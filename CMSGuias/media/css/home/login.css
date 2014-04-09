@@ -1,0 +1,77 @@
+html{
+	background: url('/media/images/portada.jpg') 0 0 no-repeat;
+	background-size: cover;
+	margin: 0;
+	max-height: 100%;
+	max-width: 100%;
+	width: 100%;
+}
+body{
+	background-color: rgba(255,255,255,0);
+	margin: 0;
+}
+section{
+	background-color: rgba(250,250,250,.8);
+}
+header{
+	border-radius: 0 0 .5em 0;
+	background-color: rgba(255,255,255,.8);
+	height: 4em;
+	max-height: 4em;
+	max-width: 30%;
+	position: absolute;
+	top: 0;
+	width: 30em;
+}
+header h2{
+	color: #6F6A75;
+	font-family: Arial;
+	font-weight: bold;
+	margin-top: .4em;
+	padding-left: .5em;
+}
+.content-login{
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 15%;
+	max-width: 20em;
+	padding: 1em 0 1em 0;
+	vertical-align: middle;
+	width: 20em;
+}
+.content-msg{
+	background-color: #FFFAAA;
+	border: solid 1px red;
+	border-radius: .5em;
+	color: red;
+	display: none;
+	margin-top: .2em;
+	padding: .5em;
+}
+@media screen and (max-width: 1120px) {
+	.content-login{
+		width: 20em;
+	}	
+}
+@media screen and (max-width: 980px) {
+	.content-login{
+		width: 20em;
+	}
+	html{
+		background-size: 100% 200%;
+	}
+}
+@media screen and (max-width: 650px) {
+	.content-login{
+		width: 20em;
+	}
+	html{
+		background-size: 100% 260%;
+	}
+}
+
+@media screen and (max-width: 480px) {
+	.content-login{
+		width: 18em;
+	}	
+}

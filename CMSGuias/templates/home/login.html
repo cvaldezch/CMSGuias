@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Login CMS Guias{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="/media/css/home/login.css">
+{% endblock %}
+{% block script %}
+<script src="/media/js/home/login.js"></script>
+{% endblock %}
+{% block header %}
+<h2>CMS Guias Remisión</h2>
+{% endblock %}
+{% block menu %}{% endblock %}
+{% block content %}
+<div class="content-login">
+	<form action="" method="POST">
+		{% csrf_token %}
+		{{form.as_p}}
+		<button type="Submit" name="submit" class="btn btn-primary" value="Submit">Ingresar
+		 <span class="glyphicon glyphicon-log-in"></span>
+		</button>
+		<div class="content-msg">
+			<span class="msg">{{msg}}</span>
+		</div>
+	</form>	
+</div>
+{% endblock %}
