@@ -16,8 +16,8 @@
 	{% endblock %}
 	<!-- Part msgBox -->
 	{% block msgbox %}
-		<link rel="stylesheet" href="/media/css/msgBoxLight.css">
-		<script src="/media/js/msgBox.js"></script>
+		<!--<link rel="stylesheet" href="/media/css/msgBoxLight.css">
+		<script src="/media/js/msgBox.js"></script>-->
 	{% endblock %}
 	<!-- Part BootStrap -->
 	{% block bootstrap %}
@@ -33,6 +33,12 @@
 	{% block style %}{% endblock %}
 	<!-- Part Scripts -->
 	{% block script %}{% endblock %}
+	<!--[if IE]><script type="text/javascript">
+		var e = ("abbr,article,spam,aside,audio,canvas,datalist,details,figure,
+		footer,header,hgroup,mark,menu,meter,nav,output,progress,
+		section,time,video").split(',');
+		for (var i=0; i<e.length; i++) {
+		document.createElement(e[i]);}</script><![endif]-->
 </head>
 <body>
 	<header>

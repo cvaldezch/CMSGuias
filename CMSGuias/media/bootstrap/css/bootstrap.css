@@ -531,6 +531,7 @@ a.text-warning:hover {
 a.text-danger:hover {
   color: #843534;
 }
+.text
 .bg-primary {
   color: #fff;
   background-color: #428bca;
@@ -5176,6 +5177,12 @@ button.close {
 .modal-footer .btn-block + .btn-block {
   margin-left: 0;
 }
+.text-black{
+  color: #222;
+}
+/*.text-black:hover{
+  color: #CCC;
+}*/
 @media (min-width: 768px) {
   .modal-dialog {
     width: 600px;
@@ -5783,3 +5790,46 @@ button.close {
   }
 }
 /*# sourceMappingURL=bootstrap.css.map */
+.bs-callout {
+  margin: 20px 0;
+  padding: 15px 30px 15px 15px;
+  border-left: 5px solid #cccccc;
+}
+.bs-callout h4 {
+  margin-top: 0;
+}
+.bs-callout p:last-child {
+  margin-bottom: 0;
+}
+.bs-callout code,
+.bs-callout .highlight {
+  background-color: #fff;
+}
+.bs-callout-danger {
+  background-color: #FBEFEF;
+  border-color: #DA4543;
+}
+.bs-callout-warning {
+  background-color: #F7F8E0;
+  border-color: #F3D962;
+}
+.bs-callout-info {
+  /*background-color: #f0f7fd;*/
+  background-color: #E0F2F7;
+  border-color: #2E9AFE;
+}
+.bs-callout-success{
+  background-color: #E0F8E0;
+  border-color: #47a447;
+}
+.bs-callout-orange{
+  background-color: #F8ECE0;
+  border-color: #FE9A2E;
+}
+.bs-user-data {
+  margin: 20px 0;
+  margin-top: -5px;
+  margin-bottom: -5px;
+  padding: 5px 30px 5px 15px;
+  border-left: 5px solid #cccccc;
+}

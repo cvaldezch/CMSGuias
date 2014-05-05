@@ -4,8 +4,14 @@ from django.template import RequestContext, TemplateDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
 from django.contrib import messages
 #from attendance.apps.almacen import models
+from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 
-def view_home(request):
-	if request.method == 'GET':
-		return render_to_response('almacen/home.html',context_instance=RequestContext(request))
+@login_required(login_url='/SignUp/')
+def view_pedido(request):
+	try:
+		if request.method == 'GET':
+			return render_to_response('almacen/pedido.html',context_instance=RequestContext(request))
+	except Exception, e:
+		raise e
+	
