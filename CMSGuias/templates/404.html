@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %} 404 {% endblock %}
+{% block style %}
+<style>
+	body{
+		background-image: url('/media/resource/background/error.jpg') !important;
+		height: 100%;
+		width: 97%;
+	}
+	section{
+		color: white;
+	}
+</style>
+{% endblock %}
+{% block content %}
+<h1>ERROR <strong>404</strong> </h1>
+<h4>LO QUE ESTAS BUSCANDO NO ESTA AQUI</h4>
+<br>
+<p>
+	{% if messages %}
+		<ul class="messages">
+		    {% for message in messages %}
+		    <li>{{ message }}</li>
+		    {% endfor %}
+		</ul>
+	{% endif %}
+</p>
+{% endblock %}

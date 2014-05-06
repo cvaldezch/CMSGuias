@@ -1,6 +1,6 @@
 #-*- Encoding: utf-8 -*-
 from django.shortcuts import get_object_or_404
-from django.template import TemplateDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
 #from django.views.generic import TemplateView
 from django.contrib import messages
@@ -20,7 +20,7 @@ def get_description_materials(request):
 				data['name'].append({'matnom':x['matnom'],'id':i})
 				i+=1
 			return HttpResponse(simplejson.dumps(data), mimetype='application/json')
-	except TemplateDoesNotExist:
+	except ObjectDoesNotExist:
 		raise Http404
 
 def get_meter_materials(request):
@@ -31,7 +31,7 @@ def get_meter_materials(request):
 			for x in meter:
 				data["list"].append({ "matmed": x["matmed"] })
 			return HttpResponse(simplejson.dumps(data), mimetype="application/json")
-	except TemplateDoesNotExist:
+	except ObjectDoesNotExist:
 		raise Http404
 
 def get_resumen_details_materiales(request):
@@ -41,7 +41,7 @@ def get_resumen_details_materiales(request):
 			res = models.Materiale.objects.values('materiales_id','matnom','matmed','unidad').filter(matnom__icontains=request.GET['matnom'],matmed__icontains=request.GET['matmed'])[:1]
 			data['list'].append({ "materialesid": res[0]['materiales_id'], "matnom": res[0]['matnom'], "matmed": res[0]['matmed'], "unidad": res[0]['unidad'] })
 			return HttpResponse(simplejson.dumps(data), mimetype='application/json')
-	except TemplateDoesNotExist:
+	except ObjectDoesNotExist:
 		raise e
 
 def save_order_temp_materials(request):
@@ -63,7 +63,7 @@ def save_order_temp_materials(request):
 		else:
 			data['status'] = False
 		return HttpResponse(simplejson.dumps(data), mimetype="application/json")
-	except Exception, e:
+	except ObjectDoesNotExist, e:
 		raise e
 
 def update_order_temp_materials(request):
@@ -77,7 +77,7 @@ def update_order_temp_materials(request):
 		else:
 			data['status'] = False
 		return HttpResponse(simplejson.dumps(data), mimetype="application/json")
-	except Exception, e:
+	except ObjectDoesNotExist, e:
 		raise e
 
 def delete_order_temp_material(request):
@@ -90,7 +90,23 @@ def delete_order_temp_material(request):
 		else:
 			data['status'] = False
 		return HttpResponse(simplejson.dumps(data), mimetype="application/json")
-	except Exception, e:
+	except ObjectDoesNotExist, e:
+		raise e
+
+def delete_all_temp_order(request):
+	try:
+		data = {}
+		if request.method == "POST":
+			# get objects to delete; these are of table bedside
+			obj = models.tmppedido.objects.filter(empdni__exact=request.POST['dni'])
+			obj.delete()
+			# here get object "Niples" tambien deberan ser eliminadas
+			
+			data['status'] = True
+		else:
+			data['status'] = False
+		return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+	except ObjectDoesNotExist, e:
 		raise e
 
 def get_list_order_temp(request):
@@ -107,7 +123,7 @@ def get_list_order_temp(request):
 		else:
 			data['status'] = False
 		return HttpResponse(simplejson.dumps(data), mimetype='application/json')
-	except Exception, e:
+	except ObjectDoesNotExist, e:
 		raise e
 
 def get_details_materials_by_id(request):
@@ -118,5 +134,20 @@ def get_details_materials_by_id(request):
 			if len(mat) > 0:
 				mat['status'] = True
 			return HttpResponse(simplejson.dumps(mat),mimetype='application/json')		
-	except Exception, e:
+	except ObjectDoesNotExist, e:
+		raise e
+# sending list of nipples
+def get_list_beside_nipples_temp_orders(request):
+	try:
+		data = {}
+		if request.method == 'GET':
+			ls = models.tmppedido.objects.filter(materiales__materiales_id__startswith='115').order_by("materiales")
+			if len(ls) > 0:
+				data['status'] = True
+				data['nipples'] = [ {"materiales_id":x.materiales.materiales_id,"matnom":x.materiales.matnom,"matmed":x.materiales.matmed,"unidad":x.materiales.unidad_id, "cantidad": x.cantidad } for x in ls]
+			else:
+				data['status'] = False
+				data['niples'] = "Nothing"
+			return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+	except ObjectDoesNotExist, e:
 		raise e

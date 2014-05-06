@@ -14,25 +14,23 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="btn-group">
-					<button class="btn btn-warning text-black"><span class="glyphicon glyphicon-upload"></span> <span>Subir Archivo</span></button>
-					<button class="btn btn-warning text-black"><span class="glyphicon glyphicon-refresh"></span> <span>Actualizar</span></button>
-					<button class="btn btn-warning text-black"><span class="glyphicon glyphicon-trash"></span> <span>Eliminar</span></button>
-					<button class="btn btn-warning text-black"><span class="glyphicon glyphicon-th"></span> <span>Niples</span></button>
+					<button class="btn btn-warning text-black btn-up-file-show"><span class="glyphicon glyphicon-upload"></span> <span>Subir Archivo</span></button>
+					<button class="btn btn-warning text-black btn-list"><span class="glyphicon glyphicon-list"></span> <span>Actualizar</span></button>
+					<button class="btn btn-warning text-black btn-del-all-temp-show"><span class="glyphicon glyphicon-trash"></span> <span>Eliminar</span></button>
+					<button class="btn btn-warning text-black btn-niples"><span class="glyphicon glyphicon-th"></span> <span>Niples</span></button>
 					<button class="btn btn-warning text-black"><span class="glyphicon glyphicon-saved"></span> <span>Guardar</span></button>
 				</div>
 			</div>
 			<div class="col-md-12">
-				<button class="btn btn-info btn-xs"><span class="glyphicon glyphicon-plus"></span> <span>Agregar Material</span></button>
-				<div class="alert alert-info alertt-block">
+				<button class="btn btn-info btn-xs btn-add-mat"><span class="glyphicon glyphicon-plus"></span> <q>Agregar Material</q></button>
+				<div class="alert alert-info alertt-block block-add-mat">
 					<!--<a href="#" data-dismiss="alert" id="aid" class="close">&times;</a>-->
 					<div class="row show-grid">
 						<div class="col-md-6">
 							<div class="form-group">
 								<label class="control-label">Descripción</label>
 								<input type="text" class="form-control matnom">
-								<ul id="description" class="description">
-									
-								</ul>
+								<ul id="description" class="description"></ul>
 							</div>
 						</div>
 						<div class="col-md-6">
@@ -43,7 +41,6 @@
 								</select>
 							</div>
 						</div>
-						
 						<div class="col-md-6">
 							<div class="col-md-4">
 								<div class="form-group">
@@ -93,20 +90,9 @@
 				</div>
 			</div>
 			<div class="col-md-12">
-				<div class="table-responsive">
-					<table class="table table-condensed table-hover">
-						<caption class="text-left"><h4>Lista de Niples</h4></caption>
-						<thead>
-							<th>Item</th>
-							<th>Codigo</th>
-							<th>Descripción</th>
-							<th>Medida</th>
-							<th>Unidad</th>
-							<th>Meter</th>
-							<th>Editar</th>
-							<th>Eliminar</th>
-						</thead>
-					</table>
+				<h4 class="text-primary"><em>Lista de Niples</em></h4>
+				<div class="panel-group bg-warning" id="niples">
+					
 				</div>
 			</div>
 		</div>
@@ -117,33 +103,18 @@
 <div class="modal fade modal-edit-cant">
 	<div class="modal-dialog modal-sm">
 		<div class="modal-content">
-			<div class="modal-header">
+			<div class="modal-header bg-warning">
 				<a class="close" data-dismiss="modal">&times;</a>
 				<h4>Modificar Cantidad</h4>
 			</div>
-			<div class="modal-body">
-				<div class="form-group">
-					<label>Materiales ID</label>
-					<p class="form-control-static edit-mid"></p>
-				</div>
-				<div class="form-group">
-					<label>Descripción</label>
-					<p class="form-control-static edit-des"></p>
-				</div>
-				<div class="form-group">
-					<label>Medida</label>
-					<p class="form-control-static edit-med"></p>
-				</div>
-				<div class="form-group">
-					<label>Unidad</label>
-					<p class="form-control-static edit-unid"></p>
-				</div>
-				<div class="form-group">
-					<label>Cantidad</label>
-					<input type="number" class="form-control edit-cant" placeholder="0">
-				</div>
+			<div class="modal-body bg-warning">
+				<p><strong>Materiales ID: </strong><small class="form-control-static edit-mid"></small></p>
+				<p><strong>Descripción: </strong><small class="form-control-static edit-des"></small></p>
+				<p><strong>Medida: </strong><small class="form-control-static edit-med"></small></p>
+				<p><strong>Unidad: </strong><small class="form-control-static edit-unid"></small></p>
+				<p><strong>Cantidad: </strong><input type="number" class="form-control edit-cant" placeholder="0"></p>
 			</div>
-			<div class="modal-footer">
+			<div class="modal-footer bg-warning">
 				<button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
 				<button class="btn btn-warning text-black btn-edit-cantidad" data-loading-text='Proccess...'><span class="glyphicon glyphicon-edit"></span> Cambiar</button>
 			</div>
@@ -154,35 +125,62 @@
 <div class="modal fade modal-delete-mid">
 	<div class="modal-dialog modal-sm">
 		<div class="modal-content">
-			<div class="modal-header">
+			<div class="modal-header bg-warning">
 				<a class="close" data-dismiss="modal">&times;</a>
 				<h4>Desea eliminar Material?</h4>
 			</div>
+			<div class="modal-body bg-warning">
+				<p><strong>Materiales ID: </strong><small class="form-control-static del-mid"></small></p>
+				<p><strong>Descripción: </strong><small class="form-control-static del-des"></small></p>
+				<p><strong>Medida: </strong><small class="form-control-static del-med"></small></p>
+				<p><strong>Unidad: </strong><small class="form-control-static del-unid"></small></p>
+				<p><strong>Cantidad: </strong><small class="form-control-static del-cant"></small></p>
+			</div>
+			<div class="modal-footer bg-warning">
+				<button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Salir</button>
+				<button class="btn btn-warning text-black btn-delete-mat" data-loading-text="Process..."><span class="glyphicon glyphicon-trash"></span> Eliminar!</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- modal delete all temp -->
+<div class="modal fade modal-delete-all-temp">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content brand-danger text-white">
 			<div class="modal-body">
-				<p>
-					<strong>Materiales ID: </strong>
-					<small class="form-control-static del-mid"></small>
-				</p>
-				<p>
-					<strong>Descripción: </strong>
-					<small class="form-control-static del-des"></small>
-				</p>
-				<p>
-					<strong>Medida: </strong>
-					<small class="form-control-static del-med"></small>
-				</p>
-				<p>
-					<strong>Unidad: </strong>
-					<small class="form-control-static del-unid"></small>
-				</p>
-				<p>
-					<strong>Cantidad: </strong>
-					<small class="form-control-static del-cant"></small>
-				</p>
+				<a class="close" data-dismiss="modal">&times;</a>
+				<h4><em>Desea eliminar todo el pedido temp?</em></h4>
+				<small>
+					Esto incluye los niples; estos se perderan permanentemente si decide continuar.
+				</small>
 			</div>
 			<div class="modal-footer">
 				<button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Salir</button>
-				<button class="btn btn-warning text-black btn-delete-mat" data-loading-text="Process..."><span class="glyphicon glyphicon-trash"></span> Eliminar!</button>
+				<button class="btn btn-danger btn-del-all-temp" data-loading-text="Process..."><span class="glyphicon glyphicon-fire"></span> Eliminar Todo</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade modal-up-file">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content brand-primary text-white">
+			<div class="modal-body">
+				<a class="close" data-dismiss="modal">&times;</a>
+				<h4>Cargar archivo Temp.</h4>
+				<div class="form-group">
+					<input type="file" class="form-control hide input-file-temp" accept="application/pdf" >
+					<hr>
+					<div class="alert alert-inverse alert-inverse-border">
+						<div class="text-center">
+							<a class="text-white">Click Here!</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Salir</button>
+				<button class="btn btn-primary"><span class="glyphicon glyphicon-gift"></span> Plantilla</button>
+				<button class="btn btn-info text-black btn-upload-file-temp" data-loading-text="Upload..."><span class="glyphicon glyphicon-upload"></span> Subir</button>
 			</div>
 		</div>
 	</div>

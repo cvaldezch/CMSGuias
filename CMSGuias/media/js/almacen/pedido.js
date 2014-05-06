@@ -1,6 +1,6 @@
 // load funtions of page
 $(function () {
-	$('.description').hide();
+	$('.description, .block-add-mat').hide();
 	$('.matnom').keypress(function (event) {
 		var key = ( event.keyCode ? event.keyCode : event.which );
 		if ( key != 13 ) {
@@ -59,7 +59,7 @@ $(function () {
 	$(".btn-edit-cantidad").click(function () {
 		edit_quantity_tmp();
 	});
-	$(".btn-delete-mat").click(function  {
+	$(".btn-delete-mat").click(function () {
 		var $mid = $(".del-mid"), $dni = $(".empdni"), $btn = $(this), $token = $("[name=csrfmiddlewaretoken]");
 		if ($mid.html() != "") {
 			$btn.button('loading');
@@ -67,15 +67,47 @@ $(function () {
 			$.post("/json/post/delete/tmp/materials/", data, function (response) {
 				if (response.status) {
 					$btn.button('reset');
-					$(".modal-edit-cant").modal("hide");
 					list_temp_materials();
+					$(".modal-delete-mid").modal("hide");
 				};
 			},"json");
 		};
 	});
 	list_temp_materials();
+	$(".btn-add-mat").click(function () {
+		var $block = $(".block-add-mat"), $btn = $(".btn-add-mat > span");
+		if (blockAdd) {
+			$block.show("blind", 600);
+			$btn.removeClass("glyphicon-plus").addClass("glyphicon-minus");
+			blockAdd=Boolean(false).valueOf();
+		}else{
+			$block.hide("blind", 600);
+			$btn.addClass("glyphicon-plus").removeClass("glyphicon-minus");
+			blockAdd=Boolean(true).valueOf();
+		};
+	});
+	$(".btn-list").click(function () {
+		list_temp_materials();
+	});
+	$(".btn-niples").click(function () {
+		get_niples();
+	});
+	$(".btn-del-all-temp-show").click(function () {
+		$(".modal-delete-all-temp").modal("show");
+	});
+	$(".btn-up-file-show").click(function () {
+		$(".modal-up-file").modal("show");
+	});
+	$(".btn-del-all-temp").click(function () {
+		data = { "dni": $(".empdni").val(), "csrfmiddlewaretoken": $("[name=csrfmiddlewaretoken]").val() }
+		$.post("/json/post/delete/all/temp/order/", data, function (response) {
+			if (response.status) {
+				location.reload();
+			};
+		},"json");
+	});
 });
-
+var blockAdd = Boolean(true).valueOf();
 // recover details of materials code, name, measure
 var getMeters = function () {
 	var $nom = $(".matnom");
@@ -228,4 +260,56 @@ var edit_quantity_tmp = function () {
 			};
 		},"json");
 	};
+}
+var get_niples = function () {
+	var template = "<div class='panel panel-default panel-warning'>"+
+										"<div class='panel-heading'>"+
+											"<h4 class='panel-title'>"+
+											"<a data-toggle='collapse' class='collapsed' data-parent='#niples' href='#des{{materiales_id}}'>{{matnom}} - {{matmed}}</a>"+
+											"<span class='pull-right badge'>{{cantidad}} {{unidad}}</span>"+
+											"</h4>"+
+										"</div>"+
+										"<div id='des{{materiales_id}}' class='panel-collapse collapse'>"+
+											"<div class='panel-body c{{materiales_id}}'>"+
+											"<div class='table-responsive'>"+
+												"<table class='table table-condensed table-hover'>"+
+													"<caption class='text-left'><div class='row'><div class='col-md-4'><div class='btn-group'>"+
+														"<button class='btn btn-default btn-xs' type='Button' data-loading-text='Proccess...'><span class='glyphicon glyphicon-plus-sign'></span> Agregar</button>"+
+														"<button class='btn btn-default btn-xs' type='Button' data-loading-text='Proccess...'><span class='glyphicon glyphicon-refresh'></span> Recargar</button>"+
+														"<button class='btn btn-danger btn-xs' type='Button' data-loading-text='Proccess...'><span class='glyphicon glyphicon-trash'></span> Eliminar Todo</button>"+
+													"</div></div>"+
+													"<div class='col-md-8'><div class='form-inline'>"+
+														"<div class='form-group'>"+
+															"<select name='typenipple' class='form-control input-sm' title='Tipo Niple' placeholder='Tipo Niple' id='>"+
+																"<option value='A'>Roscado</option><option value='B'>Ranurado</option><option value='C'>Roscado - Ranurado</option>"+
+															"</select>"+
+														"</div>"+
+														"<div class='form-group'>"+
+															"<input type='number' step='0.01' placeholder='Ingresa Metrado' min='0' class='form-control input-sm'>"+
+														"</div>"+
+														"<div class='form-group'>"+
+															"<input type='number' placeholder='Repetir n veces' min='1' class='form-control input-sm'>"+
+														"</div>"+
+														"<button class='btn btn-success text-black btn-sm'><span class='glyphicon glyphicon-floppy-save'></span> Guardar</button>"+
+													"</div></div>"+
+													"</caption>"+
+													"<thead><th>Item</th><th>Codigo</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Meter</th><th>Editar</th><th>Eliminar</th></thead>"+
+													"<tobody class='tb{{materiales_id}}'></tbody>"+
+												"</table>"+
+											"</div>"+	
+											"</div>"+
+										"</div>"+
+									"</div>";
+	// bring all the tub for contruction "Nipples"
+	$.getJSON("/json/get/nipples/temp/oreder/", function (response) {
+		if (response.status) {
+			var $collapse = $("#niples");
+			$collapse.empty();
+			for (var x in response.nipples) {
+				$collapse.append( Mustache.render( template, response.nipples[x] ) );
+			};
+		}else{
+			alert("No se a encontrado Tuberia");
+		};
+	});
 }

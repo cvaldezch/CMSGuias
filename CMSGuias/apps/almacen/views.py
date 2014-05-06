@@ -13,5 +13,6 @@ def view_pedido(request):
 		if request.method == 'GET':
 			return render_to_response('almacen/pedido.html',context_instance=RequestContext(request))
 	except Exception, e:
-		raise e
+		messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
+		raise Http404('Method no proccess')
 	

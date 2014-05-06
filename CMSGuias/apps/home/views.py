@@ -39,12 +39,14 @@ def login_view(request):
 			form = logininForm()
 			ctx = { 'form': form, 'msg': message }
 			return render_to_response('home/login.html',ctx,context_instance=RequestContext(request))
-	except Exception, e:
-		raise e
+	except TemplateDoesNotExist, e:
+		messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
+		raise Http404('Method no proccess')
 
 def logout_view(request):
 	try:
 		logout(request)
 		return HttpResponseRedirect('/')
-	except Exception, e:
-		raise e
+	except TemplateDoesNotExist, e:
+		messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
+		raise Http404('Method no proccess')

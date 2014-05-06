@@ -117,7 +117,7 @@ class Unidade(models.Model):
 		return '%s %s'%(self.unidad_id,self.uninom)
 
 class Materiale(models.Model):
-	materiales_id = models.CharField(primary_key=True,max_length=15)
+	materiales_id = models.CharField(u'Mnemocode',unique=True,primary_key=True,max_length=15)
 	matnom = models.CharField(max_length=200,null=False)
 	matmed = models.CharField(max_length=200,null=False)
 	unidad = models.ForeignKey(Unidade, to_field='unidad_id')
@@ -161,7 +161,7 @@ class Detpedido(models.Model):
 
 class tmppedido(models.Model):
 	empdni = models.CharField(max_length=8, null=False)
-	materiales = models.ForeignKey(Materiale, to_field='materiales_id')
+	materiales = models.ForeignKey(Materiale,to_field='materiales_id')
 	cantidad = models.FloatField(null=False)
 
 	def __unicode__(self):

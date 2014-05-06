@@ -536,6 +536,10 @@ a.text-danger:hover {
   color: #fff;
   background-color: #428bca;
 }
+.bg-primary {
+  color: #fff;
+  background-color: #428bca;
+}
 a.bg-primary:hover {
   background-color: #3071a9;
 }
@@ -4490,13 +4494,37 @@ a.thumbnail.active {
 .alert-danger {
   color: #a94442;
   background-color: #f2dede;
-  border-color: #ebccd1;
+  /*border-color: #ebccd1;*/
 }
 .alert-danger hr {
   border-top-color: #e4b9c0;
 }
+.alert-danger-border{
+  -webkit-border-radius: .3em;
+  -moz-border-radius: .3em;
+  -o-border-radius: .3em;
+  -ms-border-radius: .3em;
+  border-radius: .3em;
+  border: .3em dashed #A82927;
+}
 .alert-danger .alert-link {
   color: #843534;
+}
+.alert-inverse {
+  color: #7f858a;
+  background-color: #2e3134;
+  border-color: #6e858a;
+}
+.alert-inverse hr {
+  border-top-color: #353531;
+}
+.alert-inverse-border{
+  -webkit-border-radius: .3em;
+  -moz-border-radius: .3em;
+  -o-border-radius: .3em;
+  -ms-border-radius: .3em;
+  border-radius: .3em;
+  border: .3em dashed gray;
 }
 @-webkit-keyframes progress-bar-stripes {
   from {
@@ -5120,7 +5148,7 @@ button.close {
 .modal-content {
   position: relative;
   background-color: #fff;
-  background-clip: padding-box;
+  /*background-clip: padding-box;*/
   border: 1px solid #999;
   border: 1px solid rgba(0, 0, 0, .2);
   border-radius: 6px;
@@ -5160,10 +5188,11 @@ button.close {
 .modal-body {
   position: relative;
   padding: 20px;
+  padding-bottom: 10px;
 }
 .modal-footer {
   padding: 19px 20px 20px;
-  margin-top: 15px;
+  margin-top: 2px;
   text-align: right;
   border-top: 1px solid #e5e5e5;
 }
@@ -5179,6 +5208,12 @@ button.close {
 }
 .text-black{
   color: #222;
+}
+.text-white{
+  color: #fff;
+}
+.text-white:hover{
+  color: #eee;
 }
 /*.text-black:hover{
   color: #CCC;
@@ -5832,4 +5867,24 @@ button.close {
   margin-bottom: -5px;
   padding: 5px 30px 5px 15px;
   border-left: 5px solid #cccccc;
+}
+.brand-primary{
+  background-color: #428bca;
+  background-clip: padding-box;
+}
+.brand-success{
+  background-color: #5cb85c;
+  background-clip: padding-box;
+}
+.brand-info{
+  background-color: #5bc0de;
+  background-clip: padding-box;
+}
+.brand-warning{
+  background-color: #f0ad4e;
+  background-clip: padding-box;
+}
+.brand-danger{
+  background-color: #d9534f;
+  background-clip: padding-box;
 }
