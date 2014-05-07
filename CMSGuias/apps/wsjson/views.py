@@ -151,3 +151,37 @@ def get_list_beside_nipples_temp_orders(request):
 			return HttpResponse(simplejson.dumps(data), mimetype="application/json")
 	except ObjectDoesNotExist, e:
 		raise e
+# list temp nipples
+def get_list_temp_nipples(request):
+	try:
+		data = {}
+		if request.method == 'GET':
+			tipo = {'A':"Roscado","B":"Ranurado", "C":"Roscado - Ranurado" }
+			ls = models.tmpniple.objects.filter(empdni__exact=request.GET['dni'],materiales_id__exact=request.GET['mid']).order_by('metrado')
+			data['list'] = [ { "id": x.id,"cantidad":x.cantidad,"materiales_id":x.materiales.materiales_id,"matnom": 'Niple '+tipo[x.tipo],"matmed":x.materiales.matmed, "metrado": x.metrado, "tipo": x.tipo } for x in ls]
+			data['status'] = True
+		else:
+			data['status'] = False
+		return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+	except ObjectDoesNotExist:
+		raise Http404
+# saved or update templates nipples
+def post_saved_update_temp_nipples(request):
+	data = {}
+	if request.method == 'POST':
+		try:
+			if request.POST.get('tra') == 'new':
+				obj = models.tmpniple()
+			else:
+				obj = models.tmpniple.objects.get(id=request.POST.get('id'))
+			obj.empdni = request.POST.get('dni')
+			obj.materiales_id = request.POST.get('mid')
+			obj.cantidad = request.POST.get('veces')
+			obj.metrado = request.POST.get('cant')
+			obj.tipo = request.POST.get('type')
+			obj.save()
+			data['status'] = True
+		except ObjectDoesNotExist, e:
+			raise e
+			data['status'] = False
+		return HttpResponse(simplejson.dumps(data), mimetype="application/json")

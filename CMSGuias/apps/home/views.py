@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 @login_required(login_url='/SignUp/')
 def view_home(request):
 	if request.method == 'GET':
-		return render_to_response('home/home.html',context_instance=RequestContext(request))
+		return render_to_response('home/home.html',{},context_instance=RequestContext(request))
 
 def login_view(request):
 	try:

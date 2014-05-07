@@ -172,6 +172,7 @@ class Niple(models.Model):
 	proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
 	empdni = models.CharField(max_length=8,null=False)
 	materiales = models.ForeignKey(Materiale, to_field='materiales_id')
+	cantidad = models.IntegerField(null=True,default=1)
 	metrado = models.IntegerField(null=False)
 	tipo = models.CharField(max_length=1)
 	flag = models.BooleanField(default=True)
@@ -182,6 +183,7 @@ class Niple(models.Model):
 class tmpniple(models.Model):
 	empdni = models.CharField(max_length=8,null=False)
 	materiales = models.ForeignKey(Materiale, to_field='materiales_id')
+	cantidad = models.IntegerField(null=True,default=1)
 	metrado = models.IntegerField(null=False)
 	tipo = models.CharField(max_length=1)
 	flag = models.BooleanField(default=True)
