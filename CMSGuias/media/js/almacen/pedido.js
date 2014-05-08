@@ -106,6 +106,10 @@ $(function () {
 			};
 		},"json");
 	});
+	$(".btn-order-show").click(function (event) {
+		event.preventDefault();
+		$(".modal-order").modal("show");
+	});
 });
 var blockAdd = Boolean(true).valueOf();
 // recover details of materials code, name, measure
@@ -266,7 +270,10 @@ var get_niples = function () {
 										"<div class='panel-heading'>"+
 											"<h4 class='panel-title'>"+
 											"<a data-toggle='collapse' class='collapsed' data-parent='#niples' onClick='list_temp_nipples({{materiales_id}});' href='#des{{materiales_id}}'>{{matnom}} - {{matmed}}</a>"+
-											"<span class='pull-right badge'>{{cantidad}} {{unidad}}</span>"+
+											"<span class='pull-right badge badge-warning'>Quedan <span class='res{{materiales_id}}'></span> cm</span>"+
+											"<span class='pull-right badge badge-warning'>Ingresado <span class='in{{materiales_id}}'></span> cm</span>"+
+											"<span class='pull-right badge badge-warning'>Total {{cantidad}} {{unidad}}</span>"+
+											"<input type='hidden' class='totr{{materiales_id}}' value='{{cantidad}}'>"+
 											"</h4>"+
 										"</div>"+
 										"<div id='des{{materiales_id}}' class='panel-collapse collapse'>"+
@@ -274,7 +281,7 @@ var get_niples = function () {
 											"<div class='table-responsive'>"+
 												"<table class='table table-condensed table-hover'>"+
 													"<caption class='text-left'><div class='row'><div class='col-md-4'><div class='btn-group'>"+
-														"<button class='btn btn-default btn-xs' onClick='aggregate_nipples({{materiales_id}});' type='Button' data-loading-text='Proccess...'><span class='glyphicon glyphicon-plus-sign'></span> Agregar</button>"+
+														"<button class='btn btn-default btn-xs btn-add-nipple-{{materiales_id}}' onClick='aggregate_nipples({{materiales_id}});' type='Button' data-loading-text='Proccess...'><span class='glyphicon glyphicon-plus-sign'></span> Agregar</button>"+
 														"<button class='btn btn-default btn-xs' onClick='list_temp_nipples({{materiales_id}});' type='Button' data-loading-text='Proccess...'><span class='glyphicon glyphicon-refresh'></span> Recargar</button>"+
 														"<button class='btn btn-danger btn-xs' onClick='delete_all_temp_nipples({{materiales_id}});' type='Button' data-loading-text='Proccess...'><span class='glyphicon glyphicon-trash'></span> Eliminar Todo</button>"+
 													"</div></div>"+
@@ -329,9 +336,18 @@ var list_temp_nipples = function (mid) {
 				var $tb = $(".tb"+mid),
 						template = "<tr><td class='text-center'>{{cantidad}}</td><td>{{matnom}}</td><td>{{matmed}}</td><td>x<td><td class='text-center'>{{metrado}}</td><td class='text-center'>cm</td><td class='text-center'><button type='Button' class='btn btn-xs btn-info text-black' onClick=edit_temp_nipple({{id}},{{materiales_id}},{{cantidad}},{{metrado}},'{{tipo}}');><span class='glyphicon glyphicon-edit'></span></button></td><td class='text-center'><button type='Button' class='text-black btn btn-xs btn-danger' onClick='delete_temp_nipple({{id}},{{materiales_id}})'><span class='glyphicon glyphicon-remove'></span></button></td>";
 				$tb.empty();
+				var totcm = 0, incm = 0, res = 0;
+				totcm = ( (parseInt($(".totr"+mid).val())) * 100 );
 				for(var x in response.list){
 					$tb.append( Mustache.render(template, response.list[x]) );
+					incm += ( response.list[x].cantidad * response.list[x].metrado);
 				}
+				res = totcm - incm;
+				$(".in"+mid).html(incm);
+				$(".res"+mid).html(res);
+				if (res == 0 || res < 0) {
+					$(".btn-add-nipple-"+mid).attr("disabled", true);
+				};
 			};
 		});
 	};
@@ -341,6 +357,12 @@ var saved_or_update_nipples = function (mid) {
 	var $update = $(".update-id-"+mid), $quantity = $(".mt"+mid), $type = $(".tn"+mid), $nv = $(".nv"+mid), nv = 0, pass = Boolean(false).valueOf();
 	if ($quantity.val().trim() == "") { $().toastmessage('showWarningToast', "No se a ingresado una cantidad."); return pass;}else{ pass = Boolean(true).valueOf(); console.info(pass);};
 	if ($nv.val().trim() == "" || $nv.val().trim() == 0) { nv = 1 }else{ nv = $nv.val(); };
+	var valcant = parseInt($quantity.val().trim()) * parseInt(nv), res = parseInt( $(".res"+mid).html().trim());
+	if (valcant > res) {
+		pass = Boolean(false).valueOf();
+		$().toastmessage("showWarningToast","La cantidad ingresada es superior a la establecida.");
+		return false;
+	};
 	if (pass && nv >= 1) {
 		var data = {}
 		if ($update.val().trim() == "") {
@@ -348,7 +370,6 @@ var saved_or_update_nipples = function (mid) {
 		}else{
 			data = {"tra":"update","id": $update.val(),"cant": $quantity.val().trim(), "mid": mid, "type": $type.val(), "veces": nv, "dni": $(".empdni").val(),"csrfmiddlewaretoken":$("[name=csrfmiddlewaretoken]").val() }
 		};
-		console.warn(data);
 		$.post("/json/post/saved/temp/nipples/", data, function (response) {
 			console.log(response);
 			if (response.status) {
@@ -358,7 +379,7 @@ var saved_or_update_nipples = function (mid) {
 			};
 		});
 	}else{
-		console.error("No paso la validacion");
+		$().toastmessage("showWarningToast","La cantidad o la medida no se han ingresado o no son correctas.")
 	};
 }
 var edit_temp_nipple = function(id,mid,cant,med,tipo){
@@ -372,5 +393,42 @@ var edit_temp_nipple = function(id,mid,cant,med,tipo){
 	$(".update-id-"+mid).val(id);
 }
 var delete_temp_nipple = function (id,mid) {
-	
+	$().toastmessage('showToast',{
+		text: "Seguro(a) que desea eliminar el niple?",
+		type: 'confirm',
+		sticky: true,
+		buttons: [{value:'No'},{value:'Si'}],
+		success: function (result){
+			if (result == "Si") {
+				mid = String(mid).valueOf();
+				var data = {"id": id, "mid": mid, "dni": $(".empdni").val(),"csrfmiddlewaretoken":$("[name=csrfmiddlewaretoken]").val()};
+				$.post("/json/post/delete/temp/nipples/item/", data, function (response) {
+					if (response.status) {
+						mid = String(mid).valueOf();
+						list_temp_nipples(mid);
+					};
+				},"json");
+			};
+		}
+	});
+}
+var delete_all_temp_nipples = function (mid) {
+	$().toastmessage('showToast',{
+		text: "Seguro(a) que desea eliminar toda la lista de niples?",
+		type: 'confirm',
+		sticky: true,
+		buttons: [{value:'No'},{value:'Si'}],
+		success: function (result){
+			if (result == "Si") {
+				mid = String(mid).valueOf();
+				var data = {"mid": mid, "dni": $(".empdni").val(),"csrfmiddlewaretoken":$("[name=csrfmiddlewaretoken]").val()};
+				$.post("/json/post/delete/all/temp/nipples/", data, function (response) {
+					if (response.status) {
+						mid = String(mid).valueOf();
+						list_temp_nipples(mid);
+					};
+				},"json");
+			};
+		}
+	});
 }

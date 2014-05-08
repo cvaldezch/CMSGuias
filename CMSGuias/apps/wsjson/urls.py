@@ -14,6 +14,8 @@ urlpatterns = patterns('CMSGuias.apps.wsjson.views',
 	url(r'^get/nipples/temp/oreder/','get_list_beside_nipples_temp_orders'),
 	url(r'^get/list/temp/nipples/$','get_list_temp_nipples'),
 	url(r'^post/saved/temp/nipples/','post_saved_update_temp_nipples'),
+	url(r'^post/delete/temp/nipples/item/','post_delete_temp_item_nipple'),
+	url(r'^post/delete/all/temp/nipples/','post_delete_temp_all_nipple'),
 	# url recurrent
 	url(r'^get/details/materials/$','get_details_materials_by_id'),
 )

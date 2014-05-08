@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block style %}
+<!--<link rel="stylesheet" href="/media/css/almacen/pedido.css">-->
+{% endblock %}
+{% block script %}
+<!--<script src="/media/js/almacen/pedido.js"></script>-->
+{% endblock %}
+{% block content %}
+<div class="container">
+	<div class="well">
+		<h1>Clientes</h1>
+		{% csrf_token %}
+		<input type="hidden" class="empdni" value="{{user.get_profile.empdni}}">
+		<div class="row show-grid">
+			<div class="col-md-12">
+				<a href="{% url vista_add_customers %}" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Nuevo Cliente</a>
+			</div>
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<table class="table table-striped table-hover table-bordered table-condensed">
+						<thead>
+							<tr>
+								<th class="text-center">Item</th>
+								<th class="text-center">Ruc</th>
+								<th>Razón Social</th>
+								<th>Dirección</th>
+								<th class="text-center">Telefono</th>
+								<th class="text-center">Editar</th>
+								<th class="text-center">Eliminar</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for x in lista %}
+							<tr>
+								<td>{{forloop.counter}}</td>
+								<td>{{x.ruccliente_id}}</td>
+								<td>{{x.razonsocial}}</td>
+								<td>{{x.direccion}}</td>
+								<td>{{x.telefono}}</td>
+								<td class="text-center"><a href="{% url vista_edit_customers x.ruccliente_id %}" class="btn btn-link text-black" value="{{x.ruccliente_id}}"><span class="glyphicon glyphicon-edit"></span></a></td>
+								<td class="text-center"><a href="{% url vista_edit_customers x.ruccliente_id %}" class="btn btn-link text-black" value="{{x.ruccliente_id}}"><span class="glyphicon glyphicon-trash"></span></a></td>
+							</tr>
+							{% endfor%}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

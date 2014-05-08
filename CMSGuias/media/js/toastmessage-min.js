@@ -51,133 +51,134 @@
  *   included some nice free icons
  *   reimplemented to follow jquery plugin good practices rules
  *
- *   Author: Daniel Bremer-Tonn
+ *   Author: Daniel Bremer-Tonn and Christian Valdez Chavez
 **/
 (function($)
 {
 	var settings = {
-		inEffect: 			{opacity: 'show'},	// in effect
+		inEffect: {opacity: 'show'},	// in effect
 		inEffectDuration: 	600,				// in effect duration in miliseconds
-		stayTime: 			3000,				// time in miliseconds before the item has to disappear
+		stayTime: 		3000,				// time in miliseconds before the item has to disappear
 		text: 				'',					// content of the item. Might be a string or a jQuery object. Be aware that any jQuery object which is acting as a message will be deleted when the toast is fading away.
 		sticky: 			false,				// should the toast item sticky or not?
 		type: 				'notice', 			// notice, warning, error, success
-    position:           'top-right',        // top-left, top-center, top-right, middle-left, middle-center, middle-right ... Position of the toast container holding different toast. Position can be set only once at the very first call, changing the position after the first call does nothing
-    closeText:          '',                 // text which will be shown as close button, set to '' when you want to introduce an image via css
-    close:              null,                // callback function when the toastmessage is closed
+    position:     "",        // top-left, top-center, top-right, middle-left, middle-center, middle-right ... Position of the toast container holding different toast. Position can be set only once at the very first call, changing the position after the first call does nothing
+    closeText:    '',                 // text which will be shown as close button, set to '' when you want to introduce an image via css
+    close:        null,                // callback function when the toastmessage is closed
     showButtons: false,
     buttons: [],
 		success: function (result) { }
   };
   //var confirm = {"text":"Confirm?","buttons":[{value:"Ok"}]}
 	var methods = {
-	    init : function(options)
-	{
-		if (options) {
-	            $.extend( settings, options );
-	        }
-	},
+	  init : function(options)
+		{
+			if (options) {
+				$.extend( settings, options );
+			}
+		},
 
-	showToast : function(options)
-	{
-		var localSettings = {};
-	  $.extend(localSettings, settings, options);
+		showToast : function(options)
+		{
+			var localSettings = {};
+			settings.position = options.position == null ? "middle-center" : options.position
+		  $.extend(localSettings, settings, options);
+			// declare variables
+		  var toastWrapAll, toastItemOuter, toastItemInner, toastItemClose, toastItemImage, toastButtons, toastItemButtons;
 
-		// declare variables
-	  var toastWrapAll, toastItemOuter, toastItemInner, toastItemClose, toastItemImage, toastButtons, toastItemButtons;
+			toastWrapAll	= (!$('.toast-container').length) ? $('<div></div>').addClass('toast-container').addClass('toast-position-' + localSettings.position).appendTo('body') : $('.toast-container');
+			toastItemOuter	= $('<div></div>').addClass('toast-item-wrapper');
+			toastItemInner	= $('<div></div>').hide().addClass('toast-item toast-type-' + localSettings.type).appendTo(toastWrapAll).html($('<p>').append (localSettings.text)).animate(localSettings.inEffect, localSettings.inEffectDuration).wrap(toastItemOuter);
+			toastItemClose	= $('<div></div>').addClass('toast-item-close').prependTo(toastItemInner).html(localSettings.closeText).click(function() { $().toastmessage('removeToast',toastItemInner, localSettings) });
+			toastItemImage  = $('<div></div>').addClass('toast-item-image').addClass('toast-item-image-' + localSettings.type).prependTo(toastItemInner);
+			// si lista de botones es mayor a 1 creamos botones
+			if (localSettings.buttons.length > 0) {
+				toastItemButtons  = $('<div></div>').addClass('toast-item-btn').prependTo(toastItemInner);
+				$(localSettings.buttons).each(function (index, button) {
+					toastButtons = $('<button value='+button.value+'></button>').addClass('toast-buttons').prependTo(toastItemButtons).html(button.value).click(function(event) {
+						event.preventDefault();
+						var value = $(this).val();
+						localSettings.success(value);
+						$().toastmessage('removeToast',toastItemInner, localSettings);
+					});
+				});
+			};
 
-		toastWrapAll	= (!$('.toast-container').length) ? $('<div></div>').addClass('toast-container').addClass('toast-position-' + localSettings.position).appendTo('body') : $('.toast-container');
-		toastItemOuter	= $('<div></div>').addClass('toast-item-wrapper');
-		toastItemInner	= $('<div></div>').hide().addClass('toast-item toast-type-' + localSettings.type).appendTo(toastWrapAll).html($('<p>').append (localSettings.text)).animate(localSettings.inEffect, localSettings.inEffectDuration).wrap(toastItemOuter);
-		toastItemClose	= $('<div></div>').addClass('toast-item-close').prependTo(toastItemInner).html(localSettings.closeText).click(function() { $().toastmessage('removeToast',toastItemInner, localSettings) });
-		toastItemImage  = $('<div></div>').addClass('toast-item-image').addClass('toast-item-image-' + localSettings.type).prependTo(toastItemInner);
-		
-		if (localSettings.buttons.length > 0) {
-			toastItemButtons  = $('<div></div>').addClass('toast-item-btn').prependTo(toastItemInner);
-			$(localSettings.buttons).each(function (index, button) {
-				toastButtons = $('<button value='+button.value+'></button>').addClass('btn btn-default').prependTo(toastItemButtons).html(button.value).click(function(event) {
-					event.preventDefault();
-					var value = $(this).val();
-					localSettings.success(value);
-					$().toastmessage('removeToast',toastItemInner, localSettings);
+		  if(navigator.userAgent.match(/MSIE 6/i))
+			{
+		   	toastWrapAll.css({top: document.documentElement.scrollTop});
+		  }
+		  // si lo vuelve sticky
+			if(!localSettings.sticky)
+			{
+				setTimeout(function()
+				{
+					$().toastmessage('removeToast', toastItemInner, localSettings);
+				},
+				localSettings.stayTime);
+			}
+			settings.position = "";
+		  return toastItemInner;
+		},
+
+		showNoticeToast : function (message)
+		{
+			console.error(message);
+			var options = {text : message, type : 'notice'};
+			return $().toastmessage('showToast', options);
+		},
+
+		showSuccessToast : function (message)
+		{
+		    var options = {text : message, type : 'success'};
+		    return $().toastmessage('showToast', options);
+		},
+
+		showErrorToast : function (message)
+		{
+		    var options = {text : message, type : 'error'};
+		    return $().toastmessage('showToast', options);
+		},
+
+		showWarningToast : function (message)
+		{
+			var options = {text : message, type : 'warning'};
+			return $().toastmessage('showToast', options);
+		},
+
+		showConfirmToast : function (confirm)
+		{
+			var options = { text: confirm.message, type: 'confirm', buttons: confirm.buttons, success: confirm.success, position: confirm.position};
+			return $().toastmessage('showToast', options)
+		},
+
+		removeToast: function(obj, options)
+		{
+			obj.animate({opacity: '0'}, 600, function()
+			{
+				obj.parent().animate({height: '0px'}, 300, function()
+				{
+					obj.parent().remove();
+					$(".toast-container").remove();
 				});
 			});
-		};
-
-	  if(navigator.userAgent.match(/MSIE 6/i))
-		{
-	   	toastWrapAll.css({top: document.documentElement.scrollTop});
-	  }
-	  // si lo vuelve sticky
-		if(!localSettings.sticky)
-		{
-			setTimeout(function()
+			// callback
+			if (options && options.close !== null)
 			{
-				$().toastmessage('removeToast', toastItemInner, localSettings);
-			},
-			localSettings.stayTime);
+			    options.close();
+			}
 		}
-		// si creamos botones
-	  return toastItemInner;
-	},
-
-	showNoticeToast : function (message)
-	{
-	    var options = {text : message, type : 'notice'};
-	    return $().toastmessage('showToast', options);
-	},
-
-	showSuccessToast : function (message)
-	{
-	    var options = {text : message, type : 'success'};
-	    return $().toastmessage('showToast', options);
-	},
-
-	showErrorToast : function (message)
-	{
-	    var options = {text : message, type : 'error'};
-	    return $().toastmessage('showToast', options);
-	},
-
-	showWarningToast : function (message)
-	{
-	    var options = {text : message, type : 'warning'};
-	    return $().toastmessage('showToast', options);
-	},
-
-	showConfirmToast : function (confirm)
-	{
-		var options = { text: confirm.message, type: 'confirm', buttons: confirm.buttons, success: confirm.success};
-		return $().toastmessage('showToast', options)
-	},
-
-	removeToast: function(obj, options)
-	{
-		obj.animate({opacity: '0'}, 600, function()
-		{
-			obj.parent().animate({height: '0px'}, 300, function()
-			{
-				obj.parent().remove();
-			});
-		});
-	        // callback
-	        if (options && options.close !== null)
-	        {
-	            options.close();
-	        }
-	}
 	};
 
 	$.fn.toastmessage = function( method ) {
-
-	    // Method calling logic
-	    if ( methods[method] ) {
-	      return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
-	    } else if ( typeof method === 'object' || ! method ) {
-	      return methods.init.apply( this, arguments );
-	    } else {
-	      $.error( 'Method ' +  method + ' does not exist on jQuery.toastmessage' );
-	    }
+		// Method calling logic
+		if ( methods[method] ) {
+		  return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
+		} else if ( typeof method === 'object' || ! method ) {
+		  return methods.init.apply( this, arguments );
+		} else {
+		  $.error( 'Method ' +  method + ' does not exist on jQuery.toastmessage' );
+		}
 	};
 
 })(jQuery);

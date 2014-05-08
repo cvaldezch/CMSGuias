@@ -185,3 +185,27 @@ def post_saved_update_temp_nipples(request):
 			raise e
 			data['status'] = False
 		return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+# delete item nipple template
+def post_delete_temp_item_nipple(request):
+	data = {}
+	if request.method == 'POST':
+		try:
+			obj = models.tmpniple.objects.get(id__exact=request.POST.get('id'), materiales_id__exact=request.POST.get('mid'),empdni__exact=request.POST.get('dni'))
+			obj.delete()
+			data['status'] = True
+		except ObjectDoesNotExist, e:
+			raise e
+			data['status'] = False
+		return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+# delete item nipple template
+def post_delete_temp_all_nipple(request):
+	data = {}
+	if request.method == 'POST':
+		try:
+			obj = models.tmpniple.objects.filter(materiales_id__exact=request.POST.get('mid'))
+			obj.delete()
+			data['status'] = True
+		except ObjectDoesNotExist, e:
+			raise e
+			data['status'] = False
+	return HttpResponse(simplejson.dumps(data), mimetype="application/json")

@@ -4334,7 +4334,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   display: inline-block;
   min-width: 10px;
   padding: 3px 7px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
   line-height: 1;
   color: #fff;
@@ -4343,6 +4343,25 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   vertical-align: baseline;
   background-color: #999;
   border-radius: 10px;
+}
+.badge-primary{
+  background-color: #428bca;
+  color: #fff;
+}
+.bagde-success{
+  background-color: #5cb85c;
+  color: #333;
+}
+.badge-info{
+  background-color: #5bc0de;
+  color: #333;
+}
+.badge-warning{
+  background-color: #f0ad4e;
+  color: #333;
+}
+.badge-danger{
+  background-color: #d9534f;
 }
 .badge:empty {
   display: none;

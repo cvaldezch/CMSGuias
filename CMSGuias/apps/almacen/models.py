@@ -55,6 +55,7 @@ class Cliente(models.Model):
 
 class Proyecto(models.Model):
 	proyecto_id = models.CharField(primary_key=True, max_length=7,null=False)
+	ruccliente = models.ForeignKey(Cliente, to_field='ruccliente_id',null=True)
 	nompro = models.CharField(max_length=200)
 	registrado = models.DateTimeField(auto_now=True,null=False)
 	comienzo = models.DateField(null=True)
@@ -66,10 +67,45 @@ class Proyecto(models.Model):
 	direccion = models.CharField(max_length=200,null=False,)
 	telefono = models.CharField(max_length=11,null=True, blank=True,default='000-000-000')
 	obser = models.TextField(null=True)
+	status = models.CharField(max_length=2,null=False,default='00')
 	flag = models.BooleanField(default=True,null=False)
+
+	class Meta:
+		ordering = ['nompro']
 
 	def __unicode__(self):
 		return '%s %s'%(self.ruccliente,self.razonsocial)
+
+class Subproyecto(models.Model):
+	subproyecto_id = models.CharField(primary_key=True,max_length=7,null=False)
+	proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
+	nomsub = models.CharField(max_length=200)
+	registrado = models.DateTimeField(auto_now=True,null=False)
+	comienzo = models.DateField(null=True)
+	fin = models.DateField(null=True)
+	obser = models.TextField(null=True)
+	status = models.CharField(max_length=2,null=False,default='00')
+	flag = models.BooleanField(default=True,null=False)
+
+	class Meta:
+		ordering = ['nomsub']
+
+	def __unicode__(self):
+		return '%s - %s %s'%(self.proyecto,self.subproyecto_id,self.nomsub)
+
+class Sectore(models.Model):
+	sector_id = models.CharField(primary_key=True,max_length=20,null=False,unique=True)
+	proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
+	subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id',null=True)
+	planoid = models.CharField(max_length=16,null=True,default='')
+	nomsec = models.CharField(max_length=200)
+	registrado = models.DateTimeField(auto_now=True,null=False)
+	comienzo = models.DateField(null=True)
+	fin = models.DateField(null=True)
+	obser = models.TextField(null=True)
+	status = models.CharField(max_length=2,null=False,default='00')
+	flag = models.BooleanField(default=True,null=False)
+
 
 class Almacene(models.Model):
 	almacen_id = models.CharField(primary_key=True,max_length=4)
@@ -121,7 +157,7 @@ class Materiale(models.Model):
 	matnom = models.CharField(max_length=200,null=False)
 	matmed = models.CharField(max_length=200,null=False)
 	unidad = models.ForeignKey(Unidade, to_field='unidad_id')
-	matpre = models.FloatField()
+	matpre = models.FloatField(default=0,null=True)
 	matmar = models.CharField(max_length=40,null=True)
 	matmod = models.CharField(max_length=40,null=True)
 	matacb = models.CharField(max_length=255,null=True)
@@ -152,8 +188,8 @@ class Detpedido(models.Model):
 	pedido = models.ForeignKey(Pedido, to_field='pedido_id')
 	materiales = models.ForeignKey(Materiale, to_field='materiales_id')
 	cantidad = models.FloatField(null=False)
+	cantshop = models.FloatField(default=0,null=False)
 	tag = models.CharField(max_length=1,default='0')
-	#auto = models.CharField(max_length=1,default='0')
 	flag = models.BooleanField(default=True)
 
 	def __unicode__(self):

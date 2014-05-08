@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block style %}
+<!--<link rel="stylesheet" href="/media/css/almacen/pedido.css">-->
+{% endblock %}
+{% block script %}
+<!--<script src="/media/js/almacen/pedido.js"></script>-->
+{% endblock %}
+{% block content %}
+<div class="container">
+	<div class="well">
+		<h1>Editar Cliente</h1>
+		{% csrf_token %}
+		<a href="{% url vista_customers %}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> regresar</a>
+		<div class="row show-grid">
+		</div>
+		<form class="form-horizontal" method="POST" action="">
+			{% csrf_token %}
+			<table>
+				{{form.as_table}}
+			</table>
+			<button type="submit" value="submit" class="btn btn-success text-black"><span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios</button>
+		</form>
+	</div>
+</div>
+{% endblock %}
