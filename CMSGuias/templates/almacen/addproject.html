@@ -8,9 +8,9 @@
 {% block content %}
 <div class="container">
 	<div class="well">
-		<h3 class="text-primary">Editar Cliente</h3>
+		<h3 class="text-primary">Agregar Nuevo Proyecto</h3>
 		{% csrf_token %}
-		<a href="{% url 'vista_customers' %}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> regresar</a>
+		<a href="{% url 'vista_project' %}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> regresar</a>
 		<div class="row show-grid">
 		</div>
 		<form class="form-horizontal" method="POST" action="">
@@ -22,4 +22,11 @@
 		</form>
 	</div>
 </div>
+<!-- Block Scripts -->
+<script type="text/javascript">
+	$(document).ready(function() {
+		$(".in-date").datepicker({ minDate: "0" , maxDate: "" , changeMonth: true, changeYear: true, showAnim: "slide", dateFormat: "yy-mm-dd"});
+	});
+</script>
+<!-- endblock -->
 {% endblock %}

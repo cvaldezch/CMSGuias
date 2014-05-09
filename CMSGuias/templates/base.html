@@ -9,7 +9,7 @@
 	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<!-- Part JQuery -->
 	{% block jquery %}
-	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css">
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.js"></script>
 	<!--<script src="/media/js/scrollTo.js"></script>-->
@@ -52,8 +52,6 @@
 	{% block content %}
 	{% endblock %}	
 	</section>
-	<footer>
-		{% block footer %}{% endblock %}
-	</footer>
+	<footer>{% block footer %}{% endblock %}</footer>
 </body>
 </html>

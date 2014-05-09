@@ -8,9 +8,9 @@
 {% block content %}
 <div class="container">
 	<div class="well">
-		<h1>Agregar Nuevo Cliente</h1>
+		<h3 class="text-primary">Agregar Nuevo Cliente</h3>
 		{% csrf_token %}
-		<a href="{% url vista_customers %}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> regresar</a>
+		<a href="{% url 'vista_customers' %}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> regresar</a>
 		<div class="row show-grid">
 		</div>
 		<form class="form-horizontal" method="POST" action="">

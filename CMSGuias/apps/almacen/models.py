@@ -51,7 +51,7 @@ class Cliente(models.Model):
 	flag = models.BooleanField(default=True,null=False)
 
 	def __unicode__(self):
-		return '%s %s'%(self.ruccliente,self.razonsocial)
+		return '%s %s'%(self.ruccliente_id,self.razonsocial)
 
 class Proyecto(models.Model):
 	proyecto_id = models.CharField(primary_key=True, max_length=7,null=False)
@@ -64,8 +64,7 @@ class Proyecto(models.Model):
 	departamento = models.ForeignKey(Departamento, to_field='departamento_id')
 	provincia = models.ForeignKey(Provincia, to_field='provincia_id')
 	distrito = models.ForeignKey(Distrito, to_field='distrito_id')
-	direccion = models.CharField(max_length=200,null=False,)
-	telefono = models.CharField(max_length=11,null=True, blank=True,default='000-000-000')
+	direccion = models.CharField(max_length=200,null=False)
 	obser = models.TextField(null=True)
 	status = models.CharField(max_length=2,null=False,default='00')
 	flag = models.BooleanField(default=True,null=False)
@@ -74,7 +73,7 @@ class Proyecto(models.Model):
 		ordering = ['nompro']
 
 	def __unicode__(self):
-		return '%s %s'%(self.ruccliente,self.razonsocial)
+		return '%s %s - %s'%(self.proyecto_id,self.nompro,self.ruccliente_id)
 
 class Subproyecto(models.Model):
 	subproyecto_id = models.CharField(primary_key=True,max_length=7,null=False)

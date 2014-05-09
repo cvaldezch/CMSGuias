@@ -8,10 +8,57 @@
 {% block content %}
 <div class="container">
 	<div class="well">
-		<h1>Proyecto</h1>
+	<h1 class="text-primary">Proyectos</h1>
 		{% csrf_token %}
 		<input type="hidden" class="empdni" value="{{user.get_profile.empdni}}">
-		
+		<div class="row show-grid">
+			<div class="col-md-12">
+				<div class="btn-group">
+					<a href="{% url 'vista_add_projects' %}" class="btn btn-default btn-primary"><span class="glyphicon glyphicon-plus"></span> Nuevo Proyecto</a>
+					<a href="{% url 'vista_add_customers' %}" class="btn btn-default btn-info text-black"><span class="glyphicon glyphicon-plus-sign"></span> Nuevo Subproyecto</a>
+					<a href="{% url 'vista_add_customers' %}" class="btn btn-default btn-info text-black"><span class="glyphicon glyphicon-plus-sign"></span> Nuevo Sector</a>
+				</div>
+			</div>
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<table class="table table-striped table-hover table-bordered table-condensed">
+						<thead>
+							<tr>
+								<th class="text-center">Item</th>
+								<th class="text-center">Codigo</th>
+								<th>Nombre de Prouecto</th>
+								<th>Dirección</th>
+								<th class="text-center">Fecha Inicio</th>
+								<th class="text-center">Fecha Fin</th>
+								<th class="text-center">Editar</th>
+								<th class="text-center">Eliminar</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% if lista %}
+							{% for x in lista %}
+							<tr class="tr-{{x.proyecto_id}}">
+								<td>{{forloop.counter}}</td>
+								<td>{{x.proyecto_id}}</td>
+								<td>{{x.nompro}}</td>
+								<td>{{x.direccion}}</td>
+								<td>{{x.comienzo}}</td>
+								<td>{{x.fin}}</td>
+								<td class="text-center"><a href="{% url 'vista_edit_projects' x.proyecto_id %}" class="btn btn-link text-black" value="{{x.proyecto_id}}"><span class="glyphicon glyphicon-edit"></span></a></td>
+								<td class="text-center"><button type="Button" class="btn btn-link text-black btn-delete-project" title="{{x.nompro}}" value="{{x.proyecto_id}}"><span class="glyphicon glyphicon-trash"></span></button></td>
+							</tr>
+							{% endfor%}
+							{% else %}
+								<div class="alert alert-warning">
+									<strong>Warning</strong>
+									<p>No se han encontrado <q><strong>Proyectos</strong></q> para mostrar. Presione el botón <q><strong>Nuevo Proyecto</strong></q> para agregar.<p>
+								</div>
+							{% endif %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
 {% endblock %}

@@ -8,12 +8,12 @@
 {% block content %}
 <div class="container">
 	<div class="well">
-		<h1>Clientes</h1>
+		<h1 class="text-primary">Clientes</h1>
 		{% csrf_token %}
 		<input type="hidden" class="empdni" value="{{user.get_profile.empdni}}">
 		<div class="row show-grid">
 			<div class="col-md-12">
-				<a href="{% url vista_add_customers %}" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Nuevo Cliente</a>
+				<a href="{% url 'vista_add_customers' %}" class="btn btn-default btn-primary"><span class="glyphicon glyphicon-plus"></span> Nuevo Cliente</a>
 			</div>
 			<div class="col-md-12">
 				<div class="table-responsive">
@@ -30,17 +30,24 @@
 							</tr>
 						</thead>
 						<tbody>
+							{% if lista %}
 							{% for x in lista %}
-							<tr>
+							<tr class="tr-{{x.ruccliente_id}}">
 								<td>{{forloop.counter}}</td>
 								<td>{{x.ruccliente_id}}</td>
 								<td>{{x.razonsocial}}</td>
 								<td>{{x.direccion}}</td>
 								<td>{{x.telefono}}</td>
-								<td class="text-center"><a href="{% url vista_edit_customers x.ruccliente_id %}" class="btn btn-link text-black" value="{{x.ruccliente_id}}"><span class="glyphicon glyphicon-edit"></span></a></td>
-								<td class="text-center"><a href="{% url vista_edit_customers x.ruccliente_id %}" class="btn btn-link text-black" value="{{x.ruccliente_id}}"><span class="glyphicon glyphicon-trash"></span></a></td>
+								<td class="text-center"><a href="{% url 'vista_edit_customers' x.ruccliente_id %}" class="btn btn-link text-black" value="{{x.ruccliente_id}}"><span class="glyphicon glyphicon-edit"></span></a></td>
+								<td class="text-center"><button type="Button" class="btn btn-link text-black btn-delete-customers" title="{{x.razonsocial}}" value="{{x.ruccliente_id}}"><span class="glyphicon glyphicon-trash"></span></button></td>
 							</tr>
 							{% endfor%}
+							{% else %}
+								<div class="alert alert-warning">
+									<strong>Warning</strong>
+									<p>No se han encontrado <q>Clientes</q> para mostrar. Presione el botón nuevo para agregar.<p>
+								</div>
+							{% endif %}
 						</tbody>
 					</table>
 				</div>
@@ -48,4 +55,33 @@
 		</div>
 	</div>
 </div>
+<script>
+	$(document).ready(function () {
+		$(".btn-delete-customers").click(function (event) {
+			event.preventDefault();
+			var value = this.value;
+			$().toastmessage("showToast",{
+				text: "Eliminar cliente, recuerde que al eliminar a "+this.title+" sera permanentemente.<br>Desea Eliminar al Cliente?",
+				sticky: true,
+				type: "confirm",
+				position: "middle-center",
+				buttons: [{value: 'Si'},{value:'No'}],
+				success: function (result) {
+					if (result == "Si") {
+						var data = { "ruc": value, "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val() }
+						$.post("",data,function (response) {
+							if (response.status) {
+								if ($("table tbody > tr").length > 1 ){
+									$(".tr-"+value).remove();
+								}else{
+									location.reload()
+								}
+							};
+						},"json");
+					};
+				}
+			});
+		});
+	});
+</script>
 {% endblock %}
