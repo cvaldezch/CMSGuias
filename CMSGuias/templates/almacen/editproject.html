@@ -16,10 +16,23 @@
 		<form class="form-horizontal" method="POST" action="">
 			{% csrf_token %}
 			<table>
+			<tr>
+				<td><label for="proyecto_id" class="control-label">Proyecto ID:</label></td>
+				<td><select name="proyecto_id" class="form-control">
+					<option value="{{idpro}}">{{idpro}}</option>
+				</select></td>
+			</tr>
 				{{form.as_table}}
 			</table>
 			<button type="submit" value="submit" class="btn btn-success text-black"><span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios</button>
 		</form>
 	</div>
 </div>
+<!-- Block Scripts -->
+<script type="text/javascript">
+	$(document).ready(function() {
+		$(".in-date").datepicker({ minDate: "0" , maxDate: "" , changeMonth: true, changeYear: true, showAnim: "slide", dateFormat: "yy-mm-dd"});
+	});
+</script>
+<!-- endblock -->
 {% endblock %}

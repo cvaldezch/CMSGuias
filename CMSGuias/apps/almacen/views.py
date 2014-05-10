@@ -8,8 +8,13 @@ from CMSGuias.apps.almacen import models
 from CMSGuias.apps.almacen import forms
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Max
-from django.utils.simplejson import simplejson
+from django.utils import simplejson
 import datetime
+
+##
+#  Declare variables
+##
+FORMAT_DATE_STR = "%Y-%m-%d"
 
 @login_required(login_url='/SignUp/')
 def view_pedido(request):
@@ -20,16 +25,6 @@ def view_pedido(request):
 		messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
 		raise Http404('Method no proccess')
 
-@login_required(login_url='/SignUp/')
-def view_keep_project(request):
-	try:
-		if request.method == 'GET':
-			lista = models.Proyecto.objects.filter(flag=True).order_by("nompro")
-			return render_to_response('almacen/project.html',{"lista":lista},context_instance=RequestContext(request))
-	except TemplateDoesNotExist, e:
-		messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
-		raise Http404('Method no proccess')
-	
 @login_required(login_url='/SignUp/')
 def view_keep_customers(request):
 	try:
@@ -105,20 +100,46 @@ def view_keep_edit_customers(request,ruc):
 
 # Project keep views
 @login_required(login_url='/SignUp/')
+def view_keep_project(request):
+	try:
+		if request.method == 'GET':
+			lista = models.Proyecto.objects.filter(flag=True).order_by("nompro")
+			return render_to_response('almacen/project.html',{"lista":lista},context_instance=RequestContext(request))
+		elif request.method == 'POST':
+			if "proid" in request.POST:
+				data = {}
+				try:
+					obj = models.Proyecto.objects.get(pk=request.POST.get('proid'))
+					obj.status = 'DA'
+					obj.flag = False
+					obj.save()
+					data['status'] = True
+				except ObjectDoesNotExist, e:
+					data['status'] = False
+				return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+	except TemplateDoesNotExist, e:
+		messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
+		raise Http404('Method no proccess')
+
+@login_required(login_url='/SignUp/')
 def view_keep_add_project(request):
 	try:
 		if request.method == 'POST':
 			if models.Proyecto.objects.filter(pk=request.POST.get('proyecto_id')).count() > 0:
 				add = models.Proyecto.objects.get(pk=request.POST.get('proyecto_id'))
-				# add.razonsocial = request.POST.get('razonsocial')
-				# add.pais_id = request.POST.get('pais')
-				# add.departamento_id = request.POST.get('departamento')
-				# add.provincia_id = request.POST.get('provincia')
-				# add.distrito_id = request.POST.get('distrito')
-				# add.direccion = request.POST.get('direccion')
-				# add.telefono = request.POST.get('telefono')
-				# add.flag = True
-				# add.save()
+				add.ruccliente_id = request.POST.get('ruccliente')
+				add.nompro = request.POST.get('nompro')
+				add.comienzo = datetime.datetime.strptime( request.POST.get('comienzo'), FORMAT_DATE_STR ).date() if request.POST.get('comienzo') is not None else datetime.datetime.today().date()
+				add.fin = datetime.datetime.strptime(request.POST.get('fin'), FORMAT_DATE_STR).date() if request.POST.get('fin') is not None else None
+				add.pais_id = request.POST.get('pais')
+				add.departamento_id = request.POST.get('departamento')
+				add.provincia_id = request.POST.get('provincia')
+				add.distrito_id = request.POST.get('distrito')
+				add.direccion = request.POST.get('direccion')
+				add.obser = request.POST.get('obser')
+				add.status = request.POST.get('status')
+				add.flag = True
+				add.save()
 			else:
 				form = forms.addProjectForm(request.POST)
 				if form.is_valid():
@@ -157,14 +178,39 @@ def view_keep_edit_project(request,proid):
 		if request.method == 'GET':
 			form = forms.addProjectForm(instance=c)
 		elif request.method == 'POST':
+			# print request.POST.get('proyecto_id')
 			form = forms.addProjectForm(request.POST,instance=c)
 			if form.is_valid():
 				edit = form.save(commit=False)
 				edit.flag = True
+				#edit.proyecto_id = request.POST.get('proyecto_id')
 				edit.save()
 				return HttpResponseRedirect("/almacen/keep/project/")
-		ctx = { "form": form }
+		ctx = { "form": form, "idpro": proid }
 		return render_to_response("almacen/editproject.html",ctx,context_instance=RequestContext(request))
+	except TemplateDoesNotExist, e:
+		messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
+		raise Http404('Method no proccess')
+
+# Subproyectos
+@login_required(login_url='/SignUp/')
+def view_keep_sub_project(request,pid):
+	try:
+		if request.method == 'GET':
+			lista = models.Subproyecto.objects.filter(flag=True,proyecto__flag=True,proyecto_id__exact=pid).order_by("subproyecto_id")
+			return render_to_response('almacen/subproject.html',{"lista":lista},context_instance=RequestContext(request))
+		elif request.method == 'POST':
+			if "pid" in request.POST:
+				data = {}
+				try:
+					obj = models.Subproyecto.objects.get(pk=request.POST.get('sid'),proyecto_id=request.POST.get("pid"))
+					obj.status = 'DA'
+					obj.flag = False
+					obj.save()
+					data['status'] = True
+				except ObjectDoesNotExist, e:
+					data['status'] = False
+				return HttpResponse(simplejson.dumps(data), mimetype="application/json")
 	except TemplateDoesNotExist, e:
 		messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
 		raise Http404('Method no proccess')

@@ -15,8 +15,6 @@
 			<div class="col-md-12">
 				<div class="btn-group">
 					<a href="{% url 'vista_add_projects' %}" class="btn btn-default btn-primary"><span class="glyphicon glyphicon-plus"></span> Nuevo Proyecto</a>
-					<a href="{% url 'vista_add_customers' %}" class="btn btn-default btn-info text-black"><span class="glyphicon glyphicon-plus-sign"></span> Nuevo Subproyecto</a>
-					<a href="{% url 'vista_add_customers' %}" class="btn btn-default btn-info text-black"><span class="glyphicon glyphicon-plus-sign"></span> Nuevo Sector</a>
 				</div>
 			</div>
 			<div class="col-md-12">
@@ -25,8 +23,9 @@
 						<thead>
 							<tr>
 								<th class="text-center">Item</th>
+								<th></th>
 								<th class="text-center">Codigo</th>
-								<th>Nombre de Prouecto</th>
+								<th>Nombre de Proyecto</th>
 								<th>Dirección</th>
 								<th class="text-center">Fecha Inicio</th>
 								<th class="text-center">Fecha Fin</th>
@@ -39,6 +38,7 @@
 							{% for x in lista %}
 							<tr class="tr-{{x.proyecto_id}}">
 								<td>{{forloop.counter}}</td>
+								<td><a href="{% url 'vista_sub_project' x.proyecto_id %}" class="btn btn-default btn-xs btn-open"><span class="glyphicon glyphicon-folder-close"></span></a></td>
 								<td>{{x.proyecto_id}}</td>
 								<td>{{x.nompro}}</td>
 								<td>{{x.direccion}}</td>
@@ -61,4 +61,41 @@
 		</div>
 	</div>
 </div>
+<script>
+	$(document).ready(function () {
+		$(".btn-delete-project").click(function (event) {
+			event.preventDefault();
+			var value = this.value;
+			$().toastmessage("showToast",{
+				text: "Eliminar Proyecto, recuerde que al eliminar a "+this.title+" sera permanentemente.<br>Desea Eliminar el Proyecto?",
+				sticky: true,
+				type: "confirm",
+				position: "middle-center",
+				buttons: [{value:'No'},{value: 'Si'}],
+				success: function (result) {
+					if (result == "Si") {
+						var data = { "proid": value, "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val() }
+						$.post("",data,function (response) {
+							if (response.status) {
+								if ($("table tbody > tr").length > 1 ){
+									$(".tr-"+value).remove();
+								}else{
+									location.reload()
+								}
+							};
+						},"json");
+					};
+				}
+			});
+		});
+		$(".btn-open > span").mouseenter(function(event) {
+			event.preventDefault();
+			$(this).removeClass('glyphicon-folder-close').addClass('glyphicon-folder-open');
+		});
+		$(".btn-open > span").mouseout(function(event) {
+			event.preventDefault();
+			$(this).removeClass('glyphicon-folder-open').addClass('glyphicon-folder-close');
+		});
+	});
+</script>
 {% endblock %}
