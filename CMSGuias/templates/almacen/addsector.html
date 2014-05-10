@@ -8,7 +8,7 @@
 {% block content %}
 <div class="container">
 	<div class="well">
-		<h3 class="text-primary">Editar Proyecto</h3>
+		<h3 class="text-primary">Agregar Nuevo Sector</h3>
 		{% csrf_token %}
 		<a href="{% url 'vista_project' %}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> regresar</a>
 		<div class="row show-grid">
@@ -16,12 +16,6 @@
 		<form class="form-horizontal" method="POST" action="">
 			{% csrf_token %}
 			<table>
-			<tr>
-				<td><label for="proyecto_id" class="control-label">Proyecto ID:</label></td>
-				<td><select name="proyecto_id" class="form-control">
-					<option value="{{idpro}}">{{idpro}}</option>
-				</select></td>
-			</tr>
 				{{form.as_table}}
 			</table>
 			<button type="submit" value="submit" class="btn btn-success text-black"><span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios</button>

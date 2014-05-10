@@ -79,7 +79,7 @@ class Subproyecto(models.Model):
 	subproyecto_id = models.CharField(primary_key=True,max_length=7,null=False)
 	proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
 	nomsub = models.CharField(max_length=200)
-	registrado = models.DateTimeField(auto_now=True,null=False)
+	registrado = models.DateTimeField(auto_now=True,null=True)
 	comienzo = models.DateField(null=True)
 	fin = models.DateField(null=True)
 	obser = models.TextField(null=True)
