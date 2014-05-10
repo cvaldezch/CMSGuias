@@ -16,6 +16,10 @@
 		<form class="form-horizontal" method="POST" action="">
 			{% csrf_token %}
 			<table>
+				<tr>
+					<td></td>
+					<td></td>
+				</tr>
 				{{form.as_table}}
 			</table>
 			<button type="submit" value="submit" class="btn btn-success text-black"><span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios</button>
