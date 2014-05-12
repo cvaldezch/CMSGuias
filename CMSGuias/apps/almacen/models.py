@@ -79,7 +79,7 @@ class Subproyecto(models.Model):
 	subproyecto_id = models.CharField(primary_key=True,max_length=7,null=False)
 	proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
 	nomsub = models.CharField(max_length=200)
-	registrado = models.DateTimeField(auto_now=True,null=True)
+	registrado = models.DateTimeField(auto_now=True)
 	comienzo = models.DateField(null=True)
 	fin = models.DateField(null=True)
 	obser = models.TextField(null=True)
@@ -105,6 +105,11 @@ class Sectore(models.Model):
 	status = models.CharField(max_length=2,null=False,default='00')
 	flag = models.BooleanField(default=True,null=False)
 
+	class Meta:
+		ordering = ['sector_id']
+
+	def __unicode__(self):
+		return '%s - %s %s'%(self.proyecto,self.subproyecto_id,self.sector_id)
 
 class Almacene(models.Model):
 	almacen_id = models.CharField(primary_key=True,max_length=4)

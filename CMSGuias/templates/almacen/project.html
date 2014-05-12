@@ -38,7 +38,7 @@
 							{% for x in lista %}
 							<tr class="tr-{{x.proyecto_id}}">
 								<td>{{forloop.counter}}</td>
-								<td><a href="{% url 'vista_sec_project' x.proyecto_id %}" class="btn btn-default btn-xs btn-open"><span class="glyphicon glyphicon-folder-close"></span></a></td>
+								<td><a href="{% url 'vista_sec_project' x.proyecto_id tsid %}" class="btn btn-default btn-xs btn-open"><span class="glyphicon glyphicon-folder-close"></span></a></td>
 								<td>{{x.proyecto_id}}</td>
 								<td>{{x.nompro}}</td>
 								<td>{{x.direccion}}</td>

@@ -44,12 +44,12 @@ class addSectoresForm(forms.ModelForm):
 		print proid
 	class Meta:
 		model = models.Sectore
-		exclude = {"registrado","flag",}
+		exclude = {"registrado","flag","proyecto","subproyecto",}
 		STATUS = (("AC","ACTIVE"),)		
 		widgets={
 						"sector_id": forms.TextInput(attrs ={'class': 'form-control'}),                                                   
-						"proyecto": forms.Select(attrs     ={'class': 'form-control'}),                                                       
-						"subproyecto": forms.Select(attrs  ={'class': 'form-control'}),                                                    
+						#"proyecto": forms.Select(attrs     ={'class': 'form-control'}),                                                       
+						#"subproyecto": forms.Select(attrs  ={'class': 'form-control'}),                                                    
 						"planoid": forms.TextInput(attrs   ={'class': 'form-control'}),                                                     
 						"nomsec": forms.TextInput(attrs    ={'class': 'form-control'}),                                                      
 						"comienzo": forms.TextInput(attrs  ={'class': 'form-control in-date',"maxlength":"10","placeholder":"aaaa-mm-dd"}),

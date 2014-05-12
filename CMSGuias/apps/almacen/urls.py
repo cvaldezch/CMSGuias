@@ -14,8 +14,10 @@ urlpatterns = patterns('CMSGuias.apps.almacen.views',
 	url(r'^keep/project/subproyectos/(?P<pid>.*)/$','view_keep_sub_project',name='vista_sub_project'),
 	# url(r'^keep/project/subproyectos/add/$','view_keep_add_project',name='vista_add_sub_projects'),
 	# url(r'^keep/project/subproyectos/(?P<proid>.*)/(?P<sid>.*)/edit/$','view_keep_edit_project',name='vista_edit_sub_projects'),
-	url(r'^keep/project/sectores/add/(?P<proid>.*)/$','view_keep_add_sector',name='vista_add_sectors'),
+	
 	# sectores
-	url(r'^keep/project/sectores/(?P<pid>.*)/$','view_keep_sec_project',name='vista_sec_project'),
+	url(r'^keep/sectores/edit/(?P<pid>.*)/(?P<sid>.*)/(?P<cid>.*)/$','view_keep_edit_sector',name='vista_edit_sector'),
+	url(r'^keep/sectores/add/(?P<proid>.*)/(?P<sid>.*)/$','view_keep_add_sector',name='vista_add_sectors'),
+	url(r'^keep/sectores/(?P<pid>.*)/(?P<sid>.*)/$','view_keep_sec_project',name='vista_sec_project'),
 
 )
