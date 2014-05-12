@@ -1,10 +1,16 @@
 {% extends 'base.html' %}
+{% block style %}
+<!--<link rel="stylesheet" href="/media/css/almacen/pedido.css">-->
+{% endblock %}
+{% block script %}
+<!--<script src="/media/js/almacen/pedido.js"></script>-->
+{% endblock %}
 {% block content %}
 <div class="container">
 	<div class="well">
-		<h3 class="text-primary">Editar Sector</h3>
+		<h3 class="text-primary">Agregar Nuevo Subproyecto</h3>
 		{% csrf_token %}
-		<a href="{% url 'vista_sec_project' pid sid %}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> regresar</a>
+		<a href="{% url 'vista_sub_project' pid %}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> regresar</a>
 		<div class="row show-grid">
 		{% if msg %}
 			<div class="col-md-4">
@@ -16,28 +22,24 @@
 			</div>
 		{% endif %}
 		</div>
+
 		<form class="form-horizontal" method="POST" action="">
 			{% csrf_token %}
 			<table>
-			<tr>
-				<td><label for="proyecto_id">Proyecto ID:</label></td>
-				<td><input type="text" name="proyecto_id" class="form-control" value="{{pid}}" readonly></td>
-			</tr>
-			<tr>
-				<td><label for="subproyecto_id">Subproyecto ID:</label></td>
-				<td><input type="text" name="subproyecto_id" class="form-control" value="{{sid}}" readonly></td>
-			</tr>
+				<tr>
+					<td><label for="proyecto_id">Proyecto ID:</label></td>
+					<td><input type="text" name="proyecto_id" class="form-control" value="{{pid}}" readonly></td>
+				</tr>
 				{{form.as_table}}
 			</table>
 			<button type="submit" value="submit" class="btn btn-success text-black"><span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios</button>
 		</form>
 	</div>
 </div>
-<!-- block Scripts -->
+<!-- Block Scripts -->
 <script type="text/javascript">
 	$(document).ready(function() {
 		$(".in-date").datepicker({ minDate: "0" , maxDate: "" , changeMonth: true, changeYear: true, showAnim: "slide", dateFormat: "yy-mm-dd"});
-		$("[name=sector_id]").attr('readonly', true);
 	});
 </script>
 <!-- endblock -->

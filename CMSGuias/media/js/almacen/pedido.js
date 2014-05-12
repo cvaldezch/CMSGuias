@@ -298,6 +298,7 @@ var get_niples = function () {
 															"<input type='number' name='controlnipples' placeholder='Cantidad' min='1' class='form-control input-sm nv{{materiales_id}}' DISABLED>"+
 														"</div>"+
 														"<input type='hidden' class='update-id-{{materiales_id}}' value=''>"+
+														"<input type='hidden' class='update-quantity-{{materiales_id}}' value=''>"+
 														"<button class='btn btn-success text-black btn-sm' name='controlnipples' type='Button' onClick='saved_or_update_nipples({{materiales_id}})' DISABLED><span class='glyphicon glyphicon-floppy-save'></span> Guardar</button>"+
 													"</div></div>"+
 													"</caption>"+
@@ -347,6 +348,8 @@ var list_temp_nipples = function (mid) {
 				$(".res"+mid).html(res);
 				if (res == 0 || res < 0) {
 					$(".btn-add-nipple-"+mid).attr("disabled", true);
+				}else{
+					$(".btn-add-nipple-"+mid).attr("disabled", false);
 				};
 			};
 		});
@@ -358,7 +361,10 @@ var saved_or_update_nipples = function (mid) {
 	if ($quantity.val().trim() == "") { $().toastmessage('showWarningToast', "No se a ingresado una cantidad."); return pass;}else{ pass = Boolean(true).valueOf(); console.info(pass);};
 	if ($nv.val().trim() == "" || $nv.val().trim() == 0) { nv = 1 }else{ nv = $nv.val(); };
 	var valcant = parseInt($quantity.val().trim()) * parseInt(nv), res = parseInt( $(".res"+mid).html().trim());
-	if (valcant > res) {
+	if ($update.val().trim() != "") {
+		var uco = $(".update-quantity-"+mid).val();
+		pass = valcant <= (parseInt(uco)+res) ? Boolean(true).valueOf() : Boolean(false).valueOf();
+	}else if (valcant > res) {
 		pass = Boolean(false).valueOf();
 		$().toastmessage("showWarningToast","La cantidad ingresada es superior a la establecida.");
 		return false;
@@ -371,11 +377,11 @@ var saved_or_update_nipples = function (mid) {
 			data = {"tra":"update","id": $update.val(),"cant": $quantity.val().trim(), "mid": mid, "type": $type.val(), "veces": nv, "dni": $(".empdni").val(),"csrfmiddlewaretoken":$("[name=csrfmiddlewaretoken]").val() }
 		};
 		$.post("/json/post/saved/temp/nipples/", data, function (response) {
-			console.log(response);
 			if (response.status) {
 				list_temp_nipples(mid);
 				$("[name=controlnipples]").attr("DISABLED",true);
 				$(".update-id-"+mid).val("");
+				$(".update-quantity-"+mid).val("");
 			};
 		});
 	}else{
@@ -387,10 +393,11 @@ var edit_temp_nipple = function(id,mid,cant,med,tipo){
 	mid = String(mid).valueOf();
 	$(".mt"+mid).val(med);
 	$(".nv"+mid).val(cant);
-	$(".tn"+mid).val(tipo);
+	$(".tn"+mid).val(tipo);	
 	$(".tn"+mid).attr("DISABLED",true);
 	//$(".nv"+mid).attr("DISABLED",true);
 	$(".update-id-"+mid).val(id);
+	$(".update-quantity-"+mid).val( (parseInt(cant) * parseInt(med)) );
 }
 var delete_temp_nipple = function (id,mid) {
 	$().toastmessage('showToast',{

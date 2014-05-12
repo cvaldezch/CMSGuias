@@ -118,6 +118,7 @@
 				localSettings.stayTime);
 			}
 			settings.position = "";
+			$(".toast-container").css("marginTop","-"+($(".toast-container").height()/2)+"px");
 		  return toastItemInner;
 		},
 

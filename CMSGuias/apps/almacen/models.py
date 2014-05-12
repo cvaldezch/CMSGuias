@@ -59,7 +59,7 @@ class Proyecto(models.Model):
 	nompro = models.CharField(max_length=200)
 	registrado = models.DateTimeField(auto_now=True,null=False)
 	comienzo = models.DateField(null=True)
-	fin = models.DateField(null=True)
+	fin = models.DateField(null=True,blank=True)
 	pais = models.ForeignKey(Pais, to_field='pais_id')
 	departamento = models.ForeignKey(Departamento, to_field='departamento_id')
 	provincia = models.ForeignKey(Provincia, to_field='provincia_id')
@@ -80,8 +80,8 @@ class Subproyecto(models.Model):
 	proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
 	nomsub = models.CharField(max_length=200)
 	registrado = models.DateTimeField(auto_now=True)
-	comienzo = models.DateField(null=True)
-	fin = models.DateField(null=True)
+	comienzo = models.DateField(null=True,blank=True)
+	fin = models.DateField(null=True,blank=True)
 	obser = models.TextField(null=True)
 	status = models.CharField(max_length=2,null=False,default='00')
 	flag = models.BooleanField(default=True,null=False)
@@ -99,8 +99,8 @@ class Sectore(models.Model):
 	planoid = models.CharField(max_length=16,null=True,default='')
 	nomsec = models.CharField(max_length=200)
 	registrado = models.DateTimeField(auto_now=True,null=False)
-	comienzo = models.DateField(null=True)
-	fin = models.DateField(null=True)
+	comienzo = models.DateField(null=True,blank=True)
+	fin = models.DateField(null=True,blank=True)
 	obser = models.TextField(null=True)
 	status = models.CharField(max_length=2,null=False,default='00')
 	flag = models.BooleanField(default=True,null=False)
@@ -116,6 +116,9 @@ class Almacene(models.Model):
 	nombre = models.CharField(max_length=50,null=False)
 	flag = models.BooleanField(default=True,null=False)
 	
+	class Meta:
+		ordering = ['nombre']
+		
 	def __unicode__(self):
 		return "%s %s"%(self.almacen,self.nombre)
 
@@ -176,6 +179,8 @@ class Materiale(models.Model):
 class Pedido(models.Model):
 	pedido_id = models.CharField(primary_key=True,max_length=10,default='PEAA000000')
 	proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
+	subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id')
+	sector = models.ForeignKey(Sectore, to_field='sector_id')
 	almacen = models.ForeignKey(Almacene, to_field='almacen_id')
 	asunto = models.CharField(max_length=160,null=True)
 	empdni = models.CharField(max_length=8,null=False)

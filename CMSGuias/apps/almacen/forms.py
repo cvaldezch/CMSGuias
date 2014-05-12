@@ -43,10 +43,10 @@ class addSectoresForm(forms.ModelForm):
 		self.proid = kwargs.pop("proid")
 		print proid
 	class Meta:
-		model = models.Sectore
+		model   = models.Sectore
 		exclude = {"registrado","flag","proyecto","subproyecto",}
-		STATUS = (("AC","ACTIVE"),)		
-		widgets={
+		STATUS  = (("AC","ACTIVE"),)		
+		widgets ={
 						"sector_id": forms.TextInput(attrs ={'class': 'form-control'}),                                                   
 						#"proyecto": forms.Select(attrs     ={'class': 'form-control'}),                                                       
 						#"subproyecto": forms.Select(attrs  ={'class': 'form-control'}),                                                    
@@ -54,23 +54,28 @@ class addSectoresForm(forms.ModelForm):
 						"nomsec": forms.TextInput(attrs    ={'class': 'form-control'}),                                                      
 						"comienzo": forms.TextInput(attrs  ={'class': 'form-control in-date',"maxlength":"10","placeholder":"aaaa-mm-dd"}),
 						"fin": forms.TextInput(attrs       ={'class': 'form-control in-date',"maxlength":"10","placeholder":"aaaa-mm-dd"}),     
-						"obser": forms.Textarea(attrs      ={'class': 'form-control', 'maxlength':'200','rows':'3'}),                          
+						"obser": forms.Textarea(attrs      ={'class': 'form-control', 'maxlength':'200','rows':'3'}),
 						"status": forms.Select(attrs       ={'class': 'form-control'}, choices=STATUS),
 						}
 # SubProyectos'
 class addSubprojectForm(forms.ModelForm):
 	class Meta:
-		model = models.Subproyecto
-		exclude = {"registrado","flag",}
-		STATUS = (("AC","ACTIVE"),)
-		widget={
-						"sector_id": forms.TextInput(attrs ={'class': 'form-control'}),                                                   
-						"proyecto": forms.Select(attrs     ={'class': 'form-control'}),                                                       
-						"subproyecto": forms.Select(attrs  ={'class': 'form-control'}),                                                    
-						"planoid": forms.TextInput(attrs   ={'class': 'form-control'}),                                                     
-						"nomsec": forms.TextInput(attrs    ={'class': 'form-control'}),                                                      
-						"comienzo": forms.TextInput(attrs  ={'class': 'form-control in-date',"maxlength":"10","placeholder":"aaaa-mm-dd"}),
-						"fin": forms.TextInput(attrs       ={'class': 'form-control in-date',"maxlength":"10","placeholder":"aaaa-mm-dd"}),     
-						"obser": forms.Textarea(attrs      ={'class': 'form-control', 'maxlength':'200','rows':'3'}),                          
-						"status": forms.Select(attrs       ={'class': 'form-control'}, choices=STATUS),
-						}
+		model   = models.Subproyecto
+		exclude = {"proyecto","registrado","flag",}
+		STATUS  = (("AC","ACTIVE"),)
+		widgets = {
+						"subproyecto_id": forms.TextInput(attrs ={'class': 'form-control'}),
+						"nomsub": forms.TextInput(attrs         ={'class': 'form-control'}),
+						"comienzo": forms.TextInput(attrs       ={'class': 'form-control in-date',"maxlength":"10","placeholder":"aaaa-mm-dd"}),
+						"fin": forms.TextInput(attrs            ={'class': 'form-control in-date',"maxlength":"10","placeholder":"aaaa-mm-dd"}),
+						"obser": forms.Textarea(attrs           ={'class': 'form-control', 'maxlength':'200','rows':'3'}),
+						"status": forms.Select(attrs            ={'class': 'form-control'}, choices=STATUS),
+		}
+# Almacenes
+class addAlmacenesForm(forms.ModelForm):
+	class Meta:
+		model = models.Almacene
+		exclude = { "almacen_id","flag", }
+		widgets= {
+							"nombre": forms.TextInput(attrs = {'class': 'form-control', 'maxlength':'50'}),
+		}

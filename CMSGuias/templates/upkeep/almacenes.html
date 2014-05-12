@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+	<div class="well">
+	<h1 class="text-primary">Almacenes</h1>
+		{% csrf_token %}
+		<div class="row show-grid">
+			<div class="col-md-12">
+				<div class="btn-group">
+					<a href="{% url 'vista_stores_add' %}" class="btn btn-default btn-primary"><span class="glyphicon glyphicon-plus"></span> Nuevo Almacén</a>
+				</div>
+			</div>
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<table class="table table-striped table-hover table-bordered table-condensed">
+						<thead>
+							<tr>
+								<th class="text-center">Item</th>
+								<th class="text-center">Codigo</th>
+								<th>Nombres</th>
+								<th>Status</th>
+								<th class="text-center">Editar</th>
+								<th class="text-center">Eliminar</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% if lista %}
+							{% for x in lista %}
+							<tr class="tr-{{x.almacen_id}}">
+								<td>{{forloop.counter}}</td>
+								<td>{{x.almacen_id}}</td>
+								<td>{{x.nombre}}</td>
+								<td>{{x.flag}}</td>
+								<td class="text-center"><a href="{% url 'vista_stores_edit' x.almacen_id %}" class="btn btn-link text-black" value="{{x.almacen_id}}"><span class="glyphicon glyphicon-edit"></span></a></td>
+								<td class="text-center"><button type="Button" class="btn btn-link text-black btn-delete-project" title="{{x.nompro}}" value="{{x.almacen_id}}"><span class="glyphicon glyphicon-trash"></span></button></td>
+							</tr>
+							{% endfor%}
+							{% else %}
+								<div class="alert alert-warning">
+									<strong>Warning</strong>
+									<p>No se han encontrado <q><strong>Alamacenes</strong></q> para mostrar. Presione el botón <q><strong>Nuevo Almacén</strong></q> para agregar.<p>
+								</div>
+							{% endif %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	$(document).ready(function () {
+		$(".btn-delete-project").click(function (event) {
+			event.preventDefault();
+			var value = this.value;
+			$().toastmessage("showToast",{
+				text: "Eliminar Proyecto, recuerde que al eliminar a "+this.title+" sera permanentemente.<br>Desea Eliminar el Proyecto?",
+				sticky: true,
+				type: "confirm",
+				position: "middle-center",
+				buttons: [{value:'No'},{value: 'Si'}],
+				success: function (result) {
+					if (result == "Si") {
+						var data = { "proid": value, "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val() }
+						$.post("",data,function (response) {
+							if (response.status) {
+								if ($("table tbody > tr").length > 1 ){
+									$(".tr-"+value).remove();
+								}else{
+									location.reload()
+								}
+							};
+						},"json");
+					};
+				}
+			});
+		});
+		$(".btn-open > span").mouseenter(function(event) {
+			event.preventDefault();
+			$(this).removeClass('glyphicon-folder-close').addClass('glyphicon-folder-open');
+		});
+		$(".btn-open > span").mouseout(function(event) {
+			event.preventDefault();
+			$(this).removeClass('glyphicon-folder-open').addClass('glyphicon-folder-close');
+		});
+	});
+</script>
+{% endblock %}

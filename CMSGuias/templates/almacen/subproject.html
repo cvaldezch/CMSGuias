@@ -8,8 +8,8 @@
 		<div class="row show-grid">
 			<div class="col-md-12">
 				<div class="btn-group">
-					<a href="{% url 'vista_project' %}" class="btn btn-default btn-primary"><span class="glyphicon glyphicon-chevron-left"></span>  Proyecto</a>
-					<a href="{% url 'vista_add_customers' %}" class="btn btn-default btn-info text-black"><span class="glyphicon glyphicon-plus"></span> Nuevo Subproyecto</a>
+					<a href="{% url 'vista_sec_project' pid sid %}" class="btn btn-default btn-primary"><span class="glyphicon glyphicon-chevron-left"></span>  Sectores</a>
+					<a href="{% url 'vista_add_sub_projects' pid %}" class="btn btn-default btn-info text-black"><span class="glyphicon glyphicon-plus"></span> Nuevo Subproyecto</a>
 				</div>
 			</div>
 			<div class="col-md-12">
@@ -19,6 +19,7 @@
 							<tr>
 								<th class="text-center">Item</th>
 								<th>Proyecto</th>
+								<th></th>
 								<th class="text-center">Codigo</th>
 								<th>SubProyecto</th>
 								<th class="text-center">Fecha Inicio</th>
@@ -30,15 +31,16 @@
 						<tbody>
 							{% if lista %}
 							{% for x in lista %}
-							<tr class="tr-{{x.proyecto_id}}">
+							<tr class="tr-{{x.subproyecto_id}}">
 								<td>{{forloop.counter}}</td>
 								<td>{{x.proyecto_id}}</td>
-								<td>{{x.nompro}}</td>
-								<td>{{x.direccion}}</td>
+								<td><a href="{% url 'vista_sec_project' x.proyecto_id x.subproyecto_id %}" class="btn btn-default btn-xs btn-open"><span class="glyphicon glyphicon-folder-close"></span></a></td>
+								<td>{{x.subproyecto_id}}</td>
+								<td>{{x.nomsub}}</td>
 								<td>{{x.comienzo}}</td>
 								<td>{{x.fin}}</td>
-								<td class="text-center"><a href="{% url 'vista_edit_projects' x.proyecto_id %}" class="btn btn-link text-black" value="{{x.proyecto_id}}"><span class="glyphicon glyphicon-edit"></span></a></td>
-								<td class="text-center"><button type="Button" class="btn btn-link text-black btn-delete-project" title="{{x.nompro}}" value="{{x.proyecto_id}}"><span class="glyphicon glyphicon-trash"></span></button></td>
+								<td class="text-center"><a href="{% url 'vista_edit_sub_projects' pid x.subproyecto_id %}" class="btn btn-link text-black" value="{{x.subproyecto_id}}"><span class="glyphicon glyphicon-edit"></span></a></td>
+								<td class="text-center"><button type="Button" class="btn btn-link text-black btn-delete-project" title="{{x.nomsub}}" value="{{x.subproyecto_id}}"><span class="glyphicon glyphicon-trash"></span></button></td>
 							</tr>
 							{% endfor%}
 							{% else %}
@@ -54,4 +56,45 @@
 		</div>
 	</div>
 </div>
+<!-- block Script -->
+<script>
+	$(document).ready(function() {
+		$(".btn-delete-project").click(function (event) {
+			event.preventDefault();
+			var value = this.value;
+			$().toastmessage("showToast",{
+				text: "Eliminar SubProyecto, recuerde que al eliminar a "+this.title+" sera permanentemente.<br>Desea Eliminar el Sector?",
+				sticky: true,
+				type: "confirm",
+				position: "middle-center",
+				buttons: [{value:'No'},{value: 'Si'}],
+				success: function (result) {
+					if (result == "Si") {
+						var data = { "sid": value, "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val() }
+						console.log(data);
+						$.post("",data,function (response) {
+							console.warn(response);
+							if (response.status) {
+								if ($("table tbody > tr").length > 1 ){
+									$(".tr-"+value).remove();
+								}else{
+									location.reload()
+								}
+							};
+						},"json");
+					};
+				}
+			});
+		});
+		$(".btn-open > span").mouseenter(function(event) {
+			event.preventDefault();
+			$(this).removeClass('glyphicon-folder-close').addClass('glyphicon-folder-open');
+		});
+		$(".btn-open > span").mouseout(function(event) {
+			event.preventDefault();
+			$(this).removeClass('glyphicon-folder-open').addClass('glyphicon-folder-close');
+		});
+	});
+</script>
+<!-- endblock -->
 {% endblock %}

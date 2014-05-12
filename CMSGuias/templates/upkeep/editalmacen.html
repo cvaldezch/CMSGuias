@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+	<div class="well">
+		<h3 class="text-primary">Editar Almacén</h3>
+		{% csrf_token %}
+		<a href="{% url 'vista_stores' %}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> regresar</a>
+		<div class="row show-grid">
+		</div>
+		<form class="form-horizontal" method="POST" action="">
+			{% csrf_token %}
+			<hr>
+			<table>
+				{{form.as_table}}
+			</table>
+			<hr>
+			<button type="submit" value="submit" class="btn btn-success text-black"><span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios</button>
+		</form>
+	</div>
+</div>
+<!-- Block Scripts -->
+<script type="text/javascript">
+	$(document).ready(function() {
+		$(".in-date").datepicker({ minDate: "0" , maxDate: "" , changeMonth: true, changeYear: true, showAnim: "slide", dateFormat: "yy-mm-dd"});
+	});
+</script>
+<!-- endblock -->
+{% endblock %}

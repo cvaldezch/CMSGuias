@@ -109,6 +109,15 @@ def view_keep_project(request):
 			if "proid" in request.POST:
 				data = {}
 				try:
+					# sectores
+					obj = models.Sectore.objects.filter(proyecto_id=request.POST.get('proid'))
+					obj.status = 'DA'
+					obj.flag = False
+					obj.save()
+					obj = models.Subproyecto.objects.filter(proyecto_id=request.POST.get('proid'))
+					obj.status = 'DA'
+					obj.flag = False
+					obj.save()
 					obj = models.Proyecto.objects.get(pk=request.POST.get('proid'))
 					obj.status = 'DA'
 					obj.flag = False
@@ -120,7 +129,6 @@ def view_keep_project(request):
 	except TemplateDoesNotExist, e:
 		messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
 		raise Http404('Method no proccess')
-
 @login_required(login_url='/SignUp/')
 def view_keep_add_project(request):
 	try:
@@ -170,7 +178,6 @@ def view_keep_add_project(request):
 	except TemplateDoesNotExist, e:
 		messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
 		raise Http404('Method no proccess')
-
 @login_required(login_url='/SignUp/')
 def view_keep_edit_project(request,proid):
 	try:
@@ -191,40 +198,26 @@ def view_keep_edit_project(request,proid):
 	except TemplateDoesNotExist, e:
 		messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
 		raise Http404('Method no proccess')
-
-# Subproyectos
-@login_required(login_url='/SignUp/')
-def view_keep_sub_project(request,pid):
-	try:
-		if request.method == 'GET':
-			lista = models.Subproyecto.objects.filter(flag=True,proyecto__flag=True,proyecto_id__exact=pid).order_by("subproyecto_id")
-			return render_to_response('almacen/subproject.html',{"lista":lista},context_instance=RequestContext(request))
-		elif request.method == 'POST':
-			if "pid" in request.POST:
-				data = {}
-				try:
-					obj = models.Subproyecto.objects.get(pk=request.POST.get('sid'),proyecto_id=request.POST.get("pid"))
-					obj.status = 'DA'
-					obj.flag = False
-					obj.save()
-					data['status'] = True
-				except ObjectDoesNotExist, e:
-					data['status'] = False
-				return HttpResponse(simplejson.dumps(data), mimetype="application/json")
-	except TemplateDoesNotExist, e:
-		messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
-		raise Http404('Method no proccess')
-# Sectors
+# Sectors keep views
 @login_required(login_url='/SignUp/')
 def view_keep_sec_project(request,pid,sid):
 	try:
 		if request.method == 'GET':
 			lista = models.Sectore.objects.filter(flag=True,proyecto__flag=True,proyecto_id__exact=pid,subproyecto_id=None if sid.strip() == "" else sid).order_by("sector_id")
 			return render_to_response('almacen/sectores.html',{"lista":lista,"pid":pid,"sid":sid}, context_instance=RequestContext(request))
+		elif request.method == 'POST':
+			if "sec" in request.POST:
+				data = {}
+				try:
+					obj = models.Sectore.objects.get(proyecto_id=pid,subproyecto_id=None if sid.strip() == "" else sid,sector_id=request.POST.get('sec'))
+					obj.delete()
+					data['status'] = True
+				except ObjectDoesNotExist, e:
+					data['status'] = False
+				return HttpResponse(simplejson.dumps(data), mimetype='application/json')
 	except TemplateDoesNotExist, e:
 		messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
 		raise Http404('Method no proccess')
-
 @login_required(login_url='/SignUp/')
 def view_keep_add_sector(request,proid,sid):
 	try:
@@ -240,7 +233,7 @@ def view_keep_add_sector(request,proid,sid):
 				return HttpResponseRedirect(url)
 			else:
 				form = forms.addSectoresForm(request.POST)
-				msg = "No se a podido realizar la transaccón."
+				msg = "No se a podido realizar la transacción."
 				ctx = { "form": form, "pid": proid, "sid": sid, "msg": msg }
 				return render_to_response("almacen/addsector.html",ctx,context_instance=RequestContext(request))
 		if request.method == 'GET':
@@ -250,7 +243,6 @@ def view_keep_add_sector(request,proid,sid):
 	except TemplateDoesNotExist, e:
 		messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
 		raise Http404('Method no proccess')
-
 @login_required(login_url='/SignUp')
 def view_keep_edit_sector(request,pid,sid,cid):
 	try:
@@ -271,9 +263,130 @@ def view_keep_edit_sector(request,pid,sid,cid):
 				return HttpResponseRedirect(url)
 			else:
 				form = forms.addSectoresForm(request.POST)
-				msg = "No se a podido realizar la transaccón."
+				msg = "No se a podido realizar la transacción."
 				ctx = { "form": form, "pid": proid, "sid": sid, "msg": msg }
 				return render_to_response("almacen/addsector.html",ctx,context_instance=RequestContext(request))
 	except TemplateDoesNotExist, e:
 		messages.error(request, "No se puede mostrar la pagina.")
 		raise Http404("Method not proccess")
+# Subproyectos keep views
+@login_required(login_url='/SignUp/')
+def view_keep_sub_project(request,pid):
+	try:
+		if request.method == 'GET':
+			lista = models.Subproyecto.objects.filter(flag=True,proyecto__flag=True,proyecto_id__exact=pid).order_by("subproyecto_id")
+			return render_to_response('almacen/subproject.html',{"lista":lista,"pid":pid,"sid":""},context_instance=RequestContext(request))
+		elif request.method == 'POST':
+			if "sid" in request.POST:
+				data = {}
+				try:
+					obj = models.Sectore.objects.filter(proyecto_id=pid,subproyecto_id=request.POST.get('sid'))
+					obj.delete()
+					obj = models.Subproyecto.objects.get(subproyecto_id=request.POST.get('sid'),proyecto_id=pid)
+					obj.delete()
+					data['status'] = True
+				except ObjectDoesNotExist, e:
+					data['status'] = False
+				return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+	except TemplateDoesNotExist, e:
+		messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
+		raise Http404('Method no proccess')
+@login_required(login_url='/SignUp/')
+def view_keep_add_subproyeto(request,pid):
+	try:
+		if request.method == 'GET':
+			form = forms.addSubprojectForm()
+			ctx = {"form":form,"pid":pid}
+			return render_to_response("almacen/addsubproyecto.html",ctx,context_instance=RequestContext(request))
+		elif request.method == 'POST':
+			form = forms.addSubprojectForm(request.POST)
+			if form.is_valid():
+				add = form.save(commit=False)
+				add.proyecto_id = request.POST.get('proyecto_id')
+				add.flag = True
+				add.save()
+				url = "/almacen/keep/subproyectos/%s/"%(pid)
+				return HttpResponseRedirect(url)
+			else:
+				print 'Form no valid'
+	except TemplateDoesNotExist, e:
+		messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
+		raise Http404('Method no proccess')
+@login_required(login_url='/SignUp')
+def view_keep_edit_subproyecto(request,pid,sid):
+	try:
+		sub = models.Subproyecto.objects.get(flag=True,proyecto__flag=True,proyecto_id__exact=pid,subproyecto_id=sid)
+		if request.method == "GET":
+			form = forms.addSubprojectForm(instance=sub)
+			ctx = { "form": form, "pid": pid }
+			return render_to_response("almacen/editsubproyecto.html",ctx,context_instance=RequestContext(request))
+		elif request.method == "POST":
+			form = forms.addSubprojectForm(request.POST,instance=sub)
+			if form.is_valid():
+				edit = form.save(commit=False)
+				edit.proyecto_id = request.POST.get('proyecto_id')
+				edit.flag = True
+				edit.save()
+				url = "/almacen/keep/subproyectos/%s/"%(pid)
+				return HttpResponseRedirect(url)
+			else:
+				form = forms.addSubprojectForm(request.POST)
+				msg = "No se a podido realizar la transacción."
+				ctx = { "form": form, "pid": pid,"msg": msg }
+				return render_to_response("almacen/addsector.html",ctx,context_instance=RequestContext(request))
+	except TemplateDoesNotExist, e:
+		messages.error(request, "No se puede mostrar la pagina.")
+		raise Http404("Method not proccess")
+# Almacenes
+@login_required(login_url='/SignUp/')
+def view_stores(request):
+	try:
+		if request.method == 'GET':
+			lista = models.Almacene.objects.filter(flag=True).order_by('nombre')
+			ctx = { "lista": lista }
+			return render_to_response("upkeep/almacenes.html",ctx,context_instance=RequestContext(request))
+	except TemplateDoesNotExist, e:
+		messages("Template not found")
+		raise Http404
+@login_required(login_url='/SignUp/')
+def view_stores_add(request):
+	try:
+		if request.method == 'GET':
+			form = forms.addAlmacenesForm()
+			ctx = { "form": form }
+			return render_to_response("upkeep/addalmacen.html",ctx,context_instance=RequestContext(request))
+		elif request.method == 'POST':
+			form = forms.addAlmacenesForm(request.POST)
+			if form.is_valid():
+				add = form.save(commit=False)
+				# generate id for Stores
+				c_old = models.Almacene.objects.all().aggregate(Max('almacen_id'))
+				if c_old['almacen_id__max'] is not None:
+					cont = c_old['almacen_id__max'][2:4]
+					cont = int(cont) + 1
+				else:
+					cont = 1
+				add.almacen_id = "AL%s"%("{:0>2d}".format(cont))
+				add.flag = True
+				add.save()
+				return HttpResponseRedirect("/almacen/upkeep/stores/")
+			else:
+				form = forms.addAlmacenesForm(request.POST)
+				ctx = { "form": form, "msg": "Transaction unrealized." }
+				return render_to_response("upkeep/addalmacen.html",ctx,context_instance=RequestContext(request))
+	except TemplateDoesNotExist, e:
+		messages("Template not found")
+		raise Http404
+@login_required(login_url='/SignUp/')
+def view_stores_edit(request,aid):
+	try:
+		al = models.Almacene.objects.get(pk=aid)
+		if request.method == 'GET':
+			form = forms.addAlmacenesForm(instance=al)
+			ctx = { "form": form }
+			return render_to_response("upkeep/editalmacen.html",ctx,context_instance=RequestContext(request))
+		elif request.method == 'POST':
+			pass
+	except TemplateDoesNotExist, e:
+		messages("Template not found")
+		raise Http404
