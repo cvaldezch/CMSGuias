@@ -345,6 +345,15 @@ def view_stores(request):
 			lista = models.Almacene.objects.filter(flag=True).order_by('nombre')
 			ctx = { "lista": lista }
 			return render_to_response("upkeep/almacenes.html",ctx,context_instance=RequestContext(request))
+		elif request.method == 'POST':
+			data = {}
+			try:
+				obj = models.Almacene.objects.get(pk=request.POST.get('aid'))
+				obj.delete()
+				data['status'] = True
+			except ObjectDoesNotExist, e:
+				data['status'] = False
+			return HttpResponse(simplejson.dumps(data), mimetype="application/json")
 	except TemplateDoesNotExist, e:
 		messages("Template not found")
 		raise Http404
@@ -383,10 +392,127 @@ def view_stores_edit(request,aid):
 		al = models.Almacene.objects.get(pk=aid)
 		if request.method == 'GET':
 			form = forms.addAlmacenesForm(instance=al)
-			ctx = { "form": form }
+			ctx = { "form": form, "aid": aid }
 			return render_to_response("upkeep/editalmacen.html",ctx,context_instance=RequestContext(request))
 		elif request.method == 'POST':
+			form = forms.addAlmacenesForm(request.POST, instance=al)
+			if form.is_valid():
+				edit = form.save(commit=False)
+				edit.flag = True
+				edit.save()
+				url = "/almacen/upkeep/stores/"
+				return HttpResponseRedirect(url)
+			else:
+				form = forms.addSubprojectForm(request.POST)
+				msg = "No se a podido realizar la transacción."
+				ctx = { "form": form, "almacen_id": almacen_id,"msg": msg }
+				return render_to_response("almacen/addsector.html",ctx,context_instance=RequestContext(request))
+	except TemplateDoesNotExist, e:
+		messages("Template not found")
+		raise Http404
+# Transportistas
+@login_required(login_url='/SignUp/')
+def view_carrier(request):
+	try:
+		if request.method == 'GET':
+			lista = models.Transportista.objects.filter(flag=True).order_by('tranom')
+			ctx = { "lista": lista }
+			return render_to_response("upkeep/transportista.html",ctx,context_instance=RequestContext(request))
+		elif request.method == 'POST':
+			data = {}
+			if "ruc" in request.POST:
+				try:
+					# delete conductors
+					obj = models.Conductore.objects.filter(traruc_id__exact=request.POST.get('ruc'))
+					obj.delete()
+					# delete Transport
+					obj = models.Transpote.objects.filter(traruc_id__exact=request.POST.get('ruc'))
+					obj.delete()
+					# delete carrier
+					obj = models.Transportista.objects.get(pk=request.POST.get('ruc'))
+					obj.delete()
+					data['status'] = True
+				except ObjectDoesNotExist, e:
+					data['status'] = False
+				return HttpResponse(simplejson.dumps(data),mimetype='application/json')
+	except TemplateDoesNotExist, e:
+		messages("Template not found")
+		raise Http404
+@login_required(login_url="/SignUp/")
+def view_carrier_add(request):
+	try:
+		if request.method == 'GET':
+			form = forms.addCarrierForm()
+			ctx = { "form": form }
+			return render_to_response("upkeep/addcarrier.html",ctx,context_instance=RequestContext(request))
+		elif request.method == 'POST':
+			form = forms.addCarrierForm(request.POST)
+			if form.is_valid():
+				add = form.save(commit=False)
+				add.flag = True
+				add.save()
+				return HttpResponseRedirect('/almacen/upkeep/carrier/')
+			else:
+				form = forms.addCarrierForm(request.POST)
+				ctx = { "form": form }
+				return render_to_response("upkeep/addcarrier.html",ctx,context_instance=RequestContext(request))
+	except TemplateDoesNotExist, e:
+		messages("Template not found")
+		raise Http404
+@login_required(login_url='/SignUp/')
+def view_carrier_edit(request,ruc):
+	try:
+		t = models.Transportista.objects.get(pk=ruc)
+		if request.method == 'GET':
+			form = forms.addCarrierForm(instance=t)
+			return render_to_response("upkeep/editcarrier.html",{"form":form,"ruc":ruc},context_instance=RequestContext(request))
+		elif request.method == 'POST':
+			form = forms.addCarrierForm(request.POST,instance=t)
+			if form.is_valid():
+				edit = form.save(commit=False)
+				edit.flag =  True
+				edit.save()
+				return HttpResponseRedirect('/almacen/upkeep/carrier/')
+			else:
+				form = forms.addSubprojectForm(request.POST)
+				msg = "No se a podido realizar la transacción."
+				ctx = { "form": form, "almacen_id": almacen_id,"msg": msg }
+				return render_to_response("almacen/addsector.html",ctx,context_instance=RequestContext(request))
+	except TemplateDoesNotExist, e:
+		messages("Template not found")
+		raise Http404
+# Transport
+@login_required(login_url='/SignUp/')
+def view_transport(request,ruc):
+	try:
+		if request.method == 'GET':
+			lista = models.Transporte.objects.filter(flag=True,traruc_id=ruc)
+			ctx = { "lista": lista, "ruc":ruc, "nom": lista[0].traruc.tranom if lista != [] else "" }
+			return render_to_response("upkeep/transport.html",ctx,context_instance=RequestContext(request))
+		elif request.method == 'POST':
 			pass
+	except TemplateDoesNotExist, e:
+		messages("Template not found")
+		raise Http404
+@login_required(login_url='/SignUp/')
+def view_transport_add(request,tid):
+	try:
+		if request.method == 'GET':
+			form = forms.addTransportForm()
+			ctx = { "form": form, "tid": tid }
+			return render_to_response("upkeep/addtransport.html",ctx,context_instance=RequestContext(request))
+		elif request.method == 'POST':
+			form = forms.addTransportForm(request.POST)
+			if form.is_valid():
+				add = form.save(commit=False)
+				add.traruc_id = request.POST.get('traruc_id')
+				add.flag = True
+				add.save()
+				return HttpResponseRedirect('/almacen/upkeep/transport/%s'%tid)
+			else:
+				form = forms.addTransportForm(request.POST)
+				ctx = { "form": form, "tid": tid }
+				return render_to_response("upkeep/addtransport.html",ctx,context_instance=RequestContext(request))
 	except TemplateDoesNotExist, e:
 		messages("Template not found")
 		raise Http404

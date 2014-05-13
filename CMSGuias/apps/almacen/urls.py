@@ -22,4 +22,12 @@ urlpatterns = patterns('CMSGuias.apps.almacen.views',
 	url(r'^upkeep/stores/$','view_stores',name='vista_stores'),
 	url(r'^upkeep/stores/add/$','view_stores_add',name='vista_stores_add'),
 	url(r'^upkeep/stores/edit/(?P<aid>.*)/$','view_stores_edit',name='vista_stores_edit'),
+	# carrier
+	url(r'^upkeep/carrier/$','view_carrier',name='vista_carrier'),
+	url(r'^upkeep/carrier/add/$','view_carrier_add',name='vista_carrier_add'),
+	url(r'^upkeep/carrier/edit/(?P<ruc>.*)/$','view_carrier_edit',name='vista_carrier_edit'),
+	# Transport
+	url(r'^upkeep/transport/add/(?P<tid>.*)/$','view_transport_add',name='vista_transport_add'),
+	url(r'^upkeep/transport/(?P<ruc>.*)/$','view_transport',name='vista_transport'),
+
 )

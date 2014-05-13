@@ -2,12 +2,17 @@
 {% block content %}
 <div class="container">
 	<div class="well">
-	<h1 class="text-primary">Almacenes</h1>
+	<h1 class="text-primary">
+	Transporte <br>	
+		<small>Ruc : {{ruc}} {{nom}}</small>
+	</h1>
 		{% csrf_token %}
+		<input type="hidden" class="empdni" value="{{user.get_profile.empdni}}">
 		<div class="row show-grid">
 			<div class="col-md-12">
 				<div class="btn-group">
-					<a href="{% url 'vista_stores_add' %}" class="btn btn-default btn-primary"><span class="glyphicon glyphicon-plus"></span> Nuevo Almacén</a>
+					<a href="{% url 'vista_carrier' %}" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-left"></span> Transportista</a>
+					<a href="{% url 'vista_transport_add' ruc %}" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Nuevo Transporte</a>
 				</div>
 			</div>
 			<div class="col-md-12">
@@ -16,9 +21,9 @@
 						<thead>
 							<tr>
 								<th class="text-center">Item</th>
-								<th class="text-center">Codigo</th>
-								<th>Nombres</th>
-								<th>Status</th>
+								<th class="text-center">Placa</th>
+								<th>Marca</th>
+								<th class="text-center">Status</th>
 								<th class="text-center">Editar</th>
 								<th class="text-center">Eliminar</th>
 							</tr>
@@ -26,19 +31,19 @@
 						<tbody>
 							{% if lista %}
 							{% for x in lista %}
-							<tr class="tr-{{x.almacen_id}}">
+							<tr class="tr-{{x.traruc_id}}">
 								<td>{{forloop.counter}}</td>
-								<td>{{x.almacen_id}}</td>
-								<td>{{x.nombre}}</td>
+								<td>{{x.nropla_id}}</td>
+								<td>{{x.marca}}</td>
 								<td>{{x.flag}}</td>
-								<td class="text-center"><a href="{% url 'vista_stores_edit' x.almacen_id %}" class="btn btn-link text-black" value="{{x.almacen_id}}"><span class="glyphicon glyphicon-edit"></span></a></td>
-								<td class="text-center"><button type="Button" class="btn btn-link text-black btn-delete-project" title="{{x.nombre}}" value="{{x.almacen_id}}"><span class="glyphicon glyphicon-trash"></span></button></td>
+								<td class="text-center"><a href="{% url 'vista_carrier_edit' x.traruc_id %}" class="btn btn-xs btn-link text-black" value="{{x.traruc_id}}"><span class="glyphicon glyphicon-edit"></span></a></td>
+								<td class="text-center"><button type="Button" class="btn btn-xs btn-link text-black btn-delete-project" title="{{x.tranom}}" value="{{x.traruc_id}}"><span class="glyphicon glyphicon-trash"></span></button></td>
 							</tr>
 							{% endfor%}
 							{% else %}
 								<div class="alert alert-warning">
 									<strong>Warning</strong>
-									<p>No se han encontrado <q><strong>Alamacenes</strong></q> para mostrar. Presione el botón <q><strong>Nuevo Almacén</strong></q> para agregar.<p>
+									<p>No se han encontrado <q><strong>Transporte</strong></q> para mostrar. Presione el botón <q><strong>Nuevo Transporte</strong></q> para agregar.<p>
 								</div>
 							{% endif %}
 						</tbody>
@@ -54,14 +59,14 @@
 			event.preventDefault();
 			var value = this.value;
 			$().toastmessage("showToast",{
-				text: "Eliminar Almacén, recuerde que al eliminar a "+this.title+" sera permanentemente.<br>Desea Eliminar el Almacén?",
+				text: "Eliminar Proyecto, recuerde que al eliminar a "+this.title+" sera permanentemente.<br>Desea Eliminar el Proyecto?",
 				sticky: true,
 				type: "confirm",
 				position: "middle-center",
 				buttons: [{value:'No'},{value: 'Si'}],
 				success: function (result) {
 					if (result == "Si") {
-						var data = { "aid": value, "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val() }
+						var data = { "proid": value, "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val() }
 						$.post("",data,function (response) {
 							if (response.status) {
 								if ($("table tbody > tr").length > 1 ){
@@ -74,14 +79,6 @@
 					};
 				}
 			});
-		});
-		$(".btn-open > span").mouseenter(function(event) {
-			event.preventDefault();
-			$(this).removeClass('glyphicon-folder-close').addClass('glyphicon-folder-open');
-		});
-		$(".btn-open > span").mouseout(function(event) {
-			event.preventDefault();
-			$(this).removeClass('glyphicon-folder-open').addClass('glyphicon-folder-close');
 		});
 	});
 </script>

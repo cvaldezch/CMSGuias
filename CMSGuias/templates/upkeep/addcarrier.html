@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+	<div class="well">
+		<h3 class="text-primary">Agregar Nuevo Transportista</h3>
+		{% csrf_token %}
+		<a href="{% url 'vista_carrier' %}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> regresar</a>
+		<div class="row show-grid">
+		{% if msg %}
+			<div class="col-md-4">
+				<div class="alert alert-block alert-warning">
+					<a class="close" data-dismiss="alert">&times;</a>
+					<strong>Warning</strong>
+					<p>{{msg}}</p>
+				</div>
+			</div>
+		{% endif %}
+		</div>
+		<form class="form-horizontal" method="POST" action="">
+			{% csrf_token %}
+			<hr>
+			<table>
+				{{form.as_table}}
+			</table>
+			<hr>
+			<button type="submit" value="submit" class="btn btn-success text-black"><span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios</button>
+		</form>
+	</div>
+</div>
+{% endblock %}

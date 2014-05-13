@@ -120,7 +120,7 @@ class Almacene(models.Model):
 		ordering = ['nombre']
 		
 	def __unicode__(self):
-		return "%s %s"%(self.almacen,self.nombre)
+		return "%s %s"%(self.almacen_id,self.nombre)
 
 class Transportista(models.Model):
 	traruc_id = models.CharField(primary_key=True,max_length=11)
@@ -129,7 +129,7 @@ class Transportista(models.Model):
 	flag = models.BooleanField(default=True,null=False)
 	
 	def __unicode__(self):
-		return "%s %s"%(self.traruc,self.nombre)
+		return "%s %s"%(self.traruc_id,self.tranom)
 
 class Conductore(models.Model):
 	traruc = models.ForeignKey(Transportista,to_field='traruc_id')
@@ -142,7 +142,7 @@ class Conductore(models.Model):
 	def __unicode__(self):
 		return "%s %s %s"%(self.traruc,self.condni,self.connom)
 
-class Transpote(models.Model):
+class Transporte(models.Model):
 	traruc = models.ForeignKey(Transportista,to_field='traruc_id')
 	nropla_id = models.CharField(primary_key=True,max_length=8)
 	marca = models.CharField(max_length=60,null=False)
@@ -245,7 +245,7 @@ class GuiaRemision(models.Model):
 	traslado = models.DateField(null=False)
 	traruc = models.ForeignKey(Transportista, to_field='traruc_id')
 	condni = models.ForeignKey(Conductore, to_field='condni_id')
-	nropla = models.ForeignKey(Transpote, to_field='nropla_id')
+	nropla = models.ForeignKey(Transporte, to_field='nropla_id')
 	status = models.CharField(max_length=2,default='46')
 	flag = models.BooleanField(default=True)
 

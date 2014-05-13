@@ -11,6 +11,10 @@
 			{% csrf_token %}
 			<hr>
 			<table>
+				<tr>
+					<td><label for="almacen_id">Almacén ID: </label></td>
+					<td><input type="text" class="form-control" name="almacen_id" value="{{aid}}" readonly></td>
+				</tr>
 				{{form.as_table}}
 			</table>
 			<hr>

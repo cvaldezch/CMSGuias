@@ -38,10 +38,6 @@ class addProjectForm(forms.ModelForm):
 							}
 # sectores
 class addSectoresForm(forms.ModelForm):
-	def __ini__(self,*args,**kwargs):
-		super(addSectoresForm, self).__init__(*args,**kwargs)
-		self.proid = kwargs.pop("proid")
-		print proid
 	class Meta:
 		model   = models.Sectore
 		exclude = {"registrado","flag","proyecto","subproyecto",}
@@ -61,7 +57,7 @@ class addSectoresForm(forms.ModelForm):
 class addSubprojectForm(forms.ModelForm):
 	class Meta:
 		model   = models.Subproyecto
-		exclude = {"proyecto","registrado","flag",}
+		exclude = {"proyecto_id","registrado","flag",}
 		STATUS  = (("AC","ACTIVE"),)
 		widgets = {
 						"subproyecto_id": forms.TextInput(attrs ={'class': 'form-control'}),
@@ -78,4 +74,23 @@ class addAlmacenesForm(forms.ModelForm):
 		exclude = { "almacen_id","flag", }
 		widgets= {
 							"nombre": forms.TextInput(attrs = {'class': 'form-control', 'maxlength':'50'}),
+		}
+# Carrier
+class addCarrierForm(forms.ModelForm):
+	class Meta:
+		model   = models.Transportista
+		exclude = { "flag", }
+		widgets = {
+							"traruc_id" : forms.TextInput(attrs ={'class': 'form-control','maxlength':'11'}),
+							"tranom"    : forms.TextInput(attrs ={'class': 'form-control'}),
+							"tratel"    : forms.TextInput(attrs ={'class': 'form-control','placeholder':'000-000-000'}),
+		}
+# Transport
+class addTransportForm(forms.ModelForm):
+	class Meta:
+		model   = models.Transporte
+		exclude = { "traruc","flag", }
+		widgets = {
+							"nropla_id": forms.TextInput(attrs ={'class': 'form-control'}),
+							"marca": forms.TextInput(attrs     ={'class': 'form-control'}),
 		}
