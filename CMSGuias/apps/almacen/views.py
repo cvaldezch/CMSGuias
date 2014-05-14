@@ -426,7 +426,7 @@ def view_carrier(request):
 					obj = models.Conductore.objects.filter(traruc_id__exact=request.POST.get('ruc'))
 					obj.delete()
 					# delete Transport
-					obj = models.Transpote.objects.filter(traruc_id__exact=request.POST.get('ruc'))
+					obj = models.Transporte.objects.filter(traruc_id__exact=request.POST.get('ruc'))
 					obj.delete()
 					# delete carrier
 					obj = models.Transportista.objects.get(pk=request.POST.get('ruc'))
@@ -487,10 +487,19 @@ def view_transport(request,ruc):
 	try:
 		if request.method == 'GET':
 			lista = models.Transporte.objects.filter(flag=True,traruc_id=ruc)
-			ctx = { "lista": lista, "ruc":ruc, "nom": lista[0].traruc.tranom if lista != [] else "" }
+			print lista
+			ctx = { "lista": lista, "ruc":ruc, "nom": lista[0].traruc.tranom if len(lista) > 0 else "" }
 			return render_to_response("upkeep/transport.html",ctx,context_instance=RequestContext(request))
 		elif request.method == 'POST':
-			pass
+			if "nropla" in request.POST:
+				data = {}
+				try:
+					obj = models.Transporte.objects.get(traruc_id=ruc,condni_id=request.POST.get('nropla'))
+					obj.delete()
+					data['status'] = True
+				except ObjectDoesNotExist, e:
+					data['status'] = False
+				return HttpResponse(simplejson.dumps(data),mimetype='application/json')
 	except TemplateDoesNotExist, e:
 		messages("Template not found")
 		raise Http404
@@ -513,6 +522,86 @@ def view_transport_add(request,tid):
 				form = forms.addTransportForm(request.POST)
 				ctx = { "form": form, "tid": tid }
 				return render_to_response("upkeep/addtransport.html",ctx,context_instance=RequestContext(request))
+	except TemplateDoesNotExist, e:
+		messages("Template not found")
+		raise Http404
+@login_required(login_url="/SignUp/")
+def view_transport_edit(request,cid,tid):
+	try:
+		t = models.Transporte.objects.get(traruc_id=cid,nropla_id=tid)
+		if request.method == 'GET':
+			form = forms.addTransportForm(instance=t)
+			return render_to_response("upkeep/edittransport.html",{"form": form, "cid":cid, "tid": tid}, context_instance=RequestContext(request))
+		if request.method == 'POST':
+			form = forms.addTransportForm(request.POST, instance=t)
+			if form.is_valid():
+				edit = form.save(commit=True)
+				return HttpResponseRedirect("/almacen/upkeep/transport/%s/"%cid)
+			else:
+				form = forms.addTransportForm(request.POST)
+				return render_to_response("upkeep/edittransport.html",{"form": form, "cid":cid, "tid": tid}, context_instance=RequestContext(request))
+	except TemplateDoesNotExist, e:
+		messages("Template not found")
+		raise Http404
+# Conductor
+@login_required(login_url='/SignUp/')
+def view_conductor(request,ruc):
+	try:
+		if request.method == 'GET':
+			lista = models.Conductore.objects.filter(flag=True,traruc_id=ruc)
+			print lista
+			ctx = { "lista": lista, "ruc":ruc, "nom": lista[0].traruc.tranom if len(lista) > 0 else "" }
+			return render_to_response("upkeep/conductor.html",ctx,context_instance=RequestContext(request))
+		elif request.method == 'POST':
+			if "condni" in request.POST:
+				data = {}
+				try:
+					obj = models.Conductore.objects.get(traruc_id=ruc,condni_id=request.POST.get('condni'))
+					obj.delete()
+					data['status'] = True
+				except ObjectDoesNotExist, e:
+					data['status'] = False
+				return HttpResponse(simplejson.dumps(data),mimetype='application/json')
+	except TemplateDoesNotExist, e:
+		messages("Template not found")
+		raise Http404
+@login_required(login_url='/SignUp/')
+def view_conductor_add(request,tid):
+	try:
+		if request.method == 'GET':
+			form = forms.addConductorForm()
+			ctx = { "form": form, "tid": tid }
+			return render_to_response("upkeep/addconductor.html",ctx,context_instance=RequestContext(request))
+		elif request.method == 'POST':
+			form = forms.addConductorForm(request.POST)
+			if form.is_valid():
+				add = form.save(commit=False)
+				add.traruc_id = request.POST.get('traruc_id')
+				add.flag = True
+				add.save()
+				return HttpResponseRedirect('/almacen/upkeep/conductor/%s'%tid)
+			else:
+				form = forms.addConductorForm(request.POST)
+				ctx = { "form": form, "tid": tid }
+				return render_to_response("upkeep/addconductor.html",ctx,context_instance=RequestContext(request))
+	except TemplateDoesNotExist, e:
+		messages("Template not found")
+		raise Http404
+@login_required(login_url="/SignUp/")
+def view_conductor_edit(request,cid,tid):
+	try:
+		t = models.Conductore.objects.get(traruc_id=cid,condni_id=tid)
+		if request.method == 'GET':
+			form = forms.addConductorForm(instance=t)
+			return render_to_response("upkeep/editconductor.html",{"form": form, "cid":cid, "tid": tid}, context_instance=RequestContext(request))
+		if request.method == 'POST':
+			form = forms.addConductorForm(request.POST, instance=t)
+			if form.is_valid():
+				edit = form.save(commit=True)
+				return HttpResponseRedirect("/almacen/upkeep/conductor/%s/"%cid)
+			else:
+				form = forms.addConductorForm(request.POST)
+				return render_to_response("upkeep/editconductor.html",{"form": form, "cid":cid, "tid": tid}, context_instance=RequestContext(request))
 	except TemplateDoesNotExist, e:
 		messages("Template not found")
 		raise Http404

@@ -28,6 +28,10 @@ urlpatterns = patterns('CMSGuias.apps.almacen.views',
 	url(r'^upkeep/carrier/edit/(?P<ruc>.*)/$','view_carrier_edit',name='vista_carrier_edit'),
 	# Transport
 	url(r'^upkeep/transport/add/(?P<tid>.*)/$','view_transport_add',name='vista_transport_add'),
+	url(r'^upkeep/transport/edit/(?P<cid>.*)/(?P<tid>.*)/$','view_transport_edit',name='vista_transport_edit'),
 	url(r'^upkeep/transport/(?P<ruc>.*)/$','view_transport',name='vista_transport'),
-
+	# Conductor
+	url(r'^upkeep/conductor/add/(?P<tid>.*)/$','view_conductor_add',name='vista_conductor_add'),
+	url(r'^upkeep/conductor/edit/(?P<cid>.*)/(?P<tid>.*)/$','view_conductor_edit',name='vista_conductor_edit'),
+	url(r'^upkeep/conductor/(?P<ruc>.*)/$','view_conductor',name='vista_conductor'),
 )

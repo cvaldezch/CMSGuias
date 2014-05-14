@@ -3,7 +3,7 @@
 <div class="container">
 	<div class="well">
 	<h1 class="text-primary">
-	Transporte <br>	
+	Conductor <br>	
 		<small>Ruc : {{ruc}} {{nom}}</small>
 	</h1>
 		{% csrf_token %}
@@ -12,7 +12,7 @@
 			<div class="col-md-12">
 				<div class="btn-group">
 					<a href="{% url 'vista_carrier' %}" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-left"></span> Transportista</a>
-					<a href="{% url 'vista_transport_add' ruc %}" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Nuevo Transporte</a>
+					<a href="{% url 'vista_conductor_add' ruc %}" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Nuevo Conductor</a>
 				</div>
 			</div>
 			<div class="col-md-12">
@@ -21,9 +21,10 @@
 						<thead>
 							<tr>
 								<th class="text-center">Item</th>
-								<th class="text-center">Placa</th>
-								<th>Marca</th>
-								<th class="text-center">Status</th>
+								<th class="text-center">DNI</th>
+								<th>Nombres</th>
+								<th class="text-center">Licencia</th>
+								<th class="text-center">Telefono</th>
 								<th class="text-center">Editar</th>
 								<th class="text-center">Eliminar</th>
 							</tr>
@@ -31,19 +32,20 @@
 						<tbody>
 							{% if lista %}
 							{% for x in lista %}
-							<tr class="tr-{{x.traruc_id}}">
+							<tr class="tr-{{x.condni_id}}">
 								<td>{{forloop.counter}}</td>
-								<td>{{x.nropla_id}}</td>
-								<td>{{x.marca}}</td>
-								<td>{{x.flag}}</td>
-								<td class="text-center"><a href="{% url 'vista_transport_edit' ruc x.nropla_id %}" class="btn btn-xs btn-link text-black" value="{{x.nropla_id}}"><span class="glyphicon glyphicon-edit"></span></a></td>
-								<td class="text-center"><button type="Button" class="btn btn-xs btn-link text-black btn-delete-project" title="{{x.nropla_id}} {{x.marca}}" value="{{x.nropla_id}}"><span class="glyphicon glyphicon-trash"></span></button></td>
+								<td>{{x.condni_id}}</td>
+								<td>{{x.connom}}</td>
+								<td>{{x.conlic}}</td>
+								<td>{{x.contel}}</td>
+								<td class="text-center"><a href="{% url 'vista_conductor_edit' ruc x.condni_id %}" class="btn btn-xs btn-link text-black" value="{{x.nropla_id}}"><span class="glyphicon glyphicon-edit"></span></a></td>
+								<td class="text-center"><button type="Button" class="btn btn-xs btn-link text-black btn-delete-conductor" title="{{x.connom}}" value="{{x.condni_id}}"><span class="glyphicon glyphicon-trash"></span></button></td>
 							</tr>
 							{% endfor%}
 							{% else %}
 								<div class="alert alert-warning">
 									<strong>Warning</strong>
-									<p>No se han encontrado <q><strong>Transporte</strong></q> para mostrar. Presione el botón <q><strong>Nuevo Transporte</strong></q> para agregar.<p>
+									<p>No se han encontrado <q><strong>Conductor</strong></q> para mostrar. Presione el botón <q><strong>Nuevo Conductor</strong></q> para agregar.<p>
 								</div>
 							{% endif %}
 						</tbody>
@@ -55,18 +57,18 @@
 </div>
 <script>
 	$(document).ready(function () {
-		$(".btn-delete-project").click(function (event) {
+		$(".btn-delete-conductor").click(function (event) {
 			event.preventDefault();
 			var value = this.value;
 			$().toastmessage("showToast",{
-				text: "Eliminar Transporte, recuerde que al eliminar a "+this.title+" sera permanentemente.<br>Desea Eliminar el Transporte?",
+				text: "Eliminar Conductor, recuerde que al eliminar a "+this.title+" sera permanentemente.<br>Desea Eliminar al Conductor?",
 				sticky: true,
 				type: "confirm",
 				position: "middle-center",
 				buttons: [{value:'No'},{value: 'Si'}],
 				success: function (result) {
 					if (result == "Si") {
-						var data = { "nropla": value, "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val() }
+						var data = { "condni": value, "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val() }
 						$.post("",data,function (response) {
 							console.log(response);
 							if (response.status) {

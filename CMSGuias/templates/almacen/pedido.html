@@ -211,12 +211,67 @@
 		<div class="modal-content">
 			<div class="modal-header bg-success">
 				<a class="close" data-dismiss="modal">&times;</a>
-				<h4 class="text-success">Generar Pedido</h4>
-				<small class="text-success"><em>Generar pedido a almacén.</em></small>
+				<h4 class="text-success">Generar Pedido <br>
+					<small class="text-success"><em>Generar pedido a almacén.</em></small>
+				</h4>
 			</div>
 			<div class="modal-body bg-success">
 				<div class="row show-grid">
-					<div class="col-md-2"></div>
+					<div class="col-md-6">
+						<div class="form-group has-success">
+							<label for="" class="control-label">Proyecto</label>
+							<select name="pro" id="pro" class="form-control pro"></select>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group has-success">
+							<label for="" class="control-label">Subproyecto</label>
+							<select name="sub" id="sub" class="form-control sub"></select>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group has-success">
+							<label for="" class="control-label">Sector</label>
+							<select name="sec" id="sec" class="form-control sec"></select>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group has-success">
+							<label for="" class="control-label">Almacén</label>
+							<select name="al" id="al" class="form-control al"></select>
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div class="form-group has-success">
+							<label for="" class="control-label">Asunto</label>
+							<input name="issue" id="issue" class="form-control issue">
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div class="form-group has-success">
+							<label for="" class="control-label">Empleado</label>
+							<div class="row show-grid">
+								<div class="col-md-3">
+									<input name="dni" id="dni" class="form-control dni" value="{{user.get_profile.empdni}}" readonly />
+								</div>
+								<div class="col-md-8">
+									<input name="nom" id="nom" class="form-control nom" value="{{user.first_name}}" readonly />
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group has-success">
+							<label for="" class="control-label">Fecha de Traslado</label>
+							<input name="traslado" id="traslado" class="form-control in-date traslado">
+						</div>
+					</div>
+					<div class="col-md-8">
+						<div class="form-group has-success">
+							<label for="" class="control-label">Observación</label>
+							<textarea name="obs" id="obs" class="form-control obs" rows="3" maxlength="200"></textarea>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="modal-footer bg-success">

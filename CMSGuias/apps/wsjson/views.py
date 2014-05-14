@@ -209,3 +209,14 @@ def post_delete_temp_all_nipple(request):
 			raise e
 			data['status'] = False
 	return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+# get list of Porjects
+def get_list_projects(request):
+	if request.method == 'GET':
+		data = {}
+		try:
+			lst = models.Proyecto.objects.filter(flag=True,status='AC')
+			data['list'] = [ { "proyecto_id":x.proyecto_id, "nompro":x.nompro } for x in lst ]
+			data['status'] = True
+		except Exception, e:
+			data['status'] = False
+		return HttpResponse(simplejson.dumps(data), mimetype='application/json')

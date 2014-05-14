@@ -2,9 +2,9 @@
 {% block content %}
 <div class="container">
 	<div class="well">
-		<h3 class="text-primary">Editar Transporte</h3>
+		<h3 class="text-primary">Editar Conductor</h3>
 		{% csrf_token %}
-		<a href="{% url 'vista_transport' cid %}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> regresar</a>
+		<a href="{% url 'vista_conductor' cid %}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> regresar</a>
 		<div class="row show-grid">
 		{% if msg %}
 			<div class="col-md-4">
@@ -29,7 +29,7 @@
 <!-- Scripts -->
 <script>
 	$(document).ready(function() {
-		$("[name=nropla_id]").attr('readonly', true);
+		$("[name=condni_id]").attr('readonly', true);
 	});
 </script>
 <!-- endScripts -->

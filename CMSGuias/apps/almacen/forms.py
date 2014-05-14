@@ -94,3 +94,14 @@ class addTransportForm(forms.ModelForm):
 							"nropla_id": forms.TextInput(attrs ={'class': 'form-control'}),
 							"marca": forms.TextInput(attrs     ={'class': 'form-control'}),
 		}
+# Conductores
+class addConductorForm(forms.ModelForm):
+	class Meta:
+		model = models.Conductore
+		exclude = { "traruc", "flag", }
+		widgets = {
+			"condni_id" :forms.TextInput(attrs ={'class': 'form-control'}),
+			"connom" :forms.TextInput(attrs    ={'class': 'form-control'}),
+			"conlic" :forms.TextInput(attrs    ={'class': 'form-control'}),
+			"contel": forms.TextInput(attrs    ={'class': 'form-control'}),
+		}

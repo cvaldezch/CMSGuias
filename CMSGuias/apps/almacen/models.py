@@ -136,11 +136,11 @@ class Conductore(models.Model):
 	condni_id = models.CharField(primary_key=True,max_length=8)
 	connom = models.CharField(max_length=200,null=False)
 	conlic = models.CharField(max_length=12,null=False)
-	tratel = models.CharField(max_length=4,null=True,default='')
+	contel = models.CharField(max_length=11,null=True,default='',blank=True)
 	flag = models.BooleanField(default=True,null=False)
 	
 	def __unicode__(self):
-		return "%s %s %s"%(self.traruc,self.condni,self.connom)
+		return "%s %s %s"%(self.traruc,self.condni_id,self.connom)
 
 class Transporte(models.Model):
 	traruc = models.ForeignKey(Transportista,to_field='traruc_id')
@@ -149,7 +149,7 @@ class Transporte(models.Model):
 	flag = models.BooleanField(default=True,null=False)
 	
 	def __unicode__(self):
-		return "%s %s %s"%(self.traruc,self.nropla,self.marca)
+		return "%s %s %s"%(self.traruc,self.nropla_id,self.marca)
 
 class Unidade(models.Model):
 	unidad_id = models.CharField(primary_key=True,max_length=7)
@@ -179,8 +179,8 @@ class Materiale(models.Model):
 class Pedido(models.Model):
 	pedido_id = models.CharField(primary_key=True,max_length=10,default='PEAA000000')
 	proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
-	subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id')
-	sector = models.ForeignKey(Sectore, to_field='sector_id')
+	subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id',blank=True,null=True)
+	sector = models.ForeignKey(Sectore, to_field='sector_id',blank=True,null=True)
 	almacen = models.ForeignKey(Almacene, to_field='almacen_id')
 	asunto = models.CharField(max_length=160,null=True)
 	empdni = models.CharField(max_length=8,null=False)

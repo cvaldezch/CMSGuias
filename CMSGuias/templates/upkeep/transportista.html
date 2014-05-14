@@ -35,7 +35,7 @@
 								<td>{{x.tranom}}</td>
 								<td>{{x.tratel}}</td>
 								<td class="text-center"><a href="{% url 'vista_transport' x.traruc_id %}" class="btn btn-link btn-xs text-black"><span class="glyphicon glyphicon-dashboard"></span></a></td>
-								<td class="text-center"><a href="" class="btn btn-link btn-xs text-black"><span class="glyphicon glyphicon-circle-arrow-up"></span></a></td>
+								<td class="text-center"><a href="{% url 'vista_conductor' x.traruc_id %}" class="btn btn-link btn-xs text-black"><span class="glyphicon glyphicon-circle-arrow-up"></span></a></td>
 								<td class="text-center">
 								<a href="{% url 'vista_carrier_edit' x.traruc_id %}" class="btn btn-xs btn-link text-black" value="{{x.traruc_id}}"><span class="glyphicon glyphicon-edit"></span></a>
 								</td>

@@ -110,7 +110,24 @@ $(function () {
 		event.preventDefault();
 		$(".modal-order").modal("show");
 	});
+	// bedside order
+	// loading projects
+	$.getJSON("/json/get/projects/list/", function (response) {
+		if (response.status) {
+			var $pro = $(".pro");
+			$pro.empty();
+			var template = "<option value='{{proyecto_id}}'>{{nompro}}</option>";
+			for(var x in response.list){
+				$pro.append( Mustache.render(template, response.list[x]) );
+			}
+		};
+	});
+	$(".pro").click(function (event) {
+		
+	});
 });
+
+/// functions 
 var blockAdd = Boolean(true).valueOf();
 // recover details of materials code, name, measure
 var getMeters = function () {

@@ -2,9 +2,9 @@
 {% block content %}
 <div class="container">
 	<div class="well">
-		<h3 class="text-primary">Editar Transporte</h3>
+		<h3 class="text-primary">Agregar Nuevo Conductor</h3>
 		{% csrf_token %}
-		<a href="{% url 'vista_transport' cid %}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> regresar</a>
+		<a href="{% url 'vista_conductor' tid %}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> regresar</a>
 		<div class="row show-grid">
 		{% if msg %}
 			<div class="col-md-4">
@@ -20,17 +20,14 @@
 			{% csrf_token %}
 			<hr>
 			<table>
+				<tr>
+					<td><label for="">Transportista Ruc:</label></td>
+					<td><input type="text" class="form-control" name="traruc_id" readonly value="{{tid}}"></td>
+				</tr>
 				{{form.as_table}}
 			</table>
 			<button type="submit" value="submit" class="btn btn-success text-black"><span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios</button>
 		</form>
 	</div>
 </div>
-<!-- Scripts -->
-<script>
-	$(document).ready(function() {
-		$("[name=nropla_id]").attr('readonly', true);
-	});
-</script>
-<!-- endScripts -->
 {% endblock %}
