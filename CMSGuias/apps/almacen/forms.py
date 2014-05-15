@@ -105,3 +105,8 @@ class addConductorForm(forms.ModelForm):
 			"conlic" :forms.TextInput(attrs    ={'class': 'form-control'}),
 			"contel": forms.TextInput(attrs    ={'class': 'form-control'}),
 		}
+# Orders
+class addOrdersForm(forms.ModelForm):
+	class Meta:
+		model = models.Pedido
+		exclude = { "pedido_id","registrado","status","flag", }

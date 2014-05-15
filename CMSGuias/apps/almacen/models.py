@@ -177,6 +177,10 @@ class Materiale(models.Model):
 		return '%s %s %s %s'%(self.materiales_id,self.matnom,self.matmed,self.unidad.uninom)
 
 class Pedido(models.Model):
+	def url(self,filename):
+		ruta = "storage/pedido/%s/%s.pdf"%(self.proyecto_id,self.pedido_id)
+		return ruta
+
 	pedido_id = models.CharField(primary_key=True,max_length=10,default='PEAA000000')
 	proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
 	subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id',blank=True,null=True)
@@ -189,6 +193,7 @@ class Pedido(models.Model):
 	obser = models.TextField(null=True,blank=True)
 	status = models.CharField(max_length=2,null=False,default='36')
 	flag = models.BooleanField(default=True)
+	orderfile = models.FileField(upload_to=url,null=True,blank=True)
 
 	def __unicode__(self):
 		return '%s %s'%(self.pedido,self.proyecto.nompro)
@@ -215,10 +220,13 @@ class tmppedido(models.Model):
 class Niple(models.Model):
 	pedido = models.ForeignKey(Pedido, to_field='pedido_id')
 	proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
+	subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id',blank=True,null=True)
+	sector = models.ForeignKey(Sectore, to_field='sector_id',blank=True,null=True)
 	empdni = models.CharField(max_length=8,null=False)
 	materiales = models.ForeignKey(Materiale, to_field='materiales_id')
 	cantidad = models.IntegerField(null=True,default=1)
 	metrado = models.IntegerField(null=False)
+	cantshop = models.IntegerField(null=True)
 	tipo = models.CharField(max_length=1)
 	flag = models.BooleanField(default=True)
 

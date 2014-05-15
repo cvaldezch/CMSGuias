@@ -20,6 +20,7 @@ urlpatterns = patterns('CMSGuias.apps.wsjson.views',
 	# url recurrent
 	url(r'^get/details/materials/$','get_details_materials_by_id'),
 	url(r'^get/projects/list/$','get_list_projects'),
-	url(r'^get/sectors/lis/$','get_list_sectors'),
+	url(r'^get/sectors/list/$','get_list_sectors'),
 	url(r'^get/subprojects/list/$','get_list_subprojects'),
+	url(r'^get/stores/list/$','get_list_stores'),
 )

@@ -9,6 +9,7 @@ from CMSGuias.apps.almacen import forms
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Max
 from django.utils import simplejson
+from CMSGuias.apps.almacen import genkeys
 import datetime
 
 ##
@@ -20,7 +21,52 @@ FORMAT_DATE_STR = "%Y-%m-%d"
 def view_pedido(request):
 	try:
 		if request.method == 'GET':
+			#print request.user.get_profile().empdni
 			return render_to_response('almacen/pedido.html',context_instance=RequestContext(request))
+		if request.method == 'POST':
+			data = {}
+			form = forms.addOrdersForm(request.POST,request.FILES)
+			if form.is_valid():
+				# bedside Orders
+				add = form.save(commit=False)
+				id = genkeys.GenerateIdOrders()
+				add.pedido_id = id
+				add.status= 'PE'
+				add.flag = True
+				add.save()
+				# detail Orders Details
+				tmpd = models.tmppedido.objects.filter(empdni__exact=request.user.get_profile().empdni)
+				for x in tmpd:
+					det = models.Detpedido()
+					det.pedido_id = id
+					det.materiales_id = x.materiales_id
+					det.cantidad = x.cantidad
+					det.cantshop = x.cantidad
+					det.save()
+				# saved niples of tmpniple
+				tmpn = models.tmpniple.objects.filter(empdni__exact=request.user.get_profile().empdni)
+				for x in tmpd:
+					nip = models.Niple()
+					nip.pedido_id = id
+					nip.proyecto_id = request.POST.get('proyecto')
+					nip.subproyecto_id = request.POST.get('subproyecto')
+					nip.sector = request.POST.get('sector')
+					nip.empdni = request.user.get_profile().empdni
+					nip.materiales_id= x.materiales_id
+					nip.cantidad = x.cantidad
+					nip.cantshop = x.cantidad
+					nip.metrado = x.metrado
+					nip.tipo = x.tipo
+					nip.save()
+				# deleting tmps
+				tmp = models.tmppedido.objects.filter(empdni__exact=request.user.get_profile().empdni)
+				tmp.delete()
+				tmp = models.tmpniple.objects.filter(empdni__exact=request.user.get_profile().empdni)
+				tmp.delete()
+				data['status']= True
+			else:
+				data['status']= False
+			return HttpResponse(simplejson.dumps(data), mimetype="application/json")
 	except TemplateDoesNotExist, e:
 		messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
 		raise Http404('Method no proccess')

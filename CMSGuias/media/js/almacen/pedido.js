@@ -1,6 +1,7 @@
 // load funtions of page
 $(function () {
 	$('.description, .block-add-mat').hide();
+	$('.in-date').datepicker({ "minDate": "0", maxDate: "+2M", changeMonth: true, changeYear: true, showAnim:"slide", dateFormat: "yy-mm-dd"});
 	$('.matnom').keypress(function (event) {
 		var key = ( event.keyCode ? event.keyCode : event.which );
 		if ( key != 13 ) {
@@ -112,18 +113,26 @@ $(function () {
 	});
 	// bedside order
 	// loading projects
-	setTimeout(function() {
-		$.getJSON("/json/get/projects/list/", function (response) {
-			if (response.status) {
-				var $pro = $(".pro");
-				$pro.empty();
-				var template = "<option value='{{proyecto_id}}'>{{nompro}}</option>";
-				for(var x in response.list){
-					$pro.append( Mustache.render(template, response.list[x]) );
-				}
-			};
-		});
-	}, 3000);
+	$.getJSON("/json/get/projects/list/", function (response) {
+		if (response.status) {
+			var $pro = $(".pro");
+			$pro.empty();
+			var template = "<option value='{{proyecto_id}}'>{{nompro}}</option>";
+			for(var x in response.list){
+				$pro.append( Mustache.render(template, response.list[x]) );
+			}
+		};
+	});
+	$.getJSON("/json/get/stores/list/",function (response) {
+		if (response.status) {
+			var $al = $(".al");
+			$al.empty();
+			var template = "<option value='{{almacen_id}}'>{{nombre}}</option>";
+			for(var x in response.list){
+				$al.append( Mustache.render(template, response.list[x]) );
+			}
+		};
+	});
 	$(".pro").click(function (event) {
 		event.preventDefault();
 		var $sub = $(".sub"), $sec = $(".sec");
@@ -134,18 +143,75 @@ $(function () {
 				$sub.empty();
 				$sub.append("<option value=''>-- Nothing --</option>");
 				for(var x in response.list){
-					$sub.append( Mustache.render(template, resonse.list[x]) );
+					$sub.append( Mustache.render(template, response.list[x]) );
 				}
 			};
 		});
-		var data = {}
-		$.getJSON("",data, function (response) {
+		var data = {"pro": this.value}
+		$.getJSON("/json/get/sectors/list/",data, function (response) {
 			if (response.status) {
-				var template = "";
+				var template = "<option value='{{sector_id}}'>{{nomsec}} {{planoid}}</option>";
 				$sec.empty();
-
+				for(var x in response.list){
+					$sec.append( Mustache.render(template, response.list[x]) );
+				};
 			};
 		});
+	});
+	$('.tofile').click(function (event) {
+		event.preventDefault();
+		$("#file").click();
+	});
+	$("#file").change(function () {
+		console.log('in change');
+		if (this.value != "") {
+			$('.file-container,.tofile').removeClass('alert-warning text-warning').addClass('alert-success text-success');
+		};
+	});
+	$(".btn-saved-order").click(function (event) {
+		$().toastmessage('showToast',{
+			text: 'Seguro(a) que termino de ingresar los materiales al pedido?',
+			buttons: [{value:'No'},{value:'Si'}],
+			type: 'confirm',
+			sticky: true,
+			success: function (result) {
+				if (result == 'Si') {
+					
+				};
+			}
+		});
+		$().toastmessage('showToast',{
+			sticky: true,
+			text: "Desea Generar ",
+			type: "confirm",
+			buttons: [{value:'No'},{value:'Si'}],
+			success: function (result) {
+				if(result == 'Si'){
+					var data = new FormData($("form").get(0));
+					$.ajax({
+						data : data,
+						url: "",
+						type: 'POST',
+						dataType: 'json',
+						cache: false,
+						processData: false,
+						contentType: false,
+						success: function (response) {
+							console.log(response);
+							if (response.status) {
+								location.reload();
+							};
+						}
+					});
+				}
+			}
+		});
+	});
+	$('.obs').focus(function () {
+		$(this).animate({height:"102px"},600);
+	});
+	$('.obs').blur(function () {
+		$(this).animate({height:"34px"},600);
 	});
 });
 
