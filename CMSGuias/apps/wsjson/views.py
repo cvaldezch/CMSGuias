@@ -209,14 +209,39 @@ def post_delete_temp_all_nipple(request):
 			raise e
 			data['status'] = False
 	return HttpResponse(simplejson.dumps(data), mimetype="application/json")
-# get list of Porjects
+# get list of Projects
 def get_list_projects(request):
 	if request.method == 'GET':
 		data = {}
 		try:
-			lst = models.Proyecto.objects.filter(flag=True,status='AC')
+			lst = models.Proyecto.objects.values('proyecto_id','nompro').filter(flag=True,status='AC')
 			data['list'] = [ { "proyecto_id":x.proyecto_id, "nompro":x.nompro } for x in lst ]
 			data['status'] = True
 		except Exception, e:
 			data['status'] = False
+		return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+# get list sectors
+def get_list_sectors(request):
+	if request.method == 'GET':
+		data = {}
+		try:
+			if "sub" in request.GET:
+				lst = models.Sectore.objects.values('sector_id','planoid','nomsec').filter(proyecto_id=request.GET.get('pro'),subproyecto_id=request.GET.get('sub'))
+			else:
+				lst = models.Sectore.objects.filter(proyecto_id=request.GET.get('pro'),subproyecto_id='')
+			data['list']= [ { "sector_id":x.sector_id, "planoid":x.planoid, "nomsec":x.nomsec } for x in lst ]
+			data['status']= True
+		except ObjectDoesNotExist, e:
+			data['status'] = False
+		return HttpResponse(simplejson.dumps(data),mimetype="application/json")
+# get list subprojects
+def get_list_subprojecs(request):
+	if request.method == 'GET':
+		data = {}
+		try:
+			lst = models.Subproyecto.objects.values('subproyecto_id','nomsub').filter(proyecto_id=request.GET.get('pro'))
+			data['list']= [ { "subproyecto_id":x.subproyecto_id,"nomsub":x.nomsub } for x in lst ]
+			data['status']= True
+		except ObjectDoesNotExist, e:
+			data['status']= False
 		return HttpResponse(simplejson.dumps(data), mimetype='application/json')

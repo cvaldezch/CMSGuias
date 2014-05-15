@@ -57,7 +57,7 @@ class addSectoresForm(forms.ModelForm):
 class addSubprojectForm(forms.ModelForm):
 	class Meta:
 		model   = models.Subproyecto
-		exclude = {"proyecto_id","registrado","flag",}
+		exclude = {"proyecto","registrado","flag",}
 		STATUS  = (("AC","ACTIVE"),)
 		widgets = {
 						"subproyecto_id": forms.TextInput(attrs ={'class': 'form-control'}),

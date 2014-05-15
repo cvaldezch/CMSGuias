@@ -112,18 +112,40 @@ $(function () {
 	});
 	// bedside order
 	// loading projects
-	$.getJSON("/json/get/projects/list/", function (response) {
-		if (response.status) {
-			var $pro = $(".pro");
-			$pro.empty();
-			var template = "<option value='{{proyecto_id}}'>{{nompro}}</option>";
-			for(var x in response.list){
-				$pro.append( Mustache.render(template, response.list[x]) );
-			}
-		};
-	});
+	setTimeout(function() {
+		$.getJSON("/json/get/projects/list/", function (response) {
+			if (response.status) {
+				var $pro = $(".pro");
+				$pro.empty();
+				var template = "<option value='{{proyecto_id}}'>{{nompro}}</option>";
+				for(var x in response.list){
+					$pro.append( Mustache.render(template, response.list[x]) );
+				}
+			};
+		});
+	}, 3000);
 	$(".pro").click(function (event) {
-		
+		event.preventDefault();
+		var $sub = $(".sub"), $sec = $(".sec");
+		// get list subprojects
+		$.getJSON("/json/get/subprojects/list/", {"pro":this.value}, function (response) {
+			if (response.status) {
+				var template = "<option value='{{subproyecto_id}}'>{{nomsub}}</option>";
+				$sub.empty();
+				$sub.append("<option value=''>-- Nothing --</option>");
+				for(var x in response.list){
+					$sub.append( Mustache.render(template, resonse.list[x]) );
+				}
+			};
+		});
+		var data = {}
+		$.getJSON("",data, function (response) {
+			if (response.status) {
+				var template = "";
+				$sec.empty();
+
+			};
+		});
 	});
 });
 
