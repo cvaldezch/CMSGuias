@@ -12,6 +12,11 @@ from django.utils import simplejson
 from CMSGuias.apps.almacen import genkeys
 import datetime
 
+import ho.pisa as pisa
+import cStringIO as StringIO
+import cgi
+from django.template.loader import render_to_string
+
 ##
 #  Declare variables
 ##
@@ -45,12 +50,12 @@ def view_pedido(request):
 					det.save()
 				# saved niples of tmpniple
 				tmpn = models.tmpniple.objects.filter(empdni__exact=request.user.get_profile().empdni)
-				for x in tmpd:
+				for x in tmpn:
 					nip = models.Niple()
 					nip.pedido_id = id
 					nip.proyecto_id = request.POST.get('proyecto')
 					nip.subproyecto_id = request.POST.get('subproyecto')
-					nip.sector = request.POST.get('sector')
+					nip.sector_id = request.POST.get('sector')
 					nip.empdni = request.user.get_profile().empdni
 					nip.materiales_id= x.materiales_id
 					nip.cantidad = x.cantidad
@@ -651,3 +656,44 @@ def view_conductor_edit(request,cid,tid):
 	except TemplateDoesNotExist, e:
 		messages("Template not found")
 		raise Http404
+
+"""
+  request Orders
+"""
+# pending request Orders
+def view_orders_pending(request):
+	try:
+		if request.method == 'GET':
+			lst = models.Pedido.objects.filter(flag=True,status='PE').order_by('-pedido_id')
+			ctx= { 'lista': lst }
+			return render_to_response('almacen/slopeorders.html',ctx,context_instance=RequestContext(request))
+	except TemplateDoesNotExist, e:
+		messages("Error template not found")
+		raise Http404("Process Error")
+
+
+"""
+		generate pdf reports
+"""
+def fetch_resources(uri, rel):
+	if os.sep == '\\': # deal with windows and wrong slashes
+		uri2 = os.sep.join(uri.split('/'))
+	else:# else, just add the untouched path.
+		uri2 = uri
+	path = '%s%s' % (settings.SITE_ROOT, uri2)
+	return path
+def generate_pdf(html):
+	import CMSGuias.settings
+	# functions for generate the file PDF and return HttpResponse
+	result = StringIO.StringIO()
+	links = lambda uri, rel: os.path.join(settings.MEDIA_ROOT,uri.replace(settings.MEDIA_URL, ''))
+	print links
+	pdf = pisa.pisaDocument(StringIO.StringIO(html.encode("UTF-8")), dest=result,path='/home/christian/development/python/django/CMSGuias/CMSGuias', link_callback=fetch_resources)
+	if not pdf.err:
+		return HttpResponse(result.getvalue(), mimetype="application/pdf")
+	return HttpResponse("error al generar el PDF: %s"%cgi.escape(html))
+
+def view_test_pdf(request):
+	# view of poseable result pdf
+	html = render_to_string('report/test.html',{'pagesize':'A4'},context_instance=RequestContext(request))
+	return generate_pdf(html)

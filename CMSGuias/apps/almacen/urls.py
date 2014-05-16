@@ -1,7 +1,9 @@
 from django.conf.urls.defaults import patterns, url
 
 urlpatterns = patterns('CMSGuias.apps.almacen.views',
+	# orders
 	url(r'^pedido/generate/$','view_pedido',name='vista_pedido'),
+	url(r'orders/pending/$','view_orders_pending',name='vista_slope_orders'),
 	# customers
 	url(r'^keep/customers/$','view_keep_customers',name='vista_customers'),
 	url(r'^keep/customers/add/$','view_keep_add_customers',name='vista_add_customers'),
@@ -34,4 +36,6 @@ urlpatterns = patterns('CMSGuias.apps.almacen.views',
 	url(r'^upkeep/conductor/add/(?P<tid>.*)/$','view_conductor_add',name='vista_conductor_add'),
 	url(r'^upkeep/conductor/edit/(?P<cid>.*)/(?P<tid>.*)/$','view_conductor_edit',name='vista_conductor_edit'),
 	url(r'^upkeep/conductor/(?P<ruc>.*)/$','view_conductor',name='vista_conductor'),
+
+		url(r'^rpt/test/$','view_test_pdf',name='vista_report'),
 )

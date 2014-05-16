@@ -169,6 +169,7 @@ $(function () {
 		};
 	});
 	$(".btn-saved-order").click(function (event) {
+		$(".modal-order").modal('hide');
 		$().toastmessage('showToast',{
 			text: 'Seguro(a) que termino de ingresar los materiales al pedido?',
 			buttons: [{value:'No'},{value:'Si'}],
@@ -176,36 +177,58 @@ $(function () {
 			sticky: true,
 			success: function (result) {
 				if (result == 'Si') {
-					
-				};
-			}
-		});
-		$().toastmessage('showToast',{
-			sticky: true,
-			text: "Desea Generar ",
-			type: "confirm",
-			buttons: [{value:'No'},{value:'Si'}],
-			success: function (result) {
-				if(result == 'Si'){
-					var data = new FormData($("form").get(0));
-					$.ajax({
-						data : data,
-						url: "",
-						type: 'POST',
-						dataType: 'json',
-						cache: false,
-						processData: false,
-						contentType: false,
-						success: function (response) {
-							console.log(response);
-							if (response.status) {
-								location.reload();
+					setTimeout(function() {
+						$().toastmessage('showToast',{
+						text: 'Seguro(a) que termino de ingresar los Niples al pedido, recuerde que una vez que se guarde el pedido no podra modificarse.?',
+						buttons: [{value:'No'},{value:'Si'}],
+						type: 'confirm',
+						sticky: true,
+						success: function (resp2) {
+							if (resp2 == 'Si') {
+								//
+								setTimeout(function() {
+									$().toastmessage('showToast',{
+									sticky: true,
+									text: "Desea Generar Pedido almacén?",
+									type: "confirm",
+									buttons: [{value:'No'},{value:'Si'}],
+									success: function (resp3) {
+										if(resp3 == 'Si'){
+											var data = new FormData($("form").get(0));
+											$.ajax({
+												data : data,
+												url: "",
+												type: 'POST',
+												dataType: 'json',
+												cache: false,
+												processData: false,
+												contentType: false,
+												success: function (response) {
+													console.log(response);
+													if (response.status) {
+														location.reload();
+													};
+												}
+											});
+										}else{
+											$(".modal-order").modal('show');
+										}
+									}
+								});
+								}, 600);
+								//
+							}else{
+								$(".modal-order").modal('show');
 							};
 						}
 					});
-				}
+					}, 600);
+				}else{
+					$(".modal-order").modal('show');
+				};
 			}
 		});
+		
 	});
 	$('.obs').focus(function () {
 		$(this).animate({height:"102px"},600);
@@ -305,25 +328,29 @@ var list_temp_materials = function () {
 		if (response.status) {
 			var $tbody = $("[template-data-user=tmporder]");
 			$tbody.empty();
-			for (var x in response.list){
-				if (response.list[x].materiales_id == $mid.html()) {
-					var template = "<tr class='success'><td class='text-center'>{{item}}</td><td>{{materiales_id}}</td><td>{{matnom}}</td><td>{{matmed}}</td><td class='text-center'>{{unidad}}</td><td class='text-center'>{{cantidad}}</td><td class='text-center'><button class='btn btn-xs btn-info text-black' onClick='btn_edit_show({{materiales_id}},{{cantidad}});'><span class='glyphicon glyphicon-edit'></span></button></td><td class='text-center'><button class='btn btn-xs btn-danger text-black' onClick='btn_delete_show({{materiales_id}},{{cantidad}})'><span class='glyphicon glyphicon-remove'></span></button></td></tr>";	
-				}else{
-					var template = "<tr><td class='text-center'>{{item}}</td><td>{{materiales_id}}</td><td>{{matnom}}</td><td>{{matmed}}</td><td class='text-center'>{{unidad}}</td><td class='text-center'>{{cantidad}}</td><td class='text-center'><button class='btn btn-xs btn-info text-black' onClick='btn_edit_show({{materiales_id}},{{cantidad}});'><span class='glyphicon glyphicon-edit'></span></button></td><td class='text-center'><button class='btn btn-xs btn-danger text-black' onClick='btn_delete_show({{materiales_id}},{{cantidad}})'><span class='glyphicon glyphicon-remove'></span></button></td></tr>";
+			if (response.list.length > 0) {
+				for (var x in response.list){
+					if (response.list[x].materiales_id == $mid.html()) {
+						var template = "<tr class='success'><td class='text-center'>{{item}}</td><td>{{materiales_id}}</td><td>{{matnom}}</td><td>{{matmed}}</td><td class='text-center'>{{unidad}}</td><td class='text-center'>{{cantidad}}</td><td class='text-center'><button class='btn btn-xs btn-info text-black' onClick='btn_edit_show({{materiales_id}},{{cantidad}});'><span class='glyphicon glyphicon-edit'></span></button></td><td class='text-center'><button class='btn btn-xs btn-danger text-black' onClick='btn_delete_show({{materiales_id}},{{cantidad}})'><span class='glyphicon glyphicon-remove'></span></button></td></tr>";	
+					}else{
+						var template = "<tr><td class='text-center'>{{item}}</td><td>{{materiales_id}}</td><td>{{matnom}}</td><td>{{matmed}}</td><td class='text-center'>{{unidad}}</td><td class='text-center'>{{cantidad}}</td><td class='text-center'><button class='btn btn-xs btn-info text-black' onClick='btn_edit_show({{materiales_id}},{{cantidad}});'><span class='glyphicon glyphicon-edit'></span></button></td><td class='text-center'><button class='btn btn-xs btn-danger text-black' onClick='btn_delete_show({{materiales_id}},{{cantidad}})'><span class='glyphicon glyphicon-remove'></span></button></td></tr>";
+					}
+					$tbody.append( Mustache.render(template,response.list[x]) );
 				}
-				$tbody.append( Mustache.render(template,response.list[x]) );
-			}
-			$(".success").ScrollTo({
-				duration: 1000,
-				callback: function () {
-					setTimeout(function() {
-						$(".well").ScrollTo({
-							duration: 1000
-						});
-						$(".description").focus();
-					}, 1000);
-				}
-			});
+				$(".success").ScrollTo({
+					duration: 1000,
+					callback: function () {
+						setTimeout(function() {
+							$(".well").ScrollTo({
+								duration: 1000
+							});
+							$(".description").focus();
+						}, 1000);
+					}
+				});
+			}else{
+				$().toastmessage("showNoticeToast","No se han encontrado materiales para mostar.");
+			};
 		};
 	});
 }
@@ -423,7 +450,7 @@ var get_niples = function () {
 				$collapse.append( Mustache.render( template, response.nipples[x] ) );
 			};
 		}else{
-			alert("No se a encontrado Tuberia");
+			$().toastmessage("showNoticeToast","No se han encontrado Tuberia para generar niples.");
 		};
 	});
 }

@@ -101,7 +101,8 @@ def delete_all_temp_order(request):
 			obj = models.tmppedido.objects.filter(empdni__exact=request.POST['dni'])
 			obj.delete()
 			# here get object "Niples" tambien deberan ser eliminadas
-			
+			tmp = models.tmpniple.objects.filter(empdni__exact=request.POST.get('dni'))
+			tmp.delete()
 			data['status'] = True
 		else:
 			data['status'] = False

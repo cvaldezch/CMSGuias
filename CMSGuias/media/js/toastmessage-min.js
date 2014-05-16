@@ -70,6 +70,7 @@
 		success: function (result) { }
   };
   //var confirm = {"text":"Confirm?","buttons":[{value:"Ok"}]}
+  var item = 0;
 	var methods = {
 	  init : function(options)
 		{
@@ -84,22 +85,28 @@
 			settings.position = options.position == null ? "middle-center" : options.position
 		  $.extend(localSettings, settings, options);
 			// declare variables
-		  var toastWrapAll, toastItemOuter, toastItemInner, toastItemClose, toastItemImage, toastButtons, toastItemButtons;
+		  var toastWrapAll, toastItemOuter, toastItemInner, toastItemClose, toastItemImage, toastButtons, toastItemButtons, toasthidden;
 
 			toastWrapAll	= (!$('.toast-container').length) ? $('<div></div>').addClass('toast-container').addClass('toast-position-' + localSettings.position).appendTo('body') : $('.toast-container');
-			toastItemOuter	= $('<div></div>').addClass('toast-item-wrapper');
+			toastItemOuter	= $('<div></div>').addClass('toast-item-wrapper toast-item-'+item+'');
 			toastItemInner	= $('<div></div>').hide().addClass('toast-item toast-type-' + localSettings.type).appendTo(toastWrapAll).html($('<p>').append (localSettings.text)).animate(localSettings.inEffect, localSettings.inEffectDuration).wrap(toastItemOuter);
 			toastItemClose	= $('<div></div>').addClass('toast-item-close').prependTo(toastItemInner).html(localSettings.closeText).click(function() { $().toastmessage('removeToast',toastItemInner, localSettings) });
 			toastItemImage  = $('<div></div>').addClass('toast-item-image').addClass('toast-item-image-' + localSettings.type).prependTo(toastItemInner);
+			//toasthidden 		= $("<input />").attr('type', 'hidden').addClass('toast-item-value').val(item).prependTo(toastItemButtons);
 			// si lista de botones es mayor a 1 creamos botones
 			if (localSettings.buttons.length > 0) {
 				toastItemButtons  = $('<div></div>').addClass('toast-item-btn').prependTo(toastItemInner);
 				$(localSettings.buttons).each(function (index, button) {
-					toastButtons = $('<button value='+button.value+'></button>').addClass('toast-buttons').prependTo(toastItemButtons).html(button.value).click(function(event) {
+					toastButtons = $('<button title='+item+' value='+button.value+'></button>').addClass('toast-buttons').prependTo(toastItemButtons).html(button.value).click(function(event) {
 						event.preventDefault();
-						var value = $(this).val();
+						var itm = this;
+						var value = itm.value;//$(this).val();
 						localSettings.success(value);
-						$().toastmessage('removeToast',toastItemInner, localSettings);
+						console.log(itm);
+						var i = parseInt(itm.title);
+						//$().toastmessage('removeToast',$('.toast-item-'+i), localSettings);
+						//$('.toast-item-'+i).remove();
+						$().toastmessage('removeToastConfirm','toast-item-'+i);
 					});
 				});
 			};
@@ -119,12 +126,12 @@
 			}
 			settings.position = "";
 			$(".toast-container").css("marginTop","-"+($(".toast-container").height()/2)+"px");
+			item+=1;
 		  return toastItemInner;
 		},
 
 		showNoticeToast : function (message)
 		{
-			console.error(message);
 			var options = {text : message, type : 'notice'};
 			return $().toastmessage('showToast', options);
 		},
@@ -161,6 +168,7 @@
 				{
 					obj.parent().remove();
 					$(".toast-container").remove();
+					//$(".toast-item-wrapper").remove();
 				});
 			});
 			// callback
@@ -168,7 +176,13 @@
 			{
 			    options.close();
 			}
+		},
+		removeToastConfirm: function (clss) {
+			console.log('cerrando toast');
+			console.log(clss);
+			$('.'+clss).remove();
 		}
+
 	};
 
 	$.fn.toastmessage = function( method ) {
