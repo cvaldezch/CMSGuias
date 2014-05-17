@@ -1,0 +1,28 @@
+/*@page {
+	margin: 1cm;
+	#content-logo{
+		width: 3cm;
+	}
+}*/
+@page {
+	margin: 1cm;
+}
+*{
+	background-color: gray;
+}
+img {
+	width: 5em;
+}
+#content-logo {
+	background-color: gray;
+	width: 100%;
+}
+#info-dir {
+	margin-top: -2em;
+}
+#info-type {
+	margin-top: -4cm;
+	font-size: 2em;
+	right: 0;
+	width: 2em;
+}

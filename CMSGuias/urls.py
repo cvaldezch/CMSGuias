@@ -10,7 +10,7 @@ urlpatterns = patterns('',
 		url(r'', include('CMSGuias.apps.home.urls')),
 		url(r'^almacen/', include('CMSGuias.apps.almacen.urls')),
     url(r'^json/', include('CMSGuias.apps.wsjson.urls')),
-
+    url(r'^reports/', include('CMSGuias.apps.reports.urls')),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

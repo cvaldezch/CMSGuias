@@ -32,7 +32,7 @@
 								<td>{{x.almacen.nombre}}</td>
 								<td class="text-center">{{x.traslado}}</td>
 								<td class="text-center">{{x.status}}</td>
-								<td class="text-center"><a href="{% url 'vista_edit_projects' x.pedido_id %}" class="btn btn-xs btn-link text-black" value="{{x.pedido_id}}"><span class="glyphicon glyphicon-list"></span></a></td>
+								<td class="text-center"><a href="{% url 'rpt_orders' x.pedido_id x.status %}" class="btn btn-xs btn-link text-black" value="{{x.pedido_id}}"><span class="glyphicon glyphicon-list"></span></a></td>
 							</tr>
 							{% endfor%}
 							{% else %}
