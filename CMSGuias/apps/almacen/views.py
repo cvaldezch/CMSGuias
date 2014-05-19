@@ -1,9 +1,10 @@
 #-*- Encoding: utf-8 -*-
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, get_list_or_404
 from django.template import RequestContext, TemplateDoesNotExist
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.contrib import messages
+from django.contrib.auth.models import User
 from CMSGuias.apps.almacen import models
 from CMSGuias.apps.almacen import forms
 from django.contrib.auth.decorators import login_required
@@ -666,11 +667,15 @@ def view_orders_pending(request):
 		messages("Error template not found")
 		raise Http404("Process Error")
 # meet Orders
-def view_attend_order(request):
+def view_attend_order(request,oid):
 	try:
 		if request.method == 'GET':
-			lst = models.Pedido.objects.filter(flag=True,status='PE').order_by('-pedido_id')
-			ctx= { 'lista': lst }
+			obj= get_object_or_404(models.Pedido,pk=oid,status='AP',flag=True)
+			det= get_list_or_404(models.Detpedido, pedido_id__exact=oid,flag=True)
+			nipples= get_list_or_404(models.Niple.objects.order_by('metrado'),pedido_id__exact=oid,flag=True)
+			usr= models.userProfile.objects.get(empdni__exact=obj.empdni)
+			tipo= {"A":"Roscado","B":"Ranurado","C":"Rosca-Ranura"}
+			ctx= { 'orders': obj, 'det': det, 'nipples': nipples, 'usr': usr,'tipo':tipo }
 			return render_to_response('almacen/attendorder.html',ctx,context_instance=RequestContext(request))
 	except TemplateDoesNotExist, e:
 		message("Error template not found")

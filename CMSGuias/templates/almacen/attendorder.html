@@ -2,37 +2,69 @@
 {% block content %}
 <div class="container">
 	<div class="well">
-	<h1 class="text-primary">Atender Pedidos</h1>
+	<h1 class="text-primary">Atender Pedido {{orders.pedido_id}}</h1>
 		{% csrf_token %}
 		<!--<input type="hidden" class="empdni" value="{{user.get_profile.empdni}}">-->
 		<div class="row show-grid">
 			<div class="col-md-12">
+				<div class="row bs-callout bs-callout-warning">
+					<div class="col-md-6">
+						<dl class="dl-horizontal">
+							<dt>Proyecto</dt><dd>{{orders.proyecto_id}} - {{orders.proyecto.nompro}}</dd>
+							<dt>Subproyecto</dt><dd>{{orders.subproyecto_id}} - {{orders.subproyecto.nomsub}}</dd>
+							<dt>Sector</dt><dd>{{orders.sector_id}} - {{orders.sector.nomsec}}</dd>
+							<dt>Almacén</dt><dd>{{orders.almacen.nombre}}</dd>
+							<dt>Realizado</dt><dd>{{usr.user.first_name}} {{usr.user.last_name}}</dd>
+							<dt>Asunto</dt><dd>{{orders.asunto}}</dd>
+						</dl>
+					</div>
+					<div class="col-md-6">
+						<dl class="dl-horizontal">
+							<dt>Registrado</dt><dd>{{orders.registrado}}</dd>
+							<dt>Realizado</dt><dd>{{orders.traslado}}</dd>
+							<dt>Observación</dt><dd>{{orders.obser}}</dd>
+							<dt>Estado</dt><dd>{{orders.status}}</dd>
+							<dt>Adjunto</dt><dd><a class="btn btn-default btn-xs btn-warning text-black" target="_blank" href="/media/{{orders.orderfile}}"><span class="glyphicon glyphicon-download"></span></a></dd>
+						</dl>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-md-12">
 				<div class="table-responsive">
 					<table class="table table-striped table-hover table-bordered table-condensed">
+					<caption>
+						<div class="bg-warning text-left">
+							<label class="radio-inline"><input type="radio" value=""> Todo</label>
+							<label class="radio-inline"><input type="radio" value=""> Ninguno</label>
+						</div>
+					</caption>
 						<thead>
-							<tr>
-								<th class="text-center">Item</th>
+							<tr class="brand-primary text-white">
 								<th></th>
+								<th class="text-center">Item</th>
 								<th class="text-center">Codigo</th>
-								<th>Proyecto</th>
-								<th>Almacén</th>
-								<th class="text-center">Fecha Traslado</th>
-								<th class="text-center">Estado</th>
-								<th class="text-center">Vista Previa</th>
+								<th>Descripción</th>
+								<th>Medida</th>
+								<th class="text-center">Unidad</th>
+								<th class="text-center">Cantidad</th>
+								<th class="text-center">Atender</th>
 							</tr>
 						</thead>
 						<tbody>
-							{% if lista %}
-							{% for x in lista %}
-							<tr class="tr-{{x.pedido_id}}">
+							{% if det %}
+							{% for x in det %}
+							<tr class="tr-{{x.materiales_id}}">
+								<td><input type="checkbox" value="{{x.materiales_id}}"></td>
 								<td class="text-center">{{forloop.counter}}</td>
-								<td class="text-center"><a class="btn btn-xs btn-link text-black btn-approved" value="{{x.pedido_id}}"><span class="glyphicon glyphicon-ok"></span></a></td>
-								<td>{{x.pedido_id}}</td>
-								<td>{{x.proyecto.nompro}}</td>
-								<td>{{x.almacen.nombre}}</td>
-								<td class="text-center">{{x.traslado}}</td>
-								<td class="text-center">{{x.status}}</td>
-								<td class="text-center"><a href="{% url 'rpt_orders' x.pedido_id x.status %}" target="_blank" class="btn btn-xs btn-link text-black" value="{{x.pedido_id}}"><span class="glyphicon glyphicon-list"></span></a></td>
+								<td>{{x.materiales_id}}</td>
+								<td>{{x.materiales.matnom}}</td>
+								<td>{{x.materiales.matmed}}</td>
+								<td class="text-center">{{x.materiales.unidad_id}}</td>
+								<td class="text-center">{{x.cantidad}}</td>
+								<td class="col-md-1">
+										<input type="number" step="any" value="{{x.cantshop|safe}}" class="form-control col-sm-6 input-sm">
+								</td>
 							</tr>
 							{% endfor%}
 							{% else %}
@@ -41,6 +73,58 @@
 									<p>No se han encontrado <q><strong>Pedidos</strong></q> para mostrar.<p>
 								</div>
 							{% endif %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<table class="table table-condensed table-hover table-striped table-bordered">
+						<caption class="text-left"><h4>Lista de Niples</h4></caption>
+						<thead>
+							<tr><th>Item</th><th>codigo</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th></tr>
+						</thead>
+						<tbody>
+							{% for c in det %}
+								{% if c.materiales_id|truncatechars:6 == "115..." %}
+									<tr class="warning">
+										<td>{{forloop.counter0}}</td>
+										<td>{{c.materiales_id}}</td>
+										<td>{{c.materiales.matnom}}</td>
+										<td>{{c.materiales.matmed}}</td>
+										<td class="text-center">{{c.materiales.unidad_id}}</td>
+										<td class="text-center">{{c.cantidad}}</td>
+									</tr>
+									<tr>
+										<td colspan="6">
+											<table cellspacing="0" cellpadding="0" class="table table-condensed" width="100%" >
+												<thead>
+													<tr><th class="col-md-1"></th><th class="col-md-1">Cantidad</th><th class="col-md-2">Descripción</th><th class="col-md-2">Diametro</th><th class="col-md-1">Unidad</th><th class="col-md-1">Medida</th><th class="col-md-1">Atender</th></tr>
+												</thead>
+												<tbody>
+													{% for x in nipples %}
+														{% ifequal x.materiales_id c.materiales_id %}
+															<tr class="{{x.id}}">
+																<td><input type="checkbox" value="{{x.id}}"></td>
+																<td>{{x.cantidad}}</td>
+																<td>{% for k,v in tipo.items %}
+																	{% if k == x.tipo %}
+																		Niple{{x.cantidad|pluralize}} {{v}}{{x.cantidad|pluralize}}
+																	{% endif %}
+																{% endfor %}</td>
+																<td>{{c.materiales.matmed}}</td>
+																<td>{{x.metrado}}</td>
+																<td>cm</td>
+																<td><input type="number" class="form-control input-sm" value="{{x.cantshop}}"></td>
+															</tr>
+														{% endifequal %}
+													{% endfor %}
+												</tbody>
+											</table>
+										</td>
+									</tr>
+								{% endif %}
+							{% endfor %}
 						</tbody>
 					</table>
 				</div>

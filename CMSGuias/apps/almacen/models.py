@@ -267,7 +267,6 @@ class GuiaRemision(models.Model):
 		return '%s %s %s'%(self.guia_id,self.pedido.pedido_id,self.ruccliente.razonsocial)
 
 class userProfile(models.Model):
-
 	def url(self,filename):
 		ruta = "MutimediaData/Users/%s/%s"%(self.user.username,filename)
 		return ruta
