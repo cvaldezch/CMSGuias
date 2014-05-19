@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+	<div class="well">
+	<h1 class="text-primary">Atender Pedidos</h1>
+		{% csrf_token %}
+		<!--<input type="hidden" class="empdni" value="{{user.get_profile.empdni}}">-->
+		<div class="row show-grid">
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<table class="table table-striped table-hover table-bordered table-condensed">
+						<thead>
+							<tr>
+								<th class="text-center">Item</th>
+								<th></th>
+								<th class="text-center">Codigo</th>
+								<th>Proyecto</th>
+								<th>Almacén</th>
+								<th class="text-center">Fecha Traslado</th>
+								<th class="text-center">Estado</th>
+								<th class="text-center">Vista Previa</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% if lista %}
+							{% for x in lista %}
+							<tr class="tr-{{x.pedido_id}}">
+								<td class="text-center">{{forloop.counter}}</td>
+								<td class="text-center"><a class="btn btn-xs btn-link text-black btn-approved" value="{{x.pedido_id}}"><span class="glyphicon glyphicon-ok"></span></a></td>
+								<td>{{x.pedido_id}}</td>
+								<td>{{x.proyecto.nompro}}</td>
+								<td>{{x.almacen.nombre}}</td>
+								<td class="text-center">{{x.traslado}}</td>
+								<td class="text-center">{{x.status}}</td>
+								<td class="text-center"><a href="{% url 'rpt_orders' x.pedido_id x.status %}" target="_blank" class="btn btn-xs btn-link text-black" value="{{x.pedido_id}}"><span class="glyphicon glyphicon-list"></span></a></td>
+							</tr>
+							{% endfor%}
+							{% else %}
+								<div class="alert alert-warning">
+									<strong>Warning</strong>
+									<p>No se han encontrado <q><strong>Pedidos</strong></q> para mostrar.<p>
+								</div>
+							{% endif %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

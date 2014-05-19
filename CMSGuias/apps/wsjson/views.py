@@ -263,3 +263,31 @@ def get_list_stores(request):
 """
 ## end block Recurrent
 """
+# approve orders
+def post_approved_orders(request):
+	if request.method == 'POST':
+		data = {}
+		try:
+			obj = models.Pedido.objects.get(pk=request.POST.get('oid'))
+			obj.status = 'AP'
+			obj.flag = True
+			obj.save()
+			data['status']= True
+		except ObjectDoesNotExist, e:
+			data['status']= False
+			data['msg']= e
+		return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+# cancel orders
+def post_cancel_orders(request):
+	if request.method == 'POST':
+		data = {}
+		try:
+			obj = models.Pedido.objects.get(pk=request.POST.get('oid'))
+			obj.status = 'AN'
+			obj.flag = False	
+			obj.save()
+			data['status']= True
+		except ObjectDoesNotExist, e:
+			data['status']= False
+			data['msg']= e
+		return HttpResponse(simplejson.dumps(data), mimetype="application/json")

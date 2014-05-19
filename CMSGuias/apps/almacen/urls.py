@@ -3,7 +3,8 @@ from django.conf.urls.defaults import patterns, url
 urlpatterns = patterns('CMSGuias.apps.almacen.views',
 	# orders
 	url(r'^pedido/generate/$','view_pedido',name='vista_pedido'),
-	url(r'orders/pending/$','view_orders_pending',name='vista_slope_orders'),
+	url(r'^orders/pending/$','view_orders_pending',name='vista_slope_orders'),
+	url(r'^meet/order/$','view_attend_order',name='vista_meet_order'),
 	# customers
 	url(r'^keep/customers/$','view_keep_customers',name='vista_customers'),
 	url(r'^keep/customers/add/$','view_keep_add_customers',name='vista_add_customers'),

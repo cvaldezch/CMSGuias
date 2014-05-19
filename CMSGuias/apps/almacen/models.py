@@ -196,7 +196,7 @@ class Pedido(models.Model):
 	orderfile = models.FileField(upload_to=url,null=True,blank=True)
 
 	def __unicode__(self):
-		return '%s %s'%(self.pedido,self.proyecto.nompro)
+		return '%s %s'%(self.pedido_id,self.proyecto.nompro)
 	
 class Detpedido(models.Model):
 	pedido = models.ForeignKey(Pedido, to_field='pedido_id')
@@ -205,6 +205,9 @@ class Detpedido(models.Model):
 	cantshop = models.FloatField(default=0,null=False)
 	tag = models.CharField(max_length=1,default='0')
 	flag = models.BooleanField(default=True)
+
+	class Meta:
+		ordering = ['materiales']
 
 	def __unicode__(self):
 		return '%s %s %f'%(self.pedido.pedido_id,self.materiales.materiales_id,self.cantidad)
@@ -229,6 +232,9 @@ class Niple(models.Model):
 	cantshop = models.IntegerField(null=True)
 	tipo = models.CharField(max_length=1)
 	flag = models.BooleanField(default=True)
+
+	class Meta:
+		ordering = ['materiales']
 
 	def __unicode__(self):
 		return '%s %s'%(self.materiales,self.proyecto.nompro)

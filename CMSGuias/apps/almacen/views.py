@@ -665,3 +665,13 @@ def view_orders_pending(request):
 	except TemplateDoesNotExist, e:
 		messages("Error template not found")
 		raise Http404("Process Error")
+# meet Orders
+def view_attend_order(request):
+	try:
+		if request.method == 'GET':
+			lst = models.Pedido.objects.filter(flag=True,status='PE').order_by('-pedido_id')
+			ctx= { 'lista': lst }
+			return render_to_response('almacen/attendorder.html',ctx,context_instance=RequestContext(request))
+	except TemplateDoesNotExist, e:
+		message("Error template not found")
+		raise Http404
