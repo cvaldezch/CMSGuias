@@ -232,6 +232,7 @@ class Niple(models.Model):
 	cantshop = models.IntegerField(null=True)
 	tipo = models.CharField(max_length=1)
 	flag = models.BooleanField(default=True)
+	tag = models.CharField(max_length=1,default='0')
 
 	class Meta:
 		ordering = ['materiales']

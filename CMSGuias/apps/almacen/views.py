@@ -666,6 +666,16 @@ def view_orders_pending(request):
 	except TemplateDoesNotExist, e:
 		messages("Error template not found")
 		raise Http404("Process Error")
+# list ortders attend request Orders
+def view_orders_list_approved(request):
+	try:
+		if request.method == 'GET':
+			lst = models.Pedido.objects.filter(flag=True,status='AP').order_by('-pedido_id')
+			ctx= { 'lista': lst }
+			return render_to_response('almacen/listorderattend.html',ctx,context_instance=RequestContext(request))
+	except TemplateDoesNotExist, e:
+		messages("Error template not found")
+		raise Http404("Process Error")
 # meet Orders
 def view_attend_order(request,oid):
 	try:
@@ -677,6 +687,18 @@ def view_attend_order(request,oid):
 			tipo= {"A":"Roscado","B":"Ranurado","C":"Rosca-Ranura"}
 			ctx= { 'orders': obj, 'det': det, 'nipples': nipples, 'usr': usr,'tipo':tipo }
 			return render_to_response('almacen/attendorder.html',ctx,context_instance=RequestContext(request))
+		elif request.method == 'POST':
+			try:
+				import json
+				data= {}
+				# recover list of materials 
+				mat=  json.loads(request.POST.get('materials'))
+				# we walk the list materials and update items materials
+				for c in range(len(mat)):
+					obj= models.Detpedido(pedido_id__exact=request.POST.get('oid'),materiales_id__exact=mat[c]['matid'])
+			except ObjectDoesNotExist, e:
+				data['status']= False
+			return HttpResponse(simplejson.dumps(data), mimetype="application/json" )
 	except TemplateDoesNotExist, e:
 		message("Error template not found")
 		raise Http404

@@ -17,7 +17,8 @@
 	<div class="well">
 	<h1 class="text-primary">Atender Pedido {{orders.pedido_id}}</h1>
 		{% csrf_token %}
-		<!--<input type="hidden" class="empdni" value="{{user.get_profile.empdni}}">-->
+		<input type="hidden" class="empdni" value="{{user.get_profile.empdni}}">
+		<input type="hidden" class="oid" value="{{orders.pedido_id}}">
 		<div class="row show-grid">
 			<div class="col-md-12">
 				<div class="row bs-callout bs-callout-warning">
@@ -66,15 +67,15 @@
 						<tbody>
 							{% if det %}
 							{% for x in det %}
-							<tr class="tr-{{x.materiales_id}}">
-								<td><input type="checkbox" name="bed" value="{{x.materiales_id}}" /></td>
+							<tr class="tr-{{x.materiales_id}} {% if x.cantshop|safe <= 0 %}success{% endif %}">
+								<td><input type="checkbox" name="bed" value="{{x.materiales_id}}" {% if x.cantshop|safe <= 0 %}disabled{% endif %}/></td>
 								<td class="text-center">{{forloop.counter}}</td>
 								<td>{{x.materiales_id}}</td>
 								<td>{{x.materiales.matnom}}</td>
 								<td>{{x.materiales.matmed}}</td>
 								<td class="text-center">{{x.materiales.unidad_id}}</td>
 								<td class="text-center">{{x.cantidad}}</td>
-								<td class="col-md-1"><input type="number" step="any" value="{{x.cantshop|safe}}" min="1" max="{{x.cantshop|safe}}" class="form-control input-xs bed{{x.materiales_id}}" disabled></td>
+								<td class="col-md-1"><input type="number" step="any" name="{{x.cantidad|safe}}" value="{{x.cantshop|safe}}" min="1" max="{{x.cantshop|safe}}" class="form-control input-xs bed{{x.materiales_id}}" disabled></td>
 							</tr>
 							{% endfor%}
 							{% else %}
@@ -107,11 +108,11 @@
 									</tr>
 									<tr>
 										<td colspan="6">
-											<table cellspacing="0" cellpadding="0" class="table table-condensed" width="100%">
+											<table cellspacing="0" cellpadding="0" class="table table-condensed tbl" width="100%">
 												<caption>
 													<div class="bg-warning text-left">
-														<label class="radio-inline"><input type="radio" onChange="changeradio(this);" name="{{c.materiales_id}}" value="true"> Todo</label>
-														<label class="radio-inline"><input type="radio" onChange="changeradio(this);" name="{{c.materiales_id}}" value="false"> Ninguno</label>
+														<label class="radio-inline"><input type="radio" onChange="changeradio(this);" name="{{c.materiales_id}}" value="true" disabled> Todo</label>
+														<label class="radio-inline"><input type="radio" onChange="changeradio(this);" name="{{c.materiales_id}}" value="false" checked disabled /> Ninguno</label>
 													</div>
 												</caption>
 												<thead>
@@ -121,7 +122,7 @@
 													{% for x in nipples %}
 														{% ifequal x.materiales_id c.materiales_id %}
 															<tr class="{{x.id}}">
-																<td><input type="checkbox" name="sc{{c.materiales_id}}" value="{{x.id}}"></td>
+																<td><input type="checkbox" class="chknip" name="sc{{c.materiales_id}}" value="{{x.id}}" onchange="enablenquantitynip(this);" {% if x.cantshop|safe <= 0 %}disabled{% endif %} disabled></td>
 																<td>{{x.cantidad}}</td>
 																<td>{% for k,v in tipo.items %}
 																	{% if k == x.tipo %}
@@ -131,7 +132,7 @@
 																<td>{{c.materiales.matmed}}</td>
 																<td>{{x.metrado}}</td>
 																<td>cm</td>
-																<td><input type="number" class="form-control input-xs n{{x.id}}" min="1" max="{{x.cantshop}}" value="{{x.cantshop}}" disabled></td>
+																<td><input type="number" class="form-control input-xs n{{x.id}}" min="1" name="{{x.cantidad|safe}}" max="{{x.cantshop}}" value="{{x.cantshop|safe}}" title="{{x.materiales_id}}" disabled></td>
 															</tr>
 														{% endifequal %}
 													{% endfor %}
