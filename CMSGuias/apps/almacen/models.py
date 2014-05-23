@@ -203,7 +203,8 @@ class Detpedido(models.Model):
 	materiales = models.ForeignKey(Materiale, to_field='materiales_id')
 	cantidad = models.FloatField(null=False)
 	cantshop = models.FloatField(default=0,null=False)
-	tag = models.CharField(max_length=1,default='0')
+	cantguide = models.FloatField(default=0,null=True,blank=True)
+	tag = models.CharField(max_length=1,default='0',null=False)
 	flag = models.BooleanField(default=True)
 
 	class Meta:
@@ -230,6 +231,7 @@ class Niple(models.Model):
 	cantidad = models.IntegerField(null=True,default=1)
 	metrado = models.IntegerField(null=False)
 	cantshop = models.IntegerField(null=True)
+	cantguide= models.IntegerField(default=0,null=True, blank=True)
 	tipo = models.CharField(max_length=1)
 	flag = models.BooleanField(default=True)
 	tag = models.CharField(max_length=1,default='0')

@@ -692,10 +692,54 @@ def view_attend_order(request,oid):
 				import json
 				data= {}
 				# recover list of materials 
-				mat=  json.loads(request.POST.get('materials'))
-				# we walk the list materials and update items materials
+				mat= json.loads( request.POST.get('materials') )
+				# recover list of nipples
+				nip= json.loads( request.POST.get('nipples') )
+				# variables
+				cnm= 0
+				cnn= 0
+				ctn= 0
+				# we walk the list materials and update items materials of details orders
 				for c in range(len(mat)):
-					obj= models.Detpedido(pedido_id__exact=request.POST.get('oid'),materiales_id__exact=mat[c]['matid'])
+					cs= 0
+					for x in range(len(nip)):
+						if mat[c]['matid'] == nip[x]['matid']:
+							cs+= (float(nip[x]['quantityshop']) * float(nip[x]['meter']) )
+					ctn+= cs
+					obj= models.Detpedido.objects.get(pedido_id__exact=request.POST.get('oid'),materiales_id__exact=mat[c]['matid'])
+					obj.cantshop= (float(mat[c]['quantityshop']) - float(mat[c]['quantity'])) if mat[c]['matid'][0:3] == "115" else (cs / 100 )
+					obj.cantguide= float(mat[c]['quantityshop'])
+					obj.tag= "1"
+					obj.save()
+					cnm+= 1
+				# we walk the list nipples and update tag of tables nipples
+				for n in range(len(nip)):
+					obj= models.Niple.objects.get(pk=nip[n]['nid'])
+					obj.cantshop= int( float(nip[n]['quantity']) - float(nip[n]['quantityshop']) )
+					obj.cantguide= int(float(nip[n]['quantityshop']))
+					obj.tag= '1'
+					obj.save()
+					cnn+= 1
+				# evaluation status orders
+				# recover number of materials
+				onm= models.Detpedido.objects.filter(pedido_id__exact=request.POST.get('oid')).count()
+				# recover number of nipples
+				onn= models.Niple.objects.filter(pedido_id__exact=request.POST.get('oid')).count()
+				# evaluation
+				passted= False
+				status = ""
+				if cnm < onm:
+					status= 'IN'
+				else:
+					status= 'CO'
+				if cnn < onn:
+					status= 'IN'
+				else:
+					tsn= 0
+					for i in models.Niple.objects.filter(pedido_id__exact=request.POST.get('oid')):
+						tsn+= (( float(nip[x]['quantityshop']) * float(nip[x]['meter']) ) / 100)
+					status= 'IN' if ctn < tsn else 'CO'
+				data['status']= True
 			except ObjectDoesNotExist, e:
 				data['status']= False
 			return HttpResponse(simplejson.dumps(data), mimetype="application/json" )

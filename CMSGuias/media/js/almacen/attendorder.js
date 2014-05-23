@@ -94,16 +94,16 @@ var attendOrders = function () {
 		var data = new Object(), am = new Array(), an = new Array();
 		$("[name=bed]").each(function () {
 			if (this.checked) {
-				am.push( {'matid': this.value, 'quanity': $('.bed'+this.value).val(), 'quanityshop': $('.bed'+this.value).attr('name') } );
+				am.push( {'matid': this.value, 'quantityshop': $('.bed'+this.value).val(), 'quantity': $('.bed'+this.value).attr('name') } );
 			};
 		});
 		$(".chknip").each(function () {
 			if (this.checked) {
-				an.push( { 'nid': this.value, 'matid': $('.n'+this.value).attr('title'), 'quanity': $('.n'+this.value).val(),'quanityshop': $('.n'+this.value).attr('name') } );
+				an.push( { 'nid': this.value, 'matid': $('.n'+this.value).attr('title'), 'quantityshop': $('.n'+this.value).val(),'quantity': $('.n'+this.value).attr('name'),'meter': $('.n'+this.value).attr('id') } );
 			};
 		});
 		data['materials']= JSON.stringify(am);
-		data['nipples']= an;
+		data['nipples']= JSON.stringify(an);
 		data['csrfmiddlewaretoken'] = $("[name=csrfmiddlewaretoken]").val();
 		data['oid']= $(".oid").val();
 		console.info(data);
