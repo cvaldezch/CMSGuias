@@ -110,7 +110,7 @@ var attendOrders = function () {
 		$.post('', data, function (response) {
 			console.warn(response);
 			if (response.status) {
-				location.href="/almacen/";
+				//location.href="/almacen/";
 			}else{
 				$().toastmessage("showErrorToast","");
 			};

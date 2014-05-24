@@ -6,6 +6,8 @@ define: this is manager data store, ( orders, guias )
 'PE' => "PENDING" # Pendiente
 'AP' => "APPROVE" # Aprobado
 'AN' => "ANNULAR" # Anulado
+'IN' => "INCOMPLETE" # Incompleto
+'CO' => "COMPLETE" # Completo
 
 # ORDERS OF STORE
 The orders of store are realized by operations and request an orders to store

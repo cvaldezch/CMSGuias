@@ -48,8 +48,8 @@
 					<table class="table table-striped table-hover table-bordered table-condensed">
 					<caption>
 						<div class="bg-warning text-left">
-							<label class="radio-inline"><input type="radio" name="bedside" value="true"> Todo</label>
-							<label class="radio-inline"><input type="radio" name="bedside" value="false" checked /> Ninguno</label>
+							<label class="radio-inline"><input type="radio" name="bedside" value="true" {{radio}}> Todo</label>
+							<label class="radio-inline"><input type="radio" name="bedside" value="false" {{radio}} checked /> Ninguno</label>
 						</div>
 					</caption>
 						<thead>
@@ -67,8 +67,8 @@
 						<tbody>
 							{% if det %}
 							{% for x in det %}
-							<tr class="tr-{{x.materiales_id}} {% if x.cantshop|safe <= 0 %}success{% endif %}">
-								<td><input type="checkbox" name="bed" value="{{x.materiales_id}}" {% if x.cantshop|safe <= 0 %}disabled{% endif %}/></td>
+							<tr class="tr-{{x.materiales_id}} {% if x.cantshop <= 0.0 %}success{% endif %}">
+								<td><input type="checkbox" name="bed" value="{{x.materiales_id}}" {% if x.cantshop <= 0.0 %}disabled{% endif %}/></td>
 								<td class="text-center">{{forloop.counter}}</td>
 								<td>{{x.materiales_id}}</td>
 								<td>{{x.materiales.matnom}}</td>
@@ -104,7 +104,7 @@
 										<td>{{c.materiales.matnom}}</td>
 										<td>{{c.materiales.matmed}}</td>
 										<td class="text-center">{{c.materiales.unidad_id}}</td>
-										<td class="text-center">{{c.cantidad}}</td>
+										<td class="text-center">{{c.cantshop}}</td>
 									</tr>
 									<tr>
 										<td colspan="6">
@@ -121,8 +121,12 @@
 												<tbody>
 													{% for x in nipples %}
 														{% ifequal x.materiales_id c.materiales_id %}
-															<tr class="{{x.id}}">
-																<td><input type="checkbox" class="chknip" name="sc{{c.materiales_id}}" value="{{x.id}}" onchange="enablenquantitynip(this);" {% if x.cantshop|safe <= 0 %}disabled{% endif %} disabled></td>
+															<tr class="{{x.id}} {% if x.cantshop <= 0 %}success{% endif %}">
+																<td>
+																{% if x.cantshop > 0 %}
+																<input type="checkbox" class="chknip" name="sc{{c.materiales_id}}" value="{{x.id}}" onchange="enablenquantitynip(this);" disabled>
+																{% endif %}
+																</td>
 																<td>{{x.cantidad}}</td>
 																<td>{% for k,v in tipo.items %}
 																	{% if k == x.tipo %}
@@ -132,7 +136,7 @@
 																<td>{{c.materiales.matmed}}</td>
 																<td>{{x.metrado}}</td>
 																<td>cm</td>
-																<td><input type="number" class="form-control input-xs n{{x.id}}" min="1" name="{{x.cantidad|safe}}" max="{{x.cantshop}}" value="{{x.cantshop|safe}}" id="{{x.metrado|safe}}" title="{{x.materiales_id}}" disabled></td>
+																<td><input type="number" class="form-control input-xs n{{x.id}}" min="1" name="{{x.cantidad|safe}}" max="{{x.cantshop|safe}}" value="{{x.cantshop|safe}}" id="{{x.metrado|safe}}" title="{{x.materiales_id}}" disabled></td>
 															</tr>
 														{% endifequal %}
 													{% endfor %}

@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.db.models import Q
 from CMSGuias.apps.almacen import models
 from CMSGuias.apps.almacen import forms
 from django.contrib.auth.decorators import login_required
@@ -670,7 +671,7 @@ def view_orders_pending(request):
 def view_orders_list_approved(request):
 	try:
 		if request.method == 'GET':
-			lst = models.Pedido.objects.filter(flag=True,status='AP').order_by('-pedido_id')
+			lst = models.Pedido.objects.filter(flag=True).exclude(Q(status='PE')|Q(status='AN')).order_by('-pedido_id')
 			ctx= { 'lista': lst }
 			return render_to_response('almacen/listorderattend.html',ctx,context_instance=RequestContext(request))
 	except TemplateDoesNotExist, e:
@@ -680,12 +681,17 @@ def view_orders_list_approved(request):
 def view_attend_order(request,oid):
 	try:
 		if request.method == 'GET':
-			obj= get_object_or_404(models.Pedido,pk=oid,status='AP',flag=True)
+			obj= get_object_or_404(models.Pedido,pk=oid,flag=True)
 			det= get_list_or_404(models.Detpedido, pedido_id__exact=oid,flag=True)
+			radio= ''
+			for x in det:
+				if x.cantshop <= 0:
+					radio= 'disabled'
+					break
 			nipples= get_list_or_404(models.Niple.objects.order_by('metrado'),pedido_id__exact=oid,flag=True)
 			usr= models.userProfile.objects.get(empdni__exact=obj.empdni)
 			tipo= {"A":"Roscado","B":"Ranurado","C":"Rosca-Ranura"}
-			ctx= { 'orders': obj, 'det': det, 'nipples': nipples, 'usr': usr,'tipo':tipo }
+			ctx= { 'orders': obj, 'det': det, 'nipples': nipples, 'usr': usr,'tipo':tipo,'radio':radio }
 			return render_to_response('almacen/attendorder.html',ctx,context_instance=RequestContext(request))
 		elif request.method == 'POST':
 			try:
@@ -707,7 +713,9 @@ def view_attend_order(request,oid):
 							cs+= (float(nip[x]['quantityshop']) * float(nip[x]['meter']) )
 					ctn+= cs
 					obj= models.Detpedido.objects.get(pedido_id__exact=request.POST.get('oid'),materiales_id__exact=mat[c]['matid'])
-					obj.cantshop= (float(mat[c]['quantityshop']) - float(mat[c]['quantity'])) if mat[c]['matid'][0:3] == "115" else (cs / 100 )
+					# aqui hacer otro if 
+					obj.cantshop=  (float(mat[c]['quantity']) - float(mat[c]['quantityshop'])) if (cs / 100 ) == float(mat[c]['quantity']) else (cs/100) if mat[c]['matid'][0:3] == "115" else (float(mat[c]['quantity']) - float(mat[c]['quantityshop']))
+					print (cs / 100 ) if mat[c]['matid'][0:3] == "115" else (float(mat[c]['quantity']) - float(mat[c]['quantityshop']))
 					obj.cantguide= float(mat[c]['quantityshop'])
 					obj.tag= "1"
 					obj.save()
@@ -737,8 +745,15 @@ def view_attend_order(request,oid):
 				else:
 					tsn= 0
 					for i in models.Niple.objects.filter(pedido_id__exact=request.POST.get('oid')):
-						tsn+= (( float(nip[x]['quantityshop']) * float(nip[x]['meter']) ) / 100)
+						tsn+= ( ( i.cantshop * i.metrado ) / 100)
 					status= 'IN' if ctn < tsn else 'CO'
+					passted= 'IN' if ctn < tsn else 'CO'
+				# update status Bedside Orders
+				obj = models.Pedido.objects.get(pk=request.POST.get('oid'))
+				obj.status= status
+				obj.save()
+				data['sts']= status
+				data['pass']= passted
 				data['status']= True
 			except ObjectDoesNotExist, e:
 				data['status']= False
