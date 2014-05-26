@@ -783,9 +783,51 @@ def view_generate_guide_orders(request):
 def view_generate_document_out(request,oid):
 	try:
 		if request.method == 'GET':
-			
-			ctx= { 'oid': oid }
+			orders= get_object_or_404(models.Pedido,flag=True,pedido_id__exact=oid)
+			print orders
+			trans= get_list_or_404(models.Transportista.objects.values('traruc_id','tranom'),flag=True)
+			ctx= { 'oid': oid, 'trans': trans, 'orders': orders }
 			return render_to_response("almacen/documentout.html",ctx,context_instance=RequestContext(request))
+		elif request.method == 'POST':
+			if request.is_ajax():
+				form= forms.addGuideReferral(request.POST)
+				if form.is_valid():
+					data= {}
+					try:
+						add= form.save(commit=False)
+						guidekeys= genkeys.GenerateSerieGuideRemision()
+						add.guia_id= guidekeys
+						add.status= 'GE'
+						add.flag= True
+						# commit true save bedside guide
+						add.save()
+						# save details guide referral
+						# recover details orders
+						det= models.Detpedido.objects.filter(pedido_id__exact=request.POST.get('pedido'),tag='1',flag=True)
+						for x in det:
+							obj= models.DetGuiaRemision()
+							obj.guia_id= guidekeys
+							obj.materiales_id= x.materiales_id
+							obj.cantguide= x.cantguide
+							obj.flag= True
+							obj.save()
+						# recover details nipples
+						nip= models.Niple.objects.filter(pedido_id__exact=request.POST.get('pedido'),tag='1',flag=True)
+						for x in nip:
+							obj= models.NipleGuiaRemision()
+							obj.guia_id= guidekeys
+							obj.materiales_id= x.materiales_id
+							obj.metrado= x.metrado
+							obj.cantguide= x.cantguide
+							obj.tipo= x.tipo
+							obj.flag= True
+							# save details niples for guide referral
+							obj.save()
+						data['status']= True
+						data['guide']= guidekeys
+					except ObjectDoesNotExist, e:
+						data['status']= False
+					return HttpResponse(simplejson.dumps(data), mimetype='application/json')
 	except TemplateDoesNotExist, e:
 		message("Error: Template not found")
 		raise Http404

@@ -26,4 +26,6 @@ urlpatterns = patterns('CMSGuias.apps.wsjson.views',
 	url(r'^get/sectors/list/$','get_list_sectors'),
 	url(r'^get/subprojects/list/$','get_list_subprojects'),
 	url(r'^get/stores/list/$','get_list_stores'),
+	url(r'^get/list/transport/(?P<truc>.*)/$','get_recover_list_transport'),
+	url(r'^get/list/conductor/(?P<truc>.*)/$','get_recover_list_conductor'),
 )

@@ -102,7 +102,7 @@
 						var itm = this;
 						var value = itm.value;//$(this).val();
 						localSettings.success(value);
-						console.log(itm);
+						//console.log(itm);
 						var i = parseInt(itm.title);
 						//$().toastmessage('removeToast',$('.toast-item-'+i), localSettings);
 						//$('.toast-item-'+i).remove();
@@ -178,8 +178,8 @@
 			}
 		},
 		removeToastConfirm: function (clss) {
-			console.log('cerrando toast');
-			console.log(clss);
+			//console.log('cerrando toast');
+			//console.log(clss);
 			$('.'+clss).remove();
 		}
 

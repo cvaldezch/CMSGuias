@@ -269,6 +269,33 @@ class GuiaRemision(models.Model):
 	def __unicode__(self):
 		return '%s %s %s'%(self.guia_id,self.pedido.pedido_id,self.ruccliente.razonsocial)
 
+class DetGuiaRemision(models.Model):
+	guia = models.ForeignKey(GuiaRemision, to_field='guia_id')
+	materiales = models.ForeignKey(Materiale, to_field='materiales_id')
+	cantguide = models.FloatField(default=0,null=True,blank=True)
+	flag = models.BooleanField(default=True)
+
+	class Meta:
+		ordering = ['materiales']
+
+	def __unicode__(self):
+		return '%s %s %f'%(self.guia.guia_id,self.materiales.materiales_id,self.cantguide)
+
+class NipleGuiaRemision(models.Model):
+	guia = models.ForeignKey(GuiaRemision, to_field='guia_id')
+	materiales = models.ForeignKey(Materiale, to_field='materiales_id')
+	metrado = models.IntegerField(null=False)
+	cantguide= models.IntegerField(default=0,null=True, blank=True)
+	tipo = models.CharField(max_length=1)
+	flag = models.BooleanField(default=True)
+
+	class Meta:
+		ordering = ['materiales']
+
+	def __unicode__(self):
+		return '%s %s'%(self.materiales,self.guia)
+
+
 class userProfile(models.Model):
 	def url(self,filename):
 		ruta = "MutimediaData/Users/%s/%s"%(self.user.username,filename)

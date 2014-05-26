@@ -110,3 +110,8 @@ class addOrdersForm(forms.ModelForm):
 	class Meta:
 		model = models.Pedido
 		exclude = { "pedido_id","registrado","status","flag", }
+# Guide referral
+class addGuideReferral(forms.ModelForm):
+    class Meta:
+        model= models.GuiaRemision
+        exclude= { "guia_id","registrado","status","flag" }

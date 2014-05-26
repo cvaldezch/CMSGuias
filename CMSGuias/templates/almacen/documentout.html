@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block script %}
+<script src="/media/js/mustache.js"></script>
 <script src="/media/js/almacen/documentout.js"></script>
 {% endblock %}
 {% block content %}
@@ -22,59 +23,76 @@
 					<div id="guide">
 						<h4>Guia de Remisión</h4>
 						<hr>
-						<form action="" method="POST" role="form" class="form">
-							<div class="row">
+						<form action="" method="POST" name="formguide">
+						{% csrf_token %}
+							<div class="row show-grid">
 								<div class="col-md-3">
-									<div class="control-form has-warning">
-										<label for="" class="control-label">Pedido ID: </label>
-										<input type="text" name="pedido_id" class="form-control" value="{{oid}}" readonly />
+									<div class="form-group has-warning">
+										<label for="id_pedido" class="control-label">Pedido ID: </label>
+										<input type="text" name="pedido" id="id_pedido" class="form-control" value="{{oid}}" readonly />
 									</div>
 								</div>
 								<div class="col-md-3">
-									<div class="control-form has-warning">
+									<div class="form-group has-warning">
 										<label for="" class="control-label">Ruc</label>
-										<input type="text" name="ruccliente_id" class="form-control" value="12345678912" readonly>
+										<input type="text" name="ruccliente" id="id_ruccliente" class="form-control" value="{{orders.proyecto.ruccliente_id}}"readonly >
 									</div>
 								</div>
 								<div class="col-md-6">
-									<div class="control-form has-warning">
+									<div class="form-group has-warning">
 										<label for="" class="control-label">Razón Social</label>
-										<input type="text" class="form-control" readonly />
+										<input type="text" name="razonsocial" id="id_razonsocial" class="form-control" value="{{orders.proyecto.ruccliente.razonsocial}}" readonly />
 									</div>
 								</div>
 								<div class="col-md-6">
-									<div class="control-form has-warning">
+									<div class="form-group has-warning">
 										<label for="" class="control-label">Punto de Llegada</label>
-										<input type="text" name="puntollegada" class="form-control" readonly />
+										<div class="input-group">
+											<input type="text" name="puntollegada" id="id_puntollegada" value="{{orders.proyecto.direccion}}" class="form-control" readonly />
+											<span class="input-group-btn">
+												<button type="Button" class="btn btn-warning text-black btn-change" name="puntollegada"><span class="glyphicon glyphicon-pencil"></span></button>
+											</span>
+										</div>
 									</div>
 								</div>
 								<div class="col-md-3">
-									<div class="control-form has-warning">
+									<div class="form-group has-warning">
 										<label for="" class="control-label">Traslado</label>
-										<input type="text" name="traslado" class="form-control" readonly />
+										<div class="input-group">
+											<input type="text" name="traslado" id="id_traslado" value="{{orders.traslado|date:'Y-m-d'}}" class="form-control" readonly />
+											<span class="input-group-btn">
+												<button type="Button" class="btn btn-warning text-black btn-change" name="traslado"><span class="glyphicon glyphicon-pencil"></span></button>
+											</span>
+										</div>
 									</div>
 								</div>
 								<div class="col-md-6">
-									<div class="control-form has-warning">
+									<div class="form-group has-warning">
 										<label for="" class="control-label">Transportista</label>
-										<select name="trans" name="traruc_id" class="form-control tra"></select>
+										<select name="traruc" id="id_traruc" class="form-control">
+											{% for x in trans %}
+											<option value="{{x.traruc_id}}">{{x.tranom}}</option>
+											{% empty %}
+											<option value=""> -- Nothing -- </option>
+											{% endfor %}
+										</select>
 									</div>
 								</div>
 								<div class="col-md-6">
-									<div class="control-form has-warning">
+									<div class="form-group has-warning">
 										<label for="" class="control-label">Transporte</label>
-										<select name="tra" name="nropla_id" class="form-control tra"></select>
+										<select name="nropla" id="id_nropla" class="form-control"></select>
 									</div>
 								</div>
 								<div class="col-md-6">
-									<div class="control-form has-warning">
+									<div class="form-group has-warning">
 										<label for="" class="control-label">Conductor</label>
-										<select name="condni_id" class="form-control tra"></select>
+										<select name="condni" id="id_condni" class="form-control"></select>
 									</div>
 								</div>
 								<div class="col-md-12">
-								<hr>
-									<button type="submit" value="submit" class="btn btn-warning btn-block text-black">
+									<hr>
+									<button type="Button" data-loading-text="<span class='glyphicon glyphicon-transfer'></span> Proccess..." data-complete-text="<span class='glyphicon glyphicon-ok'></span> Complete!" class="btn btn-warning btn-block text-black btn-save-guide">
 										<span class="glyphicon glyphicon-floppy-save"></span> Guardar y Generar Guia
 									</button>
 								</div>
@@ -85,6 +103,7 @@
 					<div id="note">
 						<h4>Nota de Salida</h4>
 						<hr >
+						<p>Nothing</p>
 					</div>
 				</div>
 			</div>

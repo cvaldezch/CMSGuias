@@ -291,3 +291,25 @@ def post_cancel_orders(request):
 			data['status']= False
 			data['msg']= e
 		return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+# recover list transport
+def get_recover_list_transport(request,truc):
+	if request.method == 'GET':
+		if request.is_ajax():
+			data= {}
+			try:
+				data['list']= [ {'nropla_id':x['nropla_id'],'marca':x['marca']} for x in models.Transporte.objects.values('nropla_id','marca').filter(traruc_id__exact=truc,flag=True) ]
+				data['status']= True
+			except ObjectDoesNotExist, e:
+				data['status']= False
+			return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+# recover list conductor
+def get_recover_list_conductor(request,truc):
+	if request.method == 'GET':
+		if request.is_ajax():
+			data= {}
+			try:
+				data['list']= [ {'condni_id':x['condni_id'],'connom':x['connom'],'conlic':x['conlic']} for x in models.Conductore.objects.values('condni_id','connom','conlic').filter(traruc_id__exact=truc,flag=True) ]
+				data['status']= True
+			except ObjectDoesNotExist, e:
+				data['status']= False
+			return HttpResponse(simplejson.dumps(data), mimetype='application/json')
