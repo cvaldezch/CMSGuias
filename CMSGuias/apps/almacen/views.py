@@ -658,26 +658,29 @@ def view_conductor_edit(request,cid,tid):
   request Orders
 """
 # pending request Orders
+@login_required(login_url='/SignUp/')
 def view_orders_pending(request):
 	try:
 		if request.method == 'GET':
-			lst = models.Pedido.objects.filter(flag=True,status='PE').order_by('-pedido_id')
+			lst= models.Pedido.objects.filter(flag=True,status='PE').order_by('-pedido_id')
 			ctx= { 'lista': lst }
 			return render_to_response('almacen/slopeorders.html',ctx,context_instance=RequestContext(request))
 	except TemplateDoesNotExist, e:
 		messages("Error template not found")
 		raise Http404("Process Error")
 # list ortders attend request Orders
+@login_required(login_url='/SignUp/')
 def view_orders_list_approved(request):
 	try:
 		if request.method == 'GET':
-			lst = models.Pedido.objects.filter(flag=True).exclude(Q(status='PE')|Q(status='AN')).order_by('-pedido_id')
+			lst= models.Pedido.objects.filter(flag=True).exclude(Q(status='PE')|Q(status='AN')).order_by('-pedido_id')
 			ctx= { 'lista': lst }
 			return render_to_response('almacen/listorderattend.html',ctx,context_instance=RequestContext(request))
 	except TemplateDoesNotExist, e:
 		messages("Error template not found")
 		raise Http404("Process Error")
 # meet Orders
+@login_required(login_url='/SignUp/')
 def view_attend_order(request,oid):
 	try:
 		if request.method == 'GET':
@@ -760,4 +763,29 @@ def view_attend_order(request,oid):
 			return HttpResponse(simplejson.dumps(data), mimetype="application/json" )
 	except TemplateDoesNotExist, e:
 		message("Error template not found")
+		raise Http404
+"""
+	guide remision
+"""
+# generate guide remision of a orders
+@login_required(login_url='/SignUp/')
+def view_generate_guide_orders(request):
+	try:
+		if request.method == 'GET':
+			lst= get_list_or_404(models.Pedido.objects.exclude(Q(status='PE')|Q(status='AN')).order_by('-pedido_id'), flag=True )
+			ctx= { 'orders': lst }
+			return render_to_response("almacen/generateGuide.html",ctx,context_instance=RequestContext(request))
+	except TemplateDoesNotExist, e:
+		message('Error Template not found')
+		raise Http404
+# request generate guide remision
+@login_required(login_url='/SignUp/')
+def view_generate_document_out(request,oid):
+	try:
+		if request.method == 'GET':
+			
+			ctx= { 'oid': oid }
+			return render_to_response("almacen/documentout.html",ctx,context_instance=RequestContext(request))
+	except TemplateDoesNotExist, e:
+		message("Error: Template not found")
 		raise Http404

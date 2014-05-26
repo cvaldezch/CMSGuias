@@ -18,6 +18,20 @@ $(document).ready(function() {
 		$("[name=sc"+this.value+"]").attr("disabled", $(this).is(':checked') ? false : true );
 		checkeded(String("sc"+this.value).valueOf(), $(this).is(':checked') ? true : false);
 	});
+	$(".btn-attend").click(function (event) {
+		event.preventDefault();
+		$().toastmessage("showToast",{
+			type: 'confirm',
+			sticky: true,
+			text: "Atender el pedido y generar un documento de salida de almacén. Deseas atender el pedido?",
+			buttons: [{value:'Si'},{value:'No'}],
+			success: function (result) {
+				if (result == 'Si') {
+					attendOrders();
+				};
+			}
+		});
+	});
 });
 var changeradio = function (id) {
 	var item = id;

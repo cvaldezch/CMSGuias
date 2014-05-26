@@ -6,6 +6,9 @@ urlpatterns = patterns('CMSGuias.apps.almacen.views',
 	url(r'^orders/pending/$','view_orders_pending',name='vista_slope_orders'),
 	url(r'^list/oreders/approved/$','view_orders_list_approved',name='vista_list_approved'),
 	url(r'^meet/order/(?P<oid>.*)/$','view_attend_order',name='vista_meet_order'),
+	# guide remisions
+	url(r'^list/orders/meet/out/$','view_generate_guide_orders',name='vita_list_orders_outmeet'),
+	url(r'^generate/(?P<oid>.*)/document/out/$','view_generate_document_out',name='vista_outdocument'),
 	# customers
 	url(r'^keep/customers/$','view_keep_customers',name='vista_customers'),
 	url(r'^keep/customers/add/$','view_keep_add_customers',name='vista_add_customers'),

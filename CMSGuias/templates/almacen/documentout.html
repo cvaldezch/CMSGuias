@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block script %}
+<script src="/media/js/almacen/documentout.js"></script>
+{% endblock %}
+{% block content %}
+<div class="container">
+	<div class="well">
+		<h1 class="text-primary">
+		Generar Documento de Salidas <br>
+		<small>{{oid}}</small>
+		</h1>
+		<div class="row">
+			<div class="col-md-4">
+				<div class="alert alert-warning">
+					<button class="btn btn-success btn-block btn-guide-show"><span class="glyphicon glyphicon-list"></span> Guia Remisión</button>
+					<button class="btn btn-success btn-block btn-note-show"><span class="glyphicon glyphicon-list"></span> Nota de Salida</button>
+				</div>
+			</div>
+			<div class="col-md-8">
+				<div class="alert alert-warning">
+					<!-- guide remision -->
+					<div id="guide">
+						<h4>Guia de Remisión</h4>
+						<hr>
+						<form action="" method="POST" role="form" class="form">
+							<div class="row">
+								<div class="col-md-3">
+									<div class="control-form has-warning">
+										<label for="" class="control-label">Pedido ID: </label>
+										<input type="text" name="pedido_id" class="form-control" value="{{oid}}" readonly />
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="control-form has-warning">
+										<label for="" class="control-label">Ruc</label>
+										<input type="text" name="ruccliente_id" class="form-control" value="12345678912" readonly>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="control-form has-warning">
+										<label for="" class="control-label">Razón Social</label>
+										<input type="text" class="form-control" readonly />
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="control-form has-warning">
+										<label for="" class="control-label">Punto de Llegada</label>
+										<input type="text" name="puntollegada" class="form-control" readonly />
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="control-form has-warning">
+										<label for="" class="control-label">Traslado</label>
+										<input type="text" name="traslado" class="form-control" readonly />
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="control-form has-warning">
+										<label for="" class="control-label">Transportista</label>
+										<select name="trans" name="traruc_id" class="form-control tra"></select>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="control-form has-warning">
+										<label for="" class="control-label">Transporte</label>
+										<select name="tra" name="nropla_id" class="form-control tra"></select>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="control-form has-warning">
+										<label for="" class="control-label">Conductor</label>
+										<select name="condni_id" class="form-control tra"></select>
+									</div>
+								</div>
+								<div class="col-md-12">
+								<hr>
+									<button type="submit" value="submit" class="btn btn-warning btn-block text-black">
+										<span class="glyphicon glyphicon-floppy-save"></span> Guardar y Generar Guia
+									</button>
+								</div>
+							</div>
+						</form>
+					</div>
+					<!-- note out -->
+					<div id="note">
+						<h4>Nota de Salida</h4>
+						<hr >
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
