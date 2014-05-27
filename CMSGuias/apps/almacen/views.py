@@ -811,6 +811,9 @@ def view_generate_document_out(request,oid):
 							obj.cantguide= x.cantguide
 							obj.flag= True
 							obj.save()
+							ob = models.Detpedido.objects.get(pk__exact=x.id)
+							ob.tag= '2' if x.cantshop <= 0 else '0'
+							ob.save()
 						# recover details nipples
 						nip= models.Niple.objects.filter(pedido_id__exact=request.POST.get('pedido'),tag='1',flag=True)
 						for x in nip:
@@ -823,6 +826,9 @@ def view_generate_document_out(request,oid):
 							obj.flag= True
 							# save details niples for guide referral
 							obj.save()
+							ob= models.Niple.objects.get(pk__exact=x.id)
+							ob.tag= '2' if x.cantshop <= 0 else '0'
+							ob.save()
 						data['status']= True
 						data['guide']= guidekeys
 					except ObjectDoesNotExist, e:

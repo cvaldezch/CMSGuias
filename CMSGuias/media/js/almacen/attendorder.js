@@ -124,9 +124,9 @@ var attendOrders = function () {
 		$.post('', data, function (response) {
 			console.warn(response);
 			if (response.status) {
-				//location.href="/almacen/";
+				location.href="/almacen/generate/"+$(".oid").val()+"/document/out/";
 			}else{
-				$().toastmessage("showErrorToast","");
+				$().toastmessage("showErrorToast","Transaction not found");
 			};
 		});
 	}else{
