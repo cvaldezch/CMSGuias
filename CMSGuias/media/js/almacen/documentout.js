@@ -36,11 +36,6 @@ $(document).ready(function() {
 					if (result === 'Si') {
 						$(btn).button('loading');
 						var data= new FormData($("[name=formguide]").get(0));
-						/*var data = new FormData();
-						$("input,select").each(function () {
-							data.append(this.name, this.value);
-						});
-						data.append('csrfmiddlewaretoken',$("csrfmiddlewaretoken").val());*/
 						$.ajax({
 							url: '',
 							type: 'POST',
@@ -51,6 +46,7 @@ $(document).ready(function() {
 							processData: false,
 							success: function (response) {
 								console.log(response);
+								alert(response.guide);
 							}
 						});
 					};

@@ -23,11 +23,11 @@
 						<td class="text-center">{{forloop.counter}}</td>
 						<td class="text-center"><a class="btn btn-xs btn-link text-black" href="{% url 'vista_outdocument' x.pedido_id %}"><span class="glyphicon glyphicon-ok"></span></a></td>
 						<td>{{x.pedido_id}}</td>
-						<td>{{x.proyecto.nompro}}</td>
-						<td>{{x.almacen.nombre}}</td>
-						<td class="text-center">{{x.traslado}}</td>
-						<td class="text-center">{{x.status}}</td>
-						<td class="text-center"><a href="{% url 'rpt_orders' x.pedido_id x.status %}" target="_blank" class="btn btn-xs btn-link text-black" value="{{x.pedido_id}}"><span class="glyphicon glyphicon-list"></span></a></td>
+						<td>{{x.pedido.proyecto.nompro}}</td>
+						<td>{{x.pedido.almacen.nombre}}</td>
+						<td class="text-center">{{x.pedido.traslado}}</td>
+						<td class="text-center">{{x.pedido.status}}</td>
+						<td class="text-center"><a href="{% url 'rpt_orders' x.pedido_id x.pedido.status %}" target="_blank" class="btn btn-xs btn-link text-black" value="{{x.pedido_id}}"><span class="glyphicon glyphicon-list"></span></a></td>
 					</tr>
 					{% empty %}
 						<div class="alert alert-warning">

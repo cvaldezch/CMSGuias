@@ -772,7 +772,8 @@ def view_attend_order(request,oid):
 def view_generate_guide_orders(request):
 	try:
 		if request.method == 'GET':
-			lst= get_list_or_404(models.Pedido.objects.exclude(Q(status='PE')|Q(status='AN')).order_by('-pedido_id'), flag=True )
+			#lst= get_list_or_404(models.Pedido.objects.exclude(Q(status='PE')|Q(status='AN')).order_by('-pedido_id'), flag=True )
+			lst= models.Detpedido.objects.filter(tag='1').order_by('-pedido').distinct('pedido')
 			ctx= { 'orders': lst }
 			return render_to_response("almacen/generateGuide.html",ctx,context_instance=RequestContext(request))
 	except TemplateDoesNotExist, e:
