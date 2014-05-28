@@ -38,14 +38,17 @@ def GenerateSerieGuideRemision():
 		cod= models.GuiaRemision.objects.all().aggregate(Max('guia_id'))
 		id= cod['guia_id__max']
 		if id is not None:
+			#print 'codigo not empty'
 			sr= int(id[0:3])
 			num= int(id[4:])
+			#print "%i %i"%(sr,num)
 			sr= sr+1 if num >= 99999999 else sr
 			num= num+1 if num <= 99999999 else 1
+			#print "%i %i"%(sr,num)
 		else:
 			sr= 1
 			num= 1
-			id= "%s-%s"%("{:0>3d}".format(sr),"{:0>8d}".format(num))
+		id= "%s-%s"%("{:0>3d}".format(sr),"{:0>8d}".format(num))
 	except ObjectDoesNotExist, e:
 		id= "000-00000000"
 	return id

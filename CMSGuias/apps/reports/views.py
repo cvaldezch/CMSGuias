@@ -7,6 +7,7 @@ import ho.pisa as pisa
 import cStringIO as StringIO
 import cgi
 from django.shortcuts import get_object_or_404, get_list_or_404
+from django.contrib import messages
 from django.template import RequestContext, TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
@@ -52,13 +53,16 @@ def rpt_orders_details(request,pid,sts):
 		raise Http404
 
 # report guide referral with format
-def rpt_guide_referral_format(request,gid):
+def rpt_guide_referral_format(request,gid,pg):
 	try:
 		if request.method == 'GET':
-			guide= get_object_or_404(models.GuiaRemision, pk= gid, flag= True)
-			ctx= { 'guide': guide }
-			html= render_to_string("report/rptguidereferral.html",ctx,context_instance=RequestContext(request))
+			guide= get_object_or_404(models.GuiaRemision, pk=gid, flag=True)
+			det= get_list_or_404(models.DetGuiaRemision, guia_id__exact=gid, flag=True)
+			nipples= get_list_or_404(models.NipleGuiaRemision, guia_id__exact= gid, flag=True)
+			tipo= { "A":"Roscado", "B": "Ranurado","C":"Roscado - Ranurado" }
+			ctx= { 'guide': guide, 'det': det, 'nipples': nipples, "tipo": tipo }
+			page= 'rptguidereferral' if pg == 'format' else 'rptguidereferralwithout'
+			html= render_to_string("report/"+page+".html",ctx,context_instance=RequestContext(request))
 			return generate_pdf(html)
 	except TemplateDoesNotExist, e:
-		message("Error: template not found")
 		raise Http404

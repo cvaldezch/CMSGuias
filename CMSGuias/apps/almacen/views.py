@@ -673,7 +673,7 @@ def view_orders_pending(request):
 def view_orders_list_approved(request):
 	try:
 		if request.method == 'GET':
-			lst= models.Pedido.objects.filter(flag=True).exclude(Q(status='PE')|Q(status='AN')).order_by('-pedido_id')
+			lst= models.Pedido.objects.filter(flag=True).exclude(Q(status='PE')|Q(status='AN')|Q(status='CO')).order_by('-pedido_id')
 			ctx= { 'lista': lst }
 			return render_to_response('almacen/listorderattend.html',ctx,context_instance=RequestContext(request))
 	except TemplateDoesNotExist, e:
@@ -718,7 +718,7 @@ def view_attend_order(request,oid):
 					obj= models.Detpedido.objects.get(pedido_id__exact=request.POST.get('oid'),materiales_id__exact=mat[c]['matid'])
 					# aqui hacer otro if 
 					obj.cantshop=  (float(mat[c]['quantity']) - float(mat[c]['quantityshop'])) if (cs / 100 ) == float(mat[c]['quantity']) else (cs/100) if mat[c]['matid'][0:3] == "115" else (float(mat[c]['quantity']) - float(mat[c]['quantityshop']))
-					print (cs / 100 ) if mat[c]['matid'][0:3] == "115" else (float(mat[c]['quantity']) - float(mat[c]['quantityshop']))
+					#print (cs / 100 ) if mat[c]['matid'][0:3] == "115" else (float(mat[c]['quantity']) - float(mat[c]['quantityshop']))
 					obj.cantguide= float(mat[c]['quantityshop'])
 					obj.tag= "1"
 					obj.save()
@@ -733,30 +733,18 @@ def view_attend_order(request,oid):
 					cnn+= 1
 				# evaluation status orders
 				# recover number of materials
-				onm= models.Detpedido.objects.filter(pedido_id__exact=request.POST.get('oid')).count()
-				# recover number of nipples
-				onn= models.Niple.objects.filter(pedido_id__exact=request.POST.get('oid')).count()
-				# evaluation
-				passted= False
-				status = ""
-				if cnm < onm:
+				status= ''
+				onm= models.Detpedido.objects.filter(pedido_id__exact=request.POST.get('oid'),cantshop__gt=0).exclude(tag='2').count()
+				if onm > 0:
 					status= 'IN'
 				else:
 					status= 'CO'
-				if cnn < onn:
-					status= 'IN'
-				else:
-					tsn= 0
-					for i in models.Niple.objects.filter(pedido_id__exact=request.POST.get('oid')):
-						tsn+= ( ( i.cantshop * i.metrado ) / 100)
-					status= 'IN' if ctn < tsn else 'CO'
-					passted= 'IN' if ctn < tsn else 'CO'
 				# update status Bedside Orders
 				obj = models.Pedido.objects.get(pk=request.POST.get('oid'))
 				obj.status= status
 				obj.save()
 				data['sts']= status
-				data['pass']= passted
+				data['pass']= status
 				data['status']= True
 			except ObjectDoesNotExist, e:
 				data['status']= False
@@ -837,4 +825,15 @@ def view_generate_document_out(request,oid):
 					return HttpResponse(simplejson.dumps(data), mimetype='application/json')
 	except TemplateDoesNotExist, e:
 		message("Error: Template not found")
+		raise Http404
+# recover list guide referral for view and annular
+@login_required(login_url='/SignUp/')
+def view_list_guide_referral_success(request):
+	try:
+		if request.method == 'GET':
+			
+			lst= models.GuiaRemision.objects.filter(status='GE',flag=True).order_by('-guia_id')[:10]
+			ctx= {'guide':lst}
+			return render_to_response("almacen/listguide.html",ctx,context_instance=RequestContext(request))
+	except TemplateDoesNotExist, e:
 		raise Http404

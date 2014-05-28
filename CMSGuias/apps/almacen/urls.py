@@ -9,6 +9,7 @@ urlpatterns = patterns('CMSGuias.apps.almacen.views',
 	# guide remisions
 	url(r'^list/orders/meet/out/$','view_generate_guide_orders',name='vita_list_orders_outmeet'),
 	url(r'^generate/(?P<oid>.*)/document/out/$','view_generate_document_out',name='vista_outdocument'),
+	url(r'^list/guide/referral/$','view_list_guide_referral_success',name='vista_lista_guide_success'),
 	# customers
 	url(r'^keep/customers/$','view_keep_customers',name='vista_customers'),
 	url(r'^keep/customers/add/$','view_keep_add_customers',name='vista_add_customers'),

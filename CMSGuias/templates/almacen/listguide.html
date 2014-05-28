@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}Lista Guías de Remisión{% endblock %}
+{% block script %}
+<script src="/media/js/almacen/listguide.js"></script>
+{% endblock %}
+{% block content %}
+<div class="container">
+	<div class="well">
+		<h1 class="text-success">Guías Remisión Remitente</h1>
+		<div class="row show-grid">
+			<div class="col-md-12">
+				<div class="bs-callout bs-callout-success">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group has-success">
+								<label class="radio-inline"><input type="radio" class="" name="search"> Nro Guías</label>
+								<label class="radio-inline"><input type="radio" class="" name="search"> Fechas</label>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group has-success">
+								<label class="control-label">Nro Guía</label>
+								<input type="text" maxlength="12" placeholder="000-00000000" class="form-control">
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group has-success">
+								<label class="control-label">Fecha Inicio</label>
+								<input type="text" maxlength="10" placeholder="aaaa-mm-dd" class="form-control">
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group has-success">
+								<label class="control-label">Fecha Fin</label>
+								<input type="text" maxlength="10" placeholder="aaaa-mm-dd" class="form-control">
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group has-success">
+								<label class="control-label"></label>
+								<button class="btn btn-success btn-block"><span class="glyphicon glyphicon-search"></span> Buscar</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<table class="table table-condensed table-hover table-striped">
+						<thead>
+							<tr class="bg-warning">
+								<th>Item</th><th>Nro</th><th>Proyecto</th><th>Traslado</th><th>Conductor</th><th>Ver</th><th>Anular</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for x in guide %}
+								<tr class="success tr{{x.guia_id}}">
+									<td class="text-center">{{forloop.counter}}</td>
+									<td class="text-center">{{x.guia_id}}</td>
+									<td>{{x.pedido.proyecto.nompro}}</td>
+									<td>{{x.traslado}}</td>
+									<td>{{x.condni.connom}}</td>
+									<td class="text-center">
+										<button class="btn btn-link btn-sm text-black btn-show-gv" value="{{x.guia_id}}"><span class="glyphicon glyphicon-paperclip"></span></button>
+									</td>
+									<td class="text-center">
+										<button class="btn btn-link btn-sm text-black"><span class="glyphicon glyphicon-fire"></span></button>
+									</td>
+								</tr>
+							{% empty %}
+							<div class="alert alert-warning alert-block">
+								<strong>Warning</strong>
+								<p>Parece que no tenemos Guías registradas.</p>
+							</div>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- modals -->
+<div class="modal mview">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-body">
+				<a class="close" data-dismiss="modal">&times;</a>
+				<h4>Vista previa Guía Remisión</h4>
+				<div class="row">
+					<div class="col-md-6">
+						<button class="btn btn-primary btn-block btn-gv" name="format"><span class="glyphicon glyphicon-print"></span> Con Formato</button>
+					</div>
+					<div class="col-md-6">
+						<button class="btn btn-success btn-block btn-gv" name="without"><span class="glyphicon glyphicon-print"></span> Sin Formato</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

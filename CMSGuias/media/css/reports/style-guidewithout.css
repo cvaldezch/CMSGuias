@@ -1,7 +1,7 @@
 @page {
 	size: legal;
 	margin: 1cm;
-	@frame header_frame {
+	/*@frame header_frame {
 		-pdf-frame-content: logo;
 		margin-top: 1cm; top: 0; left: 1cm;
 	}
@@ -12,10 +12,10 @@
 	@frame header_frame {
 		-pdf-frame-content: nro-serie;
 		height: 4cm; margin-top: 1cm; right: 1cm; top: 0; width: 8cm;
-	}
+	}*/
 	@frame header_frame {
-		-pdf-frame-content: guide;
-		width: 8cm;
+		-pdf-frame-content: nro;
+	  margin-top: 3.1cm; right: -1cm; width: 7cm;
 	}
 	/*@frame header_frame {
 		-pdf-frame-content: nro;
@@ -34,17 +34,18 @@
 		top: 32cm; margin: 0 1cm 0 1cm;
 	}
 }
-img{
+/*img{
 	zoom: 110%;
 }
 #dir{
 	text-align: left;
 }
 #nro-serie,
+*/
 .text-center {
 	text-align: center;
 }
-#nro-serie {
+/*#nro-serie {
 	border: 1px solid #000;
 	height: 4cm;
 	padding-top: 0.4cm;
@@ -53,23 +54,21 @@ img{
 #nro-serie span {
 	font-size: 0.5cm;
 	font-weight: bold;
-}
-#guide {
-	background-color: #ddd;
-	border: 1px solid #000;
-	width: 8cm;
+}*/
+#nro {
+	/*background-color: #ddd;*/
+	font-size: 0.5cm;
+	font-weight: bold;
 }
 #bedside{
-	border: 1px solid #000;
+	/*border: 1px solid #000;*/
 }
-#footer_content { border: 1px solid #000; }
-#footer_content table { border: none; }
-.fo{ border: 1px solid #000; }
-.text-partida { background-color: #eff5fb; border: 1px solid #000; font-size: 10px; font-weight: bold; padding: 3px 0 0 5px; }
-.bedcontent { padding: 0.1cm 0 0.1cm 0; text-align: center; font-size: 11px; font-family: monospace; }
+/*#footer_content { border: 1px solid #000; }*/
+/*.text-partida { background-color: #eff5fb; border: 1px solid #000; font-size: 10px; font-weight: bold; padding: 3px 0 0 5px; }*/
+.bedcontent { padding: 0.1cm 0 0.1cm 0; text-align: center; font-size: 12px; }
 .pretitle { padding: 1px 0 0 3px; }
-.details table > thead > tr { background-color: #eff5fb; border: 0.01 solid #0b3861; padding-top: .15cm; padding-bottom: 0.1cm; }
-.details table > tbody > tr { border-left: .01cm solid #0b3861; border-right: .01cm solid #0b3861; padding-top: .05cm; padding-bottom: 0.01cm; }
-.details table > tfoot > tr { border-bottom: 0.01cm solid #0b3861; }
+.details table > thead > tr { padding-top: .15cm; padding-bottom: 0.1cm; }
+.details table > tbody > tr { padding-top: .05cm; padding-bottom: 0.01cm; }
+/*.details table > tfoot > tr { border-bottom: 0.01cm solid #0b3861; }*/
 .text-up { vertical-align: top; }
 .nom { padding-left: 5px; }

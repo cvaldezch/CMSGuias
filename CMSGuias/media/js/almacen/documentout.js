@@ -65,7 +65,7 @@ $(document).ready(function() {
 	// btn view report guide referral
 	$(".btn-gv").click(function(event) {
 		event.preventDefault();
-		location.href="/report/"
+		window.open("/reports/guidereferral/"+this.value+"/"+this.name+"/", "_blank");
 	});
 	////
 	var loadTransport = function (ruc) {
