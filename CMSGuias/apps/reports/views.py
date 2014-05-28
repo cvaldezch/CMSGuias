@@ -50,3 +50,15 @@ def rpt_orders_details(request,pid,sts):
 			return generate_pdf(html)
 	except TemplateDoesNotExist, e:
 		raise Http404
+
+# report guide referral with format
+def rpt_guide_referral_format(request,gid):
+	try:
+		if request.method == 'GET':
+			guide= get_object_or_404(models.GuiaRemision, pk= gid, flag= True)
+			ctx= { 'guide': guide }
+			html= render_to_string("report/rptguidereferral.html",ctx,context_instance=RequestContext(request))
+			return generate_pdf(html)
+	except TemplateDoesNotExist, e:
+		message("Error: template not found")
+		raise Http404

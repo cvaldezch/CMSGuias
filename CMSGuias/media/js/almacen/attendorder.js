@@ -58,6 +58,18 @@ var checkeded = function (name,sts) {
 }
 var enablenquantitynip = function (id) {
 	$(".n"+id.value).attr('disabled', id.checked ? false : true );
+	recoverVal(id.name.substring(2));
+}
+var recoverVal = function (name) {
+	var tot= 0, $input;
+	$("[name=sc"+name+"]").each(function () {
+		if (this.checked) {
+			$input= $(".n"+this.value);
+			//console.log($input.val() +' '+$input.attr('id'));
+			tot+= ( parseFloat($input.val()) * parseFloat($input.attr('id')) );
+		};
+	});
+	$(".bed"+name).val(tot/100);
 }
 var attendOrders = function () { 
 	var pass = false;

@@ -1,0 +1,62 @@
+@page {
+	margin: 1cm;
+	@frame header_frame {
+		-pdf-frame-content: logo;
+		margin-top: 1cm; top: 0; left: 1cm;
+	}
+	@frame header_frame {
+		-pdf-frame-content: dir;
+		margin-top: 1cm;top: 0pt;
+	}
+	@frame header_frame {
+		-pdf-frame-content: info-type;
+		margin-top: 1cm;top: 0cm;right: 1cm;width: 9%;
+	}
+	@frame header_frame {
+		-pdf-frame-content: nro-serie;
+		margin-top: 2.5cm; right: 1cm; top: 0; width: 8cm;
+	}
+	@frame header_frame {
+		-pdf-frame-content: nro;
+		margin-top: 3.3cm; right: 1cm; width: 8cm;
+	}
+	@frame header_frame {
+		-pdf-frame-content: bedside-col1;
+		left: 1cm; margin-top: 3.8cm; width: 9cm;
+	}
+	@frame header_frame {
+		-pdf-frame-content: bedside-col2;
+		right: 1cm; margin-top: 4.3cm; width: 9cm;
+	}
+	@frame content_frame {
+		/*-pdf-frame-content: details;*/
+		top: 7cm; width: 18cm; left: 1.5cm; right: 1.5cm;
+	}
+	@frame footer_frame {
+		-pdf-frame-content: footer_content;
+		left: 50pt; width: 512pt; top: 772pt; height: 20pt;
+	}
+}
+@page nipples {
+	margin: 1cm;
+}
+img{
+	zoom: 80%;
+}
+#dir,
+#nro-serie,
+.text-center {
+	text-align: center;
+}
+#nro-serie h1 {
+	font-size: 14px;
+}
+.details table > thead > tr { background-color: olive; border: 0.01 solid olive; padding-top: .15cm; padding-bottom: 0.1cm; }
+.details table > tbody > tr { border-left: .01cm solid olive; border-right: .01cm solid olive; padding-top: .05cm; padding-bottom: 0.01cm; }
+.details table > tfoot > tr { border-bottom: 0.01cm solid olive; }
+.nom{
+	width: 7cm;
+}
+.item{
+	width: 1cm;
+}

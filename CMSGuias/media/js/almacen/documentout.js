@@ -45,8 +45,13 @@ $(document).ready(function() {
 							contentType: false,
 							processData: false,
 							success: function (response) {
-								console.log(response);
-								alert(response.guide);
+								if (response.status) {
+									$(btn).button('complete');
+									console.log(response);
+									$(".nro-guide").html(response.guide);
+									$(".btn-gv").val(response.guide);
+									$(".mguide").modal("show");
+								};
 							}
 						});
 					};
@@ -56,6 +61,11 @@ $(document).ready(function() {
 			$().toastmessage("showWarningToast","Existe un campo vacio.");
 			return pass;
 		};
+	});
+	// btn view report guide referral
+	$(".btn-gv").click(function(event) {
+		event.preventDefault();
+		location.href="/report/"
 	});
 	////
 	var loadTransport = function (ruc) {

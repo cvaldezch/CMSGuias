@@ -139,7 +139,7 @@
 																<td>{{c.materiales.matmed}}</td>
 																<td>{{x.metrado}}</td>
 																<td>cm</td>
-																<td><input type="number" class="form-control input-xs n{{x.id}}" min="1" name="{{x.cantidad|safe}}" max="{{x.cantshop|safe}}" value="{{x.cantshop|safe}}" id="{{x.metrado|safe}}" title="{{x.materiales_id}}" disabled></td>
+																<td><input type="number" class="form-control input-xs n{{x.id}}" min="1" name="{{x.cantidad|safe}}" max="{{x.cantshop|safe}}" value="{{x.cantshop|safe}}" id="{{x.metrado|safe}}" onchange="recoverVal({{x.materiales_id}});" title="{{x.materiales_id}}" disabled></td>
 															</tr>
 														{% endifequal %}
 													{% endfor %}

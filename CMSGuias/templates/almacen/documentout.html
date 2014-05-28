@@ -1,4 +1,11 @@
 {% extends 'base.html' %}
+{% block style %}
+<style>
+	.nro-guide {
+		font-weight: bold;
+	}
+</style>
+{% endblock %}
 {% block script %}
 <script src="/media/js/mustache.js"></script>
 <script src="/media/js/almacen/documentout.js"></script>
@@ -13,8 +20,8 @@
 		<div class="row">
 			<div class="col-md-4">
 				<div class="alert alert-warning">
-					<button class="btn btn-success btn-block btn-guide-show"><span class="glyphicon glyphicon-list"></span> Guia Remisión</button>
-					<button class="btn btn-success btn-block btn-note-show"><span class="glyphicon glyphicon-list"></span> Nota de Salida</button>
+					<button class="btn btn-warning text-black btn-block btn-guide-show"><span class="glyphicon glyphicon-th"></span> Guia Remisión</button>
+					<button class="btn btn-warning text-black btn-block btn-note-show"><span class="glyphicon glyphicon-list"></span> Nota de Salida</button>
 				</div>
 			</div>
 			<div class="col-md-8">
@@ -111,15 +118,30 @@
 	</div>
 </div>
 <!-- document print -->
-<div class="modal fade pmguide">
+<div class="modal fade mguide" data-backdrop="static">
 	<div class="modal-dialog modal-sm">
 		<div class="modal-content">
-			<div class="modal-header">
+			<!-- <div class="modal-header">
 				<a class="close" data-dismiss="modal">&times;</a>
-				<h4>Imprimir Guia de Remisión</h4>
-			</div>
+				<h5>Imprimir Guia de Remisión</h5>
+			</div>-->
 			<div class="modal-body">
-				
+				<div class="row">
+					<div class="col-md-12">
+						<h4>Nro de Guia de Remisión <br> <span class="nro-guide"></span></h4>
+						<hr>
+					</div>
+					<div class="col-md-6">
+						<button class="btn btn-primary btn-block btn-gv"><span class="glyphicon glyphicon-print"></span> Con Formato</button>
+					</div>
+					<div class="col-md-6">
+						<button class="btn btn-success btn-block btn-gv"><span class="glyphicon glyphicon-print"></span> Sin Formato</button>
+					</div>
+					<div class="col-md-12">
+						<br>
+						<a href="{% url 'vita_list_orders_outmeet' %}" class="btn btn-danger btn-block text-black"><span class="glyphicon glyphicon-shopping-cart"></span> Seguir Atendiendo</a>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
