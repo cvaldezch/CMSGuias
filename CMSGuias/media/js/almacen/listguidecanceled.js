@@ -51,28 +51,8 @@ $(document).ready(function() {
 			$().toastmessage("showWarningToast","Los campos se encuentrán vacios.");
 		};
 	};
-	$(".btn-annular").click(function(event) {
-		event.preventDefault();
-		var val= $(".series").html().trim();
-		if (val != "") {
-			data= {'series': val, "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val()}
-			$.post("", data, function (response) {
-				if (response.status) {
-					$(".mannular").modal('hide');
-					$().toastmessage("showNoticeToast","Se a anulado la Guía de Remisión "+val+" correctamente.");
-					setTimeout(function() { location.reload(); }, 2600);
-				};
-			}, "json");
-		}else{
-			$().toastmessage("showWarningToast","No se puede anular la Guía de Remisión.");	
-		};
-	});
 });
 var view= function (tag) {
 	$(".btn-gv").val(tag.value);
 	$(".mview").modal("show");
-}
-var show_annular = function (obj) {
-	$('.series').html(obj.value);
-	$(".mannular").modal('show');
 }

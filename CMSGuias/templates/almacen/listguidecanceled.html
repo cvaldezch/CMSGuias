@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
-{% block title %}Lista Guías de Remisión{% endblock %}
+{% block title %}Lista Guías de Remisión Anuladas{% endblock %}
 {% block script %}
 <script src="/media/js/mustache.js"></script>
-<script src="/media/js/almacen/listguide.js"></script>
+<script src="/media/js/almacen/listguidecanceled.js"></script>
 {% endblock %}
 {% block content %}
 <div class="container">
 	<div class="well">
-		<h1 class="text-success">Guías Remisión Remitente</h1>
+		<h3 class="text-success">Guías Remisión Remitente Anuladas</h3>
 		<div class="row show-grid">
 			<div class="col-md-12">
 				<div class="bs-callout bs-callout-success">
@@ -50,7 +50,7 @@
 					<table class="table table-condensed table-hover table-striped">
 						<thead>
 							<tr class="bg-warning">
-								<th>Item</th><th>Nro</th><th>Proyecto</th><th>Traslado</th><th>Conductor</th><th>Ver</th><th>Anular</th>
+								<th>Item</th><th>Nro</th><th>Proyecto</th><th>Traslado</th><th>Conductor</th><th>Ver</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -64,14 +64,11 @@
 									<td class="text-center">
 										<button class="btn btn-link btn-sm text-black btn-show-gv" value="{{x.guia_id}}"><span class="glyphicon glyphicon-paperclip"></span></button>
 									</td>
-									<td class="text-center">
-										<button class="btn btn-link btn-sm text-black" value="{{x.guia_id}}" onclick="show_annular(this);"><span class="glyphicon glyphicon-fire"></span></button>
-									</td>
 								</tr>
 							{% empty %}
 							<div class="alert alert-warning alert-block">
 								<strong>Warning</strong>
-								<p>Parece que no tenemos Guías registradas.</p>
+								<p>Parece que no tenemos Guías anuladas.</p>
 							</div>
 							{% endfor %}
 						</tbody>
@@ -96,22 +93,6 @@
 						<button class="btn btn-success btn-block btn-gv" name="without"><span class="glyphicon glyphicon-print"></span> Sin Formato</button>
 					</div>
 				</div>
-			</div>
-		</div>
-	</div>
-</div>
-<!-- anular guide referral -->
-<div class="modal mannular">
-	<div class="modal-dialog modal-sm">
-		<div class="modal-content brand-danger">
-			<div class="modal-body text-white">
-				<h4><em>Anular Guía de Remisión.</em></h4>
-				<p>Realmente desea anular la Guía de Remisión <span class="series"></span>?</p>
-				{% csrf_token %}
-			</div>
-			<div class="modal-footer">
-				<button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-				<button class="btn btn-danger btn-annular"><span class="glyphicon glyphicon-ban-circle"></span> Anular</button>
 			</div>
 		</div>
 	</div>

@@ -831,9 +831,81 @@ def view_generate_document_out(request,oid):
 def view_list_guide_referral_success(request):
 	try:
 		if request.method == 'GET':
-			
+			if request.is_ajax():
+				data= {}
+				ls= []
+				try:
+					if request.GET.get('tra') == 'series':
+						lst= models.GuiaRemision.objects.get(pk=request.GET.get('series'),status='GE',flag=True)
+						ls= [{"item":1,"guia_id":lst.guia_id,"nompro":lst.pedido.proyecto.nompro,"traslado":lst.traslado.strftime(FORMAT_DATE_STR),"connom":lst.condni.connom}]
+						data['status']= True
+					elif request.GET.get('tra') == "dates":
+						if request.GET.get('fecf') == '' and request.GET.get('feci') != '':
+							star= datetime.datetime.strptime(request.GET.get('feci'), FORMAT_DATE_STR ).date()
+							lst= models.GuiaRemision.objects.filter(traslado=star,status='GE',flag=True)
+						elif request.GET.get('fecf') != '' and request.GET.get('feci') != '':
+							star= datetime.datetime.strptime(request.GET.get('feci'), FORMAT_DATE_STR ).date()
+							end= datetime.datetime.strptime(request.GET.get('fecf'), FORMAT_DATE_STR ).date()
+							lst= models.GuiaRemision.objects.filter(traslado__range=[star,end],status='GE',flag=True)
+						i= 1
+						for x in lst:
+							ls.append({"item":i,"guia_id":x.guia_id,"nompro":x.pedido.proyecto.nompro,"traslado":x.traslado.strftime(FORMAT_DATE_STR),"connom":x.condni.connom})
+							i+= 1
+						data['status']= True
+				except ObjectDoesNotExist, e:
+					data['status']= False
+				data['list']= ls
+				return HttpResponse(simplejson.dumps(data),mimetype="application/json")
 			lst= models.GuiaRemision.objects.filter(status='GE',flag=True).order_by('-guia_id')[:10]
 			ctx= {'guide':lst}
 			return render_to_response("almacen/listguide.html",ctx,context_instance=RequestContext(request))
+		if request.method == 'POST':
+			data= {}
+			try:
+				obj= models.GuiaRemision.objects.get(pk=request.POST.get('series'),status='GE',flag=True)
+				obj.status= 'AN'
+				obj.flag= False
+				obj.save()
+				det= models.DetGuiaRemision.objects.filter(guia_id__exact=request.POST.get('series')).update(flag=False)
+				nip= models.NipleGuiaRemision.objects.filter(guia_id__exact=request.POST.get('series')).update(flag=False)
+				data['status']= True
+			except ObjectDoesNotExist, e:
+				data['status']= False
+			return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+	except TemplateDoesNotExist, e:
+		raise Http404
+# recover list guide referral for view and annular
+@login_required(login_url='/SignUp/')
+def view_list_guide_referral_canceled(request):
+	try:
+		if request.method == 'GET':
+			if request.is_ajax():
+				data= {}
+				ls= []
+				try:
+					if request.GET.get('tra') == 'series':
+						lst= models.GuiaRemision.objects.get(pk=request.GET.get('series'),status='AN',flag=False)
+						ls= [{"item":1,"guia_id":lst.guia_id,"nompro":lst.pedido.proyecto.nompro,"traslado":lst.traslado.strftime(FORMAT_DATE_STR),"connom":lst.condni.connom}]
+						data['status']= True
+					elif request.GET.get('tra') == "dates":
+						if request.GET.get('fecf') == '' and request.GET.get('feci') != '':
+							star= datetime.datetime.strptime(request.GET.get('feci'), FORMAT_DATE_STR ).date()
+							lst= models.GuiaRemision.objects.filter(traslado=star,status='AN',flag=False)
+						elif request.GET.get('fecf') != '' and request.GET.get('feci') != '':
+							star= datetime.datetime.strptime(request.GET.get('feci'), FORMAT_DATE_STR ).date()
+							end= datetime.datetime.strptime(request.GET.get('fecf'), FORMAT_DATE_STR ).date()
+							lst= models.GuiaRemision.objects.filter(traslado__range=[star,end],status='AN',flag=False)
+						i= 1
+						for x in lst:
+							ls.append({"item":i,"guia_id":x.guia_id,"nompro":x.pedido.proyecto.nompro,"traslado":x.traslado.strftime(FORMAT_DATE_STR),"connom":x.condni.connom})
+							i+= 1
+						data['status']= True
+				except ObjectDoesNotExist, e:
+					data['status']= False
+				data['list']= ls
+				return HttpResponse(simplejson.dumps(data),mimetype="application/json")
+			lst= models.GuiaRemision.objects.filter(status='AN',flag=False).order_by('-guia_id')[:10]
+			ctx= {'guide':lst}
+			return render_to_response("almacen/listguidecanceled.html",ctx,context_instance=RequestContext(request))
 	except TemplateDoesNotExist, e:
 		raise Http404

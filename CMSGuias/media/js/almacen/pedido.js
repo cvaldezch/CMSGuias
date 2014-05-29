@@ -236,6 +236,15 @@ $(function () {
 	$('.obs').blur(function () {
 		$(this).animate({height:"34px"},600);
 	});
+	// download template
+	$(".btn-down-temp").click(function(event) {
+		var url= '/media/storage/templates/Orderstmp.xls';
+		window.open(url, "_blank");
+	});
+	$(".show-input-file-temp").click(function (event) {
+		event.preventDefault();
+		$(".input-file-temp").click();
+	});
 });
 
 /// functions 
