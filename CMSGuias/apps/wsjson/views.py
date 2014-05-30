@@ -210,6 +210,42 @@ def post_delete_temp_all_nipple(request):
 			raise e
 			data['status'] = False
 	return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+## upload file orders temp and reader file temp orders
+@login_required(login_url='/SignUp/')
+def post_upload_file_temp_orders(request):
+	data= {}
+	if request.method == 'POST':
+		if request.is_ajax():
+			from CMSGuias.apps.tools import uploadFiles
+			from xlrd import open_workbook, XL_CELL_EMPTY
+			try:
+				# upload file
+				arch= request.FILES['ftxls']
+				filename= uploadFiles.upload('/storage/temporary/',arch)
+				# read file
+				book= open_workbook(filename,encoding_override='utf-8')
+				sheet= book.sheet_by_index(0)
+				# retrive the values of the first sheet
+				for m in range(10, sheet.nrows):
+					mid= sheet.cell(m, 2)
+					# conditions for get rows values
+					if mid.ctype!=XL_CELL_EMPTY: # row different to empty or blank
+						mid= str(int(mid.value))
+						print mid
+						if len(mid) == 15: # row code is length equal 15 chars
+							print 'dentro de len mid'
+							cant= sheet.cell(m, 6) # get quantity
+							obj, created= models.tmppedido.objects.get_or_create(materiales_id=mid,defaults={'cantidad':cant.value,'empdni':'70492850'})
+							if not created:
+								obj.cantidad= (obj.cantidad + cant.value)
+								obj.save()
+				uploadFiles.removeTmp(filename)
+				data['status']= True
+			except Exception, e:
+				data['status']= False
+			#print 'Num Rows: %i'%sheet.nrows
+			return HttpResponse(simplejson.dumps(data),mimetype="application/json")
+###
 """
 ##  Recurrent get list
 """

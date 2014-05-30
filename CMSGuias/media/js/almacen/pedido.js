@@ -245,6 +245,35 @@ $(function () {
 		event.preventDefault();
 		$(".input-file-temp").click();
 	});
+	$(".btn-upload-file-temp").click(function (event) {
+		var $input= $("[name=input-file-temp]").get(0),
+				file= $input.files[0], btn = this;
+		if (file!=null) {
+			var data = new FormData();
+			data.append('ftxls',file);
+			data.append('csrfmiddlewaretoken',$("[name=csrfmiddlewaretoken]").val());
+			$.ajax({
+				url: '/json/post/upload/orders/temp/',
+				type: 'POST',
+				dataType: 'json',
+				data: data,
+				cache: false,
+				contentType: false,
+				processData: false,
+				beforeSend: function () {
+					$(btn).button('loading');
+				},
+				success: function (response) {
+					$(btn).button('complete');
+					if (response.status) {
+						setTimeout(function() { location.reload(); }, 1000);
+					};
+				}
+			});
+		}else{
+			$().toastmessage("showWarningToast","No se a seleccionado un archivo!");
+		};
+	});
 });
 
 /// functions 

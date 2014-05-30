@@ -219,7 +219,7 @@ class tmppedido(models.Model):
 	cantidad = models.FloatField(null=False)
 
 	def __unicode__(self):
-		return '%s %s %f'%(self.empdni,self.materiales.materiales_id,self.cantidad)
+		return '%s %s %f'%(self.empdni,self.materiales,self.cantidad)
 
 class Niple(models.Model):
 	pedido = models.ForeignKey(Pedido, to_field='pedido_id')

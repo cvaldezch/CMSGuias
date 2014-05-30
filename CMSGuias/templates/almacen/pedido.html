@@ -167,8 +167,9 @@
 			<div class="modal-body">
 				<a class="close" data-dismiss="modal">&times;</a>
 				<h4>Cargar archivo Temp.</h4>
+				<button class="btn btn-info btn-sm btn-down-temp"><span class="glyphicon glyphicon-file"></span> Plantilla</button>
 				<div class="form-group">
-					<input type="file" class="form-control hide input-file-temp" accept="application/vnd.ms-excel" />
+					<input type="file" class="form-control hide input-file-temp" name="input-file-temp" accept="application/vnd.ms-excel" />
 					<hr>
 					<div class="alert alert-inverse alert-inverse-border">
 						<div class="text-center">
@@ -179,8 +180,7 @@
 			</div>
 			<div class="modal-footer">
 				<button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Salir</button>
-				<button class="btn btn-primary btn-down-temp"><span class="glyphicon glyphicon-gift"></span> Plantilla</button>
-				<button class="btn btn-info text-black btn-upload-file-temp" data-loading-text="Upload..."><span class="glyphicon glyphicon-upload"></span> Subir</button>
+				<button class="btn btn-primary text-black btn-upload-file-temp" data-loading-text="Upload..." data-complete-text="Complete!"><span class="glyphicon glyphicon-upload"></span> Subir</button>
 			</div>
 		</div>
 	</div>
