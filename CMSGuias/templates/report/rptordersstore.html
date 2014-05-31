@@ -88,12 +88,13 @@
 				<thead>
 					<tr>
 						<th>Item</th>
-						<th>Código</th>
-						<th>Descripción</th>
-						<th>Medida</th>
-						<th>Unidad</th>
-						<th>Cantidad</th>
-						<th>media</th>
+						<th width="2.5cm">Código</th>
+						<th width="1cm">Cantidad</th>
+						<th width="8cm">Descripción</th>
+						<th width="3cm">Diametro</th>
+						<th width="1cm"></th>
+						<th width="1cm">Medida</th>
+						<th width="1cm">Unidad</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -101,22 +102,24 @@
 						<tr>
 							<td class="text-center item">{{forloop.counter}}</td>
 							<td class="text-center cod">{{x.materiales_id}}</td>
-							<td class="nom">{{x.materiales.matnom}}</td>
-							<td>{{x.materiales.matmed}}</td>
-							<td class="text-center">cm</td>
 							<td class="text-center">{{x.cantidad}}</td>
+							<td class="">{{x.materiales.matnom}} - Niple{{x.cantidad|pluralize}}
+										{% for k,v in tipo.items %}
+											{% ifequal k x.tipo %}
+												{{v}}{{x.cantidad|pluralize}}
+											{% endifequal %}
+										{% endfor %}
+							</td>
+							<td>{{x.materiales.matmed}}</td>
+							<td class="text-center">x</td>
 							<td class="text-center">{{x.metrado}}</td>
+							<td class="text-center">cm</td>
 						</tr>
 					{% endfor%}
 				</tbody>
 				<tfoot>
 					<tr>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
+						<td colspan="8"></td>
 					</tr>
 				</tfoot>
 			</table>

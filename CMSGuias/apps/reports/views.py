@@ -44,9 +44,10 @@ def rpt_orders_details(request,pid,sts):
 	try:
 		if request.method == 'GET':
 			order = get_object_or_404(models.Pedido,pk=pid,status=sts)
-			lista = get_list_or_404(models.Detpedido,pedido_id__exact=pid)
-			nipples = models.Niple.objects.filter(pedido_id__exact=pid)
-			ctx = { 'pagesize':'A4','order': order, 'lista': lista, 'nipples': nipples }
+			lista = get_list_or_404(models.Detpedido.objects.order_by('materiales'),pedido_id__exact=pid)
+			nipples = models.Niple.objects.filter(pedido_id__exact=pid).order_by('materiales')
+			from CMSGuias.apps.tools import globalVariable
+			ctx = { 'pagesize':'A4','order': order, 'lista': lista, 'nipples': nipples,'tipo': globalVariable.tipo_nipples }
 			html = render_to_string('report/rptordersstore.html',ctx,context_instance=RequestContext(request))
 			return generate_pdf(html)
 	except TemplateDoesNotExist, e:

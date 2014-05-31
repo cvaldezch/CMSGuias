@@ -224,22 +224,40 @@ def post_upload_file_temp_orders(request):
 				filename= uploadFiles.upload('/storage/temporary/',arch)
 				# read file
 				book= open_workbook(filename,encoding_override='utf-8')
-				sheet= book.sheet_by_index(0)
+				sheet= book.sheet_by_index(0) # recover sheet of materials
+				arn= [] # array list of materials to nipples
 				# retrive the values of the first sheet
 				for m in range(10, sheet.nrows):
 					mid= sheet.cell(m, 2)
 					# conditions for get rows values
-					if mid.ctype!=XL_CELL_EMPTY: # row different to empty or blank
+					if mid.ctype!=XL_CELL_EMPTY: # cell different to empty or blank
 						mid= str(int(mid.value))
-						print mid
 						if len(mid) == 15: # row code is length equal 15 chars
-							print 'dentro de len mid'
+							arn.append(mid) if mid[0:3] == '115' else False # aggregate materials for nipples
 							cant= sheet.cell(m, 6) # get quantity
-							obj, created= models.tmppedido.objects.get_or_create(materiales_id=mid,defaults={'cantidad':cant.value,'empdni':'70492850'})
+							obj, created= models.tmppedido.objects.get_or_create(materiales_id=mid,empdni=request.user.get_profile().empdni,defaults={'cantidad':cant.value})
 							if not created:
 								obj.cantidad= (obj.cantidad + cant.value)
 								obj.save()
-				uploadFiles.removeTmp(filename)
+				if len(arn) > 0:
+					sheet= book.sheet_by_index(1) # recover sheet of nipples
+					for n in range(9, sheet.nrows):
+						mid = sheet.cell(n, 2)
+						if mid.ctype != XL_CELL_EMPTY: # cell different to empty
+							mid= str(int(mid.value)) # convert cell value to str
+							if mid in arn:
+								# values other columns
+								cant= sheet.cell(n, 3).value # quantity of nipples
+								med= sheet.cell(n, 7).value # meter in cm
+								tipo= sheet.cell(n, 5).value # type nipple {A, B, C}
+								# create or update nipples
+								obj, created= models.tmpniple.objects.get_or_create(materiales_id=mid,metrado=med,tipo=tipo,empdni=request.user.get_profile().empdni,defaults={'cantidad':cant})
+								if not created:
+									obj.cantidad= ( obj.cantidad + cant )
+									obj.save()
+							else:
+								continue
+				uploadFiles.removeTmp(filename) # remove temp file 
 				data['status']= True
 			except Exception, e:
 				data['status']= False
