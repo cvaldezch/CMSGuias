@@ -1,4 +1,4 @@
-#-*- Encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # Django settings for CMSGuias project.
 import os
 
@@ -110,7 +110,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'CMSGuias.urls'
 
 # Identidicar o definir el perfil de los usuarios
-AUTH_PROFILE_MODULE = 'almacen.userProfile'
+AUTH_PROFILE_MODULE = 'home.userProfile'
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'CMSGuias.wsgi.application'
@@ -138,6 +138,7 @@ INSTALLED_APPS = (
     'CMSGuias.apps.home',
     'CMSGuias.apps.wsjson',
     'CMSGuias.apps.reports',
+    'CMSGuias.apps.ventas',
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'

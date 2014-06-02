@@ -5,6 +5,8 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpRespons
 #from django.views.generic import TemplateView
 from django.contrib import messages
 from CMSGuias.apps.almacen import models
+from CMSGuias.apps.home.models import Materiale, Almacene, Transporte, Conductore
+from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.utils import simplejson
@@ -13,7 +15,7 @@ def get_description_materials(request):
 	try:
 		if request.method == 'GET':
 			data = {'name':[]}
-			name = models.Materiale.objects.values('matnom').filter(matnom__icontains=request.GET['nom']).distinct('matnom').order_by('matnom')
+			name = Materiale.objects.values('matnom').filter(matnom__icontains=request.GET['nom']).distinct('matnom').order_by('matnom')
 			i = 0
 			#data['name'] = [ { 'matnom': x['matnom'], 'id': i+=1 } for x in name ]
 			for x in name:
@@ -27,7 +29,7 @@ def get_meter_materials(request):
 	try:
 		if request.method == 'GET':
 			data = { "list": [] }
-			meter = models.Materiale.objects.values('matmed').filter(matnom__icontains=request.GET['matnom']).distinct('matmed').order_by('matmed')
+			meter = Materiale.objects.values('matmed').filter(matnom__icontains=request.GET['matnom']).distinct('matmed').order_by('matmed')
 			for x in meter:
 				data["list"].append({ "matmed": x["matmed"] })
 			return HttpResponse(simplejson.dumps(data), mimetype="application/json")
@@ -38,7 +40,7 @@ def get_resumen_details_materiales(request):
 	try:
 		if request.method == 'GET':
 			data = {'list': []}
-			res = models.Materiale.objects.values('materiales_id','matnom','matmed','unidad').filter(matnom__icontains=request.GET['matnom'],matmed__icontains=request.GET['matmed'])[:1]
+			res = Materiale.objects.values('materiales_id','matnom','matmed','unidad').filter(matnom__icontains=request.GET['matnom'],matmed__icontains=request.GET['matmed'])[:1]
 			data['list'].append({ "materialesid": res[0]['materiales_id'], "matnom": res[0]['matnom'], "matmed": res[0]['matmed'], "unidad": res[0]['unidad'] })
 			return HttpResponse(simplejson.dumps(data), mimetype='application/json')
 	except ObjectDoesNotExist:
@@ -131,7 +133,7 @@ def get_details_materials_by_id(request):
 	try:
 		data = {}
 		if request.method == 'GET':
-			mat = models.Materiale.objects.values('materiales_id','matnom','matmed','unidad_id').get(pk=request.GET.get('mid'))
+			mat = Materiale.objects.values('materiales_id','matnom','matmed','unidad_id').get(pk=request.GET.get('mid'))
 			if len(mat) > 0:
 				mat['status'] = True
 			return HttpResponse(simplejson.dumps(mat),mimetype='application/json')		
@@ -272,7 +274,7 @@ def get_list_projects(request):
 	if request.method == 'GET':
 		data = {}
 		try:
-			lst = models.Proyecto.objects.values('proyecto_id','nompro').filter(flag=True,status='AC')
+			lst = Proyecto.objects.values('proyecto_id','nompro').filter(flag=True,status='AC')
 			data['list'] = [ { "proyecto_id": x['proyecto_id'], "nompro":x['nompro'] } for x in lst ]
 			data['status'] = True
 		except Exception, e:
@@ -284,9 +286,9 @@ def get_list_sectors(request):
 		data = {}
 		try:
 			if "sub" in request.GET:
-				lst = models.Sectore.objects.values('sector_id','planoid','nomsec').filter(proyecto_id=request.GET.get('pro'),subproyecto_id=request.GET.get('sub'))
+				lst = Sectore.objects.values('sector_id','planoid','nomsec').filter(proyecto_id=request.GET.get('pro'),subproyecto_id=request.GET.get('sub'))
 			else:
-				lst = models.Sectore.objects.values('sector_id','planoid','nomsec').filter(proyecto_id=request.GET.get('pro'),subproyecto_id=None)
+				lst = Sectore.objects.values('sector_id','planoid','nomsec').filter(proyecto_id=request.GET.get('pro'),subproyecto_id=None)
 			data['list']= [ { "sector_id":x['sector_id'], "planoid":x['planoid'], "nomsec":x['nomsec'] } for x in lst ]
 			data['status']= True
 		except ObjectDoesNotExist, e:
@@ -297,7 +299,7 @@ def get_list_subprojects(request):
 	if request.method == 'GET':
 		data = {}
 		try:
-			lst = models.Subproyecto.objects.values('subproyecto_id','nomsub').filter(proyecto_id=request.GET.get('pro'))
+			lst = Subproyecto.objects.values('subproyecto_id','nomsub').filter(proyecto_id=request.GET.get('pro'))
 			data['list']= [ { "subproyecto_id":x['subproyecto_id'],"nomsub":x['nomsub'] } for x in lst ]
 			data['status']= True
 		except ObjectDoesNotExist, e:
@@ -308,7 +310,7 @@ def get_list_stores(request):
 	if request.method == 'GET':
 		data = {}
 		try:
-			lst = models.Almacene.objects.values('almacen_id','nombre').filter(flag=True)
+			lst = Almacene.objects.values('almacen_id','nombre').filter(flag=True)
 			data['list']= [ { 'almacen_id':x['almacen_id'], 'nombre': x['nombre'] } for x in lst ]
 			data['status']= True
 		except ObjectDoesNotExist, e:
@@ -351,7 +353,7 @@ def get_recover_list_transport(request,truc):
 		if request.is_ajax():
 			data= {}
 			try:
-				data['list']= [ {'nropla_id':x['nropla_id'],'marca':x['marca']} for x in models.Transporte.objects.values('nropla_id','marca').filter(traruc_id__exact=truc,flag=True) ]
+				data['list']= [ {'nropla_id':x['nropla_id'],'marca':x['marca']} for x in Transporte.objects.values('nropla_id','marca').filter(traruc_id__exact=truc,flag=True) ]
 				data['status']= True
 			except ObjectDoesNotExist, e:
 				data['status']= False
@@ -362,7 +364,7 @@ def get_recover_list_conductor(request,truc):
 		if request.is_ajax():
 			data= {}
 			try:
-				data['list']= [ {'condni_id':x['condni_id'],'connom':x['connom'],'conlic':x['conlic']} for x in models.Conductore.objects.values('condni_id','connom','conlic').filter(traruc_id__exact=truc,flag=True) ]
+				data['list']= [ {'condni_id':x['condni_id'],'connom':x['connom'],'conlic':x['conlic']} for x in Conductore.objects.values('condni_id','connom','conlic').filter(traruc_id__exact=truc,flag=True) ]
 				data['status']= True
 			except ObjectDoesNotExist, e:
 				data['status']= False

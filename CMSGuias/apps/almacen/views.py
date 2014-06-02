@@ -7,11 +7,13 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db.models import Q
 from CMSGuias.apps.almacen import models
+from CMSGuias.apps.home.models import Cliente, Almacene, Transportista, Conductore, Transporte, userProfile
+from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
 from CMSGuias.apps.almacen import forms
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Max
 from django.utils import simplejson
-from CMSGuias.apps.almacen import genkeys
+from CMSGuias.apps.tools import genkeys
 import datetime
 
 ##
@@ -77,14 +79,14 @@ def view_pedido(request):
 def view_keep_customers(request):
 	try:
 		if request.method == 'GET':
-			lista = models.Cliente.objects.values('ruccliente_id','razonsocial','direccion','telefono').filter(flag=True).order_by('razonsocial')			
+			lista = Cliente.objects.values('ruccliente_id','razonsocial','direccion','telefono').filter(flag=True).order_by('razonsocial')			
 			ctx = { "lista": lista }
 			return render_to_response("almacen/customers.html",ctx,context_instance=RequestContext(request))
 		elif request.method == 'POST':
 			if "ruc" in request.POST:
 				data = {}
 				try:
-					obj = models.Cliente.objects.get(pk=request.POST.get('ruc'))
+					obj = Cliente.objects.get(pk=request.POST.get('ruc'))
 					obj.flag = False
 					obj.save()
 					data['status'] = True
@@ -100,8 +102,8 @@ def view_keep_add_customers(request):
 	try:
 		info = "Iniciando"
 		if request.method == 'POST':
-			if models.Cliente.objects.filter(pk=request.POST.get('ruccliente_id')).count() > 0:
-				add = models.Cliente.objects.get(pk=request.POST.get('ruccliente_id'))
+			if Cliente.objects.filter(pk=request.POST.get('ruccliente_id')).count() > 0:
+				add = Cliente.objects.get(pk=request.POST.get('ruccliente_id'))
 				add.razonsocial = request.POST.get('razonsocial')
 				add.pais_id = request.POST.get('pais')
 				add.departamento_id = request.POST.get('departamento')
@@ -130,7 +132,7 @@ def view_keep_add_customers(request):
 @login_required(login_url='/SignUp/')
 def view_keep_edit_customers(request,ruc):
 	try:
-		c = models.Cliente.objects.get(pk__exact=ruc)
+		c = Cliente.objects.get(pk__exact=ruc)
 		if request.method == 'GET':
 			form = forms.addCustomersForm(instance=c)
 		elif request.method == 'POST':
@@ -151,22 +153,22 @@ def view_keep_edit_customers(request,ruc):
 def view_keep_project(request):
 	try:
 		if request.method == 'GET':
-			lista = models.Proyecto.objects.filter(flag=True).order_by("nompro")
+			lista = Proyecto.objects.filter(flag=True).order_by("nompro")
 			return render_to_response('almacen/project.html',{"lista":lista, "tsid": u""},context_instance=RequestContext(request))
 		elif request.method == 'POST':
 			if "proid" in request.POST:
 				data = {}
 				try:
 					# sectores
-					obj = models.Sectore.objects.filter(proyecto_id=request.POST.get('proid'))
+					obj = Sectore.objects.filter(proyecto_id=request.POST.get('proid'))
 					obj.status = 'DA'
 					obj.flag = False
 					obj.save()
-					obj = models.Subproyecto.objects.filter(proyecto_id=request.POST.get('proid'))
+					obj = Subproyecto.objects.filter(proyecto_id=request.POST.get('proid'))
 					obj.status = 'DA'
 					obj.flag = False
 					obj.save()
-					obj = models.Proyecto.objects.get(pk=request.POST.get('proid'))
+					obj = Proyecto.objects.get(pk=request.POST.get('proid'))
 					obj.status = 'DA'
 					obj.flag = False
 					obj.save()
@@ -181,8 +183,8 @@ def view_keep_project(request):
 def view_keep_add_project(request):
 	try:
 		if request.method == 'POST':
-			if models.Proyecto.objects.filter(pk=request.POST.get('proyecto_id')).count() > 0:
-				add = models.Proyecto.objects.get(pk=request.POST.get('proyecto_id'))
+			if Proyecto.objects.filter(pk=request.POST.get('proyecto_id')).count() > 0:
+				add = Proyecto.objects.get(pk=request.POST.get('proyecto_id'))
 				add.ruccliente_id = request.POST.get('ruccliente')
 				add.nompro = request.POST.get('nompro')
 				add.comienzo = datetime.datetime.strptime( request.POST.get('comienzo'), FORMAT_DATE_STR ).date() if request.POST.get('comienzo') is not None else datetime.datetime.today().date()
@@ -201,7 +203,7 @@ def view_keep_add_project(request):
 				if form.is_valid():
 						add = form.save(commit=False)
 						# for table project have generate id
-						cod = models.Proyecto.objects.all().aggregate(Max('proyecto_id'))
+						cod = Proyecto.objects.all().aggregate(Max('proyecto_id'))
 						if cod['proyecto_id__max'] is not None:
 							aa = cod["proyecto_id__max"][2:4]
 							an = datetime.datetime.today().strftime("%y")
@@ -229,7 +231,7 @@ def view_keep_add_project(request):
 @login_required(login_url='/SignUp/')
 def view_keep_edit_project(request,proid):
 	try:
-		c = models.Proyecto.objects.get(pk__exact=proid)
+		c = Proyecto.objects.get(pk__exact=proid)
 		if request.method == 'GET':
 			form = forms.addProjectForm(instance=c)
 		elif request.method == 'POST':
@@ -251,13 +253,13 @@ def view_keep_edit_project(request,proid):
 def view_keep_sec_project(request,pid,sid):
 	try:
 		if request.method == 'GET':
-			lista = models.Sectore.objects.filter(flag=True,proyecto__flag=True,proyecto_id__exact=pid,subproyecto_id=None if sid.strip() == "" else sid).order_by("sector_id")
+			lista = Sectore.objects.filter(flag=True,proyecto__flag=True,proyecto_id__exact=pid,subproyecto_id=None if sid.strip() == "" else sid).order_by("sector_id")
 			return render_to_response('almacen/sectores.html',{"lista":lista,"pid":pid,"sid":sid}, context_instance=RequestContext(request))
 		elif request.method == 'POST':
 			if "sec" in request.POST:
 				data = {}
 				try:
-					obj = models.Sectore.objects.get(proyecto_id=pid,subproyecto_id=None if sid.strip() == "" else sid,sector_id=request.POST.get('sec'))
+					obj = Sectore.objects.get(proyecto_id=pid,subproyecto_id=None if sid.strip() == "" else sid,sector_id=request.POST.get('sec'))
 					obj.delete()
 					data['status'] = True
 				except ObjectDoesNotExist, e:
@@ -294,7 +296,7 @@ def view_keep_add_sector(request,proid,sid):
 @login_required(login_url='/SignUp')
 def view_keep_edit_sector(request,pid,sid,cid):
 	try:
-		sec = models.Sectore.objects.get(proyecto_id=pid,subproyecto_id=None if sid == "" else sid, sector_id=cid)
+		sec = Sectore.objects.get(proyecto_id=pid,subproyecto_id=None if sid == "" else sid, sector_id=cid)
 		if request.method == "GET":
 			form = forms.addSectoresForm(instance=sec)
 			ctx = { "form": form, "pid": pid, "sid": sid, "cid": cid }
@@ -322,15 +324,15 @@ def view_keep_edit_sector(request,pid,sid,cid):
 def view_keep_sub_project(request,pid):
 	try:
 		if request.method == 'GET':
-			lista = models.Subproyecto.objects.filter(flag=True,proyecto__flag=True,proyecto_id__exact=pid).order_by("subproyecto_id")
+			lista = Subproyecto.objects.filter(flag=True,proyecto__flag=True,proyecto_id__exact=pid).order_by("subproyecto_id")
 			return render_to_response('almacen/subproject.html',{"lista":lista,"pid":pid,"sid":""},context_instance=RequestContext(request))
 		elif request.method == 'POST':
 			if "sid" in request.POST:
 				data = {}
 				try:
-					obj = models.Sectore.objects.filter(proyecto_id=pid,subproyecto_id=request.POST.get('sid'))
+					obj = Sectore.objects.filter(proyecto_id=pid,subproyecto_id=request.POST.get('sid'))
 					obj.delete()
-					obj = models.Subproyecto.objects.get(subproyecto_id=request.POST.get('sid'),proyecto_id=pid)
+					obj = Subproyecto.objects.get(subproyecto_id=request.POST.get('sid'),proyecto_id=pid)
 					obj.delete()
 					data['status'] = True
 				except ObjectDoesNotExist, e:
@@ -363,7 +365,7 @@ def view_keep_add_subproyeto(request,pid):
 @login_required(login_url='/SignUp')
 def view_keep_edit_subproyecto(request,pid,sid):
 	try:
-		sub = models.Subproyecto.objects.get(flag=True,proyecto__flag=True,proyecto_id__exact=pid,subproyecto_id=sid)
+		sub = Subproyecto.objects.get(flag=True,proyecto__flag=True,proyecto_id__exact=pid,subproyecto_id=sid)
 		if request.method == "GET":
 			form = forms.addSubprojectForm(instance=sub)
 			ctx = { "form": form, "pid": pid }
@@ -390,13 +392,13 @@ def view_keep_edit_subproyecto(request,pid,sid):
 def view_stores(request):
 	try:
 		if request.method == 'GET':
-			lista = models.Almacene.objects.filter(flag=True).order_by('nombre')
+			lista = Almacene.objects.filter(flag=True).order_by('nombre')
 			ctx = { "lista": lista }
 			return render_to_response("upkeep/almacenes.html",ctx,context_instance=RequestContext(request))
 		elif request.method == 'POST':
 			data = {}
 			try:
-				obj = models.Almacene.objects.get(pk=request.POST.get('aid'))
+				obj = Almacene.objects.get(pk=request.POST.get('aid'))
 				obj.delete()
 				data['status'] = True
 			except ObjectDoesNotExist, e:
@@ -417,7 +419,7 @@ def view_stores_add(request):
 			if form.is_valid():
 				add = form.save(commit=False)
 				# generate id for Stores
-				c_old = models.Almacene.objects.all().aggregate(Max('almacen_id'))
+				c_old = Almacene.objects.all().aggregate(Max('almacen_id'))
 				if c_old['almacen_id__max'] is not None:
 					cont = c_old['almacen_id__max'][2:4]
 					cont = int(cont) + 1
@@ -437,7 +439,7 @@ def view_stores_add(request):
 @login_required(login_url='/SignUp/')
 def view_stores_edit(request,aid):
 	try:
-		al = models.Almacene.objects.get(pk=aid)
+		al = Almacene.objects.get(pk=aid)
 		if request.method == 'GET':
 			form = forms.addAlmacenesForm(instance=al)
 			ctx = { "form": form, "aid": aid }
@@ -463,7 +465,7 @@ def view_stores_edit(request,aid):
 def view_carrier(request):
 	try:
 		if request.method == 'GET':
-			lista = models.Transportista.objects.filter(flag=True).order_by('tranom')
+			lista = Transportista.objects.filter(flag=True).order_by('tranom')
 			ctx = { "lista": lista }
 			return render_to_response("upkeep/transportista.html",ctx,context_instance=RequestContext(request))
 		elif request.method == 'POST':
@@ -471,13 +473,13 @@ def view_carrier(request):
 			if "ruc" in request.POST:
 				try:
 					# delete conductors
-					obj = models.Conductore.objects.filter(traruc_id__exact=request.POST.get('ruc'))
+					obj = Conductore.objects.filter(traruc_id__exact=request.POST.get('ruc'))
 					obj.delete()
 					# delete Transport
-					obj = models.Transporte.objects.filter(traruc_id__exact=request.POST.get('ruc'))
+					obj = Transporte.objects.filter(traruc_id__exact=request.POST.get('ruc'))
 					obj.delete()
 					# delete carrier
-					obj = models.Transportista.objects.get(pk=request.POST.get('ruc'))
+					obj = Transportista.objects.get(pk=request.POST.get('ruc'))
 					obj.delete()
 					data['status'] = True
 				except ObjectDoesNotExist, e:
@@ -510,7 +512,7 @@ def view_carrier_add(request):
 @login_required(login_url='/SignUp/')
 def view_carrier_edit(request,ruc):
 	try:
-		t = models.Transportista.objects.get(pk=ruc)
+		t = Transportista.objects.get(pk=ruc)
 		if request.method == 'GET':
 			form = forms.addCarrierForm(instance=t)
 			return render_to_response("upkeep/editcarrier.html",{"form":form,"ruc":ruc},context_instance=RequestContext(request))
@@ -534,7 +536,7 @@ def view_carrier_edit(request,ruc):
 def view_transport(request,ruc):
 	try:
 		if request.method == 'GET':
-			lista = models.Transporte.objects.filter(flag=True,traruc_id=ruc)
+			lista = Transporte.objects.filter(flag=True,traruc_id=ruc)
 			print lista
 			ctx = { "lista": lista, "ruc":ruc, "nom": lista[0].traruc.tranom if len(lista) > 0 else "" }
 			return render_to_response("upkeep/transport.html",ctx,context_instance=RequestContext(request))
@@ -542,7 +544,7 @@ def view_transport(request,ruc):
 			if "nropla" in request.POST:
 				data = {}
 				try:
-					obj = models.Transporte.objects.get(traruc_id=ruc,condni_id=request.POST.get('nropla'))
+					obj = Transporte.objects.get(traruc_id=ruc,condni_id=request.POST.get('nropla'))
 					obj.delete()
 					data['status'] = True
 				except ObjectDoesNotExist, e:
@@ -576,7 +578,7 @@ def view_transport_add(request,tid):
 @login_required(login_url="/SignUp/")
 def view_transport_edit(request,cid,tid):
 	try:
-		t = models.Transporte.objects.get(traruc_id=cid,nropla_id=tid)
+		t = Transporte.objects.get(traruc_id=cid,nropla_id=tid)
 		if request.method == 'GET':
 			form = forms.addTransportForm(instance=t)
 			return render_to_response("upkeep/edittransport.html",{"form": form, "cid":cid, "tid": tid}, context_instance=RequestContext(request))
@@ -596,7 +598,7 @@ def view_transport_edit(request,cid,tid):
 def view_conductor(request,ruc):
 	try:
 		if request.method == 'GET':
-			lista = models.Conductore.objects.filter(flag=True,traruc_id=ruc)
+			lista = Conductore.objects.filter(flag=True,traruc_id=ruc)
 			print lista
 			ctx = { "lista": lista, "ruc":ruc, "nom": lista[0].traruc.tranom if len(lista) > 0 else "" }
 			return render_to_response("upkeep/conductor.html",ctx,context_instance=RequestContext(request))
@@ -604,7 +606,7 @@ def view_conductor(request,ruc):
 			if "condni" in request.POST:
 				data = {}
 				try:
-					obj = models.Conductore.objects.get(traruc_id=ruc,condni_id=request.POST.get('condni'))
+					obj = Conductore.objects.get(traruc_id=ruc,condni_id=request.POST.get('condni'))
 					obj.delete()
 					data['status'] = True
 				except ObjectDoesNotExist, e:
@@ -638,7 +640,7 @@ def view_conductor_add(request,tid):
 @login_required(login_url="/SignUp/")
 def view_conductor_edit(request,cid,tid):
 	try:
-		t = models.Conductore.objects.get(traruc_id=cid,condni_id=tid)
+		t = Conductore.objects.get(traruc_id=cid,condni_id=tid)
 		if request.method == 'GET':
 			form = forms.addConductorForm(instance=t)
 			return render_to_response("upkeep/editconductor.html",{"form": form, "cid":cid, "tid": tid}, context_instance=RequestContext(request))
@@ -692,7 +694,7 @@ def view_attend_order(request,oid):
 					radio= 'disabled'
 					break
 			nipples= get_list_or_404(models.Niple.objects.order_by('metrado'),pedido_id__exact=oid,flag=True)
-			usr= models.userProfile.objects.get(empdni__exact=obj.empdni)
+			usr= userProfile.objects.get(empdni__exact=obj.empdni)
 			tipo= {"A":"Roscado","B":"Ranurado","C":"Rosca-Ranura"}
 			ctx= { 'orders': obj, 'det': det, 'nipples': nipples, 'usr': usr,'tipo':tipo,'radio':radio }
 			return render_to_response('almacen/attendorder.html',ctx,context_instance=RequestContext(request))
@@ -774,7 +776,7 @@ def view_generate_document_out(request,oid):
 		if request.method == 'GET':
 			orders= get_object_or_404(models.Pedido,flag=True,pedido_id__exact=oid)
 			print orders
-			trans= get_list_or_404(models.Transportista.objects.values('traruc_id','tranom'),flag=True)
+			trans= get_list_or_404(Transportista.objects.values('traruc_id','tranom'),flag=True)
 			ctx= { 'oid': oid, 'trans': trans, 'orders': orders }
 			return render_to_response("almacen/documentout.html",ctx,context_instance=RequestContext(request))
 		elif request.method == 'POST':

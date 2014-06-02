@@ -1,11 +1,13 @@
 #-*- Encoding: utf-8 -*-
 from django import forms
 from CMSGuias.apps.almacen import models
+from CMSGuias.apps.home.models import Cliente, Almacene, Transportista, Transporte, Conductore
+from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
 
 # Customers
 class addCustomersForm(forms.ModelForm ):
 	class Meta:
-		model   = models.Cliente
+		model   = Cliente
 		exclude = {"flag",}
 		widgets = {
 							'ruccliente_id': forms.TextInput(attrs ={'class': 'form-control'}),
@@ -20,7 +22,7 @@ class addCustomersForm(forms.ModelForm ):
 # Projects
 class addProjectForm(forms.ModelForm):
 	class Meta:
-		model   = models.Proyecto
+		model   = Proyecto
 		exclude = {"flag","proyecto_id",}
 		STATUS  = (("AC", "ACTIVE"),)
 		widgets = {
@@ -39,7 +41,7 @@ class addProjectForm(forms.ModelForm):
 # sectores
 class addSectoresForm(forms.ModelForm):
 	class Meta:
-		model   = models.Sectore
+		model   = Sectore
 		exclude = {"registrado","flag","proyecto","subproyecto",}
 		STATUS  = (("AC","ACTIVE"),)		
 		widgets ={
@@ -56,7 +58,7 @@ class addSectoresForm(forms.ModelForm):
 # SubProyectos'
 class addSubprojectForm(forms.ModelForm):
 	class Meta:
-		model   = models.Subproyecto
+		model   = Subproyecto
 		exclude = {"proyecto","registrado","flag",}
 		STATUS  = (("AC","ACTIVE"),)
 		widgets = {
@@ -70,7 +72,7 @@ class addSubprojectForm(forms.ModelForm):
 # Almacenes
 class addAlmacenesForm(forms.ModelForm):
 	class Meta:
-		model = models.Almacene
+		model = Almacene
 		exclude = { "almacen_id","flag", }
 		widgets= {
 							"nombre": forms.TextInput(attrs = {'class': 'form-control', 'maxlength':'50'}),
@@ -78,7 +80,7 @@ class addAlmacenesForm(forms.ModelForm):
 # Carrier
 class addCarrierForm(forms.ModelForm):
 	class Meta:
-		model   = models.Transportista
+		model   = Transportista
 		exclude = { "flag", }
 		widgets = {
 							"traruc_id" : forms.TextInput(attrs ={'class': 'form-control','maxlength':'11'}),
@@ -88,7 +90,7 @@ class addCarrierForm(forms.ModelForm):
 # Transport
 class addTransportForm(forms.ModelForm):
 	class Meta:
-		model   = models.Transporte
+		model   = Transporte
 		exclude = { "traruc","flag", }
 		widgets = {
 							"nropla_id": forms.TextInput(attrs ={'class': 'form-control'}),
@@ -97,7 +99,7 @@ class addTransportForm(forms.ModelForm):
 # Conductores
 class addConductorForm(forms.ModelForm):
 	class Meta:
-		model = models.Conductore
+		model = Conductore
 		exclude = { "traruc", "flag", }
 		widgets = {
 			"condni_id" :forms.TextInput(attrs ={'class': 'form-control'}),

@@ -52,7 +52,6 @@ def rpt_orders_details(request,pid,sts):
 			return generate_pdf(html)
 	except TemplateDoesNotExist, e:
 		raise Http404
-
 # report guide referral with format
 def rpt_guide_referral_format(request,gid,pg):
 	try:
