@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block title %} Inventory {% endblock %}
+{% block script %}
+<script src="{{ MEDIA_URL }}js/almacen/inventory.js"></script>
+{% endblock%}
+{% block style %}
+<style>
+	input[name=ias]{
+		width: 80px;
+	}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+	<div class="well">
+		<header>
+			<h3>Inventory <span class="text-warning glyphicon glyphicon-th"></span></h3>
+			{{invetory}}
+		</header>
+		<div class="row show-grid">
+			<div class="col-md-12">
+				<aside class="bs-callout bs-callout-warning text-warning">
+					<div class="row show-grid">
+						<div class="col-md-12">
+							<label class="inline-radio"><input type="radio" name="nper"> Otros Periodos</label>
+							<label class="inline-radio"><input type="radio" name="nper" checked="true"> Periodo Actual</label>
+						</div>
+						<div class="col-md-2">
+							<label class="control-label">Periodo</label>
+							<select name="periodo" id="" class="form-control">
+								{% for p in periodo %}
+									<option value="{{p}}">{{p}}</option>
+								{% empty %}
+									<option value="">Nothing</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="col-md-3">
+							<label class="control-label">Almacen</label>
+							<select name="almacen" id="" class="form-control">
+								{% for a in almacen %}
+									<option value="{{a.alid}}">{{a.nom}}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="col-md-2">
+							<label class="control-label">Código</label>
+							<input type="text" name="cod" class="form-control">
+						</div>
+						<div class="col-md-5">
+							<label class="control-label">Descripción</label>
+							<input type="text" name="desc" id="" class="form-control">
+						</div>
+						<div class="col-md-2">
+							<label class="checkbox-inline"><input type="checkbox" class="stkzero"> Sotck en "0"</label>
+						</div>
+						<div class="col-md-2">
+							<label class="checkbox-inline"><input type="checkbox" class="stkmin"> Sotck Min.</label>
+							<input type="number" class="form-control" name="smin" min="0" value="10">
+						</div>
+						<div class="col-md-1">
+							<label class="control-label">Avanzado</label>
+							<button class="btn btn-sm btn-primary btn-block"
+							{% ifnotequal user.get_profile.cargo_id '111111111' %}
+								disabled="true" 
+							{% endifnotequal %} ><span class="glyphicon glyphicon-chevron-down"></span></button>
+						</div>
+						<div class="col-md-1">
+						<label for="" class="control-label">search</label>
+							<button class="btn btn-success text-black btn-block">
+							<span class="glyphicon glyphicon-search"></span></button>
+						</div>
+						<div class="col-md-12">
+							<div class="panel panel-primary opad">
+								<div class="panel-heading">Opciones Avanzadas <a class="close">&times;</a></div>
+								<div class="panel-body">
+									<strong>Ingreso a Inventario</strong>
+									<p>
+										<span class="glyphicon glyphicon-ok-sign"></span>  Poner al inventario todo la lista de Materiales con stock 0, de lo contrario especifica aqui. <input type="number" class="input-sm" name="ias" min="0" value="0"> <button class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-chevron-right"></span> <span class="glyphicon glyphicon-sort-by-attributes"></span></button>
+									</p>
+									<p>
+										<span class="glyphicon glyphicon-ok-sign"></span> Pasar el Stock del Periodo pasado al actual. <button class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-chevron-right"></span> <span class="glyphicon glyphicon-ok-circle"></span>  </button>
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</aside>
+			</div>
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<table class="table table-hover table-striped table-condensed">
+						<thead>
+							<tr class="brand-warning">
+								<th class="text-center"></th><th class="text-center">Código</th><th class="text-center">Descripción</th><th class="text-center">Medida</th><th class="text-center">Unid.</th><th class="text-center">Min</th><th class="text-center">Stock</th><th class="text-center">Ingreso</th><th class="text-center">O. Compra</th><th class="text-center"></th>
+							</tr>
+						</thead>
+						<tbody>
+							
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

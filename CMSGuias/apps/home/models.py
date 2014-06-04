@@ -64,6 +64,14 @@ class Materiale(models.Model):
     def __unicode__(self):
         return '%s %s %s %s'%(self.materiales_id,self.matnom,self.matmed,self.unidad.uninom)
 
+class Cargo(models.Model):
+    cargo_id = models.CharField(primary_key=True, max_length=9)
+    cargos = models.CharField(max_length=60)
+    flag = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return '%s %s'%(self.cargo_id, self.cargos)
+
 class userProfile(models.Model):
     def url(self,filename):
         ruta = "MutimediaData/Users/%s/%s"%(self.user.username,filename)
@@ -71,6 +79,7 @@ class userProfile(models.Model):
 
     user = models.OneToOneField(User)
     empdni = models.CharField(max_length=8,null=False)
+    cargo = models.ForeignKey(Cargo, to_field='cargo_id', null=True)
     photo = models.ImageField(upload_to=url,null=True)
 
     def __unicode__(self):
@@ -152,14 +161,6 @@ class MarcaModelMaterial(models.Model):
     matparcial = models.CharField(max_length=12, null=False)
     def __unicode__(self):
         return '%s %s'%(self.marca, self.matparcial)
-
-class Cargo(models.Model):
-    cargo_id = models.CharField(primary_key=True,max_length=9)
-    cargos = models.CharField(max_length=45)
-    flag = models.BooleanField(default=True)
-
-    def __unicode__(self):
-        return '%s %s'%(self.cargo_id, self.cargos)
 
 class Herramientas(models.Model):
     herramientas_id = models.CharField(primary_key=True, max_length=14)
