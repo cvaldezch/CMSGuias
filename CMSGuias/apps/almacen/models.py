@@ -1,8 +1,7 @@
-from django.db import models
+from django.db import connection, models
 from CMSGuias.apps.ventas.models import Proyecto, Subproyecto, Sectore
 from CMSGuias.apps.home.models import Materiale, Almacene, Transportista, Transporte, Conductore, Cliente
 
-# Create your models here.
 
 class Pedido(models.Model):
     def url(self,filename):
@@ -140,8 +139,20 @@ class Inventario(models.Model):
     class Meta:
         ordering = ['materiales']
 
+    @staticmethod
+    def register_all_list_materilas(alid,quantity):
+      try:
+          cn = connection.cursor() # Open connection to DDBB
+          # cn.callproc('SP_almacen_RegisterListMaterials',[alid,quantity,]) # Execute Store Procedure
+          cn.execute("SELECT SP_almacen_RegisterListMaterials('%s',%i)"%(alid,int(quantity)))
+          result = cn.fetchone() # recover reault
+          cn.close() # close connection
+          return result[0]
+      except Exception, e:
+          raise e
+
     def __unicode__(self):
-        return '%s %s %f'%(self.materiales,self.nrocompra,self.stock)
+        return '%s %s %f'%(self.materiales,self.compra,self.stock)
 
 class Suministro(models.Model):
     suministro_id = models.CharField(primary_key=True, max_length=10)

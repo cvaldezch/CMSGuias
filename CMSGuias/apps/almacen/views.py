@@ -918,15 +918,27 @@ def view_list_guide_referral_canceled(request):
 ###########################
 # Views natives of stores #
 ###########################
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
+
 
 class InventoryView(TemplateView):
     template_name = 'almacen/inventory.html'
-    model = models.Inventario.objects.filter(ingreso__year=datetime.datetime.today().date().year,flag=True).order_by('materiales')
+    model = models.Inventario.objects.filter(periodo=datetime.datetime.today().date().year.__str__(),flag=True).order_by('materiales')
     context_object_name = 'invetory'
 
     def get_context_data(self, **kwargs):
         context = super(InventoryView, self).get_context_data(**kwargs)
         context['periodo'] = [x['periodo'] for x in models.Inventario.objects.values('periodo').order_by('periodo').distinct('periodo')]
         context['almacen'] = [{'alid':x.almacen_id, 'nom': x.nombre} for x in Almacene.objects.filter(flag=True)]
+        context[self.context_object_name] = self.model
         return context
+
+    def post(self, request, *args, **kwargs):
+        data = {}
+        # try:
+        sts = models.Inventario.register_all_list_materilas(request.POST.get('alid'), request.POST.get('quantity'))
+        data['status'] = sts
+        # except Exception, e:
+        #     data['status'] = 'False'
+        data = simplejson.dumps(data)
+        return HttpResponse(data, mimetype='application/json')

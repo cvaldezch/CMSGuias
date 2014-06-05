@@ -1,15 +1,19 @@
 $(document).ready(function() {
 	$(".opad").hide();
-	$(document).on('keyup',"input[name=desc]" , keyUpInput);	
+	$(document).on('keyup',"input[name=cod],input[name=desc]" , keyUpInput);
+	$(".btn-register-all-list").on('click',register_all_list);
+	$("button[name=btn-opad]").click(function(event) {
+		$(".opad").toggle("blind",600);
+	});
 });
 
 // functions
 var keyUpInput = function (event) {
 	event.preventDefault();
 	var key = (event.keyCode ? event.keyCode : event.which);
-	if (key == 13) {
+	//if (key == 13) {
 		search(this);
-	};
+	//};
 }
 var search = function (ctrl) {
 	var data = new Object();
@@ -25,7 +29,7 @@ var search = function (ctrl) {
 		INSERT INTO almacen_inventario(
             materiales_id, almacen_id, precompra, preventa, stkmin, stock, 
             stkpendiente, stkdevuelto, ingreso, compra, flag, periodo)
-		select materiales_id,coalesce('AL01',''),coalesce(0,0),coalesce(0,0),coalesce(10,0),coalesce(0,0),
+		SELECT materiales_id,coalesce('AL01',''),coalesce(0,0),coalesce(0,0),coalesce(10,0),coalesce(0,0),
 		coalesce(0,0),coalesce(0,0),coalesce(to_char(now(),'YYYY-MM-DD')::date,now()::date), coalesce('',''),
 		coalesce(True,True),coalesce(to_char(now(),'YYYY'),'')
 		from home_materiale
@@ -39,4 +43,16 @@ var search = function (ctrl) {
 
 	*/
 	console.log(data);
+}
+var register_all_list = function () {
+	var data = new Object();
+	data['alid'] = $("select[name=almacen]").val();
+	data['quantity'] = parseInt($("input[name=ias]").val());
+	data['csrfmiddlewaretoken'] = $("input[name=csrfmiddlewaretoken]").val();
+	$.post('',data, function (response) {
+		console.info(response);
+		if (response.status) {
+			location.reload();
+		};
+	},'json');
 }

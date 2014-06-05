@@ -15,7 +15,7 @@
 	<div class="well">
 		<header>
 			<h3>Inventory <span class="text-warning glyphicon glyphicon-th"></span></h3>
-			{{invetory}}
+			{{ invetory }}
 		</header>
 		<div class="row show-grid">
 			<div class="col-md-12">
@@ -60,14 +60,14 @@
 						</div>
 						<div class="col-md-1">
 							<label class="control-label">Avanzado</label>
-							<button class="btn btn-sm btn-primary btn-block"
+							<button type="Button" name="btn-opad" class="btn btn-sm btn-primary btn-block"
 							{% ifnotequal user.get_profile.cargo_id '111111111' %}
 								disabled="true" 
 							{% endifnotequal %} ><span class="glyphicon glyphicon-chevron-down"></span></button>
 						</div>
 						<div class="col-md-1">
 						<label for="" class="control-label">search</label>
-							<button class="btn btn-success text-black btn-block">
+							<button class="btn btn-success text-black btn-block btn-sm">
 							<span class="glyphicon glyphicon-search"></span></button>
 						</div>
 						<div class="col-md-12">
@@ -76,10 +76,10 @@
 								<div class="panel-body">
 									<strong>Ingreso a Inventario</strong>
 									<p>
-										<span class="glyphicon glyphicon-ok-sign"></span>  Poner al inventario todo la lista de Materiales con stock 0, de lo contrario especifica aqui. <input type="number" class="input-sm" name="ias" min="0" value="0"> <button class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-chevron-right"></span> <span class="glyphicon glyphicon-sort-by-attributes"></span></button>
+										<span class="glyphicon glyphicon-ok-sign"></span>  Ingresar al inventario, todo la lista de Materiales con stock 0, de lo contrario especifica aqui. <input type="number" class="input-sm" name="ias" min="0" value="0"> <button class="btn btn-sm btn-primary btn-register-all-list"><span class="glyphicon glyphicon-chevron-right"></span> <span class="glyphicon glyphicon-sort-by-attributes"></span></button>
 									</p>
 									<p>
-										<span class="glyphicon glyphicon-ok-sign"></span> Pasar el Stock del Periodo pasado al actual. <button class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-chevron-right"></span> <span class="glyphicon glyphicon-ok-circle"></span>  </button>
+										<span class="glyphicon glyphicon-ok-sign"></span> Pasar el Stock del Periodo pasado al actual. <button class="btn btn-sm btn-primary btn-all-list"><span class="glyphicon glyphicon-chevron-right"></span> <span class="glyphicon glyphicon-ok-circle"></span></button>
 									</p>
 								</div>
 							</div>
@@ -104,4 +104,5 @@
 		</div>
 	</div>
 </div>
+{% csrf_token %}
 {% endblock %}
