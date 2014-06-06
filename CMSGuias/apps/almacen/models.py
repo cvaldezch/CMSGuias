@@ -1,6 +1,8 @@
-from django.db import connection, models
+from django.db import connection, models, transaction
+
 from CMSGuias.apps.ventas.models import Proyecto, Subproyecto, Sectore
 from CMSGuias.apps.home.models import Materiale, Almacene, Transportista, Transporte, Conductore, Cliente
+from CMSGuias.apps.logistica.models import Compra
 
 
 class Pedido(models.Model):
@@ -133,23 +135,37 @@ class Inventario(models.Model):
     stkdevuelto = models.FloatField()
     periodo = models.CharField(max_length=4, default='')
     ingreso = models.DateField(auto_now=True)
-    compra = models.CharField(max_length=10, null=True,blank=True)
+    compra = models.ForeignKey(Compra, to_field='compra_id', null=True, blank=True)
     flag = models.BooleanField(default=True)
     
     class Meta:
         ordering = ['materiales']
 
     @staticmethod
+    @transaction.commit_on_success
     def register_all_list_materilas(alid,quantity):
       try:
           cn = connection.cursor() # Open connection to DDBB
-          # cn.callproc('SP_almacen_RegisterListMaterials',[alid,quantity,]) # Execute Store Procedure
-          cn.execute("SELECT SP_almacen_RegisterListMaterials('%s',%i)"%(alid,int(quantity)))
-          result = cn.fetchone() # recover reault
+          cn.callproc('SP_almacen_RegisterListMaterials',[alid,quantity,]) # Execute Store Procedure
+          result = cn.fetchone() # recover result
           cn.close() # close connection
           return result[0]
       except Exception, e:
-          raise e
+          transaction.rollback()
+          return False
+
+    @staticmethod
+    @transaction.commit_on_success
+    def register_period_past(alid,period,almacen):
+      try:
+          cn = connection.cursor() # Open connection to DDBB
+          cn.callproc('sp_almacen_registerperiod',[alid,period,almacen,]) # Execute Store Procedure
+          result = cn.fetchone() # recover result
+          cn.close() # close connection
+          return result[0]
+      except Exception, e:
+          transaction.rollback()
+          return False
 
     def __unicode__(self):
         return '%s %s %f'%(self.materiales,self.compra,self.stock)
@@ -167,7 +183,7 @@ class Suministro(models.Model):
         ordering = ['suministro_id']
 
     def __unicode__(self):
-        return '%s %s %s'%(self.nrosuministro,self.almacen,self.ingreso)
+        return '%s %s %s'%(self.suministro_id,self.almacen,self.ingreso)
 
 class DetSuministro(models.Model):
     suministro = models.ForeignKey(Suministro, to_field='suministro_id')

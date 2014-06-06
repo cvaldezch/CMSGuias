@@ -2,6 +2,7 @@ $(document).ready(function() {
 	$(".opad").hide();
 	$(document).on('keyup',"input[name=cod],input[name=desc]" , keyUpInput);
 	$(".btn-register-all-list").on('click',register_all_list);
+	$(".btn-list-period").on("click", register_period_pased);
 	$("button[name=btn-opad]").click(function(event) {
 		$(".opad").toggle("blind",600);
 	});
@@ -11,9 +12,9 @@ $(document).ready(function() {
 var keyUpInput = function (event) {
 	event.preventDefault();
 	var key = (event.keyCode ? event.keyCode : event.which);
-	//if (key == 13) {
+	if (key == 13) {
 		search(this);
-	//};
+	};
 }
 var search = function (ctrl) {
 	var data = new Object();
@@ -23,36 +24,50 @@ var search = function (ctrl) {
 	data['omat'] = ctrl.value;
 	data['tipo'] = ctrl.name;
 	data['stkzero'] = $(".stkzero").is(":checked") ? true : false;
-	data['stkmin'] = $(".stkmin").is(":checked") ? $(".smin").val() : '';
-	/*
-		Code for Postgres function 
-		INSERT INTO almacen_inventario(
-            materiales_id, almacen_id, precompra, preventa, stkmin, stock, 
-            stkpendiente, stkdevuelto, ingreso, compra, flag, periodo)
-		SELECT materiales_id,coalesce('AL01',''),coalesce(0,0),coalesce(0,0),coalesce(10,0),coalesce(0,0),
-		coalesce(0,0),coalesce(0,0),coalesce(to_char(now(),'YYYY-MM-DD')::date,now()::date), coalesce('',''),
-		coalesce(True,True),coalesce(to_char(now(),'YYYY'),'')
-		from home_materiale
-		limit 5 offset 0
-		Code for Python
-		from django.db import connection
-	  cursor = connection.cursor()
-	  cursor.execute("SELECT foo FROM bar WHERE baz = %s", [self.baz])
-	  row = cursor.fetchone()
-	  return row
-
-	*/
+	data['stkmin'] = $(".stkmin").is(":checked") ? $(".smin").val() : 'None';
 	console.log(data);
+	$.get('',data,function (response) {
+		var $tbody = $("[data-template-name=list-materials]");
+		var template = "<td>{{ item }}</td>
+									<td>{{ materiales_id }}</td>
+									<td>{{ matnom }}</td>
+									<td>{{ matmet }}</td>
+									<td>{{ unid }}</td>
+									<td>{{ stkmin }}</td>
+									<td>{{ stock }}</td>
+									<td>{{ ingreso }}</td>
+									<td>{{ compra_id }}</td>
+									<td></td>";
+		$tbody.empty();
+		for (var x in response.list) {
+			$tbody.append(Mustache.render(template, response.list[x]))
+		};
+		console.log(response);
+	});
 }
 var register_all_list = function () {
 	var data = new Object();
 	data['alid'] = $("select[name=almacen]").val();
 	data['quantity'] = parseInt($("input[name=ias]").val());
 	data['csrfmiddlewaretoken'] = $("input[name=csrfmiddlewaretoken]").val();
+	data['tipo'] = 'all';
 	$.post('',data, function (response) {
 		console.info(response);
 		if (response.status) {
 			location.reload();
 		};
 	},'json');
+}
+var register_period_pased = function () {
+	var data = new Object();
+	data['alcp'] = $("select[name=alcp]").val();
+	data['pewh'] = $("select[name=pewh]").val();
+	data['alwh'] = $("select[name=alwh]").val();
+	data['csrfmiddlewaretoken'] = $("input[name=csrfmiddlewaretoken]").val();
+	data['tipo'] = 'per';
+	console.log(data);
+	$.post("", data, function (response) {
+		console.log(response);
+			location.reload();
+	},"json");
 }

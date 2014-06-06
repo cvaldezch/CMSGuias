@@ -1,8 +1,8 @@
 from django.db import models
+
 from CMSGuias.apps.home.models import Almacene, Documentos, FormaPago, Materiale, Moneda, Proveedor
 from CMSGuias.apps.almacen.models import Suministro
 
-# Create your models here.
 
 class Cotizacion(models.Model):
     cotizacion_id = models.CharField(primary_key=True, max_length=10)

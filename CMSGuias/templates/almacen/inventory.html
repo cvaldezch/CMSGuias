@@ -1,12 +1,16 @@
 {% extends 'base.html' %}
 {% block title %} Inventory {% endblock %}
 {% block script %}
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
 <script src="{{ MEDIA_URL }}js/almacen/inventory.js"></script>
 {% endblock%}
 {% block style %}
 <style>
 	input[name=ias]{
 		width: 80px;
+	}
+	.opadcbo{
+		width: 140px;
 	}
 </style>
 {% endblock %}
@@ -15,7 +19,6 @@
 	<div class="well">
 		<header>
 			<h3>Inventory <span class="text-warning glyphicon glyphicon-th"></span></h3>
-			{{ invetory }}
 		</header>
 		<div class="row show-grid">
 			<div class="col-md-12">
@@ -79,7 +82,33 @@
 										<span class="glyphicon glyphicon-ok-sign"></span>  Ingresar al inventario, todo la lista de Materiales con stock 0, de lo contrario especifica aqui. <input type="number" class="input-sm" name="ias" min="0" value="0"> <button class="btn btn-sm btn-primary btn-register-all-list"><span class="glyphicon glyphicon-chevron-right"></span> <span class="glyphicon glyphicon-sort-by-attributes"></span></button>
 									</p>
 									<p>
-										<span class="glyphicon glyphicon-ok-sign"></span> Pasar el Stock del Periodo pasado al actual. <button class="btn btn-sm btn-primary btn-all-list"><span class="glyphicon glyphicon-chevron-right"></span> <span class="glyphicon glyphicon-ok-circle"></span></button>
+										<span class="glyphicon glyphicon-ok-sign"></span> Pasar el Stock del Periodo pasado al actual.
+									</p>
+									<p>
+										<!-- cbo almacén a copiar-->
+										Almacén a ingresar:
+										<select name="alcp" id="" class="input-sm opadcbo">
+											{% for a in almacen %}
+												<option value="{{a.alid}}">{{a.nom}}</option>
+											{% endfor %}
+										</select>
+										<!-- cbo period -->
+										Periodo a copiar:
+										<select name="pewh" id="" class="input-sm opadcbo">
+										{% for p in periodo %}
+											<option value="{{p}}">{{p}}</option>
+										{% empty %}
+											<option value="">Nothing</option>
+										{% endfor %}
+									</select>
+									<!-- cbo almacén -->
+									Almacén a copiar:
+									<select name="alwh" id="" class="input-sm opadcbo">
+										{% for a in almacen %}
+											<option value="{{a.alid}}">{{a.nom}}</option>
+										{% endfor %}
+									</select>
+									<button class="btn btn-sm btn-primary btn-list-period"><span class="glyphicon glyphicon-chevron-right"></span> <span class="glyphicon glyphicon-ok-circle"></span></button>
 									</p>
 								</div>
 							</div>
@@ -91,13 +120,71 @@
 				<div class="table-responsive">
 					<table class="table table-hover table-striped table-condensed">
 						<thead>
+							<tr>
+								<td colspan="10" class="text-center">
+									<ul class="pager">
+										<li><a href="?page=1">&laquo;</a></li>
+										{% if inventory.has_previous %}
+											<li>
+												<a class="" href="?page={{ inventory.previous_page_number }}">previous</a>
+											</li>
+					        	{% endif %}
+										<li>
+				            	Page {{ inventory.number }} of {{ inventory.paginator.num_pages }}.
+				        		</li>
+						        {% if inventory.has_next %}
+						        	<li>
+						            <a href="?page={{ inventory.next_page_number }}">next</a>
+						          </li>
+						        {% endif %}
+						        <li><a href="?page={{ inventory.paginator.num_pages }}">&raquo;</a></li>
+						    	</ul>
+								</td>
+							</tr>
 							<tr class="brand-warning">
 								<th class="text-center"></th><th class="text-center">Código</th><th class="text-center">Descripción</th><th class="text-center">Medida</th><th class="text-center">Unid.</th><th class="text-center">Min</th><th class="text-center">Stock</th><th class="text-center">Ingreso</th><th class="text-center">O. Compra</th><th class="text-center"></th>
 							</tr>
 						</thead>
-						<tbody>
-							
+						<tbody data-templeta-name="list-materials">
+							{% for x in inventory %}
+								<tr class="{% if x.stock > x.stkmin %}success{% elif x.stock <= x.stkmin and x.stock > 0 %}warning{% elif x.stock <= 0 %}danger{% endif %}">
+									<td>{{ forloop.counter }}</td>
+									<td>{{ x.materiales_id }}</td>
+									<td>{{ x.materiales.matnom }}</td>
+									<td>{{ x.materiales.matmet }}</td>
+									<td>{{ x.materiales.unidad_id }}</td>
+									<td>{{ x.stkmin }}</td>
+									<td>{{ x.stock }}</td>
+									<td>{{ x.ingreso }}</td>
+									<td>{{ x.compra_id }}</td>
+									<td></td>
+								</tr>
+							{% empty %}
+							{% endfor %}
 						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan="10" class="text-center">
+									<ul class="pager">
+										<li><a href="?page=1">&laquo;</a></li>
+										{% if inventory.has_previous %}
+											<li>
+												<a class="" href="?page={{ inventory.previous_page_number }}">previous</a>
+											</li>
+					        	{% endif %}
+										<li>
+				            	Page {{ inventory.number }} of {{ inventory.paginator.num_pages }}.
+				        		</li>
+						        {% if inventory.has_next %}
+						        	<li>
+						            <a href="?page={{ inventory.next_page_number }}">next</a>
+						          </li>
+						        {% endif %}
+						        <li><a href="?page={{ inventory.paginator.num_pages }}">&raquo;</a></li>
+						    	</ul>
+								</td>
+							</tr>
+						</tfoot>
 					</table>
 				</div>
 			</div>

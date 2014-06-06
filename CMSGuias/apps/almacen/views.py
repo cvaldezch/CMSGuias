@@ -10,6 +10,7 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Max
 from django.utils import simplejson
+from django.core.paginator import EmptyPage, Paginator, PageNotAnInteger
 
 from CMSGuias.apps.almacen import models
 from CMSGuias.apps.home.models import Cliente, Almacene, Transportista, Conductore, Transporte, userProfile
@@ -919,26 +920,53 @@ def view_list_guide_referral_canceled(request):
 # Views natives of stores #
 ###########################
 from django.views.generic import TemplateView, ListView
+from django.db import connection, transaction
+# from django.core import serializers
 
 
-class InventoryView(TemplateView):
-    template_name = 'almacen/inventory.html'
-    model = models.Inventario.objects.filter(periodo=datetime.datetime.today().date().year.__str__(),flag=True).order_by('materiales')
-    context_object_name = 'invetory'
-
-    def get_context_data(self, **kwargs):
-        context = super(InventoryView, self).get_context_data(**kwargs)
+class InventoryView(ListView):
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            if request.GET.get('tipo') == 'desc':
+                model = models.Inventario.objects.filter(materiales__matnom__icontains='motor')
+            elif request.GET.get('tipo') == 'cod':
+                model = models.Inventario.objects.filter(materiales_id__istartswith=request.GET.get('cod'))
+            counter = 0
+            data={'list':[]}
+            for x in model:
+                counter += 1
+                data['list'].append({'item': counter,'materiales_id':x.materiales_id,'matnom': x.materiales.matnom, 'matmed': x.materiales.matmed,'unid':x.materiales.unidad_id, 'stkmin': x.stkmin, 'stock': x.stock, 'ingreso': x.ingreso, 'compra_id': x.compra_id })
+            return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+        else:
+            model = models.Inventario.objects.filter(periodo=datetime.datetime.today().date().year.__str__(),flag=True).order_by('materiales')
+        context = {}
         context['periodo'] = [x['periodo'] for x in models.Inventario.objects.values('periodo').order_by('periodo').distinct('periodo')]
         context['almacen'] = [{'alid':x.almacen_id, 'nom': x.nombre} for x in Almacene.objects.filter(flag=True)]
-        context[self.context_object_name] = self.model
-        return context
+        print model
+        paginator = Paginator(model, 20) # Show 25 materials per page
+        page = request.GET.get('page')
+        try:
+        	materials = paginator.page(page)
+        except PageNotAnInteger:
+        	# If page not is an integer, delivery first page
+        	materials = paginator.page(1)
+        except EmptyPage:
+        	# If page is out of range (e.g. 9999), delibery last page of result
+        	materials = paginator.page(paginator.num_pages)
+        context['inventory'] = materials
+        return render_to_response('almacen/inventory.html', context, context_instance=RequestContext(request))
 
     def post(self, request, *args, **kwargs):
         data = {}
-        # try:
-        sts = models.Inventario.register_all_list_materilas(request.POST.get('alid'), request.POST.get('quantity'))
-        data['status'] = sts
-        # except Exception, e:
-        #     data['status'] = 'False'
+        try:
+            tipo = request.POST.get('tipo')
+            if tipo == 'all':
+                sts = models.Inventario.register_all_list_materilas(request.POST.get('alid'), request.POST.get('quantity'))
+                data['status'] = sts
+            else:
+                sts = models.Inventario.register_period_past(request.POST.get('alcp'),request.POST.get('pewh'),request.POST.get('alwh'))
+                sts = data['status'] = sts
+        except Exception, e:
+            data['status'] = False
         data = simplejson.dumps(data)
         return HttpResponse(data, mimetype='application/json')
