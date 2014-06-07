@@ -1,8 +1,8 @@
 from django.db import connection, models, transaction
 
 from CMSGuias.apps.ventas.models import Proyecto, Subproyecto, Sectore
+# from CMSGuias.apps.logistica.models import Compra
 from CMSGuias.apps.home.models import Materiale, Almacene, Transportista, Transporte, Conductore, Cliente
-from CMSGuias.apps.logistica.models import Compra
 
 
 class Pedido(models.Model):
@@ -124,52 +124,6 @@ class NipleGuiaRemision(models.Model):
     def __unicode__(self):
         return '%s %s'%(self.materiales,self.guia)
 
-class Inventario(models.Model): 
-    materiales = models.ForeignKey(Materiale, to_field='materiales_id')
-    almacen = models.ForeignKey(Almacene, to_field='almacen_id')
-    precompra = models.FloatField()
-    preventa = models.FloatField(default=0)
-    stkmin = models.FloatField()
-    stock = models.FloatField()
-    stkpendiente = models.FloatField()
-    stkdevuelto = models.FloatField()
-    periodo = models.CharField(max_length=4, default='')
-    ingreso = models.DateField(auto_now=True)
-    compra = models.ForeignKey(Compra, to_field='compra_id', null=True, blank=True)
-    flag = models.BooleanField(default=True)
-    
-    class Meta:
-        ordering = ['materiales']
-
-    @staticmethod
-    @transaction.commit_on_success
-    def register_all_list_materilas(alid,quantity):
-      try:
-          cn = connection.cursor() # Open connection to DDBB
-          cn.callproc('SP_almacen_RegisterListMaterials',[alid,quantity,]) # Execute Store Procedure
-          result = cn.fetchone() # recover result
-          cn.close() # close connection
-          return result[0]
-      except Exception, e:
-          transaction.rollback()
-          return False
-
-    @staticmethod
-    @transaction.commit_on_success
-    def register_period_past(alid,period,almacen):
-      try:
-          cn = connection.cursor() # Open connection to DDBB
-          cn.callproc('sp_almacen_registerperiod',[alid,period,almacen,]) # Execute Store Procedure
-          result = cn.fetchone() # recover result
-          cn.close() # close connection
-          return result[0]
-      except Exception, e:
-          transaction.rollback()
-          return False
-
-    def __unicode__(self):
-        return '%s %s %f'%(self.materiales,self.compra,self.stock)
-
 class Suministro(models.Model):
     suministro_id = models.CharField(primary_key=True, max_length=10)
     almacen = models.ForeignKey(Almacene, to_field='almacen_id')
@@ -206,3 +160,50 @@ class tmpsuministro(models.Model):
 
     def __unicode__(self):
         return '%s %s %f'%(self.empdni,self.materiales,self.cantidad)
+
+class Inventario(models.Model): 
+    materiales = models.ForeignKey(Materiale,to_field='materiales_id') 
+    almacen = models.ForeignKey(Almacene, to_field='almacen_id')
+    precompra = models.FloatField()
+    preventa = models.FloatField(default=0)
+    stkmin = models.FloatField()
+    stock = models.FloatField()
+    stkpendiente = models.FloatField()
+    stkdevuelto = models.FloatField()
+    periodo = models.CharField(max_length=4, default='')
+    ingreso = models.DateField(auto_now=True)
+    compra = models.ForeignKey('logistica.Compra', to_field='compra_id', null=True,blank=True)
+    flag = models.BooleanField(default=True)
+    
+    class Meta:
+        ordering = ['materiales']
+
+    @staticmethod
+    @transaction.commit_on_success
+    def register_all_list_materilas(alid,quantity):
+      try:
+          cn = connection.cursor() # Open connection to DDBB
+          cn.callproc('SP_almacen_RegisterListMaterials',[alid,quantity,]) # Execute Store Procedure
+          result = cn.fetchone() # recover result
+          cn.close() # close connection
+          return result[0]
+      except Exception, e:
+          print e
+          transaction.rollback()
+          return False
+
+    @staticmethod
+    @transaction.commit_on_success
+    def register_period_past(alid,period,almacen):
+      try:
+          cn = connection.cursor() # Open connection to DDBB
+          cn.callproc('sp_almacen_registerperiod',[alid,period,almacen,]) # Execute Store Procedure
+          result = cn.fetchone() # recover result
+          cn.close() # close connection
+          return result[0]
+      except Exception, e:
+          transaction.rollback()
+          return False
+
+    def __unicode__(self):
+        return '%s %s %f'%(self.materiales,self.compra,self.stock)

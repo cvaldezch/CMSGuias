@@ -120,27 +120,6 @@
 				<div class="table-responsive">
 					<table class="table table-hover table-striped table-condensed">
 						<thead>
-							<tr>
-								<td colspan="10" class="text-center">
-									<ul class="pager">
-										<li><a href="?page=1">&laquo;</a></li>
-										{% if inventory.has_previous %}
-											<li>
-												<a class="" href="?page={{ inventory.previous_page_number }}">previous</a>
-											</li>
-					        	{% endif %}
-										<li>
-				            	Page {{ inventory.number }} of {{ inventory.paginator.num_pages }}.
-				        		</li>
-						        {% if inventory.has_next %}
-						        	<li>
-						            <a href="?page={{ inventory.next_page_number }}">next</a>
-						          </li>
-						        {% endif %}
-						        <li><a href="?page={{ inventory.paginator.num_pages }}">&raquo;</a></li>
-						    	</ul>
-								</td>
-							</tr>
 							<tr class="brand-warning">
 								<th class="text-center"></th><th class="text-center">Código</th><th class="text-center">Descripción</th><th class="text-center">Medida</th><th class="text-center">Unid.</th><th class="text-center">Min</th><th class="text-center">Stock</th><th class="text-center">Ingreso</th><th class="text-center">O. Compra</th><th class="text-center"></th>
 							</tr>
@@ -166,21 +145,21 @@
 							<tr>
 								<td colspan="10" class="text-center">
 									<ul class="pager">
-										<li><a href="?page=1">&laquo;</a></li>
 										{% if inventory.has_previous %}
+											<li><a href="?page=1">&laquo;</a></li>
 											<li>
-												<a class="" href="?page={{ inventory.previous_page_number }}">previous</a>
+												<a class="" href="?page={{ inventory.previous_page_number }}">Anterior</a>
 											</li>
 					        	{% endif %}
-										<li>
+										<li class="info-pages">
 				            	Page {{ inventory.number }} of {{ inventory.paginator.num_pages }}.
 				        		</li>
 						        {% if inventory.has_next %}
 						        	<li>
-						            <a href="?page={{ inventory.next_page_number }}">next</a>
+						            <a href="?page={{ inventory.next_page_number }}">Siguiente</a>
 						          </li>
+						          <li><a href="?page={{ inventory.paginator.num_pages }}">&raquo;</a></li>
 						        {% endif %}
-						        <li><a href="?page={{ inventory.paginator.num_pages }}">&raquo;</a></li>
 						    	</ul>
 								</td>
 							</tr>

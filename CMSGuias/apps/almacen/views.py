@@ -921,38 +921,55 @@ def view_list_guide_referral_canceled(request):
 ###########################
 from django.views.generic import TemplateView, ListView
 from django.db import connection, transaction
-# from django.core import serializers
+from django.core import serializers
 
 
 class InventoryView(ListView):
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
             if request.GET.get('tipo') == 'desc':
-                model = models.Inventario.objects.filter(materiales__matnom__icontains='motor')
+                if request.GET.get('stkzero') and request.GET.get('stkmin') == 'None':
+                    model = models.Inventario.objects.filter(materiales__matnom__icontains=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'), stock__lte=0)
+                else:
+                    model = models.Inventario.objects.filter(Q(materiales__matnom__icontains=request.GET.get('omat')) & Q(periodo=request.GET.get('periodo')) & Q(almacen=request.GET.get('almacen')) & Q(stock__gt=0) | Q(stkmin=request.GET.get('stkmin')))
             elif request.GET.get('tipo') == 'cod':
-                model = models.Inventario.objects.filter(materiales_id__istartswith=request.GET.get('cod'))
+                model = models.Inventario.objects.filter(materiales__materiales__startswith=request.GET.get('omat'))
             counter = 0
+            paginator = Paginator(model, 20)
+            page = request.GET.get('page')
+            try:
+                materials = paginator.page(page)
+            except PageNotAnInteger:
+                materials = paginator.page(1)
+            except EmptyPage:
+                materials = paginator.page(paginator.num_pages)
             data={'list':[]}
-            for x in model:
-                counter += 1
-                data['list'].append({'item': counter,'materiales_id':x.materiales_id,'matnom': x.materiales.matnom, 'matmed': x.materiales.matmed,'unid':x.materiales.unidad_id, 'stkmin': x.stkmin, 'stock': x.stock, 'ingreso': x.ingreso, 'compra_id': x.compra_id })
+            for x in materials:
+                data['list'].append({'materiales_id':x.materiales_id,'matnom': x.materiales.matnom, 'matmed': x.materiales.matmed,'unid':x.materiales.unidad_id, 'stkmin': x.stkmin, 'stock': x.stock, 'ingreso': x.ingreso.strftime(FORMAT_DATE_STR), 'compra_id': x.compra_id })
+            data['has_previous'] = materials.has_previous()
+            if materials.has_previous():
+                data['previous_page_number'] = materials.previous_page_number()
+            data['number'] = materials.number
+            data['num_pages'] = paginator.num_pages
+            data['has_next'] = materials.has_next()
+            if materials.has_next():
+                data['next_page_number'] = materials.next_page_number()
             return HttpResponse(simplejson.dumps(data), mimetype='application/json')
         else:
             model = models.Inventario.objects.filter(periodo=datetime.datetime.today().date().year.__str__(),flag=True).order_by('materiales')
         context = {}
         context['periodo'] = [x['periodo'] for x in models.Inventario.objects.values('periodo').order_by('periodo').distinct('periodo')]
         context['almacen'] = [{'alid':x.almacen_id, 'nom': x.nombre} for x in Almacene.objects.filter(flag=True)]
-        print model
         paginator = Paginator(model, 20) # Show 25 materials per page
         page = request.GET.get('page')
         try:
-        	materials = paginator.page(page)
+            materials = paginator.page(page)
         except PageNotAnInteger:
-        	# If page not is an integer, delivery first page
-        	materials = paginator.page(1)
+            # If page not is an integer, delivery first page
+            materials = paginator.page(1)
         except EmptyPage:
-        	# If page is out of range (e.g. 9999), delibery last page of result
-        	materials = paginator.page(paginator.num_pages)
+            # If page is out of range (e.g. 9999), delibery last page of result
+            materials = paginator.page(paginator.num_pages)
         context['inventory'] = materials
         return render_to_response('almacen/inventory.html', context, context_instance=RequestContext(request))
 
