@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block script %}
+<script src="{{ MEDIA_URL }}js/almacen/supply.js"></script>
+{% endblock %}
+{% block content %}
+<div class="container">
+	<div class="well">
+		<header>
+			<h3>Generar Suministro</h3>
+		</header>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<button class="btn btn-primary btn-gen"><span class="glyphicon glyphicon-chevron-down"></span> Generar Suministro</button>
+					</div>
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-md-12 content">
+								header
+							</div>
+							<div class="col-md-12 content">
+								<hr>
+							</div>
+							<div class="col-md-12">
+								<div class="table-responsive">
+									<table class="table table-hover table-condensed">
+										<caption class="bg-primary">
+											<div class="form-group pull-left">
+												&nbsp;&nbsp;Seleccionar <label class="radio-inline"><input type="radio" name="sel" value="true" />  Todo</label>
+												<label class="radio-inline"><input type="radio" name="sel" value="" /> Ninguno.</label>
+											</div>
+										</caption>
+										<thead>
+											<tr class="bg-primary">
+												<th></th><th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unid</th><th>Cantidad</th><th>Almacén</th><th>Origen</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% for x in tmp %}
+												<tr>
+													<td>{{ x.forloop.counter }}</td>
+													<td><input type="checkbox" name="chk" value="{{ x.materiales_id }}"></td>
+													<td>{{ x.materiales_id }}</td>
+													<td>{{ x.materiales.matnom }}</td>
+													<td>{{ x.materiales.matmed }}</td>
+													<td>{{ x.materiales.unidad_id }}</td>
+													<td>{{ x.cantidad }}</td>
+													<td>{{ x.almacen.nombre }}</td>
+													<td>{{ x.origin }}</td>
+												</tr>
+											{% empty %}
+												<div class="alert alert-warning alert-block">
+													<strong>Warning Data Empty</strong>
+													<p>
+														No se han encontrado datos para ser mostrados.
+													</p>
+												</div>
+											{% endfor %}
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

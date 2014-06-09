@@ -3,6 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Max
 import datetime
 
+
 ### format date str
 __date_str = "%Y-%m-%d"
 __year_str = "%y" # 'AA'

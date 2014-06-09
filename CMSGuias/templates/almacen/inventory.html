@@ -25,12 +25,12 @@
 				<aside class="bs-callout bs-callout-warning text-warning">
 					<div class="row show-grid">
 						<div class="col-md-12">
-							<label class="inline-radio"><input type="radio" name="nper"> Otros Periodos</label>
-							<label class="inline-radio"><input type="radio" name="nper" checked="true"> Periodo Actual</label>
+							<label class="inline-radio"><input type="radio" value="old" name="nper"> Otros Periodos</label>
+							<label class="inline-radio"><input type="radio" value="now" name="nper" checked="true"> Periodo Actual</label>
 						</div>
 						<div class="col-md-2">
 							<label class="control-label">Periodo</label>
-							<select name="periodo" id="" class="form-control">
+							<select name="periodo" disabled="disabled" class="form-control">
 								{% for p in periodo %}
 									<option value="{{p}}">{{p}}</option>
 								{% empty %}
@@ -59,19 +59,27 @@
 						</div>
 						<div class="col-md-2">
 							<label class="checkbox-inline"><input type="checkbox" class="stkmin"> Sotck Min.</label>
-							<input type="number" class="form-control" name="smin" min="0" value="10">
+							<input type="number" class="form-control" name="smin" min="0" value="10" disabled="disabled">
 						</div>
-						<div class="col-md-1">
+						<div class="col-md-1 pull-right">
 							<label class="control-label">Avanzado</label>
 							<button type="Button" name="btn-opad" class="btn btn-sm btn-primary btn-block"
 							{% ifnotequal user.get_profile.cargo_id '111111111' %}
 								disabled="true" 
 							{% endifnotequal %} ><span class="glyphicon glyphicon-chevron-down"></span></button>
 						</div>
-						<div class="col-md-1">
+						<!-- <div class="col-md-1">
 						<label for="" class="control-label">search</label>
 							<button class="btn btn-success text-black btn-block btn-sm">
 							<span class="glyphicon glyphicon-search"></span></button>
+						</div> -->
+						<div class="col-md-1 pull-right">
+							<label class="control-label">Suministro</label>
+							<button class="btn btn-block btn-sm btn-warning text-black">
+								<span class="glyphicon glyphicon-shopping-cart"></span>
+								<span class="glyphicon glyphicon-chevron-right"></span>
+								<span class="glyphicon glyphicon-list-alt"></span>
+							</button>
 						</div>
 						<div class="col-md-12">
 							<div class="panel panel-primary opad">
@@ -130,13 +138,19 @@
 									<td>{{ forloop.counter }}</td>
 									<td>{{ x.materiales_id }}</td>
 									<td>{{ x.materiales.matnom }}</td>
-									<td>{{ x.materiales.matmet }}</td>
+									<td>{{ x.materiales.matmed }}</td>
 									<td>{{ x.materiales.unidad_id }}</td>
 									<td>{{ x.stkmin }}</td>
 									<td>{{ x.stock }}</td>
 									<td>{{ x.ingreso }}</td>
 									<td>{{ x.compra_id }}</td>
-									<td></td>
+									<td>
+										<button value="{{ x.materiales_id }}" class="btn btn-xs btn-warning text-black btn-add-supply"
+										{% if x.spptag %}
+											disabled
+										{% endif %}
+										><span class="glyphicon glyphicon-plus"></span><span class="glyphicon glyphicon-shopping-cart"></span></button>
+									</td>
 								</tr>
 							{% empty %}
 							{% endfor %}
@@ -171,4 +185,27 @@
 	</div>
 </div>
 {% csrf_token %}
+<!-- Block modals -->
+<div class="modal fade maddsupply">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<a class="close" data-dismiss="modal">&times;</a>
+				<h4>Agregar a Suministro</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group has-warning">
+					<label class="control-label">Código</label>
+					<input type="text" name="add-id" class="form-control add-id" readonly />
+				</div>
+				<div class="form-group has-warning">
+					<label class="control-label">Cantidad</label>
+					<input type="number" name="add-cant" class="form-control add-cant" min="1" value="1" />
+				</div>
+				<button data-dismiss="modal" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-remove"></span> Salir</button>
+				<button class="btn btn-sm btn-warning pull-right text-black btn-stmp-supply"><span class="glyphicon glyphicon-save"></span> Añadir</button>
+			</div>
+		</div>
+	</div>
+</div>
 {% endblock %}

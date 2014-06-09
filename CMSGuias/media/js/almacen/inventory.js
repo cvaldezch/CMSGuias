@@ -1,14 +1,63 @@
 $(document).ready(function() {
 	$(".opad").hide();
 	$(document).on('keyup',"input[name=cod],input[name=desc]" , keyUpInput);
+	$(document).on("click",".btn-add-supply", addsupply);
 	$(".btn-register-all-list").on('click',register_all_list);
+	$(document).on("change", "input[name=nper]", changeperiod);
 	$(".btn-list-period").on("click", register_period_pased);
+	$(".stkmin").on("change", chkmin);
 	$("button[name=btn-opad]").click(function(event) {
 		$(".opad").toggle("blind",600);
 	});
+	$(".btn-stmp-supply").on("click", save_tmp_supply);
 });
 
 // functions
+var save_tmp_supply = function (event) {
+	event.preventDefault();
+	var data = new Object(), pass = false;
+	$(".add-id, .add-cant").each(function () {
+		if (this.value != "") {
+			data[this.name] = this.value;
+			pass = true;
+		}else{
+			$().toastmessage("showWarningToast","Se a encontrado un campo vacio.");
+			this.focus();
+			return false;
+			pass = false;
+		};
+	});
+	if (pass) {
+		data.tipo = 'save-tmp';
+		data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
+		data['add-ori'] = "AL";
+		data['add-al'] = $("select[name=almacen]").val();
+		console.info(data);
+		$.post("", data, function (response) {
+			console.warn(response);
+			if (response.status) {
+				$().toastmessage("showNoticeToast","Se agrego a Temp Suministro, correctamente.");
+				$(".add-id").val("");
+				$(".maddsupply").modal("hide");
+			}else{
+				$().toastmessage("showErrorToast","He fallado! en mi misión.")
+			};
+		}, "json");
+	};
+}
+var addsupply = function (event) {
+	event.preventDefault();
+	$(".add-id").val(this.value);
+	$(".maddsupply").modal("show");
+}
+var changeperiod = function (event) {
+	event.preventDefault();
+	$("select[name=periodo]").attr("disabled", this.value == "now" ? true : false);
+}
+var chkmin = function (event) {
+	event.preventDefault();
+	$("[name=smin]").attr("disabled", !this.checked);
+}
 var keyUpInput = function (event) {
 	event.preventDefault();
 	var key = (event.keyCode ? event.keyCode : event.which);
@@ -23,8 +72,8 @@ var search = function (ctrl,page) {
 	data['almacen'] = $("select[name=almacen]").val(); // get value almacen
 	data['omat'] = ctrl.value;
 	data['tipo'] = ctrl.name;
-	data['stkzero'] = $(".stkzero").is(":checked") ? true : false;
-	data['stkmin'] = $(".stkmin").is(":checked") ? $(".smin").val() : 'None';
+	data['stkzero'] = $(".stkzero").is(":checked") ? 1 : 0;
+	data['stkmin'] = $(".stkmin").is(":checked") ? $("[name=smin]").val() : 'None';
 	data['page'] = page;
 	$.get('',data,function (response) {
 		var $tbody = $("tbody");
@@ -37,12 +86,13 @@ var search = function (ctrl,page) {
 									"<td>{{ stock }}</td>"+
 									"<td>{{ ingreso }}</td>"+
 									"<td>{{ compra_id }}</td>"+
-									"<td></td></tr>";
+									"<td><button value='{{ materiales_id }}'' class='btn btn-xs btn-warning btn-add-supply text-black' {{ dis }}><span class='glyphicon glyphicon-plus'></span><span class='glyphicon glyphicon-shopping-cart'></span></button></td></tr>";
 		$tbody.empty();
 		for (var x in response.list) {
 			response.list[x].status = response.list[x].stock <= 0 ? 'danger' : response.list[x].stock >= response.list[x].stkmin ? 'success' : 'warning'
 			response.list[x].item = (parseInt(x) + 1);
-			$tbody.append(Mustache.render(template, response.list[x]))
+			response.list[x].dis = response.list[x].spptag ? 'disabled' : '';
+			$tbody.append(Mustache.render(template, response.list[x]));
 		};
 		var tmpnav = "";
 		if (response['has_previous']) {

@@ -4,12 +4,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
 #from django.views.generic import TemplateView
 from django.contrib import messages
-from CMSGuias.apps.almacen import models
-from CMSGuias.apps.home.models import Materiale, Almacene, Transporte, Conductore
-from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.utils import simplejson
+
+from CMSGuias.apps.almacen import models
+from CMSGuias.apps.home.models import Materiale, Almacene, Transporte, Conductore
+from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
+
 
 def get_description_materials(request):
 	try:

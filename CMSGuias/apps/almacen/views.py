@@ -18,6 +18,7 @@ from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
 from CMSGuias.apps.almacen import forms
 from CMSGuias.apps.tools import genkeys
 
+
 ##
 #  Declare variables
 ##
@@ -691,7 +692,9 @@ def view_attend_order(request,oid):
     try:
         if request.method == 'GET':
             obj= get_object_or_404(models.Pedido,pk=oid,flag=True)
-            det= get_list_or_404(models.Detpedido, pedido_id__exact=oid,flag=True)
+            # det= get_list_or_404(models.Detpedido, pedido_id__exact=oid,flag=True)
+            # use sintaxis sql for PostgreSQL
+            det = models.Detpedido.objects.filter(pedido_id__exact=oid,flag=True).extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},)
             radio= ''
             for x in det:
                 if x.cantshop <= 0:
@@ -779,7 +782,6 @@ def view_generate_document_out(request,oid):
     try:
         if request.method == 'GET':
             orders= get_object_or_404(models.Pedido,flag=True,pedido_id__exact=oid)
-            print orders
             trans= get_list_or_404(Transportista.objects.values('traruc_id','tranom'),flag=True)
             ctx= { 'oid': oid, 'trans': trans, 'orders': orders }
             return render_to_response("almacen/documentout.html",ctx,context_instance=RequestContext(request))
@@ -928,12 +930,23 @@ class InventoryView(ListView):
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
             if request.GET.get('tipo') == 'desc':
-                if request.GET.get('stkzero') and request.GET.get('stkmin') == 'None':
+                if bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') == 'None':
                     model = models.Inventario.objects.filter(materiales__matnom__icontains=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'), stock__lte=0)
+                elif bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') != 'None':
+                    model = models.Inventario.objects.filter(materiales__matnom__icontains=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'), stock__lte=0, stkmin=request.GET.get('stkmin'))
+                elif not bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') != 'None':
+                    model = models.Inventario.objects.filter(materiales__matnom__icontains=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'))
                 else:
-                    model = models.Inventario.objects.filter(Q(materiales__matnom__icontains=request.GET.get('omat')) & Q(periodo=request.GET.get('periodo')) & Q(almacen=request.GET.get('almacen')) & Q(stock__gt=0) | Q(stkmin=request.GET.get('stkmin')))
+                    model = models.Inventario.objects.filter(materiales__matnom__icontains=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'))
             elif request.GET.get('tipo') == 'cod':
-                model = models.Inventario.objects.filter(materiales__materiales__startswith=request.GET.get('omat'))
+                if bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') == 'None':
+                    model = models.Inventario.objects.filter(materiales__materiales_id__startswith=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'), stock__lte=0)
+                elif bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') != 'None':
+                    model = models.Inventario.objects.filter(materiales__materiales_id__startswith=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'), stock__lte=0, stkmin=request.GET.get('stkmin'))
+                elif not bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') != 'None':
+                    model = models.Inventario.objects.filter(materiales__materiales_id__startswith=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'))
+                else:
+                    model = models.Inventario.objects.filter(materiales__materiales_id__startswith=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'))
             counter = 0
             paginator = Paginator(model, 20)
             page = request.GET.get('page')
@@ -945,7 +958,7 @@ class InventoryView(ListView):
                 materials = paginator.page(paginator.num_pages)
             data={'list':[]}
             for x in materials:
-                data['list'].append({'materiales_id':x.materiales_id,'matnom': x.materiales.matnom, 'matmed': x.materiales.matmed,'unid':x.materiales.unidad_id, 'stkmin': x.stkmin, 'stock': x.stock, 'ingreso': x.ingreso.strftime(FORMAT_DATE_STR), 'compra_id': x.compra_id })
+                data['list'].append({'materiales_id':x.materiales_id,'matnom': x.materiales.matnom, 'matmed': x.materiales.matmed,'unid':x.materiales.unidad_id, 'stkmin': x.stkmin, 'stock': x.stock, 'ingreso': x.ingreso.strftime(FORMAT_DATE_STR), 'compra_id': x.compra_id,'spptag': x.spptag })
             data['has_previous'] = materials.has_previous()
             if materials.has_previous():
                 data['previous_page_number'] = materials.previous_page_number()
@@ -977,13 +990,34 @@ class InventoryView(ListView):
         data = {}
         try:
             tipo = request.POST.get('tipo')
-            if tipo == 'all':
+            if tipo == 'save-tmp':
+                obj = models.tmpsuministro()
+                obj.empdni = request.user.get_profile().empdni
+                obj.materiales_id = request.POST.get('add-id')
+                obj.cantidad = request.POST.get('add-cant')
+                obj.almacen_id = request.POST.get('add-al')
+                obj.origin = request.POST.get('add-ori')
+                obj.save()
+                obj = models.Inventario.objects.get(materiales_id=request.POST.get('add-id'),almacen_id=request.POST.get('add-al'),periodo=datetime.datetime.today().date().strftime('%Y'))
+                obj.spptag = True
+                obj.save()
+                data['status'] = True
+            elif tipo == 'all':
                 sts = models.Inventario.register_all_list_materilas(request.POST.get('alid'), request.POST.get('quantity'))
                 data['status'] = sts
-            else:
+            elif tipo == 'per':
                 sts = models.Inventario.register_period_past(request.POST.get('alcp'),request.POST.get('pewh'),request.POST.get('alwh'))
-                sts = data['status'] = sts
+                data['status'] = sts
         except Exception, e:
+            raise e
             data['status'] = False
         data = simplejson.dumps(data)
         return HttpResponse(data, mimetype='application/json')
+
+class SupplyView(ListView):
+    template_name = 'almacen/supply.html'
+
+    def get(self, request, *args, **kwargs):
+        context = {}
+        context['tmp'] = get_list_or_404(models.tmpsuministro, empdni__exact=request.user.get_profile().empdni)
+        return render_to_response(self.template_name,context,context_instance=RequestContext(request))

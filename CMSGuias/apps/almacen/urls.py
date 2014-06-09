@@ -1,5 +1,8 @@
-from django.conf.urls.defaults import patterns, url
+# -*- coding: utf-8 -*-
+#from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 import views
+
 
 urlpatterns = patterns('CMSGuias.apps.almacen.views',
     # orders
@@ -44,5 +47,6 @@ urlpatterns = patterns('CMSGuias.apps.almacen.views',
     url(r'^upkeep/conductor/add/(?P<tid>.*)/$','view_conductor_add',name='vista_conductor_add'),
     url(r'^upkeep/conductor/edit/(?P<cid>.*)/(?P<tid>.*)/$','view_conductor_edit',name='vista_conductor_edit'),
     url(r'^upkeep/conductor/(?P<ruc>.*)/$','view_conductor',name='vista_conductor'),
-    url(r'inventory/$',views.InventoryView.as_view(),name='vista_inventory'),
+    url(r'^inventory/$',views.InventoryView.as_view(),name='vista_inventory'),
+    url(r'^supply/$', views.SupplyView.as_view(), name='vista_supply'),
 )

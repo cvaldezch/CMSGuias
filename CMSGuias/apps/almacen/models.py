@@ -34,6 +34,7 @@ class Detpedido(models.Model):
     cantshop = models.FloatField(default=0,null=False)
     cantguide = models.FloatField(default=0,null=True,blank=True)
     tag = models.CharField(max_length=1,default='0',null=False)
+    spptag = models.BooleanField(default=False)
     flag = models.BooleanField(default=True)
 
     class Meta:
@@ -145,6 +146,7 @@ class DetSuministro(models.Model):
     cantidad = models.FloatField(null=False)
     cantshop = models.FloatField(default=0,null=False)
     tag = models.CharField(max_length=1,default='0',null=False)
+    origin = models.CharField(max_length=2,default='NN')
     flag = models.BooleanField(default=True)
 
     class Meta:
@@ -157,11 +159,13 @@ class tmpsuministro(models.Model):
     empdni = models.CharField(max_length=8, null=False)
     materiales = models.ForeignKey(Materiale,to_field='materiales_id')
     cantidad = models.FloatField(null=False)
+    almacen = models.ForeignKey(Almacene, to_field='almacen_id', default='AL01')
+    origin = models.CharField(max_length=2,default='NN')
 
     def __unicode__(self):
         return '%s %s %f'%(self.empdni,self.materiales,self.cantidad)
 
-class Inventario(models.Model): 
+class Inventario(models.Model):
     materiales = models.ForeignKey(Materiale,to_field='materiales_id') 
     almacen = models.ForeignKey(Almacene, to_field='almacen_id')
     precompra = models.FloatField()
@@ -173,6 +177,7 @@ class Inventario(models.Model):
     periodo = models.CharField(max_length=4, default='')
     ingreso = models.DateField(auto_now=True)
     compra = models.ForeignKey('logistica.Compra', to_field='compra_id', null=True,blank=True)
+    spptag = models.BooleanField(default=False)
     flag = models.BooleanField(default=True)
     
     class Meta:

@@ -65,13 +65,28 @@
 								<th class="text-center">Unidad</th>
 								<th class="text-center">Cantidad</th>
 								<th class="text-center">Atender</th>
+								<th>Stock</th>
 							</tr>
 						</thead>
 						<tbody>
 							{% if det %}
 							{% for x in det %}
-							<tr class="tr-{{x.materiales_id}} {% if x.cantshop <= 0.0 %}success{% endif %}">
-								<td><input type="checkbox" name="bed" value="{{x.materiales_id}}" {% if x.cantshop <= 0.0 %}disabled{% endif %}/></td>
+							<tr class="tr-{{x.materiales_id}}
+							{% if x.cantshop <= 0.0 %}
+								success
+							{% else %}
+									{% if x.stock <= 0 %}
+										danger
+									{% elif x.stock > 0 and x.stock <= x.cantshop %}
+										warning
+									{% else %}
+										info
+									{% endif %}
+							{% endif %}">
+								<td><input type="checkbox" name="bed" value="{{x.materiales_id}}" 
+								{% if x.cantshop <= 0.0 or x.stock <= 0 or x.stock < x.cantshop %}
+									disabled
+								{% endif %}/></td>
 								<td class="text-center">{{forloop.counter}}</td>
 								<td>{{x.materiales_id}}</td>
 								<td>{{x.materiales.matnom}}</td>
@@ -79,6 +94,7 @@
 								<td class="text-center">{{x.materiales.unidad_id}}</td>
 								<td class="text-center">{{x.cantidad}}</td>
 								<td class="col-md-1"><input type="number" step="any" name="{{x.cantidad|safe}}" value="{{x.cantshop|safe}}" min="1" max="{{x.cantshop|safe}}" class="form-control input-xs bed{{x.materiales_id}}" disabled></td>
+								<td class="text-center">{{ x.stock }}</td>
 							</tr>
 							{% endfor%}
 							{% else %}
