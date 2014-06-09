@@ -1021,3 +1021,11 @@ class SupplyView(ListView):
         context = {}
         context['tmp'] = get_list_or_404(models.tmpsuministro, empdni__exact=request.user.get_profile().empdni)
         return render_to_response(self.template_name,context,context_instance=RequestContext(request))
+
+class ListOrdersSummary(TemplateView):
+    template_name = 'almacen/listorderssupply.html'
+    context_object_name = 'Orders'
+    def get_context_data(self, **kwargs):
+        context = super(ListOrdersSummary, self).get_context_data(**kwargs)
+        context[self.context_object_name] = models.Pedido.objects.filter(Q(flag=True) & Q(status='AP') | Q(status='IN'))
+        return context

@@ -2,6 +2,8 @@
 # from django.conf.urls.defaults import patterns, url
 from django.conf.urls import patterns, url
 
+from CMSGuias.apps.wsjson import views
+
 
 urlpatterns = patterns('CMSGuias.apps.wsjson.views',
 	# temp Orders
@@ -31,4 +33,6 @@ urlpatterns = patterns('CMSGuias.apps.wsjson.views',
 	url(r'^get/stores/list/$','get_list_stores'),
 	url(r'^get/list/transport/(?P<truc>.*)/$','get_recover_list_transport'),
 	url(r'^get/list/conductor/(?P<truc>.*)/$','get_recover_list_conductor'),
+	# Class Bases-Views Genereics
+	url(r'^get/list/orders/details/$', views.get_OrdersDetails.as_view()),
 )

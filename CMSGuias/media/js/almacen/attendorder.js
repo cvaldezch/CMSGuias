@@ -32,6 +32,16 @@ $(document).ready(function() {
 			}
 		});
 	});
+	// inhabilitar radio button principal
+	setTimeout(function() {
+		$("input[name=bed]").each(function() {
+			if (this.disabled) {
+				$("input[name=bedside]").attr('disabled', true);
+				return true;
+			};
+		});
+	}, 600);
+	
 });
 var changeradio = function (id) {
 	var item = id;

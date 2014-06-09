@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block script %}
+<script src="{{ MEDIA_URL }}js/almacen/listorderssupply.js"></script>
+{% endblock %}
+{% block style %}
+<style>
+	.lst-orders{
+		padding: 10px 0 10px 0;
+	}
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+	<div class="well">
+		<header>
+			<h3>
+				Pedidos
+				<small>
+					Arrastra un pedido a la columna "Para Suministrar" para obtener el detalle de materiales y así seleccionar los materiales para la order de suministro.
+				</small>
+			</h3>
+		</header>
+		<aside>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="row">
+						<div class="col-md-2">
+							<div class="alert alert-info alert-block">
+								<strong>Pedidos</strong>
+								<ul class="list-group lst-orders"  name="order">
+									{% for x in Orders %}
+										<li class="list-group-item list-group-item-info item-draggable" id="{{ x.pedido_id }}" value="{{ x.flag }}">{{ x.pedido_id }}</li>
+									{% endfor %}
+								</ul>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="alert alert-success">
+								<strong>Para Suministrar</strong>
+								<ul class="list-group lst-orders list-drop" name="supply">
+									
+								</ul>
+							</div>
+						</div>
+						<div class="col-md-8">
+							<div class="alert alert-warning alert-block">
+								<div class="table-responsive">
+									<table class="table table-condensed table hover">
+										<thead>
+											<tr>
+												<th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th><th>Stock</th><th></th>
+											</tr>
+										</thead>
+										<tbody>
+											
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</aside>
+	</div>
+</div>
+{% endblock %}

@@ -49,4 +49,5 @@ urlpatterns = patterns('CMSGuias.apps.almacen.views',
     url(r'^upkeep/conductor/(?P<ruc>.*)/$','view_conductor',name='vista_conductor'),
     url(r'^inventory/$',views.InventoryView.as_view(),name='vista_inventory'),
     url(r'^supply/$', views.SupplyView.as_view(), name='vista_supply'),
+    url(r'^summary/list/orders/$',views.ListOrdersSummary.as_view(), name='vista_summary_orders')
 )
