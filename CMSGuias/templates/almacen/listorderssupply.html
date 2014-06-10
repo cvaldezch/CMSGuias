@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block script %}
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
 <script src="{{ MEDIA_URL }}js/almacen/listorderssupply.js"></script>
 {% endblock %}
 {% block style %}
@@ -25,8 +26,8 @@
 				<div class="col-md-12">
 					<div class="row">
 						<div class="col-md-2">
-							<div class="alert alert-info alert-block">
-								<strong>Pedidos</strong>
+							<div class="panel panel-info">
+									<div class="panel-heading"><strong>Pedidos</strong></div>
 								<ul class="list-group lst-orders"  name="order">
 									{% for x in Orders %}
 										<li class="list-group-item list-group-item-info item-draggable" id="{{ x.pedido_id }}" value="{{ x.flag }}">{{ x.pedido_id }}</li>
@@ -35,26 +36,28 @@
 							</div>
 						</div>
 						<div class="col-md-2">
-							<div class="alert alert-success">
-								<strong>Para Suministrar</strong>
+							<div class="panel panel-success">
+								<div class="panel-heading"><strong>Para Suministrar</strong></div>
 								<ul class="list-group lst-orders list-drop" name="supply">
 									
 								</ul>
 							</div>
 						</div>
 						<div class="col-md-8">
-							<div class="alert alert-warning alert-block">
-								<div class="table-responsive">
-									<table class="table table-condensed table hover">
-										<thead>
-											<tr>
-												<th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th><th>Stock</th><th></th>
-											</tr>
-										</thead>
-										<tbody>
-											
-										</tbody>
-									</table>
+							<div class="panel panel-primary">
+								<div class="panel-body">
+									<div class="table-responsive">
+										<table class="table table-condensed table hover data-mats">
+											<thead>
+												<tr>
+													<th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th><th>Stock</th><th>Add</th>
+												</tr>
+											</thead>
+											<tbody>
+												
+											</tbody>
+										</table>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -64,4 +67,30 @@
 		</aside>
 	</div>
 </div>
+<!-- block modals -->
+<div class="modal fade maddsupply">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header brand-warning">
+				<a class="close" data-dismiss="modal">&times;</a>
+				<h4>Agregar Material a Orden de Suministro</h4>
+			</div>
+			<div class="modal-body brand-warning">
+				<div class="form-group">
+					<label for="form-control" class="control-label">Código</label>
+					<input type="text" value="" name="id-add" class="form-control">
+				</div>
+				<div class="form-group">
+					<label for="form-control" class="control-label">Código</label>
+					<input type="number" value="" min="" name="cant-add" class="form-control">
+				</div>
+				<div class="form-group">
+					<button class="btn btn-sm btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Salir</button>
+					<button class="btn btn-sm btn-warning text-black pull-right btn-add-commit"><span class="glyphicon glyphicon-plus-sign"></span> <span class="glyphicon glyphicon-shopping-cart"></span> Añadir</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% csrf_token %}
 {% endblock %}

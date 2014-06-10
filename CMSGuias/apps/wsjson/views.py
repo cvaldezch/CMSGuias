@@ -7,8 +7,9 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpRespons
 from django.views.generic import ListView
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.utils import simplejson
+from django.core import serializers
 
 from CMSGuias.apps.almacen import models
 from CMSGuias.apps.home.models import Materiale, Almacene, Transporte, Conductore
@@ -378,5 +379,14 @@ def get_recover_list_conductor(request,truc):
 class get_OrdersDetails(ListView):
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
-            context = { "status": True }
-            return HttpResponse(simplejson.dumps(context),mimetype='application/json')
+          context = {}
+          try:
+              arr = json.loads(request.GET.get('orders'))
+              queryset = models.Detpedido.objects.filter(pedido_id__in=arr).extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},)
+              queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id','stock','spptag')
+              queryset = queryset.annotate(cantidad=Sum('cantshop'))
+              context['list'] = [{'materiales_id': x['materiales_id'],'matnom': x['materiales__matnom'],'matmed':x['materiales__matmed'],'unidad':x['materiales__unidad_id'],'cantidad':x['cantidad'],'stock':x['stock'],'tag':x['spptag']} for x in queryset] 
+              context['status'] = True
+          except Exception, e:
+              context['sttatus'] = False
+          return HttpResponse(simplejson.dumps(context),mimetype='application/json')

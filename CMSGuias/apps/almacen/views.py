@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
 from django.shortcuts import render_to_response, get_object_or_404, get_list_or_404
 from django.template import RequestContext, TemplateDoesNotExist
 from django.core.exceptions import ObjectDoesNotExist
@@ -1029,3 +1030,22 @@ class ListOrdersSummary(TemplateView):
         context = super(ListOrdersSummary, self).get_context_data(**kwargs)
         context[self.context_object_name] = models.Pedido.objects.filter(Q(flag=True) & Q(status='AP') | Q(status='IN'))
         return context
+
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            data = {}
+            try:
+                obj = models.tmpsuministro()
+                obj.empdni = request.user.get_profile().empdni
+                obj.materiales_id = request.POST.get('id-add')
+                obj.cantidad = request.POST.get('cant-add')
+                obj.almacen_id = 'AL01'
+                obj.origin = request.POST.get('add-ori')
+                obj.save()
+                arr = json.loads(request.POST.get('orders'))
+                models.Detpedido.objects.filter(Q(flag=True) & Q(pedido_id__in=arr) & Q(materiales_id=request.POST.get('id-add'))).update(spptag=True)
+                data['status'] = True
+            except Exception, e:
+                raise e
+                data['status'] = False
+            return HttpResponse(simplejson.dumps(data), mimetype='application/json')
