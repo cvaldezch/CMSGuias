@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Max
+from django.db.models import Count, Max, Sum
 from django.utils import simplejson
 from django.core.paginator import EmptyPage, Paginator, PageNotAnInteger
 
@@ -1019,9 +1019,36 @@ class SupplyView(ListView):
     template_name = 'almacen/supply.html'
 
     def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            data = {}
+            try:
+                arr = json.loads(request.GET.get('mats'))
+                queryset = models.tmpsuministro.objects.filter(empdni__exact=request.user.get_profile().empdni, materiales_id__in=arr)
+                queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id')
+                queryset = queryset.annotate(cantidad=Sum('cantidad')).order_by('materiales__matnom')
+                data['list'] = [{'materiales_id': x['materiales_id'],'matnom': x['materiales__matnom'],'matmed':x['materiales__matmed'],'unidad':x['materiales__unidad_id'],'cantidad':x['cantidad']} for x in queryset]
+                data['status'] = True
+            except ObjectDoesNotExist, e:
+                data['status'] = False
+            data = simplejson.dumps(data)
+            return HttpResponse(data, mimetype='application/json', content_type='application/json')
         context = {}
         context['tmp'] = get_list_or_404(models.tmpsuministro, empdni__exact=request.user.get_profile().empdni)
-        return render_to_response(self.template_name,context,context_instance=RequestContext(request))
+        context['almacen'] = Almacene.objects.filter(flag=True)
+        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            data = {}
+            try:
+                # save bedside of supply
+                
+                data['status'] = True
+            except ObjectDoesNotExist, e:
+                raise e
+                datap['status'] = False
+            data = simplejson.dumps(data)
+            return HttpResponse(data, mimetype='application/json', content_type='application/json')
 
 class ListOrdersSummary(TemplateView):
     template_name = 'almacen/listorderssupply.html'

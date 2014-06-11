@@ -387,6 +387,6 @@ class get_OrdersDetails(ListView):
               queryset = queryset.annotate(cantidad=Sum('cantshop'))
               context['list'] = [{'materiales_id': x['materiales_id'],'matnom': x['materiales__matnom'],'matmed':x['materiales__matmed'],'unidad':x['materiales__unidad_id'],'cantidad':x['cantidad'],'stock':x['stock'],'tag':x['spptag']} for x in queryset] 
               context['status'] = True
-          except Exception, e:
+          except ObjectDoesNotExist:
               context['sttatus'] = False
           return HttpResponse(simplejson.dumps(context),mimetype='application/json')

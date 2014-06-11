@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block script %}
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
 <script src="{{ MEDIA_URL }}js/almacen/supply.js"></script>
 {% endblock %}
 {% block content %}
@@ -17,17 +18,57 @@
 					<div class="panel-body">
 						<div class="row">
 							<div class="col-md-12 content">
-								header
-							</div>
-							<div class="col-md-12 content">
-								<hr>
+								<div class="btn-group">
+									<button class="btn btn-warning text-black btn-compress"><span class="glyphicon glyphicon-compressed"></span> Comprimir Lista</button>
+									<button class="btn btn-success text-black btn-generate"><span class="glyphicon glyphicon-floppy-disk"></span> Solicitar Suministro</button>
+								</div>
+								<div class="row">
+									<div class="col-md-3">
+										<div class="form-group">
+											<label class="control-label">Alamacén</label>
+											<select name="almacen" id="al" class="form-control">
+												{% for x in almacen %}
+													<option value="{{ x.almacen_id }}">{{ x.nombre }}</option>
+												{% empty %}
+												 <option value=""> -- Noting -- </option>
+												{% endfor %}
+											</select>
+										</div>
+									</div>
+									<div class="col-md-2">
+										<div class="form-group">
+											<label class="control-label">Ingreso Almacén</label>
+											<input type="text" class="form-control" name="ingreso">
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="form-group">
+											<label class="control-label">Observación</label>
+											<textarea name="obser" id="obser" class="form-control obser" rows="1"></textarea>
+										</div>
+									</div>
+								</div>
 							</div>
 							<div class="col-md-12">
 								<div class="table-responsive">
-									<table class="table table-hover table-condensed">
+									<table class="table table-hover table-condensed data-condensed">
+										<thead>
+											<tr>
+												<td colspan="7">
+													<button class="btn btn-default btn-back"><span class="glyphicon glyphicon-chevron-left"></span> Regresar, Seleccionar más Materiales</button>
+												</td>
+											</tr>
+											<tr class="bg-success">
+												<th></th><th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unid</th><th>Cantidad</th>
+											</tr>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+									<table class="table table-hover table-condensed table-first">
 										<caption class="bg-primary">
 											<div class="form-group pull-left">
-												&nbsp;&nbsp;Seleccionar <label class="radio-inline"><input type="radio" name="sel" value="true" />  Todo</label>
+												&nbsp;Seleccionar <label class="radio-inline"><input type="radio" name="sel" value="true" />  Todo</label>
 												<label class="radio-inline"><input type="radio" name="sel" value="" /> Ninguno.</label>
 											</div>
 										</caption>
@@ -39,7 +80,7 @@
 										<tbody>
 											{% for x in tmp %}
 												<tr>
-													<td>{{ x.forloop.counter }}</td>
+													<td>{{ forloop.counter }}</td>
 													<td><input type="checkbox" name="chk" value="{{ x.materiales_id }}"></td>
 													<td>{{ x.materiales_id }}</td>
 													<td>{{ x.materiales.matnom }}</td>
@@ -68,4 +109,5 @@
 		</div>
 	</div>
 </div>
+{% csrf_token %}
 {% endblock %}
