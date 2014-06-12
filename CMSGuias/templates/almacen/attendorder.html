@@ -12,6 +12,9 @@
 	}
 </style>
 {% endblock %}
+{% block menu %}
+	{% include "menus/storage_menu.htm" %}
+{% endblock menu %}
 {% block content %}
 <div class="container">
 	<div class="well">
@@ -66,6 +69,7 @@
 								<th class="text-center">Cantidad</th>
 								<th class="text-center">Atender</th>
 								<th>Stock</th>
+								<th></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -95,6 +99,15 @@
 								<td class="text-center">{{x.cantidad}}</td>
 								<td class="col-md-1"><input type="number" step="any" name="{{x.cantidad|safe}}" value="{{x.cantshop|safe}}" min="1" max="{{x.cantshop|safe}}" class="form-control input-xs bed{{x.materiales_id}}" disabled></td>
 								<td class="text-center">{{ x.stock }}</td>
+								{% if x.spptag %}
+									<td class="bg-success text-center">
+										<span class="glyphicon glyphicon-checked"></span>
+									</td>
+								{% else %}
+									<td class="bg-danger text-center">
+										<span class="glyphicon glyphicon-unchecked"></span>
+									</td>
+								{% endif %}
 							</tr>
 							{% endfor%}
 							{% else %}

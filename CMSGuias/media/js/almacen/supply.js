@@ -1,6 +1,7 @@
 $(document).ready(function() {
 	$(".content, .btn-back, .btn-compress").hide();
 	$(document).on("change","[name=sel]", changeSelect);
+	$(".btn-delete-all").on("click", deleteTmp);
 	$(".btn-gen").on("click", showGen);
 	$(".btn-compress").on("click", compressList);
 	$(".btn-back").on("click", backlist);
@@ -17,6 +18,25 @@ $(document).ready(function() {
 });
 
 // functions
+var deleteTmp = function (event) {
+	event.preventDefault();
+	$().toastmessage("showToast",{
+		text: 'Realmente desea eliminar todo el temporal de suministro?',
+		sticky: true,
+		type: 'confirm',
+		buttons: [{value:'Si'},{value:'No'}],
+		success: function (result) {
+			if (result == 'Si') {
+				data= {}
+				data['csrfmiddlewaretoken'] = $("input[name=csrfmiddlewaretoken]").val();
+				data['tipo'] = "deltmp";
+				$.post('', data, function(response) {
+					location.reload();
+				});
+			};
+		}
+	});
+}
 var generateSupply = function (event) {
 	var chk, pass, //arr = new Array(), 
 			data = new Object();
@@ -29,13 +49,17 @@ var generateSupply = function (event) {
 			pass = false;
 		};
 	});
-	$("[name=almacen],[name=asunto],[name=ingreso]").each(function () {
-		if ($(this).val() != '') {
-			data[this.name] = $(this).val();
-		}else{
-			pass = false;
-		};
-	});
+	if (pass) {
+		$("[name=almacen],[name=asunto],[name=ingreso]").each(function () {
+			if ($(this).val() != '') {
+				data[this.name] = $(this).val();
+			}else{
+				pass = false;
+			};
+		});
+	}else{
+		$().toastmessage("showWarningToast","No se han seleccionado materiales para suministrar.");
+	};
 	if (pass) {
 		// data['mats'] = arr;
 		data['obser'] = $("[name=obser]").val();

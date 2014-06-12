@@ -133,6 +133,7 @@ class Suministro(models.Model):
     registrado = models.DateTimeField(auto_now=True)
     ingreso = models.DateField()
     obser = models.TextField()
+    status = models.CharField(max_length=2, default='PE')
     flag = models.BooleanField(default=True)
     
     class Meta:

@@ -67,10 +67,14 @@ class Materiale(models.Model):
 class Cargo(models.Model):
     cargo_id = models.CharField(primary_key=True, max_length=9)
     cargos = models.CharField(max_length=60)
+    area = models.CharField(max_length=60, default='Nothing')
     flag = models.BooleanField(default=True)
 
+    class Meta:
+        ordering = ['cargos']
+
     def __unicode__(self):
-        return '%s %s'%(self.cargo_id, self.cargos)
+        return '%s %s - %s'%(self.cargo_id, self.cargos, self.area)
 
 class userProfile(models.Model):
     def url(self,filename):
@@ -80,7 +84,7 @@ class userProfile(models.Model):
     user = models.OneToOneField(User)
     empdni = models.CharField(max_length=8,null=False)
     cargo = models.ForeignKey(Cargo, to_field='cargo_id', null=True)
-    photo = models.ImageField(upload_to=url,null=True)
+    photo = models.ImageField(upload_to=url,null=True, blank=True)
 
     def __unicode__(self):
         return self.user.username

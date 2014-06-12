@@ -5,6 +5,8 @@ import views
 
 
 urlpatterns = patterns('CMSGuias.apps.almacen.views',
+
+    url(r'^$', views.StorageHome.as_view(), name='vista_storage'),
     # orders
     url(r'^pedido/generate/$','view_pedido',name='vista_pedido'),
     url(r'^orders/pending/$','view_orders_pending',name='vista_slope_orders'),

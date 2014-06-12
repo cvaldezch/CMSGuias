@@ -3,6 +3,9 @@
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>
 <script src="{{ MEDIA_URL }}js/almacen/supply.js"></script>
 {% endblock %}
+{% block menu %}
+	{% include "menus/storage_menu.htm" %}
+{% endblock menu %}
 {% block content %}
 <div class="container">
 	<div class="well">
@@ -21,6 +24,7 @@
 								<div class="btn-group">
 									<button class="btn btn-warning text-black btn-compress"><span class="glyphicon glyphicon-compressed"></span> Comprimir Lista</button>
 									<button class="btn btn-success text-black btn-generate"><span class="glyphicon glyphicon-floppy-disk"></span> Solicitar Suministro</button>
+									<button class="btn btn-danger btn-delete-all"><span class="glyphicon glyphicon-trash"></span> Eliminar Tmp</button>
 								</div>
 								<div class="row">
 									<div class="col-md-6">

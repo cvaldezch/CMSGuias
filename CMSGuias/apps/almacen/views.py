@@ -10,9 +10,12 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.db.models import Count, Max, Sum
 from django.utils import simplejson
 from django.core.paginator import EmptyPage, Paginator, PageNotAnInteger
+from django.views.generic import TemplateView, ListView, View
+from django.core import serializers
 
 from CMSGuias.apps.almacen import models
 from CMSGuias.apps.home.models import Cliente, Almacene, Transportista, Conductore, Transporte, userProfile
@@ -26,6 +29,14 @@ from CMSGuias.apps.tools import genkeys
 ##
 
 FORMAT_DATE_STR = "%Y-%m-%d"
+
+
+class StorageHome(View):
+    template_name = "almacen/storage.html"
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        return render_to_response(self.template_name,context_instance=RequestContext(request))
 
 @login_required(login_url='/SignUp/')
 def view_pedido(request):
@@ -923,10 +934,6 @@ def view_list_guide_referral_canceled(request):
 ###########################
 # Views natives of stores #
 ###########################
-from django.views.generic import TemplateView, ListView
-from django.db import connection, transaction
-from django.core import serializers
-
 
 class InventoryView(ListView):
     def get(self, request, *args, **kwargs):
@@ -1041,6 +1048,25 @@ class SupplyView(ListView):
         if request.is_ajax():
             data = {}
             try:
+                if request.POST.get('tipo') == "deltmp":
+                    obj = models.tmpsuministro.objects.filter(empdni__exact=request.user.get_profile().empdni)
+                    if obj:
+                        for x in obj:
+                            det = None
+                            if x.origin == 'PE':
+                                det = models.Detpedido.objects.get(pedido_id__exact=x.origin_id, materiales_id=x.materiales_id)
+                            elif x.origin == 'AL':
+                                det = models.Inventario.objects.get(almacen_id=x.origin_id, materiales_id=x.materiales_id, periodo=globalVariable.date_now(type='str',format='%Y'))
+                            else:
+                                continue
+                            det.spptag = False
+                            det.save()
+                        obj.delete()
+                        data['status'] = True
+                    else:
+                        data['status'] = False
+                    data = simplejson.dumps(data)
+                    return HttpResponse(data, mimetype="application/json")
                 # save bedside of supply
                 idsp = genkeys.GenerateKeySupply()
                 bed = models.Suministro()
@@ -1051,6 +1077,7 @@ class SupplyView(ListView):
                 bed.obser = request.POST.get('obser')
                 bed.flag = True
                 bed.asunto = request.POST.get('asunto')
+                bed.status = 'PE'
                 bed.save()
                 # details supply
                 obj = models.tmpsuministro.objects.filter(empdni=request.user.get_profile().empdni)
@@ -1107,7 +1134,7 @@ class ListDetOrders(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ListDetOrders, self).get_context_data(**kwargs)
         context['orders'] = get_list_or_404(models.Pedido,Q(flag=True) & Q(status='AP') | Q(status='IN'))
-        context['details'] = get_list_or_404(models.Detpedido.objects.extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},).order_by('pedido'), Q(flag=True) & Q(pedido__status='AP') | Q(pedido__status='IN'))
+        context['details'] = get_list_or_404(models.Detpedido.objects.extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},).order_by('materiales__matnom'), Q(flag=True) & Q(pedido__status='AP') | Q(pedido__status='IN'))
         return context
 
     def post(self, request, *args, **kwargs):

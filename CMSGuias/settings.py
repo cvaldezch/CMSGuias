@@ -79,6 +79,8 @@ STATICFILES_DIRS = (
     #'/home/christian/development/python/django/CMSGuias/CMSGuias/static',
 )
 
+LOGIN_URL = '/SignUp/'
+
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
