@@ -40,14 +40,16 @@ urlpatterns = patterns('CMSGuias.apps.almacen.views',
     url(r'^upkeep/carrier/add/$','view_carrier_add',name='vista_carrier_add'),
     url(r'^upkeep/carrier/edit/(?P<ruc>.*)/$','view_carrier_edit',name='vista_carrier_edit'),
     # Transport
-    url(r'^upkeep/transport/add/(?P<tid>.*)/$','view_transport_add',name='vista_transport_add'),
-    url(r'^upkeep/transport/edit/(?P<cid>.*)/(?P<tid>.*)/$','view_transport_edit',name='vista_transport_edit'),
-    url(r'^upkeep/transport/(?P<ruc>.*)/$','view_transport',name='vista_transport'),
+    url(r'^upkeep/transport/add/(?P<tid>.*)/$','view_transport_add', name='vista_transport_add'),
+    url(r'^upkeep/transport/edit/(?P<cid>.*)/(?P<tid>.*)/$','view_transport_edit', name='vista_transport_edit'),
+    url(r'^upkeep/transport/(?P<ruc>.*)/$','view_transport', name='vista_transport'),
     # Conductor
-    url(r'^upkeep/conductor/add/(?P<tid>.*)/$','view_conductor_add',name='vista_conductor_add'),
-    url(r'^upkeep/conductor/edit/(?P<cid>.*)/(?P<tid>.*)/$','view_conductor_edit',name='vista_conductor_edit'),
-    url(r'^upkeep/conductor/(?P<ruc>.*)/$','view_conductor',name='vista_conductor'),
-    url(r'^inventory/$',views.InventoryView.as_view(),name='vista_inventory'),
+    url(r'^upkeep/conductor/add/(?P<tid>.*)/$','view_conductor_add', name='vista_conductor_add'),
+    url(r'^upkeep/conductor/edit/(?P<cid>.*)/(?P<tid>.*)/$','view_conductor_edit', name='vista_conductor_edit'),
+    url(r'^upkeep/conductor/(?P<ruc>.*)/$','view_conductor', name='vista_conductor'),
+    # urls module storage
+    url(r'^inventory/$', views.InventoryView.as_view(), name='vista_inventory'),
     url(r'^supply/$', views.SupplyView.as_view(), name='vista_supply'),
-    url(r'^summary/list/orders/$',views.ListOrdersSummary.as_view(), name='vista_summary_orders')
+    url(r'^summary/list/orders/$', views.ListOrdersSummary.as_view(), name='vista_summary_orders'),
+    url(r'^orders/details/supply/$', views.ListDetOrders.as_view(), name='vista_orders_details'),
 )

@@ -129,6 +129,7 @@ class Suministro(models.Model):
     suministro_id = models.CharField(primary_key=True, max_length=10)
     almacen = models.ForeignKey(Almacene, to_field='almacen_id')
     empdni = models.CharField(max_length=8)
+    asunto = models.CharField(max_length=180, null=True, blank=True)
     registrado = models.DateTimeField(auto_now=True)
     ingreso = models.DateField()
     obser = models.TextField()
@@ -146,7 +147,7 @@ class DetSuministro(models.Model):
     cantidad = models.FloatField(null=False)
     cantshop = models.FloatField(default=0,null=False)
     tag = models.CharField(max_length=1,default='0',null=False)
-    origin = models.CharField(max_length=2,default='NN')
+    origin = models.CharField(max_length=10,default='NN')
     flag = models.BooleanField(default=True)
 
     class Meta:
@@ -159,8 +160,8 @@ class tmpsuministro(models.Model):
     empdni = models.CharField(max_length=8, null=False)
     materiales = models.ForeignKey(Materiale,to_field='materiales_id')
     cantidad = models.FloatField(null=False)
-    almacen = models.ForeignKey(Almacene, to_field='almacen_id', default='AL01')
-    origin = models.CharField(max_length=2,default='NN')
+    origin = models.CharField(max_length=2,default='NN', null=True)
+    origin_id = models.CharField(max_length=10,null=True,blank=True)
 
     def __unicode__(self):
         return '%s %s %f'%(self.empdni,self.materiales,self.cantidad)

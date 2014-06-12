@@ -56,21 +56,21 @@ def GenerateSerieGuideRemision():
 
 # Generate id for order supply
 def GenerateKeySupply():
-	  id = None
-	  try:
-	  	  cod = Suministro.objcets.aggregate(max=Max('suministro_id'))
-	  	  id = cod['max']
-	  	  cy = int(datetime.datetime.today().strftime(__year_str))
-	  	  if id is not None:
-	  	  	  yy = int(id[2:4])
-	  	  	  counter = int(id[4:10])
-	  	  	  if cy > yy:
-	  	  	  	  counter = 1
-	  	  	  else:
-	  	  	  	  counter += 1
-	  	  else:
-	  	  	  counter = 1
-	  	  id = "%s%s%s"%('SP', cy.__str__(), "{:0>6d}".format(counter))
-	  except ObjectDoesNotExist:
-	  	raise e
-	  return id
+    id = None
+    try:
+        cod = Suministro.objects.aggregate(max=Max('suministro_id'))
+        id = cod['max']
+        cy = int(datetime.datetime.today().strftime(__year_str))
+        if id is not None:
+            yy = int(id[2:4])
+            counter = int(id[4:10])
+            if cy > yy:
+                counter = 1
+            else:
+                counter += 1
+        else:
+            counter = 1
+        id = "%s%s%s"%('SP', cy.__str__(), "{:0>6d}".format(counter))
+    except ObjectDoesNotExist:
+      raise e
+    return id

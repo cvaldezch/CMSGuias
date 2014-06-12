@@ -31,11 +31,12 @@ var save_tmp_supply = function (event) {
 		data.tipo = 'save-tmp';
 		data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
 		data['add-ori'] = "AL";
-		data['add-al'] = $("select[name=almacen]").val();
+		data['add-oid'] = $("select[name=almacen]").val();
+		//data['add-al'] = $("select[name=almacen]").val();
 		console.info(data);
 		$.post("", data, function (response) {
-			console.warn(response);
 			if (response.status) {
+				$("button[name=btn-"+data['add-id']+"]").attr('disabled', true);
 				$().toastmessage("showNoticeToast","Se agrego a Temp Suministro, correctamente.");
 				$(".add-id").val("");
 				$(".maddsupply").modal("hide");

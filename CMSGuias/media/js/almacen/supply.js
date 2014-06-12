@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	$(".content,.data-condensed").hide();
+	$(".content, .btn-back, .btn-compress").hide();
 	$(document).on("change","[name=sel]", changeSelect);
 	$(".btn-gen").on("click", showGen);
 	$(".btn-compress").on("click", compressList);
@@ -11,21 +11,25 @@ $(document).ready(function() {
 	});
 	$("input[name=ingreso]").datepicker({ minDate: "0", maxDate: "+6M", showAdnim: "blind", dateFormat: "yy-mm-dd" });
 	$(".btn-generate").on("click", generateSupply);
+	$("input[value=true]").change().attr('disabled', true);
+	$("input[name=chk]").attr("disabled",true);
+	setTimeout(function() { $(".btn-compress").click(); }, 600);
 });
 
 // functions
 var generateSupply = function (event) {
-	var chk, pass, arr = new Array(), data = new Object();
+	var chk, pass, //arr = new Array(), 
+			data = new Object();
 	// validate materials checked
 	$("input[name=quote]").each(function () {
 		if (this.checked) {
-			arr.push({"mid": this.title, "cant": this.value });
+			//arr.push({"mid": this.title, "cant": this.value });
 			pass = true;
 		}else{
 			pass = false;
 		};
 	});
-	$("[name=almacen],[name=ingreso]").each(function () {
+	$("[name=almacen],[name=asunto],[name=ingreso]").each(function () {
 		if ($(this).val() != '') {
 			data[this.name] = $(this).val();
 		}else{
@@ -33,14 +37,18 @@ var generateSupply = function (event) {
 		};
 	});
 	if (pass) {
-		data['mats'] = arr;
+		// data['mats'] = arr;
 		data['obser'] = $("[name=obser]").val();
+		//data['asunto'] = $("input[name=asunto]").val();
 		data['csrfmiddlewaretoken'] = $("input[name=csrfmiddlewaretoken]").val();
 		console.log(data);
 		$.post("", data, function(response) {
 			console.log(response);
 			if (response.status) {
-				location.reload();
+				$().toastmessage("showNoticeToast","Suministro Generado: <br /> Nro "+response['nro']);
+				setTimeout(function() {
+					location.reload();
+				}, 2800);
 			};
 		});
 	}else{
@@ -69,7 +77,7 @@ var compressList = function (event) {
 			console.log(response);
 			if (response.status) {
 				var $tb = $(".data-condensed > tbody"),
-				template = "<tr><td>{{ item }}</td><td><input type='checkbox' name='quote' value='{{ cantidad }}' title='{{ materiales_id }}' checked DISABLED /></td><td>{{ materiales_id }}</td><td>{{ matnom }}</td><td>{{ matmed }}</td><td>{{ unidad }}</td><td>{{ cantidad }}</td></tr>";
+				template = "<tr><td>{{ item }}</td><td><input type='checkbox' name='quote' value='{{ cantidad }}' title='{{ materiales_id }}' checked DISABLED /></td><td>{{ materiales_id }}</td><td>{{ matnom }}</td><td>{{ matmed }}</td><td>{{ unidad }}</td><td>{{ cantidad }}</td><td>{{ stock }}</td></tr>";
 				$tb.empty();
 				for (var x in response.list) {
 					response.list[x].item = (parseInt(x) + 1);

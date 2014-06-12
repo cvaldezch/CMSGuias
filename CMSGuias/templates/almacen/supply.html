@@ -23,9 +23,15 @@
 									<button class="btn btn-success text-black btn-generate"><span class="glyphicon glyphicon-floppy-disk"></span> Solicitar Suministro</button>
 								</div>
 								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group">
+											<label class="control-label">Asunto</label>
+											<input type="text" name="asunto" class="form-control" maxlength="180">
+										</div>
+									</div>
 									<div class="col-md-3">
 										<div class="form-group">
-											<label class="control-label">Alamacén</label>
+											<label class="control-label">Almacén</label>
 											<select name="almacen" id="al" class="form-control">
 												{% for x in almacen %}
 													<option value="{{ x.almacen_id }}">{{ x.nombre }}</option>
@@ -59,22 +65,22 @@
 												</td>
 											</tr>
 											<tr class="bg-success">
-												<th></th><th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unid</th><th>Cantidad</th>
+												<th></th><th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unid</th><th>Cantidad</th><th>Stock</th>
 											</tr>
 										</thead>
 										<tbody>
 										</tbody>
 									</table>
-									<table class="table table-hover table-condensed table-first">
+									<table class="hide table table-hover table-condensed table-first">
 										<caption class="bg-primary">
 											<div class="form-group pull-left">
 												&nbsp;Seleccionar <label class="radio-inline"><input type="radio" name="sel" value="true" />  Todo</label>
-												<label class="radio-inline"><input type="radio" name="sel" value="" /> Ninguno.</label>
+												<label class="radio-inline"><input type="radio" name="sel" value="" checked /> Ninguno.</label>
 											</div>
 										</caption>
 										<thead>
 											<tr class="bg-primary">
-												<th></th><th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unid</th><th>Cantidad</th><th>Almacén</th><th>Origen</th>
+												<th></th><th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unid</th><th>Cantidad</th><th>Origin</th><th>Codigo</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -87,8 +93,8 @@
 													<td>{{ x.materiales.matmed }}</td>
 													<td>{{ x.materiales.unidad_id }}</td>
 													<td>{{ x.cantidad }}</td>
-													<td>{{ x.almacen.nombre }}</td>
 													<td>{{ x.origin }}</td>
+													<td>{{ x.origin_id }}</td>
 												</tr>
 											{% empty %}
 												<div class="alert alert-warning alert-block">

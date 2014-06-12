@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import json
+
 from django.shortcuts import render_to_response, get_object_or_404, get_list_or_404
 from django.template import RequestContext, TemplateDoesNotExist
 from django.core.exceptions import ObjectDoesNotExist
@@ -957,7 +958,7 @@ class InventoryView(ListView):
                 materials = paginator.page(1)
             except EmptyPage:
                 materials = paginator.page(paginator.num_pages)
-            data={'list':[]}
+            data={'list': []}
             for x in materials:
                 data['list'].append({'materiales_id':x.materiales_id,'matnom': x.materiales.matnom, 'matmed': x.materiales.matmed,'unid':x.materiales.unidad_id, 'stkmin': x.stkmin, 'stock': x.stock, 'ingreso': x.ingreso.strftime(FORMAT_DATE_STR), 'compra_id': x.compra_id,'spptag': x.spptag })
             data['has_previous'] = materials.has_previous()
@@ -996,10 +997,10 @@ class InventoryView(ListView):
                 obj.empdni = request.user.get_profile().empdni
                 obj.materiales_id = request.POST.get('add-id')
                 obj.cantidad = request.POST.get('add-cant')
-                obj.almacen_id = request.POST.get('add-al')
+                obj.origin_id = request.POST.get('add-oid')
                 obj.origin = request.POST.get('add-ori')
                 obj.save()
-                obj = models.Inventario.objects.get(materiales_id=request.POST.get('add-id'),almacen_id=request.POST.get('add-al'),periodo=datetime.datetime.today().date().strftime('%Y'))
+                obj = models.Inventario.objects.get(materiales_id=request.POST.get('add-id'),almacen_id=request.POST.get('add-oid'),periodo=datetime.datetime.today().date().strftime('%Y'))
                 obj.spptag = True
                 obj.save()
                 data['status'] = True
@@ -1009,8 +1010,7 @@ class InventoryView(ListView):
             elif tipo == 'per':
                 sts = models.Inventario.register_period_past(request.POST.get('alcp'),request.POST.get('pewh'),request.POST.get('alwh'))
                 data['status'] = sts
-        except Exception, e:
-            raise e
+        except ObjectDoesNotExist:
             data['status'] = False
         data = simplejson.dumps(data)
         return HttpResponse(data, mimetype='application/json')
@@ -1023,17 +1023,17 @@ class SupplyView(ListView):
             data = {}
             try:
                 arr = json.loads(request.GET.get('mats'))
-                queryset = models.tmpsuministro.objects.filter(empdni__exact=request.user.get_profile().empdni, materiales_id__in=arr)
-                queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id')
+                queryset = models.tmpsuministro.objects.extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_tmpsuministro.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},).filter(empdni__exact=request.user.get_profile().empdni, materiales_id__in=arr)
+                queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id','stock')
                 queryset = queryset.annotate(cantidad=Sum('cantidad')).order_by('materiales__matnom')
-                data['list'] = [{'materiales_id': x['materiales_id'],'matnom': x['materiales__matnom'],'matmed':x['materiales__matmed'],'unidad':x['materiales__unidad_id'],'cantidad':x['cantidad']} for x in queryset]
+                data['list'] = [{'materiales_id': x['materiales_id'],'matnom': x['materiales__matnom'],'matmed':x['materiales__matmed'],'unidad':x['materiales__unidad_id'],'cantidad':x['cantidad'],'stock':x['stock']} for x in queryset]
                 data['status'] = True
             except ObjectDoesNotExist, e:
                 data['status'] = False
             data = simplejson.dumps(data)
             return HttpResponse(data, mimetype='application/json', content_type='application/json')
         context = {}
-        context['tmp'] = get_list_or_404(models.tmpsuministro, empdni__exact=request.user.get_profile().empdni)
+        context['tmp'] = models.tmpsuministro.objects.filter(empdni__exact=request.user.get_profile().empdni).order_by('materiales__matnom')
         context['almacen'] = Almacene.objects.filter(flag=True)
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
@@ -1042,11 +1042,34 @@ class SupplyView(ListView):
             data = {}
             try:
                 # save bedside of supply
-                
+                idsp = genkeys.GenerateKeySupply()
+                bed = models.Suministro()
+                bed.suministro_id = idsp
+                bed.almacen_id = request.POST.get('almacen')
+                bed.empdni = request.user.get_profile().empdni
+                bed.ingreso = request.POST.get('ingreso')
+                bed.obser = request.POST.get('obser')
+                bed.flag = True
+                bed.asunto = request.POST.get('asunto')
+                bed.save()
+                # details supply
+                obj = models.tmpsuministro.objects.filter(empdni=request.user.get_profile().empdni)
+                for x in obj:
+                    det = models.DetSuministro()
+                    det.suministro_id = idsp
+                    det.materiales_id = x.materiales_id
+                    det.cantidad = x.cantidad
+                    det.cantshop = x.cantidad
+                    det.tag = '1'
+                    det.origin = x.origin_id
+                    det.save()
+
+                obj.delete()
                 data['status'] = True
+                data['nro'] = idsp
             except ObjectDoesNotExist, e:
                 raise e
-                datap['status'] = False
+                data['status'] = False
             data = simplejson.dumps(data)
             return HttpResponse(data, mimetype='application/json', content_type='application/json')
 
@@ -1063,16 +1086,49 @@ class ListOrdersSummary(TemplateView):
             data = {}
             try:
                 obj = models.tmpsuministro()
-                obj.empdni = request.user.get_profile().empdni
-                obj.materiales_id = request.POST.get('id-add')
-                obj.cantidad = request.POST.get('cant-add')
-                obj.almacen_id = 'AL01'
-                obj.origin = request.POST.get('add-ori')
-                obj.save()
+                arr = json.loads(request.POST.get('add-oid'))
+                for x in arr.__len__():
+                    obj.empdni = request.user.get_profile().empdni
+                    obj.materiales_id = request.POST.get('id-add')
+                    obj.cantidad = (request.POST.get('cant-add') / arr.__len__())
+                    obj.origin_id = arr[x]
+                    obj.origin = request.POST.get('add-ori')
+                    obj.save()
                 arr = json.loads(request.POST.get('orders'))
                 models.Detpedido.objects.filter(Q(flag=True) & Q(pedido_id__in=arr) & Q(materiales_id=request.POST.get('id-add'))).update(spptag=True)
                 data['status'] = True
-            except Exception, e:
-                raise e
+            except ObjectDoesNotExist:
                 data['status'] = False
             return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+
+class ListDetOrders(TemplateView):
+    template_name = 'almacen/listdetailsOrders.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ListDetOrders, self).get_context_data(**kwargs)
+        context['orders'] = get_list_or_404(models.Pedido,Q(flag=True) & Q(status='AP') | Q(status='IN'))
+        context['details'] = get_list_or_404(models.Detpedido.objects.extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},).order_by('pedido'), Q(flag=True) & Q(pedido__status='AP') | Q(pedido__status='IN'))
+        return context
+
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            data = {}
+            try:
+                mats = json.loads(request.POST.get('mats'))
+                for x in range(mats.__len__()):
+                    obj = models.tmpsuministro()
+                    obj.empdni = request.user.get_profile().empdni
+                    obj.materiales_id = mats[x]['mid']
+                    obj.cantidad = float(mats[x]['cant'].__str__())
+                    obj.origin = request.POST.get('add-ori')
+                    obj.origin_id = mats[x]['oid']
+                    obj.save()
+                    dor = models.Detpedido.objects.get(pedido_id=mats[x]['oid'], materiales_id=mats[x]['mid'])
+                    dor.spptag = True
+                    dor.save()
+                data['status'] = True
+            except ObjectDoesNotExist, e:
+                raise e
+                data['status'] = False
+            data = simplejson.dumps(data)
+            return HttpResponse(data, mimetype='application/json', content_type='application/json')

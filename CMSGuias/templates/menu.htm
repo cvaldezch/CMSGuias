@@ -22,6 +22,10 @@
             <li class="divider"></li>
             <li><a href="{% url 'vista_slope_orders' %}">Pedidos Pendientes</a></li>
             <li><a href="{% url 'vista_list_approved' %}">Pedidos Aprobados</a></li>
+            <li class="divider"></li>
+            <li class="dropdown-header">Pedido Inventario</li>
+            <li><a href="{% url 'vista_orders_details' %}">Detalle de Pedido</a></li>
+            <li><a href="{% url 'vista_summary_orders' %}">Pedidos compress</a></li>
           </ul>
         </li>
         <li class="dropdown">
@@ -38,8 +42,7 @@
           <ul class="dropdown-menu">
             <li class="dropdown-header">Inventario</li>
             <li><a href="{% url 'vista_inventory' %}">Inventario</a></li>
-            <li class="divider">Siministros</li>
-            <li><a href="{% url 'vista_summary_orders' %}">Pedidos</a></li>
+            <li class="divider"></li>
             <li><a href="{% url 'vista_supply' %}">Suministro</a></li>
           </ul>
         </li>

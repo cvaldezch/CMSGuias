@@ -145,7 +145,7 @@
 									<td>{{ x.ingreso }}</td>
 									<td>{{ x.compra_id }}</td>
 									<td>
-										<button value="{{ x.materiales_id }}" class="btn btn-xs btn-warning text-black btn-add-supply"
+										<button value="{{ x.materiales_id }}" name="btn-{{ x.materiales_id }}" class="btn btn-xs btn-warning text-black btn-add-supply"
 										{% if x.spptag %}
 											disabled
 										{% endif %}
