@@ -1,114 +1,32 @@
 {% extends 'base.html' %}
 {% block style %}
 	<style>
-		img{
-			background-color: #fff;
-			height: 24px;
-			width: 24px;
+		.icon-circle {
+			display: block;
+			padding-top: 1.4em;
+			text-align: center;
+		}
+		.icon-circle span {
+			background-color: rgba(255,255,255,0.4);
+			border-radius: 50%;
+			box-shadow: 0 0 0 0.8em transparent;
+			display: inline-block;
+			font-size: 1.8em;
+			margin: 0 auto;
+			padding: 0.4em;
+			box-shadow: * .6s ease-in-out;
+		}
+		.icon-tab{
+			background-color: rgba(255,255,255,0.4);
+			border-radius: 50%;
+			box-shadow: 0 0 0 0.8em transparent;
+			display: inline-block;
+			margin: 0 auto;
+			padding: 0.4em;
+			box-shadow: * .6s ease-in-out;
 		}
 	</style>
 {% endblock style %}
 {% block content %}
-	<!-- define visibility screen -->
-	<!-- screem medium and large	 -->
-	<div class="visible-lg visible-md">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-12 col-md-12">
-					<div class="col-lg-4 col-md-4">
-						<div class="thumbnail brand-danger">
-							<img src="" alt="" class="image-circle" data-src="holder.js/300x200">
-							<div class="caption">
-								<h3>Desarrollo</h3>
-								<p>Module for development <h6><small>ACTIVO</small></h6></p>
-								<p>
-									<a href="/admin/" class="btn btn-default"><span class="glyphicon glyphicon-chevron-right"></span> Ingresar</a>
-								</p>
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-4 col-md-4">
-						<div class="thumbnail brand-warning">
-							<img src="" alt="" class="image-circle" data-src="holder.js/300x200">
-							<div class="caption">
-								<h3>Almacén</h3>
-								<p>
-									Modulo de Almacén, materiales y herramientas.
-									<h6><small>ACTIVO</small></h6>
-								</p>
-								<p>
-									<a href="/almacen/" class="btn btn-default"><span class="glyphicon glyphicon-chevron-right"></span> Ingresar</a>
-								</p>
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-4 col-md-4">
-						<div class="thumbnail brand-success">
-							<img src="" alt="" class="image-circle" data-src="holder.js/300x200">
-							<div class="caption">
-								<h3>Logística</h3>
-								<p>
-									Modulo de Logística, Cotizaciones y Compras.
-									<h6><small>ACTIVO</small></h6>
-								</p>
-								<p>
-									<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-chevron-right"></span> Ingresar</a>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-12 col-md-12">
-					<div class="col-lg-4 col-md-4">
-						<div class="thumbnail brand-info">
-							<img src="" alt="" class="image-circle" data-src="holder.js/300x200">
-							<div class="caption">
-								<h3>Operaciones</h3>
-								<p>
-									Modulo de Operaciones. Gestion de proyecto en ejecución.
-									<h6><small>ACTIVO</small></h6>
-								</p>
-								<p>
-									<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-chevron-right"></span> Ingresar</a>
-								</p>
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-4 col-md-4">
-						<div class="thumbnail brand-primary">
-							<img src="" alt="" class="image-circle" data-src="holder.js/300x200">
-							<div class="caption">
-								<h3>Ventas</h3>
-								<p>
-									Modulo Ventas. Gestión de proyectos, pre, durante y post venta.
-									<h6><small>ACTIVO</small></h6>
-								</p>
-								<p>
-									<a href="#" class="btn btn-default"><span class="glyphicon glyphicon-chevron-right"></span> Ingresar</a>
-								</p>
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-4 col-md-4">
-						<div class="thumbnail">
-							<img src="" alt="" class="image-circle" data-src="holder.js/300x200">
-							<div class="caption">
-								<h3>About</h3>
-								<p>
-								Copy Right 2014 <br>
-								Todos los derechos reservados.
-								</p>
-								<p>
-									<a href="#"><span class="glyphicon glyphicon-cog"></span> Configuración</a>
-								</p>
-								<p>
-									<a href="#" class="btn btn-primary"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+	{% include "menu.htm" %}
 {% endblock content %}

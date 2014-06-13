@@ -4,25 +4,25 @@
 <style>
 	body{
 		background-image: url('/media/resource/background/error.jpg') !important;
-		height: 100%;
-		width: 97%;
-	}
-	section{
-		color: #444;
+		background-size: cover;
 	}
 </style>
 {% endblock %}
 {% block content %}
-<h1>ERROR <strong>404</strong> </h1>
-<h4>LO QUE ESTAS BUSCANDO NO ESTA AQUI</h4>
-<br>
-<p>
-	{% if messages %}
-		<ul class="messages">
-		    {% for message in messages %}
-		    <li>{{ message }}</li>
-		    {% endfor %}
-		</ul>
-	{% endif %}
-</p>
+<div class="container">
+	<div class="alert brand-danger">
+		<h1>ERROR <strong>404</strong> </h1>
+		<h4>LO QUE ESTAS BUSCANDO NO ESTA AQUI</h4>
+		<br>
+		<p>
+			{% if messages %}
+				<ul class="messages">
+				    {% for message in messages %}
+				    	<li>{{ message }}</li>
+				    {% endfor %}
+				</ul>
+			{% endif %}
+		</p>
+	</div>
+</div>
 {% endblock %}

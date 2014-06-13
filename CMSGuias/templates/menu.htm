@@ -1,75 +1,237 @@
-<nav class="navbar navbar-default navbar-inverse navbar-fixed-top" role="navigation">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="{% url 'vista_home' %}">CMS Almacén</a>
+<div class="container">
+  <!-- define visibility screen -->
+  <!-- screem medium and large   -->
+    <div class="visible-lg visible-md">
+      <div class="row">
+        <div class="col-lg-12 col-md-12">
+          <div class="col-lg-4 col-md-4">
+            <div class="thumbnail brand-danger">
+              <span class="icon-circle">
+                <span class="glyphicon glyphicon-tasks"></span>
+              </span>
+              <div class="caption">
+                <h3>Desarrollo</h3>
+                <p>
+                  Module for development and manager of ORM
+                  <h6><small>ACTIVO</small></h6></p>
+                <p>
+                <a href="/admin/" class="btn btn-default"><span class="glyphicon glyphicon-chevron-right"></span> Ingresar</a>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4">
+            <div class="thumbnail brand-warning">
+              <span class="icon-circle">
+                <span class="glyphicon glyphicon-tasks"></span>
+              </span>
+              <div class="caption">
+                <h3>Almacén</h3>
+                <p>
+                  Modulo de Almacén, materiales y herramientas.
+                  <h6><small>ACTIVO</small></h6>
+                </p>
+                <p>
+                  <a href="/almacen/" class="btn btn-default"><span class="glyphicon glyphicon-chevron-right"></span> Ingresar</a>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4">
+            <div class="thumbnail brand-success">
+              <span class="icon-circle">
+                <span class="glyphicon glyphicon-tasks"></span>
+              </span>
+              <div class="caption">
+                <h3>Logística</h3>
+                <p>
+                  Modulo de Logística, Cotizaciones y Compras.
+                  <h6><small>ACTIVO</small></h6>
+                </p>
+                <p>
+                  <a href="{% url 'view_logistics' %}" class="btn btn-default"><span class="glyphicon glyphicon-chevron-right"></span> Ingresar</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-12 col-md-12">
+          <div class="col-lg-4 col-md-4">
+            <div class="thumbnail brand-info">
+              <span class="icon-circle">
+                <span class="glyphicon glyphicon-tasks"></span>
+              </span>
+              <div class="caption">
+                <h3>Operaciones</h3>
+                <p>
+                  Modulo de Operaciones. Gestion de proyecto en ejecución.
+                  <h6><small>INACTIVO</small></h6>
+                </p>
+                <p>
+                  <a href="#" class="btn btn-default"><span class="glyphicon glyphicon-chevron-right"></span> Ingresar</a>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4">
+            <div class="thumbnail brand-primary">
+              <span class="icon-circle">
+                <span class="glyphicon glyphicon-tasks"></span>
+              </span>
+              <div class="caption">
+                <h3>Ventas</h3>
+                <p>
+                  Modulo Ventas. Gestión de proyectos, pre, durante y post venta.
+                  <h6><small>INACTIVO</small></h6>
+                </p>
+                <p>
+                  <a href="#" class="btn btn-default"><span class="glyphicon glyphicon-chevron-right"></span> Ingresar</a>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4">
+            <div class="thumbnail warning">
+              <span class="icon-circle">
+                <span class="glyphicon glyphicon-book"></span>
+              </span>
+              <div class="caption">
+                <h3>About</h3>
+                <p>
+                Copy Right 2014 <br>
+                Todos los derechos reservados.
+                </p>
+                <p>
+                  <a href="#"><span class="glyphicon glyphicon-cog"></span> Configuración</a>
+                </p>
+                <p>
+                  <a href="{% url 'vista_logout' %}" class="btn btn-primary"><span class="glyphicon glyphicon-log-out"></span> Logout</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="{% url 'vista_home' %}"><span class="glyphicon glyphicon-home"></span></a></li>
-        
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Pedidos <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a href="{% url 'vista_pedido' %}">Generar Pedido</a></li>
-            <li class="divider"></li>
-            <li><a href="{% url 'vista_slope_orders' %}">Pedidos Pendientes</a></li>
-            <li><a href="{% url 'vista_list_approved' %}">Pedidos Aprobados</a></li>
-            <li class="divider"></li>
-            <li class="dropdown-header">Pedido Inventario</li>
-            <li><a href="{% url 'vista_orders_details' %}">Detalle de Pedido</a></li>
-            <li><a href="{% url 'vista_summary_orders' %}">Pedidos compress</a></li>
-          </ul>
-        </li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Guias Remisión <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a href="{% url 'vita_list_orders_outmeet' %}">Guias de Remisión</a></li>
-            <li class="divider"></li>
-            <li><a href="{% url 'vista_lista_guide_success' %}">Guias de Remision hechas</a></li>
-            <li><a href="{% url 'vista_lista_guide_canceled' %}">Guias de Remision Anuladas</a></li>
-          </ul>
-        </li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"> Inventario<b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li class="dropdown-header">Inventario</li>
-            <li><a href="{% url 'vista_inventory' %}">Inventario</a></li>
-            <li class="divider"></li>
-            <li><a href="{% url 'vista_supply' %}">Suministro</a></li>
-          </ul>
-        </li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Mantenimientos <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a href="{% url 'vista_project' %}">Proyectos</a></li>
-            <li><a href="{% url 'vista_stores' %}">Almacenes</a></li>
-            <li><a href="{% url 'vista_customers' %}">Clientes</a></li>
-            <li><a href="{% url 'vista_carrier' %}">Transportista</a></li>
-            <li class="divider"></li>
-            <li><a href="#">Empleados</a></li>
-          </ul>
-        </li>
-        <li><a href="#">About</a></li>
-      </ul>
-      
-      <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> {{user.first_name}}, {{user.last_name}} <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a>Cargo: {{user.get_profile.cargo.cargos}}</a></li>
-            <li class="divider"></li>
-            <li><a href="{% url 'vista_logout' %}"><span class="glyphicon glyphicon-log-out"></span> Cerrar Session</a></li>
-          </ul>
-        </li>
-      </ul>
-    </div><!-- navbar-collapse -->
-  </div><!-- container-fluid -->
-</nav>
+
+    <!--screen small as tablets-->
+    <div class="visible-sm">
+      <div class="row">
+        <div class="col-md-12 col-sm-12">
+          <div class="row">
+            <div class="col-md-5 col-md-offset-1 col-sm-5 col-sm-offset-1">
+              <div class="list-group">
+                <a href="/admin/" class="list-group-item brand-danger">
+                  <h4 class="list-group-item-heading">
+                    <span class="icon-tab"><span class="glyphicon glyphicon-tasks"></span></span> Development
+                  </h4>
+                  <p>
+                    Module Development and manager of ORM DDBB
+                    <h6><small>ACTIVO</small></h6>
+                  </p>
+                </a>
+                <a href="{% url 'vista_storage' %}" class="list-group-item brand-warning">
+                  <h4 class="list-group-item-heading">
+                    <span class="icon-tab"><span class="glyphicon glyphicon-tasks"></span></span> Almacén
+                  </h4>
+                  <p>
+                    Modulo de Almacén, materiales y herramientas.
+                    <h6><small>ACTIVO</small></h6>
+                  </p>
+                </a>
+                <a class="list-group-item brand-success">
+                  <h4 class="list-group-item-heading">
+                    <span class="icon-tab"><span class="glyphicon glyphicon-tasks"></span></span> Logistica
+                  </h4>
+                  <p>
+                    Modulo de Logística, Cotizaciones y Compras.
+                    <h6><small>ACTIVO</small></h6>
+                  </p>
+                </a>
+              </div>
+            </div>
+            <div class="col-md-5 col-sm-5">
+              <div class="list-group">
+                <a class="list-group-item brand-info">
+                  <h4 class="list-group-item-heading">
+                    <span class="icon-tab"><span class="glyphicon glyphicon-tasks"></span></span> Operaciones
+                  </h4>
+                  <p>
+                    Modulo de Operaciones, gestión de proyetos.
+                  <h6><small>INACTIVO</small></h6>
+                  </p>
+                </a>
+                <a class="list-group-item brand-primary">
+                  <h4 class="list-group-item-heading">
+                    <span class="icon-tab"><span class="glyphicon glyphicon-tasks"></span></span> Ventas
+                  </h4>
+                  Modulo de Ventas, Presupuesto Proyectos.
+                  <h6><small>INACTIVO</small></h6>
+                </a>
+                <a class="list-group-item list-group-item-warning">
+                  <h4 class="list-group-item-heading">
+                    <span class="icon-tab"><span class="glyphicon glyphicon-book"></span></span> About
+                  </h4>
+                  <p>
+                    Todos los derechos reservados. <br>
+                    <button class="btn btn-link" onclick="javascript:location.href='';"><span class="glyphicon glyphicon-cog"></span></button class="btn btn-link">
+                    <button class="btn btn-link" onclick="javascript:location.href='{% url 'vista_logout' %}';"><span class="glyphicon glyphicon-log-out"></span> Logout</button>
+                  </p>
+                </a>
+              </div>
+            </div>
+            <div class="col-md-offset-1 col-sm-offset-1"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- screen xsmall phones -->
+    <div class="visible-xs">
+      <div class="row">
+        <div class="col-sm-12 col-xs-12">
+          <div class="list-group">
+            <a href="/admin/" class="list-group-item brand-danger">
+              <h4 class="item-group-heading">
+                <span class="icon-tab"><span class="glyphicon glyphicon-tasks"></span></span>
+                Development
+              </h4>
+            </a>
+            <a href="{% url 'vista_storage' %}" class="list-group-item brand-warning">
+              <h4 class="item-group-heading">
+                <span class="icon-tab"><span class="glyphicon glyphicon-tasks"></span></span>
+                Almacén
+              </h4>
+            </a>
+            <a href="#" class="list-group-item brand-success">
+              <h4 class="item-group-heading">
+                <span class="icon-tab"><span class="glyphicon glyphicon-tasks"></span></span>
+                Logística
+              </h4>
+            </a>
+            <a href="#" class="list-group-item brand-info">
+              <h4 class="item-group-heading">
+                <span class="icon-tab"><span class="glyphicon glyphicon-tasks"></span></span>
+                Operaciones
+              </h4>
+            </a>
+            <a href="#" class="list-group-item brand-primary">
+              <h4 class="item-group-heading">
+                <span class="icon-tab"><span class="glyphicon glyphicon-tasks"></span></span>
+                Ventas
+              </h4>
+            </a>
+            <a href="" class="list-group-item list-group-item-warning">
+              <button class="btn btn-link text-black">
+                <span class="icon-tab"><span class="glyphicon glyphicon-cog"></span></span>
+                Config
+              </button>
+              <button class="btn btn-link text-black">
+                <span class="icon-tab"><span class="glyphicon glyphicon-log-out"></span></span>
+                Logout
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

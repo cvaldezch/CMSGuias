@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %} 500 {% endblock %}
+{% block style %}
+<style>
+	body{
+		background-image: url('/media/resource/background/error.jpg') !important;
+		background-size: cover;
+	}
+</style>
+{% endblock %}
+{% block content %}
+<h1>
+ERROR <strong>500</strong>
+{{ messages }}
+<br>
+<small class="text-black">
+	
+	Se ha producido un error, nuestro servidor se ha quedado dormido.
+	Estamos tratando de despertalo.
+</small>
+</h1>
+<br>
+<p>
+	{% if messages %}
+		<ul class="messages">
+		    {% for message in messages %}
+		    <li>{{ message }}</li>
+		    {% endfor %}
+		</ul>
+	{% endif %}
+</p>
+{% endblock %}

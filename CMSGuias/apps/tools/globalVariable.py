@@ -3,15 +3,14 @@
 
 import datetime
 
+from django.contrib import messages
+from django.http import Http404
+
 #######################
 #  Variables Globals  #
 #######################
 """
-'PE' => "PENDING" # Pendiente
-'AP' => "APPROVE" # Aprobado
-'AN' => "ANNULAR" # Anulado
-'IN' => "INCOMPLETE" # Incompleto
-'CO' => "COMPLETE" # Completo
+    Status Models
 """
 status = {
     'PE' : "PENDIENTE", # Pendiente
@@ -36,3 +35,29 @@ def date_now(type='date',format="%Y-%m-%d"):
         return date.date()
     else:
         return date
+
+# Convert Date str to Date and date to str
+def format_date_str(_date=None, format="%Y-%m-%d"):
+    date_str = ""
+    try:
+        if _date is not None:
+            date_str = _date.strftime(format)
+        else:
+            date_str = "date invalid!"
+    except Exception, e:
+        messages.add_message("%s"%e)
+        raise Http404
+    return date_str
+
+def format_str_date(_str=None, format="%Y-%m-%d"):
+    str_date = ""
+    try:
+        if _str is not None:
+            str_date = datetime.datetime.strptime(_str, format).date()
+        else:
+            str_date = "str invalid!"
+    except Exception, e:
+        print 'Error   '
+        messages.add_message(e)
+        raise Http404('Method Error')
+    return str_date

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}
+	Suppy Pending
+{% endblock title %}
+{% block menu %}
+	{% include "menus/logistics.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+	<div class="well">
+		<header>
+			<h3><span class="glyphicon glyphicon-list-alt"></span> Suministros pendientes</h3>
+		</header>
+		<aside>
+			<div class="bs-callout bs-callout-warning">
+				<div class="row">
+					<form action="" method="GET">
+						<div class="col-md-3">
+							<div class="form-gruop">
+								Buscar por: 
+								<label class="radio-inline"><input type="radio" name="rdo" value="code"> Código</label>
+								<label class="radio-inline"><input type="radio" name="rdo" value="date" checked /> Fechas</label>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="col-md-2">
+								<div class="form-group">
+									<label class="control-label">Código</label>
+									<input type="text" class="form-control" name="id-su">
+								</div>
+							</div>
+							<div class="col-md-2">
+								<div class="form-group">
+									<label class="control-label">Fecha Inicio</label>
+									<input type="text" class="form-control" name="fi-su">
+								</div>
+							</div>
+							<div class="col-md-2">
+								<div class="form-group">
+									<label class="control-label">Fecha Fin</label>
+									<input type="text" class="form-control" name="ff-su">
+								</div>
+							</div>
+							<div class="col-md-1">
+								<div class="form-group">
+									<label class="control-label">Buscar</label>
+									<button class="btn btn-warning btn-block text-black"><span class="glyphicon glyphicon-search"></span></button>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</aside>
+		<div class="table-responsive">
+			<table class="table table-hover table-condensed">
+				<thead>
+					<tr class="brand-warning">
+						<th></th><th>Código</th><th>Almacén</th><th>Registrado</th><th>Ingreso Almacén</th><th>Asunto</th><th>status</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for x in supply %}
+						<tr>
+							<td>{{ forloop.counter }}</td>
+							<td>{{ x.suministro_id }}</td>
+							<td>{{ x.almacen.nombre }}</td>
+							<td>{{ x.registrado|date:"d M Y H:m" }}</td>
+							<td>{{ x.ingreso }}</td>
+							<td>{{ x.asunto }}</td>
+							<td>
+							{% for k, v in status.items %}
+								{% ifequal k x.status  %} 
+									{{ v }}
+								{% endifequal %}
+							{% endfor %}
+							</td>
+						</tr>
+					{% empty %}
+						<div class="alert alert-warning alert-block">
+							<strong>Notice</strong>
+							<p>
+								No hay suministros registrados para mostrar, al parecer no tienes trabajo por aquí.
+							</p>
+						</div>
+					{% endfor %}
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="7" class="text-center">
+							<ul class="pagination">
+								{% if supply.has_preveous %}
+									<li><a href="?page=1">&laquo;</a></li>	
+									<li><a href="?page={{ supply.previous_page_number }}">&laquo;</a></li>	
+								{% endif %}								
+								<li><a> Page {{ supply.number }} of {{ supply.paginator.num_pages }}</a></li>
+								{% if supply.has_next %}
+									<li><a href="?page={{ supply.next_page_number }}">&raquo;</a></li>
+									<li><a href="?page={{ supply.paginator.num_pages }}">&raquo;</a></li>
+								{% endif %}
+							</ul>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock content %}

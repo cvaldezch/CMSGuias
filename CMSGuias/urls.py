@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'', include('CMSGuias.apps.home.urls')),
     url(r'^almacen/', include('CMSGuias.apps.almacen.urls')),
+    url(r'^logistics/', include('CMSGuias.apps.logistica.urls')),
     url(r'^json/', include('CMSGuias.apps.wsjson.urls')),
     url(r'^reports/', include('CMSGuias.apps.reports.urls')),
     # Uncomment the admin/doc line below to enable admin documentation:
