@@ -2,7 +2,7 @@
 # Django settings for CMSGuias project.
 import os
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 PATH_PROJECT = os.path.join(os.path.dirname(__file__))
 

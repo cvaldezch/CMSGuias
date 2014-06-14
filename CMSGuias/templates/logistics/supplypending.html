@@ -2,6 +2,9 @@
 {% block title %}
 	Suppy Pending
 {% endblock title %}
+{% block script %}
+<script src="{{ MEDIA_URL }}js/logistics/supply.js"></script>
+{% endblock script %}
 {% block menu %}
 	{% include "menus/logistics.htm" %}
 {% endblock menu %}
@@ -19,26 +22,26 @@
 							<div class="form-gruop">
 								Buscar por: 
 								<label class="radio-inline"><input type="radio" name="rdo" value="code"> Código</label>
-								<label class="radio-inline"><input type="radio" name="rdo" value="date" checked /> Fechas</label>
+								<label class="radio-inline"><input type="radio" name="rdo" value="date" /> Fechas</label>
 							</div>
 						</div>
 						<div class="col-md-12">
 							<div class="col-md-2">
 								<div class="form-group">
 									<label class="control-label">Código</label>
-									<input type="text" class="form-control" name="id-su">
+									<input type="text" maxlength="10" placeholder="SPAA000000" class="form-control" name="id-su">
 								</div>
 							</div>
 							<div class="col-md-2">
 								<div class="form-group">
 									<label class="control-label">Fecha Inicio</label>
-									<input type="text" class="form-control" name="fi-su">
+									<input type="text" maxlength="10" placeholder="aaaa-mm-dd" class="form-control" name="fi-su">
 								</div>
 							</div>
 							<div class="col-md-2">
 								<div class="form-group">
 									<label class="control-label">Fecha Fin</label>
-									<input type="text" class="form-control" name="ff-su">
+									<input type="text" maxlength="10" placeholder="aaaa-mm-dd" class="form-control" name="ff-su">
 								</div>
 							</div>
 							<div class="col-md-1">
@@ -56,13 +59,16 @@
 			<table class="table table-hover table-condensed">
 				<thead>
 					<tr class="brand-warning">
-						<th></th><th>Código</th><th>Almacén</th><th>Registrado</th><th>Ingreso Almacén</th><th>Asunto</th><th>status</th>
+						<th></th><th></th><th>Código</th><th>Almacén</th><th>Registrado</th><th>Ingreso Almacén</th><th>Asunto</th><th>status</th><th></th>
 					</tr>
 				</thead>
 				<tbody>
 					{% for x in supply %}
 						<tr>
 							<td>{{ forloop.counter }}</td>
+							<td>
+								<a class="btn-proccess text-center text-black"><span class="glyphicon glyphicon-unchecked"></span></a>
+							</td>
 							<td>{{ x.suministro_id }}</td>
 							<td>{{ x.almacen.nombre }}</td>
 							<td>{{ x.registrado|date:"d M Y H:m" }}</td>
@@ -75,6 +81,7 @@
 								{% endifequal %}
 							{% endfor %}
 							</td>
+							<td><a href="{% url 'rpt_supply' x.suministro_id %}" class="text-black" target="_blank"><span class="glyphicon glyphicon-list-alt"></span></a></td>
 						</tr>
 					{% empty %}
 						<div class="alert alert-warning alert-block">

@@ -10,4 +10,5 @@ def RedirectModule(charge="administrator"):
         template_name = "almacen/storage.html"
     else:
         template_name = "warning.html"
+
     return template_name
