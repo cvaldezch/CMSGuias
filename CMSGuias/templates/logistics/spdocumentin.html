@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}
+	Document Out
+{% endblock title %}
+{% block menu %}
+	{% include "menus/logistics.htm" %}
+{% endblock menu %}
+{% block content %}
+	<div class="container">
+		<div class="well">
+			<header>
+				<h3>Generar Solicitud de Cotización o Orden de Compra</h3>
+			</header>
+			<div class="row">
+				<div class="col-md-12">
+					
+				</div>
+				<div class="col-md-12">
+					<div class="table-responsive">
+						<table class="table table-condensed table-hover bordered">
+							<thead>
+								<tr>
+									<th></th><th></th><th>Código</th><th>Almacén</th><th>Registrado</th><th>Ingreso Almacén</th><th>Asunto</th><th>status</th><th></th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for x in supply %}
+									<tr>
+									<td>{{ forloop.counter }}</td>
+										<td>
+												<a class="btn-proccess text-center text-black" name="{{ x.suministro_id }}"><span class="glyphicon glyphicon-unchecked"></span></a>
+											</td>
+											<td>{{ x.suministro_id }}</td>
+											<td>{{ x.almacen.nombre }}</td>
+											<td>{{ x.registrado|date:"d M Y H:m" }}</td>
+											<td>{{ x.ingreso }}</td>
+											<td>{{ x.asunto }}</td>
+											<td>
+											{% for k, v in status.items %}
+												{% ifequal k x.status  %} 
+													{{ v }}
+												{% endifequal %}
+											{% endfor %}
+											</td>
+									</tr>
+								{% empty %}
+									<div class="alert alert-warning alert-block">
+										<strong>Notice</strong>
+										<p>
+											No hay suministros registrados para mostrar, al parecer no tienes trabajo por aquí.
+										</p>
+									</div>
+								{% endfor %}
+							</tbody>
+							<tfoot>
+								<tr>
+									<td colspan="7" class="text-center">
+										<ul class="pagination">
+											{% if supply.has_preveous %}
+												<li><a href="?page=1">&laquo;</a></li>	
+												<li><a href="?page={{ supply.previous_page_number }}">&laquo;</a></li>	
+											{% endif %}								
+											<li><a> Page {{ supply.number }} of {{ supply.paginator.num_pages }}</a></li>
+											{% if supply.has_next %}
+												<li><a href="?page={{ supply.next_page_number }}">&raquo;</a></li>
+												<li><a href="?page={{ supply.paginator.num_pages }}">&raquo;</a></li>
+											{% endif %}
+										</ul>
+									</td>
+								</tr>
+							</tfoot>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock content %}

@@ -14,8 +14,8 @@ from django.http import Http404
 """
 status = {
     'PE' : "PENDIENTE", # Pendiente
-    'AP' : "APROVADO", # Aprobado
-    'AN' : "ANULAR", # Anulado
+    'AP' : "APROBADO", # Aprobado
+    'AN' : "ANULADO", # Anulado
     'IN' : "INCOMPLETO", # Incompleto
     'CO' : "COMPLETO", # Completo
     'NN' : "Nothing" # Nothing

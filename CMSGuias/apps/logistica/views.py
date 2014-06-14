@@ -60,3 +60,41 @@ class SupplyPending(TemplateView):
         context['supply'] = supply
         context['status'] = globalVariable.status
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = {}
+        if request.is_ajax():
+            try:
+                obj = Suministro.objects.get(flag=True, status='PE', pk=request.POST.get('id-su'))
+                obj.status = 'AP' if request.POST.get('status') == "approve" else 'AN'
+                obj.save() # update status supply
+                context['status'] = True
+            except ObjectDoesNotExist:
+                messages.error(request, "Se ha encontrado error al cambiar el status de supply", messages.ERROR);
+                raise Http404
+                context['status'] = False
+            context['type'] = request.POST.get('status')
+            context = simplejson.dumps(context)
+            return HttpResponse(context, mimetype="application/json", content_type="application/json")
+
+# Class view Convert Supply to quote or Purchase
+class SupplytoDocumentIn(TemplateView):
+    template_name = "logistics/spdocumentin.html"
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = super(SupplytoDocumentIn, self).get_context_data(**kwargs)
+        model = Suministro.objects.filter(flag=True, status='AP')
+        paginator = Paginator(model, 20)
+        page = request.GET.get('page')
+        try:
+            supply = paginator.page(page)
+        except PageNotAnInteger:
+            supply = paginator.page(1)
+        except EmptyPage:
+            supply = paginator.page(paginator.num_pages)
+
+        context['supply'] = supply
+        context['status'] = globalVariable.status
+        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
