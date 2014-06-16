@@ -193,7 +193,7 @@ class FormaPago(models.Model):
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return '%s %s'%(self.pagos_id,self.documento)
+        return '%s %s'%(self.pagos_id,self.pagos)
 
 class Moneda(models.Model):
     moneda_id = models.CharField(primary_key=True,max_length=4)
@@ -202,7 +202,7 @@ class Moneda(models.Model):
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return '%s %s'%(self.pagos_id,self.documento)
+        return '%s %s'%(self.moneda_id,self.moneda)
 
 class TipoCambio(models.Model):
     moneda = models.ForeignKey(Moneda, to_field='moneda_id')

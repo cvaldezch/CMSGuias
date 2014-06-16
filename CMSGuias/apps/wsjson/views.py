@@ -4,7 +4,7 @@ import json
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Sum
@@ -390,3 +390,20 @@ class get_OrdersDetails(ListView):
           except ObjectDoesNotExist:
               context['sttatus'] = False
           return HttpResponse(simplejson.dumps(context),mimetype='application/json')
+
+class SupplyDetailView(DetailView):
+    def get(self, request, *args, **kwargs):
+        context = {}
+        try:
+            response = HttpResponse()
+            response['content-type'] = 'application/json'
+            response['mimetype'] = 'application/json'
+            queryset = models.DetSuministro.objects.filter(suministro_id__exact=kwargs['sid'], flag=True)
+            queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id')
+            queryset = queryset.annotate(cantidad=Sum('cantshop')).order_by('materiales__matnom')
+            context['status'] = True
+            context['list'] = [{'materiales_id':x['materiales_id'],'materiales__matnom':x['materiales__matnom'],'materiales__matmed':x['materiales__matmed'],'materiales__unidad_id':x['materiales__unidad_id'],'cantidad':x['cantidad']} for x in queryset]
+            response.write(simplejson.dumps(context))
+        except Exception, e:
+            context['status'] = False
+        return response

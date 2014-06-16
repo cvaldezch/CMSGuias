@@ -18,6 +18,7 @@ from django.views.generic import TemplateView, View, ListView
 from .models import Cotizacion
 from CMSGuias.apps.almacen.models import Suministro
 from CMSGuias.apps.tools import globalVariable
+from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda
 
 ### Class Bases Views generic
 
@@ -97,4 +98,9 @@ class SupplytoDocumentIn(TemplateView):
 
         context['supply'] = supply
         context['status'] = globalVariable.status
+        context['supplier'] = Proveedor.objects.filter(flag=True)
+        context['storage'] = Almacene.objects.filter(flag=True)
+        context['documents'] = Documentos.objects.filter(flag=True)
+        context['payment'] = FormaPago.objects.filter(flag=True)
+        context['currency'] = Moneda.objects.filter(flag=True)
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
