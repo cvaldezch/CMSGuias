@@ -29,7 +29,7 @@
 									<tr class="success">
 									<td>{{ forloop.counter }}</td>
 										<td>
-												<a class="btn-proccess text-center text-black" name="{{ x.suministro_id }}"><span class="glyphicon glyphicon-check"></span></a>
+												<a class="btn-proccess text-center text-black" placeholder="{{ x.ingreso|date:'Y-m-d' }}" data="{{ x.almacen_id }}" name="{{ x.suministro_id }}"><span class="glyphicon glyphicon-check"></span></a>
 											</td>
 											<td>{{ x.suministro_id }}</td>
 											<td>{{ x.almacen.nombre }}</td>
@@ -81,7 +81,7 @@
 									<div class="row">
 										<div class="col-md-12">
 											<div class="btn-group">
-												<button class="btn btn-info btn-sm btn-new-quote text-black"><span class="glyphicon glyphicon-file"></span> Nuevo</button>
+												<button class="btn btn-info btn-sm btn-new text-black" value="quote"><span class="glyphicon glyphicon-file"></span> Nuevo</button>
 												<button class="btn btn-sm btn-info btn-clean-quote text-black" disabled><span class="glyphicon glyphicon-trash"></span> Limpiar</button>
 												<button class="btn btn-sm btn-info btn-save-quote text-black" disabled><span class="glyphicon glyphicon-floppy-save"></span> Cotizar Proveedor</button>
 											</div>
@@ -89,7 +89,8 @@
 										<div class="col-md-4">
 											<div class="form-group">
 												<label for="supplier_quote" class="control-label">Proveedor</label>
-												<select name="supplier_quote" id="supplier_quote" class="form-control input-sm">
+												<select name="supplier_quote" id="supplier_quote" class="form-control input-sm" disabled>
+													<option value="">-- Selected Supplier --</option>
 													{% for s in supplier %}
 														<option value="{{ s.proveedor_id }}">{{ s.razonsocial }}</option>
 														{% empty %}
@@ -101,7 +102,7 @@
 										<div class="col-md-3">
 											<div class="form-group">
 												<label for="storege_quote" class="control-label">Almacén</label>
-												<select name="storage_quote" id="storage_quote" class="form-control input-sm">
+												<select name="storage_quote" id="storage_quote" class="form-control input-sm" disabled>
 													{% for a in storage %}
 													 <option value="{{ a.almacen_id }}">{{ a.nombre }}</option>
 														{% empty %}
@@ -113,13 +114,13 @@
 										<div class="col-md-2">
 											<div class="form-group">
 												<label for="traslado_quote" class="control-label">Fecha Traslado</label>
-												<input type="text" class="form-control input-sm" name="traslado_quote">
+												<input type="text" class="form-control input-sm" name="traslado_quote" disabled>
 											</div>
 										</div>
 										<div class="col-md-3">
 											<div class="form-group">
 												<label for="obser_quote" class="control-label">Observaciones</label>
-												<textarea name="obser_quote" id="obser_quote" class="form-control input-sm" rows="1"></textarea>
+												<textarea name="obser_quote" id="obser_quote" class="form-control input-sm" rows="1" disabled></textarea>
 											</div>
 										</div>
 									</div>
@@ -133,7 +134,7 @@
 									<div class="row">
 										<div class="col-md-12">
 											<div class="btn-group">
-												<button class="btn btn-success btn-sm btn-new-quote text-black"><span class="glyphicon glyphicon-file"></span> Nuevo</button>
+												<button class="btn btn-success btn-sm btn-new text-black" value="buy"><span class="glyphicon glyphicon-file"></span> Nuevo</button>
 												<button class="btn btn-sm btn-success btn-clean-quote text-black" disabled><span class="glyphicon glyphicon-trash"></span> Limpiar</button>
 												<button class="btn btn-sm btn-success btn-save-quote text-black" disabled><span class="glyphicon glyphicon-floppy-save"></span> Comprar Proveedor</button>
 											</div>
@@ -141,7 +142,8 @@
 										<div class="col-md-4">
 											<div class="form-group">
 												<label for="" class="control-label">Proveedor</label>
-												<select name="supplier_buy" id="supplier_buy" class="form-control input-sm">
+												<select name="supplier_buy" id="supplier_buy" class="form-control input-sm" disabled>
+													<option value="">-- Selected Supplier --</option>
 													{% for s in supplier %}
 														<option value="{{ s.proveedor_id }}">{{ s.razonsocial }}</option>
 														{% empty %}
@@ -153,7 +155,7 @@
 										<div class="col-md-3">
 											<div class="form-group">
 												<label for="" class="control-label">Documento</label>
-												<select name="documents_buy" id="documents_buy" class="form-control input-sm">
+												<select name="documents_buy" id="documents_buy" class="form-control input-sm" disabled>
 													{% for d in documents %}
 														<option value="{{ d.documentos_id }}">{{ d.documento }}</option>
 														{% empty %}
@@ -165,7 +167,7 @@
 										<div class="col-md-3">
 											<div class="form-group">
 												<label for="" class="control-label">Pagos</label>
-												<select name="payment_buy" id="payment_buy" class="form-control input-sm">
+												<select name="payment_buy" id="payment_buy" class="form-control input-sm" disabled>
 													{% for p in payment %}
 														<option value="{{ p.pagos_id }}">{{ p.pagos }}</option>
 														{% empty %}
@@ -177,7 +179,7 @@
 										<div class="col-md-2">
 											<div class="form-group">
 												<label for="" class="control-label">Modena</label>
-												<select name="currency_buy" id="currency_buy" class="form-control input-sm">
+												<select name="currency_buy" id="currency_buy" class="form-control input-sm" disabled>
 													{% for d in currency %}
 														{% if d.moneda|cut:" " == "DORALESAMERICANOS"  %}
 															<option value="{{ d.moneda_id }}" selected>{{ d.moneda }}</option>
@@ -193,13 +195,13 @@
 										<div class="col-md-2">
 											<div class="form-group">
 												<label for="" class="control-label">Fecha de Traslado</label>
-												<input type="text" class="form-control input-sm" name="transfer_buy">
+												<input type="text" class="form-control input-sm" name="transfer_buy" disabled>
 											</div>
 										</div>
 										<div class="col-md-4">
 											<div class="form-group">
 												<label for="" class="control-label">Contacto</label>
-												<input type="text" class="form-control input-sm" name="contact_buy">
+												<input type="text" class="form-control input-sm" name="contact_buy" disabled>
 											</div>
 										</div>
 									</div>
