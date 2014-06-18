@@ -1,7 +1,13 @@
-from CMSGuias.apps.almacen.models import Pedido, GuiaRemision, Suministro
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import datetime
+from random import randint
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Max
-import datetime
+
+from CMSGuias.apps.almacen.models import Pedido, GuiaRemision, Suministro
+from CMSGuias.apps.logistica.models import Cotizacion, Compra
 
 
 ### format date str
@@ -71,6 +77,59 @@ def GenerateKeySupply():
         else:
             counter = 1
         id = "%s%s%s"%('SP', cy.__str__(), "{:0>6d}".format(counter))
+    except ObjectDoesNotExist:
+      raise e
+    return id
+
+# Generate id for order Quotation
+def GenerateKeyQuotation():
+    id = None
+    try:
+        cod = Cotizacion.objects.aggregate(max=Max('cotizacion_id'))
+        id = cod['max']
+        cy = int(datetime.datetime.today().strftime(__year_str))
+        if id is not None:
+            yy = int(id[2:4])
+            counter = int(id[4:10])
+            if cy > yy:
+                counter = 1
+            else:
+                counter += 1
+        else:
+            counter = 1
+        id = "%s%s%s"%('SC', cy.__str__(), "{:0>6d}".format(counter))
+    except ObjectDoesNotExist:
+      raise e
+    return id
+
+def GeneratekeysQuoteClient():
+    keys = ""
+    try:
+        chars = "aObAcPdB1Qe2Cf3Dg4Rh5Ei6S7jF8kT9lG0UmnHoWpIqJrYsKtLuZwMyzN-*!#^*()=_|"
+        for x in xrange(1, 10):
+            index = randint(0, (chars.__len__() - 1))
+            keys = "%s%s"%(keys, chars[index])
+    except Exception, e:
+        raise e
+    return "SC%s"%keys
+
+# Generate id for order Quotation
+def GenerateKeyPurchase():
+    id = None
+    try:
+        cod = Compra.objects.aggregate(max=Max('compra_id'))
+        id = cod['max']
+        cy = int(datetime.datetime.today().strftime(__year_str))
+        if id is not None:
+            yy = int(id[2:4])
+            counter = int(id[4:10])
+            if cy > yy:
+                counter = 1
+            else:
+                counter += 1
+        else:
+            counter = 1
+        id = "%s%s%s"%('OC', cy.__str__(), "{:0>6d}".format(counter))
     except ObjectDoesNotExist:
       raise e
     return id

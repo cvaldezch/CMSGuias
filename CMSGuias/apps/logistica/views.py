@@ -19,7 +19,8 @@ from .models import Cotizacion
 from CMSGuias.apps.almacen.models import Suministro
 from CMSGuias.apps.tools import globalVariable
 from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda
-
+from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra
+from CMSGuias.apps.tools import genkeys, globalVariable
 ### Class Bases Views generic
 
 # view home logistics
@@ -104,3 +105,75 @@ class SupplytoDocumentIn(TemplateView):
         context['payment'] = FormaPago.objects.filter(flag=True)
         context['currency'] = Moneda.objects.filter(flag=True)
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            if request.POST.get("type") == "finish":
+                data = {}
+                try:
+                    obj =  Suministro.objects.get(pk=request.POST.get('supply'))
+                    obj.status = 'CO'
+                    obj.flag = False
+                    obj.save()
+                    data['status'] = True
+                except Exception, e:
+                    data['status'] = False
+                return HttpResponse(simplejson.dumps(data), mimetype='application/json', content_type='application/json')
+            
+            response = HttpResponse()
+            data = {}
+            try:
+                # get status type document
+                if request.POST.get('type') == "quote":
+                    # saved quotation
+                    idquote = None
+                    if request.POST.get('newid') == "1":
+                        # recover data for header quote and save
+                        idquote = genkeys.GenerateKeyQuotation()
+                        obj = Cotizacion()
+                        obj.cotizacion_id = idquote
+                        obj.suministro_id = request.POST.get('supply')
+                        obj.empdni = request.user.get_profile().empdni
+                        obj.almacen_id = request.POST.get('storage')
+                        obj.traslado = globalVariable.format_str_date(request.POST.get('traslado'))
+                        obj.obser = request.POST.get('obser')
+                        obj.status = 'PE'
+                        obj.flag = True
+                        obj.save()
+                    elif request.POST.get('newid') == "0":
+                        idquote = request.POST.get('id')
+
+                    # save quote to client
+                    counter = CotKeys.objects.filter(cotizacion_id=idquote, proveedor_id=request.POST.get('supplier')).aggregate(counter=Count('cotizacion'))
+                    if counter['counter'] == 0:
+                        obj = CotKeys()
+                        obj.cotizacion_id = idquote
+                        obj.proveedor_id = request.POST.get('supplier')
+                        obj.keygen = genkeys.GeneratekeysQuoteClient()
+                        obj.status = "PE"
+                        obj.flag = True
+                        obj.save()
+
+                    # save det quote
+                    mats = json.loads(request.POST.get('mats'))
+                    for x in range(mats.__len__()):
+                        obj = DetCotizacion()
+                        obj.cotizacion_id = idquote
+                        obj.proveedor_id = request.POST.get('supplier')
+                        obj.materiales_id = mats[x]['mid']
+                        obj.cantidad = mats[x]['cant']
+                        obj.flag = True
+                        obj.save()
+
+                    data["id"] = idquote
+                    data['status'] = True
+                elif request.POST.get('type') == "buy":
+                    data['status'] = True
+            except Exception, e:
+                #data['msg'] = e
+                data['status'] = False
+            response.write(simplejson.dumps(data))
+            response['content_type'] = "application/json"
+            response['mimetype'] = "application/json"
+            return response

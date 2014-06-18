@@ -84,6 +84,7 @@
 												<button class="btn btn-info btn-sm btn-new text-black" value="quote"><span class="glyphicon glyphicon-file"></span> Nuevo</button>
 												<button class="btn btn-sm btn-info btn-clean text-black" value="quote" disabled><span class="glyphicon glyphicon-trash"></span> Limpiar</button>
 												<button class="btn btn-sm btn-info btn-save text-black" value="quote" disabled><span class="glyphicon glyphicon-floppy-save"></span> Cotizar Proveedor</button>
+												<button class="btn btn-danger btn-sm text-black btn-finish"><span class="glyphicon glyphicon-ok"></span>  Ya, termine!</button>
 											</div>
 										</div>
 										<div class="col-md-4">
@@ -137,6 +138,7 @@
 												<button class="btn btn-success btn-sm btn-new text-black" value="buy"><span class="glyphicon glyphicon-file"></span> Nuevo</button>
 												<button class="btn btn-sm btn-success btn-clean text-black" value="buy" disabled><span class="glyphicon glyphicon-trash"></span> Limpiar</button>
 												<button class="btn btn-sm btn-success btn-save text-black" value="quote" disabled><span class="glyphicon glyphicon-floppy-save"></span> Comprar Proveedor</button>
+												<button class="btn btn-danger btn-sm text-black btn-finish"><span class="glyphicon glyphicon-ok"></span>  Ya, termine!</button>
 											</div>
 										</div>
 										<div class="col-md-4">
@@ -236,7 +238,12 @@
 			</div>
 		</div>
 	</div>
-
+<!-- block variables -->
+<input type="hidden" name="supply">
+<input type="hidden" name="nro-quote">
+<input type="hidden" name="nro-buy">
+{% csrf_token %}
+<!-- end block-->
 	<!-- block modal -->
 	<div class="modal fade mquestion">
 		<div class="modal-dialog modal-sm">

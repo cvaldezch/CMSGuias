@@ -90,10 +90,10 @@ class DetCotizacion(models.Model):
     proveedor = models.ForeignKey(Proveedor, to_field='proveedor_id')
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     cantidad = models.FloatField()
-    precio = models.FloatField()
-    entrega = models.DateField()
-    marca = models.CharField(max_length=60)
-    modelo = models.CharField(max_length=60)
+    precio = models.FloatField(null=True,blank=True)
+    entrega = models.DateField(null=True, blank=True)
+    marca = models.CharField(max_length=60, null=True, blank=True)
+    modelo = models.CharField(max_length=60, null=True, blank=True)
     flag = models.BooleanField(default=True)
 
     class Meta:
