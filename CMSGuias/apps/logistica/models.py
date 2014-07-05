@@ -19,7 +19,7 @@ class Cotizacion(models.Model):
         ordering = ['cotizacion_id']
 
     def __unicode__(self):
-        return '%s %s %s'%(self.cotizacion, self.almacen, self.traslado)
+        return '%s %s %s'%(self.cotizacion_id, self.almacen, self.traslado)
 
 class Compra(models.Model):
     compra_id = models.CharField(primary_key=True, max_length=10)

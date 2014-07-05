@@ -98,7 +98,7 @@ def GenerateKeyQuotation():
         else:
             counter = 1
         id = "%s%s%s"%('SC', cy.__str__(), "{:0>6d}".format(counter))
-    except ObjectDoesNotExist:
+    except ObjectDoesNotExist, e:
       raise e
     return id
 

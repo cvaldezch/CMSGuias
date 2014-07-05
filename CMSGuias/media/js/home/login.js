@@ -5,7 +5,6 @@ $(function () {
 		$('#id_username,#id_password').each(function () {
 			var item = this;
 			if (item.value == '') {
-				console.log(item.id);
 				item.focus();
 				return false;
 			};

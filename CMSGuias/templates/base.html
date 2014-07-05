@@ -5,7 +5,7 @@
 	<title> {% block title %}CMS Guias {% endblock %}</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<link rel="shortcut icon" href="/media/resource/ico/icrperu.ico" type="image/x-icon">
+	<!--<link rel="shortcut icon" href="/media/resource/ico/icrperu.ico" type="image/x-icon">-->
 	<script src="/media/js/html5.js"></script>
 	<!-- Part JQuery -->
 	{% block jquery %}
@@ -24,10 +24,6 @@
 	<link rel="stylesheet" href="/media/bootstrap/css/bootstrap-theme.css">
 	<script src="/media/bootstrap/js/bootstrap.js"></script>
 	{% endblock %}
-	<!-- Part Style-Basic -->
-	{% block stylebase %}
-	<link rel="stylesheet" href="/media/css/base.css">
-	{% endblock %}
 	<!-- Part Styles -->
 	{% block style %}{% endblock %}
 	<!-- Part Scripts -->
@@ -35,6 +31,10 @@
 	{% block validateForm %}
 		<script type="text/javascript" src="{{ MEDIA_URL }}js/validateFields.js"></script>
 	{% endblock validateForm %}
+		<!-- Part Style-Basic -->
+	{% block stylebase %}
+	<link rel="stylesheet" href="/media/css/base.css">
+	{% endblock %}
 	<!--[if IE]><script type="text/javascript">
 		var e = ("abbr,article,spam,aside,audio,canvas,datalist,details,figure,
 		footer,header,hgroup,mark,menu,meter,nav,output,progress,

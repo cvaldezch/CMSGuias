@@ -116,8 +116,8 @@ class SupplytoDocumentIn(TemplateView):
                     obj.status = 'CO'
                     obj.flag = False
                     obj.save()
-                    data['status'] = True
-                except Exception, e:
+                    data['obj'] = True
+                except ObjectDoesNotExist, e:
                     data['status'] = False
                 return HttpResponse(simplejson.dumps(data), mimetype='application/json', content_type='application/json')
             
@@ -170,10 +170,17 @@ class SupplytoDocumentIn(TemplateView):
                     data['status'] = True
                 elif request.POST.get('type') == "buy":
                     data['status'] = True
-            except Exception, e:
-                #data['msg'] = e
+            except ObjectDoesNotExist, e:
+                print e
                 data['status'] = False
             response.write(simplejson.dumps(data))
             response['content_type'] = "application/json"
             response['mimetype'] = "application/json"
             return response
+
+class ViewListQuotation(TemplateView):
+    template_name = "logistics/listquotation.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ViewListQuotation, self).get_context_data(**kwargs)
+        return context
