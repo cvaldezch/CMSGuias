@@ -15,9 +15,7 @@ from django.utils.decorators import method_decorator
 from django.template import RequestContext, TemplateDoesNotExist
 from django.views.generic import TemplateView, View, ListView
 
-from .models import Cotizacion
 from CMSGuias.apps.almacen.models import Suministro
-from CMSGuias.apps.tools import globalVariable
 from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda
 from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra
 from CMSGuias.apps.tools import genkeys, globalVariable
@@ -120,7 +118,7 @@ class SupplytoDocumentIn(TemplateView):
                 except ObjectDoesNotExist, e:
                     data['status'] = False
                 return HttpResponse(simplejson.dumps(data), mimetype='application/json', content_type='application/json')
-            
+
             response = HttpResponse()
             data = {}
             try:
@@ -181,6 +179,33 @@ class SupplytoDocumentIn(TemplateView):
 class ViewListQuotation(TemplateView):
     template_name = "logistics/listquotation.html"
 
-    def get_context_data(self, **kwargs):
+    def get(self, request, *args, **kwargs):
         context = super(ViewListQuotation, self).get_context_data(**kwargs)
-        return context
+        if request.is_ajax():
+            if request.GET.get('by') == 'code':
+                model = CotKeys.objects.filter(cotizacion_id=request.GET.get('code'),flag=True)
+            elif request.GET.get('by') == 'dates':
+                if request.GET.get('dates') != '' and request.GET.get('datee') == '':
+                    model = CotKeys.objects.filter(cotizacion__registrado__startswith=globalVariable.format_str_date(request.GET.get('dates')),flag=True)
+                elif request.GET.get('dates') != '' and request.GET.get('datee') != '':
+                    model = CotKeys.objects.filter(cotizacion__registrado__range=(globalVariable.format_str_date(request.GET.get('dates')),globalVariable.format_str_date(request.GET.get('datee'))), flag=True)
+        else:
+            model = CotKeys.objects.filter(flag=True)
+
+        paginator = Paginator(model, 15)
+        page = request.GET.get('page')
+        try:
+            quote = paginator.page(page)
+        except PageNotAnInteger:
+            quote = paginator.page(1)
+        except EmptyPage:
+            quote = paginator.page(paginator.num_pages)
+        context['list'] = quote
+        if request.is_ajax():
+            data = {}
+            data['list'] = [{'cotizacion_id':x.cotizacion_id,'proveedor_id':x.proveedor_id,'razonsocial':x.proveedor.razonsocial,'keygen':x.keygen,'traslado':globalVariable.format_date_str(x.cotizacion.traslado)} for x in quote]
+            data['status'] = True
+            return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+        else:
+            return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+

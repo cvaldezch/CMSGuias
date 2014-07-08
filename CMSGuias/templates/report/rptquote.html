@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Request of Quotation</title>
+    <link rel="stylesheet" type="text/css" href="/media/css/reports/ordersstore.css">
+</head>
+<body>
+    <header>
+        <img id="logo" src="/media/images/icrlogo.png" alt="image">
+        <div id="dir" >
+            Jr. Gral. Jose de San Martin Mz. E Lote 6 Huachipa - Lurigancho Lima 15, Peru<br >
+            Central Telefonica: (511) 371-0443<br >
+            E-mail: logistica@icrperusa.com
+        </div>
+        <div id="info-type">
+            <h1>Materiales</h1>
+        </div>
+        <div id="nro-serie">
+            <h1>Nro Cotización</h1>
+            <h1 id="nro">{{bedside.cotizacion_id}}</h1>
+        </div>
+        <div id="bedside-col1">
+            <table>
+                <tr><td><strong>Almacén :</strong></td><td> {{bedside.almacen.nombre}}</td></tr>
+                <tr><td><strong>Asunto :</strong></td><td> {{bedside.asunto}}</td></tr>
+                <tr><td width="3cm"><strong>Fecha Registrado :</strong></td><td> {{bedside.registrado}}</td></tr>
+                <tr><td><strong>Fecha Ingreso :</strong></td><td> {{bedside.traslado}}</td></tr>
+            </table>
+        </div>
+        <div id="bedside-col2">
+            <table>
+                <tr><td width="2cm"><strong>Estado :</strong></td><td> {% for k, v in status.iteritems %}
+                    {% ifequal k bedside.status %}
+                        {{ v }}
+                    {% endifequal %}
+                {% endfor %}</td></tr>
+                <tr><td><strong>Observación :</strong></td><td> {{bedside.obser}}</td></tr>
+            </table>
+        </div>
+    </header>
+    <section>
+        <div class="details">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Código</th>
+                        <th>Descripción</th>
+                        <th>Medida</th>
+                        <th>Unidad</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for x in details %}
+                        <tr>
+                            <td class="text-center item">{{forloop.counter}}</td>
+                            <td class="text-center cod">{{x.materiales_id}}</td>
+                            <td class="nom">{{x.materiales.matnom}}</td>
+                            <td>{{x.materiales.matmed}}</td>
+                            <td class="text-center">{{x.materiales.unidad_id}}</td>
+                            <td class="text-center">{{x.cantidad}}</td>
+                        </tr>
+                    {% endfor%}
+                </tbody>
+                <tfoot>
+                    <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </section>
+</body>
+</html>

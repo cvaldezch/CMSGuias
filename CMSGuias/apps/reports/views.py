@@ -18,6 +18,7 @@ from django.views.generic import TemplateView
 
 from CMSGuias.apps.almacen import models
 from CMSGuias.apps.tools import globalVariable
+from CMSGuias.apps.logistica.models import Cotizacion, CotCliente, DetCotizacion
 
 def fetch_resources(uri, rel):
     path = os.path.join(settings.MEDIA_ROOT, uri.replace(settings.MEDIA_URL, ""))
@@ -43,7 +44,7 @@ def view_test_pdf(request):
 """
         end block
 """
-### Reports 
+### Reports
 def rpt_orders_details(request,pid,sts):
     try:
         if request.method == 'GET':
@@ -88,3 +89,16 @@ class RptSupply(TemplateView):
             return generate_pdf(html)
         except TemplateDoesNotExist:
             raise Http404
+
+# Report Quote
+class RptQuote(TemplateView):
+    template_name = "report/rptquote.html"
+
+    def get(self, request, *args, **kwargs):
+        context = super(RptQuote, self).get_context_data(**kwargs)
+        context['bedside'] = get_object_or_404(Cotizacion, pk=kwargs['qid'], flag=True)
+        context['customers'] = CotCliente.objects.filter(cotizacion_id=kwargs['qid'], proveedor_id=kwargs['pid'])
+        context['details'] = DetCotizacion.objects.filter(cotizacion_id=kwargs['qid'],proveedor_id=kwargs['pid'])
+        context['status'] = globalVariable.status
+        html = render_to_string(self.template_name, context, context_instance=RequestContext(request))
+        return generate_pdf(html)

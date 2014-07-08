@@ -81,3 +81,18 @@ body
   font-size: 12px
   width: 26em
 
+colortext(color, percent)
+  color darken(color, percent)
+
+.text-red
+  colortext(red, 0)
+  &:hover
+    colortext(red, 20)
+.text-green
+  colortext(#5cb85c, 0)
+  &:hover
+    colortext(#5cb85c, 20)
+.text-blue
+  colortext(#428bca, 0)
+  &:hover
+    colortext(#428bca, 20)

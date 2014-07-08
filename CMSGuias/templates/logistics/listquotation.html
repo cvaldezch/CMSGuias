@@ -2,6 +2,13 @@
 {% block title %}
 List of Quotation with keys
 {% endblock title %}
+{% block script %}
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="{{ MEDIA_URL }}js/logistics/listquotation.js"></script>
+{% endblock script %}
+{% block menu %}
+{% include "menus/logistics.htm" %}
+{% endblock menu %}
 {% block content %}
 <div class="container">
 	<div class="well">
@@ -13,7 +20,98 @@ List of Quotation with keys
 				<div class="col-md-12">
 					<div class="bs-callout bs-callout-warning">
 						<div class="row">
-							div.col-md-
+							<div class="col-md-12">
+								<div class="alert alert-block">
+								<div class="form-gruop has-warning">
+									<label class="control-label">Busqueda por:</label>
+									<label class="radio-inline"><input type="radio" name="search" value="code"> Código </label>
+									<label class="radio-inline"><input type="radio" name="search" value="dates"> Fechas. </label>
+								</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="col-md-2">
+									<div class="form-group has-warning">
+										<label class="control-label">Código</label>
+										<input type="text" class="form-control" maxlength="10" name="code" placeholder="QTAA000000" disabled >
+									</div>
+								</div>
+								<div class="col-md-2">
+									<div class="form-group has-warning">
+										<label class="control-label">Fecha Inicio</label>
+										<input type="text" class="form-control" maxlength="10" name="dates" placeholder="aaaa-mm-dd" disabled >
+									</div>
+								</div>
+								<div class="col-md-2">
+									<div class="form-group has-warning">
+										<label class="control-label">Fecha Fin</label>
+										<input type="text" name="datee" class="form-control" maxlength="10" placeholder="aaaa-mm-dd" disabled >
+									</div>
+								</div>
+								<div class="col-md-1">
+									<div class="form-group has-warning">
+										<label class="control-label">Buscar</label>
+										<button class="btn btn-block btn-warning btn-search"><span class="glyphicon glyphicon-search"></span></button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="panel panel-warning">
+						<div class="table-responsive">
+							<table class="table table-condensed table-hover">
+								<thead>
+									<tr class="brand-warning">
+										<th>Item</th><th>Cotización</th><th>Ruc</th><th>Razón Social</th><th>Key</th><th>Fecha Traslado</th><th>Ver</th><th>Envia</th><th>Anular</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for x in list %}
+									<tr>
+										<td>{{ forloop.counter }}</td>
+										<td>{{ x.cotizacion_id }}</td>
+										<td>{{ x.proveedor_id }}</td>
+										<td>{{ x.proveedor.razonsocial }}</td>
+										<td>{{ x.keygen }}</td>
+										<td>{{ x.cotizacion.traslado }}</td>
+										<td>
+											<button class="btn btn-xs btn-link text-blue btn-view" value="{{ x.cotizacion_id }}" data-sup="{{ x.proveedor_id }}"><span class="glyphicon glyphicon-eye-open"></span></button>
+										</td>
+										<td>
+											<button class="btn btn-xs btn-link text-green"><span class="glyphicon glyphicon-envelope"></span></button>
+										</td>
+										<td>
+											<button class="btn btn-xs btn-link text-red btn-del" value="{{ x.cotizacion_id }}" data-sup="{{ x.proveedor_id }}"><span class="glyphicon glyphicon-fire"></span></button>
+										</td>
+									</tr>
+									{% empty %}
+									<tr class="warning">
+										<td colspan="9">
+											<h4>No se han encontrado resultados para cotizaciones.</h4>
+										</td>
+									</tr>
+									{% endfor %}
+								</tbody>
+								<tfoot>
+									<tr>
+										<td colspan="9" class="text-center">
+											<ul class="pagination">
+												{% if list.has_preveous %}
+													<li><a href="?page=1">&laquo;</a></li>
+													<li><a href="?page={{ list.previous_page_number }}">&laquo;</a></li>
+												{% endif %}
+												<li><a> Page {{ list.number }} of {{ list.paginator.num_pages }}</a></li>
+												{% if list.has_next %}
+													<li><a href="?page={{ list.next_page_number }}">&raquo;</a></li>
+													<li><a href="?page={{ list.paginator.num_pages }}">&raquo;</a></li>
+												{% endif %}
+											</ul>
+										</td>
+									</tr>
+								</tfoot>
+							</table>
 						</div>
 					</div>
 				</div>
