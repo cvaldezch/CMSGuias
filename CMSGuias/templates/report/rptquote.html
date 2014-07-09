@@ -24,14 +24,18 @@
             <table>
                 <tr><td><strong>Suministro :</strong></td><td> {{bedside.suministro_id}}</td></tr>
                 <tr><td><strong>Almacén :</strong></td><td> {{bedside.almacen.nombre}}</td></tr>
-                <tr><td><strong>Asunto :</strong></td><td> {{bedside.asunto}}</td></tr>
                 <tr><td width="3cm"><strong>Fecha Registrado :</strong></td><td> {{bedside.registrado}}</td></tr>
                 <tr><td><strong>Fecha Traslado :</strong></td><td> {{bedside.traslado}}</td></tr>
+                <tr><td><strong>RUC:</strong></td><td> {{ details.0.proveedor_id }}</td></tr>
+                <tr><td><strong>Razón Social:</strong></td><td> {{ details.0.proveedor.razonsocial }}</td></tr>
             </table>
         </div>
         <div id="bedside-col2">
             <table>
-                <tr><td width="2cm"><strong>Estado :</strong></td><td> {% for k, v in status.iteritems %}
+                <tr><td><strong>Envio Proveedor:</strong></td><td> {{ customers.envio }}</td></tr>
+                <tr><td><strong>Validez:</strong></td><td> {{ customers.validez }}</td></tr>
+                <tr><td><strong>Moneda:</strong></td><td> {{ customers.moneda.moneda }}</td></tr>
+                <tr><td width="3cm"><strong>Estado :</strong></td><td> {% for k, v in status.iteritems %}
                     {% ifequal k bedside.status %}
                         {{ v }}
                     {% endifequal %}
@@ -57,22 +61,28 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for x in details %}
-                        <tr>
-                            <td class="text-center item">{{forloop.counter}}</td>
-                            <td class="text-center cod">{{x.materiales_id}}</td>
-                            <td>{{x.materiales.matnom}}</td>
-                            <td>{{x.materiales.matmed}}</td>
-                            <td class="text-center">{{x.materiales.unidad_id}}</td>
-                            <td class="text-center">{{x.cantidad}}</td>
-                            <td class="text-center">{{ x.precio }}</td>
-                            <td class="text-center">{{ x.marca }}</td>
-                            <td class="text-center">{{ x.entrega }}</td>
-                        </tr>
-                    {% endfor%}
+                {% for x in details %}
+                    <tr>
+                        <td class="text-center item">{{forloop.counter}}</td>
+                        <td class="text-center cod">{{x.materiales_id}}</td>
+                        <td>{{x.materiales.matnom}}</td>
+                        <td>{{x.materiales.matmed}}</td>
+                        <td class="text-center">{{x.materiales.unidad_id}}</td>
+                        <td class="text-center">{{x.cantidad}}</td>
+                        <td class="text-center">{{ x.precio }}</td>
+                        <td class="text-center">{{ x.marca }}</td>
+                        <td class="text-center">{{ x.entrega }}</td>
+                    </tr>
+                {% endfor%}
                 </tbody>
             </table>
         </div>
+        <p>
+            {% if customers.obser %}
+                <strong>Nota:</strong>
+                {{ customers.obser }}
+            {% endif %}
+        </p>
     </section>
 </body>
 </html>

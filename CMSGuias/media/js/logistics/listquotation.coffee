@@ -3,6 +3,20 @@ $(document).ready ->
     $("[name=search]").on "change", changeradio
     $(".btn-search").on "click", searchquote
     $(".btn-view").on "click", viewReport
+    $(".btn-show-send").on "click", showMessage
+    $(".btn-send").on "click", sendMessages
+    init()
+    return
+
+init = ->
+    tinymce.init
+        selector: "textarea[name=text]",
+        height: 200,
+        theme: "modern",
+        menubar: false,
+        statusbar: false,
+        plugins: "link contextmenu",
+        toolbar: "undo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | print preview media fullpage | forecolor backcolor emoticons| link image"
     return
 
 changeradio = (event)->
@@ -96,4 +110,49 @@ viewReport = (event) ->
     if pass
         url = "/reports/quote/#{quote}/#{supplier}"
         window.open url, "_blank"
-    return  
+    return
+
+showMessage = (event) ->
+    event.preventDefault()
+    quote = $(@).val()
+    name = $(@).attr "data-name"
+    key = $(@).attr "data-key"
+    mail = $(@).attr "data-mail"
+    if quote isnt "" and name isnt "" and key isnt ""
+        text = "
+                <p>Estimados Sres. #{ name }:</p>
+                <p>Le enviamos la url con lal cual prodrán acceder a&nbsp;nuestra cotización.</p>
+                <p>Con los&nbsp;datos que le proporcionamos se mostrara la cotización, el número de <strong>cotización</strong> y su&nbsp;respectiva <strong>clave</strong>&nbsp;son:</p>
+                <p><strong>Nro Cotización:</strong>&nbsp;#{ quote }</p>
+                <p><strong>AutoKey : </strong> #{ key }</p>
+                <p>Se puede acceder a nuestro sitio web desde estos enlaces:</p>
+                <ul><li>Presione <a href=\"http://190.41.246.91/proveedor/\" data-mce-href=\"http://190.41.246.91/proveedor/\" target=\"_blank\" title=\"ICR PERU SA\">aquí</a> para ir al sitio web.<br></li><li><a title=\"ICR PERU SA\" href=\"http://190.41.246.91/proveedor/\" target=\"_blank\" data-mce-href=\"http://190.41.246.91/proveedor/\">http://190.41.246.91/proveedor/</a></li></ul>
+                <p><br data-mce-bogus=\"1\"></p>
+                <p>Saludos.</p>
+                <p><br data-mce-bogus=\"1\"></p>
+                <p><strong> *** Logistica ICR PERU S.A. ***</strong></p>"
+        $("#text_ifr").contents().find("body").html(text)
+        $("input[name=for]").val mail
+        $("input[name=issue]").val "COTIZACIÓN #{ quote }"
+        $(".mmail").modal "show"
+        return
+    else
+        $().toastmessage "showWarningToast", "Fail: Not show message, field empty."
+        return
+
+windowmsg = null
+
+sendMessages = ->
+    $for = $("input[name=for]")
+    if $for.val() isnt ""
+        data = {}
+        data.text = $("#text_ifr").contents().find("body").html()
+        data.para = $("input[name=for]").val()
+        data.asunto = $("input[name=issue]").val()
+        parameter = $.param data
+        url = "http://190.41.246.91:3000/?"
+        windowmsg = window.open url, "Send Msg", "toolbar=no, scrollbars=no, resizable=no, width=200, height=100"
+        setTimeout ->
+            windowmsg.close()
+            return
+        , 2600
