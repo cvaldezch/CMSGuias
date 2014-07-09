@@ -17,15 +17,16 @@
             <h1>Materiales</h1>
         </div>
         <div id="nro-serie">
-            <h1>Nro Cotización</h1>
+            <h1>Nro Solicitud Cotización</h1>
             <h1 id="nro">{{bedside.cotizacion_id}}</h1>
         </div>
         <div id="bedside-col1">
             <table>
+                <tr><td><strong>Suministro :</strong></td><td> {{bedside.suministro_id}}</td></tr>
                 <tr><td><strong>Almacén :</strong></td><td> {{bedside.almacen.nombre}}</td></tr>
                 <tr><td><strong>Asunto :</strong></td><td> {{bedside.asunto}}</td></tr>
                 <tr><td width="3cm"><strong>Fecha Registrado :</strong></td><td> {{bedside.registrado}}</td></tr>
-                <tr><td><strong>Fecha Ingreso :</strong></td><td> {{bedside.traslado}}</td></tr>
+                <tr><td><strong>Fecha Traslado :</strong></td><td> {{bedside.traslado}}</td></tr>
             </table>
         </div>
         <div id="bedside-col2">
@@ -45,11 +46,14 @@
                 <thead>
                     <tr>
                         <th>Item</th>
-                        <th>Código</th>
-                        <th>Descripción</th>
-                        <th>Medida</th>
+                        <th width="2.5cm">Código</th>
+                        <th width="4cm">Descripción</th>
+                        <th width="4cm">Medida</th>
                         <th>Unidad</th>
                         <th>Cantidad</th>
+                        <th>Precio</th>
+                        <th>Marca</th>
+                        <th>Entrega</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,23 +61,16 @@
                         <tr>
                             <td class="text-center item">{{forloop.counter}}</td>
                             <td class="text-center cod">{{x.materiales_id}}</td>
-                            <td class="nom">{{x.materiales.matnom}}</td>
+                            <td>{{x.materiales.matnom}}</td>
                             <td>{{x.materiales.matmed}}</td>
                             <td class="text-center">{{x.materiales.unidad_id}}</td>
                             <td class="text-center">{{x.cantidad}}</td>
+                            <td class="text-center">{{ x.precio }}</td>
+                            <td class="text-center">{{ x.marca }}</td>
+                            <td class="text-center">{{ x.entrega }}</td>
                         </tr>
                     {% endfor%}
                 </tbody>
-                <tfoot>
-                    <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    </tr>
-                </tfoot>
             </table>
         </div>
     </section>

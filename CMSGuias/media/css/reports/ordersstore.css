@@ -14,11 +14,11 @@
 	}
 	@frame header_frame {
 		-pdf-frame-content: nro-serie;
-		margin-top: 2.5cm; right: 1cm; top: 0; width: 8cm;
+		margin-top: 2.5cm; right: 1cm; top: 0; width: 9cm;
 	}
 	@frame header_frame {
 		-pdf-frame-content: nro;
-		margin-top: 3.3cm; right: 1cm; width: 8cm;
+		margin-top: 3.3cm; right: 1cm; width: 9cm;
 	}
 	@frame header_frame {
 		-pdf-frame-content: bedside-col1;
@@ -53,7 +53,8 @@ img{
 }
 .details table > thead > tr { background-color: olive; border: 0.01 solid olive; padding-top: .15cm; padding-bottom: 0.1cm; }
 .details table > tbody > tr { border-left: .01cm solid olive; border-right: .01cm solid olive; padding-top: .05cm; padding-bottom: 0.01cm; }
-.details table > tfoot > tr { border-bottom: 0.01cm solid olive; }
+/*.details table > tfoot > tr { border-top: 0.01cm solid olive; }*/
+.details table > tbody > tr:last-child { border-bottom: 1px solid olive; }
 .nom{
 	width: 7cm;
 }

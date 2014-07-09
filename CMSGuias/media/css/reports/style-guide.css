@@ -70,6 +70,6 @@ img{
 .pretitle { padding: 1px 0 0 3px; }
 .details table > thead > tr { background-color: #eff5fb; border: 0.01 solid #0b3861; padding-top: .15cm; padding-bottom: 0.1cm; }
 .details table > tbody > tr { border-left: .01cm solid #0b3861; border-right: .01cm solid #0b3861; padding-top: .05cm; padding-bottom: 0.01cm; }
-.details table > tfoot > tr { border-bottom: 0.01cm solid #0b3861; }
+.details table > tbody > tr:last-child { border-top: 0.01cm solid #0b3861; }
 .text-up { vertical-align: top; }
 .nom { padding-left: 5px; }

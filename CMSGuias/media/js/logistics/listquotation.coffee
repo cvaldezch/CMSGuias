@@ -96,4 +96,4 @@ viewReport = (event) ->
     if pass
         url = "/reports/quote/#{quote}/#{supplier}"
         window.open url, "_blank"
-    return
+    return  
