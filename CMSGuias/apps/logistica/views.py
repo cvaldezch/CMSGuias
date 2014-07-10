@@ -17,8 +17,10 @@ from django.views.generic import TemplateView, View, ListView
 
 from CMSGuias.apps.almacen.models import Suministro
 from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda
-from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra
+from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra, tmpcotizacion
 from CMSGuias.apps.tools import genkeys, globalVariable
+
+
 ### Class Bases Views generic
 
 # view home logistics
@@ -209,3 +211,33 @@ class ViewListQuotation(TemplateView):
         else:
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            context = dict()
+            try:
+                key = CotKeys.objects.get(cotizacion_id=request.POST.get('quote'),proveedor_id=request.POST.get('supplier'))
+                if key.flag:
+                    key.flag = False
+                    key.save()
+                flag = CotKeys.objects.filter(cotizacion_id=request.POST.get('quote'),proveedor_id=request.POST.get('supplier'), flag=True).aggregate(counter=Count('cotizacion'))
+                if flag['counter'] == 0:
+                    quote = Cotizacion.objects.get(cotizacion_id=request.POST.get('quote'))
+                    quote.flag = False
+                    quote.save()
+                customer = CotCliente.objects.filter(cotizacion_id=request.POST.get('quote'),proveedor_id=request.POST.get('supplier'))
+                if customer.__len__() > 0:
+                    customer.flag = False
+                    customer.save()
+                context['status'] = True
+            except ObjectDoesNotExist, e:
+                raise e
+                context['status'] = False
+            return HttpResponse(simplejson.dumps(context), mimetype='application/json')
+
+class ViewQuoteSingle(TemplateView):
+    template_name = "logistics/single.html"
+
+    def get(self, request, *args, **kwargs):
+        context = super(ViewQuoteSingle, self).get_context_data(**kwargs)
+        context['details'] = tmpcotizacion.objects.filter(empdni=request.user.get_profile().empdni).order_by('materiales__matnom')
+        return render_to_response(self.template_name, context, context_instance=RequestContext(request))

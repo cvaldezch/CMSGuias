@@ -22,7 +22,6 @@ def get_description_materials(request):
             data = {'name':[]}
             name = Materiale.objects.values('matnom').filter(matnom__icontains=request.GET['nom']).distinct('matnom').order_by('matnom')
             i = 0
-            #data['name'] = [ { 'matnom': x['matnom'], 'id': i+=1 } for x in name ]
             for x in name:
                 data['name'].append({'matnom':x['matnom'],'id':i})
                 i+=1
@@ -50,6 +49,19 @@ def get_resumen_details_materiales(request):
             return HttpResponse(simplejson.dumps(data), mimetype='application/json')
     except ObjectDoesNotExist:
         raise e
+
+class GetDetailsMaterialesByCode(DetailView):
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                mat = Materiale.objects.values('materiales_id','matnom','matmed','unidad').get(pk=request.GET.get('code'))
+                context['list'] = {"materialesid": mat['materiales_id'], "matnom": mat['matnom'], "matmed": mat['matmed'], "unidad": mat['unidad']}
+                context['status'] = True
+            except ObjectDoesNotExist, e:
+                raise e
+                context['status'] = False
+            return HttpResponse(simplejson.dumps(context), mimetype='application/json')
 
 def save_order_temp_materials(request):
     try:
@@ -141,7 +153,7 @@ def get_details_materials_by_id(request):
             mat = Materiale.objects.values('materiales_id','matnom','matmed','unidad_id').get(pk=request.GET.get('mid'))
             if len(mat) > 0:
                 mat['status'] = True
-            return HttpResponse(simplejson.dumps(mat),mimetype='application/json')        
+            return HttpResponse(simplejson.dumps(mat),mimetype='application/json')
     except ObjectDoesNotExist, e:
         raise e
 # sending list of nipples
@@ -264,7 +276,7 @@ def post_upload_file_temp_orders(request):
                                     obj.save()
                             else:
                                 continue
-                uploadFiles.removeTmp(filename) # remove temp file 
+                uploadFiles.removeTmp(filename) # remove temp file
                 data['status']= True
             except Exception, e:
                 data['status']= False
@@ -345,7 +357,7 @@ def post_cancel_orders(request):
         try:
             obj = models.Pedido.objects.get(pk=request.POST.get('oid'))
             obj.status = 'AN'
-            obj.flag = False    
+            obj.flag = False
             obj.save()
             data['status']= True
         except ObjectDoesNotExist, e:
@@ -385,7 +397,7 @@ class get_OrdersDetails(ListView):
               queryset = models.Detpedido.objects.filter(pedido_id__in=arr).extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},)
               queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id','stock','spptag')
               queryset = queryset.annotate(cantidad=Sum('cantshop'))
-              context['list'] = [{'materiales_id': x['materiales_id'],'matnom': x['materiales__matnom'],'matmed':x['materiales__matmed'],'unidad':x['materiales__unidad_id'],'cantidad':x['cantidad'],'stock':x['stock'],'tag':x['spptag']} for x in queryset] 
+              context['list'] = [{'materiales_id': x['materiales_id'],'matnom': x['materiales__matnom'],'matmed':x['materiales__matmed'],'unidad':x['materiales__unidad_id'],'cantidad':x['cantidad'],'stock':x['stock'],'tag':x['spptag']} for x in queryset]
               context['status'] = True
           except ObjectDoesNotExist:
               context['sttatus'] = False

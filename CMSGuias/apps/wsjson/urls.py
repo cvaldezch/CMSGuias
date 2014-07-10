@@ -7,6 +7,7 @@ import views
 
 urlpatterns = patterns('CMSGuias.apps.wsjson.views',
   # temp Orders
+    url(r'^get/materials/code/$', views.GetDetailsMaterialesByCode.as_view()),
     url(r'^get/materials/name/$','get_description_materials'),
     url(r'^get/meter/materials/$','get_meter_materials'),
     url(r'^get/resumen/details/materiales/$','get_resumen_details_materiales'),

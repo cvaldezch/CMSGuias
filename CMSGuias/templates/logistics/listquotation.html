@@ -70,7 +70,7 @@ List of Quotation with keys
 								</thead>
 								<tbody>
 									{% for x in list %}
-									<tr>
+									<tr id="{{ x.cotizacion_id }}{{ x.proveedor_id }}">
 										<td>{{ forloop.counter }}</td>
 										<td>{{ x.cotizacion_id }}</td>
 										<td>{{ x.proveedor_id }}</td>
@@ -147,4 +147,6 @@ List of Quotation with keys
 	</div>
 </div>
 <!-- endblock -->
+<!-- globals -->
+{% csrf_token %}
 {% endblock content %}

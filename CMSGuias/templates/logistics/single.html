@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}
+    Cotización Simple
+{% endblock title %}
+{% block script %}
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="{{ MEDIA_URL }}js/scrollTo.js"></script>
+<script src="{{ MEDIA_URL }}js/getMaterials.js"></script>
+<script src="{{ MEDIA_URL }}js/logistics/single.js"></script>
+{% endblock script %}
+{% block menu %}
+    {% include "menus/logistics.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+    <div class="well">
+        <header>
+            <h3>Cotizar Materiales</h3>
+        </header>
+        <aside>
+            <div class="bs-callout bs-callout-warning">
+                <div class="btn-group">
+                    <button class="btn btn-warning text-black btn-search">
+                        <span class="glyphicon glyphicon-search"></span>
+                        <span class="visible-lg visible-md visible-sm">Buscar</span>
+                    </button>
+                    <button class="btn btn-warning text-black btn-read">
+                        <span class="glyphicon glyphicon-file"></span>
+                        <span class="visible-lg visible-md visible-sm">Leer Archivo</span>
+                    </button>
+                    <button class="btn btn-warning text-black btn-list">
+                        <span class="glyphicon glyphicon-list"></span>
+                        <span class="visible-lg visible-md visible-sm">Listar</span>
+                    </button>
+                    <button class="btn btn-warning text-black btn-trash">
+                        <span class="glyphicon glyphicon-trash"></span>
+                        <span class="visible-lg visible-md visible-sm">Eliminar tmp</span>
+                    </button>
+                    <button class="btn btn-warning text-black btn-save">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                        <span class="visible-lg visible-md visible-sm">Guardar Cambios</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+        <article>
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <button class="btn btn-xs btn-warning text-black">Agregar materiales <span class="glyphicon glyphicon-chevron-up"></span></button>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group has-warning">
+                                <label class="control-label">Descripción / Nombre de material</label>
+                                <input type="text" class="form-control" name="description">
+                                <ul id="matname-global" class="matname-global"></ul>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group has-warning">
+                                <label class="control-label">Código</label>
+                                <input type="text" class="form-control" maxlength="15" name="code">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group has-warning">
+                                <label class="control-label">Medida</label>
+                                <select class="form-control" name="meter"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group has-warning">
+                                <label class="control-label">Metrado/Cantidad</label>
+                                <input type="number" class="form-control cantidad" min="0" placeholder="1">
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group has-warning">
+                                <label class="control-label">Agregar</label>
+                                <button class="btn btn-block btn-warning text-black"><span class="glyphicon glyphicon-plus"></span></button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-md-offset-3">
+                            <div class="alert alert-warning alert-block">
+                                <strong>Resumén</strong>
+                                <table class="table-condensed tb-details">
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <section>
+            <div class="panel panel-warning">
+                <div class="table-responsive">
+                    <table class="table table-condened table-hover">
+                        <thead>
+                            <tr class="brand-warning">
+                                <th>Item</th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th><th>Editar</th><th>Eliminar</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock content %}
