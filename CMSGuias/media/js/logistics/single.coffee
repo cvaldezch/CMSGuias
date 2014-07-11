@@ -1,8 +1,34 @@
 $(document).ready ->
+    # block search materials
+    $(".panel-add,input[name=read],.step-second").hide()
     $("input[name=description]").on "keyup", keyDescription
     $("input[name=description]").on "keypress", keyUpDescription
     $("select[name=meter]").on "click", getSummaryMaterials
     $("input[name=code]").on "keypress", keyCode
+    # endblock
+    $(".btn-search").on "click", searchMaterial
+    $(".btn-list").on "click", listTmpQuote
+    $(".btn-add").on "click", addTmpQuote
+    $(document).on "click", "[name=btn-edit]", showEdit
+    $("button[name=esave]").on "click", editMaterial
+    $(document).on "click", "[name=btn-del]", deleteMaterial
+    $(".btn-show-materials").on "click", showMaterials
+    $(".btn-trash").on "click", deleteAll
+    $(".btn-read").on "click", -> $(".mfile").modal "show"
+    $(".show-input-file-temp").click ->
+        $("input[name=read]").click()
+    $("[name=btn-upload]").on "click", uploadReadFile
+    $(".btn-quote").on "click", stepSecond
+    return
+
+
+showMaterials = (event) ->
+    item = @
+    $(".panel-add").toggle ->
+        if $(@).is(":hidden")
+            $(item).find("span").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down")
+        else
+            $(item).find("span").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up")
     return
 
 keyDescription = (event) ->
@@ -17,3 +43,185 @@ keyCode = (event) ->
     key = if window.Event then event.keyCode else event.which
     if key is 13
         searchMaterialCode @value
+
+searchMaterial = (event) ->
+    desc = $("input[name=description]").val()
+    code = $("input[name=code]").val()
+    if code.length is 15
+        searchMaterialCode code
+    else
+        getDescription $.trim(desc).toLowerCase()
+
+addTmpQuote = (event) ->
+    data = new Object()
+    code = $(".id-mat").html()
+    quantity = $("input[name=cantidad]").val()
+    if code isnt ""
+        if quantity isnt ""
+            data.materiales = code
+            data.cantidad = quantity
+            data.type = "add"
+            data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+            $.post "", data, (response) ->
+                if response.status
+                    listTmpQuote()
+                else
+                    $().toastmessage "showWarningToast", "El servidor no a podido agregar el material. #{response.raise}"
+            , "json"
+        else
+            $().toastmessage "showWarningToast", "Agregar materiales Falló. Cantidad Null."
+        return
+    else
+        $().toastmessage "showWarningToast", "Agregar materiales Falló. Código Null."
+    return
+
+listTmpQuote = (event) ->
+    $.getJSON "", "type":"list", (response) ->
+        if response.status
+            template = "<tr name=\"{{ id }}\"><td>{{ item }}</td><td>{{ materials_id }}</td><td>{{ matname }}</td><td>{{ matmeasure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td><button class=\"btn btn-xs btn-link\" name=\"btn-edit\" value=\"{{ quantity }}\" data-id=\"{{ id }}\" data-mat=\"{{ materials_id }}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td><td><button class=\"btn btn-xs btn-link text-red\" name=\"btn-del\" value=\"{{ id }}\" data-mat=\"{{ materials_id }}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>"
+            $tb = $("table.table-list > tbody")
+            $tb.empty()
+            for x of response.list
+                response.list[x].item = parseInt(x) + 1
+                $tb.append Mustache.render template, response.list[x]
+            return
+        else
+            $().toastmessage "showWarningToast", "No se a encontrado resultados. #{ response.raise }"
+    return
+
+showEdit = (event) ->
+    event.preventDefault()
+    $("input[name=ematid]").val $(@).attr "data-mat"
+    $("input[name=eidtmp]").val $(@).attr "data-id"
+    $("input[name=equantity]").val @value
+    $(".medit").modal "show"
+    return
+
+editMaterial = (event) ->
+    event.preventDefault()
+    $id = $("input[name=eidtmp]")
+    $mat = $("input[name=ematid]")
+    $quantity = $("input[name=equantity]")
+    if $quantity.val() isnt 0 and $quantity.val() > 0
+        data = new Object()
+        data.id = $id.val()
+        data.materials_id = $mat.val()
+        data.quantity = $quantity.val()
+        data.type = "edit"
+        data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+        $.post "", data, (response) ->
+            if response.status
+                $edit = $("table.table-list > tbody > tr[name=#{$id.val()}] > td")
+                $edit.eq(5).html($quantity.val())
+                $edit.eq(6).find("button").val($quantity.val())
+                $("input[name=ematid]").val ""
+                $("input[name=eidtmp]").val ""
+                $("input[name=equantity]").val ""
+                $(".medit").modal "hide"
+                return
+            else
+                $().toastmessage "showWarningToast","No se a podido editar el material #{response.raise}"
+        return
+    else
+        $().toastmessage "showWarningToast", "Error campo cantidad"
+    return
+
+deleteMaterial = (event) ->
+    event.preventDefault()
+    item = @
+    $().toastmessage "showToast",
+        sticky: true,
+        text: "Desea eliminar el material #{$(@).attr "data-mat"}",
+        type: "confirm",
+        buttons: [{value:"Si"},{value:"No"}],
+        success: (result) ->
+            if result is "Si"
+                data = new Object()
+                data.id = item.value
+                data.materials_id = $(item).attr "data-mat"
+                data.type = "del"
+                data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+                $.post "", data, (response) ->
+                    if response.status
+                        $("table.table-list > tbody > tr[name=#{item.value}]").remove()
+                    else
+                        $().toastmessage "showWarningToast", "Error al eliminar material #{response.raise}"
+                , "json"
+                return
+
+deleteAll = (event) ->
+    event.preventDefault()
+    $().toastmessage "showToast",
+        sticky: true,
+        text: "Desea eliminar todo el temporal?",
+        type: "confirm",
+        buttons: [{value:"Si"},{value:"No"}],
+        success: (result) ->
+            if result is "Si"
+                $.post "", type: "delall", "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val(), (response) ->
+                    if response.status
+                        $().toastmessage "showNoticeToast", "Correcto se a eliminado todo el temporal.";
+                        setTimeout ->
+                            location.reload()
+                        , 2600
+                    else
+                        $().toastmessage "showWarningToast", "No se a podido eliminar todo el temporal. #{response.raise}"
+                , "json"
+                return
+    return
+
+uploadReadFile = (event) ->
+    event.preventDefault()
+    btn = @
+    inputfile = document.getElementsByName("read")
+    file = inputfile[0].files[0]
+    if file?
+        data = new FormData()
+        data.append "type", "read"
+        data.append "archivo", file
+        data.append "csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val()
+        $.ajax
+            url : ""
+            type : "POST"
+            data: data
+            contentType : false
+            processData : false
+            cache : false
+            beforeSend : ->
+                $(btn).button "loading"
+            success : (response) ->
+                if response.status
+                    listTmpQuote()
+                    $(btn).button "reset"
+                    if response.list.length > 0
+                        template = "<tr><td>{{ item }}</td><td>{{ name }}</td><td>{{ measure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td></tr>"
+                        $tb = $("table.table-nothing > tbody")
+                        $tb.empty()
+                        for x of response.list
+                            response.list[x].item = (parseInt(x) + 1)
+                            $tb.append Mustache.render template, response.list[x]
+
+                        $(".mlist").modal "show"
+                    $(".mfile").modal "hide"
+                    return
+                else
+                    $().toastmessage "showWarningToast", "No se ha podido completar la transacción. #{response.raise}"
+    else
+        $().toastmessage "showWarningToast", "Seleccione un archivo para subir y ser leido."
+    return
+
+stepSecond = ->
+    $.getJSON "", "type":"list", (response) ->
+        if response.status
+            template = "<tr name=\"{{ id }}\"><td>{{ item }}</td><td><input type=\"checkbox\"></td><td>{{ materials_id }}</td><td>{{ matname }}</td><td>{{ matmeasure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td></tr>"
+            $tb = $("table.table-quote > tbody")
+            $tb.empty()
+            for x of response.list
+                response.list[x].item = parseInt(x) + 1
+                $tb.append Mustache.render template, response.list[x]
+            return
+        else
+            $().toastmessage "showWarningToast", "No se a encontrado resultados. #{ response.raise }"
+    $(".step-first").hide "blind", 600
+    $(".step-second").show "blind", 400
+    return

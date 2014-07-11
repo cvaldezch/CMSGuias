@@ -13,7 +13,7 @@
 {% endblock menu %}
 {% block content %}
 <div class="container">
-    <div class="well">
+    <div class="well step-first">
         <header>
             <h3>Cotizar Materiales</h3>
         </header>
@@ -36,9 +36,9 @@
                         <span class="glyphicon glyphicon-trash"></span>
                         <span class="visible-lg visible-md visible-sm">Eliminar tmp</span>
                     </button>
-                    <button class="btn btn-warning text-black btn-save">
-                        <span class="glyphicon glyphicon-floppy-save"></span>
-                        <span class="visible-lg visible-md visible-sm">Guardar Cambios</span>
+                    <button class="btn btn-warning text-black btn-quote">
+                        <span class="glyphicon glyphicon-send"></span>
+                        <span class="visible-lg visible-md visible-sm">Enviar a proveedores</span>
                     </button>
                 </div>
             </div>
@@ -46,9 +46,9 @@
         <article>
             <div class="panel panel-warning">
                 <div class="panel-heading">
-                    <button class="btn btn-xs btn-warning text-black">Agregar materiales <span class="glyphicon glyphicon-chevron-up"></span></button>
+                    <button class="btn btn-xs btn-warning text-black btn-show-materials">Agregar materiales <span class="glyphicon glyphicon-chevron-down"></span></button>
                 </div>
-                <div class="panel-body">
+                <div class="panel-body panel-add">
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group has-warning">
@@ -72,13 +72,13 @@
                         <div class="col-md-2">
                             <div class="form-group has-warning">
                                 <label class="control-label">Metrado/Cantidad</label>
-                                <input type="number" class="form-control cantidad" min="0" placeholder="1">
+                                <input type="number" class="form-control" name="cantidad" min="0" placeholder="0">
                             </div>
                         </div>
                         <div class="col-md-1">
                             <div class="form-group has-warning">
                                 <label class="control-label">Agregar</label>
-                                <button class="btn btn-block btn-warning text-black"><span class="glyphicon glyphicon-plus"></span></button>
+                                <button class="btn btn-block btn-warning text-black btn-add"><span class="glyphicon glyphicon-plus"></span></button>
                             </div>
                         </div>
                         <div class="col-md-6 col-md-offset-3">
@@ -96,16 +96,175 @@
         <section>
             <div class="panel panel-warning">
                 <div class="table-responsive">
-                    <table class="table table-condened table-hover">
+                    <table class="table table-condensed table-hover table-list">
                         <thead>
                             <tr class="brand-warning">
                                 <th>Item</th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th><th>Editar</th><th>Eliminar</th>
                             </tr>
                         </thead>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
         </section>
     </div>
+    <div class="well step-second">
+        <h4>Cotizar a proveedores</h4>
+        <article>
+        <div class="btn-group btn-group-justified">
+          <div class="btn-group">
+            <button type="button" class="btn btn-success">
+                <span class="glyphicon glyphicon-file"></span>
+                <span class="visible-lg visible-md visible-sm">Nuevo</span>
+            </button>
+          </div>
+          <div class="btn-group">
+            <button type="button" class="btn btn-success">
+                <span class="glyphicon glyphicon-floppy-disk"></span>
+                <span class="visible-lg visible-md visible-sm">Cotizar</span>
+            </button>
+          </div>
+          <div class="btn-group">
+            <button type="button" class="btn btn-danger">
+                <span class="glyphicon glyphicon-ok"></span>
+                <span class="visible-lg visible-md visible-sm">Terminar de Cotizar</span>
+            </button>
+          </div>
+        </div>
+        </article>
+        <section>
+            <div class="panel panel-success">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">Proveedor / Razón Social</label>
+                                <div class="input-group">
+                                    <select name="proveedor" id="proveedor" class="form-control"></select>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default"><span class="glyphicon glyphicon-refresh"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="control-label">Almacén</label>
+                                <select name="almacen" id="almacen" class="form-control"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="control-label">Fecha</label>
+                                <input type="text" class="form-control" maxlength="10" name="traslado">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">Observaciones</label>
+                                <textarea name="obser" id="obser" class="form-control" cols="30"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <aside>
+            <div class="panel panel-success">
+                <div class="table-responsive">
+                    <table class="table table-hover table-condensed table-bordered table-quote">
+                        <caption class="text-left">
+                            <div class="form-group">
+                                Seleccionar:
+                                <label class="radio-inline"><input type="radio" name="select" value="1"> todo</label>
+                                <label class="radio-inline"><input type="radio" name="select" value="0"> ninguno.</label>
+                            </div>
+                        </caption>
+                        <thead>
+                            <tr class="brand-success">
+                                <th>Item</th><th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </aside>
+    </div>
 </div>
+<!-- block modal -->
+<div class="modal fade medit">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h4>Editar cantidad de material.</h4>
+                <div class="form-group has-info">
+                    <label class="control-label">Código Material</label>
+                    <input type="text" maxlength="15" name="ematid" class="form-control" readonly>
+                    <input type="hidden" name="eidtmp">
+                </div>
+                <div class="form-group has-info">
+                    <label class="control-label">Cantidad</label>
+                    <input type="number" class="form-control" name="equantity">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                <button class="btn btn-warning text-black" name="esave"><span class="glyphicon glyphicon-floppy-saved"></span> Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade mfile" data-backdrop="static">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body bg-warning">
+                <h4>Subir y leer plantilla</h4>
+                <a class="btn btn-danger btn-sm" href="{{ MEDIA_URL }}storage/templates/Quotetmp.xls" target="_blank"><span class="glyphicon glyphicon-file"></span> Plantilla</a>
+                <div class="alert alert-inverse alert-inverse-border">
+                    <div class="text-center">
+                        <button class="btn btn-link text-white show-input-file-temp">Click aquí!</button>
+                        <input type="file" name="read" accept="application/xls">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-warning">
+                <button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                <button class="btn btn-warning text-black" data-loaging-text="Loading..." name="btn-upload"><span class="glyphicon glyphicon-tasks"></span> Leer Archivo</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade mlist">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4>
+                    Materiales no registrados,
+                    <small> estos materiales no se encuentran registrados, hasta que los registre no podra agregar a la cotización.</small>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="panel panel-danger">
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-hover table-nothing">
+                            <thead>
+                                <tr class="brand-danger">
+                                    <th>Item</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end block -->
+<!-- block global -->
+{% csrf_token %}
+<!-- endblock -->
 {% endblock content %}

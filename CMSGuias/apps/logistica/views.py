@@ -14,14 +14,28 @@ from django.utils import simplejson
 from django.utils.decorators import method_decorator
 from django.template import RequestContext, TemplateDoesNotExist
 from django.views.generic import TemplateView, View, ListView
+from xlrd import open_workbook, XL_CELL_EMPTY
 
 from CMSGuias.apps.almacen.models import Suministro
 from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda
 from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra, tmpcotizacion
-from CMSGuias.apps.tools import genkeys, globalVariable
+from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles
+from .forms import addTmpCotizacionForm
 
 
 ### Class Bases Views generic
+
+class JSONResponseMixin(object):
+    def render_to_json_response(self, context, **response_kwargs):
+        return HttpResponse(
+            self.convert_context_to_json(context),
+            content_type='application/json',
+            mimetype='application/json',
+            **response_kwargs
+        )
+
+    def convert_context_to_json(self, context):
+        return simplejson.dumps(context, encoding='utf-8')
 
 # view home logistics
 class LogisticsHome(TemplateView):
@@ -234,10 +248,100 @@ class ViewListQuotation(TemplateView):
                 context['status'] = False
             return HttpResponse(simplejson.dumps(context), mimetype='application/json')
 
-class ViewQuoteSingle(TemplateView):
+class ViewQuoteSingle(JSONResponseMixin, TemplateView):
     template_name = "logistics/single.html"
 
     def get(self, request, *args, **kwargs):
         context = super(ViewQuoteSingle, self).get_context_data(**kwargs)
+        if request.is_ajax():
+            if request.GET.get('type') == 'list':
+                context = {}
+                try:
+                    tmp = tmpcotizacion.objects.filter(empdni=request.user.get_profile().empdni)
+                    context['list'] = [{'id':x.id, 'materials_id':x.materiales_id, 'matname':x.materiales.matnom, 'matmeasure': x.materiales.matmed, 'unit':x.materiales.unidad_id, 'quantity':x.cantidad} for x in tmp]
+                    context['status'] = True
+                except ObjectDoesNotExist, e:
+                    context['raise'] = e
+                    context['status'] = False
+                return self.render_to_json_response(context, **kwargs)
         context['details'] = tmpcotizacion.objects.filter(empdni=request.user.get_profile().empdni).order_by('materiales__matnom')
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            context = dict()
+            if request.POST.get('type') == 'add':
+                try:
+                    form = addTmpCotizacionForm(request.POST)
+                    if form.is_valid():
+                        add = form.save(commit=False)
+                        add.empdni = request.user.get_profile().empdni
+                        add.save()
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+                except ObjectDoesNotExist, e:
+                    context['raise'] = e
+                    context['status'] = False
+                return self.render_to_json_response(context, **kwargs)
+            if request.POST.get('type') == 'edit':
+                try:
+                    tmp = tmpcotizacion.objects.get(pk=request.POST.get('id'),materiales_id=request.POST.get('materials_id'))
+                    tmp.cantidad = request.POST.get('quantity')
+                    tmp.save()
+                    context['status'] = True
+                except ObjectDoesNotExist, e:
+                    context['raise'] = e
+                    context['status'] = False
+                return self.render_to_json_response(context, **kwargs)
+            if request.POST.get('type') == 'del':
+                try:
+                    tmp = tmpcotizacion.objects.get(pk=request.POST.get('id'),materiales_id=request.POST.get('materials_id'))
+                    tmp.delete()
+                    context['status'] = True
+                except ObjectDoesNotExist, e:
+                    context['raise'] = e
+                    context['status'] = False
+                return self.render_to_json_response(context, **kwargs)
+            if request.POST.get('type') == 'delall':
+                try:
+                    tmp = tmpcotizacion.objects.filter(empdni=request.user.get_profile().empdni)
+                    tmp.delete()
+                    context['status'] = True
+                except ObjectDoesNotExist, e:
+                    context['raise'] = e
+                    context['status'] = False
+                return self.render_to_json_response(context, **kwargs)
+            if request.POST.get('type') == 'read':
+                try:
+                    nothing = list()
+                    # upload file
+                    arch = request.FILES['archivo']
+                    filename = uploadFiles.upload('/storage/temporary/', arch)
+                    book = open_workbook(filename,encoding_override='utf-8')
+                    sheet = book.sheet_by_index(0) # recover sheet of materials
+                    for m in range(10, sheet.nrows):
+                        mid = sheet.cell(m, 2)
+                        if mid.ctype != XL_CELL_EMPTY:
+                            mid = str(int(mid.value))
+                        else:
+                            mid = ''
+                        cant = sheet.cell(m, 6) # get quantity
+                        if len(mid) == 15: # row code is length equal 15 chars
+                            obj, created= tmpcotizacion.objects.get_or_create(materiales_id=mid,empdni=request.user.get_profile().empdni,defaults={'cantidad':cant.value})
+                            if not created:
+                                obj.cantidad= (obj.cantidad + cant.value)
+                                obj.save()
+                        else:
+                            if cant.ctype != XL_CELL_EMPTY:
+                                nothing.append({'name':sheet.cell(m, 3).value, 'measure':sheet.cell(m, 4).value, 'unit':sheet.cell(m, 5).value, 'quantity': cant.value})
+                            else:
+                                continue
+                    uploadFiles.removeTmp(filename)
+                    context['status']= True
+                    context['list'] = nothing
+                except ObjectDoesNotExist, e:
+                    print e
+                    context['raise'] = e
+                    context['status'] = False
+                return self.render_to_json_response(context, **kwargs)
