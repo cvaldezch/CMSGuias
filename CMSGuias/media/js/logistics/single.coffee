@@ -6,6 +6,7 @@ $(document).ready ->
     $("select[name=meter]").on "click", getSummaryMaterials
     $("input[name=code]").on "keypress", keyCode
     # endblock
+    $("input[name=traslado]").datepicker minDate: "0", showAnim: "slide", dateFormat: "yy-mm-dd"
     $(".btn-search").on "click", searchMaterial
     $(".btn-list").on "click", listTmpQuote
     $(".btn-add").on "click", addTmpQuote
@@ -19,8 +20,12 @@ $(document).ready ->
         $("input[name=read]").click()
     $("[name=btn-upload]").on "click", uploadReadFile
     $(".btn-quote").on "click", stepSecond
+    $(".get-supplier").on "click", loadSupplier
+    $(".get-store").on "click", loadStore
+    $("textarea[name=obser]").on "focus", loadText
+    $("[name=select]").on "change", changeRadio
+    $(".btn-quotesupplier").on "click", saveQuote
     return
-
 
 showMaterials = (event) ->
     item = @
@@ -213,7 +218,7 @@ uploadReadFile = (event) ->
 stepSecond = ->
     $.getJSON "", "type":"list", (response) ->
         if response.status
-            template = "<tr name=\"{{ id }}\"><td>{{ item }}</td><td><input type=\"checkbox\"></td><td>{{ materials_id }}</td><td>{{ matname }}</td><td>{{ matmeasure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td></tr>"
+            template = "<tr name=\"{{ id }}\"><td>{{ item }}</td><td><input type=\"checkbox\" name=\"chk\" value=\"{{ id }}\"></td><td>{{ materials_id }}</td><td>{{ matname }}</td><td>{{ matmeasure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td></tr>"
             $tb = $("table.table-quote > tbody")
             $tb.empty()
             for x of response.list
@@ -222,6 +227,70 @@ stepSecond = ->
             return
         else
             $().toastmessage "showWarningToast", "No se a encontrado resultados. #{ response.raise }"
+            return
+    loadSupplier()
+    loadStore()
     $(".step-first").hide "blind", 600
     $(".step-second").show "blind", 400
+    return
+
+loadSupplier = ->
+    $.getJSON "/json/supplier/get/list/all/", (response) ->
+        if response.status
+            template = "<option value=\"{{ supplier_id }}\">{{ company }}</option>"
+            $sel = $("select#proveedor")
+            $sel.empty()
+            for x of response.supplier
+                $sel.append Mustache.render template, response.supplier[x]
+            return
+        return
+
+loadStore = ->
+    $.getJSON "/json/store/get/list/all/", (response) ->
+        if response.status
+            template = "<option value=\"{{ store_id }}\">{{ name }}</option>"
+            $sel = $("select#almacen")
+            $sel.empty()
+            for x of response.store
+                $sel.append Mustache.render template, response.store[x]
+            return
+        return
+
+loadText = ->
+    tinymce.init
+        selector: "textarea[name=obser]"
+        theme: "modern"
+        menubar: false
+        statusbar: false
+        toolbar_items_size: "small"
+        schema: "html5"
+        toolbar: "undo redo | styleselect | bold italic"
+    return
+
+changeRadio = (event) ->
+    $("input[name=select]").each ->
+        radio = Boolean parseInt @.value
+        if @checked
+            $("[name=chk]").each ->
+                @.checked = radio
+                return
+            return
+    return
+
+saveQuote = (event) ->
+    check = $("input[name=multiple]")
+    supplier = $("select[name=proveedor]")
+    store = $("select[name=almacen]")
+    transfer = $("input[name=traslado]")
+    obser = $("#text_ifr").contents().find("body").html()
+    data = new Object()
+    if supplier.val() isnt "" and store.val() isnt "" and transfer.val() isnt ""
+        if check.is(":checked")
+            console.log "check"
+        else
+            console.log "not checked"
+        return
+        console.log data
+    else
+        $().toastmessage "showWarningToast", "Formato incorrecto, Campos vacios."
     return

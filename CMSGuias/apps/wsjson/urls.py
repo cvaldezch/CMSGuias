@@ -34,6 +34,8 @@ urlpatterns = patterns('CMSGuias.apps.wsjson.views',
     url(r'^get/stores/list/$','get_list_stores'),
     url(r'^get/list/transport/(?P<truc>.*)/$','get_recover_list_transport'),
     url(r'^get/list/conductor/(?P<truc>.*)/$','get_recover_list_conductor'),
+    url(r'^supplier/get/list/all/$', views.getSupplierList.as_view()),
+    url(r'^store/get/list/all/$', views.getStoreList.as_view()),
     # Class Bases-Views Genereics
     url(r'^get/list/orders/details/$', views.get_OrdersDetails.as_view()),
     url(r'^get/details/supply/(?P<sid>.*)/$', views.SupplyDetailView.as_view()),

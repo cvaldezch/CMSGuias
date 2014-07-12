@@ -12,7 +12,7 @@ from django.utils import simplejson
 from django.core import serializers
 
 from CMSGuias.apps.almacen import models
-from CMSGuias.apps.home.models import Materiale, Almacene, Transporte, Conductore
+from CMSGuias.apps.home.models import Materiale, Almacene, Transporte, Conductore, Proveedor
 from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
 
 
@@ -388,6 +388,19 @@ def get_recover_list_conductor(request,truc):
             return HttpResponse(simplejson.dumps(data), mimetype='application/json')
 
 # Class Views Generics
+#
+class JSONResponseMixin(object):
+    def render_to_json_response(self, context, **response_kwargs):
+        return HttpResponse(
+            self.convert_context_to_json(context),
+            content_type='application/json',
+            mimetype='application/json',
+            **response_kwargs
+        )
+
+    def convert_context_to_json(self, context):
+        return simplejson.dumps(context, encoding='utf-8')
+#
 class get_OrdersDetails(ListView):
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
@@ -419,3 +432,29 @@ class SupplyDetailView(DetailView):
         except Exception, e:
             context['status'] = False
         return response
+
+class getSupplierList(JSONResponseMixin, DetailView):
+
+    def get(self, rquest, *args, **kwargs):
+        context = dict()
+        try:
+            supplier = Proveedor.objects.filter(flag=True).order_by('razonsocial')
+            context['supplier'] = [{"supplier_id":x.proveedor_id, "company":x.razonsocial, "address":x.direccion,"phone":x.telefono,"type":x.tipo, "mail":x.email} for x in supplier]
+            context['status'] = True
+        except ObjectDoesNotExist, e:
+            context['raise'] = e
+            context['status'] = False
+        return self.render_to_json_response(context, **kwargs)
+
+class getStoreList(JSONResponseMixin, DetailView):
+
+    def get(self, rquest, *args, **kwargs):
+        context = dict()
+        try:
+            store = Almacene.objects.filter(flag=True).order_by('nombre')
+            context['store'] = [{"store_id":x.almacen_id, "name":x.nombre} for x in store]
+            context['status'] = True
+        except ObjectDoesNotExist, e:
+            context['raise'] = e
+            context['status'] = False
+        return self.render_to_json_response(context, **kwargs)
