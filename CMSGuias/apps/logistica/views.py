@@ -328,9 +328,9 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
                             mid = ''
                         cant = sheet.cell(m, 6) # get quantity
                         if len(mid) == 15: # row code is length equal 15 chars
-                            obj, created= tmpcotizacion.objects.get_or_create(materiales_id=mid,empdni=request.user.get_profile().empdni,defaults={'cantidad':cant.value})
+                            obj, created = tmpcotizacion.objects.get_or_create(materiales_id=mid,empdni=request.user.get_profile().empdni,defaults={'cantidad':cant.value})
                             if not created:
-                                obj.cantidad= (obj.cantidad + cant.value)
+                                obj.cantidad = (obj.cantidad + cant.value)
                                 obj.save()
                         else:
                             if cant.ctype != XL_CELL_EMPTY:
@@ -341,7 +341,56 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
                     context['status']= True
                     context['list'] = nothing
                 except ObjectDoesNotExist, e:
-                    print e
+                    context['raise'] = e
+                    context['status'] = False
+                return self.render_to_json_response(context, **kwargs)
+            if request.POST.get('type') == 'addQuote':
+                try:
+                    if request.POST.get('check') == 'new':
+                        quote = genkeys.GenerateKeyQuotation()
+                        newQuote = True
+                    elif request.POST.get('check') == 'old':
+                        if request.POST.get('quote') == '':
+                            quote = genkeys.GenerateKeyQuotation()
+                            newQuote = True
+                        else:
+                            quote = request.POST.get('quote')
+                            newQuote = False
+                    if newQuote:
+                        # Save quotation
+                        obj = Cotizacion()
+                        obj.cotizacion_id = quote
+                        obj.empdni = request.user.get_profile().empdni
+                        obj.almacen_id = request.POST.get('almacen')
+                        obj.traslado = request.POST.get('traslado')
+                        obj.obser = request.POST.get('obser')
+                        obj.status = 'PE'
+                        obj.flag = True
+                        obj.save()
+
+                    # Save Key Quotation for supplier
+                    obj = CotKeys()
+                    obj.cotizacion_id = quote
+                    obj.proveedor_id = request.POST.get('proveedor')
+                    obj.keygen = genkeys.GeneratekeysQuoteClient()
+                    obj.status = 'PE'
+                    obj.flag = True
+                    obj.save()
+
+                    # Save Details quotation for supplier
+                    details = json.loads(request.POST.get('details'))
+                    for x in details:
+                        obj = DetCotizacion()
+                        obj.cotizacion_id = quote
+                        obj.proveedor_id = request.POST.get('proveedor')
+                        obj.materiales_id = x['materials_id']
+                        obj.cantidad = x['quantity']
+                        obj.flag = True
+                        obj.save()
+
+                    context['quote'] = quote
+                    context['status'] = True
+                except ObjectDoesNotExist, e:
                     context['raise'] = e
                     context['status'] = False
                 return self.render_to_json_response(context, **kwargs)

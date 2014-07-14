@@ -25,6 +25,8 @@ $(document).ready ->
     $("textarea[name=obser]").on "focus", loadText
     $("[name=select]").on "change", changeRadio
     $(".btn-quotesupplier").on "click", saveQuote
+    $(".btn-newquote").on "click", newQuote
+    $(".btn-finish").on "click", finishTmp
     return
 
 showMaterials = (event) ->
@@ -178,7 +180,7 @@ deleteAll = (event) ->
 uploadReadFile = (event) ->
     event.preventDefault()
     btn = @
-    inputfile = document.getElementsByName("read")
+    inputfile = docu("read")
     file = inputfile[0].files[0]
     if file?
         data = new FormData()
@@ -282,15 +284,83 @@ saveQuote = (event) ->
     supplier = $("select[name=proveedor]")
     store = $("select[name=almacen]")
     transfer = $("input[name=traslado]")
-    obser = $("#text_ifr").contents().find("body").html()
+    obser = $("#obser_ifr").contents().find("body").html()
     data = new Object()
+    mats = new Array()
     if supplier.val() isnt "" and store.val() isnt "" and transfer.val() isnt ""
         if check.is(":checked")
             console.log "check"
+            data.proveedor = supplier.val()
+            data.quote = check.val()
+            data.check = "old"
         else
             console.log "not checked"
-        return
+            data.proveedor = supplier.val()
+            data.almacen = store.val()
+            data.traslado = transfer.val()
+            data.obser = obser
+            data.check = "new"
+        data.type = "addQuote"
+        data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+        $("[name=chk]").each ->
+            if @checked
+                mats.push
+                    "materials_id" : $(".table-quote > tbody > tr[name=#{@value}]").find("td").eq(2).html()
+                    "quantity" : $(".table-quote > tbody > tr[name=#{@value}]").find("td").eq(6).html()
+                return
+        data.details = JSON.stringify mats
+        if mats.length <= 0
+            $().toastmessage "showWarningToast", "Formato incorrecto, Materiales no seleccionados."
+            return false
+
+        $.post "", data, (response) ->
+            if response.status
+                $().toastmessage "showNoticeToast", "Cotización generada #{response.quote}"
+                check.val response.quote
+                newQuote event
+            else
+                $().toastmessage "showWarningToast", "Guardar Cotización fallo. #{response.raise}"
+        , "json"
         console.log data
+        return
     else
         $().toastmessage "showWarningToast", "Formato incorrecto, Campos vacios."
+    return
+
+newQuote = (event) ->
+    event.preventDefault()
+    span = $(".btn-newquote").find "span"
+    if span.eq(1).html() is "Nuevo"
+        value = false
+        span.eq(0).removeClass("glyphicon-file").addClass "glyphicon-remove"
+        span.eq(1).html("Cancelar")
+    else
+        value = true
+        span.eq(0).removeClass("glyphicon-remove").addClass "glyphicon-file"
+        span.eq(1).html("Nuevo")
+    $(".form-quote").find("select, input, button").each ->
+        @disabled = value
+        return
+    $(".btn-quotesupplier").attr "disabled", value
+    return
+
+finishTmp = (event) ->
+    event.preventDefault()
+    $().toastmessage "showToast",
+        sticky: true,
+        text: "Desea Terminar con el temporal de la Cotización?",
+        type: "confirm",
+        buttons: [{value:"Si"},{value:"No"}],
+        success: (result) ->
+            if result is "Si"
+                $.post "", type: "delall", "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val(), (response) ->
+                    if response.status
+                        $().toastmessage "showNoticeToast", "Felicidades, la(s) cotizacion(es) se han generado.";
+                        setTimeout ->
+                            location.reload()
+                        , 2600
+                    else
+                        $().toastmessage "showWarningToast", "No se a ponido finalizar el temportal. #{response.raise}"
+                , "json"
+                return
     return
