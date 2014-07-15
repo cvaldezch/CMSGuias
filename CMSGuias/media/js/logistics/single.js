@@ -239,7 +239,7 @@
     var btn, data, file, inputfile;
     event.preventDefault();
     btn = this;
-    inputfile = docu("read");
+    inputfile = document.getElementsByName("read");
     file = inputfile[0].files[0];
     if (file != null) {
       data = new FormData();

@@ -180,7 +180,7 @@ deleteAll = (event) ->
 uploadReadFile = (event) ->
     event.preventDefault()
     btn = @
-    inputfile = docu("read")
+    inputfile = document.getElementsByName("read")
     file = inputfile[0].files[0]
     if file?
         data = new FormData()

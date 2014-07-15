@@ -22,6 +22,9 @@ class Cotizacion(models.Model):
         return '%s %s %s'%(self.cotizacion_id, self.almacen, self.traslado)
 
 class Compra(models.Model):
+    def url(self, filename):
+        return "storage/compra/%s/%s.pdf"%(self.compra_id, self.proveedor_id)
+
     compra_id = models.CharField(primary_key=True, max_length=10)
     proveedor = models.ForeignKey(Proveedor, to_field='proveedor_id')
     empdni = models.CharField(max_length=8)
@@ -34,6 +37,7 @@ class Compra(models.Model):
     traslado = models.DateField()
     contacto = models.CharField(max_length=200, null=True, blank=True)
     status = models.CharField(max_length=2, default='PE')
+    deposito = models.FileField(upload_to=url, null=True,blank=True)
     flag = models.BooleanField(default=True)
 
     class Meta:
@@ -58,8 +62,9 @@ class DetCompra(models.Model):
 
 class tmpcompra(models.Model):
     empdni = models.CharField(max_length=8, null=False)
-    materiales = models.ForeignKey(Materiale,to_field='materiales_id')
+    materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     cantidad = models.FloatField(null=False)
+    precio = models.FloatField(null=False, default=0)
 
     class Meta:
         ordering = ['materiales']
@@ -128,7 +133,7 @@ class DevProveedor(models.Model):
     notaingreso = models.CharField(max_length=10)
     almacen = models.ForeignKey(Almacene, to_field='almacen_id')
     compra = models.ForeignKey(Compra, to_field='compra_id')
-    notacredido = models.CharField(max_length=10) 
+    notacredido = models.CharField(max_length=10)
     montonc = models.FloatField()
     obser = models.TextField()
     flag = models.BooleanField(default=True)
