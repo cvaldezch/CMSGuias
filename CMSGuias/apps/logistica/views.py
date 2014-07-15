@@ -251,6 +251,7 @@ class ViewListQuotation(TemplateView):
 class ViewQuoteSingle(JSONResponseMixin, TemplateView):
     template_name = "logistics/single.html"
 
+    @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = super(ViewQuoteSingle, self).get_context_data(**kwargs)
         if request.is_ajax():
@@ -267,6 +268,7 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
         context['details'] = tmpcotizacion.objects.filter(empdni=request.user.get_profile().empdni).order_by('materiales__matnom')
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
+    @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             context = dict()
@@ -394,3 +396,11 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
                     context['raise'] = e
                     context['status'] = False
                 return self.render_to_json_response(context, **kwargs)
+
+class ViewPurchaseSingle(TemplateView):
+    template_name = "logistics/purchase.html"
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = super(ViewPurchaseSingle, self).get_context_data(**kwargs)
+        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
