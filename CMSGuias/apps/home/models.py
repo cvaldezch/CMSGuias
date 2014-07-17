@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -93,10 +98,10 @@ class Almacene(models.Model):
     almacen_id = models.CharField(primary_key=True,max_length=4)
     nombre = models.CharField(max_length=50,null=False)
     flag = models.BooleanField(default=True,null=False)
-    
+
     class Meta:
         ordering = ['nombre']
-        
+
     def __unicode__(self):
         return "%s %s"%(self.almacen_id,self.nombre)
 
@@ -105,7 +110,7 @@ class Transportista(models.Model):
     tranom = models.CharField(max_length=200,null=False)
     tratel = models.CharField(max_length=11,null=True,default='000-000-000')
     flag = models.BooleanField(default=True,null=False)
-    
+
     def __unicode__(self):
         return "%s %s"%(self.traruc_id,self.tranom)
 
@@ -116,7 +121,7 @@ class Conductore(models.Model):
     conlic = models.CharField(max_length=12,null=False)
     contel = models.CharField(max_length=11,null=True,default='',blank=True)
     flag = models.BooleanField(default=True,null=False)
-    
+
     def __unicode__(self):
         return "%s %s %s"%(self.traruc,self.condni_id,self.connom)
 
@@ -125,7 +130,7 @@ class Transporte(models.Model):
     nropla_id = models.CharField(primary_key=True,max_length=8)
     marca = models.CharField(max_length=60,null=False)
     flag = models.BooleanField(default=True,null=False)
-    
+
     def __unicode__(self):
         return "%s %s %s"%(self.traruc,self.nropla_id,self.marca)
 
@@ -207,6 +212,7 @@ class Moneda(models.Model):
 class TipoCambio(models.Model):
     moneda = models.ForeignKey(Moneda, to_field='moneda_id')
     fecha = models.DateField(auto_now=True)
+    registrado = models.TimeField(auto_now=True)
     compra = models.FloatField()
     venta = models.FloatField()
     flag = models.BooleanField(default=True)
@@ -230,3 +236,11 @@ class Proveedor(models.Model):
 
     def __unicode__(self):
       return '%s %s %s'%(self.proveedor_id, self.razonsocial, self.direccion)
+
+class Configuracion(models.Model):
+    periodo = models.CharField(max_length=4, default='')
+    registrado = models.DateTimeField(auto_now=True)
+    moneda = models.ForeignKey(Moneda, to_field='moneda_id')
+
+    def __unicode__(self):
+        return "%s %s"%( self.periodo, self.moneda)

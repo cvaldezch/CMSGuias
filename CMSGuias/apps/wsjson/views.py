@@ -1,5 +1,10 @@
 #-*- Encoding: utf-8 -*-
+#
 import json
+import datetime
+import time, urllib2
+import re
+from bs4 import BeautifulSoup
 
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
@@ -12,7 +17,7 @@ from django.utils import simplejson
 from django.core import serializers
 
 from CMSGuias.apps.almacen import models
-from CMSGuias.apps.home.models import Materiale, Almacene, Transporte, Conductore, Proveedor
+from CMSGuias.apps.home.models import Materiale, Almacene, Transporte, Conductore, Proveedor, Moneda, TipoCambio, Configuracion
 from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
 
 
@@ -458,3 +463,57 @@ class getStoreList(JSONResponseMixin, DetailView):
             context['raise'] = e
             context['status'] = False
         return self.render_to_json_response(context, **kwargs)
+
+###
+# Get data Sunat
+# Solo habilitado para el tipo de cambio en Dolares Americanos
+class RestfulExchangeRate(JSONResponseMixin, DetailView):
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            # Get exchange rate today
+            date = datetime.datetime.today().date()
+            currency = Configuracion.objects.get(periodo=date.year.__str__())
+            exchange = TipoCambio.objects.filter(fecha=date, moneda_id=currency.moneda_id)
+            if exchange.__len__() == 0:
+                url = 'http://www.sunat.gob.pe/cl-at-ittipcam/tcS01Alias'
+                data = parseSunat(url)
+                if data != 'Nothing':
+                    soup = BeautifulSoup('"""%s"""'%data)
+                    html = soup.select('body > form > div > center > table > tbody')
+                    rate = html[1].find_all('td')
+                    length = rate.__len__()
+                    obj = TipoCambio()
+                    obj.moneda_id = currency.moneda_id
+                    purchase = float(re.sub('[(\n)(\t)(\s)]','',rate[length - 2].contents[0].string))
+                    sale = float(re.sub('[(\n)(\t)(\s)]','',rate[length - 1].contents[0].string))
+                    if currency.moneda.moneda.startswith('DOLARES'):
+                        obj.compra = (1 / purchase)
+                        obj.venta = (1 / sale)
+                    else:
+                        obj.compra = purchase
+                        obj.venta = sale
+                    obj.save()
+                    day = int(rate[length - 3].strong.string)
+                    if day != date.day:
+                        context['rasie'] = 'the exchange rate, does not belong to the date.'
+                    else:
+                        context['raise'] = 'Successfully save.'
+                    context['status'] = True
+                else:
+                    context['status'] = False
+            else:
+                context['raise'] = 'The exchange rate already this registered.'
+                context['status'] = True
+                context['show'] = False
+        except Exception, e:
+            context['raise'] = e.__str__()
+            context['status'] = False
+        return self.render_to_json_response(context, **kwargs)
+
+def parseSunat(url):
+    try:
+        req = urllib2.Request(url)
+        return urllib2.urlopen(req).read()
+    except Exception:
+        return "Nothing"
