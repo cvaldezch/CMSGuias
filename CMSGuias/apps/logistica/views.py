@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+ # -*- coding: utf-8 -*-
 
 import json
 
@@ -148,7 +148,7 @@ class SupplytoDocumentIn(TemplateView):
                         obj = Cotizacion()
                         obj.cotizacion_id = idquote
                         obj.suministro_id = request.POST.get('supply')
-                        obj.empdni = request.user.get_profile().empdni
+                        obj.empdni = request.user.get_profile().empdni_id
                         obj.almacen_id = request.POST.get('storage')
                         obj.traslado = globalVariable.format_str_date(request.POST.get('traslado'))
                         obj.obser = request.POST.get('obser')
@@ -258,14 +258,14 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
             if request.GET.get('type') == 'list':
                 context = {}
                 try:
-                    tmp = tmpcotizacion.objects.filter(empdni=request.user.get_profile().empdni)
+                    tmp = tmpcotizacion.objects.filter(empdni=request.user.get_profile().empdni_id)
                     context['list'] = [{'id':x.id, 'materials_id':x.materiales_id, 'matname':x.materiales.matnom, 'matmeasure': x.materiales.matmed, 'unit':x.materiales.unidad_id, 'quantity':x.cantidad} for x in tmp]
                     context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = e
                     context['status'] = False
                 return self.render_to_json_response(context, **kwargs)
-        context['details'] = tmpcotizacion.objects.filter(empdni=request.user.get_profile().empdni).order_by('materiales__matnom')
+        context['details'] = tmpcotizacion.objects.filter(empdni=request.user.get_profile().empdni_id).order_by('materiales__matnom')
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
     @method_decorator(login_required)
@@ -277,7 +277,7 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
                     form = addTmpCotizacionForm(request.POST)
                     if form.is_valid():
                         add = form.save(commit=False)
-                        add.empdni = request.user.get_profile().empdni
+                        add.empdni = request.user.get_profile().empdni_id
                         add.save()
                         context['status'] = True
                     else:
@@ -307,7 +307,7 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
                 return self.render_to_json_response(context, **kwargs)
             if request.POST.get('type') == 'delall':
                 try:
-                    tmp = tmpcotizacion.objects.filter(empdni=request.user.get_profile().empdni)
+                    tmp = tmpcotizacion.objects.filter(empdni=request.user.get_profile().empdni_id)
                     tmp.delete()
                     context['status'] = True
                 except ObjectDoesNotExist, e:
@@ -330,7 +330,7 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
                             mid = ''
                         cant = sheet.cell(m, 6) # get quantity
                         if len(mid) == 15: # row code is length equal 15 chars
-                            obj, created = tmpcotizacion.objects.get_or_create(materiales_id=mid,empdni=request.user.get_profile().empdni,defaults={'cantidad':cant.value})
+                            obj, created = tmpcotizacion.objects.get_or_create(materiales_id=mid,empdni=request.user.get_profile().empdni_id,defaults={'cantidad':cant.value})
                             if not created:
                                 obj.cantidad = (obj.cantidad + cant.value)
                                 obj.save()
@@ -362,7 +362,7 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
                         # Save quotation
                         obj = Cotizacion()
                         obj.cotizacion_id = quote
-                        obj.empdni = request.user.get_profile().empdni
+                        obj.empdni = request.user.get_profile().empdni_id
                         obj.almacen_id = request.POST.get('almacen')
                         obj.traslado = request.POST.get('traslado')
                         obj.obser = request.POST.get('obser')
@@ -406,7 +406,7 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
             if request.GET.get('type') == 'list':
                 context = dict()
                 try:
-                    tmp = tmpcompra.objects.filter(empdni=request.user.get_profile().empdni)
+                    tmp = tmpcompra.objects.filter(empdni=request.user.get_profile().empdni_id)
                     context['list'] = [{'id':x.id, 'materials_id':x.materiales_id, 'matname':x.materiales.matnom, 'matmeasure': x.materiales.matmed, 'unit':x.materiales.unidad_id, 'quantity':x.cantidad, 'price':x.precio} for x in tmp]
                     context['status'] = True
                 except ObjectDoesNotExist, e:
@@ -425,7 +425,7 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                     form = addTmpCompraForm(request.POST)
                     if form.is_valid():
                         add = form.save(commit=False)
-                        add.empdni = request.user.get_profile().empdni
+                        add.empdni = request.user.get_profile().empdni_id
                         add.save()
                         context['status'] = True
                     else:
@@ -439,7 +439,7 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                     form = addTmpCompraForm(request.POST)
                     if form.is_valid():
                         add = form.save(commit=False)
-                        add.empdni = request.user.get_profile().empdni
+                        add.empdni = request.user.get_profile().empdni_id
                         add.save()
                         context['status'] = True
                     else:
@@ -470,7 +470,7 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                 return self.render_to_json_response(context, **kwargs)
             if request.POST.get('type') == 'delall':
                 try:
-                    tmp = tmpcompra.objects.filter(empdni=request.user.get_profile().empdni)
+                    tmp = tmpcompra.objects.filter(empdni=request.user.get_profile().empdni_id)
                     tmp.delete()
                     context['status'] = True
                 except ObjectDoesNotExist, e:
@@ -494,7 +494,7 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                         cant = sheet.cell(m, 6) # get quantity
                         price = sheet.cell(m, 7) # get price
                         if len(mid) == 15: # row code is length equal 15 chars
-                            obj, created = tmpcompra.objects.get_or_create(materiales_id=mid,empdni=request.user.get_profile().empdni,defaults={'cantidad':cant.value,'precio':price.value})
+                            obj, created = tmpcompra.objects.get_or_create(materiales_id=mid,empdni=request.user.get_profile().empdni_id,defaults={'cantidad':cant.value,'precio':price.value})
                             if not created:
                                 obj.cantidad = (obj.cantidad + cant.value)
                                 obj.precio = price.value

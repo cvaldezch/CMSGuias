@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, View
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Sum
@@ -17,7 +17,7 @@ from django.utils import simplejson
 from django.core import serializers
 
 from CMSGuias.apps.almacen import models
-from CMSGuias.apps.home.models import Materiale, Almacene, Transporte, Conductore, Proveedor, Moneda, TipoCambio, Configuracion
+from CMSGuias.apps.home.models import *
 from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
 
 
@@ -259,7 +259,7 @@ def post_upload_file_temp_orders(request):
                         if len(mid) == 15: # row code is length equal 15 chars
                             arn.append(mid) if mid[0:3] == '115' else False # aggregate materials for nipples
                             cant= sheet.cell(m, 6) # get quantity
-                            obj, created= models.tmppedido.objects.get_or_create(materiales_id=mid,empdni=request.user.get_profile().empdni,defaults={'cantidad':cant.value})
+                            obj, created= models.tmppedido.objects.get_or_create(materiales_id=mid,empdni=request.user.get_profile().empdni_id,defaults={'cantidad':cant.value})
                             if not created:
                                 obj.cantidad= (obj.cantidad + cant.value)
                                 obj.save()
@@ -275,7 +275,7 @@ def post_upload_file_temp_orders(request):
                                 med= sheet.cell(n, 7).value # meter in cm
                                 tipo= sheet.cell(n, 5).value # type nipple {A, B, C}
                                 # create or update nipples
-                                obj, created= models.tmpniple.objects.get_or_create(materiales_id=mid,metrado=med,tipo=tipo,empdni=request.user.get_profile().empdni,defaults={'cantidad':cant})
+                                obj, created= models.tmpniple.objects.get_or_create(materiales_id=mid,metrado=med,tipo=tipo,empdni=request.user.get_profile().empdni_id,defaults={'cantidad':cant})
                                 if not created:
                                     obj.cantidad= ( obj.cantidad + cant )
                                     obj.save()
@@ -517,3 +517,57 @@ def parseSunat(url):
         return urllib2.urlopen(req).read()
     except Exception:
         return "Nothing"
+
+# stage2dev
+# Country
+class ViewContry(JSONResponseMixin, View):
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            context = dict()
+            try:
+                if request.GET.get('type') == 'option':
+                    context['country'] = [{'country_id': x.pais_id,'country':x.paisnom} for x in Pais.objects.filter(flag=True)]
+                context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
+
+class ViewDepartament(JSONResponseMixin, View):
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            context = dict()
+            try:
+                if request.GET.get('type') == 'option':
+                    context['departament'] = [{'departament_id': x.departamento_id, 'departament': x.depnom} for x in Departamento.objects.filter(pais_id=request.GET.get('country'), flag=True)]
+                context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
+
+class ViewProvince(JSONResponseMixin, View):
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            context = dict()
+            try:
+                if request.GET.get('type') == 'option':
+                    context['province'] = [{'province_id':x.provincia_id, 'province': x.pronom} for x in Provincia.objects.filter(pais_id=request.GET.get('country'), departamento_id=request.GET.get('departament'), flag=True)]
+                context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
+
+class ViewDistrict(JSONResponseMixin, View):
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            context = dict()
+            try:
+                if request.GET.get('type') == 'option':
+                    context['district'] = [{'district_id': x.distrito_id, 'district': x.distnom} for x in Distrito.objects.filter(pais_id=request.GET.get('country'), departamento_id=request.GET.get('departament'), provincia_id=request.GET.get('province'), flag=True)]
+                context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)

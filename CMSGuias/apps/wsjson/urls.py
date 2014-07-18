@@ -36,6 +36,11 @@ urlpatterns = patterns('CMSGuias.apps.wsjson.views',
     url(r'^get/list/conductor/(?P<truc>.*)/$','get_recover_list_conductor'),
     url(r'^supplier/get/list/all/$', views.getSupplierList.as_view()),
     url(r'^store/get/list/all/$', views.getStoreList.as_view()),
+    # recurrent country, departament, province, district
+    url(r'^country/list/', views.ViewContry.as_view()),
+    url(r'^departament/list/', views.ViewDepartament.as_view()),
+    url(r'^province/list/', views.ViewProvince.as_view()),
+    url(r'^district/list/', views.ViewDistrict.as_view()),
     # url get data sunat
     url(r'^sunat/exchange/rate/$', views.RestfulExchangeRate.as_view()),
     # Class Bases-Views Genereics

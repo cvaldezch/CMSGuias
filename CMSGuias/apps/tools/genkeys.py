@@ -8,12 +8,13 @@ from django.db.models import Max
 
 from CMSGuias.apps.almacen.models import Pedido, GuiaRemision, Suministro
 from CMSGuias.apps.logistica.models import Cotizacion, Compra
+from CMSGuias.apps.ventas.models import Proyecto
 
 
 ### format date str
 __date_str = "%Y-%m-%d"
 __year_str = "%y" # 'AA'
-### 
+###
 
 
 def __init__():
@@ -132,4 +133,25 @@ def GenerateKeyPurchase():
         id = "%s%s%s"%('OC', cy.__str__(), "{:0>6d}".format(counter))
     except ObjectDoesNotExist:
       raise e
+    return id
+
+# Generate Id for Project
+def GenerateIdPorject():
+    id = None
+    try:
+        code = Proyecto.objects.aggregate(max=Max('proyecto_id'))
+        id = code['max']
+        yn = datetime.datetime.today().date().year
+        if id is not None:
+            yy = int(id[2:4])
+            counter = int(id[4:7])
+            if yn > yy:
+                counter = 1
+            else:
+                counter += 1
+        else:
+            counter = 1
+        id = '%s%s%s'%('PR',yn.__str__(), '{:0>3d}'.format(counter))
+    except ObjectDoesNotExist, e:
+        raise e
     return id

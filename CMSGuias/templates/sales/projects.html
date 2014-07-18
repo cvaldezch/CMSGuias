@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}
+    List Projects
+{% endblock title %}
+{% block script %}
+<script src="{{ MEDIA_URL }}js/tinymce.js"></script>
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="{{ MEDIA_URL }}js/getCountry.js"></script>
+<script src="{{ MEDIA_URL }}js/sales/projects.js"></script>
+{% endblock script %}
+{% block menu %}
+    {% include "menus/sale.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+    <div class="well">
+        <header>
+            <h3 class="text-primary">Proyectos</h3>
+        </header>
+        <aside>
+            <div class="btn-group">
+                <button class="btn btn-primary btn-add">
+                    <span class="glyphicon glyphicon-plus"></span>
+                    <span> Nuevo Proyecto</span>
+                </button>
+                <button class="btn btn-success text-black btn-save">
+                    <span class="glyphicon glyphicon-floppy-disk"></span> Guardar Cambios
+                </button>
+            </div>
+            <div class="panel panel-primary panel-pro">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Cliente</label>
+                                <div class="input-group input-group-sm">
+                                    <select name="ruccliente" id="ruccliente" class="form-control input-sm">
+                                        {% for x in customers %}
+                                            <option value="{{ x.cliente_id }}">{{ x.razonsocial }}</option>
+                                        {% empty %}
+                                            <option value="">-- Nothing --</option>
+                                        {% endfor %}
+                                    </select>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
+                                        <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Nombre Proyecto</label>
+                                <input type="text" name="nompro" class="form-control input-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Inicio Proyecto</label>
+                                <input type="text" name="comienzo" class="form-control input-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Fin Proyecto</label>
+                                <input type="text" name="fin" class="form-control input-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Pais</label>
+                                <div class="input-group input-group-sm">
+                                    <select name="pais" id="pais" class="form-control input-sm">
+                                        {% for x in country %}
+                                            <option value="{{ x.pais_id }}">{{ x.paisnom }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
+                                        <button class="btn btn-primary btn-country-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Depatamento</label>
+                                <div class="input-group">
+                                    <select name="departamento" id="" class="form-control input-sm"></select>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
+                                        <button class="btn btn-primary btn-departament-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Provincia</label>
+                                <div class="input-group input-group-sm">
+                                    <select name="provincia" id="provincia" class="form-control input-sm"></select>
+                                     <span class="input-group-btn">
+                                        <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
+                                        <button class="btn btn-primary btn-province-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Distrito</label>
+                                <div class="input-group input-group-sm">
+                                    <select name="distrito" id="" class="form-control input-sm"></select>
+                                     <span class="input-group-btn">
+                                        <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
+                                        <button class="btn btn-primary btn-district-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Dirección</label>
+                                <input type="text" name="direccion" class="form-control input-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Fin Proyecto</label>
+                                <input type="text" name="fin" class="form-control input-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Observación</label>
+                                <textarea name="obser" id="obser" rows="5" class="form-control input-sm"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <article>
+            <div class="panel panel-primary">
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered table-condensed">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Item</th>
+                                <th></th>
+                                <th class="text-center">Codigo</th>
+                                <th>Nombre de Proyecto</th>
+                                <th>Dirección</th>
+                                <th class="text-center">Fecha Inicio</th>
+                                <th class="text-center">Fecha Fin</th>
+                                <th class="text-center">Editar</th>
+                                <th class="text-center">Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for x in list %}
+                            <tr class="tr-{{ x.proyecto_id }}">
+                                <td>{{ forloop.counter }}</td>
+                                <td><a href="{% url 'vista_sec_project' x.proyecto_id tsid %}" class="btn btn-link btn-xs btn-open text-black"><span class="glyphicon glyphicon-folder-close"></span></a></td>
+                                <td>{{ x.proyecto_id }}</td>
+                                <td>{{ x.nompro }}</td>
+                                <td>{{ x.direccion }}</td>
+                                <td>{{ x.comienzo }}</td>
+                                <td>{{ x.fin }}</td>
+                                <td class="text-center"><a href="{% url 'vista_edit_projects' x.proyecto_id %}" class="btn btn-link text-black" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-edit"></span></a></td>
+                                <td class="text-center"><button type="Button" class="btn btn-link text-black btn-delete-project" title="{{ x.nompro }}" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-trash"></span></button></td>
+                            </tr>
+                            {% empty %}
+                                <div class="alert alert-warning">
+                                    <strong>Warning</strong>
+                                    <p>No se han encontrado <q><strong>Proyectos</strong></q> para mostrar. Presione el botón <q><strong>Nuevo Proyecto</strong></q> para agregar.<p>
+                                </div>
+                            {% endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </article>
+    </div>
+</div>
+{% endblock content %}

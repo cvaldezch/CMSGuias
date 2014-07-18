@@ -1,5 +1,5 @@
 from django.db import models
-from CMSGuias.apps.home.models import Pais, Departamento, Provincia, Distrito, Cliente
+from CMSGuias.apps.home.models import Pais, Departamento, Provincia, Distrito, Cliente, Materiale, Employee
 
 # Create your models here.
 
@@ -17,6 +17,7 @@ class Proyecto(models.Model):
 	direccion = models.CharField(max_length=200,null=False)
 	obser = models.TextField(null=True,blank=True)
 	status = models.CharField(max_length=2,null=False,default='00')
+	empdni = models.ForeignKey(Employee, to_field='empdni_id', null=True, blank=True)
 	flag = models.BooleanField(default=True,null=False)
 
 	class Meta:
@@ -60,3 +61,35 @@ class Sectore(models.Model):
 
 	def __unicode__(self):
 		return '%s - %s %s'%(self.proyecto,self.subproyecto_id,self.sector_id)
+
+class Metradoventa(models.Model):
+	proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
+	subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
+	sector = models.ForeignKey(Sectore, to_field='sector_id')
+	materiales = models.ForeignKey(Materiale, to_field='materiales_id')
+	cantidad = models.FloatField()
+	precio = models.FloatField()
+	flag = models.BooleanField(default=True)
+
+	class Meta:
+		ordering = ['proyecto']
+
+	def __unicode__(self):
+		return '%s %s %s %f %f'%(self.proyecto, self.sector, self.materiales, self.cantidad, self.precio)
+
+class Alertasproyecto(models.Model):
+	proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
+	subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
+	sector = models.ForeignKey(Sectore, to_field='sector_id')
+	registrado = models.DateTimeField(auto_now=True)
+	empdni = models.ForeignKey(Employee, to_field='empdni_id')
+	cargo = models.CharField(max_length=3)
+	mensage = models.TextField(max_length=250)
+	flag = models.BooleanField(default=True)
+
+	class Meta:
+		ordering = ['proyecto']
+
+	def __unicode__(self):
+		return '%s %s %s %s %s'%(self.proyecto, self.sector, self.cargo, self.mensage, self.registrado)
+

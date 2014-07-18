@@ -81,15 +81,31 @@ class Cargo(models.Model):
     def __unicode__(self):
         return '%s %s - %s'%(self.cargo_id, self.cargos, self.area)
 
+class Employee(models.Model):
+    empdni_id = models.CharField(primary_key=True, max_length=8)
+    firstname = models.CharField(max_length=100)
+    lastname = models.CharField(max_length=150)
+    register = models.DateTimeField(auto_now=True)
+    birth = models.DateField()
+    phone = models.CharField(max_length=10)
+    address = models.CharField(max_length=180)
+    charge = models.ForeignKey(Cargo, to_field='cargo_id')
+    flag = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['lastname']
+
+    def __unicode__(self):
+        return '%s %s %s %s %s'%(self.empdni_id, self.firstname, self.lastname, self.phone, self.charge)
+
 class userProfile(models.Model):
     def url(self,filename):
-        ruta = "MutimediaData/Users/%s/%s"%(self.user.username,filename)
+        ruta = "storage/Users/%s/%s"%(self.empdni,filename)
         return ruta
 
     user = models.OneToOneField(User)
-    empdni = models.CharField(max_length=8,null=False)
-    cargo = models.ForeignKey(Cargo, to_field='cargo_id', null=True)
-    photo = models.ImageField(upload_to=url,null=True, blank=True)
+    empdni = models.ForeignKey(Employee, to_field='empdni_id')
+    photo = models.ImageField(upload_to=url, null=True, blank=True)
 
     def __unicode__(self):
         return self.user.username
@@ -241,6 +257,7 @@ class Configuracion(models.Model):
     periodo = models.CharField(max_length=4, default='')
     registrado = models.DateTimeField(auto_now=True)
     moneda = models.ForeignKey(Moneda, to_field='moneda_id')
+    igv = models.IntegerField(default=10)
 
     def __unicode__(self):
         return "%s %s"%( self.periodo, self.moneda)
