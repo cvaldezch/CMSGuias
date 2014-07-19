@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block menu %}
+    {% include "menus/sale.htm" %}
+{% endblock menu %}
+{% block content %}
+    <div class="container">
+        <div class="well">
+            <h1>Clientes</h1>
+            <div class="panel panel-primary">
+                <div class="btn-group">
+                    <a href="{% url 'customers_new' %}" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Nuevo Cliente
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-condensed">
+                        <thead>
+                            <tr class="brand-primary">
+                                <th>Item</th><th>Ruc</th><th>Razón Social</th><th>Dirección</th><th>Telefono</th><th></th><th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for x in object_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ x.ruccliente_id }}</td>
+                                <td>{{ x.razonsocial }}</td>
+                                <td>{{ x.direccion }}</td>
+                                <td>{{ x.telefono }}</td>
+                                <td>
+                                    <a href="{% url 'customers_edit' x.ruccliente_id %}" class="btn btn-xs btn-link text-green">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'customers_del' x.ruccliente_id %}" class="btn btn-xs btn-link text-red">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -5,6 +5,7 @@ import datetime
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 # Create your models here.
 class Pais(models.Model):
@@ -159,10 +160,13 @@ class Cliente(models.Model):
     distrito = models.ForeignKey(Distrito, to_field='distrito_id')
     direccion = models.CharField(max_length=200,null=False,)
     telefono = models.CharField(max_length=11,null=True, blank=True,default='000-000-000')
-    flag = models.BooleanField(default=True,null=False)
+    flag = models.BooleanField(default=True)
 
     def __unicode__(self):
         return '%s %s'%(self.ruccliente_id,self.razonsocial)
+
+    def get_absolute_url(self):
+        return reverse('customers_edit', kwargs={'pk': self.ruccliente_id})
 
 class Marca(models.Model): # Class Model de Marca de Materiales
     marca_id = models.CharField(primary_key=True, max_length=3, null=False)
