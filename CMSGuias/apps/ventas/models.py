@@ -1,7 +1,6 @@
 from django.db import models
 from CMSGuias.apps.home.models import Pais, Departamento, Provincia, Distrito, Cliente, Materiale, Employee
 
-# Create your models here.
 
 class Proyecto(models.Model):
 	proyecto_id = models.CharField(primary_key=True, max_length=7,null=False)

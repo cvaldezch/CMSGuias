@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 {% block title %}
-    Delete Customer
+    Delete Departament
 {% endblock title %}
 {% block content %}
 <div class="container">
     <div class="alert alert-block brand-danger">
-        <h1>Eliminar Cliente</h1>
+        <h1>Eliminar Departamento</h1>
         <form method="post">
             {% csrf_token %}
             <p>
                 Estas Seguro(a) que desea eliminar "{{ object }}" ?
             </p>
-            <a href="{% url 'customers_list' %}" class="btn btn-default">
+            <a href="{% url 'departament_list' %}" class="btn btn-default">
                 <span class="glyphicon glyphicon-chevron-left"></span>
                 Regresar
             </a>

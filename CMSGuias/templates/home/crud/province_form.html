@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}
+    Province
+{% endblock title %}
+{% block menu %}
+    {% include "menus/sale.htm" %}
+{% endblock menu %}
+{% block content %}
+    <div class="container">
+        <div class="well">
+            <h1>Provincia</h1>
+            <form method="post" role="form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <a href="{% url 'province_list' %}" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                    Regresar
+                </a>
+                <button type="submit" class="btn btn-success">
+                    <span class="glyphicon glyphicon-saved"></span>
+                    Guardar Cambios
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

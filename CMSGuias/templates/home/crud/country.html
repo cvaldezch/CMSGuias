@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block menu %}
+    {% include "menus/sale.htm" %}
+{% endblock menu %}
+{% block content %}
+    <div class="container">
+        <div class="well">
+            <h1>Pais</h1>
+            <div class="panel panel-primary">
+                <div class="btn-group">
+                    <a href="{% url 'country_new' %}" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Nuevo Pais
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-condensed">
+                        <thead>
+                            <tr class="brand-primary">
+                                <th width="1cm">Item</th><th width="2cm">Código</th><th>Nombre Pais</th><th></th><th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for x in country %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ x.pais_id }}</td>
+                                <td>{{ x.paisnom }}</td>
+                                <td>
+                                    <a href="{% url 'country_edit' x.pais_id %}" class="btn btn-xs btn-link text-green">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'country_del' x.pais_id %}" class="btn btn-xs btn-link text-red">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

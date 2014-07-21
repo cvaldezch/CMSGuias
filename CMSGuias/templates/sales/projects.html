@@ -30,19 +30,20 @@
             <div class="panel panel-primary panel-pro">
                 <div class="panel-body">
                     <div class="row">
+                        {% csrf_token %}
                         <div class="col-md-4">
                             <div class="form-group has-primary">
                                 <label class="control-label">Cliente</label>
                                 <div class="input-group input-group-sm">
                                     <select name="ruccliente" id="ruccliente" class="form-control input-sm">
                                         {% for x in customers %}
-                                            <option value="{{ x.cliente_id }}">{{ x.razonsocial }}</option>
+                                            <option value="{{ x.ruccliente_id }}">{{ x.razonsocial }}</option>
                                         {% empty %}
                                             <option value="">-- Nothing --</option>
                                         {% endfor %}
                                     </select>
                                     <span class="input-group-btn">
-                                        <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
+                                        <button class="btn btn-primary btn-sm btn-add-customers"><span class="glyphicon glyphicon-plus"></span></button>
                                         <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
                                     </span>
                                 </div>
@@ -76,7 +77,7 @@
                                         {% endfor %}
                                     </select>
                                     <span class="input-group-btn">
-                                        <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
+                                        <button class="btn btn-primary btn-sm btn-add-country"><span class="glyphicon glyphicon-plus"></span></button>
                                         <button class="btn btn-primary btn-country-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
                                     </span>
                                 </div>
@@ -88,7 +89,7 @@
                                 <div class="input-group">
                                     <select name="departamento" id="" class="form-control input-sm"></select>
                                     <span class="input-group-btn">
-                                        <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
+                                        <button class="btn btn-primary btn-sm btn-add-departament"><span class="glyphicon glyphicon-plus"></span></button>
                                         <button class="btn btn-primary btn-departament-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
                                     </span>
                                 </div>
@@ -100,7 +101,7 @@
                                 <div class="input-group input-group-sm">
                                     <select name="provincia" id="provincia" class="form-control input-sm"></select>
                                      <span class="input-group-btn">
-                                        <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
+                                        <button class="btn btn-primary btn-sm btn-add-province"><span class="glyphicon glyphicon-plus"></span></button>
                                         <button class="btn btn-primary btn-province-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
                                     </span>
                                 </div>
@@ -112,7 +113,7 @@
                                 <div class="input-group input-group-sm">
                                     <select name="distrito" id="" class="form-control input-sm"></select>
                                      <span class="input-group-btn">
-                                        <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
+                                        <button class="btn btn-primary btn-sm btn-add-district"><span class="glyphicon glyphicon-plus"></span></button>
                                         <button class="btn btn-primary btn-district-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
                                     </span>
                                 </div>
@@ -155,7 +156,7 @@
                             {% for x in list %}
                             <tr class="tr-{{ x.proyecto_id }}">
                                 <td>{{ forloop.counter }}</td>
-                                <td><a href="{% url 'vista_sec_project' x.proyecto_id tsid %}" class="btn btn-link btn-xs btn-open text-black"><span class="glyphicon glyphicon-folder-close"></span></a></td>
+                                <td><a href="{% url 'managerpro_view' x.proyecto_id %}" class="btn btn-link btn-xs btn-open text-black"><span class="glyphicon glyphicon-folder-close"></span></a></td>
                                 <td>{{ x.proyecto_id }}</td>
                                 <td>{{ x.nompro }}</td>
                                 <td>{{ x.direccion }}</td>

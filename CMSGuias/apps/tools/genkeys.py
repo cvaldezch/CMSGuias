@@ -141,7 +141,7 @@ def GenerateIdPorject():
     try:
         code = Proyecto.objects.aggregate(max=Max('proyecto_id'))
         id = code['max']
-        yn = datetime.datetime.today().date().year
+        yn = int(datetime.datetime.today().strftime(__year_str))
         if id is not None:
             yy = int(id[2:4])
             counter = int(id[4:7])

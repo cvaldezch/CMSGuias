@@ -4,7 +4,7 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from .models import Cliente
+from .models import *
 
 
 class logininForm(forms.Form):
@@ -23,7 +23,7 @@ class signupForm(forms.Form):
 # Customers
 class CustomersForm(forms.ModelForm):
     class Meta:
-        EMPTY  = (("","Nothing"),)
+        EMPTY = (('', '-- Nothing --'),)
         exclude = { 'flag', }
         model = Cliente
         widgets = {
@@ -35,4 +35,50 @@ class CustomersForm(forms.ModelForm):
             'distrito': forms.Select(attrs = {'class': 'form-control'}, choices=EMPTY),
             'direccion': forms.Textarea(attrs = {'class': 'form-control', 'maxlength': '200', 'rows': '4'}),
             'telefono': forms.TextInput(attrs = {'type':'tel','placeholder':'000-000-000','class': 'form-control'}),
+        }
+
+# Country
+class CountryForm(forms.ModelForm):
+    class Meta:
+        exclude = {'flag',}
+        model = Pais
+        widgets = {
+            'pais_id': forms.TextInput(attrs={'class': 'form-control'}),
+            'paisnom': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+# Departament
+class DepartamentForm(forms.ModelForm):
+    class Meta:
+        exclude = {'flag',}
+        model = Departamento
+        widgets = {
+            'pais' : forms.Select(attrs = {'class' : 'form-control'}),
+            'departamento_id' : forms.TextInput(attrs = {'class' : 'form-control'}),
+            'depnom' : forms.TextInput(attrs = {'class' : 'form-control'}),
+        }
+
+# Province
+class ProvinceForm(forms.ModelForm):
+    class Meta:
+        exclude = {'flag',}
+        model = Provincia
+        widgets = {
+            'pais' : forms.Select(attrs = {'class' : 'form-control'}),
+            'departamento' : forms.Select(attrs = {'class' : 'form-control'}),
+            'provincia_id' : forms.TextInput(attrs = {'class' : 'form-control'}),
+            'pronom' : forms.TextInput(attrs = {'class' : 'form-control'})
+        }
+
+# District
+class DistrictForm(forms.ModelForm):
+    class Meta:
+        exclude = {'flag',}
+        model = Distrito
+        widgets = {
+            'pais' : forms.Select(attrs = {'class' : 'form-control'}),
+            'departamento' : forms.Select(attrs = {'class' : 'form-control'}),
+            'provincia' : forms.Select(attrs = {'class' : 'form-control'}),
+            'distrito_id' : forms.TextInput(attrs = {'class' : 'form-control'}),
+            'distnom' : forms.TextInput(attrs = {'class' : 'form-control'}),
         }

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}
+    Manager Project
+{% endblock title %}
+{% block menu %}
+    {% include "menus/sale.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+    <div class="well">
+        <h3>Administrador de Proyetos</h3>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="panel panel-primary">
+                    <div class="panel-body">
+                        <h4>Sectores and Subsectores</h4>
+                        <hr>
+                        <div class="panel-group" id="accordion">
+                            <div class="panel panel-success">
+                            <div class="panel-heading">
+                              <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                  Projecto Default
+                                </a>
+                              </h4>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse collapse in">
+                              <div class="panel-body">
+                                SECTOR 01
+                              </div>
+                            </div>
+                            </div>
+                            <div class="panel panel-success">
+                            <div class="panel-heading">
+                              <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+                                  ADICIONAL 01
+                                </a>
+                              </h4>
+                            </div>
+                            <div id="collapseTwo" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                <ul>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                    <li></li>
+                                </ul>
+                              </div>
+                            </div>
+                            </div>
+                            <div class="panel panel-success">
+                            <div class="panel-heading">
+                              <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+                                  SUB PROYECTO 01
+                                </a>
+                              </h4>
+                            </div>
+                            <div id="collapseThree" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                SECTRO 03
+                              </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <button class="btn btn-default btn-xs">
+                            Regresar
+                        </button>
+                        <br>
+                        <strong>Proyecto</strong>: {{ project.nompro }}
+                        <p>
+                            <button class="btn btn-primary text-black btn-xs">
+                                <span class="glyphicon glyphicon-th"></span>
+                                Nuevo Sector
+                            </button>
+                            <button class="btn btn-primary text-black btn-xs pull-right">
+                                <span class="glyphicon glyphicon-th-large"></span>
+                                Nuevo Subproyeto
+                            </button>
+                        </p>
+                    </div>
+                    <div class="panel-body">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

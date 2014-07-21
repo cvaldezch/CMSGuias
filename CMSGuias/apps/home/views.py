@@ -16,8 +16,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from CMSGuias.apps.home.forms import signupForm, logininForm
 from CMSGuias.apps.tools.redirectHome import RedirectModule
-from .models import Cliente
-from .forms import CustomersForm
+from .models import *
+from .forms import *
 
 
 class HomeManager(ListView):
@@ -58,17 +58,6 @@ class LoginView(View):
         ctx = { 'form': form, 'msg': message }
         return render_to_response('home/login.html', ctx, context_instance=RequestContext(request))
 
-# def login_view(request):
-#     try:
-#         message = ""
-
-#         else:
-#             if request.method == 'POST':
-
-#     except TemplateDoesNotExist, e:
-#         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
-#         raise Http404('Method no proccess')
-
 class LogoutView(View):
 
     @method_decorator(login_required)
@@ -79,14 +68,6 @@ class LogoutView(View):
         except TemplateDoesNotExist, e:
             messages.error(request, 'No se a encontrado esta pagina!')
             raise Http404('Template Does Not Exist')
-
-# def logout_view(request):
-#     try:
-#         logout(request)
-#         return HttpResponseRedirect(reverse_lazy('vista_login'))
-#     except TemplateDoesNotExist, e:
-#         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
-#         raise Http404('Method no proccess')
 
 # CRUD Customers
 class CustomersList(ListView):
@@ -128,3 +109,182 @@ class CustomersDelete(DeleteView):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(CustomersDelete, self).dispatch(request, *args, **kwargs)
+
+# CRUD Country
+class CountryList(ListView):
+    template_name = 'home/crud/country.html'
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.GET.get('menu'):
+            context['menu'] = request.GET.get('menu')
+        context['country'] = Pais.objects.filter(flag=True)
+        return render_to_response(self.template_name, context, context_instance= RequestContext(request))
+
+class CountryCreate(CreateView):
+    form_class = CountryForm
+    model = Pais
+    success_url = reverse_lazy('country_list')
+    template_name = 'home/crud/country_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(CountryCreate, self).dispatch(request, *args, **kwargs)
+
+class CountryUpdate(UpdateView):
+    form_class = CountryForm
+    model = Pais
+    slug_field = 'pais_id'
+    slug_url_kwarg = 'pais_id'
+    success_url = reverse_lazy('country_list')
+    template_name = 'home/crud/country_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(CountryUpdate, self).dispatch(request, *args, **kwargs)
+
+class CountryDelete(DeleteView):
+    model = Pais
+    slug_field = 'pais_id'
+    slug_url_kwarg = 'pais_id'
+    success_url = reverse_lazy('country_list')
+    template_name = 'home/crud/country_del.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(CountryDelete, self).dispatch(request, *args, **kwargs)
+
+# CRUD Departament
+class DepartamentList(ListView):
+    template_name = "home/crud/departament.html"
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.GET.get('menu'):
+            context['country'] = request.GET.get('menu')
+        context['departament'] = Departamento.objects.filter(flag=True)
+        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+
+class DepartamentCreate(CreateView):
+    form_class = DepartamentForm
+    model = Departamento
+    success_url = reverse_lazy('departament_list')
+    template_name = 'home/crud/departament_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(DepartamentCreate, self).dispatch(request, *args, **kwargs)
+
+class DepartamentUpdate(UpdateView):
+    form_class = DepartamentForm
+    model = Departamento
+    slug_field = 'departamento_id'
+    slug_url_kwarg = 'departamento_id'
+    success_url = reverse_lazy('departament_list')
+    template_name = 'home/crud/departament_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(DepartamentUpdate, self).dispatch(request, *args, **kwargs)
+
+class DepartamentDelete(DeleteView):
+    model = Departamento
+    slug_field = 'departamento_id'
+    slug_url_kwarg = 'departamento_id'
+    success_url = reverse_lazy('departament_list')
+    template_name = 'home/crud/departament_del.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(DepartamentDelete, self).dispatch(request, *args, **kwargs)
+
+# CRUD Province
+class ProvinceList(ListView):
+    template_name = "home/crud/province.html"
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.GET.get('menu'):
+            context['country'] = request.GET.get('menu')
+        context['province'] = Provincia.objects.filter(flag=True)
+        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+
+class ProvinceCreate(CreateView):
+    form_class = ProvinceForm
+    model = Provincia
+    success_url = reverse_lazy('province_list')
+    template_name = 'home/crud/province_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(ProvinceCreate, self).dispatch(request, *args, **kwargs)
+
+class ProvinceUpdate(UpdateView):
+    form_class = ProvinceForm
+    model = Provincia
+    slug_field = 'provincia_id'
+    slug_url_kwarg = 'provincia_id'
+    success_url = reverse_lazy('province_list')
+    template_name = 'home/crud/province_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(ProvinceUpdate, self).dispatch(request, *args, **kwargs)
+
+class ProvinceDelete(DeleteView):
+    model = Provincia
+    slug_field = 'provincia_id'
+    slug_url_kwarg = 'provincia_id'
+    success_url = reverse_lazy('province_list')
+    template_name = 'home/crud/province_del.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(ProvinceDelete, self).dispatch(request, *args, **kwargs)
+
+# CRUD District
+class DistrictList(ListView):
+    template_name = "home/crud/district.html"
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.GET.get('menu'):
+            context['menu'] = request.GET.get('get')
+        context['district'] = Distrito.objects.filter(flag=True)
+        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+
+class DistrictCreate(CreateView):
+    form_class = DistrictForm
+    model = Distrito
+    success_url = reverse_lazy('district_list')
+    template_name = 'home/crud/district_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(DistrictCreate, self).dispatch(request, *args, **kwargs)
+
+class DistrictUpdate(UpdateView):
+    form_class = DistrictForm
+    model = Distrito
+    slug_field = 'distrito_id'
+    slug_url_kwarg = 'distrito_id'
+    success_url = reverse_lazy('district_list')
+    template_name = 'home/crud/district_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(DistrictUpdate, self).dispatch(request, *args, **kwargs)
+
+class DistrictDelete(DeleteView):
+    model = Distrito
+    slug_field = 'distrito_id'
+    slug_url_kwarg = 'distrito_id'
+    success_url = reverse_lazy('district_list')
+    template_name = 'home/crud/district_del.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(DistrictDelete, self).dispatch(request, *args, **kwargs)

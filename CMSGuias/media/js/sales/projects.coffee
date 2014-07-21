@@ -1,5 +1,11 @@
 $(document).ready ->
     $(".btn-save, .panel-pro").hide()
+    $("input[name=comienzo], input[name=fin]").datepicker
+        "changeMonth": true
+        "changeYear" : true
+        "showAnim" : "slide"
+        "dateFormat" : "yy-mm-dd"
+
     $(".btn-open > span").mouseenter (event) ->
         event.preventDefault()
         $(@).removeClass "glyphicon-folder-close"
@@ -39,6 +45,12 @@ $(document).ready ->
     $(".btn-province-refresh").on "click", getProvinceOption
     $(".btn-district-refresh").on "click", getDistrictOption
     $(".btn-add").on "click", showaddProject
+    $(".btn-add-customers").on "click", showCustomer
+    $(".btn-add-country").on "click", showCountry
+    $(".btn-add-departament").on "click", showDepartament
+    $(".btn-add-province").on "click", showProvince
+    $(".btn-add-district").on "click", showDistrict
+    $(".btn-save").on "click", CreateProject
 
     return
 
@@ -58,5 +70,58 @@ showaddProject = (event) ->
             $btn.find("span").eq(1).html(" Cancelar")
             $(".btn-save").show()
             return
+
+    return
+
+# Show upkeep country, departament, province, district, customers
+showCustomer = (event) ->
+    event.preventDefault()
+    url = "/customers/new/"
+    window.open url, "Customers", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600"
+
+showCountry = (event) ->
+    event.preventDefault()
+    url = "/country/new/"
+    window.open url, "Country", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=500"
+
+showDepartament = (event) ->
+    event.preventDefault()
+    url = "/departament/new/"
+    window.open url, "Departament", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=500"
+
+showProvince = (event) ->
+    event.preventDefault()
+    url = "/province/new/"
+    window.open url, "Province", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=500"
+
+showDistrict = (event) ->
+    event.preventDefault()
+    url = "/district/new/"
+    window.open url, "District", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=500"
+
+# create new Project
+CreateProject = (event) ->
+    pass = false
+    data = new Object()
+    $(".panel-pro").find("input, select").each ->
+        if @value is "" or @value is null
+            console.log @name
+            @.focus()
+            pass = false
+            $().toastmessage "showWarningToast", "campo vacio #{@name}."
+            return pass
+        else
+            data[@name] = $(@).val()
+            pass = true
+            return
+    console.log data
+    if pass
+        data['obser'] = $("#obser_ifr").contents().find("body").html()
+        data['type'] = "new"
+        $.post "", data, (response) ->
+            if response.status
+                $().toastmessage "showNoticeToast", "Se registro el proyecto #{data['nompro']} correctamente!"
+            else
+                $().toastmessage "showErrorToast", "Error en la transacción #{response.raise}."
 
     return

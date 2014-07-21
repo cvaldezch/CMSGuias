@@ -14,11 +14,12 @@ from django.utils import simplejson
 from django.utils.decorators import method_decorator
 from django.template import RequestContext, TemplateDoesNotExist
 from django.views.generic import ListView, TemplateView, View
+# from django.views.generic.edit import UpdateView
 
 from .models import *
 from .forms import *
 from CMSGuias.apps.home.models import *
-from CMSGuias.apps.tools import *
+from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles
 
 
 ## Class Bases Views Generic
@@ -44,7 +45,7 @@ class SalesHome(TemplateView):
         return super(SalesHome, self).dispatch(request, *args, **kwargs)
 
 # View list project
-class ProjectsList(TemplateView):
+class ProjectsList(JSONResponseMixin, TemplateView):
     template_name = "sales/projects.html"
 
     @method_decorator(login_required)
@@ -58,3 +59,41 @@ class ProjectsList(TemplateView):
         except TemplateDoesNotExist, e:
             messages.error(request, "Template Does Not Exist %s"%e)
             raise Http404("Template Does Not Exist %s"%e)
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            context = dict()
+            try:
+                if request.POST.get('type') == 'new':
+                    form = ProjectForm(request.POST)
+                    key = genkeys.GenerateIdPorject()
+                    print form, form.is_valid(), request.user.get_profile().empdni_id, key
+                    if form.is_valid():
+                        add = form.save(commit=False)
+                        add.proyecto_id = key
+                        add.empdni_id = request.user.get_profile().empdni_id
+                        add.status = 'PE'
+                        add.save()
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
+
+# Manager View Project
+class ProjectManager(View):
+    template_name = 'sales/managerpro.html'
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            context['project'] = Proyecto.objects.get(pk=kwargs['project'])
+            return render_to_response(self.template_name, context, context_instance = RequestContext(request))
+        except TemplateDoesNotExist, e:
+            print e
+            messages.error(request, 'Template not Exist %s',e)
+            raise Http404('Page Not Found')

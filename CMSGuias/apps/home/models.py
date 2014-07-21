@@ -12,6 +12,10 @@ class Pais(models.Model):
     pais_id = models.CharField(primary_key=True,max_length=3)
     paisnom = models.CharField(max_length=56)
     flag = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['paisnom']
+
     def __unicode__(self):
         return self.paisnom
 
@@ -20,6 +24,9 @@ class Departamento(models.Model):
     pais = models.ForeignKey(Pais, to_field='pais_id')
     depnom = models.CharField(max_length=56)
     flag = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['depnom']
 
     def __unicode__(self):
         return self.depnom
@@ -31,6 +38,9 @@ class Provincia(models.Model):
     pronom = models.CharField(max_length=56)
     flag = models.BooleanField(default=True)
 
+    class Meta:
+        ordering = ['pronom']
+
     def __unicode__(self):
         return self.pronom
 
@@ -41,6 +51,9 @@ class Distrito(models.Model):
     pais = models.ForeignKey(Pais, to_field='pais_id')
     distnom = models.CharField(max_length=56)
     flag = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['distnom']
 
     def __unicode__(self):
         return self.distnom
