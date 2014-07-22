@@ -109,7 +109,7 @@ def view_keep_customers(request):
                     data['status'] = True
                 except ObjectDoesNotExist, e:
                     data['status'] = False
-                return HttpResponse(simplejson.dumps(data), 
+                return HttpResponse(simplejson.dumps(data),
                                     mimetype="application/json")
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
@@ -134,9 +134,9 @@ def view_keep_add_customers(request):
             else:
                 form = forms.addCustomersForm(request.POST)
                 if form.is_valid():
-                        add = form.save(commit=False)
-                        add.flag = True
-                        add.save()
+                    add = form.save(commit=False)
+                    add.flag = True
+                    add.save()
             #form.save_m2m() # esto es para guardar las relaciones ManyToMany
             return HttpResponseRedirect("/almacen/keep/customers/")
         if request.method == 'GET':
@@ -722,7 +722,7 @@ def view_attend_order(request,oid):
             try:
                 import json
                 data= {}
-                # recover list of materials 
+                # recover list of materials
                 mat= json.loads( request.POST.get('materials') )
                 # recover list of nipples
                 nip= json.loads( request.POST.get('nipples') )
@@ -738,7 +738,7 @@ def view_attend_order(request,oid):
                             cs+= (float(nip[x]['quantityshop']) * float(nip[x]['meter']) )
                     ctn+= cs
                     obj= models.Detpedido.objects.get(pedido_id__exact=request.POST.get('oid'),materiales_id__exact=mat[c]['matid'])
-                    # aqui hacer otro if 
+                    # aqui hacer otro if
                     obj.cantshop=  (float(mat[c]['quantity']) - float(mat[c]['quantityshop'])) if (cs / 100 ) == float(mat[c]['quantity']) else (cs/100) if mat[c]['matid'][0:3] == "115" else (float(mat[c]['quantity']) - float(mat[c]['quantityshop']))
                     #print (cs / 100 ) if mat[c]['matid'][0:3] == "115" else (float(mat[c]['quantity']) - float(mat[c]['quantityshop']))
                     obj.cantguide= float(mat[c]['quantityshop'])

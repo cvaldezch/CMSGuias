@@ -33,7 +33,7 @@ class Subproyecto(models.Model):
 	comienzo = models.DateField(null=True,blank=True)
 	fin = models.DateField(null=True,blank=True)
 	obser = models.TextField(null=True,blank=True)
-	status = models.CharField(max_length=2,null=False,default='00')
+	status = models.CharField(max_length=2,null=False,default='AC')
 	flag = models.BooleanField(default=True,null=False)
 
 	class Meta:
@@ -45,14 +45,14 @@ class Subproyecto(models.Model):
 class Sectore(models.Model):
 	sector_id = models.CharField(primary_key=True,max_length=20,null=False,unique=True)
 	proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
-	subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id',null=True)
+	subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id',null=True, blank=True)
 	planoid = models.CharField(max_length=16,null=True,default='')
 	nomsec = models.CharField(max_length=200)
-	registrado = models.DateTimeField(auto_now=True,null=False)
+	registrado = models.DateTimeField(auto_now=True)
 	comienzo = models.DateField(null=True,blank=True)
 	fin = models.DateField(null=True,blank=True)
 	obser = models.TextField(null=True,blank=True)
-	status = models.CharField(max_length=2,null=False,default='00')
+	status = models.CharField(max_length=2,null=False,default='AC')
 	flag = models.BooleanField(default=True,null=False)
 
 	class Meta:

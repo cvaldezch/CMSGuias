@@ -1,0 +1,50 @@
+.all-sectors > article {
+    border: 1px solid #428bca;
+    border-radius: 5px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+    float: left;
+    width: 23%;
+    background: #FFF;
+    margin: 10px 1%;
+    padding: 1%;
+    text-align: center;
+}
+.all-sectors > article > a {
+    text-decoration: none;
+}
+.sectors {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+.sectors li a {
+    display: inline-table;
+    font-size: 12px;
+    padding: 1% 1%;
+    text-decoration: none;
+}
+@media all and (max-width: 900px) {
+    .all-sectors > article {
+        width: 48%;
+    }
+}
+@media screen and (max-height: 765px) {
+    .panel-manager{
+        height: 30em;
+        overflow: auto;
+    }
+}
+@media screen and (min-height: 960px) {
+    .panel-manager {
+        height: 50em;
+        overflow: auto;
+    }
+}
+@media screen and (max-height: 648px) {
+    .panel-manager {
+        display: inline-table;
+        height: 100%;
+        overflow: auto;
+    }
+}

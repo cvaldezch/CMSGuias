@@ -6,7 +6,15 @@
 <!--<script src="/media/js/almacen/pedido.js"></script>-->
 {% endblock %}
 {% block menu %}
-	{% include "menus/storage_menu.htm" %}
+	{% ifequal user.get_profile.empdni.charge.cargos "Almacen" %}
+		{% include "menus/storage_menu.htm" %}
+	{% endifequal %}
+	{% ifequal user.get_profile.empdni.charge.cargos "Ventas" %}
+		{% include "menus/sale.htm" %}
+	{% endifequal %}
+	{% ifequal user.get_profile.empdni.charge.cargos "Administrador" %}
+		{% include "menus/storage_menu.htm" %}
+	{% endifequal %}
 {% endblock menu %}
 {% block content %}
 <div class="container">

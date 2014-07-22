@@ -14,7 +14,7 @@ from django.utils import simplejson
 from django.utils.decorators import method_decorator
 from django.template import RequestContext, TemplateDoesNotExist
 from django.views.generic import ListView, TemplateView, View
-# from django.views.generic.edit import UpdateView
+from django.views.generic.edit import UpdateView, CreateView
 
 from .models import *
 from .forms import *
@@ -83,6 +83,109 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                 context['status'] = False
             return self.render_to_json_response(context)
 
+# add sectors
+class SectorsView(JSONResponseMixin, View):
+    template_name = 'sales/crud/sectors_form.html'
+
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                obj = Sectore.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None).order_by('subproyecto','planoid')
+                context['list'] =[{'sector_id': x.sector_id, 'nomsec': x.nomsec, 'planoid' : x.planoid} for x in obj]
+                context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
+        context['pro'] = request.GET.get('pro')
+        context['sub'] = request.GET.get('sub')
+        if request.GET.get('type') == 'update':
+            obj = Sectore.objects.get(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'))
+            context['form'] = SectoreForm(instance=obj)
+            context['type'] = 'update'
+        elif request.GET.get('type') == 'new':
+            context['form'] = SectoreForm
+            context['type'] = 'new'
+        return render_to_response(self.template_name, context, context_instance = RequestContext(request))
+
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if request.POST.get('type') == 'update':
+                obj = Sectore.objects.get(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('sub') if request.POST.get('subproyecto') != '' else None, sector_id=request.POST.get('sector_id'))
+                form = SectoreForm(request.POST, instance=obj)
+                print form, form.is_valid()
+                if form.is_valid():
+                    form.save()
+                    context['status'] = True
+                    context['msg'] = 'success'
+                else:
+                    context['status'] = False
+                    context['msg'] = 'error'
+            elif request.POST.get('type') == 'new':
+                form = SectoreForm(request.POST)
+                if form.is_valid():
+                    add = form.save(commit=False)
+                    id = "%s%s"%(add.proyecto_id, add.sector_id)
+                    print id, len(id)
+                    add.sector_id = id
+                    add.save()
+                    context['status'] = True
+                    context['msg'] = 'success'
+                else:
+                    context['status'] = False
+                    context['msg'] = 'error'
+        except ObjectDoesNotExist, e:
+            context['raise'] = e.__str__()
+            context['status'] = False
+        return render_to_response(self.template_name, context, context_instance = RequestContext(request))
+
+# Add Subproject
+class SubprojectsView(JSONResponseMixin, View):
+    template_name = 'sales/crud/subprojects_form.html'
+
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        context['pro'] = request.GET.get('pro')
+        if request.GET.get('type') == 'update':
+            obj = Subproyecto.objects.get(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub'))
+            context['form'] = SubprojectForm(instance=obj)
+            context['type'] = 'update'
+        elif request.GET.get('type') == 'new':
+            context['form'] = SubprojectForm
+            context['type'] = 'new'
+        return render_to_response(self.template_name, context, context_instance = RequestContext(request))
+
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if request.POST.get('type') == 'update':
+                obj = Subproyecto.objects.get(proyecto_id=request.POST.get('proyecto'),subproyecto_id=request.POST.get('subproyecto_id'))
+                form = SubprojectForm(request.POST, instance=obj)
+                print form, form.is_valid()
+                if form.is_valid():
+                    form.save()
+                    context['status'] = True
+                    context['msg'] = 'success'
+                else:
+                    context['status'] = False
+                    context['msg'] = 'error'
+            elif request.POST.get('type') == 'new':
+                form = SubprojectForm(request.POST)
+                print form, form.is_valid()
+                if form.is_valid():
+                    form.save()
+                    context['status'] = True
+                    context['msg'] = 'success'
+                else:
+                    context['status'] = False
+                    context['msg'] = 'error'
+        except ObjectDoesNotExist, e:
+            context['raise'] = e.__str__()
+            context['status'] = False
+        return render_to_response(self.template_name, context, context_instance = RequestContext(request))
+
 # Manager View Project
 class ProjectManager(View):
     template_name = 'sales/managerpro.html'
@@ -92,9 +195,10 @@ class ProjectManager(View):
         context = dict()
         try:
             context['project'] = Proyecto.objects.get(pk=kwargs['project'])
+            context['subpro'] = Subproyecto.objects.filter(proyecto_id=kwargs['project'])
+            context['sectors'] = Sectore.objects.filter(proyecto_id=kwargs['project']).order_by('subproyecto','planoid')
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
-            print e
             messages.error(request, 'Template not Exist %s',e)
             raise Http404('Page Not Found')
 
