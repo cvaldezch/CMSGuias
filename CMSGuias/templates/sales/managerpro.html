@@ -2,21 +2,46 @@
 {% block title %}
     Manager Project
 {% endblock title %}
+{% block style %}
+<style>
+    @media screen and (max-height: 765px) {
+        .panel-manager{
+            height: 30em;
+        }
+    }
+    @media screen and (min-height: 960px) {
+        .panel-manager {
+            height: 50em;
+        }
+    }
+    @media screen and (max-height: 648px) {
+      .panel-manager {
+            height: 100%;
+      }
+    }
+</style>
+{% endblock style %}
 {% block menu %}
     {% include "menus/sale.htm" %}
 {% endblock menu %}
 {% block content %}
 <div class="container">
     <div class="well">
-        <h3>Administrador de Proyetos</h3>
+        <h3>
+            Administrador de Proyetos
+            <br>
+            <button class="btn btn-default btn-xs">
+                <span class="glyphicon glyphicon-chevron-left"></span> Regresar
+            </button>
+        </h3>
         <div class="row">
             <div class="col-md-3">
-                <div class="panel panel-primary">
+                <div class="panel panel-primary panel-manager">
                     <div class="panel-body">
                         <h4>Sectores and Subsectores</h4>
                         <hr>
                         <div class="panel-group" id="accordion">
-                            <div class="panel panel-success">
+                            <div class="panel panel-primary">
                             <div class="panel-heading">
                               <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
@@ -30,7 +55,7 @@
                               </div>
                             </div>
                             </div>
-                            <div class="panel panel-success">
+                            <div class="panel panel-primary">
                             <div class="panel-heading">
                               <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
@@ -51,7 +76,7 @@
                               </div>
                             </div>
                             </div>
-                            <div class="panel panel-success">
+                            <div class="panel panel-primary">
                             <div class="panel-heading">
                               <h4 class="panel-title">
                                 <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
@@ -70,26 +95,22 @@
                 </div>
             </div>
             <div class="col-md-9">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <button class="btn btn-default btn-xs">
-                            Regresar
-                        </button>
-                        <br>
-                        <strong>Proyecto</strong>: {{ project.nompro }}
-                        <p>
-                            <button class="btn btn-primary text-black btn-xs">
-                                <span class="glyphicon glyphicon-th"></span>
-                                Nuevo Sector
-                            </button>
-                            <button class="btn btn-primary text-black btn-xs pull-right">
-                                <span class="glyphicon glyphicon-th-large"></span>
-                                Nuevo Subproyeto
-                            </button>
-                        </p>
-                    </div>
+                <div class="panel panel-primary panel-manager">
                     <div class="panel-body">
-
+                        <p>
+                            <strong>Proyecto</strong>: {{ project.nompro }}
+                        </p>
+                        <button class="btn btn-primary btn-xs">
+                            <span class="glyphicon glyphicon-th"></span>
+                            Nuevo Sector
+                        </button>
+                        <button class="btn btn-primary btn-xs pull-right">
+                            <span class="glyphicon glyphicon-th-large"></span>
+                            Nuevo Subproyeto
+                        </button>
+                        <div class="alert alert-inverse">
+                            
+                        </div>
                     </div>
                 </div>
             </div>

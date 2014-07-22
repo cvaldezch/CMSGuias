@@ -97,3 +97,4 @@ class ProjectManager(View):
             print e
             messages.error(request, 'Template not Exist %s',e)
             raise Http404('Page Not Found')
+
