@@ -197,8 +197,28 @@ class ProjectManager(View):
             context['project'] = Proyecto.objects.get(pk=kwargs['project'])
             context['subpro'] = Subproyecto.objects.filter(proyecto_id=kwargs['project'])
             context['sectors'] = Sectore.objects.filter(proyecto_id=kwargs['project']).order_by('subproyecto','planoid')
+            context['operation'] = Employee.objects.filter(charge__area__istartswith='opera').order_by('charge__area')
+            context['admin'] = Employee.objects.filter(charge__area__istartswith='admin').order_by('charge__area')
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)
             raise Http404('Page Not Found')
 
+# Manager View Sectors
+class SectorManage(View):
+    template_name = 'sales/managersec.html'
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            context['project'] = Proyecto.objects.get(pk=kwargs['pro'])
+            if kwargs['sub'] is not None:
+                print 'AQui sub', kwargs['sub']
+                # context['subproject'] = Subproyecto.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'])
+            context['sector'] = Sectore.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] is None else None, sector_id=kwargs['sec'])
+
+            return render_to_response(self.template_name, context, context_instance = RequestContext(request))
+        except TemplateDoesNotExist, e:
+            messages.error(request, 'Template not Exist %s',e)
+            raise Http404('Page Not Found')

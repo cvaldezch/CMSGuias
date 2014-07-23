@@ -19,6 +19,7 @@ project_urls = patterns('',
     url(r'^manager/(?P<project>\w+)/$', ProjectManager.as_view(), name='managerpro_view'),
     url(r'^sectors/', include(sectore_urls)),
     url(r'^subprojects/', include(subproject_urls)),
+    url(r'^manager/sector/(?P<pro>\w+)/(?P<sub>.*)/(?P<sec>\w+)/$', SectorManage.as_view(), name='managersec_view'),
 )
 
 urlpatterns = patterns('',

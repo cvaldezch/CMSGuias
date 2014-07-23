@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}
+    Manager Sec
+{% endblock title %}
+{% block menu %}
+    {% include "menus/sale.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+    <div class="well">
+        <header>
+            <h3>
+                Sector {{ sector.nomsec }} - {{ sector.planoid }}<br>
+                <small><strong>Sector ID:</strong> {{ sector.sector_id }} </small><br>
+                <a href="{% url 'managerpro_view' project.proyecto_id  %}" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Regresar</a>
+            </h3>
+            <p>
+               <strong>Proyecto:</strong> {{ project.nompro }}  <strong>Codigo:</strong> {{ project.proyecto_id }}
+            </p>
+            {% if subproject %}
+                <p>
+                   <strong>Subproyecto:</strong> {{ subproject.nomsub }}  <strong>Codigo:</strong> {{ subproject.subproyecto_id }}
+                </p>
+            {% endif %}
+        </header>
+        <section>
+            <div class="panel panel-primary">
+                <div class="panel-footer">
+                    <h4>Plano(s) del Sector</h4>
+                    {% if not planes %}
+                        <div class="alert alert-inverse alert-inverse-border text-center">
+                            <h4>CLICK AQUI <button style="background-color: #007a96;" class="btn text-white"><strong>BROWSE</strong></button>
+                            </h4>
+                        </div>
+                    {% endif %}
+                </div>
+                {% if planes %}
+                    <div class="panel-body">
+                        <div class="row">
+                            {% for x in planes %}
+                                <div class="col-lg-3 col-md-3">
+                                    <iframe src="" frameborder="0"></iframe>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+        <section>
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+              <li class="active"><a href="#materials" role="tab" data-toggle="tab">Materiales</a></li>
+              <li><a href="#tools" role="tab" data-toggle="tab">Herramientas</a></li>
+              <li><a href="#hand" role="tab" data-toggle="tab">Mano de Obra</a></li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+              <div class="tab-pane active" id="materials">
+                    <div class="panel panel-warning">
+                        <div class="btn-group btn-group-justified">
+                            <div class="btn-group">
+                                <button class="btn btn-warning btn-sm text-black">
+                                    <span class="glyphicon glyphicon-plus"></span> material
+                                </button>
+                                <button class="btn btn-warning btn-sm text-black">
+                                    <span class="glyphicon glyphicon-plus"></span> archivo
+                                </button>
+                                <button class="btn btn-warning btn-sm text-black">
+                                    <span class="glyphicon glyphicon-plus"></span> Lista
+                                </button>
+                                <button class="btn btn-warning btn-sm text-black">
+                                    <span class="glyphicon glyphicon-plus"></span> Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+              </div>
+              <div class="tab-pane" id="tools">
+                  <div class="alert alert-inverse alert-inverse-border alert-block text-center">
+                      <h3>Not available</h3>
+                  </div>
+              </div>
+              <div class="tab-pane" id="hand">
+                  <div class="alert alert-inverse alert-inverse-border alert-block text-center">
+                      <h3>Not available</h3>
+                  </div>
+              </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock content %}

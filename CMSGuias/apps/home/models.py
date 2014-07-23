@@ -112,6 +112,10 @@ class Employee(models.Model):
     def __unicode__(self):
         return '%s %s %s %s %s'%(self.empdni_id, self.firstname, self.lastname, self.phone, self.charge)
 
+    @property
+    def name_complete(self):
+        return "%s, %s"%(self.firstname, self.lastname)
+
 class userProfile(models.Model):
     def url(self,filename):
         ruta = "storage/Users/%s/%s"%(self.empdni,filename)

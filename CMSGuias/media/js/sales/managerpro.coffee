@@ -4,6 +4,18 @@ $(document).ready ->
     $(".new-subproject").on "click", openNewSubproyecto
     $(document).on "click", "#accordion > .panel-primary", setSubproject
     $(document).on "click", ".btn-edit-sub", openUpdateSubproject
+    $(".btn-responsible").on "click", ->
+        $(".mresponsible").modal("show");
+    $(".btn-files").on "click", ->
+        $(".mfiles").modal("show");
+    $(".btn-cuadro").on "click", (evetn) ->
+        changeView 23
+    $(".btn-list").on "click", (event) ->
+        changeView 100
+    $(".btn-admin").on "click", ->
+        $("[name=administrative]").click()
+    $(".btn-opera").on "click", ->
+        $("[name=operation]").click()
     return
 
 setSubproject = (event) ->
@@ -92,3 +104,9 @@ openWindow = (url) ->
             return
     , 1000
     return win;
+
+changeView = (percent) ->
+    $(".all-sectors > article").css
+        "width" : "#{percent}%"
+    equalheight ".all-sectors article"
+    return

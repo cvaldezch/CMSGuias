@@ -154,13 +154,13 @@ $(window).resize(function(){
                                 </button>
                             </div>
                             <div class="btn-group">
-                                <button class="btn btn-primary btn-xs">
+                                <button class="btn btn-primary btn-xs btn-responsible">
                                     <span class="glyphicon glyphicon-user"></span>
                                     <span class="visible-lg visible-sm">Responsable</span>
                                 </button>
                             </div>
                             <div class="btn-group">
-                                <button class="btn btn-primary btn-xs">
+                                <button class="btn btn-primary btn-xs btn-files">
                                     <span class="glyphicon glyphicon-compressed"></span>
                                     <span class="visible-lg visible-sm">Archivos</span>
                                 </button>
@@ -171,8 +171,11 @@ $(window).resize(function(){
                                     <span class="visible-lg visible-md">Vista</span>
                                 </button>
                                 <ul class="dropdown-menu" role="menu">
-                                  <li><a href="#"><span class="glyphicon glyphicon-th"></span> Cuadros</a></li>
-                                  <li><a href="#"><span class="glyphicon glyphicon-align-justify"></span> Lista</a></li>
+                                    <li>
+                                        <a class="btn-cuadro"><span class="glyphicon glyphicon-th"></span> Cuadros</a></li>
+                                    <li>
+                                        <a class="btn-list"><span class="glyphicon glyphicon-align-justify"></span> Lista</a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -187,7 +190,7 @@ $(window).resize(function(){
                                         <button class="btn btn-xs text-black btn-link pull-right" value="{{ x.sector_id }}">
                                             <span class="glyphicon glyphicon-trash"></span>
                                         </button>
-                                        <a href="" class="text-black">
+                                        <a href="{% url 'managersec_view' x.proyecto_id x.subproyecto_id x.sector_id %}" class="text-black">
                                             {{ x.sector_id }}
                                             {{ x.nomsec }}
                                             <small>{{ x.planoid }}</small>
@@ -199,7 +202,110 @@ $(window).resize(function(){
                     </div>
                 </div>
             </div>
+            <div class="col-md-12">
+            {% if admin %}
+                <button class="btn btn-primary btn-sm">
+                    <span class="glyphicon glyphicon-compressed"></span>
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                    <span class="glyphicon glyphicon-file"></span> Mostrar Archivos
+                </button>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="panel panel-primary">
+                            <div class="panel-footer">
+                                <strong>Archivos Admisitrativos</strong>
+                            </div>
+                            <div class="panel-body">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="panel panel-primary">
+                            <div class="panel-footer">
+                                <strong>Archivos Operaciones</strong>
+                            </div>
+                            <div class="panel-body">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            </div>
         </div>
     </div>
 </div>
+<!-- block modal -->
+<div class="modal fade mresponsible">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4 class="modal-title">Responsable de proyecto.</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">Operaciones</label>
+                    <select name="responsible" id="responsible" class="form-control input-sm">
+                        {% for x in operation %}
+                            <option value="{{ x.empdni_id }}">{{ x.name_complete }}</option>
+                        {% empty %}
+                            <option value="">-- Nothing --</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Administrador</label>
+                    <select name="admin" id="admin" class="form-control input-sm">
+                        {% for x in admin %}
+                            <option value="{{ x.empdni_id }}">{{ x.name_complete }}</option>
+                        {% empty %}
+                            <option value="">-- Nothing --</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Password Administrador</label>
+                    <input type="password" class="form-control input-sm" name="passwd">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                <button class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade mfiles" data-backdrop="static">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4>Subir Archivos</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">Administrativos</label>
+                    <div class="alert alert-inverse alert-inverse-border alert-block text-center">
+                        <button class="btn btn-xs btn-link btn-admin">Click Aquí</button>
+                        <input type="file" class="hide" name="administrative">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Operaciones</label>
+                    <div class="alert alert-inverse alert-inverse-border alert-block text-center">
+                        <button class="btn btn-xs btn-link btn-opera">Click Aquí</button>
+                        <input type="file" class="hide" name="operation">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                <button class="btn btn-primary"><span class="glyphicon glyphicon-upload"></span> Subir</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end block -->
 {% endblock content %}
