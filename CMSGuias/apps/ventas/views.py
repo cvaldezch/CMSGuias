@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import datetime
 
 from django.db.models import Q, Count
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -213,11 +214,13 @@ class SectorManage(View):
         context = dict()
         try:
             context['project'] = Proyecto.objects.get(pk=kwargs['pro'])
-            if kwargs['sub'] is not None:
-                print 'AQui sub', kwargs['sub']
-                # context['subproject'] = Subproyecto.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'])
+            if kwargs['sub'] != unicode(None):
+                print 'AQui sub', kwargs['sub'], type(kwargs['sub'])
+                context['subproject'] = Subproyecto.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'])
             context['sector'] = Sectore.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] is None else None, sector_id=kwargs['sec'])
-
+            context['system'] = Configuracion.objects.get(periodo=globalVariable.get_year)
+            context['currency'] = Moneda.objects.filter(flag=True).order_by('moneda')
+            context['exchange'] = TipoCambio.objects.filter(fecha=globalVariable.date_now())
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)

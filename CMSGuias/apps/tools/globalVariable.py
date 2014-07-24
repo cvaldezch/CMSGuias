@@ -22,7 +22,7 @@ status = {
 }
 
 # types nipples
-tipo_nipples= { "A": "Roscado", "B": "Ranurado", "C": "Roscado - Ranurado" }
+tipo_nipples = { "A": "Roscado", "B": "Ranurado", "C": "Roscado - Ranurado" }
 
 # date now format str
 def date_now(type='date',format="%Y-%m-%d"):
@@ -32,7 +32,7 @@ def date_now(type='date',format="%Y-%m-%d"):
     elif type == 'date':
         return date.date()
     elif type == 'time':
-        return date.date()
+        return date.time()
     else:
         return date
 
@@ -61,3 +61,6 @@ def format_str_date(_str=None, format="%Y-%m-%d"):
         messages.add_message(e)
         raise Http404('Method Error')
     return str_date
+
+# get year current
+get_year = datetime.datetime.today().date().strftime("%Y")
