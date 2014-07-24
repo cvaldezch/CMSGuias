@@ -206,7 +206,7 @@ class ProjectManager(View):
             raise Http404('Page Not Found')
 
 # Manager View Sectors
-class SectorManage(View):
+class SectorManage(JSONResponseMixin, View):
     template_name = 'sales/managersec.html'
 
     @method_decorator(login_required)
@@ -215,13 +215,38 @@ class SectorManage(View):
         try:
             context['project'] = Proyecto.objects.get(pk=kwargs['pro'])
             if kwargs['sub'] != unicode(None):
-                print 'AQui sub', kwargs['sub'], type(kwargs['sub'])
                 context['subproject'] = Subproyecto.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'])
-            context['sector'] = Sectore.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] is None else None, sector_id=kwargs['sec'])
+            context['sector'] = Sectore.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])
+            context['planes'] = SectorFiles.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])
             context['system'] = Configuracion.objects.get(periodo=globalVariable.get_year)
             context['currency'] = Moneda.objects.filter(flag=True).order_by('moneda')
             context['exchange'] = TipoCambio.objects.filter(fecha=globalVariable.date_now())
+
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)
             raise Http404('Page Not Found')
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            context = dict()
+            try:
+                if 'type' in request.POST:
+                    if request.POST.get('type') == 'plane':
+                        form = SectorFilesForm(request.POST, request.FILES)
+                        if form.is_valid():
+                            form.save()
+                        context['status'] = True
+                    if request.POST.get('type') == 'delplane':
+                        obj = SectorFiles.objects.get(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') else None, sector_id=request.POST.get('sec'), files=request.POST.get('files'))
+                        obj.delete()
+                        uploadFiles.removeTmp('%s/%s'%(globalVariable.relative_path, request.POST.get('files')))
+                        context['status'] = True
+                else:
+                    context['status'] = False
+            except ObjectDoesNotExist, e:
+                print e
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)

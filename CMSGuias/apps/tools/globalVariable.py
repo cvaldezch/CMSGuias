@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+from django.conf import settings
 
 from django.contrib import messages
 from django.http import Http404
@@ -64,3 +65,6 @@ def format_str_date(_str=None, format="%Y-%m-%d"):
 
 # get year current
 get_year = datetime.datetime.today().date().strftime("%Y")
+
+# get Relative path
+relative_path = settings.MEDIA_ROOT

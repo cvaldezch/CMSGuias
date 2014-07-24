@@ -3,7 +3,7 @@
 #
 from django import forms
 
-from .models import Proyecto, Sectore, Subproyecto
+from .models import Proyecto, Sectore, Subproyecto, SectorFiles
 
 class ProjectForm(forms.ModelForm):
     class Meta:
@@ -36,3 +36,8 @@ class SubprojectForm(forms.ModelForm):
             'fin': forms.TextInput(attrs ={'class': 'form-control in-date','maxlength':'10','placeholder':'aaaa-mm-dd'}),
             'obser': forms.Textarea(attrs ={'class': 'form-control', 'maxlength':'200','rows':'3'}),
         }
+
+class SectorFilesForm(forms.ModelForm):
+    class Meta:
+        model = SectorFiles
+        exclude = {'flag',}
