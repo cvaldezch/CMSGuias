@@ -213,6 +213,17 @@ class SectorManage(JSONResponseMixin, View):
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
+            if request.is_ajax():
+                if 'type' in request.GET:
+                    if request.GET.get('type') == 'list':
+                        try:
+                            obj = Metradoventa.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec')).order_by('materiales__matnom')
+                            context['list'] = [{'id':x.id,'materials_id': x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'quantity':x.cantidad, 'price':x.precio} for x in obj]
+                            context['status'] = True
+                        except ObjectDoesNotExist, e:
+                            context['raise'] = e.__str__()
+                            context['status'] = False
+                return self.render_to_json_response(context)
             context['project'] = Proyecto.objects.get(pk=kwargs['pro'])
             if kwargs['sub'] != unicode(None):
                 context['subproject'] = Subproyecto.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'])
@@ -221,7 +232,7 @@ class SectorManage(JSONResponseMixin, View):
             context['system'] = Configuracion.objects.get(periodo=globalVariable.get_year)
             context['currency'] = Moneda.objects.filter(flag=True).order_by('moneda')
             context['exchange'] = TipoCambio.objects.filter(fecha=globalVariable.date_now())
-
+            context['materials'] = Metradoventa.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom')
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)
@@ -243,10 +254,29 @@ class SectorManage(JSONResponseMixin, View):
                         obj.delete()
                         uploadFiles.removeTmp('%s/%s'%(globalVariable.relative_path, request.POST.get('files')))
                         context['status'] = True
+                    if request.POST.get('type') == 'add':
+                        if 'edit' in request.POST:
+                            obj = Metradoventa.objects.get(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') else None, sector_id=request.POST.get('sector'), materiales_id=request.POST.get('materiales'))
+                            form = MetradoventaForm(request.POST, instance=obj)
+                        else:
+                            form = MetradoventaForm(request.POST)
+                        if form.is_valid():
+                            if 'edit' in request.POST:
+                                form.save()
+                            else:
+                                obj = Metradoventa.objects.filter(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') else None, sector_id=request.POST.get('sector'), materiales_id=request.POST.get('materiales'))
+                                if obj:
+                                    obj.cantidad = obj[0].cantidad + request.POST.get('cantidad')
+                                    obj.precio = request.POST.get('precio')
+                                    obj.save()
+                                else:
+                                    form.save()
+                            context['status'] = True
+                        else:
+                            context['status'] = False
                 else:
                     context['status'] = False
             except ObjectDoesNotExist, e:
-                print e
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)

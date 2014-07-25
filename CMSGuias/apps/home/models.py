@@ -255,7 +255,7 @@ class TipoCambio(models.Model):
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return '%s %s'%(self.pagos_id,self.documento)
+        return '%s %s - %f %f'%(self.moneda,self.fecha, self.compra, self.venta)
 
 class Proveedor(models.Model):
     proveedor_id = models.CharField(primary_key=True, max_length=11)

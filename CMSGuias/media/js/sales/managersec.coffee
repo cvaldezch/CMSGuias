@@ -12,8 +12,19 @@ $(document).ready ->
     $(".btn-show-planes").on "click", panelPlanes
     $("[name=show-full]").on "click", viewFull
     $("[name=plane-del]").on "click", delPlane
+    $(".btn-add").on "click", addMaterial
     $("[name=show-plane]").on "click", (event) ->
         $("input[name=plane]").click()
+    $(document).on "click", ".btn-del-mat", delMaterials
+    $(".btn-save-edit").on "click", editMaterials
+    $(document).on "click", ".btn-show-edit", ->
+        $(".btn-save-edit").val @value
+        $materials = $(".#{@value} > td")
+        $(".text-edit").text "#{$materials.eq(2).text()} #{$materials.eq(3).text()}"
+        $("input[name=edit-materials]").val $materials.eq(1).text()
+        $("input[name=edit-quantity]").val $materials.eq(5).text()
+        $("input[name=edit-price]").val $materials.eq(6).text()
+        $(".medit").modal "toggle"
     return
 
 # block get Materiales
@@ -122,4 +133,132 @@ delPlane = (event) ->
                         location.reload()
                     else
                         $().toastmessage "showWarningToast", "Error, al eliminar el plano."
+    return
+
+addMaterial = (event) ->
+    data = new Object()
+    data.proyecto = $("input[name=pro]").val()
+    data.subproyecto = $("input[name=sub]").val()
+    data.sector = $("input[name=sec]").val()
+    data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+    data.type = "add"
+    data.materiales = $(".id-mat").text()
+    data.cantidad = $("input[name=cantidad]").val()
+    data.precio = $("input[name=precio]").val()
+    if data.materiales != "" and data.cantidad != "" and data.precio != ""
+        # if $(".currency-name").text() is "NUEVO SOLES"
+        currency = $("select[name=moneda]").val()
+        console.log currency
+        if $("[name=currency]").val() isnt currency
+            purchase = $("[name=#{$("[name=currency]").val()}]").val()
+            data['precio'] = data['precio'] * parseFloat(purchase)
+
+        $.post "", data, (response) ->
+            console.info response
+            if response.status
+                listMaterials()
+            else
+                $().toastmessage "showErrorToast", "No found Transaction #{response.raise }"
+        , "json"
+        return
+    else
+        $().toastmessage "showWarningToast", "Existe campos vacio."
+    return
+
+listMaterials = ->
+    data = new Object()
+    data.pro = $("input[name=pro]").val()
+    data.sub = $("input[name=sub]").val()
+    data.sec = $("input[name=sec]").val()
+    data.type = "list"
+    $.getJSON "", data, (response) ->
+        console.info response
+        if response.status
+            template = "<tr class=\"{{ materials_id }}-{{ id }}\">
+                            <td>{{ item }}</td>
+                            <td>{{ materials_id }}</td>
+                            <td>{{ name }}</td>
+                            <td>{{ measure }}</td>
+                            <td>{{ unit }}</td>
+                            <td>{{ quantity }}</td>
+                            <td>{{ price }}</td>
+                            <td>
+                                <button class=\"btn btn-xs btn-link text-green btn-show-edit\" value=\"{{ materials_id }}-{{ id }}\">
+                                    <span class=\"glyphicon glyphicon-pencil\"></span>
+                                </button>
+                            </td>
+                            <td>
+                                <button class=\"btn btn-xs btn-link text-red btn-del-mat\" value=\"{{ materials_id }}-{{ id }}\">
+                                    <span class=\"glyphicon glyphicon-trash\"></span>
+                                </button>
+                            </td>
+                        </tr>"
+            $tb = $(".table-details > tbody")
+            $tb.empty()
+            for x of response.list
+                response.list[x].item = parseInt(x) + 1
+                $tb.append Mustache.render template, response.list[x]
+    return
+
+delMaterials = (event)->
+    console.log @value
+    $materials = $(".#{@value} > td")
+    $().toastmessage "showToast",
+        "text": "Desea eliminar #{$materials.eq(2).text()} #{$materials.eq(3).text()}?"
+        "sticky" : true
+        "type" : "confirm"
+        "buttons" : [{value:'Si'}, {value:'No'}]
+        "success" : (result) ->
+            if result is "Si"
+                data = new Object()
+                data.pro = $("input[name=pro]").val()
+                data.sub = $("input[name=sub]").val()
+                data.sec = $("input[name=sec]").val()
+                data.materials = $materials.eq(1).text()
+                data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+                data.type = "del"
+                $.post "", data, (response) ->
+                    if response.status
+                        $(".#{@value}").remove()
+                        $(".table-details > tbody > tr").each (index, element) ->
+                            element.find "td"
+                            .eq 0
+                            .text index + 1
+                        return
+                    else
+                        $().toastmessage "showWarningToast", "No se elimino el material."
+                return
+    return
+
+editMaterials = (event) ->
+    btn = @
+    data = new Object()
+    data.proyecto = $("input[name=pro]").val()
+    data.subproyecto = $("input[name=sub]").val()
+    data.sector = $("input[name=sec]").val()
+    data.materiales = $("input[name=edit-materials]").val()
+    data.cantidad = $("input[name=edit-quantity]").val()
+    data.precio = $("input[name=edit-price]").val()
+    data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+    data.type = "add"
+    data.edit = true
+    if data.cantidad != "" and data.precio != ""
+        currency = $("select[name=moneda-e]").val()
+        console.log currency
+        console.info $("[name=currency]").val()
+        if $("[name=currency]").val() != currency
+            console.warn $("[name=#{$("[name=currency]").val()}]").val()
+            purchase = $("[name=#{$("[name=currency]").val()}]").val()
+            data.precio = (data.precio * purchase)
+
+        $.post "", data, (response) ->
+            if response.status
+                $materials = $(".#{btn.value} > td")
+                $materials.eq(5).text data.cantidad
+                $materials.eq(6).text data.precio
+                $(".medit").modal "toggle"
+            else
+                $().toastmessage "showWarningToast", "No se edito el material."
+    else
+        $().toastmessage "showWarningToast", "Existen campos vacios o menores a uno."
     return

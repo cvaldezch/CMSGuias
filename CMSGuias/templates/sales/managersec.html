@@ -161,7 +161,7 @@
                             </div>
                             <div class="col-md-12">
                                 <small>
-                                    El precio del sistema esta expresado en <q>{{ system.moneda.moneda }}</q>
+                                    El precio del sistema esta expresado en <q class="currency-name">{{ system.moneda.moneda }}</q>
                                 </small>
                             </div>
                           </div>
@@ -177,7 +177,7 @@
                     </div>
                     </div>
                     <div class="table-responsive">
-                      <table class="table table-hover table-condensed">
+                      <table class="table table-hover table-condensed table-details">
                         <thead>
                           <tr class="brand-primary text-white">
                             <th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th><th>Precio</th><th>Editar</th><th>Eliminar</th>
@@ -185,7 +185,25 @@
                         </thead>
                         <tbody>
                           {% for x in materials %}
-
+                            <tr class="{{ x.materiales_id }}-{{ x.id }}">
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ x.materiales_id }}</td>
+                                <td>{{ x.materiales.matnom }}</td>
+                                <td>{{ x.materiales.matmed }}</td>
+                                <td>{{ x.materiales.unidad_id }}</td>
+                                <td>{{ x.cantidad|safe }}</td>
+                                <td>{{ x.precio|safe }}</td>
+                                <td>
+                                    <button class="btn btn-xs btn-link text-green btn-show-edit" value="{{ x.materiales_id }}-{{ x.id }}">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-xs btn-link text-red btn-del-mat" value="{{ x.materiales_id }}-{{ x.id }}">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                </td>
+                            </tr>
                           {% endfor %}
                         </tbody>
                       </table>
@@ -205,6 +223,48 @@
         </section>
     </div>
 </div>
+<!-- modals -->
+<div class="modal fade medit" data-backdrop="static">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4>
+                    Editar
+                    <small class="text-edit"></small>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">Cantidad</label>
+                    <input type="number" step="0.01" min="1" class="form-control input-sm" name="edit-quantity">
+                    <input type="hidden" name="edit-materials">
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Precio</label>
+                    <input type="number" min="1" step="0.1" class="form-control input-sm" name="edit-price">
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Moneda</label>
+                    <select name="moneda-e" id="moneda-e" class="form-control input-sm">
+                        {% for x in currency %}
+                            {% ifequal x.moneda_id system.moneda_id %}
+                              <option value="{{ x.moneda_id }}" selected readonly>{{ x.moneda }}</option>
+                            {% else %}
+                              <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
+                            {% endifequal %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default pull-left"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                <button class="btn btn-success btn-save-edit text-black"><span class="glyphicon glyphicon-edit"></span> Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end block -->
 <!-- utils -->
 <div class="full-screen view-full">
     <div class="well well-sm">
@@ -223,6 +283,6 @@
 <input type="hidden" name="currency" value="{{ system.moneda_id }}">
 <!-- exchange rate -->
 {% for x in exchange %}
-  <input type="hidden" name="{{ x.moneda_id }}" value="{{ x.compra }}">
+  <input type="hidden" name="{{ x.moneda_id }}" value="{{ x.compra|safe }}">
 {% endfor %}
 {% endblock content %}
