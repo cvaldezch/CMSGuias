@@ -41,6 +41,20 @@ district_urls = patterns('',
     url(r'^edit/(?P<distrito_id>\w+)/$', DistrictUpdate.as_view(), name='district_edit'),
     url(r'^delete/(?P<distrito_id>\w+)/$', DistrictDelete.as_view(), name='district_del'),
 )
+# Brand
+brand_urls = patterns('',
+    url(r'^list/$', BrandList.as_view(), name='brand_list'),
+    url(r'^new/$', BrandCreate.as_view(), name='brand_new'),
+    url(r'^edit/(?P<brand_id>\w+)/$', BrandUpdate.as_view(), name='brand_edit'),
+    url(r'^delete/(?P<brand_id>\w+)/$', BrandDelete.as_view(), name='brand_del'),
+)
+# Model
+model_urls = patterns('',
+    url(r'^list/$', ModelList.as_view(), name='model_list'),
+    url(r'^new/$', ModelCreate.as_view(), name='model_new'),
+    url(r'^edit/(?P<model_id>\w+)/$', ModelUpdate.as_view(), name='model_edit'),
+    url(r'^delete/(?P<model_id>\w+)/$', ModelDelete.as_view(), name='model_del'),
+)
 # urls main
 urlpatterns = patterns('',
 	url(r'^SignUp/$', LoginView.as_view(), name='vista_login'),
@@ -51,4 +65,6 @@ urlpatterns = patterns('',
     url(r'^departament/', include(departament_urls)),
     url(r'^province/', include(province_urls)),
     url(r'^district/', include(district_urls)),
+    url(r'^brand/', include(brand_urls)),
+    url(r'^model/', include(model_urls)),
 )

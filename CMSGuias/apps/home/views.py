@@ -16,6 +16,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from CMSGuias.apps.home.forms import signupForm, logininForm
 from CMSGuias.apps.tools.redirectHome import RedirectModule
+from CMSGuias.apps.tools import genkeys
 from .models import *
 from .forms import *
 
@@ -248,6 +249,7 @@ class ProvinceDelete(DeleteView):
 # CRUD District
 class DistrictList(ListView):
     template_name = "home/crud/district.html"
+
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
@@ -288,3 +290,105 @@ class DistrictDelete(DeleteView):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(DistrictDelete, self).dispatch(request, *args, **kwargs)
+
+# CRUD Brand
+class BrandList(ListView):
+    template_name = 'home/crud/brand.html'
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.GET.get('menu'):
+            context['menu'] = request.GET.get('get')
+        context['brand'] = Brand.objects.filter(flag=True)
+        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+
+class BrandCreate(CreateView):
+    form_class = BrandForm
+    model = Brand
+    success_url = reverse_lazy('brand_list')
+    template_name = 'home/crud/brand_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(BrandCreate, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.brand_id = genkeys.GenerateIdBrand()
+        self.save()
+        return super(BrandCreate, self).form_valid(form)
+
+class BrandUpdate(UpdateView):
+    form_class = BrandForm
+    model = Brand
+    slug_field = 'brand_id'
+    slug_url_kwarg = 'brand_id'
+    success_url = reverse_lazy('brand_list')
+    template_name = 'home/crud/brand_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(BrandUpdate, self).dispatch(request, *args, **kwargs)
+
+class BrandDelete(DeleteView):
+    model = Brand
+    slug_field = 'brand_id'
+    slug_url_kwarg = 'brand_id'
+    success_url = reverse_lazy('brand_list')
+    template_name = 'home/crud/brand_del.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(BrandDelete, self).dispatch(request, *args, **kwargs)
+
+# CRUD Model
+class ModelList(ListView):
+    template_name = 'home/crud/model.html'
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.GET.get('menu'):
+            context['menu'] = request.GET.get('get')
+        context['model'] = Model.objects.filter(flag=True)
+        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+
+class ModelCreate(CreateView):
+    form_class = ModelForm
+    model = Model
+    success_url = reverse_lazy('model_list')
+    template_name = 'home/crud/model_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(ModelCreate, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.model_id = genkeys.GenerateIdModel()
+        self.save()
+        return super(BrandCreate, self).form_valid(form)
+
+class ModelUpdate(UpdateView):
+    form_class = ModelForm
+    model = Model
+    slug_field = 'model_id'
+    slug_url_kwarg = 'model_id'
+    success_url = reverse_lazy('model_list')
+    template_name = 'home/crud/model_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(ModelUpdate, self).dispatch(request, *args, **kwargs)
+
+class ModelDelete(DeleteView):
+    model = Model
+    slug_field = 'model_id'
+    slug_url_kwarg = 'model_id'
+    success_url = reverse_lazy('model_list')
+    template_name = 'home/crud/model_del.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(ModelDelete, self).dispatch(request, *args, **kwargs)

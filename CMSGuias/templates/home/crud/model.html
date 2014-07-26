@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block menu %}
+    {% include "menus/sale.htm" %}
+{% endblock menu %}
+{% block content %}
+    <div class="container">
+        <div class="well">
+            <h1>Model</h1>
+            <div class="panel panel-primary">
+                <div class="btn-group">
+                    <a href="{% url 'model_new' %}" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Nuevo Modelo
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered table-condensed">
+                        <thead>
+                            <tr class="brand-primary">
+                                <th>Item</th><th>Marca</th><th>Codigo</th><th>Modelo</th><th></th><th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for x in model %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ x.brand.brand }}</td>
+                                <td>{{ x.model_id }}</td>
+                                <td>{{ x.model }}</td>
+                                <td>
+                                    <a href="{% url 'model_edit' x.model_id %}" class="btn btn-xs btn-link text-green">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'model_del' x.model_id %}" class="btn btn-xs btn-link text-red">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

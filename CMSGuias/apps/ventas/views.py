@@ -218,7 +218,7 @@ class SectorManage(JSONResponseMixin, View):
                     if request.GET.get('type') == 'list':
                         try:
                             obj = Metradoventa.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec')).order_by('materiales__matnom')
-                            context['list'] = [{'id':x.id,'materials_id': x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'quantity':x.cantidad, 'price':x.precio} for x in obj]
+                            context['list'] = [{'id':x.id,'materials_id': x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'brand' : x.brand.brand, 'model' : x.model.model , 'quantity':x.cantidad, 'price':x.precio} for x in obj]
                             context['status'] = True
                         except ObjectDoesNotExist, e:
                             context['raise'] = e.__str__()
@@ -274,6 +274,10 @@ class SectorManage(JSONResponseMixin, View):
                             context['status'] = True
                         else:
                             context['status'] = False
+                    if request.POST.get('type') == 'killdata':
+                        obj = Metradoventa.objects.filter(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') else None, sector_id=request.POST.get('sec'))
+                        obj.delete()
+                        context['status'] = True
                 else:
                     context['status'] = False
             except ObjectDoesNotExist, e:

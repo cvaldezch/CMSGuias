@@ -66,6 +66,7 @@ var getSummaryMaterials = function (event) {
             for (var x in response.list) {
                 $tb.append(Mustache.render(template, response.list[x]));
             };
+            searchBrandOption();
         });
     };
 }
@@ -127,9 +128,82 @@ var searchMaterialCode = function (code) {
                 var $tb = $(".tb-details > tbody");
                 $tb.empty();
                 $tb.append(Mustache.render(template, response.list));
+                searchBrandOption();
             }else{
                 $().toastmessage("showWarningToast","The material not found.");
             };
          });
     };
 }
+// Search Brand and Model for the material
+var searchBrandOption = function  () {
+    $.getJSON("/json/brand/list/option/", function (response) {
+        if (response.status) {
+            template = "<option value=\"{{ brand_id }}\">{{ brand }}</option>";
+            $brand = $("select[name=brand]");
+            $brand.empty();
+            for(var x in response.brand) {
+                $brand.append(Mustache.render(template, response.brand[x]));
+            }
+        }else{
+            $().toastmessage("showWarningToast", "No se a podido obtener la lista de marcas.")
+        };
+    });
+}
+var searchModelOption = function  () {
+    brand = $("select[name=brand]").val();
+    if (brand != "") {
+        data = {
+            "brand" : brand
+        }
+        $.getJSON("/json/model/list/option/", data, function (response) {
+            if (response.status) {
+                template = "<option value=\"{{ model_id }}\">{{ model }}</option>";
+                $model = $("select[name=model]");
+                $model.empty();
+                for(var x in response.model) {
+                    $model.append(Mustache.render(template, response.model[x]));
+                }
+            }else{
+                $().toastmessage("showWarningToast", "No se a podido obtener la lista de marcas.")
+            };
+        });
+    };
+}
+keyDescription = function(event) {
+  var key;
+  key = window.Event ? event.keyCode : event.which;
+  if (key !== 13 && key !== 40 && key !== 38 && key !== 39 && key !== 37) {
+    getDescription(this.value.toLowerCase());
+  }
+  if (key === 40 || key === 38 || key === 39 || key === 37) {
+    moveTopBottom(key);
+  }
+};
+
+keyCode = function(event) {
+  var key;
+  key = window.Event ? event.keyCode : event.which;
+  if (key === 13) {
+    return searchMaterialCode(this.value);
+  }
+};
+
+searchMaterial = function(event) {
+  var code, desc;
+  desc = $("input[name=description]").val();
+  code = $("input[name=code]").val();
+  if (code.length === 15) {
+    return searchMaterialCode(code);
+  } else {
+    return getDescription($.trim(desc).toLowerCase());
+  }
+};
+/// Add Event Listener
+$(document).on("click", "select[name=brand]", function (event) {
+    searchModelOption();
+});
+$(document).on("keyup", "input[name=description]", keyDescription);
+$(document).on("keypress", "input[name=description]", keyUpDescription);
+$(document).on("click", "select[name=meter]", getSummaryMaterials);
+$(document).on("keypress", "input[name=code]", keyCode);

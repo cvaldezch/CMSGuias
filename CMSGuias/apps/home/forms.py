@@ -82,3 +82,22 @@ class DistrictForm(forms.ModelForm):
             'distrito_id' : forms.TextInput(attrs = {'class' : 'form-control'}),
             'distnom' : forms.TextInput(attrs = {'class' : 'form-control'}),
         }
+
+# Brand
+class BrandForm(forms.ModelForm):
+    class Meta:
+        model = Brand
+        exclude = {'brand_id','flag',}
+        widgets = {
+            'brand' : forms.TextInput(attrs = {'class': 'form-control'}),
+        }
+
+# Model
+class ModelForm(forms.ModelForm):
+    class Meta:
+        model = Model
+        exclude = {'model_id','flag'}
+        widgets = {
+            'brand' : forms.Select(attrs = {'class':'form-control'}),
+            'model' : forms.TextInput(attrs = {'class':'form-control'}),
+        }

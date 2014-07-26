@@ -21,6 +21,19 @@ from CMSGuias.apps.home.models import *
 from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
 
 
+class JSONResponseMixin(object):
+    def render_to_json_response(self, context, **response_kwargs):
+        return HttpResponse(
+            self.convert_context_to_json(context),
+            content_type='application/json',
+            mimetype='application/json',
+            **response_kwargs
+        )
+
+    def convert_context_to_json(self, context):
+        return simplejson.dumps(context, encoding='utf-8')
+
+
 def get_description_materials(request):
     try:
         if request.method == 'GET':
@@ -54,6 +67,28 @@ def get_resumen_details_materiales(request):
             return HttpResponse(simplejson.dumps(data), mimetype='application/json')
     except ObjectDoesNotExist:
         raise e
+
+class SearchBrand(JSONResponseMixin, DetailView):
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            context['brand'] = [{'brand_id': x.brand_id, 'brand': x.brand} for x in Brand.objects.filter(flag=True).order_by('brand')]
+            context['status'] = True
+        except ObjectDoesNotExist, e:
+            context['raise'] = e.__str__()
+            context['status'] = False
+        return self.render_to_json_response(context)
+
+class SearchModel(JSONResponseMixin, DetailView):
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            context['model'] = [{'model_id': x.model_id, 'model': x.model} for x in Model.objects.filter(brand_id=request.GET.get('brand'),flag=True).order_by('model')]
+            context['status'] = True
+        except ObjectDoesNotExist, e:
+            context['raise'] = e.__str__()
+            context['status'] = False
+        return self.render_to_json_response(context)
 
 class GetDetailsMaterialesByCode(DetailView):
     def get(self, request, *args, **kwargs):
@@ -394,17 +429,6 @@ def get_recover_list_conductor(request,truc):
 
 # Class Views Generics
 #
-class JSONResponseMixin(object):
-    def render_to_json_response(self, context, **response_kwargs):
-        return HttpResponse(
-            self.convert_context_to_json(context),
-            content_type='application/json',
-            mimetype='application/json',
-            **response_kwargs
-        )
-
-    def convert_context_to_json(self, context):
-        return simplejson.dumps(context, encoding='utf-8')
 #
 class get_OrdersDetails(ListView):
     def get(self, request, *args, **kwargs):

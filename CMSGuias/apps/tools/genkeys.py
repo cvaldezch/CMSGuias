@@ -9,6 +9,7 @@ from django.db.models import Max
 from CMSGuias.apps.almacen.models import Pedido, GuiaRemision, Suministro
 from CMSGuias.apps.logistica.models import Cotizacion, Compra
 from CMSGuias.apps.ventas.models import Proyecto
+from CMSGuias.apps.home.models import Brand, Model
 
 
 ### format date str
@@ -152,6 +153,38 @@ def GenerateIdPorject():
         else:
             counter = 1
         id = '%s%s%s'%('PR',yn.__str__(), '{:0>3d}'.format(counter))
+    except ObjectDoesNotExist, e:
+        raise e
+    return id
+
+# Generate Id for Brand
+def GenerateIdBrand():
+    id = None
+    try:
+        code = Brand.objects.aggregate(max=Max('brand_id'))
+        id = code['max']
+        if id is not None:
+            counter = int(id[2:5])
+            counter += 1
+        else:
+            counter = 1
+        id = '%s%s'%('BR', '{:0>3d}'.format(counter))
+    except ObjectDoesNotExist, e:
+        raise e
+    return id
+
+# Generate Id for Model
+def GenerateIdModel():
+    id = None
+    try:
+        code = Model.objects.aggregate(max=Max('brand_id'))
+        id = code['max']
+        if id is not None:
+            counter = int(id[2:5])
+            counter += 1
+        else:
+            counter = 1
+        id = '%s%s'%('MO', '{:0>3d}'.format(counter))
     except ObjectDoesNotExist, e:
         raise e
     return id

@@ -1,11 +1,5 @@
 $(document).ready ->
-    # block search materials
     $(".panel-add,input[name=read],.step-second").hide()
-    $("input[name=description]").on "keyup", keyDescription
-    $("input[name=description]").on "keypress", keyUpDescription
-    $("select[name=meter]").on "click", getSummaryMaterials
-    $("input[name=code]").on "keypress", keyCode
-    # endblock
     $(".panel-add-mat, .view-full").hide()
     $(".btn-show-mat").on "click", openAddMaterial
     $("input[name=plane]").on "change", uploadPlane
@@ -13,6 +7,9 @@ $(document).ready ->
     $("[name=show-full]").on "click", viewFull
     $("[name=plane-del]").on "click", delPlane
     $(".btn-add").on "click", addMaterial
+    $(".btn-show-del").on "click", dellAllMaterial
+    $(".btn-new-brand").on "click", openBrand
+    $(".btn-new-model").on "click", openModel
     $("[name=show-plane]").on "click", (event) ->
         $("input[name=plane]").click()
     $(document).on "click", ".btn-del-mat", delMaterials
@@ -20,42 +17,84 @@ $(document).ready ->
     $(document).on "click", ".btn-show-edit", ->
         $(".btn-save-edit").val @value
         $materials = $(".#{@value} > td")
+        editBrandandModel $materials.eq(5).text(), $materials.eq(6).text()
         $(".text-edit").text "#{$materials.eq(2).text()} #{$materials.eq(3).text()}"
         $("input[name=edit-materials]").val $materials.eq(1).text()
-        $("input[name=edit-quantity]").val $materials.eq(5).text()
-        $("input[name=edit-price]").val $materials.eq(6).text()
+        $("input[name=edit-quantity]").val $materials.eq(7).text()
+        $("input[name=edit-price]").val $materials.eq(8).text()
         $(".medit").modal "toggle"
+    $("select[name=edit-brand]").on "change", (event) ->
+        $.getJSON "/json/model/list/option/",
+            "brand": $("select[name=edit-brand]").val(),
+            (response) ->
+                if response.status
+                    template = "<option value=\"{{ model_id }}\" title>{{ model }}</option>"
+                    $model = $("select[name=edit-model]")
+                    $model.empty()
+                    for x of response.model
+                        if model is response.model[x].model
+                            $model.append Mustache.render template.replace("title", "selected"), response.model[x]
+                        else
+                            $model.append Mustache.render template, response.model[x]
+                    return
     return
 
-# block get Materiales
-keyDescription = (event) ->
-    key = `window.Event ? event.keyCode : event.which`
-    if key isnt 13 and key isnt 40 and key isnt 38 and key isnt 39 and key isnt 37
-        getDescription @value.toLowerCase()
-    if key is 40 or key is 38 or key is 39 or key is 37
-        moveTopBottom key
+editBrandandModel = (brand, model)->
+    $.getJSON "/json/brand/list/option/", (response) ->
+        if response.status
+            template = "<option value=\"{{ brand_id }}\" title>{{ brand }}</option>"
+            $brand = $("select[name=edit-brand]")
+            $brand.empty()
+            for x of response.brand
+                if brand is response.brand[x].brand
+                    $brand.append Mustache.render template.replace("title", "selected"), response.brand[x]
+                else
+                    $brand.append Mustache.render template, response.brand[x]
+
+            $.getJSON "/json/model/list/option/",
+                "brand": $("select[name=edit-brand]").val(),
+                (response) ->
+                    if response.status
+                        template = "<option value=\"{{ model_id }}\" title>{{ model }}</option>"
+                        $model = $("select[name=edit-model]")
+                        $model.empty()
+                        for x of response.model
+                            if model is response.model[x].model
+                                $model.append Mustache.render template.replace("title", "selected"), response.model[x]
+                            else
+                                $model.append Mustache.render template, response.model[x]
+                        return
+            return
     return
 
-keyCode = (event) ->
-    key = if window.Event then event.keyCode else event.which
-    if key is 13
-        searchMaterialCode @value
+# Open window
+openBrand = ->
+    url = "/brand/new/"
+    win = window.open url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600"
+    interval = window.setInterval ->
+        if win == null or win.closed
+            window.clearInterval interval
+            searchBrandOption()
+            return
+    , 1000
+    return win;
 
-searchMaterial = (event) ->
-    desc = $("input[name=description]").val()
-    code = $("input[name=code]").val()
-    if code.length is 15
-        searchMaterialCode code
-    else
-        getDescription $.trim(desc).toLowerCase()
-
-# endBlock
+openModel = ->
+    url = "/model/new/"
+    win = window.open url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600"
+    interval = window.setInterval ->
+        if win == null or win.closed
+            window.clearInterval interval
+            searchModelOption()
+            return
+    , 1000
+    return win;
 
 openAddMaterial = (event) ->
     event.preventDefault()
     $(".panel-add-mat").toggle ->
-        if $(".btn-show-mat").is(":hidden")
-            $(@).find("span").removeClass "glyphicon-chevron-up"
+        if $(@).is(":hidden")
+            $(".btn-show-mat").find("span").removeClass "glyphicon-chevron-up"
             .addClass "glyphicon-chevron-down"
         else
             $(".btn-show-mat").find("span").removeClass "glyphicon-chevron-down"
@@ -63,7 +102,6 @@ openAddMaterial = (event) ->
     return
 
 uploadPlane = (event) ->
-    console.log @files[0]
     if @files[0] isnt null
         data = new FormData()
         data.append("type", "plane")
@@ -145,16 +183,16 @@ addMaterial = (event) ->
     data.materiales = $(".id-mat").text()
     data.cantidad = $("input[name=cantidad]").val()
     data.precio = $("input[name=precio]").val()
+    data.brand = $("select[name=brand]").val()
+    data.model = $("select[name=model]").val()
     if data.materiales != "" and data.cantidad != "" and data.precio != ""
         # if $(".currency-name").text() is "NUEVO SOLES"
         currency = $("select[name=moneda]").val()
-        console.log currency
         if $("[name=currency]").val() isnt currency
             purchase = $("[name=#{$("[name=currency]").val()}]").val()
             data['precio'] = data['precio'] * parseFloat(purchase)
 
         $.post "", data, (response) ->
-            console.info response
             if response.status
                 listMaterials()
             else
@@ -172,7 +210,6 @@ listMaterials = ->
     data.sec = $("input[name=sec]").val()
     data.type = "list"
     $.getJSON "", data, (response) ->
-        console.info response
         if response.status
             template = "<tr class=\"{{ materials_id }}-{{ id }}\">
                             <td>{{ item }}</td>
@@ -180,6 +217,8 @@ listMaterials = ->
                             <td>{{ name }}</td>
                             <td>{{ measure }}</td>
                             <td>{{ unit }}</td>
+                            <td>{{ brand }}</td>
+                            <td>{{ model }}</td>
                             <td>{{ quantity }}</td>
                             <td>{{ price }}</td>
                             <td>
@@ -201,7 +240,6 @@ listMaterials = ->
     return
 
 delMaterials = (event)->
-    console.log @value
     $materials = $(".#{@value} > td")
     $().toastmessage "showToast",
         "text": "Desea eliminar #{$materials.eq(2).text()} #{$materials.eq(3).text()}?"
@@ -239,26 +277,49 @@ editMaterials = (event) ->
     data.materiales = $("input[name=edit-materials]").val()
     data.cantidad = $("input[name=edit-quantity]").val()
     data.precio = $("input[name=edit-price]").val()
+    data.brand = $("select[name=edit-brand]").val()
+    data.model = $("select[name=edit-model]").val()
     data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
     data.type = "add"
     data.edit = true
     if data.cantidad != "" and data.precio != ""
         currency = $("select[name=moneda-e]").val()
-        console.log currency
-        console.info $("[name=currency]").val()
         if $("[name=currency]").val() != currency
-            console.warn $("[name=#{$("[name=currency]").val()}]").val()
             purchase = $("[name=#{$("[name=currency]").val()}]").val()
             data.precio = (data.precio * purchase)
 
         $.post "", data, (response) ->
             if response.status
                 $materials = $(".#{btn.value} > td")
-                $materials.eq(5).text data.cantidad
-                $materials.eq(6).text data.precio
+                $materials.eq(5).text $("select[name=edit-brand]").text()
+                $materials.eq(6).text $("select[name=edit-model]").text()
+                $materials.eq(7).text data.cantidad
+                $materials.eq(8).text data.precio
                 $(".medit").modal "toggle"
             else
                 $().toastmessage "showWarningToast", "No se edito el material."
     else
         $().toastmessage "showWarningToast", "Existen campos vacios o menores a uno."
+    return
+
+dellAllMaterial = (event) ->
+    $().toastmessage "showToast",
+        "text": "Desea eliminar toda la lista de materiales?"
+        "sticky" : true
+        "type" : "confirm"
+        "buttons" : [{value:'Si'}, {value:'No'}]
+        "success" : (result) ->
+            if result is "Si"
+                data = new Object()
+                data.pro = $("input[name=pro]").val()
+                data.sub = $("input[name=sub]").val()
+                data.sec = $("input[name=sec]").val()
+                data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+                data.type = "killdata"
+                $.post "", data, (response) ->
+                    if response.status
+                        location.reload()
+                    else
+                        $().toastmessage "showWarningToast", "No se elimino la lista de materiales."
+                return
     return

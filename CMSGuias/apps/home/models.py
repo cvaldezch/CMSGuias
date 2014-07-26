@@ -185,28 +185,29 @@ class Cliente(models.Model):
     def get_absolute_url(self):
         return reverse('customers_edit', kwargs={'pk': self.ruccliente_id})
 
-class Marca(models.Model): # Class Model de Marca de Materiales
-    marca_id = models.CharField(primary_key=True, max_length=3, null=False)
-    marca = models.CharField(max_length=40, null=False)
+class Brand(models.Model): # Class Model de Marca de Materiales
+    brand_id = models.CharField(primary_key=True, max_length=5, null=False)
+    brand = models.CharField(max_length=40, null=False)
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return '%s %s'%(self.marca_id,self.marca)
+        return '%s %s'%(self.brand_id,self.brand)
 
-class ModelMarca(models.Model):
-    modelo_id = models.CharField(primary_key=True, max_length=5)
-    modelo = models.CharField(max_length=60)
+class Model(models.Model):
+    model_id = models.CharField(primary_key=True, max_length=5)
+    brand = models.ForeignKey(Brand, to_field='brand_id')
+    model = models.CharField(max_length=60)
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):
-      return '%s - %s'%(self.modelo_id, self.modelo)
+      return '%s - %s'%(self.brand, self.model)
 
-class MarcaModelMaterial(models.Model):
-    marca = models.ForeignKey(Marca, to_field='marca_id')
-    modelo = models.ForeignKey(ModelMarca, to_field='modelo_id')
-    matparcial = models.CharField(max_length=12, null=False)
+class BrandMaterial(models.Model):
+    materiales = models.ForeignKey(Materiale, to_field='materiales_id')
+    brand = models.ForeignKey(Brand, to_field='brand_id')
+
     def __unicode__(self):
-        return '%s %s'%(self.marca, self.matparcial)
+        return '%s %s'%(self.materiales, self.brand)
 
 class Herramientas(models.Model):
     herramientas_id = models.CharField(primary_key=True, max_length=14)

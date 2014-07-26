@@ -1,5 +1,5 @@
 from django.db import models
-from CMSGuias.apps.home.models import Pais, Departamento, Provincia, Distrito, Cliente, Materiale, Employee
+from CMSGuias.apps.home.models import Pais, Departamento, Provincia, Distrito, Cliente, Materiale, Employee, Brand, Model
 
 
 class Proyecto(models.Model):
@@ -84,6 +84,8 @@ class Metradoventa(models.Model):
     subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
     sector = models.ForeignKey(Sectore, to_field='sector_id')
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
+    brand = models.ForeignKey(Brand, to_field='brand_id', default='BR000')
+    model = models.ForeignKey(Model, to_field='model_id', default='MO000')
     cantidad = models.FloatField()
     precio = models.FloatField()
     flag = models.BooleanField(default=True)

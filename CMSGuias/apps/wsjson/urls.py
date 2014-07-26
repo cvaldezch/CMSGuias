@@ -1,13 +1,19 @@
 # -*- coding: utf-8 -*-
 # from django.conf.urls.defaults import patterns, url
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns, url, include
 
-import views
+from .views import *
 
-
+# urls recurrents
+urls_brands = patterns('',
+    url(r'^list/option/$', SearchBrand.as_view()),
+)
+urls_models = patterns('',
+    url(r'^list/option/$', SearchModel.as_view()),
+)
 urlpatterns = patterns('CMSGuias.apps.wsjson.views',
   # temp Orders
-    url(r'^get/materials/code/$', views.GetDetailsMaterialesByCode.as_view()),
+    url(r'^get/materials/code/$', GetDetailsMaterialesByCode.as_view()),
     url(r'^get/materials/name/$','get_description_materials'),
     url(r'^get/meter/materials/$','get_meter_materials'),
     url(r'^get/resumen/details/materiales/$','get_resumen_details_materiales'),
@@ -34,16 +40,18 @@ urlpatterns = patterns('CMSGuias.apps.wsjson.views',
     url(r'^get/stores/list/$','get_list_stores'),
     url(r'^get/list/transport/(?P<truc>.*)/$','get_recover_list_transport'),
     url(r'^get/list/conductor/(?P<truc>.*)/$','get_recover_list_conductor'),
-    url(r'^supplier/get/list/all/$', views.getSupplierList.as_view()),
-    url(r'^store/get/list/all/$', views.getStoreList.as_view()),
+    url(r'^supplier/get/list/all/$', getSupplierList.as_view()),
+    url(r'^store/get/list/all/$', getStoreList.as_view()),
     # recurrent country, departament, province, district
-    url(r'^country/list/', views.ViewContry.as_view()),
-    url(r'^departament/list/', views.ViewDepartament.as_view()),
-    url(r'^province/list/', views.ViewProvince.as_view()),
-    url(r'^district/list/', views.ViewDistrict.as_view()),
+    url(r'^country/list/', ViewContry.as_view()),
+    url(r'^departament/list/', ViewDepartament.as_view()),
+    url(r'^province/list/', ViewProvince.as_view()),
+    url(r'^district/list/', ViewDistrict.as_view()),
     # url get data sunat
-    url(r'^sunat/exchange/rate/$', views.RestfulExchangeRate.as_view()),
-    # Class Bases-Views Genereics
-    url(r'^get/list/orders/details/$', views.get_OrdersDetails.as_view()),
-    url(r'^get/details/supply/(?P<sid>.*)/$', views.SupplyDetailView.as_view()),
+    url(r'^sunat/exchange/rate/$', RestfulExchangeRate.as_view()),
+    # Class Bases-View Genereics
+    url(r'^get/list/orders/details/$', get_OrdersDetails.as_view()),
+    url(r'^get/details/supply/(?P<sid>.*)/$', SupplyDetailView.as_view()),
+    url(r'^brand/', include(urls_brands)),
+    url(r'^model/', include(urls_models)),
 )
