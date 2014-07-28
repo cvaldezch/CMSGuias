@@ -304,6 +304,116 @@
         </div>
     </div>
 </div>
+<!-- modal copy list -->
+<div class="modal fade mcopy" data-backdrop="static">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+      <a data-dismiss="modal" class="close">&times;</a>
+        <h4 class="modal_title">Copiar lista de materiales.</h4>
+        <button class="btn btn-xs btn-default btn-back"><span class="glyphicon glyphicon-chevron-left"></span></button>
+      </div>
+      <div class="modal-body body-projects">
+        <div class="row">
+            <div class="col-md-4">
+              <!-- sectores locales -->
+              <div class="panel panel-primary">
+                <ul class="list-group sector-local">
+                  
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <!-- projects list -->
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <input type="text" name="proid" placeholder="Codigo" class="form-control input-sm">
+                  </div>
+                </div>
+                <div class="col-md-8">
+                  <div class="form-group">
+                    <input type="text" name="proname" placeholder="Nombre de proyecto" class="form-control">
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="panel panel-primary">
+                    <div class="table-responsive">
+                      <table class="table table-condensed table-hover table-projects">
+                        <thead>
+                          <tr>
+                            <th>Codigo</th><th>Nombre de Proyecto</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-body body-subandsec">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="panel panel-primary">
+              <div class="panel-footer">
+                <h5>Subproyectos</h5>
+              </div>
+              <ul class="list-group subprojects"></ul>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="panel panel-primary">
+              <div class="panel-footer">
+                <h5>Sectores</h5>
+              </div>
+              <ul class="list-group sectors"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-body body-sector">
+        <div class="panel panel-primary">
+          <div class="panel-footer">
+            <h5>Lista de Sectores</h5>
+          </div>
+          <ul class="list-group list-sector"></ul>
+        </div>
+      </div>
+      <div class="modal-body body-materials">
+        <div class="panel panel-primary">
+          <div class="panel-footer">
+            Lista de Materiales
+            <button class="btn btn-xs btn-primary pull-right btn-paste"><span class="glyphicon glyphicon-saved"></span> Pasar materiales</button>
+            <input type="hidden" name="cpro">
+            <input type="hidden" name="csub">
+            <input type="hidden" name="csec">
+          </div>
+          <div class="table-responsive">
+            <div class="form-group">
+              Seleccionar :
+              <label class="radio-inline">
+                <input type="radio" name="rcp" value="all"> Todo
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="rcp" value=""> Ninguno.
+              </label>
+            </div>
+            <table class="table table-hover table-condensed table-copy">
+              <thead>
+                <th>Item</th><td></td><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th><th>Precio</th>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end copy list -->
 <!-- end block -->
 <!-- utils -->
 <div class="full-screen view-full">

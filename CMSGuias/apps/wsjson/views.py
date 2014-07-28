@@ -18,7 +18,7 @@ from django.core import serializers
 
 from CMSGuias.apps.almacen import models
 from CMSGuias.apps.home.models import *
-from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
+from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto, Metradoventa
 
 
 class JSONResponseMixin(object):
@@ -442,7 +442,7 @@ class get_OrdersDetails(ListView):
               context['list'] = [{'materiales_id': x['materiales_id'],'matnom': x['materiales__matnom'],'matmed':x['materiales__matmed'],'unidad':x['materiales__unidad_id'],'cantidad':x['cantidad'],'stock':x['stock'],'tag':x['spptag']} for x in queryset]
               context['status'] = True
           except ObjectDoesNotExist:
-              context['sttatus'] = False
+              context['status'] = False
           return HttpResponse(simplejson.dumps(context),mimetype='application/json')
 
 class SupplyDetailView(DetailView):
@@ -591,6 +591,60 @@ class ViewDistrict(JSONResponseMixin, View):
                 if request.GET.get('type') == 'option':
                     context['district'] = [{'district_id': x.distrito_id, 'district': x.distnom} for x in Distrito.objects.filter(pais_id=request.GET.get('country'), departamento_id=request.GET.get('departament'), provincia_id=request.GET.get('province'), flag=True)]
                 context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
+
+class ViewCopyMaterialesProjectsSale(JSONResponseMixin, DetailView):
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            context = dict()
+            try:
+                if 'project' in request.GET:
+                    if 'code' in request.GET:
+                        pro = Proyecto.objects.get(pk=request.GET.get('code'))
+                        context['project'] = [{'project_id':pro.proyecto_id,'name':pro.nompro}]
+                    if 'name' in request.GET:
+                        context['project'] = [{'project_id':x.proyecto_id,'name':x.nompro} for x in Proyecto.objects.filter(nompro__icontains=request.GET.get('name')).order_by('nompro')]
+                if 'subproject' in request.GET:
+                    context['subproject'] = [{'subproject_id':x.subproyecto_id, 'name':x.nomsub, 'project_id':x.proyecto_id} for x in Subproyecto.objects.filter(proyecto_id=request.GET.get('pro')).order_by('nomsub')]
+                if 'sector' in request.GET:
+                    context['sector'] = [{'sector_id':x.sector_id, 'name':x.nomsec, 'plane':x.planoid, 'project_id':x.proyecto_id, 'subproject_id':x.subproyecto_id} for x in Sectore.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None)]
+                if 'materials' in request.GET:
+                    context['materials'] = [{'id':x.id,'materials_id': x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'brand' : x.brand.brand, 'model' : x.model.model , 'quantity':x.cantidad, 'price':x.precio} for x in Metradoventa.objects.filter(proyecto_id=request.GET['pro'], subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec')).order_by('materiales__matnom')]
+                context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
+
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            context = dict()
+            try:
+                if 'paste' in request.POST:
+                    mats = request.POST.getlist('materials[]')
+                    for x in Metradoventa.objects.filter(proyecto_id=request.POST.get('cpro'), subproyecto_id=request.POST.get('csub') if request.POST.get('csub') != '' else None, sector_id=request.POST.get('csec'), materiales_id__in=mats):
+                        
+                        obj = Metradoventa.objects.filter(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') != '' else None, sector_id=request.POST.get('sec'), materiales_id=x.materiales_id)
+
+                        if obj:
+                            obj.cantidad = (x.cantidad + obj.cantidad)
+                        else:
+                            obj = Metradoventa()
+                            obj.cantidad = x.cantidad
+
+                        obj.proyecto_id = request.POST.get('pro')
+                        obj.subproyecto_id = request.POST.get('sub')
+                        obj.sector_id = request.POST.get('sec')
+                        obj.materiales_id = x.materiales_id
+                        obj.precio = x.precio
+                        obj.brand_id = obj.brand_id
+                        obj.model_id = x.model_id
+                        obj.flag = True
+                        obj.save()
+                    context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

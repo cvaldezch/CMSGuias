@@ -1,5 +1,5 @@
 $(document).ready ->
-    $(".panel-add,input[name=read],.step-second").hide()
+    $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials").hide()
     $(".panel-add-mat, .view-full").hide()
     $(".btn-show-mat").on "click", openAddMaterial
     $("input[name=plane]").on "change", uploadPlane
@@ -13,7 +13,31 @@ $(document).ready ->
     $("[name=show-plane]").on "click", (event) ->
         $("input[name=plane]").click()
     $(document).on "click", ".btn-del-mat", delMaterials
+    $(document).on "click", ".btn-show-secsub", loadSecandSub
+    $(document).on "click", ".btn-show-subproject_id", loadSector
+    $(document).on "click", ".btn-show-sector_id", loadMaterials
     $(".btn-save-edit").on "click", editMaterials
+    $(".btn-show-copy").on "click", ->
+        $(".mcopy").modal "show"
+        $.getJSON "/json/projects/lists/",
+            "sector" : true,
+            "pro" : $("input[name=pro]").val(),
+            "sub" : $("input[name=sub]").val(),
+            (response)->
+                if response.status
+                    template = "<a class=\"list-group-item\">
+                                <button class=\"btn badge btn-primary btn-show-sector_id\" value=\"{{ sector_id }}\" data-sub=\"{{ subproject_id }}\" data-pro=\"{{ project_id }}\" data-body=\"projects\"><span class=\"glyphicon glyphicon-chevron-right\"></span></button>
+                                {{ name }}
+                                </a>"
+                    $sec = $("ul.sector-local")
+                    $sec.empty()
+                    for x of response.sector
+                        $sec.append Mustache.render template, response.sector[x]
+                    return
+        return
+    $(".btn-back").on "click", copyBack
+    $(".btn-paste").on "click", pasteMaterials
+    $("input[name=rcp]").on "change", changeRadio
     $(document).on "click", ".btn-show-edit", ->
         $(".btn-save-edit").val @value
         $materials = $(".#{@value} > td")
@@ -37,6 +61,117 @@ $(document).ready ->
                         else
                             $model.append Mustache.render template, response.model[x]
                     return
+    $("input[name=proid], input[name=proname]").on "keyup", (event)->
+        key = if window.Event then event.keyCode else event.which
+        if key is 13
+            data = new Object()
+            if @name == "proid"
+                data.code = $("input[name=proid]").val()
+            else
+                data.name = $("input[name=proname]").val()
+            data.project = true
+            $.getJSON "/json/projects/lists/", data, (response) ->
+                if response.status
+                    template = "<tr><td>{{ project_id }}</td><td>{{ name }}</td><td><button class=\"btn badge btn-primary btn-xs btn-show-secsub\" value=\"{{ project_id }}\" data-body=\"projects\"><span class=\"glyphicon glyphicon-chevron-right\"></span></button></td></tr>"
+                    $tb = $(".table-projects > tbody")
+                    $tb.empty()
+                    for x of response.project
+                        $tb.append Mustache.render template, response.project[x]
+                    return 
+            return
+    return
+
+loadSecandSub = (event) ->
+    $(".body-projects, .body-sector, .body-materials").hide()
+    $(".body-subandsec").show 600
+    $(".btn-back").val $(@).attr "data-body"
+    $.getJSON "/json/projects/lists/",
+        "pro" : @value,
+        "subproject" : true,
+        "sector" : true
+        (response) ->
+            if response.status
+                template = "<a class=\"list-group-item\">
+                                <button class=\"btn badge btn-primary btn-show-sector_id\" value=\"{{ sector_id }}\" data-sub=\"{{ subproject_id }}\" data-pro=\"{{ project_id }}\" data-body=\"subandsec\"><span class=\"glyphicon glyphicon-chevron-right\"></span></button>
+                                {{ name }}
+                                </a>"
+                $item = $("ul.sectors")
+                $item.empty()
+                for x of response.sector
+                    $item.append Mustache.render template, response.sector[x]
+                
+                $item = $("ul.subprojects")
+                template = template.replace "sector_id", "subproject_id", 2
+                $item.empty()
+                for x of response.subproject
+                    $item.append Mustache.render template, response.subproject[x]
+                return
+    return
+
+loadSector = (event) ->
+    $(".body-projects, .body-subandsec, .body-materials").hide()
+    $(".body-sector").show 600
+    $(".btn-back").val $(@).attr "data-body"
+    $.getJSON "/json/projects/lists/",
+        "pro" : $(@).attr("data-pro"),
+        "sub" : $(@).attr("data-sub"),
+        "sector" : true,
+        (response) ->
+            if response.status
+                template = "<a class=\"list-group-item\">
+                                <button class=\"btn badge btn-primary btn-show-sector_id\" value=\"{{ sector_id }}\" data-sub=\"{{ subproject_id }}\" data-pro=\"{{ project_id }}\" data-body=\"sector\"><span class=\"glyphicon glyphicon-chevron-right\"></span></button>
+                                    {{ name }}
+                                </a>"
+                $item = $("ul.list-sector")
+                $item.empty()
+                for x of response.sector
+                    $item.append Mustache.render template, response.sector[x]
+                return
+    return
+
+loadMaterials = (event) ->
+    $(".body-projects, .body-subandsec, .body-sector").hide()
+    $(".body-materials").show 600
+    $(".btn-back").val $(@).attr "data-body"
+    $("input[name=cpro]").val $(@).attr("data-pro")
+    $("input[name=csub]").val $(@).attr("data-sub")
+    $("input[name=csec]").val @value
+    $.getJSON "/json/projects/lists/",
+        "pro" : $(@).attr("data-pro"),
+        "sub" : $(@).attr("data-sub"),
+        "sec" : @value,
+        "materials" : true,
+        (response) ->
+            if response.status
+                template = "<tr id=\"{{ materials_id }}-copy\"><td>{{ item }}</td><td><input type=\"checkbox\" name=\"copy\" value=\"{{ materials_id }}-copy\"></td><td>{{ materials_id }}</td><td>{{ name }}</td><td>{{ measure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td>{{ price }}</td></tr>"
+                $item = $("table.table-copy > tbody")
+                $item.empty()
+                for x of response.materials
+                    response.materials[x].item = parseInt(x) + 1
+                    $item.append Mustache.render template, response.materials[x]
+                return
+    return
+
+copyBack = (event)->
+    if $(".body-sector").is(":visible")
+        @value = "subandsec"
+    else if $(".body-sector").is(":visible")
+        @value = "projects"
+    else if $(".body-subandsec").is(":visible")
+        @value = "projects"
+
+    if $(".body-projects").is(":visible")
+        $(".body-projects").hide()
+    if $(".body-subandsec").is(":visible")
+        $(".body-subandsec").hide()
+    if $(".body-sector").is(":visible")
+        $(".body-sector").hide()
+    if $(".body-materials").is(":visible")
+        $(".body-materials").hide()
+
+    console.log $(".body-sector").is(":hidden")
+    
+    $(".body-#{@value}").show 600
     return
 
 editBrandandModel = (brand, model)->
@@ -94,11 +229,9 @@ openAddMaterial = (event) ->
     event.preventDefault()
     $(".panel-add-mat").toggle ->
         if $(@).is(":hidden")
-            $(".btn-show-mat").find("span").removeClass "glyphicon-chevron-up"
-            .addClass "glyphicon-chevron-down"
+            $(".btn-show-mat").find("span").removeClass("glyphicon-chevron-up").addClass "glyphicon-chevron-down"
         else
-            $(".btn-show-mat").find("span").removeClass "glyphicon-chevron-down"
-            .addClass "glyphicon-chevron-up"
+            $(".btn-show-mat").find("span").removeClass("glyphicon-chevron-down").addClass "glyphicon-chevron-up"
     return
 
 uploadPlane = (event) ->
@@ -131,11 +264,11 @@ panelPlanes = (event) ->
     btn = @
     $(".panel-planes > .panel-body").toggle ->
         if $(".panel-planes > .panel-body").is(":hidden")
-            $(btn).find("span").removeClass "glyphicon-chevron-up"
-            .addClass "glyphicon-chevron-down"
+            $(btn).find("span").removeClass("glyphicon-chevron-up").addClass "glyphicon-chevron-down"
+            return
         else
-            $(btn).find("span").removeClass "glyphicon-chevron-down"
-            .addClass "glyphicon-chevron-up"
+            $(btn).find("span").removeClass("glyphicon-chevron-down").addClass "glyphicon-chevron-up"
+            return
     return
 
 viewFull = (event) ->
@@ -322,4 +455,42 @@ dellAllMaterial = (event) ->
                     else
                         $().toastmessage "showWarningToast", "No se elimino la lista de materiales."
                 return
+    return
+
+pasteMaterials = ->
+    $cp = $("input[name=copy]")
+    data = new Object()
+    arr = new Array()
+    counter = 0
+    $cp.each (index, element) ->
+        if @checked
+            counter += 1
+            $td = $("##{@value} > td")
+            arr.push($td.eq(2).text())
+    data.materials = arr
+    data.paste = true
+    data.pro = $("input[name=pro]").val()
+    data.sub = $("input[name=sub]").val()
+    data.sec = $("input[name=sec]").val()
+    data.cpro = $("input[name=cpro]").val()
+    data.csub = $("input[name=csub]").val()
+    data.csec = $("input[name=csec]").val()
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    if counter > 0 and counter >= $cp.length
+        console.log data
+        $.post "/json/projects/lists/",data, (response) ->
+            if response.status
+                location.reload()
+            else
+                $().toastmessage "showErrorToast", "No found Transaction"
+        , "json"
+    return
+
+changeRadio = (event) ->
+    console.log @
+    $(@).each (index, element) ->
+        if @checked
+            rdo = @
+            $("input[name=copy]").each (index, element) ->
+                @checked = if rdo.value is "all" then "checked" else ""
     return
