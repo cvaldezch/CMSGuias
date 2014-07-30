@@ -53,7 +53,7 @@ class ProjectsList(JSONResponseMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         context = super(ProjectsList, self).get_context_data(**kwargs)
         try:
-            context['list'] = Proyecto.objects.filter(flag=True)
+            context['list'] = Proyecto.objects.filter(Q(flag=True), ~Q(status='DA'))
             context['country'] = Pais.objects.filter(flag=True)
             context['customers'] = Cliente.objects.filter(flag=True)
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
@@ -188,23 +188,77 @@ class SubprojectsView(JSONResponseMixin, View):
         return render_to_response(self.template_name, context, context_instance = RequestContext(request))
 
 # Manager View Project
-class ProjectManager(View):
+class ProjectManager(JSONResponseMixin, View):
     template_name = 'sales/managerpro.html'
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
+            if request.is_ajax():
+                if 'list' in request.GET:
+                    try:
+                        context['alert'] = [{} for x in Alertasproyecto.objects.filter(Q(proyecto_id=request.GET['pro']) | ~Q(subproyecto_id=None), Q(sector_id=None)).order_by('-registrado')]
+                        context['status'] = True
+                    except ObjectDoesNotExist, e:
+                        context['raise'] = e.__str__()
+                        contedxt['status'] = False
+                    return self.render_to_json_response(context)
             context['project'] = Proyecto.objects.get(pk=kwargs['project'])
             context['subpro'] = Subproyecto.objects.filter(proyecto_id=kwargs['project'])
             context['sectors'] = Sectore.objects.filter(proyecto_id=kwargs['project']).order_by('subproyecto','planoid')
             context['operation'] = Employee.objects.filter(charge__area__istartswith='opera').order_by('charge__area')
             context['admin'] = Employee.objects.filter(charge__area__istartswith='admin').order_by('charge__area')
+            context['alerts'] = Alertasproyecto.objects.filter(Q(proyecto_id=kwargs['project']) | ~Q(subproyecto_id=None), Q(sector_id=None)).order_by('-registrado')
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)
             raise Http404('Page Not Found')
 
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            context = dict()
+            if request.POST.get('type') == 'files':
+                try:
+                    # charge file to server
+                    if request.POST.get('sub') == '':
+                        admin = '/storage/projects/%s/administrative/'%(request.POST.get('pro'))
+                        opera = '/storage/projects/%s/operation/'%(request.POST.get('pro'))
+                    else:
+                        admin = '/storage/projects/%s/%s/administrative/'%(request.POST.get('pro'), request.POST.get('sub'))
+                        opera = '/storage/projects/%s/%s/operation/'%(request.POST.get('pro'), request.POST.get('sub'))
+
+                    if 'administrative' in request.FILES:
+                        fileadmin = uploadFiles.upload(admin, request.FILES['administrative'], {'name': 'admin'})
+                        # descompress files in the server
+                        context['descompress'] =  uploadFiles.descompressRAR(fileadmin, admin)
+                        # delete files temp
+                        uploadFiles.removeTmp(fileadmin)
+                    if 'operation' in request.FILES:
+                        fileopera = uploadFiles.upload(opera, request.FILES['operation'], {'name': 'opera'})
+                        # descompress files in the server
+                        context['descompress'] = uploadFiles.descompressRAR(fileopera, opera)
+                        # delete files temp
+                        uploadFiles.removeTmp(fileopera)
+                    context['status'] = True
+                except ObjectDoesNotExist, e:
+                    print e
+                    context['raise'] = e.__str__()
+                    context['status'] = False
+            if request.POST.get('type') == 'add':
+                form = AlertasproyectoForm(request.POST)
+                print form, form.is_valid()
+                if form.is_valid():
+                    add = form.save(commit=False)
+                    add.empdni = request.user.get_profile().empdni_id
+                    add.cargo = request.user.get_profile().charge.cargo_id
+                    print kwargs['project']
+                    # add.save()
+                    context['status'] = True
+                else:
+                    context['status'] = False
+            return self.render_to_json_response(context)
 # Manager View Sectors
 class SectorManage(JSONResponseMixin, View):
     template_name = 'sales/managersec.html'
@@ -266,7 +320,7 @@ class SectorManage(JSONResponseMixin, View):
                             else:
                                 obj = Metradoventa.objects.filter(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') else None, sector_id=request.POST.get('sector'), materiales_id=request.POST.get('materiales'))
                                 if obj:
-                                    obj.cantidad = obj[0].cantidad + request.POST.get('cantidad')
+                                    obj.cantidad = obj[0].cantidad + float(request.POST.get('cantidad'))
                                     obj.precio = request.POST.get('precio')
                                     obj.save()
                                 else:
@@ -274,6 +328,10 @@ class SectorManage(JSONResponseMixin, View):
                             context['status'] = True
                         else:
                             context['status'] = False
+                    if 'del' in request.POST:
+                        obj = Metradoventa.objects.filter(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') else None, sector_id=request.POST.get('sec'), materiales_id=request.POST.get('materials'))
+                        obj.delete()
+                        context['status'] = True
                     if request.POST.get('type') == 'killdata':
                         obj = Metradoventa.objects.filter(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') else None, sector_id=request.POST.get('sec'))
                         obj.delete()

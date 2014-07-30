@@ -15,10 +15,11 @@ from django.http import Http404
 """
 status = {
     'PE' : "PENDIENTE", # Pendiente
-    'AP' : "APROBADO", # Aprobado
-    'AN' : "ANULADO", # Anulado
+    'AN' : "ANULADO", # Anular
+    'DL' : "ELIMINADO", # Delete
     'IN' : "INCOMPLETO", # Incompleto
     'CO' : "COMPLETO", # Completo
+    'AC' : "ACTIVO", # Activo
     'NN' : "Nothing" # Nothing
 }
 

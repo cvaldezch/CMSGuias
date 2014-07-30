@@ -16,8 +16,91 @@ $(document).ready ->
         $("[name=administrative]").click()
     $(".btn-opera").on "click", ->
         $("[name=operation]").click()
+    $(".btn-upload-files").on "click", uploadFiles
+    $(".btn-show-comment").on "click", toggleComment
+    $("#message").focus ->
+        $(@).animate
+            "height": "102px"
+        , 500
+        return
+    .blur ->
+        $(@).animate
+            "height": "34px"
+        , 500
+        return
+    treeAdminaandOpera()
+    tinymce.init
+        selector: "textarea#message",
+        theme: "modern",
+        menubar: false,
+        statusbar: false,
+        plugins: "link contextmenu",
+        font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",
+        toolbar: "undo redo | styleselect | fontsizeselect |"
+    $(".btn-publisher").on "click", publisherCommnet
     return
 
+publisherCommnet = ->
+    data = new Object()
+    data.edit = $("input[name=edit-message]").val()
+    data.message = $("#message_ifr").contents().find('body').html()
+    if data.message is "<p><br data-mce-bogus=\"1\"></p>"
+        $().toastmessage "showWarningToast", "No se puede publicar el mensaje, campo vacio."
+        return false
+    if data.edit ==  ""
+        data.type = "edit"
+    else
+        data.type = "add"
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    $.post "", data, (response) ->
+        if response.status
+            listComment()
+    return 
+
+listComment = ->
+    $.getJSON "", "list":"comment", (response) ->
+        if response.status
+            template = ""
+    return
+
+toggleComment = ->
+    $(".panel-comment").find ".panel-body"
+    .toggle ->
+        if $(@).is ":hidden"
+            $(".btn-show-comment").find "span"
+            .removeClass "glyphicon-chevron-up"
+            .addClass "glyphicon-chevron-down"
+            $(".panel-comment").css "height", "1em"
+        else
+            $(".btn-show-comment").find "span"
+            .removeClass "glyphicon-chevron-down"
+            .addClass "glyphicon-chevron-up"
+            $(".panel-comment").css "height", "20em"
+    return
+
+treeAdminaandOpera = ->
+    if $("input[name=sub]").val() == ""
+        admin = "/storage/projects/#{ $("input[name=pro]").val() }/administrative/"
+        opera = "/storage/projects/#{ $("input[name=pro]").val() }/operation/"
+    else
+        admin = "/storage/projects/#{ $("input[name=pro]").val() }/#{$("input[name=sub]").val()}/administrative/"
+        opera = "/storage/projects/#{ $("input[name=pro]").val() }/#{$("input[name=sub]").val()}/operation/"
+    
+    fileTree 'filetree_administrative', admin
+    fileTree 'filetree_operation', opera
+    return
+
+fileTree = (id, path)->
+    $("##{ id }").fileTree
+        root: path
+        script: "/json/get/path/"
+        folderEvent: "click"
+        expandSpeed: 750
+        collapseSpeed: 750
+        multiFolder: true
+        , (file) ->
+            window.open file, "_blank"
+    return
 setSubproject = (event) ->
     console.log $(@).attr("data-sub")
     $("input[name=sub]").val($(@).attr("data-sub"))
@@ -36,8 +119,9 @@ getSectors = ->
     data.sub = $("input[name=sub]").val()
     url = "/sales/projects/sectors/crud/"
     $.getJSON url, data, (response) ->
-        console.log response
         if response.status
+            if data.sub == ""
+                data.sub = "None"
             template = "<article>
                         <button class=\"btn btn-xs text-black btn-link pull-left btn-edit-sector\" value=\"{{ sector_id }}\">
                             <span class=\"glyphicon glyphicon-pencil\"></span>
@@ -45,13 +129,13 @@ getSectors = ->
                         <button class=\"btn btn-xs text-black btn-link pull-right\" value=\"{{ sector_id }}\">
                             <span class=\"glyphicon glyphicon-trash\"></span>
                                         </button>
-                        <a href=\"\" class=\"text-black\">
+                        <a href=\"/sales/projects/manager/sector/#{data.pro}/#{data.sub}/{{ sector_id }}/\" class=\"text-black\">
                             {{ sector_id }}
                             {{ nomsec }}
                             <small>{{ planoid }}</small>
                         </a>
                         </article>"
-            templist = "<li><a href=\"\" class=\"text-black\"><span class=\"glyphicon glyphicon-chevron-right\"></span> {{ nomsec }}</a></li>"
+            templist = "<li><a href=\"/sales/projects/manager/sector/#{data.pro}/#{data.sub}/{{ sector_id }}/\" class=\"text-black\"><span class=\"glyphicon glyphicon-chevron-right\"></span> {{ nomsec }}</a></li>"
             $list = if data['sub'] is "" then $(".sectorsdefault") else $(".sectors#{data['sub']}")
             console.log $list
             $sec = $(".all-sectors")
@@ -109,4 +193,34 @@ changeView = (percent) ->
     $(".all-sectors > article").css
         "width" : "#{percent}%"
     equalheight ".all-sectors article"
+    return
+
+uploadFiles = (event) ->
+    data = new FormData()
+    $("input[name=administrative], input[name=operation]").each (index, elemtent) ->
+        # valid inputs files is null
+        console.log @files[0]
+        if @files[0]?
+            data.append @name, @files[0]
+            return
+
+    data.append "csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val()
+    data.append "type", "files"
+    data.append "pro", $("input[name=pro]").val()
+    data.append "sub", $("input[name=sub]").val()
+    console.log data
+    $.ajax
+        data : data,
+        url : "",
+        type : "POST",
+        dataType : "json",
+        cache : false,
+        processData: false,
+        contentType: false,
+        success : (response) ->
+            console.log response
+            if response.status
+                location.reload()
+            else
+                $().toastmessage "showErrorToast", "Error al subir los archivos al servidor"
     return

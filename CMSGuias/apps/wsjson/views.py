@@ -19,6 +19,7 @@ from django.core import serializers
 from CMSGuias.apps.almacen import models
 from CMSGuias.apps.home.models import *
 from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto, Metradoventa
+from CMSGuias.apps.tools import uploadFiles
 
 
 class JSONResponseMixin(object):
@@ -649,3 +650,8 @@ class ViewCopyMaterialesProjectsSale(JSONResponseMixin, DetailView):
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
+
+class TreePath(View):
+    def post(self, request, *args, **kwargs):
+        path = uploadFiles.listDir(request.POST.get('dir'))
+        return HttpResponse(path, 'text/plain')

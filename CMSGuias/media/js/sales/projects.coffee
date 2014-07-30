@@ -36,6 +36,9 @@ $(document).ready ->
             return
         return
     , 2000
+    $(".btn-show-edit").on "click",  openUpdateProject
+    $(".btn-show-delete").on "click", deleteProject
+    return
 
     $("[name=pais]").on "click", getDepartamentOption
     $("[name=departamento]").on "click", getProvinceOption
@@ -51,7 +54,6 @@ $(document).ready ->
     $(".btn-add-province").on "click", showProvince
     $(".btn-add-district").on "click", showDistrict
     $(".btn-save").on "click", CreateProject
-
     return
 
 showaddProject = (event) ->
@@ -114,7 +116,7 @@ CreateProject = (event) ->
             data[@name] = $(@).val()
             pass = true
             return
-    console.log data
+    # console.log data
     if pass
         data['obser'] = $("#obser_ifr").contents().find("body").html()
         data['type'] = "new"
@@ -123,5 +125,42 @@ CreateProject = (event) ->
                 $().toastmessage "showNoticeToast", "Se registro el proyecto #{data['nompro']} correctamente!"
             else
                 $().toastmessage "showErrorToast", "Error en la transacción #{response.raise}."
-
+        return
     return
+
+openUpdateProject = (event) ->
+    pro = @value
+    url = "/almacen/keep/project/#{pro}/edit/"
+    openWindow url
+    return
+
+openWindow = (url) ->
+    win = window.open url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600"
+    interval = window.setInterval ->
+        if win == null or win.closed
+            window.clearInterval interval
+            location.reload
+            return
+    , 1000
+    return win;
+
+deleteProject = ->
+    value = @value;
+    $().toastmessage "showToast",
+        text: "Eliminar Proyecto, recuerde que al eliminar a #{@title} sera permanentemente.<br>Desea Eliminar el Proyecto?",
+        sticky: true
+        type: "confirm"
+        position: "middle-center"
+        buttons: [{value:'No'},{value: 'Si'}]
+        success: (result) ->
+            if result is "Si"
+                data = 
+                    "proid": value,
+                    "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val()
+                $.post "/almacen/keep/project/", data, (response) ->
+                    if response.status
+                        if $("table tbody > tr").length > 1
+                            $(".tr-"+value).remove()
+                        else
+                            location.reload()
+                ,"json"

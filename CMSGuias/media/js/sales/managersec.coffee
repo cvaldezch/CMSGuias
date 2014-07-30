@@ -322,6 +322,10 @@ addMaterial = (event) ->
         # if $(".currency-name").text() is "NUEVO SOLES"
         currency = $("select[name=moneda]").val()
         if $("[name=currency]").val() isnt currency
+            # valid exists exchange rate for today
+            if $("[name=#{$("[name=currency]").val()}]").val() is null or $("[name=#{$("[name=currency]").val()}]").val() is undefined
+                $().toastmessage "showWarningToast", "El tipo de cambio no esta registrado."
+                return false
             purchase = $("[name=#{$("[name=currency]").val()}]").val()
             data['precio'] = data['precio'] * parseFloat(purchase)
 
@@ -388,6 +392,7 @@ delMaterials = (event)->
                 data.materials = $materials.eq(1).text()
                 data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
                 data.type = "del"
+                console.log data
                 $.post "", data, (response) ->
                     if response.status
                         $(".#{@value}").remove()
@@ -418,6 +423,9 @@ editMaterials = (event) ->
     if data.cantidad != "" and data.precio != ""
         currency = $("select[name=moneda-e]").val()
         if $("[name=currency]").val() != currency
+            if $("[name=#{$("[name=currency]").val()}]").val() is null or $("[name=#{$("[name=currency]").val()}]").val() is undefined
+                $().toastmessage "showWarningToast", "El tipo de cambio no esta registrado."
+                return false
             purchase = $("[name=#{$("[name=currency]").val()}]").val()
             data.precio = (data.precio * purchase)
 

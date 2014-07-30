@@ -3,7 +3,7 @@
 #
 from django import forms
 
-from .models import Proyecto, Sectore, Subproyecto, SectorFiles, Metradoventa
+from .models import Proyecto, Sectore, Subproyecto, SectorFiles, Metradoventa, Alertasproyecto
 
 class ProjectForm(forms.ModelForm):
     class Meta:
@@ -46,3 +46,9 @@ class MetradoventaForm(forms.ModelForm):
     class Meta:
         model = Metradoventa
         exclude = {'flag',}
+
+class AlertasproyectoForm(forms.ModelForm):
+    class Meta:
+        model = Alertasproyecto
+        exclude = {'registrado', 'empdni', 'cargo', 'flag',}
+    

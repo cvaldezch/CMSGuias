@@ -55,4 +55,5 @@ urlpatterns = patterns('CMSGuias.apps.wsjson.views',
     url(r'^brand/', include(urls_brands)),
     url(r'^model/', include(urls_models)),
     url(r'^projects/lists/$', ViewCopyMaterialesProjectsSale.as_view()),
+    url(r'^get/path/$', TreePath.as_view()),
 )

@@ -162,8 +162,14 @@
                                 <td>{{ x.direccion }}</td>
                                 <td>{{ x.comienzo }}</td>
                                 <td>{{ x.fin }}</td>
-                                <td class="text-center"><a href="{% url 'vista_edit_projects' x.proyecto_id %}" class="btn btn-link text-black" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-edit"></span></a></td>
-                                <td class="text-center"><button type="Button" class="btn btn-link text-black btn-delete-project" title="{{ x.nompro }}" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-trash"></span></button></td>
+                                <td class="text-center">
+                                    <button class="btn btn-link text-black btn-show-edit" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-edit"></span>
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <button type="Button" class="btn btn-link text-black btn-show-delete" title="{{ x.nompro }}" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                </td>
                             </tr>
                             {% empty %}
                                 <div class="alert alert-warning">

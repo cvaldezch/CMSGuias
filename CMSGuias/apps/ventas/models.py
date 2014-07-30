@@ -1,5 +1,5 @@
 from django.db import models
-from CMSGuias.apps.home.models import Pais, Departamento, Provincia, Distrito, Cliente, Materiale, Employee, Brand, Model
+from CMSGuias.apps.home.models import Pais, Departamento, Provincia, Distrito, Cliente, Materiale, Employee, Brand, Model, Cargo
 
 
 class Proyecto(models.Model):
@@ -99,10 +99,10 @@ class Metradoventa(models.Model):
 class Alertasproyecto(models.Model):
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
     subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
-    sector = models.ForeignKey(Sectore, to_field='sector_id')
+    sector = models.ForeignKey(Sectore, to_field='sector_id', null=True, blank=True)
     registrado = models.DateTimeField(auto_now=True)
     empdni = models.ForeignKey(Employee, to_field='empdni_id')
-    cargo = models.CharField(max_length=3)
+    charge = models.ForeignKey(Cargo, to_field='cargo_id')
     mensage = models.TextField(max_length=250)
     flag = models.BooleanField(default=True)
 

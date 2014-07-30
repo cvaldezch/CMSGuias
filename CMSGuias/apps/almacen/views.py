@@ -172,28 +172,32 @@ def view_keep_project(request):
     try:
         if request.method == 'GET':
             lista = Proyecto.objects.filter(flag=True).order_by("nompro")
-            return render_to_response('almacen/project.html',{"lista":lista, "tsid": u""},context_instance=RequestContext(request))
+            return render_to_response('almacen/project.html',{"lista":lista, "tsid": u''},context_instance=RequestContext(request))
         elif request.method == 'POST':
-            if "proid" in request.POST:
-                data = {}
-                try:
-                    # sectores
-                    obj = Sectore.objects.filter(proyecto_id=request.POST.get('proid'))
-                    obj.status = 'DA'
-                    obj.flag = False
-                    obj.save()
-                    obj = Subproyecto.objects.filter(proyecto_id=request.POST.get('proid'))
-                    obj.status = 'DA'
-                    obj.flag = False
-                    obj.save()
-                    obj = Proyecto.objects.get(pk=request.POST.get('proid'))
-                    obj.status = 'DA'
-                    obj.flag = False
-                    obj.save()
-                    data['status'] = True
-                except ObjectDoesNotExist, e:
-                    data['status'] = False
-                return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+            if request.is_ajax():
+                if "proid" in request.POST:
+                    data = {}
+                    try:
+                        # sectores
+                        obj = Sectore.objects.filter(proyecto_id=request.POST.get('proid'))
+                        if obj:
+                            obj.status = 'DA'
+                            obj.flag = False
+                            obj.save()
+                        obj = Subproyecto.objects.filter(proyecto_id=request.POST.get('proid'))
+                        if obj:
+                            obj.status = 'DA'
+                            obj.flag = False
+                            obj.save()
+                        obj = Proyecto.objects.get(pk=request.POST.get('proid'))
+                        obj.status = 'DA'
+                        obj.flag = False
+                        obj.save()
+                        data['status'] = True
+                    except ObjectDoesNotExist, e:
+                        data['status'] = False
+                        data['raise'] = e.__str__()
+                    return HttpResponse(simplejson.dumps(data), mimetype="application/json")
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
         raise Http404('Method no proccess')
