@@ -100,15 +100,15 @@ class Alertasproyecto(models.Model):
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
     subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
     sector = models.ForeignKey(Sectore, to_field='sector_id', null=True, blank=True)
-    registrado = models.DateTimeField(auto_now=True)
+    registrado = models.DateTimeField(auto_now_add=True)
     empdni = models.ForeignKey(Employee, to_field='empdni_id')
     charge = models.ForeignKey(Cargo, to_field='cargo_id')
-    mensage = models.TextField(max_length=250)
+    message = models.TextField(max_length=250, default='')
+    status = models.CharField(max_length=8, default='success')
     flag = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['proyecto']
 
     def __unicode__(self):
-        return '%s %s %s %s %s'%(self.proyecto, self.sector, self.cargo, self.mensage, self.registrado)
-
+        return '%s %s %s %s %s'%(self.proyecto, self.sector, self.charge, self.message, self.registrado)

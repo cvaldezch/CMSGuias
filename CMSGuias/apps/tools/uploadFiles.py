@@ -75,6 +75,6 @@ def listDir(path):
                 r.append('<li class="file ext_%s"><a href="#" rel="/media/%s">%s</a></li>' % (e,media[1],f))
         r.append('</ul>')
     except Exception,e:
-        r.append('Could not load directory: %s' % str(e))
+        r.append('Could not load directory')
     r.append('</ul>')
     return r

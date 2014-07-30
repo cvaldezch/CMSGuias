@@ -50,5 +50,4 @@ class MetradoventaForm(forms.ModelForm):
 class AlertasproyectoForm(forms.ModelForm):
     class Meta:
         model = Alertasproyecto
-        exclude = {'registrado', 'empdni', 'cargo', 'flag',}
-    
+        exclude = {'registrado', 'empdni', 'charge', 'flag',}

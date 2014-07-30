@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-from django.conf import settings
+import pytz
 
+from django.conf import settings
 from django.contrib import messages
 from django.http import Http404
+
 
 #######################
 #  Variables Globals  #
@@ -24,7 +26,10 @@ status = {
 }
 
 # types nipples
-tipo_nipples = { "A": "Roscado", "B": "Ranurado", "C": "Roscado - Ranurado" }
+tipo_nipples = {"A": "Roscado", "B": "Ranurado", "C": "Roscado - Ranurado"}
+
+# name month
+months_name = {'January':'Enero','February':'Febrero','March':'Marzo','April':'Abril','May':'Mayo','June':'Junio','July':'Julio','August':'Agosto', 'September':'Setiembre', 'Octuber':'Octubre','November':'Noviembre', 'Decemcer':'Diciembre'}
 
 # date now format str
 def date_now(type='date',format="%Y-%m-%d"):
@@ -39,17 +44,40 @@ def date_now(type='date',format="%Y-%m-%d"):
         return date
 
 # Convert Date str to Date and date to str
-def format_date_str(_date=None, format="%Y-%m-%d"):
+def format_date_str(_date=None, format='%Y-%m-%d',options={}):
     date_str = ""
     try:
         if _date is not None:
-            date_str = _date.strftime(format)
+            if format.startswith('%d'):
+                date_str = _date.strftime(format)
+                old = _date.strftime('%B')
+                date_str = date_str.replace(old, months_name[old])
+            else:
+                date_str = _date.strftime(format)
         else:
             date_str = "date invalid!"
     except Exception, e:
         messages.add_message("%s"%e)
         raise Http404
     return date_str
+
+def format_time_str(_date=None, format='%H:%M:%S', options={}):
+    time_str = ""
+    try:
+        if _date is not None:
+            if options.__len__() > 0:
+                if options['tz']:
+                    local = pytz.timezone(settings.TIME_ZONE)
+                    _date = local.normalize(_date)
+                    time_str = _date.strftime(format)
+            else:
+                time_str = _date.strftime(format)
+        else:
+            time_str = "date invalid!"
+    except Exception, e:
+        messages.add_message("%s"%e)
+        raise Http404
+    return time_str
 
 def format_str_date(_str=None, format="%Y-%m-%d"):
     str_date = ""

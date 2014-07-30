@@ -18,6 +18,8 @@ $(document).ready ->
         $("[name=operation]").click()
     $(".btn-upload-files").on "click", uploadFiles
     $(".btn-show-comment").on "click", toggleComment
+    $(".btn-message-edit").on "click", showEditComment
+    $(".btn-message-del").on "click", showEditComment
     $("#message").focus ->
         $(@).animate
             "height": "102px"
@@ -43,19 +45,30 @@ $(document).ready ->
 publisherCommnet = ->
     data = new Object()
     data.edit = $("input[name=edit-message]").val()
-    data.message = $("#message_ifr").contents().find('body').html()
+    data.message = $("#message_ifr").contents().find("body").html()
+    data.status = $("select[name=message-status]").val()
     if data.message is "<p><br data-mce-bogus=\"1\"></p>"
         $().toastmessage "showWarningToast", "No se puede publicar el mensaje, campo vacio."
         return false
     if data.edit ==  ""
-        data.type = "edit"
-    else
         data.type = "add"
+    else
+        data.type = "edit"
+    data.proyecto = $("input[name=pro]").val()
+    data.subproyecto = $("input[name=sub]").val()
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
     $.post "", data, (response) ->
         if response.status
             listComment()
-    return 
+    return
+
+showEditComment = ->
+    if @getAttribute("data-id") isnt ""
+        id = @getAttribute("data-id")
+        $("#message_ifr").contents().find("body").html $(".comment4").find("div").eq(2).html()
+        $("select[message-status]").val @getAttribute("data-status")
+        $("input[name=edit-message]").val id
+    return
 
 listComment = ->
     $.getJSON "", "list":"comment", (response) ->
@@ -75,7 +88,7 @@ toggleComment = ->
             $(".btn-show-comment").find "span"
             .removeClass "glyphicon-chevron-down"
             .addClass "glyphicon-chevron-up"
-            $(".panel-comment").css "height", "20em"
+            $(".panel-comment").css "height", "23em"
     return
 
 treeAdminaandOpera = ->
@@ -85,7 +98,7 @@ treeAdminaandOpera = ->
     else
         admin = "/storage/projects/#{ $("input[name=pro]").val() }/#{$("input[name=sub]").val()}/administrative/"
         opera = "/storage/projects/#{ $("input[name=pro]").val() }/#{$("input[name=sub]").val()}/operation/"
-    
+
     fileTree 'filetree_administrative', admin
     fileTree 'filetree_operation', opera
     return
@@ -197,7 +210,7 @@ changeView = (percent) ->
 
 uploadFiles = (event) ->
     data = new FormData()
-    $("input[name=administrative], input[name=operation]").each (index, elemtent) ->
+    $("input[name=administrative], input[name=operation]").each (index, element) ->
         # valid inputs files is null
         console.log @files[0]
         if @files[0]?

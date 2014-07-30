@@ -229,21 +229,49 @@ $(window).resize(function(){
             <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-8">
-                        <div class="panel panel-success panel-comment">
+                        <div class="panel panel-default panel-comment">
                             <div class="panel-heading   ">
-                                <h6 class="text-success">Comentarios</h6>
+                                <h6>Comentarios</h6>
                                 <button class="close btn-show-comment"><span class="glyphicon glyphicon-chevron-up"></span></button>
                             </div>
-                            <div class="panel-body"></div>
+                            <div class="panel-body">
+                                {% for x in alerts %}
+                                    <div class="alert alert-{{ x.status }} comment{{ x.id }}">
+                                            <div>
+                                                <div class="btn-group pull-right">
+                                                    <button type="button" data-toggle="dropdown" class="btn btn-xs btn-link text-black dropdown-toggle"><span class="glyphicon glyphicon-collapse-down"></span></button>
+                                                    <ul role="menu" class="dropdown-menu">
+                                                        <li><a data-status="{{ x.status }}" data-id="{{ x.id }}" class="btn-message-edit">Editar</a></li>
+                                                        <li><a data-status="{{ x.status }}" data-id="{{ x.id }}" class="btn-message-del">Eliminar</a></li>
+                                                    </ul>
+                                                </div>
+                                                <small>{{ x.registrado }}</small>
+                                            </div>
+                                            <div>
+                                                {{ x.message|safe }}
+                                            </div>
+                                            <div>
+                                                <small class="pull-right">{{ x.charge.area }}</small>
+                                            </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="panel panel-success panel-comment">
+                        <div class="panel panel-default panel-comment">
                             <div class="panel-heading">
-                                <h6 class="text-success">Publicar Comentario</h6>
+                                <h6>Publicar Comentario</h6>
                             </div>
                             <div class="panel-body">
                                 <textarea maxlength="250" name="message" id="message" rows="1" class="form-control"></textarea>
+                                <div class="form-group">
+                                    <select name="message-status" id="message-status" class="form-control">
+                                        <option value="success">Normal</option>
+                                        <option value="warning">Importante</option>
+                                        <option value="danger">Error</option>
+                                    </select>
+                                </div>
                                 <input type="hidden" name="edit-message">
                                 <button class="btn btn-success bt-sm btn-publisher"><span class="glyphicon glyphicon-comment"></span> Publicar</button><span>
                                     <h6><small> Maximo de caracteres 250.</small></h6>

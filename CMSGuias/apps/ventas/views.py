@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_list_or_404,get_object_or_404
-from django.utils import simplejson
+from django.utils import simplejson, timezone
 from django.utils.decorators import method_decorator
 from django.template import RequestContext, TemplateDoesNotExist
 from django.views.generic import ListView, TemplateView, View
@@ -198,18 +198,18 @@ class ProjectManager(JSONResponseMixin, View):
             if request.is_ajax():
                 if 'list' in request.GET:
                     try:
-                        context['alert'] = [{} for x in Alertasproyecto.objects.filter(Q(proyecto_id=request.GET['pro']) | ~Q(subproyecto_id=None), Q(sector_id=None)).order_by('-registrado')]
+                        context['alert'] = [{'id':x.id, 'date': globalVariable.format_date_str(x.registrado,'%d de %B de %Y'), 'time':globalVariable.format_time_str(_date=x.registrado,options={'tz':True}), 'name': x.empdni.name_complete, 'charge':x.charge.area, 'message': x.message, 'status': x.status } for x in Alertasproyecto.objects.filter(Q(proyecto_id=kwargs['project']) | ~Q(subproyecto_id=None) | Q(subproyecto_id=None), Q(sector_id=None), Q(flag=True)).order_by('-registrado')]
                         context['status'] = True
                     except ObjectDoesNotExist, e:
                         context['raise'] = e.__str__()
-                        contedxt['status'] = False
+                        context['status'] = False
                     return self.render_to_json_response(context)
             context['project'] = Proyecto.objects.get(pk=kwargs['project'])
             context['subpro'] = Subproyecto.objects.filter(proyecto_id=kwargs['project'])
             context['sectors'] = Sectore.objects.filter(proyecto_id=kwargs['project']).order_by('subproyecto','planoid')
             context['operation'] = Employee.objects.filter(charge__area__istartswith='opera').order_by('charge__area')
             context['admin'] = Employee.objects.filter(charge__area__istartswith='admin').order_by('charge__area')
-            context['alerts'] = Alertasproyecto.objects.filter(Q(proyecto_id=kwargs['project']) | ~Q(subproyecto_id=None), Q(sector_id=None)).order_by('-registrado')
+            context['alerts'] = Alertasproyecto.objects.filter(Q(proyecto_id=kwargs['project']) | ~Q(subproyecto_id=None), Q(sector_id=None), Q(flag=True)).order_by('-registrado')
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)
@@ -246,15 +246,22 @@ class ProjectManager(JSONResponseMixin, View):
                     print e
                     context['raise'] = e.__str__()
                     context['status'] = False
+
             if request.POST.get('type') == 'add':
                 form = AlertasproyectoForm(request.POST)
-                print form, form.is_valid()
                 if form.is_valid():
                     add = form.save(commit=False)
-                    add.empdni = request.user.get_profile().empdni_id
-                    add.cargo = request.user.get_profile().charge.cargo_id
-                    print kwargs['project']
-                    # add.save()
+                    add.empdni_id = request.user.get_profile().empdni_id
+                    add.charge_id = request.user.get_profile().empdni.charge_id
+                    add.save()
+                    context['status'] = True
+                else:
+                    context['status'] = False
+            if request.POST.get('type') == 'edit':
+                obj = Alertasproyecto.objects.get(pk=request.POST.get('edit'))
+                form = AlertasproyectoForm(request.POST, instance=obj)
+                if form.is_valid():
+                    form.save()
                     context['status'] = True
                 else:
                     context['status'] = False
