@@ -103,7 +103,7 @@ class Alertasproyecto(models.Model):
     registrado = models.DateTimeField(auto_now_add=True)
     empdni = models.ForeignKey(Employee, to_field='empdni_id')
     charge = models.ForeignKey(Cargo, to_field='cargo_id')
-    message = models.TextField(max_length=250, default='')
+    message = models.TextField(default='')
     status = models.CharField(max_length=8, default='success')
     flag = models.BooleanField(default=True)
 

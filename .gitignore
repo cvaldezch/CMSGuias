@@ -4,3 +4,5 @@
 *.tmp
 *.rar
 django_yuml/
+projects/
+pedido/

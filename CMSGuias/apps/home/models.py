@@ -114,7 +114,12 @@ class Employee(models.Model):
 
     @property
     def name_complete(self):
-        return "%s, %s"%(self.firstname, self.lastname)
+        return '%s, %s'%(self.firstname, self.lastname)
+
+    @property
+    def name_charge(self):
+        return '%s - %s'%(self.charge.cargos, self.charge.area)
+
 
 class userProfile(models.Model):
     def url(self,filename):

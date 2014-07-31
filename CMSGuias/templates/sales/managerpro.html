@@ -140,6 +140,11 @@ $(window).resize(function(){
                             <p>
                                 <strong>Dirección: </strong> {{ project.direccion }}
                             </p>
+                            {% if project.empdni_id %}
+                                <p>
+                                    <strong>Responsable :</strong> {{ project.empdni.name_complete }} {{ project.empdni.name_charge }}
+                                </p>
+                            {% endif %}
                         </div>
                         <div class="btn-group btn-group-justified">
                             <div class="btn-group">
@@ -179,6 +184,15 @@ $(window).resize(function(){
                                 {% endif %}">
                                     <span class="glyphicon glyphicon-compressed"></span>
                                     <span class="visible-lg visible-sm">Archivos</span>
+                                </button>
+                            </div>
+                            <div class="btn-group">
+                                <button data-toggle="modal" data-target="#mapprove" class="btn btn-danger btn-xs btn-approve
+                                {% if project.status == 'AC' %}
+                                    hide
+                                {% endif %}">
+                                    <span class="glyphicon glyphicon-saved"></span>
+                                    <span class="visible-lg visible-sm">Aprobar</span>
                                 </button>
                             </div>
                             <div class="btn-group">
@@ -229,7 +243,7 @@ $(window).resize(function(){
             <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-8">
-                        <div class="panel panel-default panel-comment">
+                        <div class="panel panel-default panel-comment comment-list">
                             <div class="panel-heading   ">
                                 <h6>Comentarios</h6>
                                 <button class="close btn-show-comment"><span class="glyphicon glyphicon-chevron-up"></span></button>
@@ -238,20 +252,22 @@ $(window).resize(function(){
                                 {% for x in alerts %}
                                     <div class="alert alert-{{ x.status }} comment{{ x.id }}">
                                             <div>
-                                                <div class="btn-group pull-right">
-                                                    <button type="button" data-toggle="dropdown" class="btn btn-xs btn-link text-black dropdown-toggle"><span class="glyphicon glyphicon-collapse-down"></span></button>
-                                                    <ul role="menu" class="dropdown-menu">
-                                                        <li><a data-status="{{ x.status }}" data-id="{{ x.id }}" class="btn-message-edit">Editar</a></li>
-                                                        <li><a data-status="{{ x.status }}" data-id="{{ x.id }}" class="btn-message-del">Eliminar</a></li>
-                                                    </ul>
-                                                </div>
+                                                {% ifequal x.empdni_id user.get_profile.empdni_id %}
+                                                    <div class="btn-group pull-right">
+                                                        <button type="button" data-toggle="dropdown" class="btn btn-xs btn-link text-black dropdown-toggle"><span class="glyphicon glyphicon-collapse-down"></span></button>
+                                                        <ul role="menu" class="dropdown-menu">
+                                                            <li><a data-status="{{ x.status }}" data-id="{{ x.id }}" class="btn-message-edit">Editar</a></li>
+                                                            <!-- <li><a data-status="{{ x.status }}" data-id="{{ x.id }}" class="btn-message-del">Eliminar</a></li> -->
+                                                        </ul>
+                                                    </div>
+                                                {% endifequal %}
                                                 <small>{{ x.registrado }}</small>
                                             </div>
                                             <div>
                                                 {{ x.message|safe }}
                                             </div>
                                             <div>
-                                                <small class="pull-right">{{ x.charge.area }}</small>
+                                                <small class="pull-right">{{ x.empdni.firstname }} {{ x.empdni.lastname }} - {{ x.charge.area }}</small>
                                             </div>
                                     </div>
                                 {% endfor %}
@@ -344,7 +360,7 @@ $(window).resize(function(){
             </div>
             <div class="modal-footer">
                 <button data-dismiss="modal" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar</button>
+                <button class="btn btn-primary btn-assigned"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar</button>
             </div>
         </div>
     </div>
@@ -379,8 +395,32 @@ $(window).resize(function(){
         </div>
     </div>
 </div>
+<div class="modal fade mapprove" id="mapprove" data-backdrop="static">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header brand-danger">
+                <h4 class="modal-title">
+                    Aprobar Proyecto para Ejecución
+                </h4>
+            </div>
+            <div class="modal-body brand-danger">
+                <p>
+                    <strong>Importante!</strong> este paso solo se debe seguir es esta seguro que a terminado de ingresar los archivos y las listas de materiales a los respectivos sectores.
+                </p>
+                <p>
+                    Desea continuar con la aprobación del proyecto?
+                </p>
+                <p>
+                    <button data-dismiss="modal" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                    <button class="btn btn-danger"><span class="glyphicon glyphicon-saved"></span> Aprobar</button>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- end block -->
 {% csrf_token %}
+<input type="hidden" name="dni" value="{{ user.get_profile.empdni_id }}">
 <!-- block tree file -->
 <script src="{{ MEDIA_URL }}js/jquery.easing.js" type="text/javascript"></script>
 <script src="{{ MEDIA_URL }}js/jqueryFileTree.js" type="text/javascript"></script>

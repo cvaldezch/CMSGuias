@@ -20,6 +20,7 @@ $(document).ready ->
     $(".btn-show-comment").on "click", toggleComment
     $(".btn-message-edit").on "click", showEditComment
     $(".btn-message-del").on "click", showEditComment
+    $(".btn-assigned").on "click", assignedResponsible
     $("#message").focus ->
         $(@).animate
             "height": "102px"
@@ -42,10 +43,30 @@ $(document).ready ->
     $(".btn-publisher").on "click", publisherCommnet
     return
 
+assignedResponsible = ->
+    responsible  = $("select[name=responsible]").val()
+    admin = $("select[name=admin]").val()
+    passwd = $("input[name=passwd]").val()
+    if responsible? and admin? and passwd?
+        data = new Object()
+        data.responsible = responsible
+        data.admin = admin
+        data.passwd = passwd
+        data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+        data.type = 'responsible'
+        console.info data
+        $.post "", data, (response) ->
+            if response.status
+                location.reload()
+            else
+                $().toastmessage "", "Transaccion error: #{response.raise}"
+        return
+    return
+
 publisherCommnet = ->
     data = new Object()
     data.edit = $("input[name=edit-message]").val()
-    data.message = $("#message_ifr").contents().find("body").html()
+    data.message = $.trim $("#message_ifr").contents().find("body").html()
     data.status = $("select[name=message-status]").val()
     if data.message is "<p><br data-mce-bogus=\"1\"></p>"
         $().toastmessage "showWarningToast", "No se puede publicar el mensaje, campo vacio."
@@ -59,22 +80,52 @@ publisherCommnet = ->
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
     $.post "", data, (response) ->
         if response.status
-            listComment()
+            location.reload()
     return
 
 showEditComment = ->
     if @getAttribute("data-id") isnt ""
         id = @getAttribute("data-id")
-        $("#message_ifr").contents().find("body").html $(".comment4").find("div").eq(2).html()
+        $("#message_ifr").contents().find("body").html $(".comment#{id}").find("div").eq(2).html()
         $("select[message-status]").val @getAttribute("data-status")
         $("input[name=edit-message]").val id
     return
 
-listComment = ->
+###listComment = ->
     $.getJSON "", "list":"comment", (response) ->
         if response.status
-            template = ""
-    return
+            template = "
+            <div class=\"alert alert-{{ status }} comment{{ id }}\">
+                <div>
+                    {{!editing}}
+                    <small>{{ date }} {{ time }}</small>
+                </div>
+                <div>
+                    {{ message }}
+                </div>
+                <div>
+                    <small class=\"pull-right\">{{ charge }}</small>
+                </div>
+            </div>"
+            edit = "<div class=\"btn-group pull-right\">
+                        <button type=\"button\" data-toggle=\"dropdown\" class=\"btn btn-xs btn-link text-black dropdown-toggle\"><span class=\"glyphicon glyphicon-collapse-down\"></span></button>
+                        <ul role=\"menu\" class=\"dropdown-menu\">
+                            <li><a data-status=\"{{ status }}\" data-id=\"{{ id }}\" class=\"btn-message-edit\">Editar</a></li>
+                            <li><a data-status=\"{{ status }}\" data-id=\"{{ id }}\" class=\"btn-message-del\">Eliminar</a></li>
+                        </ul>
+                    </div>"
+            $panel = $("div.comment-list > .panel-body")
+            $panel.empty()
+            dni = $("input[name=dni]").val()
+            html = ""
+            for x of response.alerts
+                if x.empdni == dni
+                    template = template.replace "{{!editing}}", edit
+                html = html.concat Mustache.to_html template, response.alerts[x]
+            console.log html
+            $panel.html html
+            return
+    return###
 
 toggleComment = ->
     $(".panel-comment").find ".panel-body"

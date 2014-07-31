@@ -8,6 +8,7 @@ from django.db.models import Q, Count
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
+# from django.contrib.auth.mod import User
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_list_or_404,get_object_or_404
@@ -73,7 +74,7 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                     if form.is_valid():
                         add = form.save(commit=False)
                         add.proyecto_id = key
-                        add.empdni_id = request.user.get_profile().empdni_id
+                        # add.empdni_id = request.user.get_profile().empdni_id
                         add.status = 'PE'
                         add.save()
                         context['status'] = True
@@ -195,15 +196,15 @@ class ProjectManager(JSONResponseMixin, View):
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
-            if request.is_ajax():
-                if 'list' in request.GET:
-                    try:
-                        context['alert'] = [{'id':x.id, 'date': globalVariable.format_date_str(x.registrado,'%d de %B de %Y'), 'time':globalVariable.format_time_str(_date=x.registrado,options={'tz':True}), 'name': x.empdni.name_complete, 'charge':x.charge.area, 'message': x.message, 'status': x.status } for x in Alertasproyecto.objects.filter(Q(proyecto_id=kwargs['project']) | ~Q(subproyecto_id=None) | Q(subproyecto_id=None), Q(sector_id=None), Q(flag=True)).order_by('-registrado')]
-                        context['status'] = True
-                    except ObjectDoesNotExist, e:
-                        context['raise'] = e.__str__()
-                        context['status'] = False
-                    return self.render_to_json_response(context)
+            """if request.is_ajax():
+            if 'list' in request.GET:
+                try:
+                    context['alerts'] = [{'id':x.id, 'date': globalVariable.format_date_str(x.registrado,'%d de %B de %Y'), 'time':globalVariable.format_time_str(_date=x.registrado,options={'tz':True}), 'name': x.empdni.name_complete, 'charge':x.charge.area, 'message': mark_safe(escape(x.message)), 'status': x.status } for x in Alertasproyecto.objects.filter(Q(proyecto_id=kwargs['project']) | ~Q(subproyecto_id=None) | Q(subproyecto_id=None), Q(sector_id=None), Q(flag=True)).order_by('-registrado')]
+                    context['status'] = True
+                except ObjectDoesNotExist, e:
+                    context['raise'] = e.__str__()
+                    context['status'] = False
+                return self.render_to_json_response(context)"""
             context['project'] = Proyecto.objects.get(pk=kwargs['project'])
             context['subpro'] = Subproyecto.objects.filter(proyecto_id=kwargs['project'])
             context['sectors'] = Sectore.objects.filter(proyecto_id=kwargs['project']).order_by('subproyecto','planoid')
@@ -265,6 +266,38 @@ class ProjectManager(JSONResponseMixin, View):
                     context['status'] = True
                 else:
                     context['status'] = False
+            if request.POST.get('type') == 'responsible':
+                try:
+                    user = userProfile.objects.get(empdni_id=request.POST.get('admin'))
+                    # authenticate password admin
+                    if user.user.check_password(request.POST.get('passwd')):
+                        #if user.user.is_superuser:
+                        pro = Proyecto.objects.get(pk=kwargs['project'])
+                        pro.empdni_id = request.POST.get('responsible')
+                        pro.save()
+                        context['status'] = True
+                    else:
+                        context['raise'] = 'Password incorrect!'
+                        context['status'] = False
+                except ObjectDoesNotExist, e:
+                    context['raise'] = e.__str__()
+                    context['status'] = False
+            if request.POST.get('type') == 'approve':
+                # this function is for approve the project
+                try:
+                    user = userProfile.objects.get(empdni_id=request.POST.get('admin'))
+                    # authenticate password admin
+                    if user.user.check_password(request.POST.get('passwd')):
+                        #if user.user.is_superuser:
+                        pro = Proyecto.objects.get(pk=kwargs['project'])
+                        pro.approved = request.POST.get('admin')
+                        pro.save()
+                        context['status'] = True
+                    else:
+                        context['raise'] = 'Password incorrect!'
+                        context['status'] = False
+                except ObjectDoesNotExist, e:
+                    raise e
             return self.render_to_json_response(context)
 # Manager View Sectors
 class SectorManage(JSONResponseMixin, View):
@@ -349,3 +382,4 @@ class SectorManage(JSONResponseMixin, View):
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
+
