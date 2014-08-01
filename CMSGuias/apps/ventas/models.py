@@ -16,10 +16,12 @@ class Proyecto(models.Model):
     direccion = models.CharField(max_length=200,null=False)
     obser = models.TextField(null=True,blank=True)
     status = models.CharField(max_length=2,null=False,default='00')
-    empdni = models.ForeignKey(Employee, to_field='empdni_id', null=True, blank=True)
+    empdni = models.ForeignKey(Employee, related_name='proyectoAsEmployee', null=True, blank=True)
+    approved = models.ForeignKey(Employee, related_name='approvedAsEmployee', null=True, blank=True)
     flag = models.BooleanField(default=True,null=False)
 
     class Meta:
+        #abstract = True
         ordering = ['nompro']
 
     def __unicode__(self):

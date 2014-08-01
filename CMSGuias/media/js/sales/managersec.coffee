@@ -77,8 +77,10 @@ $(document).ready ->
                     $tb.empty()
                     for x of response.project
                         $tb.append Mustache.render template, response.project[x]
-                    return 
+                    return
             return
+    # seconded part for order to store
+    $("input[name=choice]").on "change", selectChoiseOrder
     return
 
 loadSecandSub = (event) ->
@@ -99,7 +101,7 @@ loadSecandSub = (event) ->
                 $item.empty()
                 for x of response.sector
                     $item.append Mustache.render template, response.sector[x]
-                
+
                 $item = $("ul.subprojects")
                 template = template.replace "sector_id", "subproject_id", 2
                 $item.empty()
@@ -170,7 +172,7 @@ copyBack = (event)->
         $(".body-materials").hide()
 
     console.log $(".body-sector").is(":hidden")
-    
+
     $(".body-#{@value}").show 600
     return
 
@@ -377,6 +379,7 @@ listMaterials = ->
     return
 
 delMaterials = (event)->
+    btn = @value
     $materials = $(".#{@value} > td")
     $().toastmessage "showToast",
         "text": "Desea eliminar #{$materials.eq(2).text()} #{$materials.eq(3).text()}?"
@@ -395,7 +398,7 @@ delMaterials = (event)->
                 console.log data
                 $.post "", data, (response) ->
                     if response.status
-                        $(".#{@value}").remove()
+                        $(".#{btn}").remove()
                         $(".table-details > tbody > tr").each (index, element) ->
                             element.find "td"
                             .eq 0
@@ -501,4 +504,20 @@ changeRadio = (event) ->
             rdo = @
             $("input[name=copy]").each (index, element) ->
                 @checked = if rdo.value is "all" then "checked" else ""
+    return
+
+
+# part two -> order to store, this include administrator, sales and store
+#
+#
+#change choice order
+selectChoiseOrder = (event) ->
+    event.preventDefault()
+    $(@).each ->
+        if @checked
+            chk = @
+            $("input[name=mats]").each (index, element) ->
+                @checked = Boolean parseInt chk.value
+                return
+
     return

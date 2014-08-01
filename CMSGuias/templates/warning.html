@@ -5,12 +5,15 @@
 </head>
 <body>
 <h1>Warning template warning</h1>
-
+<h4>
+    This is a page of warning template.
+</h4>
 <p>
-{{ messages }}
 <ul>
 {% for msg in messages %}
-<li>{{ msg }}</li>
+    <li>{{ msg }}</li>
+{% empty %}
+    <h4>Nothing message.</h4>
 {% endfor %}
 </ul>
 </p>

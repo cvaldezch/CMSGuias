@@ -18,6 +18,7 @@
             <h3 class="text-primary">Proyectos</h3>
         </header>
         <aside>
+        {% if user.get_profile.empdni.charge.area == 'Administrator' or user.get_profile.empdni.charge.area == 'Ventas' %}
             <div class="btn-group">
                 <button class="btn btn-primary btn-add">
                     <span class="glyphicon glyphicon-plus"></span>
@@ -27,6 +28,7 @@
                     <span class="glyphicon glyphicon-floppy-disk"></span> Guardar Cambios
                 </button>
             </div>
+        {% endif %}
             <div class="panel panel-primary panel-pro">
                 <div class="panel-body">
                     <div class="row">
@@ -148,8 +150,10 @@
                                 <th>Dirección</th>
                                 <th class="text-center">Fecha Inicio</th>
                                 <th class="text-center">Fecha Fin</th>
+                                {% if user.get_profile.empdni.charge.area == "Administrator" or user.get_profile.empdni.charge.area == "Ventas"  %}
                                 <th class="text-center">Editar</th>
                                 <th class="text-center">Eliminar</th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -162,6 +166,7 @@
                                 <td>{{ x.direccion }}</td>
                                 <td>{{ x.comienzo }}</td>
                                 <td>{{ x.fin }}</td>
+                                {% if user.get_profile.empdni.charge.area == "Administrator" or user.get_profile.empdni.charge.area == "Ventas"  %}
                                 <td class="text-center">
                                     <button class="btn btn-link text-black btn-show-edit" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-edit"></span>
                                     </button>
@@ -170,6 +175,7 @@
                                     <button type="Button" class="btn btn-link text-black btn-show-delete" title="{{ x.nompro }}" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-trash"></span>
                                     </button>
                                 </td>
+                                {% endif %}
                             </tr>
                             {% empty %}
                                 <div class="alert alert-warning">

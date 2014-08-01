@@ -405,14 +405,30 @@ $(window).resize(function(){
             </div>
             <div class="modal-body brand-danger">
                 <p>
-                    <strong>Importante!</strong> este paso solo se debe seguir es esta seguro que a terminado de ingresar los archivos y las listas de materiales a los respectivos sectores.
+                    <strong>Importante!</strong> este paso solo se debe seguir si esta seguro que a terminado de ingresar los archivos y las listas de materiales a los respectivos sectores.
                 </p>
                 <p>
                     Desea continuar con la aprobación del proyecto?
                 </p>
                 <p>
+                    <div class="form-group">
+                        <label class="control-label">Administrador</label>
+                        <select name="admin-approve" id="admin-approve" class="form-control input-sm">
+                            {% for x in admin %}
+                                <option value="{{ x.empdni_id }}">{{ x.name_complete }}</option>
+                            {% empty %}
+                                <option value="">-- Nothing --</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Password</label>
+                        <input type="password" class="form-control input-sm" name="passwd-approve">
+                    </div>
+                </p>
+                <p>
                     <button data-dismiss="modal" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                    <button class="btn btn-danger"><span class="glyphicon glyphicon-saved"></span> Aprobar</button>
+                    <button class="btn btn-danger pull-right btn-approved"><span class="glyphicon glyphicon-saved"></span> Aprobar</button>
                 </p>
             </div>
         </div>

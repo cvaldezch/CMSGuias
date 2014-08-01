@@ -26,9 +26,12 @@ class HomeManager(ListView):
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
-        context = {}
-        self.template_name = RedirectModule(request.user.get_profile().empdni.charge.area)
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        try:
+            context = {}
+            self.template_name = RedirectModule(request.user.get_profile().empdni.charge.area)
+            return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        except TemplateDoesNotExist, e:
+            raise e
 
 class LoginView(View):
 

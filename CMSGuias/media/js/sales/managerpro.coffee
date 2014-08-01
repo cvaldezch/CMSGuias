@@ -21,6 +21,7 @@ $(document).ready ->
     $(".btn-message-edit").on "click", showEditComment
     $(".btn-message-del").on "click", showEditComment
     $(".btn-assigned").on "click", assignedResponsible
+    $(".btn-approved").on "click", approvedProject
     $("#message").focus ->
         $(@).animate
             "height": "102px"
@@ -41,6 +42,28 @@ $(document).ready ->
         font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",
         toolbar: "undo redo | styleselect | fontsizeselect |"
     $(".btn-publisher").on "click", publisherCommnet
+    return
+
+approvedProject = ->
+    data = new Object()
+    data.type = "approved"
+    data.admin = $("select[name=admin-approve]").val()
+    data.passwd = $("input[name=passwd-approve]").val()
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    $().toastmessage "showToast",
+        text : "Realmente desea habilitar el proyecto?"
+        type : "confirm"
+        sticky : true
+        buttons : [{value:'No'},{value:'Si'}]
+        success : (result) ->
+            if result is "Si"
+                $.post "", data, (response) ->
+                    if response.status
+                        location.reload()
+                    else
+                        $().toastmessage "showWarningToast", "Fallo Transaccion: #{response.raise}"
+                , "json"
+                return
     return
 
 assignedResponsible = ->

@@ -282,7 +282,7 @@ class ProjectManager(JSONResponseMixin, View):
                 except ObjectDoesNotExist, e:
                     context['raise'] = e.__str__()
                     context['status'] = False
-            if request.POST.get('type') == 'approve':
+            if request.POST.get('type') == 'approved':
                 # this function is for approve the project
                 try:
                     user = userProfile.objects.get(empdni_id=request.POST.get('admin'))
@@ -290,14 +290,25 @@ class ProjectManager(JSONResponseMixin, View):
                     if user.user.check_password(request.POST.get('passwd')):
                         #if user.user.is_superuser:
                         pro = Proyecto.objects.get(pk=kwargs['project'])
-                        pro.approved = request.POST.get('admin')
+                        pro.approved_id = request.POST.get('admin')
+                        pro.status = 'AC'
+                        print 'all correct'
                         pro.save()
+                        sub = Subproyecto.objects.filter(proyecto_id=kwargs['project'])
+                        if sub:
+                            sub.status = 'AC'
+                            sub.save()
+                        sec = Sectore.objects.filter(proyecto_id=kwargs['project'])
+                        if sec:
+                            sec.status = 'AC'
+                            sec.save()
                         context['status'] = True
                     else:
                         context['raise'] = 'Password incorrect!'
                         context['status'] = False
                 except ObjectDoesNotExist, e:
-                    raise e
+                    context['raise'] = e.__str__()
+                    context['status'] = False
             return self.render_to_json_response(context)
 # Manager View Sectors
 class SectorManage(JSONResponseMixin, View):
@@ -368,9 +379,9 @@ class SectorManage(JSONResponseMixin, View):
                             context['status'] = True
                         else:
                             context['status'] = False
-                    if 'del' in request.POST:
+                    if request.POST.get('type') == 'del':
                         obj = Metradoventa.objects.filter(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') else None, sector_id=request.POST.get('sec'), materiales_id=request.POST.get('materials'))
-                        obj.delete()
+                        print obj.delete(), 'object delete'
                         context['status'] = True
                     if request.POST.get('type') == 'killdata':
                         obj = Metradoventa.objects.filter(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') else None, sector_id=request.POST.get('sec'))

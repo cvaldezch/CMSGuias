@@ -58,7 +58,9 @@
                                             {% endif %}
                                             <p>
                                                 <button name="show-full" class="btn btn-xs btn-primary" role="button" value="{{ MEDIA_URL }}{{ x.files }}"><span class="glyphicon glyphicon-fullscreen"></span></button>
-                                                <button name="plane-del" class="btn btn-xs btn-danger pull-right" role="button" value="{{ x.files }}"><span class="glyphicon glyphicon-fire"></span></button>
+                                                {% ifequal project.status 'PE' %}
+                                                    <button name="plane-del" class="btn btn-xs btn-danger pull-right" role="button" value="{{ x.files }}"><span class="glyphicon glyphicon-fire"></span></button>
+                                                {% endifequal %}
                                             </p>
                                       </div>
                                     </div>
@@ -203,9 +205,28 @@
                     </div>
                     <div class="table-responsive">
                       <table class="table table-hover table-condensed table-details">
+                        {% ifequal project.status 'AC'  %}
+                        <caption>
+                            <div class="form-group pull-left">
+                                    <strong>Seleccionar :</strong>
+                                <label class="radio-inline">
+                                    <input type="radio" value="1" name="choice"> Todo
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="0" name="choice"> Ninguno.
+                                </label>
+                            </div>
+                        </caption>
+                        {% endifequal %}
                         <thead>
                           <tr class="brand-primary text-white">
-                            <th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Marca</th><th>Modelo</th><th>Cantidad</th><th>Precio</th>
+                            {% ifequal project.status 'AC'  %}
+                            <th></th>
+                            {% endifequal %}
+                            <th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Marca</th><th>Modelo</th><th>Cantidad</th>
+                            {% if user.get_profile.empdni.charge.area == 'Administrator' or user.get_profile.empdni.charge.area == 'Ventas'  %}
+                            <th>Precio</th>
+                            {% endif %}
                             {% ifequal project.status 'PE'  %}
                                 <th>Editar</th><th>Eliminar</th>
                             {% endifequal %}
@@ -215,6 +236,11 @@
                           {% for x in materials %}
                             <tr class="{{ x.materiales_id }}-{{ x.id }}">
                                 <td>{{ forloop.counter }}</td>
+                                {% ifequal project.status 'AC' %}
+                                <td>
+                                    <input type="checkbox" name="mats" value="{{ x.materiales_id }}-{{ x.id }}">
+                                </td>
+                                {% endifequal %}
                                 <td>{{ x.materiales_id }}</td>
                                 <td>{{ x.materiales.matnom }}</td>
                                 <td>{{ x.materiales.matmed }}</td>
@@ -222,7 +248,9 @@
                                 <td>{{ x.brand.brand }}</td>
                                 <td>{{ x.model.model }}</td>
                                 <td>{{ x.cantidad|safe }}</td>
+                                {% if user.get_profile.empdni.charge.area == 'Administrator' or user.get_profile.empdni.charge.area == 'Ventas'  %}
                                 <td>{{ x.precio|safe }}</td>
+                                {% endif %}
                                 {% ifequal project.status 'PE'  %}
                                     <td>
                                         <button class="btn btn-xs btn-link text-green btn-show-edit" value="{{ x.materiales_id }}-{{ x.id }}">
@@ -319,7 +347,7 @@
               <!-- sectores locales -->
               <div class="panel panel-primary">
                 <ul class="list-group sector-local">
-                  
+
                 </ul>
               </div>
             </div>
