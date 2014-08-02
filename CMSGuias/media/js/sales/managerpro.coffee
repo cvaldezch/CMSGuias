@@ -77,7 +77,7 @@ assignedResponsible = ->
         data.passwd = passwd
         data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
         data.type = 'responsible'
-        console.info data
+        # console.info data
         $.post "", data, (response) ->
             if response.status
                 location.reload()
@@ -189,7 +189,7 @@ fileTree = (id, path)->
             window.open file, "_blank"
     return
 setSubproject = (event) ->
-    console.log $(@).attr("data-sub")
+    # console.log $(@).attr("data-sub")
     $("input[name=sub]").val($(@).attr("data-sub"))
     if $("input[name=sub]").val() isnt ""
         $(".header-project > .info-sub").remove()
@@ -210,21 +210,26 @@ getSectors = ->
             if data.sub == ""
                 data.sub = "None"
             template = "<article>
-                        <button class=\"btn btn-xs text-black btn-link pull-left btn-edit-sector\" value=\"{{ sector_id }}\">
-                            <span class=\"glyphicon glyphicon-pencil\"></span>
-                                        </button>
-                        <button class=\"btn btn-xs text-black btn-link pull-right\" value=\"{{ sector_id }}\">
-                            <span class=\"glyphicon glyphicon-trash\"></span>
-                                        </button>
+                        {{!editable}}
                         <a href=\"/sales/projects/manager/sector/#{data.pro}/#{data.sub}/{{ sector_id }}/\" class=\"text-black\">
                             {{ sector_id }}
                             {{ nomsec }}
                             <small>{{ planoid }}</small>
                         </a>
                         </article>"
+            edit = "<button class=\"btn btn-xs text-black btn-link pull-left btn-edit-sector\" value=\"{{ sector_id }}\">
+                            <span class=\"glyphicon glyphicon-pencil\"></span>
+                                        </button>
+                        <button class=\"btn btn-xs text-black btn-link pull-right\" value=\"{{ sector_id }}\">
+                            <span class=\"glyphicon glyphicon-trash\"></span>
+                                        </button>"
+            editable = $("input[name=status-project]").val()
+            if editable isnt 'AC'
+                template = template.replace "{{!editable}}", edit
+
             templist = "<li><a href=\"/sales/projects/manager/sector/#{data.pro}/#{data.sub}/{{ sector_id }}/\" class=\"text-black\"><span class=\"glyphicon glyphicon-chevron-right\"></span> {{ nomsec }}</a></li>"
             $list = if data['sub'] is "" then $(".sectorsdefault") else $(".sectors#{data['sub']}")
-            console.log $list
+            # console.log $list
             $sec = $(".all-sectors")
             $sec.empty()
             $list.empty()
@@ -286,7 +291,7 @@ uploadFiles = (event) ->
     data = new FormData()
     $("input[name=administrative], input[name=operation]").each (index, element) ->
         # valid inputs files is null
-        console.log @files[0]
+        # console.log @files[0]
         if @files[0]?
             data.append @name, @files[0]
             return
@@ -295,7 +300,7 @@ uploadFiles = (event) ->
     data.append "type", "files"
     data.append "pro", $("input[name=pro]").val()
     data.append "sub", $("input[name=sub]").val()
-    console.log data
+    # console.log data
     $.ajax
         data : data,
         url : "",
@@ -305,7 +310,7 @@ uploadFiles = (event) ->
         processData: false,
         contentType: false,
         success : (response) ->
-            console.log response
+            # console.log response
             if response.status
                 location.reload()
             else

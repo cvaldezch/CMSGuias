@@ -146,11 +146,12 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'CMSGuias.apps.almacen',
     'CMSGuias.apps.home',
-    'CMSGuias.apps.wsjson',
+    'CMSGuias.apps.logistica',
     'CMSGuias.apps.reports',
     'CMSGuias.apps.ventas',
-    'CMSGuias.apps.logistica',
     'CMSGuias.apps.taller',
+    'CMSGuias.apps.wsjson',
+    'CMSGuias.apps.operations',
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'

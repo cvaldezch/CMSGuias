@@ -140,9 +140,9 @@
         <article>
             <div class="panel panel-primary">
                 <div class="table-responsive">
-                    <table class="table table-hover table-bordered table-condensed">
+                    <table class="table table-hover table-condensed">
                         <thead>
-                            <tr>
+                            <tr class="brand-primary text-white">
                                 <th class="text-center">Item</th>
                                 <th></th>
                                 <th class="text-center">Codigo</th>
@@ -158,7 +158,12 @@
                         </thead>
                         <tbody>
                             {% for x in list %}
-                            <tr class="tr-{{ x.proyecto_id }}">
+                            {% ifequal x.status 'AC' %}
+                            <tr class="tr-{{ x.proyecto_id }} success">
+                            {% endifequal %}
+                            {% ifequal x.status 'PE'  %}
+                            <tr class="tr-{{ x.proyecto_id }} info">
+                            {% endifequal %}
                                 <td>{{ forloop.counter }}</td>
                                 <td><a href="{% url 'managerpro_view' x.proyecto_id %}" class="btn btn-link btn-xs btn-open text-black"><span class="glyphicon glyphicon-folder-close"></span></a></td>
                                 <td>{{ x.proyecto_id }}</td>
@@ -168,11 +173,11 @@
                                 <td>{{ x.fin }}</td>
                                 {% if user.get_profile.empdni.charge.area == "Administrator" or user.get_profile.empdni.charge.area == "Ventas"  %}
                                 <td class="text-center">
-                                    <button class="btn btn-link text-black btn-show-edit" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-edit"></span>
+                                    <button class="btn btn-link btn-xs text-black btn-show-edit" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-edit"></span>
                                     </button>
                                 </td>
                                 <td class="text-center">
-                                    <button type="Button" class="btn btn-link text-black btn-show-delete" title="{{ x.nompro }}" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-trash"></span>
+                                    <button type="Button" class="btn btn-xs btn-link text-black btn-show-delete" title="{{ x.nompro }}" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-trash"></span>
                                     </button>
                                 </td>
                                 {% endif %}

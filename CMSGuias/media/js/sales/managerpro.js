@@ -97,7 +97,6 @@ assignedResponsible = function() {
     data.passwd = passwd;
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
     data.type = 'responsible';
-    console.info(data);
     $.post("", data, function(response) {
       if (response.status) {
         return location.reload();
@@ -221,7 +220,6 @@ fileTree = function(id, path) {
 };
 
 setSubproject = function(event) {
-  console.log($(this).attr("data-sub"));
   $("input[name=sub]").val($(this).attr("data-sub"));
   if ($("input[name=sub]").val() !== "") {
     $(".header-project > .info-sub").remove();
@@ -240,15 +238,19 @@ getSectors = function() {
   data.sub = $("input[name=sub]").val();
   url = "/sales/projects/sectors/crud/";
   $.getJSON(url, data, function(response) {
-    var $list, $sec, template, templist, x;
+    var $list, $sec, edit, editable, template, templist, x;
     if (response.status) {
       if (data.sub === "") {
         data.sub = "None";
       }
-      template = "<article> <button class=\"btn btn-xs text-black btn-link pull-left btn-edit-sector\" value=\"{{ sector_id }}\"> <span class=\"glyphicon glyphicon-pencil\"></span> </button> <button class=\"btn btn-xs text-black btn-link pull-right\" value=\"{{ sector_id }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> <a href=\"/sales/projects/manager/sector/" + data.pro + "/" + data.sub + "/{{ sector_id }}/\" class=\"text-black\"> {{ sector_id }} {{ nomsec }} <small>{{ planoid }}</small> </a> </article>";
+      template = "<article> {{!editable}} <a href=\"/sales/projects/manager/sector/" + data.pro + "/" + data.sub + "/{{ sector_id }}/\" class=\"text-black\"> {{ sector_id }} {{ nomsec }} <small>{{ planoid }}</small> </a> </article>";
+      edit = "<button class=\"btn btn-xs text-black btn-link pull-left btn-edit-sector\" value=\"{{ sector_id }}\"> <span class=\"glyphicon glyphicon-pencil\"></span> </button> <button class=\"btn btn-xs text-black btn-link pull-right\" value=\"{{ sector_id }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button>";
+      editable = $("input[name=status-project]").val();
+      if (editable !== 'AC') {
+        template = template.replace("{{!editable}}", edit);
+      }
       templist = "<li><a href=\"/sales/projects/manager/sector/" + data.pro + "/" + data.sub + "/{{ sector_id }}/\" class=\"text-black\"><span class=\"glyphicon glyphicon-chevron-right\"></span> {{ nomsec }}</a></li>";
       $list = data['sub'] === "" ? $(".sectorsdefault") : $(".sectors" + data['sub']);
-      console.log($list);
       $sec = $(".all-sectors");
       $sec.empty();
       $list.empty();
@@ -318,7 +320,6 @@ uploadFiles = function(event) {
   var data;
   data = new FormData();
   $("input[name=administrative], input[name=operation]").each(function(index, element) {
-    console.log(this.files[0]);
     if (this.files[0] != null) {
       data.append(this.name, this.files[0]);
     }
@@ -327,7 +328,6 @@ uploadFiles = function(event) {
   data.append("type", "files");
   data.append("pro", $("input[name=pro]").val());
   data.append("sub", $("input[name=sub]").val());
-  console.log(data);
   $.ajax({
     data: data,
     url: "",
@@ -337,7 +337,6 @@ uploadFiles = function(event) {
     processData: false,
     contentType: false,
     success: function(response) {
-      console.log(response);
       if (response.status) {
         return location.reload();
       } else {

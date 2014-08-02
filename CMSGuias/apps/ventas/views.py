@@ -18,9 +18,10 @@ from django.template import RequestContext, TemplateDoesNotExist
 from django.views.generic import ListView, TemplateView, View
 from django.views.generic.edit import UpdateView, CreateView
 
+from CMSGuias.apps.home.models import *
+from CMSGuias.apps.operations.models import MetProject
 from .models import *
 from .forms import *
-from CMSGuias.apps.home.models import *
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles
 
 
@@ -296,12 +297,22 @@ class ProjectManager(JSONResponseMixin, View):
                         pro.save()
                         sub = Subproyecto.objects.filter(proyecto_id=kwargs['project'])
                         if sub:
-                            sub.status = 'AC'
-                            sub.save()
+                            sub.update(status='AC')
                         sec = Sectore.objects.filter(proyecto_id=kwargs['project'])
                         if sec:
-                            sec.status = 'AC'
-                            sec.save()
+                            sec.update(status='AC')
+                        # paste all list of materials to "MetProject"
+                        for x in Metradoventa.objects.filter(proyecto_id=kwargs['project']):
+                            obj = MetProject()
+                            obj.proyecto_id = x.proyecto_id
+                            obj.subproyecto_id = x.subproyecto_id
+                            obj.sector_id = x.sector_id
+                            obj.materiales_id = x.materiales_id
+                            obj.cantidad = x.cantidad
+                            obj.precio = x.precio
+                            obj.brand_id = x.brand_id
+                            obj.model_id = x.model_id
+                            obj.save()
                         context['status'] = True
                     else:
                         context['raise'] = 'Password incorrect!'
@@ -337,7 +348,10 @@ class SectorManage(JSONResponseMixin, View):
             context['system'] = Configuracion.objects.get(periodo=globalVariable.get_year)
             context['currency'] = Moneda.objects.filter(flag=True).order_by('moneda')
             context['exchange'] = TipoCambio.objects.filter(fecha=globalVariable.date_now())
-            context['materials'] = Metradoventa.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom')
+            if context['project'].status != 'AC':
+                context['materials'] = Metradoventa.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom')
+            else:
+                context['materials'] = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom')
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)
