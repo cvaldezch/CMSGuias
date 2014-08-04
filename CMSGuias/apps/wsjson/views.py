@@ -16,7 +16,7 @@ from django.db.models import Count, Sum
 from django.utils import simplejson
 from django.core import serializers
 
-from CMSGuias.apps.almacen import models
+from CMSGuias.apps.almacen.models import *
 from CMSGuias.apps.home.models import *
 from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto, Metradoventa
 from CMSGuias.apps.tools import uploadFiles
@@ -108,13 +108,13 @@ def save_order_temp_materials(request):
     try:
         data = {}
         if request.method == "POST":
-            c = models.tmppedido.objects.filter(empdni__exact=request.POST['dni'],materiales_id__exact=request.POST['mid']).count()
+            c = tmppedido.objects.filter(empdni__exact=request.POST['dni'],materiales_id__exact=request.POST['mid']).count()
             quantity_old = 0
             if c > 0:
-                obj = models.tmppedido.objects.get(empdni__exact=request.POST['dni'],materiales_id__exact=request.POST['mid'])
+                obj = tmppedido.objects.get(empdni__exact=request.POST['dni'],materiales_id__exact=request.POST['mid'])
                 quantity_old = float(obj.cantidad)
             else:
-                obj = models.tmppedido()
+                obj = tmppedido()
             obj.empdni = request.POST['dni']
             obj.materiales_id = request.POST['mid']
             obj.cantidad = ( float(request.POST['cant']) + quantity_old)
@@ -130,7 +130,7 @@ def update_order_temp_materials(request):
     try:
         data = {}
         if request.method == "POST":
-            obj = models.tmppedido.objects.get(empdni__exact=request.POST['dni'],materiales_id__exact=request.POST['mid'])
+            obj = tmppedido.objects.get(empdni__exact=request.POST['dni'],materiales_id__exact=request.POST['mid'])
             obj.cantidad = request.POST['cantidad']
             obj.save()
             data['status'] = True
@@ -144,7 +144,7 @@ def delete_order_temp_material(request):
     try:
         data = {}
         if request.method == "POST":
-            obj = models.tmppedido.objects.get(empdni__exact=request.POST['dni'],materiales_id__exact=request.POST['mid'])
+            obj = tmppedido.objects.get(empdni__exact=request.POST['dni'],materiales_id__exact=request.POST['mid'])
             obj.delete()
             data['status'] = True
         else:
@@ -158,10 +158,10 @@ def delete_all_temp_order(request):
         data = {}
         if request.method == "POST":
             # get objects to delete; these are of table bedside
-            obj = models.tmppedido.objects.filter(empdni__exact=request.POST['dni'])
+            obj = tmppedido.objects.filter(empdni__exact=request.POST['dni'])
             obj.delete()
             # here get object "Niples" tambien deberan ser eliminadas
-            tmp = models.tmpniple.objects.filter(empdni__exact=request.POST.get('dni'))
+            tmp = tmpniple.objects.filter(empdni__exact=request.POST.get('dni'))
             tmp.delete()
             data['status'] = True
         else:
@@ -174,11 +174,11 @@ def get_list_order_temp(request):
     try:
         data = {'list':[]}
         if request.method == 'GET':
-            ls = models.tmppedido.objects.filter(empdni__exact=request.GET['dni']).order_by("materiales")
+            ls = tmppedido.objects.filter(empdni__startswith=request.GET['dni']).order_by('materiales__matnom')
             #lista = [ {"cant": x.cantidad, "materiales_id": x.materiales_id, "matnom": x.materiales.matnom } for x in ls ]
             i = 1
             for x in ls:
-                data['list'].append({"item": i, "materiales_id": x.materiales_id, "matnom": x.materiales.matnom, "matmed": x.materiales.matmed, "unidad": x.materiales.unidad_id, "cantidad": x.cantidad })
+                data['list'].append({'item': i, 'materiales_id': x.materiales_id, 'matnom': x.materiales.matnom, 'matmed': x.materiales.matmed, 'unidad': x.materiales.unidad_id, 'cantidad': x.cantidad })
                 i+=1
             data['status'] = True
         else:
@@ -202,7 +202,7 @@ def get_list_beside_nipples_temp_orders(request):
     try:
         data = {}
         if request.method == 'GET':
-            ls = models.tmppedido.objects.filter(materiales__materiales_id__startswith='115').order_by("materiales")
+            ls = tmppedido.objects.filter(materiales__materiales_id__startswith='115').order_by("materiales")
             if len(ls) > 0:
                 data['status'] = True
                 data['nipples'] = [ {"materiales_id":x.materiales.materiales_id,"matnom":x.materiales.matnom,"matmed":x.materiales.matmed,"unidad":x.materiales.unidad_id, "cantidad": x.cantidad } for x in ls]
@@ -218,7 +218,7 @@ def get_list_temp_nipples(request):
         data = {}
         if request.method == 'GET':
             tipo = {'A':"Roscado","B":"Ranurado", "C":"Roscado - Ranurado" }
-            ls = models.tmpniple.objects.filter(empdni__exact=request.GET['dni'],materiales_id__exact=request.GET['mid']).order_by('metrado')
+            ls = tmpniple.objects.filter(empdni__exact=request.GET['dni'],materiales_id__exact=request.GET['mid']).order_by('metrado')
             data['list'] = [ { "id": x.id,"cantidad":x.cantidad,"materiales_id":x.materiales.materiales_id,"matnom": 'Niple '+tipo[x.tipo],"matmed":x.materiales.matmed, "metrado": x.metrado, "tipo": x.tipo } for x in ls]
             data['status'] = True
         else:
@@ -232,9 +232,9 @@ def post_saved_update_temp_nipples(request):
     if request.method == 'POST':
         try:
             if request.POST.get('tra') == 'new':
-                obj = models.tmpniple()
+                obj = tmpniple()
             else:
-                obj = models.tmpniple.objects.get(id=request.POST.get('id'))
+                obj = tmpniple.objects.get(id=request.POST.get('id'))
             obj.empdni = request.POST.get('dni')
             obj.materiales_id = request.POST.get('mid')
             obj.cantidad = request.POST.get('veces')
@@ -251,7 +251,7 @@ def post_delete_temp_item_nipple(request):
     data = {}
     if request.method == 'POST':
         try:
-            obj = models.tmpniple.objects.get(id__exact=request.POST.get('id'), materiales_id__exact=request.POST.get('mid'),empdni__exact=request.POST.get('dni'))
+            obj = tmpniple.objects.get(id__exact=request.POST.get('id'), materiales_id__exact=request.POST.get('mid'),empdni__exact=request.POST.get('dni'))
             obj.delete()
             data['status'] = True
         except ObjectDoesNotExist, e:
@@ -263,7 +263,7 @@ def post_delete_temp_all_nipple(request):
     data = {}
     if request.method == 'POST':
         try:
-            obj = models.tmpniple.objects.filter(materiales_id__exact=request.POST.get('mid'))
+            obj = tmpniple.objects.filter(materiales_id__exact=request.POST.get('mid'))
             obj.delete()
             data['status'] = True
         except ObjectDoesNotExist, e:
@@ -295,7 +295,7 @@ def post_upload_file_temp_orders(request):
                         if len(mid) == 15: # row code is length equal 15 chars
                             arn.append(mid) if mid[0:3] == '115' else False # aggregate materials for nipples
                             cant= sheet.cell(m, 6) # get quantity
-                            obj, created= models.tmppedido.objects.get_or_create(materiales_id=mid,empdni=request.user.get_profile().empdni_id,defaults={'cantidad':cant.value})
+                            obj, created= tmppedido.objects.get_or_create(materiales_id=mid,empdni=request.user.get_profile().empdni_id,defaults={'cantidad':cant.value})
                             if not created:
                                 obj.cantidad= (obj.cantidad + cant.value)
                                 obj.save()
@@ -311,7 +311,7 @@ def post_upload_file_temp_orders(request):
                                 med= sheet.cell(n, 7).value # meter in cm
                                 tipo= sheet.cell(n, 5).value # type nipple {A, B, C}
                                 # create or update nipples
-                                obj, created= models.tmpniple.objects.get_or_create(materiales_id=mid,metrado=med,tipo=tipo,empdni=request.user.get_profile().empdni_id,defaults={'cantidad':cant})
+                                obj, created= tmpniple.objects.get_or_create(materiales_id=mid,metrado=med,tipo=tipo,empdni=request.user.get_profile().empdni_id,defaults={'cantidad':cant})
                                 if not created:
                                     obj.cantidad= ( obj.cantidad + cant )
                                     obj.save()
@@ -382,7 +382,7 @@ def post_approved_orders(request):
     if request.method == 'POST':
         data = {}
         try:
-            obj = models.Pedido.objects.get(pk=request.POST.get('oid'))
+            obj = Pedido.objects.get(pk=request.POST.get('oid'))
             obj.status = 'AP'
             obj.flag = True
             obj.save()
@@ -396,7 +396,7 @@ def post_cancel_orders(request):
     if request.method == 'POST':
         data = {}
         try:
-            obj = models.Pedido.objects.get(pk=request.POST.get('oid'))
+            obj = Pedido.objects.get(pk=request.POST.get('oid'))
             obj.status = 'AN'
             obj.flag = False
             obj.save()
@@ -437,7 +437,7 @@ class get_OrdersDetails(ListView):
           context = {}
           try:
               arr = json.loads(request.GET.get('orders'))
-              queryset = models.Detpedido.objects.filter(pedido_id__in=arr).extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},)
+              queryset = Detpedido.objects.filter(pedido_id__in=arr).extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},)
               queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id','stock','spptag')
               queryset = queryset.annotate(cantidad=Sum('cantshop'))
               context['list'] = [{'materiales_id': x['materiales_id'],'matnom': x['materiales__matnom'],'matmed':x['materiales__matmed'],'unidad':x['materiales__unidad_id'],'cantidad':x['cantidad'],'stock':x['stock'],'tag':x['spptag']} for x in queryset]
@@ -453,7 +453,7 @@ class SupplyDetailView(DetailView):
             response = HttpResponse()
             response['content-type'] = 'application/json'
             response['mimetype'] = 'application/json'
-            queryset = models.DetSuministro.objects.filter(suministro_id__exact=kwargs['sid'], flag=True)
+            queryset = DetSuministro.objects.filter(suministro_id__exact=kwargs['sid'], flag=True)
             queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id')
             queryset = queryset.annotate(cantidad=Sum('cantshop')).order_by('materiales__matnom')
             context['status'] = True
@@ -627,7 +627,7 @@ class ViewCopyMaterialesProjectsSale(JSONResponseMixin, DetailView):
                 if 'paste' in request.POST:
                     mats = request.POST.getlist('materials[]')
                     for x in Metradoventa.objects.filter(proyecto_id=request.POST.get('cpro'), subproyecto_id=request.POST.get('csub') if request.POST.get('csub') != '' else None, sector_id=request.POST.get('csec'), materiales_id__in=mats):
-                        
+
                         obj = Metradoventa.objects.filter(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') != '' else None, sector_id=request.POST.get('sec'), materiales_id=x.materiales_id)
 
                         if obj:

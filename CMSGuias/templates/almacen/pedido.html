@@ -13,7 +13,7 @@
 	<div class="well">
 		<h1>Generar Pedido</h1>
 		{% csrf_token %}
-		<input type="hidden" class="empdni" value="{{user.get_profile.empdni}}">
+		<input type="hidden" class="empdni" value="{{user.get_profile.empdni_id}}">
 		<div class="row">
 			<div class="col-md-12">
 				<div class="btn-group">
@@ -95,7 +95,7 @@
 			<div class="col-md-12">
 				<h4 class="text-warning"><em>Lista de Niples</em></h4>
 				<div class="panel-group bg-warning" id="niples">
-					
+
 				</div>
 			</div>
 		</div>
@@ -130,7 +130,7 @@
 		<div class="modal-content">
 			<div class="modal-header bg-warning">
 				<a class="close" data-dismiss="modal">&times;</a>
-				<h4>Desea eliminar Material?</h4>
+				<h4>Desea eliminar material?</h4>
 			</div>
 			<div class="modal-body bg-warning">
 				<p><strong>Materiales ID: </strong><small class="form-control-static del-mid"></small></p>
@@ -257,10 +257,10 @@
 							<label for="" class="control-label">Empleado</label>
 							<div class="row show-grid">
 								<div class="col-md-4">
-									<input name="empdni" id="dni" class="form-control input-sm dni" value="{{user.get_profile.empdni}}" readonly />
+									<input name="empdni" id="dni" class="form-control input-sm dni" value="{{user.get_profile.empdni_id}}" readonly />
 								</div>
 								<div class="col-md-8">
-									<input name="nom" id="nom" class="form-control input-sm nom" value="{{user.first_name}}, {{user.last_name}}" readonly />
+									<input name="nom" id="nom" class="form-control input-sm nom" value="{{ user.get_profile.empdni.firstname }}, {{ user.get_profile.empdni.lastname }}" readonly />
 								</div>
 							</div>
 						</div>

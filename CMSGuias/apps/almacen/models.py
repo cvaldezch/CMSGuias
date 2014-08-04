@@ -2,7 +2,7 @@ from django.db import connection, models, transaction
 
 from CMSGuias.apps.ventas.models import Proyecto, Subproyecto, Sectore
 # from CMSGuias.apps.logistica.models import Compra
-from CMSGuias.apps.home.models import Materiale, Almacene, Transportista, Transporte, Conductore, Cliente
+from CMSGuias.apps.home.models import Materiale, Almacene, Transportista, Transporte, Conductore, Cliente, Brand, Model
 
 
 class Pedido(models.Model):
@@ -26,7 +26,7 @@ class Pedido(models.Model):
 
     def __unicode__(self):
         return '%s %s'%(self.pedido_id,self.proyecto.nompro)
-    
+
 class Detpedido(models.Model):
     pedido = models.ForeignKey(Pedido, to_field='pedido_id')
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
@@ -49,7 +49,7 @@ class tmppedido(models.Model):
     cantidad = models.FloatField(null=False)
 
     def __unicode__(self):
-        return '%s %s %f'%(self.empdni,self.materiales,self.cantidad)
+        return '%s %s %f'%(self.empdni, self.materiales, self.cantidad)
 
 class Niple(models.Model):
     pedido = models.ForeignKey(Pedido, to_field='pedido_id')
@@ -65,6 +65,7 @@ class Niple(models.Model):
     tipo = models.CharField(max_length=1)
     flag = models.BooleanField(default=True)
     tag = models.CharField(max_length=1,default='0')
+    comment = models.CharField(max_length=250, default='', null=True, blank=True)
 
     class Meta:
         ordering = ['materiales']
@@ -78,6 +79,7 @@ class tmpniple(models.Model):
     cantidad = models.IntegerField(null=True,default=1)
     metrado = models.IntegerField(null=False)
     tipo = models.CharField(max_length=1)
+    comment = models.CharField(max_length=250, null=True, blank=True, default='')
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):
@@ -115,7 +117,7 @@ class NipleGuiaRemision(models.Model):
     guia = models.ForeignKey(GuiaRemision, to_field='guia_id')
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     metrado = models.IntegerField(null=False)
-    cantguide= models.IntegerField(default=0,null=True, blank=True)
+    cantguide = models.IntegerField(default=0,null=True, blank=True)
     tipo = models.CharField(max_length=1)
     flag = models.BooleanField(default=True)
 
@@ -135,7 +137,7 @@ class Suministro(models.Model):
     obser = models.TextField()
     status = models.CharField(max_length=2, default='PE')
     flag = models.BooleanField(default=True)
-    
+
     class Meta:
         ordering = ['suministro_id']
 
@@ -168,7 +170,7 @@ class tmpsuministro(models.Model):
         return '%s %s %f'%(self.empdni,self.materiales,self.cantidad)
 
 class Inventario(models.Model):
-    materiales = models.ForeignKey(Materiale,to_field='materiales_id') 
+    materiales = models.ForeignKey(Materiale,to_field='materiales_id')
     almacen = models.ForeignKey(Almacene, to_field='almacen_id')
     precompra = models.FloatField()
     preventa = models.FloatField(default=0)
@@ -181,7 +183,7 @@ class Inventario(models.Model):
     compra = models.ForeignKey('logistica.Compra', to_field='compra_id', null=True,blank=True)
     spptag = models.BooleanField(default=False)
     flag = models.BooleanField(default=True)
-    
+
     class Meta:
         ordering = ['materiales']
 
@@ -214,3 +216,20 @@ class Inventario(models.Model):
 
     def __unicode__(self):
         return '%s %s %f'%(self.materiales,self.compra,self.stock)
+
+class InventoryBrand(models.Model):
+    period = models.CharField(max_length=4)
+    materials = models.ForeignKey(Materiale, to_field='materiales_id')
+    brand = models.ForeignKey(Brand, to_field='brand_id')
+    model = models.ForeignKey(Model, to_field='model_id')
+    ingress = models.DateTimeField(auto_now=True)
+    stock = models.FloatField()
+    purchase = models.FloatField()
+    sale = models.FloatField()
+    flag = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['materials']
+
+    def __unicode__(self):
+        return '%s %s %s %f'%(self.materials,self.period,self.brand,self.stock)

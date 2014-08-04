@@ -20,6 +20,7 @@ from django.views.generic.edit import UpdateView, CreateView
 
 from CMSGuias.apps.home.models import *
 from CMSGuias.apps.operations.models import MetProject
+from CMSGuias.apps.almacen.models import Inventario
 from .models import *
 from .forms import *
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles
@@ -351,7 +352,16 @@ class SectorManage(JSONResponseMixin, View):
             if context['project'].status != 'AC':
                 context['materials'] = Metradoventa.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom')
             else:
-                context['materials'] = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom')
+                met = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom')
+                data = list()
+                for x in met:
+                    stock = None
+                    # get stock of Inventory
+                    # if x.brand_id == 'BR000':
+                    stock = Inventario.objects.filter(materiales_id=x.materiales_id, periodo=globalVariable.get_year)
+                    data.append({'materiales_id':x.materiales_id, 'name':x.materiales.matnom,'measure':x.materiales.matmed,'unit':x.materiales.unidad.uninom,'brand':x.brand.brand, 'model':x.model.model,'quantity':x.cantidad,'price':x.precio, 'stock':stock[0].stock})
+                context['meter'] = data
+                print data
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)

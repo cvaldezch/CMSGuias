@@ -16,6 +16,7 @@ class MetProject(models.Model):
     model = models.ForeignKey(Model, to_field='model_id', default='MO000')
     cantidad = models.FloatField()
     precio = models.FloatField()
+    comment = models.CharField(max_length=250,default='',null=True, blank=True)
     flag = models.BooleanField(default=True)
 
     class Meta:

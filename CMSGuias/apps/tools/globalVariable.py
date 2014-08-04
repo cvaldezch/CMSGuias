@@ -26,10 +26,42 @@ status = {
 }
 
 # types nipples
-tipo_nipples = {"A": "Roscado", "B": "Ranurado", "C": "Roscado - Ranurado"}
+tipo_nipples = {
+    'A' : 'Roscado',
+    'B' : 'Ranurado',
+    'C' : 'Roscado - Ranurado'
+}
 
 # name month
-months_name = {'January':'Enero','February':'Febrero','March':'Marzo','April':'Abril','May':'Mayo','June':'Junio','July':'Julio','August':'Agosto', 'September':'Setiembre', 'Octuber':'Octubre','November':'Noviembre', 'Decemcer':'Diciembre'}
+months_name = {
+    'January' : 'Enero',
+    'February' : 'Febrero',
+    'March' : 'Marzo',
+    'April' : 'Abril',
+    'May' : 'Mayo',
+    'June' : 'Junio',
+    'July' : 'Julio',
+    'August' : 'Agosto',
+    'September' : 'Setiembre',
+    'Octuber' : 'Octubre',
+    'November' : 'Noviembre',
+    'Decemcer' : 'Diciembre'
+}
+# munber month
+months_name = {
+    '01' : 'Enero',
+    '02' : 'Febrero',
+    '03' : 'Marzo',
+    '04' : 'Abril',
+    '05' : 'Mayo',
+    '06' : 'Junio',
+    '07' : 'Julio',
+    '08' : 'Agosto',
+    '09' : 'Setiembre',
+    '10' : 'Octubre',
+    '11' : 'Noviembre',
+    '12' : 'Diciembre'
+}
 
 # date now format str
 def date_now(type='date',format="%Y-%m-%d"):
