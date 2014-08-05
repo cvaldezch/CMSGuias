@@ -29,7 +29,7 @@ status = {
 tipo_nipples = {
     'A' : 'Roscado',
     'B' : 'Ranurado',
-    'C' : 'Roscado - Ranurado'
+    'C' : 'Rosca - Ranura'
 }
 
 # name month

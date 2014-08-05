@@ -521,3 +521,57 @@ selectChoiseOrder = (event) ->
                 return
 
     return
+
+list_temp_nipples = (idmat)->
+    data =
+        "list-nip" : true
+        "pro" : $("input[name=pro]").val()
+        "sub" : $("input[name=sub]").val()
+        "sec" : $("input[name=sec]").val()
+        "mat" : idmat
+    $.getJSON "", data, (response) ->
+        if response.status
+            template = "<tr class=\"trnip{{ id }}\"><td>{{ quantity }}</td><td>{{ name }}</td><td>{{ diameter }}</td><td>x<td><td>{{ measure }}</td><td>{{ unit }}</td><td><button class=\"btn btn-xs btn-link btn-nip-edit\" value=\"{{ id }}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td><td><button class=\"btn btn-xs btn-link btn-nip-del\" value=\"{{ id }}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>"
+            $tb = $("#des#{idmat} > div > table > tbody")
+            console.log $tb
+            $tb.empty()
+            for x of response.list
+                response.list[x].item = (parseInt(x) + 1)
+                $tb.append Mustache.render template, response.list[x]
+
+            $(".in#{idmat}").text (response.ingress)
+            $(".res#{idmat}").text ($(".totr#{idmat}").val() * 100) - response.ingress
+            return
+    return
+
+aggregate_nipples = (idmat) ->
+    $(".tn#{idmat},.mt#{idmat},.nv#{idmat},.nc#{idmat},.bn#{idmat}").attr "disabled", false
+    return
+
+saved_or_update_nipples = (idmat) ->
+    if idmat.length == 15
+        data = new Object()
+        if $("input.update-id-#{idmat}").val() isnt ""
+            data.id = $("input.update-id-#{idmat}").val()
+        data.addnip = true
+        data.proyecto = $("input[name=pro]").val()
+        data.subproyecto = $("input[name=sub]").val()
+        data.sector = $("input[name=sec]").val()
+        data.materiales = idmat
+        data.metrado = parseFloat $(".mt#{idmat}").val()
+        data.tipo = $(".tn#{idmat}").val()
+        data.cantidad = parseFloat $(".nv#{idmat}").val()
+        data.comment = $($(".nc#{idmat}")).val()
+        data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+        console.log data
+        console.warn $(".res#{idmat}").text()
+        if (data.metrado * data.cantidad) < parseFloat $(".res#{idmat}").text()
+            $.post "", data, (response) ->
+                if response.status
+                    list_temp_nipples idmat
+            return
+        else
+            $().toastmessage "showWarningToast", "Cantidad es mayor a la establecida."
+    else
+        $().toastmessage "showWarningToast", "Código incorrecto"
+    return

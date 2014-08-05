@@ -1,8 +1,7 @@
 from django.db import connection, models, transaction
 
 from CMSGuias.apps.ventas.models import Proyecto, Subproyecto, Sectore
-# from CMSGuias.apps.logistica.models import Compra
-from CMSGuias.apps.home.models import Materiale, Almacene, Transportista, Transporte, Conductore, Cliente, Brand, Model
+from CMSGuias.apps.home.models import Materiale, Almacene, Transportista, Transporte, Conductore, Cliente, Brand, Model, Employee
 
 
 class Pedido(models.Model):
@@ -58,10 +57,10 @@ class Niple(models.Model):
     sector = models.ForeignKey(Sectore, to_field='sector_id',blank=True,null=True)
     empdni = models.CharField(max_length=8,null=False)
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
-    cantidad = models.IntegerField(null=True,default=1)
-    metrado = models.IntegerField(null=False)
-    cantshop = models.IntegerField(null=True)
-    cantguide= models.IntegerField(default=0,null=True, blank=True)
+    cantidad = models.FloatField(null=True,default=1)
+    metrado = models.FloatField(null=False, default=0)
+    cantshop = models.FloatField(null=True, default=0)
+    cantguide= models.FloatField(default=0,null=True, blank=True)
     tipo = models.CharField(max_length=1)
     flag = models.BooleanField(default=True)
     tag = models.CharField(max_length=1,default='0')
@@ -74,10 +73,13 @@ class Niple(models.Model):
         return '%s %s'%(self.materiales,self.proyecto.nompro)
 
 class tmpniple(models.Model):
-    empdni = models.CharField(max_length=8,null=False)
+    empdni = models.ForeignKey(Employee, to_field='empdni_id')
+    proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id', null=True, blank=True)
+    subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
+    sector = models.ForeignKey(Sectore, to_field='sector_id', null=True, blank=True)
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
-    cantidad = models.IntegerField(null=True,default=1)
-    metrado = models.IntegerField(null=False)
+    cantidad = models.FloatField(null=True, default=1)
+    metrado = models.FloatField(null=False, default=1)
     tipo = models.CharField(max_length=1)
     comment = models.CharField(max_length=250, null=True, blank=True, default='')
     flag = models.BooleanField(default=True)
@@ -116,8 +118,8 @@ class DetGuiaRemision(models.Model):
 class NipleGuiaRemision(models.Model):
     guia = models.ForeignKey(GuiaRemision, to_field='guia_id')
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
-    metrado = models.IntegerField(null=False)
-    cantguide = models.IntegerField(default=0,null=True, blank=True)
+    metrado = models.FloatField(null=False, default=0)
+    cantguide = models.FloatField(default=0,null=True, blank=True)
     tipo = models.CharField(max_length=1)
     flag = models.BooleanField(default=True)
 

@@ -20,9 +20,10 @@ from django.views.generic.edit import UpdateView, CreateView
 
 from CMSGuias.apps.home.models import *
 from CMSGuias.apps.operations.models import MetProject
-from CMSGuias.apps.almacen.models import Inventario
+from CMSGuias.apps.almacen.models import Inventario, tmpniple, Pedido, Detpedido
 from .models import *
 from .forms import *
+from CMSGuias.apps.operations.forms import tmpnipleForm
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles
 
 
@@ -331,15 +332,23 @@ class SectorManage(JSONResponseMixin, View):
         context = dict()
         try:
             if request.is_ajax():
-                if 'type' in request.GET:
-                    if request.GET.get('type') == 'list':
-                        try:
+                try:
+                    if 'type' in request.GET:
+                        if request.GET.get('type') == 'list':
                             obj = Metradoventa.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec')).order_by('materiales__matnom')
                             context['list'] = [{'id':x.id,'materials_id': x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'brand' : x.brand.brand, 'model' : x.model.model , 'quantity':x.cantidad, 'price':x.precio} for x in obj]
                             context['status'] = True
-                        except ObjectDoesNotExist, e:
-                            context['raise'] = e.__str__()
-                            context['status'] = False
+                    if 'list-nip' in request.GET:
+                        obj = tmpniple.objects.filter(empdni_id=request.user.get_profile().empdni_id, proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), materiales_id=request.GET.get('mat')).order_by('metrado')
+                        context['list'] = [{'id':x.id, 'quantity':x.cantidad, 'diameter':x.materiales.matmed, 'measure':x.metrado,'unit':x.materiales.unidad.uninom,'name':globalVariable.tipo_nipples[x.tipo],'comment':x.comment} for x in obj]
+                        ingress = 0
+                        for x in obj:
+                            ingress += (x.cantidad * x.metrado)
+                        context['ingress'] = ingress
+                        context['status'] = True
+                except ObjectDoesNotExist, e:
+                    context['raise'] = e.__str__()
+                    context['status'] = False
                 return self.render_to_json_response(context)
             context['project'] = Proyecto.objects.get(pk=kwargs['pro'])
             if kwargs['sub'] != unicode(None):
@@ -361,7 +370,7 @@ class SectorManage(JSONResponseMixin, View):
                     stock = Inventario.objects.filter(materiales_id=x.materiales_id, periodo=globalVariable.get_year)
                     data.append({'materiales_id':x.materiales_id, 'name':x.materiales.matnom,'measure':x.materiales.matmed,'unit':x.materiales.unidad.uninom,'brand':x.brand.brand, 'model':x.model.model,'quantity':x.cantidad,'price':x.precio, 'stock':stock[0].stock})
                 context['meter'] = data
-                print data
+                context['niple'] = globalVariable.tipo_nipples
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)
@@ -413,6 +422,17 @@ class SectorManage(JSONResponseMixin, View):
                         context['status'] = True
                 else:
                     context['status'] = False
+                if 'addnip' in request.POST:
+                    if 'id' in request.POST:
+                        obj = tmpniple.objects.get(pk=request.POST.get('id'))
+                        form = tmpnipleForm(request.POST, instance=obj)
+                    else:
+                        form = tmpnipleForm(request.POST)
+                    if form.is_valid():
+                        add = form.save(commit=False)
+                        add.empdni_id = request.user.get_profile().empdni_id
+                        add.save()
+                        context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

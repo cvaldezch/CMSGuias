@@ -34,30 +34,28 @@ $(document).ready ->
             else if $(@).attr("aria-pressed") is "true"
                 $(".navbar").show()
             return
+        $(".btn-add").on "click", showaddProject
+        $("[name=pais]").on "click", getDepartamentOption
+        $("[name=departamento]").on "click", getProvinceOption
+        $("[name=provincia]").on "click", getDistrictOption
+        $(".btn-country-refresh").on "click", getCountryOption
+        $(".btn-departament-refresh").on "click", getDepartamentOption
+        $(".btn-province-refresh").on "click", getProvinceOption
+        $(".btn-district-refresh").on "click", getDistrictOption
+        $(".btn-add-customers").on "click", showCustomer
+        $(".btn-add-country").on "click", showCountry
+        $(".btn-add-departament").on "click", showDepartament
+        $(".btn-add-province").on "click", showProvince
+        $(".btn-add-district").on "click", showDistrict
+        $(".btn-save").on "click", CreateProject
+        $(".btn-show-edit").on "click",  openUpdateProject
+        $(".btn-show-delete").on "click", deleteProject
         return
     , 2000
-    $(".btn-show-edit").on "click",  openUpdateProject
-    $(".btn-show-delete").on "click", deleteProject
-    return
-
-    $("[name=pais]").on "click", getDepartamentOption
-    $("[name=departamento]").on "click", getProvinceOption
-    $("[name=provincia]").on "click", getDistrictOption
-    $(".btn-country-refresh").on "click", getCountryOption
-    $(".btn-departament-refresh").on "click", getDepartamentOption
-    $(".btn-province-refresh").on "click", getProvinceOption
-    $(".btn-district-refresh").on "click", getDistrictOption
-    $(".btn-add").on "click", showaddProject
-    $(".btn-add-customers").on "click", showCustomer
-    $(".btn-add-country").on "click", showCountry
-    $(".btn-add-departament").on "click", showDepartament
-    $(".btn-add-province").on "click", showProvince
-    $(".btn-add-district").on "click", showDistrict
-    $(".btn-save").on "click", CreateProject
     return
 
 showaddProject = (event) ->
-    event.preventDefault()
+    # event.preventDefault()
     $btn = $(@)
     $(".panel-pro").toggle ->
         if $(@).is(":hidden")
@@ -72,7 +70,6 @@ showaddProject = (event) ->
             $btn.find("span").eq(1).html(" Cancelar")
             $(".btn-save").show()
             return
-
     return
 
 # Show upkeep country, departament, province, district, customers
@@ -123,6 +120,9 @@ CreateProject = (event) ->
         $.post "", data, (response) ->
             if response.status
                 $().toastmessage "showNoticeToast", "Se registro el proyecto #{data['nompro']} correctamente!"
+                setTimeout ->
+                    location.reload()
+                , 2000
             else
                 $().toastmessage "showErrorToast", "Error en la transacción #{response.raise}."
         return
@@ -154,7 +154,7 @@ deleteProject = ->
         buttons: [{value:'No'},{value: 'Si'}]
         success: (result) ->
             if result is "Si"
-                data = 
+                data =
                     "proid": value,
                     "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val()
                 $.post "/almacen/keep/project/", data, (response) ->

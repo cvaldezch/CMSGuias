@@ -35,29 +35,27 @@ $(document).ready(function() {
         $(".navbar").show();
       }
     });
+    $(".btn-add").on("click", showaddProject);
+    $("[name=pais]").on("click", getDepartamentOption);
+    $("[name=departamento]").on("click", getProvinceOption);
+    $("[name=provincia]").on("click", getDistrictOption);
+    $(".btn-country-refresh").on("click", getCountryOption);
+    $(".btn-departament-refresh").on("click", getDepartamentOption);
+    $(".btn-province-refresh").on("click", getProvinceOption);
+    $(".btn-district-refresh").on("click", getDistrictOption);
+    $(".btn-add-customers").on("click", showCustomer);
+    $(".btn-add-country").on("click", showCountry);
+    $(".btn-add-departament").on("click", showDepartament);
+    $(".btn-add-province").on("click", showProvince);
+    $(".btn-add-district").on("click", showDistrict);
+    $(".btn-save").on("click", CreateProject);
+    $(".btn-show-edit").on("click", openUpdateProject);
+    $(".btn-show-delete").on("click", deleteProject);
   }, 2000);
-  $(".btn-show-edit").on("click", openUpdateProject);
-  $(".btn-show-delete").on("click", deleteProject);
-  return;
-  $("[name=pais]").on("click", getDepartamentOption);
-  $("[name=departamento]").on("click", getProvinceOption);
-  $("[name=provincia]").on("click", getDistrictOption);
-  $(".btn-country-refresh").on("click", getCountryOption);
-  $(".btn-departament-refresh").on("click", getDepartamentOption);
-  $(".btn-province-refresh").on("click", getProvinceOption);
-  $(".btn-district-refresh").on("click", getDistrictOption);
-  $(".btn-add").on("click", showaddProject);
-  $(".btn-add-customers").on("click", showCustomer);
-  $(".btn-add-country").on("click", showCountry);
-  $(".btn-add-departament").on("click", showDepartament);
-  $(".btn-add-province").on("click", showProvince);
-  $(".btn-add-district").on("click", showDistrict);
-  $(".btn-save").on("click", CreateProject);
 });
 
 showaddProject = function(event) {
   var $btn;
-  event.preventDefault();
   $btn = $(this);
   $(".panel-pro").toggle(function() {
     if ($(this).is(":hidden")) {
@@ -128,7 +126,10 @@ CreateProject = function(event) {
     data['type'] = "new";
     $.post("", data, function(response) {
       if (response.status) {
-        return $().toastmessage("showNoticeToast", "Se registro el proyecto " + data['nompro'] + " correctamente!");
+        $().toastmessage("showNoticeToast", "Se registro el proyecto " + data['nompro'] + " correctamente!");
+        return setTimeout(function() {
+          return location.reload();
+        }, 2000);
       } else {
         return $().toastmessage("showErrorToast", "Error en la transacción " + response.raise + ".");
       }

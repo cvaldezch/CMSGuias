@@ -240,72 +240,76 @@
                               </tr>
                             </thead>
                             <tbody>
-                            {% for x in materials %}
-                                <tr class="{{ x.materiales_id }}-{{ x.id }}">
-                                    <td>{{ forloop.counter }}</td>
-                                    {% ifequal project.status 'AC' %}
-                                    <td>
-                                        <input type="checkbox" name="mats" value="{{ x.materiales_id }}-{{ x.id }}">
-                                    </td>
-                                    {% endifequal %}
-                                    <td>{{ x.materiales_id }}</td>
-                                    <td>{{ x.materiales.matnom }}</td>
-                                    <td>{{ x.materiales.matmed }}</td>
-                                    <td>{{ x.materiales.unidad.uninom }}</td>
-                                    <td>{{ x.brand.brand }}</td>
-                                    <td>{{ x.model.model }}</td>
-                                    <td>{{ x.cantidad|safe }}</td>
-                                    {% if user.get_profile.empdni.charge.area == 'Administrator' or user.get_profile.empdni.charge.area == 'Ventas'  %}
-                                        <td>{{ x.precio|safe }}</td>
-                                    {% endif %}
-                                    {% ifequal project.status 'PE'  %}
+                                {% for x in materials %}
+                                    <tr class="{{ x.materiales_id }}-{{ x.id }}">
+                                        <td>{{ forloop.counter }}</td>
+                                        {% ifequal project.status 'AC' %}
                                         <td>
-                                            <button class="btn btn-xs btn-link text-green btn-show-edit" value="{{ x.materiales_id }}-{{ x.id }}">
-                                                <span class="glyphicon glyphicon-pencil"></span>
-                                            </button>
+                                            <input type="checkbox" name="mats" value="{{ x.materiales_id }}-{{ x.id }}">
                                         </td>
-                                        <td>
-                                            <button class="btn btn-xs btn-link text-red btn-del-mat" value="{{ x.materiales_id }}-{{ x.id }}">
-                                                <span class="glyphicon glyphicon-trash"></span>
-                                            </button>
-                                        </td>
-                                    {% endifequal %}
-                                </tr>
-                            {% endfor %}
-                            {% if meter %}
-                                {% for x in meter %}
-                                {% if x.stock <= 0 %}
-                                    <tr class="danger {{ x.materiales_id }}">
-                                {% else  %}
-                                    <tr class="success {{ x.materiales_id }}">
-                                {% endif %}
-                                    <td>{{ forloop.counter }}</td>
-                                    <td>
-                                        <input type="checkbox" name="mats" value="{{ x.materiales_id }}">
-                                    </td>
-                                    <td>{{ x.materiales_id }}</td>
-                                    <td>{{ x.name }}</td>
-                                    <td>{{ x.measure }}</td>
-                                    <td>{{ x.unit }}</td>
-                                    <td>{{ x.brand }}</td>
-                                    <td>{{ x.model }}</td>
-                                    <td>{{ x.quantity|safe }}</td>
-                                    {% if user.get_profile.empdni.charge.area == 'Administrator' or user.get_profile.empdni.charge.area == 'Ventas'  %}
-                                    <td>{{ x.price|safe }}</td>
-                                    <td>{{ x.stock|safe }}</td>
-                                    {% endif %}
-                                </tr>
+                                        {% endifequal %}
+                                        <td>{{ x.materiales_id }}</td>
+                                        <td>{{ x.materiales.matnom }}</td>
+                                        <td>{{ x.materiales.matmed }}</td>
+                                        <td>{{ x.materiales.unidad.uninom }}</td>
+                                        <td>{{ x.brand.brand }}</td>
+                                        <td>{{ x.model.model }}</td>
+                                        <td>{{ x.cantidad|safe }}</td>
+                                        {% if user.get_profile.empdni.charge.area == 'Administrator' or user.get_profile.empdni.charge.area == 'Ventas'  %}
+                                            <td>{{ x.precio|safe }}</td>
+                                        {% endif %}
+                                        {% ifequal project.status 'PE'  %}
+                                            <td>
+                                                <button class="btn btn-xs btn-link text-green btn-show-edit" value="{{ x.materiales_id }}-{{ x.id }}">
+                                                    <span class="glyphicon glyphicon-pencil"></span>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-xs btn-link text-red btn-del-mat" value="{{ x.materiales_id }}-{{ x.id }}">
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                </button>
+                                            </td>
+                                        {% endifequal %}
+                                    </tr>
                                 {% endfor %}
-                            {% endif %}
+                                {% if meter %}
+                                    {% for x in meter %}
+                                    {% if x.stock <= 0 %}
+                                        <tr class="danger {{ x.materiales_id }}">
+                                    {% else  %}
+                                        <tr class="success {{ x.materiales_id }}">
+                                    {% endif %}
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>
+                                            <input type="checkbox" name="mats" value="{{ x.materiales_id }}">
+                                        </td>
+                                        <td>{{ x.materiales_id }}</td>
+                                        <td>{{ x.name }}</td>
+                                        <td>{{ x.measure }}</td>
+                                        <td>{{ x.unit }}</td>
+                                        <td>{{ x.brand }}</td>
+                                        <td>{{ x.model }}</td>
+                                        <td>{{ x.quantity|safe }}</td>
+                                        {% if user.get_profile.empdni.charge.area == 'Administrator' or user.get_profile.empdni.charge.area == 'Ventas'  %}
+                                        <td>{{ x.price|safe }}</td>
+                                        <td>{{ x.stock|safe }}</td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                {% endif %}
                             </tbody>
                           </table>
                         </div>
                     </div>
+                    {% ifequal project.status 'AC' %}
                     <div class="panel panel-warning">
                         <div class="table-responsive">
-                            <table class="table table-condensed table-hover brand-warning table-niple">
+                            <table class="table table-condensed table-hover table-niple">
+                            <caption class="text-left">
+                                <h4>Lista de Niples</h4>
+                            </caption>
                                 <thead>
-                                    <tr>
+                                    <tr class="brand-warning">
                                         <th>Codigo</th>
                                         <th>Descripción</th>
                                         <th>Tipo</th>
@@ -317,56 +321,89 @@
                                 </thead>
                                 <tbody>
                                 {% for x in meter %}
-                                    {% ifequal '1' '1' %}
-                                        <div class='panel panel-default panel-warning'>
-                                        <div class='panel-heading'>
-                                            <h4 class='panel-title'>
-                                            <a data-toggle='collapse' class='collapsed' data-parent='#niples' onClick='list_temp_nipples({{ materiales_id }});' href='#des{{ materiales_id }}'>{{ matnom }} - {{ matmed }}</a>
-                                            <span class='pull-right badge badge-warning'>Quedan <span class='res{{ materiales_id }}'></span> cm</span>
-                                            <span class='pull-right badge badge-warning'>Ingresado <span class='in{{ materiales_id }}'></span> cm</span>
-                                            <span class='pull-right badge badge-warning'>Total {{ cantidad }} {{ unidad }}</span>
-                                            <input type='hidden' class='totr{{ materiales_id }}' value='{{cantidad }}'>
-                                            </h4>
-                                        </div>
-                                        <div id='des{{materiales_id}}' class='panel-collapse collapse'>
-                                            <div class='panel-body c{{materiales_id}}'>
-                                            <div class='table-responsive'>
-                                                <table class='table table-condensed table-hover'>
-                                                    <caption class='text-left'><div class='row'><div class='col-md-4'><div class='btn-group'>
-                                                        <button class='btn btn-default btn-xs btn-add-nipple-{{materiales_id}}' onClick='aggregate_nipples({{materiales_id}});' type='Button' data-loading-text='Proccess...'><span class='glyphicon glyphicon-plus-sign'></span> Agregar</button>
-                                                        <button class='btn btn-default btn-xs' onClick='list_temp_nipples({{materiales_id}});' type='Button' data-loading-text='Proccess...'><span class='glyphicon glyphicon-refresh'></span> Recargar</button>
-                                                        <button class='btn btn-danger btn-xs' onClick='delete_all_temp_nipples({{materiales_id}});' type='Button' data-loading-text='Proccess...'><span class='glyphicon glyphicon-trash'></span> Eliminar Todo</button>
-                                                    </div></div>
-                                                    <div class='col-md-8'><div class='form-inline pull-right'>
-                                                        <div class='form-group '>
-                                                            <select name='controlnipples' class='form-control input-sm tn{{materiales_id}}' title='Tipo Niple' placeholder='Tipo Niple' DISABLED>
-                                                                <option value='A'>A - Roscado</option><option value='B'>B - Ranurado</option><option value='C'>C - Roscado - Ranurado</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class='form-group col-md-4'>
-                                                            <div class='input-group input-group-sm'><input type='number' name='controlnipples' placeholder='Medida' min='0' class='form-control input-sm mt{{materiales_id}}' DISABLED><span class='input-group-addon'><strong>cm</strong><span></div>
-                                                        </div>
-                                                        <div class='form-group'>
-                                                            <input type='number' name='controlnipples' placeholder='Cantidad' min='1' class='form-control input-sm nv{{materiales_id}}' DISABLED>
-                                                        </div>
-                                                        <input type='hidden' class='update-id-{{materiales_id}}' value=''>
-                                                        <input type='hidden' class='update-quantity-{{materiales_id}}' value=''>
-                                                        <button class='btn btn-success text-black btn-sm' name='controlnipples' type='Button' onClick='saved_or_update_nipples({{materiales_id}})' DISABLED><span class='glyphicon glyphicon-floppy-save'></span> Guardar</button>
-                                                    </div></div>
-                                                    </caption>
-                                                    <thead><th>Cantidad</th><th>Descripción</th><th>Diametro</th><th><th><th>Medida</th><th>Unidad</th><th>Editar</th><th>Eliminar</th></thead>
-                                                    <tbody class='tb{{materiales_id}}'></tbody>
-                                                </table>
+                                    {% ifequal x.materiales_id|truncatechars:6 "115..." %}
+                                    <tr>
+                                        <td colspan="7">
+                                            <div class="panel panel-warning">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" class="collapsed" data-parent="#niples" onClick="list_temp_nipples({{ x.materiales_id }});" href="#des{{ x.materiales_id }}">{{ x.name }} - {{ x.measure }}</a>
+                                                        <span class="pull-right badge badge-warning">Quedan
+                                                            <span class="res{{ x.materiales_id }}"></span> cm
+                                                        </span>
+                                                        <span class="pull-right badge badge-warning">Ingresado
+                                                            <span class="in{{ x.materiales_id }}"></span> cm
+                                                        </span>
+                                                        <span class="pull-right badge badge-warning">Total {{ x.quantity|safe }} {{ x.unit }}</span>
+                                                        <input type="hidden" class="totr{{ x.materiales_id }}" value="{{ x.quantity|safe }}">
+                                                    </h4>
+                                                </div>
+                                                <div id="des{{ x.materiales_id }}" class="panel-collapse collapse">
+                                                    <!-- <div class="panel-body c{{ x.materiales_id }}"> -->
+                                                    <div class="table-responsive">
+                                                        <table class="table table-condensed table-hover">
+                                                            <caption class="text-left">
+                                                                <div class="row">
+                                                                    <div class="col-md-4">
+                                                                        <div class="btn-group">
+                                                                            <button class="btn btn-default btn-xs btn-add-nipple-{{ x.materiales_id }}" onClick="aggregate_nipples({{ x.materiales_id }});" type="Button" data-loading-text="Proccess...">
+                                                                                <span class="glyphicon glyphicon-plus-sign"></span> Agregar
+                                                                            </button>
+                                                                            <button class="btn btn-default btn-xs" onClick="list_temp_nipples({{ x.materiales_id }});" type="Button" data-loading-text="Proccess...">
+                                                                                <span class="glyphicon glyphicon-refresh"></span> Recargar
+                                                                            </button>
+                                                                            <button class="btn btn-danger btn-xs" onClick="delete_all_temp_nipples({{ x.materiales_id }});" type="Button" data-loading-text="Proccess...">
+                                                                                <span class="glyphicon glyphicon-trash"></span> Eliminar Todo
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-8">
+                                                                        <div class="form-inline pull-right">
+                                                                            <div class="form-group ">
+                                                                                <select name="controlnipples" class="form-control input-sm tn{{ x.materiales_id }}" title="Tipo Niple" placeholder="Tipo Niple" DISABLED>
+                                                                                    {% for k, v in niple.items %}
+                                                                                        <option value="{{ k }}">{{ k }} - {{ v }}</option>
+                                                                                    {% endfor %}
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="form-group col-md-3">
+                                                                                <div class="input-group input-group-sm">
+                                                                                    <input type="number" name="controlnipples" placeholder="Medida" min="0" class="form-control input-sm mt{{ x.materiales_id }}" DISABLED><span class="input-group-addon"><strong>cm</strong></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="form-group">
+                                                                                <input type="number" name="controlnipples" placeholder="Cantidad" min="1" class="form-control input-sm nv{{ x.materiales_id }}" DISABLED>
+                                                                            </div>
+                                                                            <div class="form-group">
+                                                                                <input type="text" name="controlnipples" placeholder="Observación"  maxlength="250" class="form-control input-sm nc{{ x.materiales_id }}" DISABLED>
+                                                                            </div>
+                                                                            <div class="form-group">
+                                                                                <input type="hidden" class="update-id-{{ x.materiales_id }}" value="">
+                                                                                <input type="hidden" class="update-quantity-{{ x.materiales_id }}" value="">
+                                                                            </div>
+                                                                            <button class="btn btn-success text-black btn-sm bn{{ x.materiales_id }}" name="controlnipples" type="Button" onClick="saved_or_update_nipples('{{ x.materiales_id }}')" DISABLED><span class="glyphicon glyphicon-floppy-save"></span> Guardar</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </caption>
+                                                            <thead>
+                                                                <th>Cantidad</th><th>Descripción</th><th>Diametro</th><th><th><th>Medida</th><th>Unidad</th><th>Editar</th><th>Eliminar</th>
+                                                            </thead>
+                                                            <tbody class="tb{{materiales_id}}"></tbody>
+                                                        </table>
+                                                    </div>
+                                                    <!-- </div> -->
+                                                </div>
                                             </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        </td>
+                                    </tr>
                                     {% endifequal %}
                                 {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                     </div>
+                    {% endifequal %}
               </div>
               <div class="tab-pane" id="tools">
                   <div class="alert alert-inverse alert-inverse-border alert-block text-center">
