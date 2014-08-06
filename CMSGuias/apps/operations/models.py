@@ -17,6 +17,8 @@ class MetProject(models.Model):
     cantidad = models.FloatField()
     precio = models.FloatField()
     comment = models.CharField(max_length=250,default='',null=True, blank=True)
+    quantityorder = models.FloatField(default=0)
+    tag = models.CharField(max_length=1, default='0')
     flag = models.BooleanField(default=True)
 
     class Meta:

@@ -10,7 +10,7 @@ from CMSGuias.apps.almacen.models import tmpniple
 class MetProjectForm(forms.ModelForm):
     class Meta:
         model = MetProject
-        exclude = {'flag',}
+        exclude = {'flag','tag',}
 
 class tmpnipleForm(forms.ModelForm):
     class Meta:

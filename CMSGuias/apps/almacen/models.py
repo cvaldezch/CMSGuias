@@ -97,7 +97,7 @@ class GuiaRemision(models.Model):
     traruc = models.ForeignKey(Transportista, to_field='traruc_id')
     condni = models.ForeignKey(Conductore, to_field='condni_id')
     nropla = models.ForeignKey(Transporte, to_field='nropla_id')
-    status = models.CharField(max_length=2,default='46')
+    status = models.CharField(max_length=2, default='46')
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):

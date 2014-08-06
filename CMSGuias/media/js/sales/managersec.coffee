@@ -81,6 +81,8 @@ $(document).ready ->
             return
     # seconded part for order to store
     $("input[name=choice]").on "change", selectChoiseOrder
+    $(document).on "click", ".btn-nip-edit", show_edit_nipple
+    $(".btn-show-orders").on "click", showOrders
     return
 
 loadSecandSub = (event) ->
@@ -171,7 +173,6 @@ copyBack = (event)->
     if $(".body-materials").is(":visible")
         $(".body-materials").hide()
 
-    console.log $(".body-sector").is(":hidden")
 
     $(".body-#{@value}").show 600
     return
@@ -395,7 +396,6 @@ delMaterials = (event)->
                 data.materials = $materials.eq(1).text()
                 data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
                 data.type = "del"
-                console.log data
                 $.post "", data, (response) ->
                     if response.status
                         $(".#{btn}").remove()
@@ -488,7 +488,6 @@ pasteMaterials = ->
     data.csec = $("input[name=csec]").val()
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
     if counter > 0 and counter >= $cp.length
-        console.log data
         $.post "/json/projects/lists/",data, (response) ->
             if response.status
                 location.reload()
@@ -498,7 +497,6 @@ pasteMaterials = ->
     return
 
 changeRadio = (event) ->
-    console.log @
     $(@).each (index, element) ->
         if @checked
             rdo = @
@@ -531,9 +529,26 @@ list_temp_nipples = (idmat)->
         "mat" : idmat
     $.getJSON "", data, (response) ->
         if response.status
-            template = "<tr class=\"trnip{{ id }}\"><td>{{ quantity }}</td><td>{{ name }}</td><td>{{ diameter }}</td><td>x<td><td>{{ measure }}</td><td>{{ unit }}</td><td><button class=\"btn btn-xs btn-link btn-nip-edit\" value=\"{{ id }}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td><td><button class=\"btn btn-xs btn-link btn-nip-del\" value=\"{{ id }}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>"
+            template = "<tr class=\"trnip{{ id }}\">
+                            <td>{{ quantity }}</td>
+                            <td>{{ name }}</td>
+                            <td>{{ diameter }}</td>
+                            <td>x</td>
+                            <td>{{ measure }}</td>
+                            <td>{{ unit }}</td>
+                            <td>{{ comment }}</td>
+                            <td>
+                                <button class=\"btn btn-xs btn-link text-green btn-nip-edit\" data-edit-nip=\"{{ materials }}\" value=\"{{ id }}\">
+                                    <span class=\"glyphicon glyphicon-pencil\"></span>
+                                </button>
+                            </td>
+                            <td>
+                                <button class=\"btn btn-xs btn-link btn-nip-del text-red\" data-del-nip=\"{{ materials }}\" value=\"{{ id }}\">
+                                    <span class=\"glyphicon glyphicon-trash\"></span>
+                                </button>
+                            </td>
+                        </tr>"
             $tb = $("#des#{idmat} > div > table > tbody")
-            console.log $tb
             $tb.empty()
             for x of response.list
                 response.list[x].item = (parseInt(x) + 1)
@@ -545,33 +560,115 @@ list_temp_nipples = (idmat)->
     return
 
 aggregate_nipples = (idmat) ->
+    $(".nv#{idmat}").val ""
+    $(".mt#{idmat}").val ""
+    $(".tn#{idmat}").val ""
+    $(".nc#{idmat}").text ""
+    $(".update-quantity-#{idmat}").val ""
+    $(".update-id-#{idmat}").val ""
     $(".tn#{idmat},.mt#{idmat},.nv#{idmat},.nc#{idmat},.bn#{idmat}").attr "disabled", false
     return
 
 saved_or_update_nipples = (idmat) ->
     if idmat.length == 15
         data = new Object()
-        if $("input.update-id-#{idmat}").val() isnt ""
-            data.id = $("input.update-id-#{idmat}").val()
+        pass = false
         data.addnip = true
         data.proyecto = $("input[name=pro]").val()
         data.subproyecto = $("input[name=sub]").val()
         data.sector = $("input[name=sec]").val()
         data.materiales = idmat
-        data.metrado = parseFloat $(".mt#{idmat}").val()
+        data.metrado = parseFloat parseInt $(".mt#{idmat}").val()
         data.tipo = $(".tn#{idmat}").val()
-        data.cantidad = parseFloat $(".nv#{idmat}").val()
+        data.cantidad = parseFloat parseInt $(".nv#{idmat}").val()
         data.comment = $($(".nc#{idmat}")).val()
         data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
-        console.log data
-        console.warn $(".res#{idmat}").text()
-        if (data.metrado * data.cantidad) < parseFloat $(".res#{idmat}").text()
+        if $("input.update-id-#{idmat}").val() isnt ""
+            data.id = $("input.update-id-#{idmat}").val()
+            pass = if (data.metrado * data.cantidad) <= (parseFloat parseInt($(".res#{idmat}").text()) + parseFloat parseInt($(".update-quantity-#{idmat}").val())) then true else false
+        else
+            pass = if (data.metrado * data.cantidad) <= parseFloat parseInt $(".res#{idmat}").text() then true else false
+        if pass
             $.post "", data, (response) ->
                 if response.status
+                    $(".tn#{idmat},.mt#{idmat},.nv#{idmat},.nc#{idmat},.bn#{idmat}").attr "disabled", true
+                    $(".update-quantity-#{idmat}").val ""
+                    $(".update-id-#{idmat}").val ""
                     list_temp_nipples idmat
+
             return
         else
             $().toastmessage "showWarningToast", "Cantidad es mayor a la establecida."
     else
         $().toastmessage "showWarningToast", "Código incorrecto"
+    return
+
+show_edit_nipple = ->
+    idmat = $(@).attr "data-edit-nip"
+    tipo = new Object()
+    $(".tn#{idmat}").find("option").each (index, element) ->
+        text = $.trim element.innerHTML
+        text = text.split "-"
+        if text.length == 2
+            text = text[1]
+        else if text.length == 3
+            text = text[1] + "-" + text[2]
+        tipo[text] = element.value
+        return
+
+    console.log tipo
+    $(".update-id-#{idmat}").val @value
+    $td = $(".trnip#{@value} > td")
+    $(".nv#{idmat}").val $td.eq(0).text()
+    $(".mt#{idmat}").val $td.eq(4).html()
+    $(".tn#{idmat}").val tipo[$td.eq(1).text()]
+    $(".nc#{idmat}").text $td.eq(6).text()
+    $(".update-quantity-#{idmat}").val(parseFloat($td.eq(0).text()) * parseFloat($td.eq(4).text()))
+    $(".tn#{idmat},.mt#{idmat},.nv#{idmat},.nc#{idmat},.bn#{idmat}").attr "disabled", false
+    return
+
+delete_all_temp_nipples = (idmat)->
+    if idmat isnt ""
+        $().toastmessage "showToast",
+            text : "Desea eliminar todo los niples de la tuberia?"
+            type : "confirm"
+            sticky : true
+            buttons : [{value:'Si'},{value:'No'}]
+            success : (result) ->
+                if result is "Si"
+                    data = new Object()
+                    data.addnip = true
+                    data.proyecto = $("input[name=pro]").val()
+                    data.subproyecto = $("input[name=sub]").val()
+                    data.sector = $("input[name=sec]").val()
+                    data.materiales = idmat
+                    $.post "", data, (response) ->
+                        if response.status
+                            list_temp_nipples idmat
+                    , "json"
+                    return
+        return
+    else
+        $().toastmessage "showWarningToast", "Código de material incorrecto."
+    return
+
+deleteallnipmat = ->
+
+    return
+
+showOrders = ->
+    counter = 0
+    data = new Object()
+    arr = new Array()
+    $("input[name=mats]").each (index, element) ->
+        if @checked
+            counter += 1
+            $td = $(".#{@value} > td")
+            arr.push {"item": counter, "materials":$td.eq(2).text(), 'name': $td.eq(3).text(), 'measure':$td.eq(4).text(), 'unit':$td.eq(5),'brand':$td.eq(6).text(), 'model':$td.eq(7).text(),'quantity':$td.eq(8).text()}
+    data.list = arr
+    if counter > 0
+        template
+        $("#morders").modal "toggle"
+    else
+        $().toastmessage "showWarningToast", "Tienes que seleccionar por lo menos un material."
     return

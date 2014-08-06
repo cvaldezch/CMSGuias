@@ -218,7 +218,7 @@
                                     </label>
                                 </div>
                                 <div class="form-group pull-right">
-                                    <button class="btn btn-xs btn-primary" data-toggle="modal" data-target="#morders">
+                                    <button class="btn btn-xs btn-primary btn-show-orders">
                                         <span class="glyphicon glyphicon-saved"></span> Pedido Almacén
                                     </button>
                                 </div>
@@ -226,14 +226,16 @@
                             {% endifequal %}
                             <thead>
                               <tr class="brand-primary text-white">
-                                {% ifequal project.status 'AC'  %}
+                                {% ifequal project.status 'AC' %}
                                 <th></th>
                                 {% endifequal %}
                                 <th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Marca</th><th>Modelo</th><th>Cantidad</th>
                                 {% if user.get_profile.empdni.charge.area == 'Administrator' or user.get_profile.empdni.charge.area == 'Ventas'  %}
                                 <th>Precio</th>
                                 {% endif %}
+                                {% ifequal project.status 'AC' %}
                                 <th>Stock</th>
+                                {% endifequal %}
                                 {% ifequal project.status 'PE'  %}
                                     <th>Editar</th><th>Eliminar</th>
                                 {% endifequal %}
@@ -281,7 +283,11 @@
                                     {% endif %}
                                         <td>{{ forloop.counter }}</td>
                                         <td>
-                                            <input type="checkbox" name="mats" value="{{ x.materiales_id }}">
+                                            {% if x.quantity|safe == 0 %}
+                                                <input type="checkbox" name="mats" value="{{ x.materiales_id }}" disabled="disabled">
+                                            {% else %}
+                                                <input type="checkbox" name="mats" value="{{ x.materiales_id }}">
+                                            {% endif %}
                                         </td>
                                         <td>{{ x.materiales_id }}</td>
                                         <td>{{ x.name }}</td>
@@ -341,7 +347,7 @@
                                                 <div id="des{{ x.materiales_id }}" class="panel-collapse collapse">
                                                     <!-- <div class="panel-body c{{ x.materiales_id }}"> -->
                                                     <div class="table-responsive">
-                                                        <table class="table table-condensed table-hover">
+                                                        <table class="table table-condensed table-hover table-bordered">
                                                             <caption class="text-left">
                                                                 <div class="row">
                                                                     <div class="col-md-4">
@@ -387,7 +393,15 @@
                                                                 </div>
                                                             </caption>
                                                             <thead>
-                                                                <th>Cantidad</th><th>Descripción</th><th>Diametro</th><th><th><th>Medida</th><th>Unidad</th><th>Editar</th><th>Eliminar</th>
+                                                                <th>Cantidad</th>
+                                                                <th>Descripción</th>
+                                                                <th>Diametro</th>
+                                                                <th></th>
+                                                                <th>Medida</th>
+                                                                <th>Unidad</th>
+                                                                <th>Observación</th>
+                                                                <th>Editar</th>
+                                                                <th>Eliminar</th>
                                                             </thead>
                                                             <tbody class="tb{{materiales_id}}"></tbody>
                                                         </table>
@@ -589,7 +603,16 @@
                 </h4>
             </div>
             <div class="modal-body">
-
+                <div class="table-responsive">
+                    <div class="panel panel-primary">
+                        <table class="table table-condensed torders">
+                            <thead>
+                                <th>Item</th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

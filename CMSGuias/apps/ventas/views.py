@@ -295,7 +295,6 @@ class ProjectManager(JSONResponseMixin, View):
                         pro = Proyecto.objects.get(pk=kwargs['project'])
                         pro.approved_id = request.POST.get('admin')
                         pro.status = 'AC'
-                        print 'all correct'
                         pro.save()
                         sub = Subproyecto.objects.filter(proyecto_id=kwargs['project'])
                         if sub:
@@ -314,6 +313,7 @@ class ProjectManager(JSONResponseMixin, View):
                             obj.precio = x.precio
                             obj.brand_id = x.brand_id
                             obj.model_id = x.model_id
+                            obj.quantityorder = x.cantidad
                             obj.save()
                         context['status'] = True
                     else:
@@ -339,8 +339,8 @@ class SectorManage(JSONResponseMixin, View):
                             context['list'] = [{'id':x.id,'materials_id': x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'brand' : x.brand.brand, 'model' : x.model.model , 'quantity':x.cantidad, 'price':x.precio} for x in obj]
                             context['status'] = True
                     if 'list-nip' in request.GET:
-                        obj = tmpniple.objects.filter(empdni_id=request.user.get_profile().empdni_id, proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), materiales_id=request.GET.get('mat')).order_by('metrado')
-                        context['list'] = [{'id':x.id, 'quantity':x.cantidad, 'diameter':x.materiales.matmed, 'measure':x.metrado,'unit':x.materiales.unidad.uninom,'name':globalVariable.tipo_nipples[x.tipo],'comment':x.comment} for x in obj]
+                        obj = tmpniple.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), materiales_id=request.GET.get('mat')).order_by('metrado')
+                        context['list'] = [{'id':x.id, 'quantity':x.cantidad, 'diameter':x.materiales.matmed, 'measure':x.metrado,'unit':'cm','name':globalVariable.tipo_nipples[x.tipo],'comment':x.comment, 'materials':x.materiales_id} for x in obj]
                         ingress = 0
                         for x in obj:
                             ingress += (x.cantidad * x.metrado)
@@ -368,7 +368,7 @@ class SectorManage(JSONResponseMixin, View):
                     # get stock of Inventory
                     # if x.brand_id == 'BR000':
                     stock = Inventario.objects.filter(materiales_id=x.materiales_id, periodo=globalVariable.get_year)
-                    data.append({'materiales_id':x.materiales_id, 'name':x.materiales.matnom,'measure':x.materiales.matmed,'unit':x.materiales.unidad.uninom,'brand':x.brand.brand, 'model':x.model.model,'quantity':x.cantidad,'price':x.precio, 'stock':stock[0].stock})
+                    data.append({'materiales_id':x.materiales_id, 'name':x.materiales.matnom,'measure':x.materiales.matmed,'unit':x.materiales.unidad.uninom,'brand':x.brand.brand, 'model':x.model.model,'quantity':x.quantityorder, 'cantidad':x.cantidad , 'price':x.precio, 'stock':stock[0].stock})
                 context['meter'] = data
                 context['niple'] = globalVariable.tipo_nipples
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
@@ -414,7 +414,7 @@ class SectorManage(JSONResponseMixin, View):
                             context['status'] = False
                     if request.POST.get('type') == 'del':
                         obj = Metradoventa.objects.filter(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') else None, sector_id=request.POST.get('sec'), materiales_id=request.POST.get('materials'))
-                        print obj.delete(), 'object delete'
+                        obj.delete()
                         context['status'] = True
                     if request.POST.get('type') == 'killdata':
                         obj = Metradoventa.objects.filter(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') else None, sector_id=request.POST.get('sec'))
