@@ -19,11 +19,11 @@ from django.views.generic import ListView, TemplateView, View
 from django.views.generic.edit import UpdateView, CreateView
 
 from CMSGuias.apps.home.models import *
-from CMSGuias.apps.operations.models import MetProject
+from CMSGuias.apps.operations.models import MetProject, Nipple
 from CMSGuias.apps.almacen.models import Inventario, tmpniple, Pedido, Detpedido
 from .models import *
 from .forms import *
-from CMSGuias.apps.operations.forms import tmpnipleForm
+from CMSGuias.apps.operations.forms import NippleForm
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles
 
 
@@ -339,8 +339,8 @@ class SectorManage(JSONResponseMixin, View):
                             context['list'] = [{'id':x.id,'materials_id': x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'brand' : x.brand.brand, 'model' : x.model.model , 'quantity':x.cantidad, 'price':x.precio} for x in obj]
                             context['status'] = True
                     if 'list-nip' in request.GET:
-                        obj = tmpniple.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), materiales_id=request.GET.get('mat')).order_by('metrado')
-                        context['list'] = [{'id':x.id, 'quantity':x.cantidad, 'diameter':x.materiales.matmed, 'measure':x.metrado,'unit':'cm','name':globalVariable.tipo_nipples[x.tipo],'comment':x.comment, 'materials':x.materiales_id} for x in obj]
+                        obj = Nipple.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), materiales_id=request.GET.get('mat')).order_by('metrado')
+                        context['list'] = [{'id':x.id, 'quantity':x.cantidad, 'diameter':x.materiales.matmed, 'measure':x.metrado,'unit':'cm','name': 'Niple(s) %s'%globalVariable.tipo_nipples[x.tipo],'comment':x.comment, 'materials':x.materiales_id} for x in obj]
                         ingress = 0
                         for x in obj:
                             ingress += (x.cantidad * x.metrado)
@@ -424,14 +424,12 @@ class SectorManage(JSONResponseMixin, View):
                     context['status'] = False
                 if 'addnip' in request.POST:
                     if 'id' in request.POST:
-                        obj = tmpniple.objects.get(pk=request.POST.get('id'))
-                        form = tmpnipleForm(request.POST, instance=obj)
+                        obj = Nipple.objects.get(pk=request.POST.get('id'))
+                        form = NippleForm(request.POST, instance=obj)
                     else:
-                        form = tmpnipleForm(request.POST)
+                        form = NippleForm(request.POST)
                     if form.is_valid():
-                        add = form.save(commit=False)
-                        add.empdni_id = request.user.get_profile().empdni_id
-                        add.save()
+                        form.save()
                         context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()

@@ -3,8 +3,8 @@
 #
 from django import forms
 
-from .models import MetProject
-from CMSGuias.apps.almacen.models import tmpniple
+from .models import MetProject, Nipple
+# from CMSGuias.apps.almacen.models import tmpniple
 
 
 class MetProjectForm(forms.ModelForm):
@@ -12,7 +12,12 @@ class MetProjectForm(forms.ModelForm):
         model = MetProject
         exclude = {'flag','tag',}
 
-class tmpnipleForm(forms.ModelForm):
+# class tmpnipleForm(forms.ModelForm):
+#     class Meta:
+#         model = tmpniple
+#         exclude = {'flag','empdni',}
+
+class NippleForm(forms.ModelForm):
     class Meta:
-        model = tmpniple
-        exclude = {'flag','empdni',}
+        model = Nipple
+        exclude = {'flag', 'tag',}
