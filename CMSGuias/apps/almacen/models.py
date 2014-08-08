@@ -34,6 +34,7 @@ class Detpedido(models.Model):
     cantguide = models.FloatField(default=0,null=True,blank=True)
     tag = models.CharField(max_length=1,default='0',null=False)
     spptag = models.BooleanField(default=False)
+    commet = models.CharField(max_length=250, default='')
     flag = models.BooleanField(default=True)
 
     class Meta:

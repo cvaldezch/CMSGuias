@@ -1,5 +1,6 @@
 $(document).ready ->
-    $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials").hide()
+    $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials, .ordersbedside").hide()
+    $("input[name=traslado]").datepicker "dateFormat": "yy-mm-dd", changeMonth : true, changeYear : true
     $(".panel-add-mat, .view-full").hide()
     $(".btn-show-mat").on "click", openAddMaterial
     $("input[name=plane]").on "change", uploadPlane
@@ -86,6 +87,23 @@ $(document).ready ->
     $(document).on "click", ".btn-append-list-nipp", showListNipp
     $(document).on "click", ".showhidenipp", showHideTbody
     $(document).on "change", "input[name=rdonipp]", changeRdoNip
+    $(document).on "change", ".chknipp", chkNippChange
+    $(document).on "blur", ".valquamax", valMax
+    $(".btn-next-order").on "click", nextOrders
+    $(".btn-back-order").on "click", backOrders
+    $(".comment-mat").on "blur", updateCommentMat
+    $("#orderf").click ->
+        $("#orderfile").click()
+    tinymce.init
+        selector: "textarea[name=obser]",
+        theme: "modern",
+        menubar: false,
+        statusbar: false,
+        plugins: "link contextmenu",
+        fullpage_default_doctype: "<!DOCTYPE html>",
+        font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",
+        toolbar1: "styleselect | fontsizeselect | | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |"
+        toolbar2: "undo redo | bold italic |"
     return
 
 loadSecandSub = (event) ->
@@ -690,7 +708,7 @@ showOrders = ->
             if $.trim(data.list[x].materials.substring(0, 3)) == "115"
                 template = template.replace("{{! input }}", "
                         <div class=\"input-group\">
-                            <input type=\"number\" class=\"form-control input-sm\" readonly=\"readonly\">
+                            <input type=\"number\" class=\"form-control input-sm meter{{ materials }} quantityOrders\" data-mat=\"{{ materials }}\" readonly=\"readonly\">
                             <span class=\"input-group-btn\">
                                 <button class=\"btn btn-default btn-sm btn-append-list-nipp\" value=\"{{ materials }}\" type=\"button\">
                                     <span class=\"glyphicon glyphicon-list\"></span>
@@ -699,7 +717,7 @@ showOrders = ->
                         </div>")
             else
                 template = template.replace("{{! input }}","
-                        <input type=\"number\" min=\"1\" max=\"{{ quantity }}\" value=\"{{ quantity }}\" class=\"form-control input-sm\">")
+                        <input type=\"number\" min=\"1\" max=\"{{ quantity }}\" value=\"{{ quantity }}\" data-mat=\"{{ materials }}\" class=\"form-control input-sm valquamax quantityOrders\">")
             $tb.append Mustache.render template, data.list[x]
         $("#morders").modal "toggle"
     else
@@ -726,7 +744,7 @@ showListNipp = ->
         data.nip = arr
         if data.nip.length > 0
             $tb = $(".torders > tbody.nipples")
-            template = "<tr class=\"#{idmat}nip{{ id }}\"><td><input type=\"checkbox\" class=\"chknipp chknipp#{idmat}\" value=\"#{idmat}nip{{ id }}\" value=\"{{ id }}\"></td><td><input type=\"number\" class=\"form-control input-sm\" style=\"width:90px;\" data-id=\"{{ id }}\" value=\"{{ quantity }}\" disabled></td><td>{{ quantity }}</td><td>{{ name }}</td><td>{{ diameter }}</td><td>x</td><td>{{ measure }}</td><td>{{ unit }}</td><td>{{ comment }}</td></tr>"
+            template = "<tr class=\"#{idmat}nip{{ id }}\"><td><input type=\"checkbox\" class=\"chknipp chknipp#{idmat}\" value=\"#{idmat}nip{{ id }}\" value=\"{{ id }}\"></td><td><input type=\"number\" class=\"form-control input-sm valquamax\" style=\"width:90px;\" data-id=\"{{ id }}\" min=\"1\" max=\"{{ quantity }}\" value=\"{{ quantity }}\" data-mat=\"#{idmat}\" disabled></td><td>{{ quantity }}</td><td>{{ name }}</td><td>{{ diameter }}</td><td>x</td><td>{{ measure }}</td><td>{{ unit }}</td><td>{{ comment }}</td></tr>"
             dat = ""
             for x of data.nip
                 dat = dat.concat Mustache.render template, data.nip[x]
@@ -761,7 +779,7 @@ showHideTbody = ->
                 $(btn).find("span").removeClass "glyphicon-chevron-down"
                 .addClass "glyphicon-chevron-up"
     else
-        $(".#{@value} > tbody").toggle ->
+        $("#{@value}").toggle ->
             if $(@).is(":hidden")
                 $(btn).find("span").removeClass "glyphicon-chevron-up"
                 .addClass "glyphicon-chevron-down"
@@ -777,6 +795,79 @@ changeRdoNip = ->
             chk = Boolean parseInt @value
             $(".chknipp#{$(@).attr "data-mat"}").each ->
                 @.checked = chk
+                $(@).change()
                 return
             return
+    return
+
+chkNippChange = ->
+    if @value isnt ""
+        $td = $("tr.#{@value} > td")
+        $td.eq(1).find("input").attr "disabled", not @checked
+        calMeter @value.substring 0, 15
+    return
+
+calMeter = (matid)->
+    input = $(".meter#{matid}")
+    m = 0
+    $(".table#{matid} > tbody > tr").each (index, element) ->
+        $td = $(element).find("td")
+        if $td.eq(0).find("input").is(":checked")
+            quantity = parseFloat $td.eq(1).find("input").val()
+            meter = parseFloat $td.eq(6).text()
+            m += ((quantity * meter) / 100)
+    input.val m
+    return
+
+valMax = ->
+    $input = $(@)
+    max = parseFloat $input.attr "max"
+    val = parseFloat $input.val()
+    mat = $input.attr "data-mat"
+    if val > max
+        $input.val max
+    else if val < 1
+        $input.val 1
+        id = $input.attr "data-id"
+        #$input.val max
+        $("tr.#{mat}nip#{id} > td").eq(0).find("input").attr "checked", false
+        .change()
+    calMeter mat
+    return
+
+nextOrders = ->
+    pass = valQuantityPreOrders()
+    if pass
+        $(".torders").fadeOut 400
+        $(".ordersbedside").fadeIn 800
+    else
+        $().toastmessage "showWarningToast", "Existe campos vacios o con valor cero, esto es incorrecto."
+    return
+
+backOrders = ->
+    $(".ordersbedside").fadeOut 400
+    $(".torders").fadeIn 800
+    return
+
+valQuantityPreOrders = ->
+    pass = false
+    $(".quantityOrders").each (index, element) ->
+        if element.value is "" or element.value is 0 or element.value is "0"
+            pass = false
+            return
+        else
+            pass = true
+            return
+    return pass
+
+updateCommentMat = ->
+    data = new Object()
+    data.pro = $("input[name=pro]").val()
+    data.sub = $("input[name=sub]").val()
+    data.sec = $("input[name=sec]").val()
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    data.comment = @value
+    data.mat = $(@).attr "data-mat"
+    data.upcomment = true
+    $.post "", data
     return

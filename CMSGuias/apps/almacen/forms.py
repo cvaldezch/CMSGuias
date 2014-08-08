@@ -116,4 +116,4 @@ class addOrdersForm(forms.ModelForm):
 class addGuideReferral(forms.ModelForm):
     class Meta:
         model= models.GuiaRemision
-        exclude= { 'guia_id','registrado','status','flag' }
+        exclude= { 'guia_id','registrado','status','flag', }

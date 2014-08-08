@@ -6,6 +6,7 @@
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>
 <script src="{{ MEDIA_URL }}js/getMaterials.js"></script>
 <script src="{{ MEDIA_URL }}js/sales/managersec.js"></script>
+<script src="{{ MEDIA_URL }}js/tinymce.js"></script>
 {% endblock script %}
 {% block menu %}
     {% include "menus/sale.htm" %}
@@ -235,6 +236,7 @@
                                 {% endif %}
                                 {% ifequal project.status 'AC' %}
                                 <th>Stock</th>
+                                <th>Observación</th>
                                 {% endifequal %}
                                 {% ifequal project.status 'PE'  %}
                                     <th>Editar</th><th>Eliminar</th>
@@ -300,6 +302,9 @@
                                         <td>{{ x.price|safe }}</td>
                                         <td>{{ x.stock|safe }}</td>
                                         {% endif %}
+                                        <td>
+                                            <input type="text" class="form-control input-sm comment-mat" data-mat="{{ x.materiales_id }}" value="{{ x.comment }}" style="width: 160px;">
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 {% endif %}
@@ -606,14 +611,80 @@
                 <div class="table-responsive">
                     <div class="panel panel-primary">
                         <table class="table table-condensed torders">
+                            <caption>
+                                <button class="btn btn-sm btn-primary pull-right btn-next-order"><span class="glyphicon glyphicon-chevron-right"></span> Continuar</button>
+                            </caption>
                             <thead>
-                                <th>Item</th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Marca</th><th>Model</th><th>Cantidad</th><th style="width:120px;">Pedido</th>
+                                <th><button class="btn btn-xs btn-link showhidenipp" value=".torders > tbody.materials"><span class="glyphicon glyphicon-chevron-up"></span></button></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Marca</th><th>Model</th><th>Cantidad</th><th style="width:120px;">Pedido</th>
                             </thead>
                             <tbody class="materials"></tbody>
-                            <tbody class="nipples">
-
-                            </tbody>
+                            <tbody class="nipples"></tbody>
                         </table>
+                        <div class="panel-body">
+                            <div class="ordersbedside">
+                                <h4 class="text-success">
+                                    Generar pedido a almacén
+                                </h4>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-default btn-back-order"><span class="glyphicon glyphicon-chevron-left"></span> Regresar</button>
+                                    <button class="btn btn-sm btn-success text-black btn-generate-orders"><span class="glyphicon glyphicon-floppy-disk"></span> Hacer Pedido</button>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group has-success">
+                                            <label class="control-label ">Almacén</label>
+                                            <select name="almacen" id="almacen" class="form-control">
+                                                {% for x in store %}
+                                                    <option value="{{ x.almacen_id }}">{{ x.nombre }}</option>
+                                                {% empty %}
+                                                    <option value="">-- Nothing --</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="form-group has-success">
+                                            <label class="control-label ">Asunto</label>
+                                            <input type="text" name="asunto" id="asunto" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group has-success">
+                                            <label class="control-label">Empleado</label>
+                                            <input type="text" class="form-control" name="empdni" value="{{ user.get_profile.empdni_id }}" readonly="readonly">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group has-success">
+                                            <label class="control-label ">Nombres</label>
+                                            <input type="text" class="form-control" value="{{ user.get_profile.empdni.firstname }}, {{ user.get_profile.empdni.lastname }}" readonly="readonly">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group has-success">
+                                            <label class="control-label ">Traslado</label>
+                                            <input type="text" name="traslado" id="traslado" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group has-success">
+                                            <label class="control-label ">Adjuntar Archivo <small>(opcional)</small></label>
+                                            <div class="alert alert-inverse alert-inverse border text-center">
+                                                <span class="glyphicon glyphicon-paperclip"></span>
+                                                <a id="orderf" href="#">Browser</a>
+                                            </div>
+                                            <input type="file" name="orderfile" id="orderfile" class="hide" accept="application/pdf">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label class="control-label">Observaciones</label>
+                                            <textarea name="obser" id="obser" class="form-group" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

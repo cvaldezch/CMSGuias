@@ -368,9 +368,10 @@ class SectorManage(JSONResponseMixin, View):
                     # get stock of Inventory
                     # if x.brand_id == 'BR000':
                     stock = Inventario.objects.filter(materiales_id=x.materiales_id, periodo=globalVariable.get_year)
-                    data.append({'materiales_id':x.materiales_id, 'name':x.materiales.matnom,'measure':x.materiales.matmed,'unit':x.materiales.unidad.uninom,'brand':x.brand.brand, 'model':x.model.model,'quantity':x.quantityorder, 'cantidad':x.cantidad , 'price':x.precio, 'stock':stock[0].stock})
+                    data.append({'materiales_id':x.materiales_id, 'name':x.materiales.matnom,'measure':x.materiales.matmed,'unit':x.materiales.unidad.uninom,'brand':x.brand.brand, 'model':x.model.model,'quantity':x.quantityorder, 'cantidad':x.cantidad , 'price':x.precio, 'stock':stock[0].stock, 'comment':x.comment})
                 context['meter'] = data
                 context['niple'] = globalVariable.tipo_nipples
+                context['store'] = Almacene.objects.filter(flag=True).order_by('nombre')
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)
@@ -430,6 +431,12 @@ class SectorManage(JSONResponseMixin, View):
                         form = NippleForm(request.POST)
                     if form.is_valid():
                         form.save()
+                        context['status'] = True
+                if'upcomment' in request.POST:
+                    obj = MetProject.objects.get(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') != '' else None, sector_id=request.POST.get('sec'), materiales_id=request.POST.get('mat'))
+                    if obj:
+                        obj.comment = request.POST.get('comment')
+                        obj.save()
                         context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
