@@ -92,6 +92,7 @@ $(document).ready ->
     $(".btn-next-order").on "click", nextOrders
     $(".btn-back-order").on "click", backOrders
     $(".comment-mat").on "blur", updateCommentMat
+    $(".btn-generate-orders").on "click", generateOrders
     $("#orderf").click ->
         $("#orderfile").click()
     tinymce.init
@@ -638,7 +639,6 @@ show_edit_nipple = ->
         tipo[text] = element.value
         return
 
-    console.log tipo
     $(".update-id-#{idmat}").val @value
     $td = $(".trnip#{@value} > td")
     $(".nv#{idmat}").val $td.eq(0).text()
@@ -729,9 +729,10 @@ showListNipp = ->
     data = new Object()
     arr =  new Array()
     counter = 0
-    if not $(".torders > tbody.nipples > tr.prenip#{@value}").length
+    # console.log $("table.torders > tbody.nipples > tr.prenip#{idmat}").length
+    if $("table.torders > tbody.nipples > tr.prenip#{idmat}").length is 0
         $tr = $("div#des#{@value} > div > table > tbody.tb > tr")
-        if not $tr.length
+        if $tr.length is 0
             list_temp_nipples @value
         $tr.each ()->
             $td = $(@).find("td")
@@ -739,10 +740,11 @@ showListNipp = ->
             arr.push {"item":counter, "quantity":$td.eq(0).text(), "name": $td.eq(1).text(), "diameter":$td.eq(2).text(),"measure":$td.eq(4).text(), "unit":"cm", "comment":$td.eq(6).text(),"id":$td.eq(7).find("button").val()}
             return
     else
+        console.log "row exists"
         counter = 1
     if counter > 0
-        data.nip = arr
-        if data.nip.length > 0
+        if arr.length > 0
+            data.nip = arr
             $tb = $(".torders > tbody.nipples")
             template = "<tr class=\"#{idmat}nip{{ id }}\"><td><input type=\"checkbox\" class=\"chknipp chknipp#{idmat}\" value=\"#{idmat}nip{{ id }}\" value=\"{{ id }}\"></td><td><input type=\"number\" class=\"form-control input-sm valquamax\" style=\"width:90px;\" data-id=\"{{ id }}\" min=\"1\" max=\"{{ quantity }}\" value=\"{{ quantity }}\" data-mat=\"#{idmat}\" disabled></td><td>{{ quantity }}</td><td>{{ name }}</td><td>{{ diameter }}</td><td>x</td><td>{{ measure }}</td><td>{{ unit }}</td><td>{{ comment }}</td></tr>"
             dat = ""
@@ -766,6 +768,8 @@ showListNipp = ->
                         </td></tr>"
             template = template.replace "{rows}", dat
             $tb.append template
+        else
+            console.log "mostramos row old "
     return
 
 showHideTbody = ->
@@ -870,4 +874,85 @@ updateCommentMat = ->
     data.mat = $(@).attr "data-mat"
     data.upcomment = true
     $.post "", data
+    return
+
+validOrders = ->
+    data = new Object()
+    detail = new Array()
+    nipp = new Array()
+    pipe = new Array()
+    pass = false
+    $(".ordersbedside > .row").find("select,input").each ->
+        #console.warn "#{@name} and #{@value} length #{@value.length}"
+        if @value is ""
+            if @name isnt "orderfile"
+                pass = false
+                data.elemet = @name
+                return pass
+            return
+        else
+            if @name isnt "orderfile" and @name isnt ""
+                data[@name] = @value #$(element).value
+                pass = true
+            return
+    if pass
+        $(".quantityOrders").each (index, element) ->
+            if element.value isnt "" or element.value isnt 0 or element.value isnt "0"
+                detail.push {"idmat": element.getAttribute("data-mat"), "quantity": parseFloat(element.value), "comment":$("tr.#{element.getAttribute("data-mat")}").find("td").eq(11).find("input").val()}
+                if element.getAttribute("data-mat").substring(0,3) is "115"
+                    pipe.push element.getAttribute("data-mat")
+                    return
+        if pipe.length > 0
+            for x of pipe
+                $(".table#{pipe[x]} > tbody > tr").each (index, element) ->
+                    $td = $(element).find("td")
+                    if $td.eq(0).find("input").is(":checked")
+                        nipp.push({"quantity":parseFloat($td.eq(1).find("input").val()), "idnip":$td.eq(1).find("input").attr("data-id"), "idmat": $td.eq(1).find("input").attr("data-mat"), "comment": $("tr.trnip#{$td.eq(1).find("input").attr("data-id")}").find("td").eq(6).text()})
+                        return
+    data.detail = JSON.stringify detail
+    data.nipples = JSON.stringify nipp
+    data.pass = pass
+    return data
+
+generateOrders = ->
+    val = validOrders()
+    if val.pass
+        btn = @
+        data = new FormData()
+        if $("input[name=orderfile]").get(0).files.length > 0
+            data.append "orders", $("input[name=orderfile]").get(0).files[0]
+        data.append "obser", $("#obser_ifr").contents().find("body").html()
+        data.append "proyecto", $("input[name=pro]").val()
+        data.append "subproyecto", $("input[name=sub]").val()
+        data.append "sector", $("input[name=sec]").val()
+        data.append "csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val()
+        data.append "almacen", val.almacen
+        data.append "asunto", val.asunto
+        data.append "empdni", val.empdni
+        data.append "traslado", val.traslado
+        data.append "details", val.detail
+        data.append "nipples", val.nipples
+        data.append "saveorders", true
+        $.ajax
+            data : data
+            url : ""
+            type : "POST"
+            dataType : "json"
+            cache: false
+            contentType : false
+            processData : false
+            beforeSend : ->
+                $(btn).button("loading");
+            success : (response) ->
+                if response.status
+                    $(btn).button('loading');
+                    $().toastmessage "showNoticeToast", "Correcto! se a generado el pedido a almacén nro #{response.nro}"
+                    setTimeout ->
+                        location.reload()
+                    , 2600
+                else
+                    $().toastmessage "showWarningToast", "No se a generado el pedido almacén, #{response.raise}"
+        return
+    else
+        $().toastmessage "showWarningToast", "existe un error de formatado, revise los campos del formulario"
     return

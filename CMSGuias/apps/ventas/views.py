@@ -23,6 +23,7 @@ from CMSGuias.apps.operations.models import MetProject, Nipple
 from CMSGuias.apps.almacen.models import Inventario, tmpniple, Pedido, Detpedido
 from .models import *
 from .forms import *
+from CMSGuias.apps.almacen.forms import addOrdersForm
 from CMSGuias.apps.operations.forms import NippleForm
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles
 
@@ -438,6 +439,18 @@ class SectorManage(JSONResponseMixin, View):
                         obj.comment = request.POST.get('comment')
                         obj.save()
                         context['status'] = True
+                if 'saveorders' in request.POST:
+                    form = addOrdersForm(request.POST, request.FILES)
+                    if form.is_valid():
+                        # save bedside Orders
+                        add = form.save(commit=False)
+                        id = genkeys.GenerateIdOrders()
+                        add.pedido_id = id
+                        add.status= 'PE'
+                        add.save()
+                        context['status'] = True
+                        # save to detail
+
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

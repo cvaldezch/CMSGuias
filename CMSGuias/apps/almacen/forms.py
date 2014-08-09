@@ -102,10 +102,10 @@ class addConductorForm(forms.ModelForm):
 		model = Conductore
 		exclude = { 'traruc', 'flag', }
 		widgets = {
-			'condni_id' :forms.TextInput(attrs ={'class': 'form-control'}),
-			'connom' :forms.TextInput(attrs    ={'class': 'form-control'}),
-			'conlic' :forms.TextInput(attrs    ={'class': 'form-control'}),
-			'contel': forms.TextInput(attrs    ={'class': 'form-control'}),
+			'condni_id' :forms.TextInput(attrs = {'class': 'form-control'}),
+			'connom' :forms.TextInput(attrs = {'class': 'form-control'}),
+			'conlic' :forms.TextInput(attrs = {'class': 'form-control'}),
+			'contel': forms.TextInput(attrs = {'class': 'form-control'}),
 		}
 # Orders
 class addOrdersForm(forms.ModelForm):
