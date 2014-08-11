@@ -231,7 +231,7 @@
                                 <th></th>
                                 {% endifequal %}
                                 <th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Marca</th><th>Modelo</th><th>Cantidad</th>
-                                {% if user.get_profile.empdni.charge.area == 'Administrator' or user.get_profile.empdni.charge.area == 'Ventas'  %}
+                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
                                 <th>Precio</th>
                                 {% endif %}
                                 {% ifequal project.status 'AC' %}
@@ -259,7 +259,7 @@
                                         <td>{{ x.brand.brand }}</td>
                                         <td>{{ x.model.model }}</td>
                                         <td>{{ x.cantidad|safe }}</td>
-                                        {% if user.get_profile.empdni.charge.area == 'Administrator' or user.get_profile.empdni.charge.area == 'Ventas'  %}
+                                        {% if user.get_profile.empdni.charge.area|capfirst == 'Administrator' or user.get_profile.empdni.charge.area == 'Ventas'  %}
                                             <td>{{ x.precio|safe }}</td>
                                         {% endif %}
                                         {% ifequal project.status 'PE'  %}
@@ -278,15 +278,15 @@
                                 {% endfor %}
                                 {% if meter %}
                                     {% for x in meter %}
-                                    {% if x.stock <= 0 %}
-                                        <tr class="danger {{ x.materiales_id }}">
-                                    {% else  %}
+                                    {% if x.quantity <= 0 %}
                                         <tr class="success {{ x.materiales_id }}">
+                                    {% else  %}
+                                        <tr class="info {{ x.materiales_id }}">
                                     {% endif %}
                                         <td>{{ forloop.counter }}</td>
                                         <td>
-                                            {% if x.quantity|safe == 0 %}
-                                                <input type="checkbox" name="mats" value="{{ x.materiales_id }}" disabled="disabled">
+                                            {% if x.quantity == 0 %}
+                                                <input type="checkbox" name="mats" value="{{ x.materiales_id }}" disabled>
                                             {% else %}
                                                 <input type="checkbox" name="mats" value="{{ x.materiales_id }}">
                                             {% endif %}
@@ -298,12 +298,16 @@
                                         <td>{{ x.brand }}</td>
                                         <td>{{ x.model }}</td>
                                         <td>{{ x.quantity|safe }}</td>
-                                        {% if user.get_profile.empdni.charge.area == 'Administrator' or user.get_profile.empdni.charge.area == 'Ventas'  %}
-                                        <td>{{ x.price|safe }}</td>
-                                        <td>{{ x.stock|safe }}</td>
+                                        {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
+                                            <td>{{ x.price|safe }}</td>
+                                            <td>{{ x.stock|safe|floatformat:"2" }}</td>
                                         {% endif %}
                                         <td>
-                                            <input type="text" class="form-control input-sm comment-mat" data-mat="{{ x.materiales_id }}" value="{{ x.comment }}" style="width: 160px;">
+                                            {% if x.quantity <= 0 %}
+                                                <input type="text" class="form-control input-sm comment-mat" data-mat="{{ x.materiales_id }}" value="{{ x.comment }}" style="width: 160px;" disabled>
+                                            {% else %}
+                                                <input type="text" class="form-control input-sm comment-mat" data-mat="{{ x.materiales_id }}" value="{{ x.comment }}" style="width: 160px;">
+                                            {% endif %}
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -357,15 +361,19 @@
                                                                 <div class="row">
                                                                     <div class="col-md-4">
                                                                         <div class="btn-group">
-                                                                            <button class="btn btn-default btn-xs btn-add-nipple-{{ x.materiales_id }}" onClick="aggregate_nipples({{ x.materiales_id }});" type="Button" data-loading-text="Proccess...">
-                                                                                <span class="glyphicon glyphicon-plus-sign"></span> Agregar
-                                                                            </button>
+                                                                            {% if x.quantity == x.cantidad %}
+                                                                                <button class="btn btn-default btn-xs btn-add-nipple-{{ x.materiales_id }}" onClick="aggregate_nipples({{ x.materiales_id }});" type="Button" data-loading-text="Proccess...">
+                                                                                    <span class="glyphicon glyphicon-plus-sign"></span> Agregar
+                                                                                </button>
+                                                                            {% endif %}
                                                                             <button class="btn btn-default btn-xs" onClick="list_temp_nipples({{ x.materiales_id }});" type="Button" data-loading-text="Proccess...">
                                                                                 <span class="glyphicon glyphicon-refresh"></span> Recargar
                                                                             </button>
+                                                                            {% if x.quantity == x.cantidad %}
                                                                             <button class="btn btn-danger btn-xs" onClick="delete_all_temp_nipples({{ x.materiales_id }});" type="Button" data-loading-text="Proccess...">
                                                                                 <span class="glyphicon glyphicon-trash"></span> Eliminar Todo
                                                                             </button>
+                                                                            {% endif %}
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-8">

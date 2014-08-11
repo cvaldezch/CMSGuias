@@ -6,7 +6,8 @@ $(document).ready(function() {
   $("input[name=traslado]").datepicker({
     "dateFormat": "yy-mm-dd",
     changeMonth: true,
-    changeYear: true
+    changeYear: true,
+    minDate: "0"
   });
   $(".panel-add-mat, .view-full").hide();
   $(".btn-show-mat").on("click", openAddMaterial);
@@ -634,7 +635,7 @@ list_temp_nipples = function(idmat) {
   $.getJSON("", data, function(response) {
     var $tb, template, x;
     if (response.status) {
-      template = "<tr class=\"trnip{{ id }}\"> <td>{{ quantity }}</td> <td>{{ name }}</td> <td>{{ diameter }}</td> <td>x</td> <td>{{ measure }}</td> <td>{{ unit }}</td> <td>{{ comment }}</td> <td> <button class=\"btn btn-xs btn-link text-green btn-nip-edit\" data-edit-nip=\"{{ materials }}\" value=\"{{ id }}\"> <span class=\"glyphicon glyphicon-pencil\"></span> </button> </td> <td> <button class=\"btn btn-xs btn-link btn-nip-del text-red\" data-del-nip=\"{{ materials }}\" value=\"{{ id }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> </tr>";
+      template = "<tr class=\"trnip{{ id }}\"> <td>{{ quantity }}</td> <td>{{ name }}</td> <td>{{ diameter }}</td> <td>x</td> <td>{{ measure }}</td> <td>{{ unit }}</td> <td>{{ comment }}</td> <td> <button class=\"btn btn-xs btn-link text-green btn-nip-edit {{ view }}\" data-edit-nip=\"{{ materials }}\" value=\"{{ id }}\"> <span class=\"glyphicon glyphicon-pencil\"></span> </button> </td> <td> <button class=\"btn btn-xs btn-link btn-nip-del text-red {{ view }}\" data-del-nip=\"{{ materials }}\" value=\"{{ id }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> </tr>";
       $tb = $("#des" + idmat + " > div > table > tbody");
       $tb.empty();
       for (x in response.list) {
@@ -970,7 +971,7 @@ updateCommentMat = function() {
 };
 
 validOrders = function() {
-  var data, detail, nipp, pass, pipe, x;
+  var data, detail, nipp, pass, pipe, tipo, x;
   data = new Object();
   detail = new Array();
   nipp = new Array();
@@ -1004,16 +1005,32 @@ validOrders = function() {
       }
     });
     if (pipe.length > 0) {
+      tipo = new Object();
+      $(".tn" + detail[0].idmat).find("option").each(function(index, element) {
+        var text;
+        text = $.trim(element.innerHTML);
+        text = text.split("-");
+        if (text.length === 2) {
+          text = text[1];
+        } else if (text.length === 3) {
+          text = text[1] + "-" + text[2];
+        }
+        tipo[text] = element.value;
+      });
       for (x in pipe) {
         $(".table" + pipe[x] + " > tbody > tr").each(function(index, element) {
-          var $td;
+          var $td, ar, met;
           $td = $(element).find("td");
           if ($td.eq(0).find("input").is(":checked")) {
+            ar = $("tr.trnip" + ($td.eq(1).find("input").attr("data-id"))).find("td").eq(1).text().split(",");
+            met = $("tr.trnip" + ($td.eq(1).find("input").attr("data-id"))).find("td").eq(4).text();
             nipp.push({
               "quantity": parseFloat($td.eq(1).find("input").val()),
               "idnip": $td.eq(1).find("input").attr("data-id"),
               "idmat": $td.eq(1).find("input").attr("data-mat"),
-              "comment": $("tr.trnip" + ($td.eq(1).find("input").attr("data-id"))).find("td").eq(6).text()
+              "comment": $("tr.trnip" + ($td.eq(1).find("input").attr("data-id"))).find("td").eq(6).text(),
+              "type": ar[1],
+              "meter": met
             });
           }
         });
@@ -1033,7 +1050,7 @@ generateOrders = function() {
     btn = this;
     data = new FormData();
     if ($("input[name=orderfile]").get(0).files.length > 0) {
-      data.append("orders", $("input[name=orderfile]").get(0).files[0]);
+      data.append("orderfile", $("input[name=orderfile]").get(0).files[0]);
     }
     data.append("obser", $("#obser_ifr").contents().find("body").html());
     data.append("proyecto", $("input[name=pro]").val());

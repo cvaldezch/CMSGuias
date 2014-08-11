@@ -20,7 +20,7 @@ from django.views.generic.edit import UpdateView, CreateView
 
 from CMSGuias.apps.home.models import *
 from CMSGuias.apps.operations.models import MetProject, Nipple
-from CMSGuias.apps.almacen.models import Inventario, tmpniple, Pedido, Detpedido
+from CMSGuias.apps.almacen.models import Inventario, tmpniple, Pedido, Detpedido, Niple
 from .models import *
 from .forms import *
 from CMSGuias.apps.almacen.forms import addOrdersForm
@@ -341,7 +341,12 @@ class SectorManage(JSONResponseMixin, View):
                             context['status'] = True
                     if 'list-nip' in request.GET:
                         obj = Nipple.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), materiales_id=request.GET.get('mat')).order_by('metrado')
-                        context['list'] = [{'id':x.id, 'quantity':x.cantidad, 'diameter':x.materiales.matmed, 'measure':x.metrado,'unit':'cm','name': 'Niple(s) %s'%globalVariable.tipo_nipples[x.tipo],'comment':x.comment, 'materials':x.materiales_id} for x in obj]
+                        mat = MetProject.objects.get(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), materiales_id=request.GET.get('mat'))
+                        if mat.quantityorder == mat.cantidad:
+                            attend = 'show'
+                        else:
+                            attend = 'hide'
+                        context['list'] = [{'id':x.id, 'quantity':x.cantidad, 'diameter':x.materiales.matmed, 'measure':x.metrado,'unit':'cm','name': 'Niple%s %s, %s'%('s' if x.cantidad > 1 else '',globalVariable.tipo_nipples[x.tipo], x.tipo),'comment':x.comment, 'materials':x.materiales_id, 'view': attend} for x in obj]
                         ingress = 0
                         for x in obj:
                             ingress += (x.cantidad * x.metrado)
@@ -447,12 +452,52 @@ class SectorManage(JSONResponseMixin, View):
                         id = genkeys.GenerateIdOrders()
                         add.pedido_id = id
                         add.status= 'PE'
-                        add.save()
-                        context['status'] = True
+                        #add.save()
                         # save to detail
-
+                        details = json.loads(request.POST.get('details'))
+                        print details
+                        for x in details:
+                            obj = Detpedido()
+                            obj.pedido_id = id
+                            obj.materiales_id = x['idmat']
+                            obj.cantidad = x['quantity']
+                            obj.cantshop = x['quantity']
+                            obj.commet = x['comment']
+                            #obj.save()
+                            # update quantity in Metproyect
+                            pro = MetProject.objects.get(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') != '' else None, sector_id=request.POST.get('sector'), materiales_id=x['idmat'])
+                            if pro.quantityorder == pro.cantidad:
+                                pro.quantityorder = (pro.cantidad - x['quantity'])
+                            else:
+                                pro.quantityorder = (pro.quantityorder - x['quantity'])
+                            #pro.save()
+                        # save to nipples
+                        nipples = json.loads(request.POST.get('nipples'))
+                        print nipples
+                        for x in nipples:
+                            obj = Niple()
+                            obj.pedido_id = id
+                            obj.proyecto_id = request.POST.get('proyecto')
+                            obj.subproyecto_id = request.POST.get('subproyecto')
+                            obj.sector_id = request.POST.get('sector')
+                            obj.empdni = request.user.get_profile().empdni_id
+                            obj.materiales_id= x['idmat']
+                            obj.cantidad = x['quantity']
+                            obj.cantshop = x['quantity']
+                            obj.metrado = x['meter']
+                            obj.tipo = x['type'].strip()
+                            obj.comment = x['comment']
+                            obj.save()
+                            # update table od nipples
+                            nip = Nipple.objects.get(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') != '' else None, sector_id=request.POST.get('sector'), materiales_id=x['idmat'], id=x['idnip'])
+                            if nip.cantshop == nip.cantidad:
+                                nip.cantshop = (nip.cantidad - x['quantity'])
+                            else:
+                                nip.cantshop = (nip.cantshop - x['quantity'])
+                            nip.save()
+                        context['nro'] = id
+                        context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
-

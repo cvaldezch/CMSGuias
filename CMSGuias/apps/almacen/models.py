@@ -34,7 +34,7 @@ class Detpedido(models.Model):
     cantguide = models.FloatField(default=0,null=True,blank=True)
     tag = models.CharField(max_length=1,default='0',null=False)
     spptag = models.BooleanField(default=False)
-    commet = models.CharField(max_length=250, default='')
+    comment = models.CharField(max_length=250, default='')
     flag = models.BooleanField(default=True)
 
     class Meta:
@@ -64,7 +64,7 @@ class Niple(models.Model):
     cantguide= models.FloatField(default=0,null=True, blank=True)
     tipo = models.CharField(max_length=1)
     flag = models.BooleanField(default=True)
-    tag = models.CharField(max_length=1,default='0')
+    tag = models.CharField(max_length=1, default='0')
     comment = models.CharField(max_length=250, default='', null=True, blank=True)
 
     class Meta:

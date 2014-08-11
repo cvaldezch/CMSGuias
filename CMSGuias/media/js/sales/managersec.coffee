@@ -1,6 +1,6 @@
 $(document).ready ->
     $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials, .ordersbedside").hide()
-    $("input[name=traslado]").datepicker "dateFormat": "yy-mm-dd", changeMonth : true, changeYear : true
+    $("input[name=traslado]").datepicker "dateFormat": "yy-mm-dd", changeMonth : true, changeYear : true, minDate : "0"
     $(".panel-add-mat, .view-full").hide()
     $(".btn-show-mat").on "click", openAddMaterial
     $("input[name=plane]").on "change", uploadPlane
@@ -560,12 +560,12 @@ list_temp_nipples = (idmat)->
                             <td>{{ unit }}</td>
                             <td>{{ comment }}</td>
                             <td>
-                                <button class=\"btn btn-xs btn-link text-green btn-nip-edit\" data-edit-nip=\"{{ materials }}\" value=\"{{ id }}\">
+                                <button class=\"btn btn-xs btn-link text-green btn-nip-edit {{ view }}\" data-edit-nip=\"{{ materials }}\" value=\"{{ id }}\">
                                     <span class=\"glyphicon glyphicon-pencil\"></span>
                                 </button>
                             </td>
                             <td>
-                                <button class=\"btn btn-xs btn-link btn-nip-del text-red\" data-del-nip=\"{{ materials }}\" value=\"{{ id }}\">
+                                <button class=\"btn btn-xs btn-link btn-nip-del text-red {{ view }}\" data-del-nip=\"{{ materials }}\" value=\"{{ id }}\">
                                     <span class=\"glyphicon glyphicon-trash\"></span>
                                 </button>
                             </td>
@@ -903,11 +903,23 @@ validOrders = ->
                     pipe.push element.getAttribute("data-mat")
                     return
         if pipe.length > 0
+            tipo = new Object()
+            $(".tn#{detail[0].idmat}").find("option").each (index, element) ->
+                text = $.trim element.innerHTML
+                text = text.split "-"
+                if text.length == 2
+                    text = text[1]
+                else if text.length == 3
+                    text = text[1] + "-" + text[2]
+                tipo[text] = element.value
+                return
             for x of pipe
                 $(".table#{pipe[x]} > tbody > tr").each (index, element) ->
                     $td = $(element).find("td")
                     if $td.eq(0).find("input").is(":checked")
-                        nipp.push({"quantity":parseFloat($td.eq(1).find("input").val()), "idnip":$td.eq(1).find("input").attr("data-id"), "idmat": $td.eq(1).find("input").attr("data-mat"), "comment": $("tr.trnip#{$td.eq(1).find("input").attr("data-id")}").find("td").eq(6).text()})
+                        ar = $("tr.trnip#{$td.eq(1).find("input").attr("data-id")}").find("td").eq(1).text().split(",")
+                        met = $("tr.trnip#{$td.eq(1).find("input").attr("data-id")}").find("td").eq(4).text()
+                        nipp.push({"quantity":parseFloat($td.eq(1).find("input").val()), "idnip":$td.eq(1).find("input").attr("data-id"), "idmat": $td.eq(1).find("input").attr("data-mat"), "comment": $("tr.trnip#{$td.eq(1).find("input").attr("data-id")}").find("td").eq(6).text(), "type": ar[1], "meter" : met})
                         return
     data.detail = JSON.stringify detail
     data.nipples = JSON.stringify nipp
@@ -920,7 +932,7 @@ generateOrders = ->
         btn = @
         data = new FormData()
         if $("input[name=orderfile]").get(0).files.length > 0
-            data.append "orders", $("input[name=orderfile]").get(0).files[0]
+            data.append "orderfile", $("input[name=orderfile]").get(0).files[0]
         data.append "obser", $("#obser_ifr").contents().find("body").html()
         data.append "proyecto", $("input[name=pro]").val()
         data.append "subproyecto", $("input[name=sub]").val()

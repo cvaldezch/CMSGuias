@@ -72,12 +72,12 @@ def view_pedido(request):
                     nip.proyecto_id = request.POST.get('proyecto')
                     nip.subproyecto_id = request.POST.get('subproyecto')
                     nip.sector_id = request.POST.get('sector')
-                    nip.empdni = request.user.get_profile().empdni
+                    nip.empdni = request.user.get_profile().empdni_id
                     nip.materiales_id= x.materiales_id
                     nip.cantidad = x.cantidad
                     nip.cantshop = x.cantidad
                     nip.metrado = x.metrado
-                    nip.tipo = x.tipo
+                    nip.tipo = x.tipo.strip()
                     nip.save()
                 # deleting tmps
                 tmp = models.tmppedido.objects.filter(empdni__exact=request.user.get_profile().empdni)
