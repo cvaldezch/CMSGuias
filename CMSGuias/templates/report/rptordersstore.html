@@ -34,7 +34,7 @@
 			<tr><td width="3cm"><strong>Fecha Registrado :</strong></td><td> {{order.registrado}}</td></tr>
 			<tr><td><strong>Fecha Traslado :</strong></td><td> {{order.traslado}}</td></tr>
 			<tr><td><strong>Estado :</strong></td><td> PENDIENTE</td></tr>
-			<tr><td><strong>Observación :</strong></td><td> {{order.obser}}</td></tr>
+			<tr><td><strong>Observación :</strong></td><td> {{ order.obser|safe }}</td></tr>
 			</table>
 		</div>
 	</header>
@@ -76,7 +76,7 @@
 			</table>
 		</div>
 	</section>
-	
+
 	{% if nipples %}
 
 	<pdf:nextpage	>

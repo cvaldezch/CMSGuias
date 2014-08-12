@@ -346,10 +346,10 @@ class SectorManage(JSONResponseMixin, View):
                             attend = 'show'
                         else:
                             attend = 'hide'
-                        context['list'] = [{'id':x.id, 'quantity':x.cantidad, 'diameter':x.materiales.matmed, 'measure':x.metrado,'unit':'cm','name': 'Niple%s %s, %s'%('s' if x.cantidad > 1 else '',globalVariable.tipo_nipples[x.tipo], x.tipo),'comment':x.comment, 'materials':x.materiales_id, 'view': attend} for x in obj]
+                        context['list'] = [{'id':x.id, 'quantity':x.cantshop, 'diameter':x.materiales.matmed, 'measure':x.metrado,'unit':'cm','name': 'Niple%s %s, %s'%('s' if x.cantshop > 1 else '',globalVariable.tipo_nipples[x.tipo], x.tipo),'comment':x.comment, 'materials':x.materiales_id, 'view': attend} for x in obj if x.cantshop > 0]
                         ingress = 0
                         for x in obj:
-                            ingress += (x.cantidad * x.metrado)
+                            ingress += (x.cantshop * x.metrado)
                         context['ingress'] = ingress
                         context['status'] = True
                 except ObjectDoesNotExist, e:
@@ -446,13 +446,15 @@ class SectorManage(JSONResponseMixin, View):
                         context['status'] = True
                 if 'saveorders' in request.POST:
                     form = addOrdersForm(request.POST, request.FILES)
+                    print form
+                    print 'form valid', form.is_valid()
                     if form.is_valid():
                         # save bedside Orders
                         add = form.save(commit=False)
                         id = genkeys.GenerateIdOrders()
                         add.pedido_id = id
-                        add.status= 'PE'
-                        #add.save()
+                        add.status = 'PE'
+                        add.save()
                         # save to detail
                         details = json.loads(request.POST.get('details'))
                         print details
@@ -462,15 +464,19 @@ class SectorManage(JSONResponseMixin, View):
                             obj.materiales_id = x['idmat']
                             obj.cantidad = x['quantity']
                             obj.cantshop = x['quantity']
-                            obj.commet = x['comment']
-                            #obj.save()
+                            obj.comment = x['comment']
+                            obj.save()
                             # update quantity in Metproyect
                             pro = MetProject.objects.get(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') != '' else None, sector_id=request.POST.get('sector'), materiales_id=x['idmat'])
                             if pro.quantityorder == pro.cantidad:
                                 pro.quantityorder = (pro.cantidad - x['quantity'])
                             else:
                                 pro.quantityorder = (pro.quantityorder - x['quantity'])
-                            #pro.save()
+                            if pro.quantityorder > 0 and pro.quantityorder < pro.cantidad:
+                                pro.tag = '1'
+                            else:
+                                pro.tag = '2'
+                            pro.save()
                         # save to nipples
                         nipples = json.loads(request.POST.get('nipples'))
                         print nipples
@@ -494,6 +500,10 @@ class SectorManage(JSONResponseMixin, View):
                                 nip.cantshop = (nip.cantidad - x['quantity'])
                             else:
                                 nip.cantshop = (nip.cantshop - x['quantity'])
+                            if nip.cantshop > 0 and nip.cantshop < nip.cantidad:
+                                nip.tag = '1'
+                            else:
+                                nip.tag = '2'
                             nip.save()
                         context['nro'] = id
                         context['status'] = True

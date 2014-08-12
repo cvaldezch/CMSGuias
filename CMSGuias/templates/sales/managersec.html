@@ -285,10 +285,10 @@
                                     {% endif %}
                                         <td>{{ forloop.counter }}</td>
                                         <td>
-                                            {% if x.quantity == 0 %}
-                                                <input type="checkbox" name="mats" value="{{ x.materiales_id }}" disabled>
-                                            {% else %}
+                                            {% if x.quantity > 0 %}
                                                 <input type="checkbox" name="mats" value="{{ x.materiales_id }}">
+                                            {% else %}
+                                                <!-- <input type="hidden" name="mats" value="{{ x.materiales_id }}" disabled> -->
                                             {% endif %}
                                         </td>
                                         <td>{{ x.materiales_id }}</td>

@@ -5,7 +5,7 @@ from CMSGuias.apps.home.models import Materiale, Almacene, Transportista, Transp
 
 
 class Pedido(models.Model):
-    def url(self,filename):
+    def url(self, filename):
         ruta = "storage/pedido/%s/%s.pdf"%(self.proyecto_id,self.pedido_id)
         return ruta
 
@@ -21,7 +21,7 @@ class Pedido(models.Model):
     obser = models.TextField(null=True,blank=True)
     status = models.CharField(max_length=2,null=False,default='36')
     flag = models.BooleanField(default=True)
-    orderfile = models.FileField(upload_to=url,null=True,blank=True)
+    orderfile = models.FileField(upload_to=url, null=True, blank=True)
 
     def __unicode__(self):
         return '%s %s'%(self.pedido_id,self.proyecto.nompro)

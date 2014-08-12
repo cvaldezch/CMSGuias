@@ -46,13 +46,13 @@ def view_pedido(request):
             return render_to_response('almacen/pedido.html',context_instance=RequestContext(request))
         if request.method == 'POST':
             data = {}
-            form = forms.addOrdersForm(request.POST,request.FILES)
+            form = forms.addOrdersForm(request.POST, request.FILES)
             if form.is_valid():
                 # bedside Orders
                 add = form.save(commit=False)
                 id = genkeys.GenerateIdOrders()
                 add.pedido_id = id
-                add.status= 'PE'
+                add.status = 'PE'
                 add.flag = True
                 add.save()
                 # detail Orders Details
