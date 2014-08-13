@@ -27,20 +27,20 @@
 				<div class="row bs-callout bs-callout-warning">
 					<div class="col-md-6">
 						<dl class="dl-horizontal">
-							<dt>Proyecto</dt><dd>{{orders.proyecto_id}} - {{orders.proyecto.nompro}}</dd>
-							<dt>Subproyecto</dt><dd>{{orders.subproyecto_id}} - {{orders.subproyecto.nomsub}}</dd>
-							<dt>Sector</dt><dd>{{orders.sector_id}} - {{orders.sector.nomsec}}</dd>
-							<dt>Almacén</dt><dd>{{orders.almacen.nombre}}</dd>
-							<dt>Realizado</dt><dd>{{usr.user.first_name}} {{usr.user.last_name}}</dd>
-							<dt>Asunto</dt><dd>{{orders.asunto}}</dd>
+							<dt>Proyecto</dt><dd>{{ orders.proyecto_id }} - {{ orders.proyecto.nompro }}</dd>
+							<dt>Subproyecto</dt><dd>{{ orders.subproyecto_id }} - {{ orders.subproyecto.nomsub }}</dd>
+							<dt>Sector</dt><dd>{{ orders.sector_id }} - {{ orders.sector.nomsec }}</dd>
+							<dt>Almacén</dt><dd>{{ orders.almacen.nombre }}</dd>
+							<dt>Realizado</dt><dd>{{ usr.user.first_name }} {{ usr.user.last_name }}</dd>
+							<dt>Asunto</dt><dd>{{ orders.asunto }}</dd>
 						</dl>
 					</div>
 					<div class="col-md-6">
 						<dl class="dl-horizontal">
-							<dt>Registrado</dt><dd>{{orders.registrado}}</dd>
-							<dt>Realizado</dt><dd>{{orders.traslado}}</dd>
-							<dt>Observación</dt><dd>{{orders.obser}}</dd>
-							<dt>Estado</dt><dd>{{orders.status}}</dd>
+							<dt>Registrado</dt><dd>{{ orders.registrado }}</dd>
+							<dt>Realizado</dt><dd>{{ orders.traslado }}</dd>
+							<dt>Observación</dt><dd>{{ orders.obser|safe }}</dd>
+							<dt>Estado</dt><dd>{{ orders.status }}</dd>
 							<dt>Adjunto</dt><dd><a class="btn btn-default btn-xs btn-warning text-black" target="_blank" href="/media/{{orders.orderfile}}"><span class="glyphicon glyphicon-download"></span></a></dd>
 						</dl>
 					</div>
@@ -87,7 +87,7 @@
 										info
 									{% endif %}
 							{% endif %}">
-								<td><input type="checkbox" name="bed" value="{{x.materiales_id}}" 
+								<td><input type="checkbox" name="bed" value="{{x.materiales_id}}"
 								{% if x.cantshop <= 0.0 or x.stock <= 0 or x.stock < x.cantshop %}
 									disabled
 								{% endif %}/></td>

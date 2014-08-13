@@ -56,7 +56,7 @@ def view_pedido(request):
                 add.flag = True
                 add.save()
                 # detail Orders Details
-                tmpd = models.tmppedido.objects.filter(empdni__exact=request.user.get_profile().empdni)
+                tmpd = models.tmppedido.objects.filter(empdni__exact=request.user.get_profile().empdni_id)
                 for x in tmpd:
                     det = models.Detpedido()
                     det.pedido_id = id
@@ -65,7 +65,7 @@ def view_pedido(request):
                     det.cantshop = x.cantidad
                     det.save()
                 # saved niples of tmpniple
-                tmpn = models.tmpniple.objects.filter(empdni__exact=request.user.get_profile().empdni)
+                tmpn = models.tmpniple.objects.filter(empdni__exact=request.user.get_profile().empdni_id)
                 for x in tmpn:
                     nip = models.Niple()
                     nip.pedido_id = id
@@ -80,9 +80,9 @@ def view_pedido(request):
                     nip.tipo = x.tipo.strip()
                     nip.save()
                 # deleting tmps
-                tmp = models.tmppedido.objects.filter(empdni__exact=request.user.get_profile().empdni)
+                tmp = models.tmppedido.objects.filter(empdni__exact=request.user.get_profile().empdni_id)
                 tmp.delete()
-                tmp = models.tmpniple.objects.filter(empdni__exact=request.user.get_profile().empdni)
+                tmp = models.tmpniple.objects.filter(empdni__exact=request.user.get_profile().empdni_id)
                 tmp.delete()
                 data['status']= True
             else:
@@ -692,6 +692,7 @@ def view_orders_pending(request):
     except TemplateDoesNotExist, e:
         messages("Error template not found")
         raise Http404("Process Error")
+
 # list ortders attend request Orders
 @login_required(login_url='/SignUp/')
 def view_orders_list_approved(request):
@@ -724,7 +725,6 @@ def view_attend_order(request,oid):
             return render_to_response('almacen/attendorder.html',ctx,context_instance=RequestContext(request))
         elif request.method == 'POST':
             try:
-                import json
                 data= {}
                 # recover list of materials
                 mat= json.loads( request.POST.get('materials') )
@@ -1005,7 +1005,7 @@ class InventoryView(ListView):
             tipo = request.POST.get('tipo')
             if tipo == 'save-tmp':
                 obj = models.tmpsuministro()
-                obj.empdni = request.user.get_profile().empdni
+                obj.empdni = request.user.get_profile().empdni_id
                 obj.materiales_id = request.POST.get('add-id')
                 obj.cantidad = request.POST.get('add-cant')
                 obj.origin_id = request.POST.get('add-oid')
@@ -1034,7 +1034,7 @@ class SupplyView(ListView):
             data = {}
             try:
                 arr = json.loads(request.GET.get('mats'))
-                queryset = models.tmpsuministro.objects.extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_tmpsuministro.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},).filter(empdni__exact=request.user.get_profile().empdni, materiales_id__in=arr)
+                queryset = models.tmpsuministro.objects.extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_tmpsuministro.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},).filter(empdni__exact=request.user.get_profile().empdni_id, materiales_id__in=arr)
                 queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id','stock')
                 queryset = queryset.annotate(cantidad=Sum('cantidad')).order_by('materiales__matnom')
                 data['list'] = [{'materiales_id': x['materiales_id'],'matnom': x['materiales__matnom'],'matmed':x['materiales__matmed'],'unidad':x['materiales__unidad_id'],'cantidad':x['cantidad'],'stock':x['stock']} for x in queryset]
@@ -1044,7 +1044,7 @@ class SupplyView(ListView):
             data = simplejson.dumps(data)
             return HttpResponse(data, mimetype='application/json', content_type='application/json')
         context = {}
-        context['tmp'] = models.tmpsuministro.objects.filter(empdni__exact=request.user.get_profile().empdni).order_by('materiales__matnom')
+        context['tmp'] = models.tmpsuministro.objects.filter(empdni__exact=request.user.get_profile().empdni_id).order_by('materiales__matnom')
         context['almacen'] = Almacene.objects.filter(flag=True)
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
@@ -1053,7 +1053,7 @@ class SupplyView(ListView):
             data = {}
             try:
                 if request.POST.get('tipo') == "deltmp":
-                    obj = models.tmpsuministro.objects.filter(empdni__exact=request.user.get_profile().empdni)
+                    obj = models.tmpsuministro.objects.filter(empdni__exact=request.user.get_profile().empdni_id)
                     if obj:
                         for x in obj:
                             det = None
@@ -1076,7 +1076,7 @@ class SupplyView(ListView):
                 bed = models.Suministro()
                 bed.suministro_id = idsp
                 bed.almacen_id = request.POST.get('almacen')
-                bed.empdni = request.user.get_profile().empdni
+                bed.empdni = request.user.get_profile().empdni_id
                 bed.ingreso = request.POST.get('ingreso')
                 bed.obser = request.POST.get('obser')
                 bed.flag = True
@@ -1084,7 +1084,7 @@ class SupplyView(ListView):
                 bed.status = 'PE'
                 bed.save()
                 # details supply
-                obj = models.tmpsuministro.objects.filter(empdni=request.user.get_profile().empdni)
+                obj = models.tmpsuministro.objects.filter(empdni=request.user.get_profile().empdni_id)
                 for x in obj:
                     det = models.DetSuministro()
                     det.suministro_id = idsp
@@ -1119,7 +1119,7 @@ class ListOrdersSummary(TemplateView):
                 obj = models.tmpsuministro()
                 arr = json.loads(request.POST.get('add-oid'))
                 for x in arr.__len__():
-                    obj.empdni = request.user.get_profile().empdni
+                    obj.empdni = request.user.get_profile().empdni_id
                     obj.materiales_id = request.POST.get('id-add')
                     obj.cantidad = (request.POST.get('cant-add') / arr.__len__())
                     obj.origin_id = arr[x]
@@ -1148,7 +1148,7 @@ class ListDetOrders(TemplateView):
                 mats = json.loads(request.POST.get('mats'))
                 for x in range(mats.__len__()):
                     obj = models.tmpsuministro()
-                    obj.empdni = request.user.get_profile().empdni
+                    obj.empdni = request.user.get_profile().empdni_id
                     obj.materiales_id = mats[x]['mid']
                     obj.cantidad = float(mats[x]['cant'].__str__())
                     obj.origin = request.POST.get('add-ori')

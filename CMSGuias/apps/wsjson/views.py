@@ -52,7 +52,7 @@ def get_meter_materials(request):
     try:
         if request.method == 'GET':
             data = { "list": [] }
-            meter = Materiale.objects.values('matmed').filter(matnom__icontains=request.GET['matnom']).distinct('matmed').order_by('matmed')
+            meter = Materiale.objects.values('matmed').filter(matnom__contains=request.GET['matnom']).distinct('matnom','matmed').order_by('matmed')
             for x in meter:
                 data["list"].append({ "matmed": x["matmed"] })
             return HttpResponse(simplejson.dumps(data), mimetype="application/json")

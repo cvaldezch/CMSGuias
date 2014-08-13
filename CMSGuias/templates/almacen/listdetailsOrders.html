@@ -30,7 +30,7 @@
 											<thead>
 												<tr class="warning">
 													<td colspan="8">
-														Selecionar 
+														Selecionar
 														<label class="radio-inline"><input type="radio" name="rdo{{ x.pedido_id }}" value="all"> Todo</label>
 														<label class="radio-inline"><input type="radio" name="rdo{{ x.pedido_id }}" value=""> Ninguno</label>
 														<div class="btn-group pull-right">
@@ -44,7 +44,7 @@
 											</thead>
 											<tbody>
 												{% for j in details %}
-													{% ifequal x.pedido_id j.pedido_id  %} 
+													{% ifequal x.pedido_id j.pedido_id  %}
 														<tr class="
 															{% if j.stock <= 0 and not j.spptag %}
 																danger
@@ -57,15 +57,15 @@
 															<td>{{ forloop.counter }}</td>
 															<td><input type="checkbox" name="chk{{ x.pedido_id }}" value="{{ j.cantshop }}" title="{{ j.materiales_id }}"
 																{% if j.spptag %}
-																	disabled="disabled" checked 
+																	disabled="disabled" checked
 																{% endif %}
 															></td>
 															<td>{{ j.materiales_id }}</td>
 															<td>{{ j.materiales.matnom }}</td>
 															<td>{{ j.materiales.matmed }}</td>
 															<td>{{ j.materiales.unidad_id }}</td>
-															<th>{{ j.cantshop }}</th>
-															<th>{{ j.stock }}</th>
+															<th>{{ j.cantshop|safe }}</th>
+															<th>{{ j.stock|safe }}</th>
 														</tr>
 													{% endifequal %}
 												{% endfor %}

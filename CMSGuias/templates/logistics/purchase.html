@@ -201,6 +201,47 @@
         </div>
     </div>
 </div>
+<!-- modal save to purchase  -->
+<div class="modal fade mpurchase" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a data-miss="modal" class="close">&times;</a>
+                <h4 class="modal-title">
+                    Generar Orden de Compra
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group has-warning">
+                            <label class="control-label">Proveedor</label>
+                            <select name="proveedor" id="proveedor" class="form-control input-sm"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group has-warning">
+                            <label class="control-label">Entrega</label>
+                            <input type="text" class="form-control imput-sm">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group has-warning">
+                            <label class="control-label">Documento</label>
+                            <select name="proveedor" id="proveedor" class="form-control input-sm"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group has-warning">
+                            <label class="control-label">Pago</label>
+                            <select name="proveedor" id="proveedor" class="form-control input-sm"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- endblock -->
 {% csrf_token %}
 {% endblock content %}

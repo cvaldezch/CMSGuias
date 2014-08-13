@@ -41,11 +41,12 @@ var keyUpDescription = function (event) {
 var getMeters = function () {
     var $nom = $("[name=description]");
     if ($nom.val() != "" ) {
-        var template = "<option value='{{ matmed }}'>{{ matmed }}</option>";
         var data = { "matnom": $nom.val().trim() }
-        $med = $("[name=meter]");
-        $med.empty();
         $.getJSON("/json/get/meter/materials/", data, function (response) {
+            console.log(response);
+            var template = "<option value='{{ matmed }}'>{{ matmed }}</option>";
+            $med = $("[name=meter]");
+            $med.empty();
             for (var x in response.list) {
                 $med.append(Mustache.render(template, response.list[x]));
             };
@@ -55,14 +56,15 @@ var getMeters = function () {
 var getSummaryMaterials = function (event) {
     var $nom = $("[name=description]"), $med = $("[name=meter]");
     if ($nom.val().trim() != "" && $med.val() != "" ) {
-        var template = "<tr><th>Codigo :</th><td class='id-mat'>{{materialesid}}</td></tr>"+
-            "<tr><th>Descripción :</th><td>{{matnom}}</td></tr>"+
-            "<tr><th>Medida :</th><td>{{matmed}}</td></tr>"+
-            "<tr><th>Unidad :</th><td>{{unidad}}</td></tr>";
-        var $tb = $(".tb-details > tbody");
-        $tb.empty();
         var data = { "matnom": $nom.val(), "matmed": $med.val() }
         $.getJSON("/json/get/resumen/details/materiales/", data, function (response) {
+            console.log(response);
+            var template = "<tr><th>Codigo :</th><td class='id-mat'>{{materialesid}}</td></tr>"+
+                "<tr><th>Descripción :</th><td>{{matnom}}</td></tr>"+
+                "<tr><th>Medida :</th><td>{{matmed}}</td></tr>"+
+                "<tr><th>Unidad :</th><td>{{unidad}}</td></tr>";
+            var $tb = $(".tb-details > tbody");
+            $tb.empty();
             for (var x in response.list) {
                 $tb.append(Mustache.render(template, response.list[x]));
             };

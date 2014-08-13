@@ -183,7 +183,7 @@ class Inventario(models.Model):
     stkdevuelto = models.FloatField()
     periodo = models.CharField(max_length=4, default='')
     ingreso = models.DateField(auto_now=True)
-    compra = models.ForeignKey('logistica.Compra', to_field='compra_id', null=True,blank=True)
+    compra = models.ForeignKey('logistica.Compra', to_field='compra_id', null=True, blank=True)
     spptag = models.BooleanField(default=False)
     flag = models.BooleanField(default=True)
 

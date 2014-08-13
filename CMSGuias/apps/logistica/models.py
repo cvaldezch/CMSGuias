@@ -1,6 +1,6 @@
 from django.db import models
 
-from CMSGuias.apps.home.models import Almacene, Documentos, FormaPago, Materiale, Moneda, Proveedor
+from CMSGuias.apps.home.models import Almacene, Documentos, FormaPago, Materiale, Moneda, Proveedor, Employee
 #from CMSGuias.apps.almacen.models import Suministro
 
 
@@ -27,7 +27,7 @@ class Compra(models.Model):
 
     compra_id = models.CharField(primary_key=True, max_length=10)
     proveedor = models.ForeignKey(Proveedor, to_field='proveedor_id')
-    empdni = models.CharField(max_length=8)
+    empdni = models.ForeignKey(Employee, to_field='empdni_id', default='')
     cotizacion = models.ForeignKey(Cotizacion, to_field='cotizacion_id', null=True, blank=True)
     lugent = models.CharField(max_length=200, null=True, blank=True)
     documento = models.ForeignKey(Documentos, to_field='documento_id', null=True, blank=True)
@@ -37,7 +37,7 @@ class Compra(models.Model):
     traslado = models.DateField()
     contacto = models.CharField(max_length=200, null=True, blank=True)
     status = models.CharField(max_length=2, default='PE')
-    deposito = models.FileField(upload_to=url, null=True,blank=True)
+    deposito = models.FileField(upload_to=url, null=True, blank=True)
     flag = models.BooleanField(default=True)
 
     class Meta:
@@ -111,7 +111,7 @@ class CotKeys(models.Model):
     cotizacion = models.ForeignKey(Cotizacion, to_field='cotizacion_id')
     proveedor = models.ForeignKey(Proveedor, to_field='proveedor_id')
     keygen = models.CharField(max_length=12)
-    status = models.CharField(max_length=2,default='PE')
+    status = models.CharField(max_length=2, default='PE')
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):

@@ -20,7 +20,7 @@ from CMSGuias.apps.almacen.models import Suministro
 from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda
 from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra, tmpcotizacion, tmpcompra
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles
-from .forms import addTmpCotizacionForm, addTmpCompraForm
+from .forms import addTmpCotizacionForm, addTmpCompraForm, CompraForm
 
 
 ### Class Bases Views generic
@@ -206,7 +206,7 @@ class ViewListQuotation(TemplateView):
                 elif request.GET.get('dates') != '' and request.GET.get('datee') != '':
                     model = CotKeys.objects.filter(cotizacion__registrado__range=(globalVariable.format_str_date(request.GET.get('dates')),globalVariable.format_str_date(request.GET.get('datee'))), flag=True)
         else:
-            model = CotKeys.objects.filter(flag=True)
+            model = CotKeys.objects.filter(flag=True).order_by('-cotizacion__registrado')
 
         paginator = Paginator(model, 15)
         page = request.GET.get('page')
@@ -511,3 +511,22 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                     context['raise'] = e
                     context['status'] = False
                 return self.render_to_json_response(context, **kwargs)
+            # save to oreder purchase
+            try:
+                if 'savePurchase' in request.POST:
+                    # Set all data the form
+                    form = CompraForm(request.POST, request.FILES)
+                    if form.is_valid():
+                        id = genkeys.GenerateKeyPurchase()
+                        add = form.save(commit=False)
+                        add.compra_id = id
+                        add.save()
+                        # save details os the order purchase
+                        details = json.loads(request.POST.get('details'))
+                        for x in details:
+                            pass
+                        context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
