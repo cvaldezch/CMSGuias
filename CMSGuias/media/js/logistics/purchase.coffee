@@ -19,6 +19,8 @@ $(document).ready ->
     $(".show-input-file-temp").click ->
         $("input[name=read]").click()
     $("[name=btn-upload]").on "click", uploadReadFile
+    $(".show-bedside").on "click", showBedside
+    $("input[name=discount]").on "blur", blurRange
     return
 
 showMaterials = (event) ->
@@ -216,4 +218,22 @@ uploadReadFile = (event) ->
                     $().toastmessage "showWarningToast", "No se ha podido completar la transacción. #{response.raise}"
     else
         $().toastmessage "showWarningToast", "Seleccione un archivo para subir y ser leido."
+    return
+
+blurRange = ->
+    # event.preventDefault()
+    console.info "value #{@value}"
+    console.info "max #{@getAttribute("max")}"
+    if parseInt(@value) > parseInt(@getAttribute("max"))
+        @value = parseInt @getAttribute "max"
+    else if parseInt(@value) < parseInt(@getAttribute("min"))
+        @value = parseInt @getAttribute "min"
+    return
+
+showBedside = ->
+    $(".mpurchase").modal "toggle"
+    return
+
+saveOrderPurchase = ->
+
     return

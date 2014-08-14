@@ -45,7 +45,7 @@
 						</button>
 					</div>
 					<div class="btn-group">
-						<button type="button" class="btn btn-warning text-black">
+						<button type="button" class="btn btn-warning text-black show-bedside">
 							<span class="glyphicon glyphicon-floppy-disk"></span>
 							<span class="visible-lg visible-md visible-sm"> Generar Orden de Compra</span>
 						</button>
@@ -65,41 +65,47 @@
 	                        <div class="col-md-4">
 	                            <div class="form-group has-warning">
 	                                <label class="control-label">Descripción / Nombre de material</label>
-	                                <input type="text" class="form-control" name="description">
+	                                <input type="text" class="form-control input-sm" name="description">
 	                                <ul id="matname-global" class="matname-global"></ul>
 	                            </div>
 	                        </div>
 	                        <div class="col-md-2">
 	                            <div class="form-group has-warning">
 	                                <label class="control-label">Código</label>
-	                                <input type="text" class="form-control" maxlength="15" name="code">
+	                                <input type="text" class="form-control input-sm" maxlength="15" name="code">
 	                            </div>
 	                        </div>
 	                        <div class="col-md-6">
 	                            <div class="form-group has-warning">
 	                                <label class="control-label">Medida</label>
-	                                <select class="form-control" name="meter"></select>
+	                                <select class="form-control input-sm" name="meter"></select>
 	                            </div>
 	                        </div>
 	                        <div class="col-md-2">
 	                            <div class="form-group has-warning">
 	                                <label class="control-label">Metrado/Cantidad</label>
-	                                <input type="number" class="form-control" name="cantidad" min="1" placeholder="0">
+	                                <input type="number" class="form-control input-sm" name="cantidad" min="1" placeholder="0">
 	                            </div>
 	                        </div>
 	                        <div class="col-md-2">
 	                            <div class="form-group has-warning">
 	                                <label class="control-label">Precio</label>
-	                                <input type="number" class="form-control" name="precio" min="1" placeholder="0">
+	                                <input type="number" class="form-control input-sm" name="precio" min="1" placeholder="0">
 	                            </div>
 	                        </div>
+                            <div class="col-md-1">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Descuento</label>
+                                    <input type="number" name="discount" class="form-control input-sm" min="0" max="100">
+                                </div>
+                            </div>
 	                        <div class="col-md-1">
 	                            <div class="form-group has-warning">
 	                                <label class="control-label">Agregar</label>
-	                                <button class="btn btn-block btn-warning text-black btn-add"><span class="glyphicon glyphicon-plus"></span></button>
+	                                <button class="btn btn-block btn-sm btn-warning text-black btn-add"><span class="glyphicon glyphicon-plus"></span></button>
 	                            </div>
 	                        </div>
-	                        <div class="col-md-6 col-md-offset-1">
+	                        <div class="col-md-6">
 	                            <div class="alert alert-warning alert-block">
 	                                <strong>Resumén</strong>
 	                                <table class="table-condensed tb-details">
@@ -145,6 +151,10 @@
                 <div class="form-group has-info">
                     <label class="control-label">Precio</label>
                     <input type="number" class="form-control" name="eprice">
+                </div>
+                <div class="form-group has-info">
+                    <label class="control-label">Descuento</label>
+                    <input type="number" min="0" max="100" class="form-control" name="edist">
                 </div>
             </div>
             <div class="modal-footer">
@@ -206,37 +216,69 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <a data-miss="modal" class="close">&times;</a>
-                <h4 class="modal-title">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4 class="modal-title text-warning">
                     Generar Orden de Compra
                 </h4>
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group has-warning">
                             <label class="control-label">Proveedor</label>
                             <select name="proveedor" id="proveedor" class="form-control input-sm"></select>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group has-warning">
                             <label class="control-label">Entrega</label>
                             <input type="text" class="form-control imput-sm">
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="form-group has-warning">
                             <label class="control-label">Documento</label>
                             <select name="proveedor" id="proveedor" class="form-control input-sm"></select>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="form-group has-warning">
                             <label class="control-label">Pago</label>
                             <select name="proveedor" id="proveedor" class="form-control input-sm"></select>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="form-group has-warning">
+                            <label class="control-label">Moneda</label>
+                            <select name="moneda" id="moneda" class="form-control input-sm"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group has-warning">
+                            <label class="control-label">Traslado</label>
+                            <input type="text" name="traslado" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group has-warning">
+                            <label class="control-label">Contacto</label>
+                            <input type="text" name="contacto" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group has-warning">
+                            <label class="control-label">Deposito</label>
+                            <div class="alert alert-inverse alert-inverse-border text-center">
+                            <span class="glyphicon glyphicon-paperclip"></span>
+                                Click<button class="btn btn-sm btn-link">aqui</button>
+                            </div>
+                            <input type="file" class="hide" name="deposito">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-fotter">
+                    <button type="button" data-dismiss="modal" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                    <button class="btn btn-warning text-black pull-right"><span class="glyphicon glyphicon-floppy-disk"></span> Orden de Compra</button>
                 </div>
             </div>
         </div>

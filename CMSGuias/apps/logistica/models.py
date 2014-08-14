@@ -51,6 +51,7 @@ class DetCompra(models.Model):
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     cantidad = models.FloatField()
     precio = models.FloatField()
+    discount = models.PositiveSmallIntegerField(default=0)
     cantstatic = models.FloatField()
     flag = models.BooleanField(default=True)
 
@@ -64,6 +65,7 @@ class tmpcompra(models.Model):
     empdni = models.CharField(max_length=8, null=False)
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     cantidad = models.FloatField(null=False)
+    discount = models.PositiveSmallIntegerField(default=0)
     precio = models.FloatField(null=False, default=0)
 
     class Meta:
