@@ -20,7 +20,7 @@ $(document).ready ->
         $("input[name=read]").click()
     $("[name=btn-upload]").on "click", uploadReadFile
     $(".show-bedside").on "click", showBedside
-    $("input[name=discount]").on "blur", blurRange
+    $("input[name=discount],input[name=edist]").on "blur", blurRange
     return
 
 showMaterials = (event) ->
@@ -59,12 +59,14 @@ addTmpPurchase = (event) ->
     code = $(".id-mat").html()
     quantity = $("input[name=cantidad]").val()
     price = $("input[name=precio]").val()
+    discount = parseInt $("input[name=discount]").val()
     if code isnt ""
         if quantity isnt ""
             if price isnt ""
                 data.materiales = code
                 data.cantidad = quantity
                 data.precio = price
+                data.discount = discount
                 data.type = "add"
                 data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
                 $.post "", data, (response) ->
@@ -85,7 +87,7 @@ addTmpPurchase = (event) ->
 listTmpBuy = (event) ->
     $.getJSON "", "type":"list", (response) ->
         if response.status
-            template = "<tr name=\"{{ id }}\"><td>{{ item }}</td><td>{{ materials_id }}</td><td>{{ matname }}</td><td>{{ matmeasure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td>{{ price }}</td><td><button class=\"btn btn-xs btn-link\" name=\"btn-edit\" value=\"{{ quantity }}\" data-price=\"{{ price }}\" data-id=\"{{ id }}\" data-mat=\"{{ materials_id }}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td><td><button class=\"btn btn-xs btn-link text-red\" name=\"btn-del\" value=\"{{ id }}\" data-mat=\"{{ materials_id }}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>"
+            template = "<tr name=\"{{ id }}\"><td>{{ item }}</td><td>{{ materials_id }}</td><td>{{ matname }}</td><td>{{ matmeasure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td>{{ price }}</td><td>{{ discount }}%</td><td><button class=\"btn btn-xs btn-link\" name=\"btn-edit\" value=\"{{ quantity }}\" data-price=\"{{ price }}\" data-id=\"{{ id }}\" data-mat=\"{{ materials_id }}\" data-discount=\"{{ discount }}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td><td><button class=\"btn btn-xs btn-link text-red\" name=\"btn-del\" value=\"{{ id }}\" data-mat=\"{{ materials_id }}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>"
             $tb = $("table.table-list > tbody")
             $tb.empty()
             for x of response.list
@@ -102,6 +104,7 @@ showEdit = (event) ->
     $("input[name=eidtmp]").val $(@).attr "data-id"
     $("input[name=equantity]").val @value
     $("input[name=eprice]").val $(@).attr "data-price"
+    $("input[name=edist]").val $(@).attr "data-discount"
     $(".medit").modal "show"
     return
 
@@ -111,6 +114,7 @@ editMaterial = (event) ->
     $mat = $("input[name=ematid]")
     $quantity = $("input[name=equantity]")
     $price = $("input[name=eprice]")
+    $discount = $("input[name=edist]").val()
     if $quantity.val() isnt 0 and $quantity.val() > 0 and $price.val() isnt 0 and $price.val() > 0
         data = new Object()
         data.id = $id.val()
@@ -118,14 +122,16 @@ editMaterial = (event) ->
         data.quantity = $quantity.val()
         data.price = $price.val()
         data.type = "edit"
+        data.discount = $discount
         data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
         $.post "", data, (response) ->
             if response.status
                 $edit = $("table.table-list > tbody > tr[name=#{$id.val()}] > td")
                 $edit.eq(5).html $quantity.val()
                 $edit.eq(6).html $price.val()
-                $edit.eq(7).find("button").val $quantity.val()
-                $edit.eq(7).find("button").attr "data-price", $price.val()
+                $edit.eq(7).html "#{$discount}%"
+                $edit.eq(8).find("button").val $quantity.val()
+                $edit.eq(8).find("button").attr "data-price", $price.val()
                 $("input[name=ematid],input[name=eidtmp],input[name=equantity],input[name=eprice]").val ""
                 $(".medit").modal "hide"
                 return

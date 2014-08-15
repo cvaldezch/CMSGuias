@@ -95,8 +95,8 @@
 	                        </div>
                             <div class="col-md-1">
                                 <div class="form-group has-warning">
-                                    <label class="control-label">Descuento</label>
-                                    <input type="number" name="discount" class="form-control input-sm" min="0" max="100">
+                                    <label class="control-label">Desct %</label>
+                                    <input type="number" name="discount" class="form-control input-sm" value="0" min="0" max="100">
                                 </div>
                             </div>
 	                        <div class="col-md-1">
@@ -123,7 +123,7 @@
 						<table class="table table-hover table-condensed table-list">
 							<thead>
 								<tr class="brand-warning">
-									<th>Item</th><th>Codigo</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th><th>Precio</th><th>Editar</th><th>Eliminar</th>
+									<th>Item</th><th>Codigo</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th><th>Precio</th><th>Descuento</th><th>Editar</th><th>Eliminar</th>
 								</tr>
 							</thead>
 							<tbody></tbody>
@@ -146,15 +146,20 @@
                 </div>
                 <div class="form-group has-info">
                     <label class="control-label">Cantidad</label>
-                    <input type="number" class="form-control" name="equantity">
+                    <input type="number" class="form-control input-sm" name="equantity">
                 </div>
                 <div class="form-group has-info">
                     <label class="control-label">Precio</label>
-                    <input type="number" class="form-control" name="eprice">
+                    <input type="number" class="form-control input-sm" name="eprice">
                 </div>
                 <div class="form-group has-info">
                     <label class="control-label">Descuento</label>
-                    <input type="number" min="0" max="100" class="form-control" name="edist">
+                    <div class="input-group input-group-sm">
+                        <input type="number" min="0" max="100" value="0" class="form-control input-sm" name="edist">
+                        <span class="input-group-addon">
+                            %
+                        </span>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -226,7 +231,11 @@
                     <div class="col-md-6">
                         <div class="form-group has-warning">
                             <label class="control-label">Proveedor</label>
-                            <select name="proveedor" id="proveedor" class="form-control input-sm"></select>
+                            <select name="proveedor" id="proveedor" class="form-control input-sm">
+                            {% for x in supplier %}
+                                <option value="{{ x.proveedor_id }}">{{ x.razonsocial }}</option>
+                            {% endfor %}
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -238,19 +247,31 @@
                     <div class="col-md-4">
                         <div class="form-group has-warning">
                             <label class="control-label">Documento</label>
-                            <select name="proveedor" id="proveedor" class="form-control input-sm"></select>
+                            <select name="proveedor" id="proveedor" class="form-control input-sm">
+                                {% for x in document %}
+                                    <option value="{{ x.documento_id }}">{{ x.documento }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group has-warning">
                             <label class="control-label">Pago</label>
-                            <select name="proveedor" id="proveedor" class="form-control input-sm"></select>
+                            <select name="proveedor" id="proveedor" class="form-control input-sm">
+                                {% for x in pago %}
+                                    <option value="{{ x.pagos_id }}">{{ x.pagos }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group has-warning">
                             <label class="control-label">Moneda</label>
-                            <select name="moneda" id="moneda" class="form-control input-sm"></select>
+                            <select name="moneda" id="moneda" class="form-control input-sm">
+                                {% for x in currency %}
+                                    <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-4">

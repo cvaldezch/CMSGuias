@@ -28,7 +28,7 @@ $(document).ready(function() {
   });
   $("[name=btn-upload]").on("click", uploadReadFile);
   $(".show-bedside").on("click", showBedside);
-  $("input[name=discount]").on("blur", blurRange);
+  $("input[name=discount],input[name=edist]").on("blur", blurRange);
 });
 
 showMaterials = function(event) {
@@ -74,17 +74,19 @@ searchMaterial = function(event) {
 };
 
 addTmpPurchase = function(event) {
-  var code, data, price, quantity;
+  var code, data, discount, price, quantity;
   data = new Object();
   code = $(".id-mat").html();
   quantity = $("input[name=cantidad]").val();
   price = $("input[name=precio]").val();
+  discount = parseInt($("input[name=discount]").val());
   if (code !== "") {
     if (quantity !== "") {
       if (price !== "") {
         data.materiales = code;
         data.cantidad = quantity;
         data.precio = price;
+        data.discount = discount;
         data.type = "add";
         data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
         $.post("", data, function(response) {
@@ -112,7 +114,7 @@ listTmpBuy = function(event) {
   }, function(response) {
     var $tb, template, x;
     if (response.status) {
-      template = "<tr name=\"{{ id }}\"><td>{{ item }}</td><td>{{ materials_id }}</td><td>{{ matname }}</td><td>{{ matmeasure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td>{{ price }}</td><td><button class=\"btn btn-xs btn-link\" name=\"btn-edit\" value=\"{{ quantity }}\" data-price=\"{{ price }}\" data-id=\"{{ id }}\" data-mat=\"{{ materials_id }}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td><td><button class=\"btn btn-xs btn-link text-red\" name=\"btn-del\" value=\"{{ id }}\" data-mat=\"{{ materials_id }}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
+      template = "<tr name=\"{{ id }}\"><td>{{ item }}</td><td>{{ materials_id }}</td><td>{{ matname }}</td><td>{{ matmeasure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td>{{ price }}</td><td>{{ discount }}%</td><td><button class=\"btn btn-xs btn-link\" name=\"btn-edit\" value=\"{{ quantity }}\" data-price=\"{{ price }}\" data-id=\"{{ id }}\" data-mat=\"{{ materials_id }}\" data-discount=\"{{ discount }}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td><td><button class=\"btn btn-xs btn-link text-red\" name=\"btn-del\" value=\"{{ id }}\" data-mat=\"{{ materials_id }}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
       $tb = $("table.table-list > tbody");
       $tb.empty();
       for (x in response.list) {
@@ -131,16 +133,18 @@ showEdit = function(event) {
   $("input[name=eidtmp]").val($(this).attr("data-id"));
   $("input[name=equantity]").val(this.value);
   $("input[name=eprice]").val($(this).attr("data-price"));
+  $("input[name=edist]").val($(this).attr("data-discount"));
   $(".medit").modal("show");
 };
 
 editMaterial = function(event) {
-  var $id, $mat, $price, $quantity, data;
+  var $discount, $id, $mat, $price, $quantity, data;
   event.preventDefault();
   $id = $("input[name=eidtmp]");
   $mat = $("input[name=ematid]");
   $quantity = $("input[name=equantity]");
   $price = $("input[name=eprice]");
+  $discount = $("input[name=edist]").val();
   if ($quantity.val() !== 0 && $quantity.val() > 0 && $price.val() !== 0 && $price.val() > 0) {
     data = new Object();
     data.id = $id.val();
@@ -148,6 +152,7 @@ editMaterial = function(event) {
     data.quantity = $quantity.val();
     data.price = $price.val();
     data.type = "edit";
+    data.discount = $discount;
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
     $.post("", data, function(response) {
       var $edit;
@@ -155,8 +160,9 @@ editMaterial = function(event) {
         $edit = $("table.table-list > tbody > tr[name=" + ($id.val()) + "] > td");
         $edit.eq(5).html($quantity.val());
         $edit.eq(6).html($price.val());
-        $edit.eq(7).find("button").val($quantity.val());
-        $edit.eq(7).find("button").attr("data-price", $price.val());
+        $edit.eq(7).html("" + $discount + "%");
+        $edit.eq(8).find("button").val($quantity.val());
+        $edit.eq(8).find("button").attr("data-price", $price.val());
         $("input[name=ematid],input[name=eidtmp],input[name=equantity],input[name=eprice]").val("");
         $(".medit").modal("hide");
       } else {

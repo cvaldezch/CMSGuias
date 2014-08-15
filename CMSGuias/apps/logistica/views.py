@@ -407,13 +407,17 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                 context = dict()
                 try:
                     tmp = tmpcompra.objects.filter(empdni=request.user.get_profile().empdni_id)
-                    context['list'] = [{'id':x.id, 'materials_id':x.materiales_id, 'matname':x.materiales.matnom, 'matmeasure': x.materiales.matmed, 'unit':x.materiales.unidad_id, 'quantity':x.cantidad, 'price':x.precio} for x in tmp]
+                    context['list'] = [{'id':x.id, 'materials_id':x.materiales_id, 'matname':x.materiales.matnom, 'matmeasure': x.materiales.matmed, 'unit':x.materiales.unidad_id, 'quantity':x.cantidad, 'price':x.precio, 'discount':x.discount} for x in tmp]
                     context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = e
                     context['status'] = False
                 return self.render_to_json_response(context, **kwargs)
         context = super(ViewPurchaseSingle, self).get_context_data(**kwargs)
+        context['document'] = Documentos.objects.all()
+        context['pago'] = FormaPago.objects.all()
+        context['currency'] = Moneda.objects.all()
+        context['supplier'] = Proveedor.objects.all()
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
     @method_decorator(login_required)
@@ -434,25 +438,26 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                     context['raise'] = e
                     context['status'] = False
                 return self.render_to_json_response(context, **kwargs)
-            if request.POST.get('type') == 'add':
-                try:
-                    form = addTmpCompraForm(request.POST)
-                    if form.is_valid():
-                        add = form.save(commit=False)
-                        add.empdni = request.user.get_profile().empdni_id
-                        add.save()
-                        context['status'] = True
-                    else:
-                        context['status'] = False
-                except ObjectDoesNotExist, e:
-                    context['raise'] = e
-                    context['status'] = False
-                return self.render_to_json_response(context, **kwargs)
+            # if request.POST.get('type') == 'add':
+            #     try:
+            #         form = addTmpCompraForm(request.POST)
+            #         if form.is_valid():
+            #             add = form.save(commit=False)
+            #             add.empdni = request.user.get_profile().empdni_id
+            #             add.save()
+            #             context['status'] = True
+            #         else:
+            #             context['status'] = False
+            #     except ObjectDoesNotExist, e:
+            #         context['raise'] = e
+            #         context['status'] = False
+            #     return self.render_to_json_response(context, **kwargs)
             if request.POST.get('type') == 'edit':
                 try:
                     tmp = tmpcompra.objects.get(pk=request.POST.get('id'),materiales_id=request.POST.get('materials_id'))
                     tmp.cantidad = request.POST.get('quantity')
                     tmp.precio = request.POST.get('price')
+                    tmp.discount = request.POST.get('discount')
                     tmp.save()
                     context['status'] = True
                 except ObjectDoesNotExist, e:
