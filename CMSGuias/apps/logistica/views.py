@@ -17,7 +17,7 @@ from django.views.generic import TemplateView, View, ListView
 from xlrd import open_workbook, XL_CELL_EMPTY
 
 from CMSGuias.apps.almacen.models import Suministro
-from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda
+from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda, Configuracion
 from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra, tmpcotizacion, tmpcompra
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles
 from .forms import addTmpCotizacionForm, addTmpCompraForm, CompraForm
@@ -407,7 +407,17 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                 context = dict()
                 try:
                     tmp = tmpcompra.objects.filter(empdni=request.user.get_profile().empdni_id)
-                    context['list'] = [{'id':x.id, 'materials_id':x.materiales_id, 'matname':x.materiales.matnom, 'matmeasure': x.materiales.matmed, 'unit':x.materiales.unidad_id, 'quantity':x.cantidad, 'price':x.precio, 'discount':x.discount} for x in tmp]
+                    context['list'] = []
+                    igv = 0
+                    subt = 0
+                    total = 0
+                    conf = Configuracion.objects.filter(period=globalVariable.get_year)
+                    for x in tmp:
+                        disc = ((x.precio * x.discount) / 100)
+                        precio = x.precio - disc
+                        amount = (x.cantidad * precio)
+                        subt += amount
+                        context['list'].append({'id':x.id, 'materials_id':x.materiales_id, 'matname':x.materiales.matnom, 'matmeasure': x.materiales.matmed, 'unit':x.materiales.unidad_id, 'quantity':x.cantidad, 'price':x.precio, 'discount':x.discount, 'amount':amount})
                     context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = e

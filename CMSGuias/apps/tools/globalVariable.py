@@ -124,7 +124,7 @@ def format_str_date(_str=None, format="%Y-%m-%d"):
         raise Http404('Method Error')
     return str_date
 
-# get year current
+# get year current str
 get_year = datetime.datetime.today().date().strftime("%Y")
 
 # get Relative path

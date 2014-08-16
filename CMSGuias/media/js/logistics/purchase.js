@@ -29,6 +29,7 @@ $(document).ready(function() {
   $("[name=btn-upload]").on("click", uploadReadFile);
   $(".show-bedside").on("click", showBedside);
   $("input[name=discount],input[name=edist]").on("blur", blurRange);
+  listTmpBuy();
 });
 
 showMaterials = function(event) {
@@ -114,7 +115,7 @@ listTmpBuy = function(event) {
   }, function(response) {
     var $tb, template, x;
     if (response.status) {
-      template = "<tr name=\"{{ id }}\"><td>{{ item }}</td><td>{{ materials_id }}</td><td>{{ matname }}</td><td>{{ matmeasure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td>{{ price }}</td><td>{{ discount }}%</td><td><button class=\"btn btn-xs btn-link\" name=\"btn-edit\" value=\"{{ quantity }}\" data-price=\"{{ price }}\" data-id=\"{{ id }}\" data-mat=\"{{ materials_id }}\" data-discount=\"{{ discount }}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td><td><button class=\"btn btn-xs btn-link text-red\" name=\"btn-del\" value=\"{{ id }}\" data-mat=\"{{ materials_id }}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
+      template = "<tr name=\"{{ id }}\"><td>{{ item }}</td><td>{{ materials_id }}</td><td>{{ matname }}</td><td>{{ matmeasure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td>{{ price }}</td><td>{{ discount }}%</td><td>{{ amount }}</td><td><button class=\"btn btn-xs btn-link\" name=\"btn-edit\" value=\"{{ quantity }}\" data-price=\"{{ price }}\" data-id=\"{{ id }}\" data-mat=\"{{ materials_id }}\" data-discount=\"{{ discount }}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td><td><button class=\"btn btn-xs btn-link text-red\" name=\"btn-del\" value=\"{{ id }}\" data-mat=\"{{ materials_id }}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>";
       $tb = $("table.table-list > tbody");
       $tb.empty();
       for (x in response.list) {
@@ -149,22 +150,25 @@ editMaterial = function(event) {
     data = new Object();
     data.id = $id.val();
     data.materials_id = $mat.val();
-    data.quantity = $quantity.val();
-    data.price = $price.val();
+    data.quantity = parseFloat($quantity.val());
+    data.price = parseFloat($price.val());
     data.type = "edit";
-    data.discount = $discount;
+    data.discount = parseFloat($discount);
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
     $.post("", data, function(response) {
-      var $edit;
       if (response.status) {
-        $edit = $("table.table-list > tbody > tr[name=" + ($id.val()) + "] > td");
-        $edit.eq(5).html($quantity.val());
-        $edit.eq(6).html($price.val());
-        $edit.eq(7).html("" + $discount + "%");
-        $edit.eq(8).find("button").val($quantity.val());
-        $edit.eq(8).find("button").attr("data-price", $price.val());
-        $("input[name=ematid],input[name=eidtmp],input[name=equantity],input[name=eprice]").val("");
+
+        /*$edit = $("table.table-list > tbody > tr[name=#{$id.val()}] > td")
+        $edit.eq(5).html $quantity.val()
+        $edit.eq(6).html $price.val()
+        $edit.eq(7).html "#{$discount}%"
+        $edit.eq(8).html (((data.price * data.discount) / 100) * data.quantity)
+        $edit.eq(9).find("button").val $quantity.val()
+        $edit.eq(9).find("button").attr "data-price", $price.val()
+        $("input[name=ematid],input[name=eidtmp],input[name=equantity],input[name=eprice]").val ""
+         */
         $(".medit").modal("hide");
+        listTmpBuy();
       } else {
         return $().toastmessage("showWarningToast", "No se a podido editar el material " + response.raise);
       }
