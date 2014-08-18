@@ -14,13 +14,14 @@ from django.utils import simplejson
 from django.utils.decorators import method_decorator
 from django.template import RequestContext, TemplateDoesNotExist
 from django.views.generic import TemplateView, View, ListView
+from django.views.generic.edit import CreateView
 from xlrd import open_workbook, XL_CELL_EMPTY
 
 from CMSGuias.apps.almacen.models import Suministro
 from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda, Configuracion
 from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra, tmpcotizacion, tmpcompra
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles
-from .forms import addTmpCotizacionForm, addTmpCompraForm, CompraForm
+from .forms import addTmpCotizacionForm, addTmpCompraForm, CompraForm, ProveedorForm
 
 
 ### Class Bases Views generic
@@ -603,3 +604,21 @@ class ListPurchase(JSONResponseMixin, TemplateView):
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404('Template not found')
+
+class LoginProveedor(TemplateView):
+    template_name = "logistics/loginSupplier.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(LoginProveedor, self).get_context_data(**kwargs)
+        context['supplier'] = Proveedor.objects.filter(flag=True).order_by('razonsocial')
+        return context
+
+class SupplierCreate(CreateView):
+    form_class = ProveedorForm
+    model = Proveedor
+    success_url = reverse_lazy('proveedor_list')
+    template_name = 'logistics/crud/supplier_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(SupplierCreate, self).dispatch(request, *args, **kwargs)

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django  import forms
 from .models import tmpcotizacion, tmpcompra, Compra
+from CMSGuias.apps.home.models import Proveedor
 
 # tmpcotizacion
 class addTmpCotizacionForm(forms.ModelForm):
@@ -19,3 +20,8 @@ class CompraForm(forms.ModelForm):
     class Meta:
         model = Compra
         exclude = {'compra_id','flag','empdni','status',}
+
+class ProveedorForm(forms.ModelForm):
+    class Meta:
+        model = Proveedor
+        exclude = {'flag',}

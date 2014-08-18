@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}
+    Login Supplier
+{% endblock title %}
+{% block menu %}
+    {% include "menus/logistics.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+    <div class="well">
+        <header>
+            <h3>Registrar Proveedor</h3>
+        </header>
+        <section>
+            <div class="row">
+                <!-- <div class="col-md-12"> -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Proveedor</label>
+                            <div class="input-group">
+                                <select name="proveedor" id="proveedor" class="form-control">
+                                    {% for x in supplier %}
+                                        <option value="{{ x.proveedor_id }}">{{ x.razonsocial }}</option>
+                                    {% endfor %}
+                                </select>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default"><span class="glyphicon glyphicon-plus"></span></button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-md-offset-8"></div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Usuario</label> <small>Se recomienda que sea el <q>Ruc de Proveedor</q></small>
+                            <input type="text" name="username" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-md-offset-8"></div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Password</label>
+                            <input type="password" name="passwd" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-md-offset-8"></div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Confirmar</label>
+                            <input type="password" name="confirm" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-md-offset-8"></div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <button class="btn btn-block btn-primary btn-register-supplier">
+                                <span class="glyphicon glyphicon-user"></span>
+                                <span class="text">Registrar</span>
+                            </button>
+                        </div>
+                    </div>
+                <!-- </div> -->
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock content %}

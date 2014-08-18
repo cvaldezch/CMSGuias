@@ -274,11 +274,20 @@ class Proveedor(models.Model):
     telefono = models.CharField(max_length=12)
     tipo = models.CharField(max_length=8)
     origen = models.CharField(max_length=10)
+    last_login = models.DateTimeField(auto_now=True, null=True)
     email = models.CharField(max_length=60, default='ejemplo@dominio.com')
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):
       return '%s %s %s'%(self.proveedor_id, self.razonsocial, self.direccion)
+
+class LoginProveedor(models.Model):
+    supplier = models.ForeignKey(Proveedor, to_field='proveedor_id')
+    username = models.CharField(max_length=16)
+    password = models.CharField(max_length=128)
+
+    def __unicode__(self):
+        return '%s %s %s'%(self.supplier, self.username)
 
 class Configuracion(models.Model):
     periodo = models.CharField(max_length=4, default='')
