@@ -1,6 +1,7 @@
 from django.db import models
 
 from CMSGuias.apps.home.models import Almacene, Documentos, FormaPago, Materiale, Moneda, Proveedor, Employee
+from CMSGuias.apps.tools import globalVariable
 #from CMSGuias.apps.almacen.models import Suministro
 
 
@@ -23,7 +24,7 @@ class Cotizacion(models.Model):
 
 class Compra(models.Model):
     def url(self, filename):
-        return "storage/compra/%s/%s.pdf"%(self.compra_id, self.proveedor_id)
+        return "storage/compra/%s/%s-%s.pdf"%(globalVariable.get_year ,self.compra_id, self.proveedor_id)
 
     compra_id = models.CharField(primary_key=True, max_length=10)
     proveedor = models.ForeignKey(Proveedor, to_field='proveedor_id')

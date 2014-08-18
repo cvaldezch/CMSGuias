@@ -18,7 +18,8 @@ from django.views.generic import TemplateView
 
 from CMSGuias.apps.almacen import models
 from CMSGuias.apps.tools import globalVariable
-from CMSGuias.apps.logistica.models import Cotizacion, CotCliente, DetCotizacion
+from CMSGuias.apps.logistica.models import Cotizacion, CotCliente, DetCotizacion, Compra, DetCompra
+from CMSGuias.apps.home.models import Configuracion
 
 def fetch_resources(uri, rel):
     path = os.path.join(settings.MEDIA_ROOT, uri.replace(settings.MEDIA_URL, ""))
@@ -102,3 +103,37 @@ class RptQuote(TemplateView):
         context['status'] = globalVariable.status
         html = render_to_string(self.template_name, context, context_instance=RequestContext(request))
         return generate_pdf(html)
+
+# Report Order Purchase
+class RptPurchase(TemplateView):
+    template_name = "report/rptpurchase.html"
+
+    def get(self, request, *args, **kwargs):
+        try:
+            context = dict()
+            context['bedside'] = Compra.objects.get(pk=kwargs['pk'], flag=True)
+            tmp = DetCompra.objects.filter(compra_id=kwargs['pk'])
+            igv = 0
+            subt = 0
+            total = 0
+            conf = Configuracion.objects.get(periodo=globalVariable.get_year)
+            tdiscount = 0
+            # print conf.igv
+            context['details'] = list()
+            for x in tmp:
+                disc = ((x.precio * x.discount) / 100)
+                tdiscount += (disc * x.cantidad)
+                precio = x.precio - disc
+                amount = (x.cantidad * precio)
+                subt += amount
+                context['details'].append({'materials_id':x.materiales_id, 'matname':x.materiales.matnom, 'measure': x.materiales.matmed, 'unit':x.materiales.unidad_id, 'quantity':x.cantidad, 'price':x.precio, 'discount':x.discount, 'amount':amount})
+            context['discount'] = tdiscount
+            context['igvval'] = ((conf.igv * subt) / 100)
+            context['igv'] = conf.igv
+            context['subtotal'] = subt
+            context['total'] = (context['igv'] + subt)
+            context['status'] = globalVariable.status
+            html = render_to_string(self.template_name, context, context_instance=RequestContext(request))
+            return generate_pdf(html)
+        except TemplateDoesNotExist, e:
+            raise Http404

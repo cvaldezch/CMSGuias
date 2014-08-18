@@ -18,4 +18,4 @@ class addTmpCompraForm(forms.ModelForm):
 class CompraForm(forms.ModelForm):
     class Meta:
         model = Compra
-        exclude = {'compra_id','flag',}
+        exclude = {'compra_id','flag','empdni','status',}

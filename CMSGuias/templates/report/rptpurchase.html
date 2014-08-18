@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Purchase</title>
+    <link rel="stylesheet" type="text/css" href="/media/css/reports/ordersstore.css">
+</head>
+<body>
+    <header>
+        <img id="logo" src="/media/images/icrlogo.png" alt="image">
+        <div id="dir" >
+            Jr. Gral. Jose de San Martin Mz. E Lote 6 Huachipa - Lurigancho Lima 15, Peru<br >
+            Central Telefonica: (511) 371-0443<br >
+            E-mail: logistica@icrperusa.com
+        </div>
+        <!-- <div id="info-type">
+            <h1>Materiales</h1>
+        </div> -->
+        <div id="nro-serie">
+            <h1>Nro Orden de Compra</h1>
+            <h1 id="nro">{{ bedside.compra_id }}</h1>
+        </div>
+        <div id="bedside-col1">
+            <table>
+                <tr><td><strong>Proveedor :</strong></td><td> {{ bedside.proveedor_id }} - {{ bedside.proveedor.razonsocial }}</td></tr>
+                <tr><td><strong>Cotización :</strong></td><td> {{ bedside.cotizacion_id }}</td></tr>
+                <tr><td width="3cm"><strong>Fecha Registrado :</strong></td><td> {{ bedside.registrado }}</td></tr>
+                <tr><td><strong>Fecha Traslado :</strong></td><td> {{ bedside.traslado }}</td></tr>
+                <tr><td><strong>Entrega:</strong></td><td> {{ bedside.lugent }}</td></tr>
+                <!-- <tr><td><strong>Razón Social:</strong></td><td> {{ details.0.proveedor.razonsocial }}</td></tr> -->
+            </table>
+        </div>
+        <div id="bedside-col2">
+            <table>
+                <tr><td><strong>Documento :</strong></td><td> {{ bedside.documento.documento }}</td></tr>
+                <tr><td><strong>Pago :</strong></td><td> {{ bedside.pagos.pagos }}</td></tr>
+                <tr><td><strong>Moneda:</strong></td><td> {{ bedside.moneda.moneda }}</td></tr>
+                <tr><td width="3cm"><strong>Estado :</strong></td><td> {% for k, v in status.iteritems %}
+                    {% ifequal k bedside.status %}
+                        {{ v }}
+                    {% endifequal %}
+                {% endfor %}</td></tr>
+                <tr><td><strong>Contacto :</strong></td><td> {{ bedside.contacto }}</td></tr>
+            </table>
+        </div>
+    </header>
+    <section>
+        <div class="details">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th width="2.5cm">Código</th>
+                        <th width="8cm">Descripción</th>
+                        <!-- <th width="4cm">Medida</th> -->
+                        <th>Unidad</th>
+                        <th>Cantidad</th>
+                        <th>Precio</th>
+                        <th>Dsto.</th>
+                        <th>Importe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for x in details %}
+                    <tr>
+                        <td class="text-center item">{{ forloop.counter|floatformat:"2" }}</td>
+                        <td class="text-center cod">{{ x.materials_id }}</td>
+                        <td>{{ x.matname }} {{ x.measure }}</td>
+                        <td class="text-center">{{ x.unit }}</td>
+                        <td class="text-center">{{ x.quantity|safe }}</td>
+                        <td class="text-center">{{ x.price|safe }}</td>
+                        <td class="text-center">{{ x.discount }}%</td>
+                        <td class="text-center">{{ x.amount|safe|floatformat:"2" }}</td>
+                    </tr>
+                {% endfor%}
+                </tbody>
+                <tfoot>
+                    <tr></tr>
+                    <tr>
+                        <th colspan="6"></th>
+                        <th>Sub Total</th>
+                        <th>{{ subtotal|safe|floatformat:"2" }}</th>
+                    </tr>
+                    <tr>
+                        <th colspan="6"></th>
+                        <th>IGV {{ igv }}%</th>
+                        <th>{{ igvval|safe|floatformat:"2" }}</th>
+                    </tr>
+                    <tr>
+                        <th colspan="6"></th>
+                        <th>Sub Total</th>
+                        <th>{{ total|safe|floatformat:"2" }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </section>
+</body>
+</html>

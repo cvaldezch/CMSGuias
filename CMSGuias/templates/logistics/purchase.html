@@ -123,22 +123,28 @@
 						<table class="table table-hover table-condensed table-list">
                             <caption>
                                 <div class="row">
-                                    <div class="col-md-4">
-                                        <dl class="dl-horizontal">
-                                            <dt>Subtotal</dt>
-                                            <dd class="sub text-left">100</dd>
+                                    <div class="col-md-3">
+                                        <dl class="dl-horizontal bg-warning">
+                                            <dt>Subtotal :</dt>
+                                            <dd class="sub text-left"></dd>
                                         </dl>
                                     </div>
-                                    <div class="col-md-4">
-                                        <dl class="dl-horizontal">
-                                            <dt>IGV</dt>
-                                            <dd class="igv text-left">10</dd>
+                                    <div class="col-md-3">
+                                        <dl class="dl-horizontal bg-warning">
+                                            <dt>Total Descuento :</dt>
+                                            <dd class="discount text-left"></dd>
                                         </dl>
                                     </div>
-                                    <div class="col-md-4">
-                                        <dl class="dl-horizontal">
-                                            <dt>Total</dt>
-                                            <dd class="total text-left">100</dd>
+                                    <div class="col-md-3">
+                                        <dl class="dl-horizontal bg-warning">
+                                            <dt>IGV :</dt>
+                                            <dd class="igv text-left"></dd>
+                                        </dl>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <dl class="dl-horizontal bg-warning">
+                                            <dt>Total :</dt>
+                                            <dd class="total text-left"></dd>
                                         </dl>
                                     </div>
                                 </div>
@@ -263,13 +269,13 @@
                     <div class="col-md-6">
                         <div class="form-group has-warning">
                             <label class="control-label">Entrega</label>
-                            <input type="text" class="form-control imput-sm">
+                            <input type="text" name="lugent" class="form-control imput-sm" value="Jr. Gral. Jose de San Martin Mz. E Lote 6 Huachipa - Lurigancho Lima 15, Peru">
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group has-warning">
                             <label class="control-label">Documento</label>
-                            <select name="proveedor" id="proveedor" class="form-control input-sm">
+                            <select name="documento" id="documento" class="form-control input-sm">
                                 {% for x in document %}
                                     <option value="{{ x.documento_id }}">{{ x.documento }}</option>
                                 {% endfor %}
@@ -279,7 +285,7 @@
                     <div class="col-md-4">
                         <div class="form-group has-warning">
                             <label class="control-label">Pago</label>
-                            <select name="proveedor" id="proveedor" class="form-control input-sm">
+                            <select name="pagos" id="pagos" class="form-control input-sm">
                                 {% for x in pago %}
                                     <option value="{{ x.pagos_id }}">{{ x.pagos }}</option>
                                 {% endfor %}
@@ -313,20 +319,21 @@
                             <label class="control-label">Deposito</label>
                             <div class="alert alert-inverse alert-inverse-border text-center">
                             <span class="glyphicon glyphicon-paperclip"></span>
-                                Click<button class="btn btn-sm btn-link">aqui</button>
+                                Click<button class="btn btn-sm btn-link btn-deposito">aqui</button>
                             </div>
-                            <input type="file" class="hide" name="deposito">
+                            <input type="file" class="hide" name="deposito" accept="application/pdf">
                         </div>
                     </div>
                 </div>
                 <div class="modal-fotter">
                     <button type="button" data-dismiss="modal" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                    <button class="btn btn-warning text-black pull-right"><span class="glyphicon glyphicon-floppy-disk"></span> Orden de Compra</button>
+                    <button class="btn btn-warning text-black pull-right btn-purchase"><span class="glyphicon glyphicon-floppy-disk"></span> Orden de Compra</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <!-- endblock -->
+{% csrf_token %}
 {% csrf_token %}
 {% endblock content %}

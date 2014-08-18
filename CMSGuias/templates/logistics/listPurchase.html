@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}
+	List Purchase
+{% endblock title %}
+{% block script %}
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="{{ MEDIA_URL }}js/logistics/listPurchase.js"></script>
+{% endblock script %}
+{% block menu %}
+	{% include "menus/logistics.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+	<div class="well">
+		<header>
+			<h1>Ordenes de Compra</h1>
+		</header>
+		<section>
+			<aside>
+				<div class="bs-callout bs-callout-warning">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								Buscar por: 
+								<label class="inline-radio"><input type="radio" name="search" value="code"> Código</label>
+								<label class="inline-radio"><input type="radio" name="search" value="status"> Estado</label>
+								<label class="inline-radio"><input type="radio" name="search" value="dates"> Fechas</label>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label class="control-label">Código</label>
+								<input type="text" maxlength="10" class="form-control input-sm" name="code" placeholder="OCAA000000" disabled="disabled">
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label class="control-label">Estado</label>
+								<select name="status" id="status" class="form-control input-sm" disabled="disabled">
+									<option value="">-- Seleccione --</option>
+									<option value="PE">PENDIENTE</option>
+									<option value="CO">COMPLETO</option>
+									<option value="IN">INCOMPLETO</option>
+									<option value="AN">ANULADO</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label class="control-label">Fecha Inicio</label>
+								<input type="text" maxlength="10" class="form-control input-sm" name="star" placeholder="aaaa-mm-dd" disabled="disabled">
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label class="control-label">Fecha Fin</label>
+								<input type="text" maxlength="10" class="form-control input-sm" name="end" placeholder="aaaa-mm-dd" disabled="disabled">
+							</div>
+						</div>
+						<div class="col-md-1">
+							<div class="form-group">
+								<label class="control-label"></label>
+								<button class="btn btn-warning btn-block text-black btn-search"><span class="glyphicon glyphicon-search"></span></button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</aside>
+			<article>
+				<div class="panel panel-primary">
+					<div class="table-responsive">
+						<table class="table table-hover table-condensed">
+							<thead>
+								<th></th><th>Nro Orden Compra</th><th>Documento</th><th>Traslado</th><th>Moneda</th><th>Deposito</th><th>Ver</th>
+							</thead>
+							<tbody>
+								{% for x in purchase %}
+									<tr>
+										<td>{{ forloop.counter }}</td>
+										<td>{{ x.compra_id }}</td>
+										<td>{{ x.documento.documento }}</td>
+										<td>{{ x.traslado }}</td>
+										<td>{{ x.moneda.moneda }}</td>
+										<td><a class="text-black" target="_blank" href="{{ MEDIA_URL }}{{ x.deposito }}"><span class="glyphicon glyphicon-file"></span></a></td>
+										<td><a class="text-black" target="_blank" href="{% url 'rpt_purchase' x.compra_id %}"><span class="glyphicon glyphicon-list"></span></a></td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</article>
+		</section>
+	</div>
+</div>
+{% endblock content %}

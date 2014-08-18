@@ -21,6 +21,8 @@ $(document).ready ->
     $("[name=btn-upload]").on "click", uploadReadFile
     $(".show-bedside").on "click", showBedside
     $("input[name=discount],input[name=edist]").on "blur", blurRange
+    $(".btn-deposito").on "click", toggleDeposito
+    $(".btn-purchase").on "click", saveOrderPurchase
     listTmpBuy()
     return
 
@@ -94,6 +96,10 @@ listTmpBuy = (event) ->
             for x of response.list
                 response.list[x].item = parseInt(x) + 1
                 $tb.append Mustache.render template, response.list[x]
+            $(".discount").html response.discount.toFixed 2
+            $(".sub").html response.subtotal.toFixed 2
+            $(".igv").html response.igv.toFixed 2
+            $(".total").html response.total.toFixed 2
             return
         else
             $().toastmessage "showWarningToast", "No se a encontrado resultados. #{ response.raise }"
@@ -240,10 +246,76 @@ blurRange = ->
         @value = parseInt @getAttribute "min"
     return
 
+toggleDeposito = ->
+    $("input[name=deposito]").click()
+    return
+
 showBedside = ->
-    $(".mpurchase").modal "toggle"
+    $tb = $("table.table-list > tbody > tr")
+    if $tb.length
+        $(".mpurchase").modal "toggle"
+    else
+        $().toastmessage "showWarningToast", "Debe de ingresar por lo menos un material."
     return
 
 saveOrderPurchase = ->
-
+    valid = false
+    data = new Object()
+    $("div.mpurchase > .modal-dialog > .modal-content > .modal-body > .row").find("select,input").each (index, elements) ->
+            if elements.type is "file"
+                return true
+            if elements.value isnt ""
+                valid = true
+                data[elements.name] = elements.value
+            else
+                valid = false
+                data.element = elements.name
+                return valid
+    if valid
+        $().toastmessage "showToast",
+            text : "Desea generar la <q>Orden de Compra</q>?"
+            type : "confirm"
+            sticky : true
+            buttons : [{value:'Si'},{value:'No'}]
+            success : (result) ->
+                if result is "Si"
+                    arr = new Array()
+                    $("table.table-list > tbody > tr").each (index, elements) ->
+                        $td = $(elements).find("td")
+                        discount = parseInt $td.eq(7).text().split("%")[0]
+                        arr.push {"materials":$td.eq(1).text(), "quantity": parseFloat($td.eq(5).text()), "price":parseFloat($td.eq(6).text()), "discount": discount}
+                        return
+                    prm = new FormData()
+                    prm.append "proveedor", data.proveedor
+                    prm.append "lugent", data.lugent
+                    prm.append "documento", data.documento
+                    prm.append "pagos", data.pagos
+                    prm.append "moneda", data.moneda
+                    prm.append "traslado", data.traslado
+                    prm.append "contacto", data.contacto
+                    prm.append "savePurchase", true
+                    prm.append "details", JSON.stringify arr
+                    if $("input[name=deposito]").get(0).files.length
+                        prm.append "deposito", $("input[name=deposito]").get(0).files[0]
+                    prm.append "csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val()
+                    $.ajax
+                        url : "",
+                        type : "POST",
+                        data : prm,
+                        dataType : "json",
+                        contentType : false,
+                        processData : false,
+                        cache : false,
+                        success : (response) ->
+                            if response.status
+                                $().toastmessage "showNoticeToast", "Correco se a generar <q>Orden de Compra Nro #{response.nro}</q>"
+                                setTimeout ->
+                                    location.reload()
+                                , 2600
+                                return
+                            else
+                                $().toastmessage "showWarningToast", "No se a podido generar la <q>Orden de Compra</q>. #{response.raise}"
+                    return
+    else
+        $().toastmessage "showWarningToast", "Alerta!<br>Campo vacio, #{data.element}"
     return

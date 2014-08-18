@@ -411,13 +411,20 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                     igv = 0
                     subt = 0
                     total = 0
-                    conf = Configuracion.objects.filter(period=globalVariable.get_year)
+                    conf = Configuracion.objects.get(periodo=globalVariable.get_year)
+                    tdiscount = 0
+                    # print conf.igv
                     for x in tmp:
                         disc = ((x.precio * x.discount) / 100)
+                        tdiscount += (disc * x.cantidad)
                         precio = x.precio - disc
                         amount = (x.cantidad * precio)
                         subt += amount
                         context['list'].append({'id':x.id, 'materials_id':x.materiales_id, 'matname':x.materiales.matnom, 'matmeasure': x.materiales.matmed, 'unit':x.materiales.unidad_id, 'quantity':x.cantidad, 'price':x.precio, 'discount':x.discount, 'amount':amount})
+                    context['discount'] = tdiscount
+                    context['igv'] = ((conf.igv * subt) / 100)
+                    context['subtotal'] = subt
+                    context['total'] = (context['igv'] + subt)
                     context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = e
@@ -535,13 +542,64 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                         id = genkeys.GenerateKeyPurchase()
                         add = form.save(commit=False)
                         add.compra_id = id
+                        add.empdni_id = request.user.get_profile().empdni_id
+                        add.status = 'PE'
                         add.save()
                         # save details os the order purchase
                         details = json.loads(request.POST.get('details'))
                         for x in details:
-                            pass
+                            obj = DetCompra()
+                            obj.compra_id = id
+                            obj.materiales_id = x['materials']
+                            obj.cantidad = x['quantity']
+                            obj.precio = x['price']
+                            obj.cantstatic = x['quantity']
+                            obj.discount = x['discount']
+                            obj.save()
+                        # if all success delete all data of the temp purchase
+                        obj = tmpcompra.objects.filter(empdni=request.user.get_profile().empdni_id)
+                        obj.delete()
                         context['status'] = True
+                        context['nro'] = id
+                    else:
+                        context['status'] = False
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
+
+class ListPurchase(JSONResponseMixin, TemplateView):
+    template_name = 'logistics/listPurchase.html'
+    def get(self, request, *args, **kwargs):
+        try:
+            context = dict()
+            if request.is_ajax():
+                try:
+                    if 'code' in request.GET:
+                        context['list'] = [{'purchase' : x.compra_id, 'document' : x.documento.documento, 'transfer' :  globalVariable.format_date_str(x.traslado), 'currency' : x.moneda.moneda, 'deposito' : str(x.deposito)} for x in Compra.objects.filter(flag=True, pk=request.GET.get('code'))]
+                    elif 'status' in request.GET:
+                        context['list'] = [{'purchase' : x.compra_id, 'document' : x.documento.documento, 'transfer' :  globalVariable.format_date_str(x.traslado), 'currency' : x.moneda.moneda, 'deposito' : str(x.deposito)} for x in Compra.objects.filter(flag=True, status=request.GET.get('status'))]
+                    elif 'dates' in request.GET:
+                        if 'start' in request.GET and 'end' not in request.GET:
+                            obj = Compra.objects.filter(flag=True, registrado__startswith=globalVariable.format_str_date(request.GET.get('start')))
+                        elif 'start' in request.GET and 'end' in request.GET:
+                            obj = Compra.objects.filter(flag=True, registrado__range=(globalVariable.format_str_date(request.GET.get('start')), globalVariable.format_str_date(request.GET.get('end'))))
+                        context['list'] = [{'purchase':x.compra_id, 'document':x.documento.documento, 'transfer': globalVariable.format_date_str(x.traslado),'currency':x.moneda.moneda, 'deposito':str(x.deposito)} for x in obj]
+                    context['status'] = True
+                except ObjectDoesNotExist, e:
+                    context['raise'] = e.__str__()
+                    context['status'] = False
+                return self.render_to_json_response(context)
+            obj = Compra.objects.filter(status='PE', flag=True).order_by('-registrado')
+            # paginator = Paginator(obj, 20)
+            # page = request.GET.get('page')
+            # try:
+            #     purchase = paginator.page(page)
+            # except PageNotAnInteger:
+            #     purchase = paginator.page(1)
+            # except EmptyPage:
+            #     purchase = paginator.page(paginator.num_pages)
+            context['purchase'] = obj
+            return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        except TemplateDoesNotExist, e:
+            raise Http404('Template not found')
