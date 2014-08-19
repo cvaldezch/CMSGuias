@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}
+Supplier
+{% endblock title %}
+{% block script %}
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="{{ MEDIA_URL }}js/getCountry.js"></script>
+<script src="{{ MEDIA_URL }}js/logistics/crud/supplier.js"></script>
+{% endblock script %}
+{% block menu %}
+    {# {% include "menus/logistics.htm" %} #}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+    <div class="well">
+        <header>
+            <h3>Mantenimiento Proveedor</h3>
+        </header>
+        <section>
+            {% if msg %}
+                <div class="alert alert-success alert-block">
+                    <strong>Se guardo correctamente.</strong>
+                </div>
+            {% else%}
+                <button class="btn btn-warning text-black btn-search"><span class="glyphicon glyphicon-search"></span></button>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="form-group">
+                        <button type="reset" class="btn btn-default"><span class="glyphicon glyphicon-remove-circle"></span> Limpiar</button>
+                        <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Cambios</button>
+                    </div>
+                </form>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock content %}

@@ -5,6 +5,9 @@ from django.conf.urls import patterns, url, include
 from .views import *
 
 # urls recurrents
+urls_crossdomain = patterns('',
+    url(r'^data/ruc/$', RestfulDataRuc.as_view()),
+)
 urls_brands = patterns('',
     url(r'^list/option/$', SearchBrand.as_view()),
 )
@@ -56,4 +59,5 @@ urlpatterns = patterns('CMSGuias.apps.wsjson.views',
     url(r'^model/', include(urls_models)),
     url(r'^projects/lists/$', ViewCopyMaterialesProjectsSale.as_view()),
     url(r'^get/path/$', TreePath.as_view()),
+    url(r'^restful/', include(urls_crossdomain)),
 )

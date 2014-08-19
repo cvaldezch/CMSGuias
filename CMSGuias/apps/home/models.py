@@ -181,7 +181,7 @@ class Cliente(models.Model):
     provincia = models.ForeignKey(Provincia, to_field='provincia_id')
     distrito = models.ForeignKey(Distrito, to_field='distrito_id')
     direccion = models.CharField(max_length=200,null=False,)
-    telefono = models.CharField(max_length=11,null=True, blank=True,default='000-000-000')
+    telefono = models.CharField(max_length=30,null=True, blank=True,default='000-000-000')
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):
@@ -271,7 +271,7 @@ class Proveedor(models.Model):
     departamento = models.ForeignKey(Departamento, to_field='departamento_id')
     provincia = models.ForeignKey(Provincia, to_field='provincia_id')
     distrito = models.ForeignKey(Distrito, to_field='distrito_id')
-    telefono = models.CharField(max_length=12)
+    telefono = models.CharField(max_length=30)
     tipo = models.CharField(max_length=8)
     origen = models.CharField(max_length=10)
     last_login = models.DateTimeField(auto_now=True, null=True)

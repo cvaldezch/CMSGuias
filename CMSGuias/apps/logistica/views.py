@@ -616,9 +616,12 @@ class LoginProveedor(TemplateView):
 class SupplierCreate(CreateView):
     form_class = ProveedorForm
     model = Proveedor
-    success_url = reverse_lazy('proveedor_list')
+    #success_url = reverse_lazy('proveedor_list')
     template_name = 'logistics/crud/supplier_form.html'
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(SupplierCreate, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        return render_to_response(self.template_name, {'msg':'success'}, context_instance=RequestContext(self.request))
