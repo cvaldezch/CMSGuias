@@ -18,6 +18,7 @@ getDataRUC = ->
         data = new Object()
         data.ruc = ruc
         data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+        data.capcha = $("input[name=capcha]").val()
         $.post "/json/restful/data/ruc/", data, (response) ->
             console.log response
             if response.status

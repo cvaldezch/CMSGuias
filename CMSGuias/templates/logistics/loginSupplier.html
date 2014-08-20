@@ -3,7 +3,7 @@
     Register Supplier
 {% endblock title %}
 {% block script %}
-<script src="{{ MEDIA_URL }}js/loginSupplier.js"></script>
+<script src="{{ MEDIA_URL }}js/logistics/loginSupplier.js"></script>
 {% endblock script %}
 {% block menu %}
     {% include "menus/logistics.htm" %}
@@ -36,21 +36,21 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">Usuario</label> <small>Se recomienda que sea el <q>Ruc de Proveedor</q></small>
-                            <input type="text" name="username" class="form-control">
+                            <input type="text" name="username" class="form-control" disabled="disabled">
                         </div>
                     </div>
                     <div class="col-md-8 col-md-offset-8"></div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">Password</label>
-                            <input type="password" name="passwd" class="form-control">
+                            <input type="password" name="passwd" class="form-control" disabled="disabled">
                         </div>
                     </div>
                     <div class="col-md-8 col-md-offset-8"></div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">Confirmar</label>
-                            <input type="password" name="confirm" class="form-control">
+                            <input type="password" name="confirm" class="form-control" disabled="disabled">
                         </div>
                     </div>
                     <div class="col-md-8 col-md-offset-8"></div>

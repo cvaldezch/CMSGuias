@@ -18,7 +18,7 @@ from django.views.generic.edit import CreateView
 from xlrd import open_workbook, XL_CELL_EMPTY
 
 from CMSGuias.apps.almacen.models import Suministro
-from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda, Configuracion
+from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda, Configuracion, LoginProveedor
 from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra, tmpcotizacion, tmpcompra
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles
 from .forms import addTmpCotizacionForm, addTmpCompraForm, CompraForm, ProveedorForm
@@ -605,13 +605,21 @@ class ListPurchase(JSONResponseMixin, TemplateView):
         except TemplateDoesNotExist, e:
             raise Http404('Template not found')
 
-class LoginProveedor(TemplateView):
-    template_name = "logistics/loginSupplier.html"
+class LoginSupplier(JSONResponseMixin, TemplateView):
+    template_name = 'logistics/loginSupplier.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(LoginProveedor, self).get_context_data(**kwargs)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            if 'exists' in request.GET:
+                exists = LoginProveedor.objects.filter(supplier_id=request.GET.get('ruc'))
+                if exists:
+                    context['exists'] = {'username':exists.username, 'status':True, 'supplier': exists.supplier_id}
+                else:
+                    context['exists'] = {'status' : False}
+            return self.render_to_json_response(context)
         context['supplier'] = Proveedor.objects.filter(flag=True).order_by('razonsocial')
-        return context
+        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
 class SupplierCreate(CreateView):
     form_class = ProveedorForm
@@ -624,4 +632,6 @@ class SupplierCreate(CreateView):
         return super(SupplierCreate, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
+        #self.instance.save()
+        form.save()
         return render_to_response(self.template_name, {'msg':'success'}, context_instance=RequestContext(self.request))

@@ -22,7 +22,13 @@ Supplier
                     <strong>Se guardo correctamente.</strong>
                 </div>
             {% else%}
-                <button class="btn btn-warning text-black btn-search"><span class="glyphicon glyphicon-search"></span></button>
+                <!-- <button class="btn btn-warning text-black btn-search"><span class="glyphicon glyphicon-search"></span></button>
+                <div class="form-group">
+                    <label class="control-label">Imagen de busqueda</label>
+                    <img src="http://www.sunat.gob.pe/cl-ti-itmrconsruc/captcha?accion=image" alt="">
+                    <iframe src="http://www.sunat.gob.pe/cl-ti-itmrconsruc/captcha?accion=image" frameborder="0"></iframe>
+                    <input type="text" maxlength="4" name="capcha" class="form-control">
+                </div> -->
                 <form action="" method="POST">
                     {% csrf_token %}
                     {{ form.as_p }}
