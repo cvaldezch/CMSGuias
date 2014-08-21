@@ -7,9 +7,12 @@ getDataProveedor = ->
     if @value isnt ""
         data =  new Object()
         data.ruc = @value
+        data.exists = true
         $.getJSON "", data, (response)->
             if response.status
-                $("input").attr "disabled", false
+                $("input[name=username]").val response.username
+                return
+            $("input").attr "disabled", false
     return
 
 openSupplier = ->
@@ -23,3 +26,24 @@ openSupplier = ->
     , 1000
     return win
 
+save_or_update_username = ->
+    data = new Object()
+    data.username = $("input[name=username]").val()
+    data.supplier = $("select[name=proveedor]").val()
+    data.password = $("input[name=passwd]").val()
+    confirm = $("input[name=confirm]").val()
+    if data.supplier isnt ""
+        if data.username isnt ""
+            if data.password is confirm
+                data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+                $.post "", data, (response) ->
+                    if response.status
+                        location.reload()
+                        return
+            else
+                $().toastmessage "showWarningToast", "la contraseña es inconrrecta."
+        else
+            $().toastmessage "showWarningToast", "Ingrese un usuario."
+    else
+        $().toastmessage "showWarningToast","Seleccione un <q>Proveedor</q>."
+    return

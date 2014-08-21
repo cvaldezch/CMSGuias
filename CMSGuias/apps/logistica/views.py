@@ -621,6 +621,17 @@ class LoginSupplier(JSONResponseMixin, TemplateView):
         context['supplier'] = Proveedor.objects.filter(flag=True).order_by('razonsocial')
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            try:
+                if 'username' in request.POST:
+                    pass
+                context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return  self.render_to_json_response(context)
+
 class SupplierCreate(CreateView):
     form_class = ProveedorForm
     model = Proveedor
