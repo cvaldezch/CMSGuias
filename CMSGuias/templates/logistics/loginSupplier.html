@@ -4,6 +4,7 @@
 {% endblock title %}
 {% block script %}
 <script src="{{ MEDIA_URL }}js/logistics/loginSupplier.js"></script>
+<script src="{{ MEDIA_URL }}js/sha256.js"></script>
 {% endblock script %}
 {% block menu %}
     {% include "menus/logistics.htm" %}
@@ -70,4 +71,5 @@
         </section>
     </div>
 </div>
+{% csrf_token %}
 {% endblock content %}

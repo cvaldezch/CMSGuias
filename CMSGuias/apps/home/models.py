@@ -287,7 +287,7 @@ class LoginProveedor(models.Model):
     password = models.CharField(max_length=128)
 
     def __unicode__(self):
-        return '%s %s %s'%(self.supplier, self.username)
+        return '%s %s'%(self.supplier_id, self.username)
 
 class Configuracion(models.Model):
     periodo = models.CharField(max_length=4, default='')

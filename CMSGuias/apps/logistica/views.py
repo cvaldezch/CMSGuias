@@ -614,7 +614,7 @@ class LoginSupplier(JSONResponseMixin, TemplateView):
             if 'exists' in request.GET:
                 exists = LoginProveedor.objects.filter(supplier_id=request.GET.get('ruc'))
                 if exists:
-                    context['exists'] = {'username':exists.username, 'status':True, 'supplier': exists.supplier_id}
+                    context['exists'] = {'username':exists[0].username, 'status':True, 'supplier': exists[0].supplier_id}
                 else:
                     context['exists'] = {'status' : False}
             return self.render_to_json_response(context)
@@ -622,11 +622,22 @@ class LoginSupplier(JSONResponseMixin, TemplateView):
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
     def post(self, request, *args, **kwargs):
+        context = dict()
         if request.is_ajax():
             try:
-                if 'username' in request.POST:
-                    pass
-                context['status'] = True
+                if 'supplier' in request.POST:
+                    obj = LoginProveedor.objects.get(supplier_id=request.POST.get('supplier'))
+                    print obj
+                    if obj:
+                        obj.password = request.POST.get('password')
+                        obj.save()
+                    else:
+                        obj = LoginProveedor()
+                        obj.username = request.POST.get('username')
+                        obj.password = request.POST.get('password')
+                        obj.supplier_id = request.POST.get('supplier')
+                        obj.save()
+                    context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

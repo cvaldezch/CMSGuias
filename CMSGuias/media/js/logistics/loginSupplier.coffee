@@ -1,6 +1,7 @@
 $(document).ready ->
     $("select[name=proveedor]").on "click", getDataProveedor
     $(".btn-default").on "click", openSupplier
+    $(".btn-register-supplier").on "click", save_or_update_username
     return
 
 getDataProveedor = ->
@@ -9,9 +10,10 @@ getDataProveedor = ->
         data.ruc = @value
         data.exists = true
         $.getJSON "", data, (response)->
-            if response.status
-                $("input[name=username]").val response.username
-                return
+            console.log response
+            if response.exists.status
+                $("input[name=username]").val response.exists.username
+                .attr "readonly", "readonly"
             $("input").attr "disabled", false
     return
 
@@ -36,9 +38,14 @@ save_or_update_username = ->
         if data.username isnt ""
             if data.password is confirm
                 data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+                hash = CryptoJS.HmacSHA256("Message", "secret")
+                data.password = CryptoJS.enc.Hex.stringify(hash)
                 $.post "", data, (response) ->
                     if response.status
-                        location.reload()
+                        $().toastmessage "showNoticeToast", "Se a registrado correctamente al proveedor."
+                        setTimeout ->
+                            location.reload()
+                        , 2600
                         return
             else
                 $().toastmessage "showWarningToast", "la contraseña es inconrrecta."

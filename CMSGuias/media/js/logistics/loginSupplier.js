@@ -4,6 +4,7 @@ var getDataProveedor, openSupplier, save_or_update_username;
 $(document).ready(function() {
   $("select[name=proveedor]").on("click", getDataProveedor);
   $(".btn-default").on("click", openSupplier);
+  $(".btn-register-supplier").on("click", save_or_update_username);
 });
 
 getDataProveedor = function() {
@@ -13,9 +14,9 @@ getDataProveedor = function() {
     data.ruc = this.value;
     data.exists = true;
     $.getJSON("", data, function(response) {
-      if (response.status) {
-        $("input[name=username]").val(response.username);
-        return;
+      console.log(response);
+      if (response.exists.status) {
+        $("input[name=username]").val(response.exists.username).attr("readonly", "readonly");
       }
       return $("input").attr("disabled", false);
     });
@@ -36,7 +37,7 @@ openSupplier = function() {
 };
 
 save_or_update_username = function() {
-  var confirm, data;
+  var confirm, data, hash;
   data = new Object();
   data.username = $("input[name=username]").val();
   data.supplier = $("select[name=proveedor]").val();
@@ -46,9 +47,14 @@ save_or_update_username = function() {
     if (data.username !== "") {
       if (data.password === confirm) {
         data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
+        hash = CryptoJS.HmacSHA256("Message", "secret");
+        data.password = CryptoJS.enc.Hex.stringify(hash);
         $.post("", data, function(response) {
           if (response.status) {
-            location.reload();
+            $().toastmessage("showNoticeToast", "Se a registrado correctamente al proveedor.");
+            setTimeout(function() {
+              return location.reload();
+            }, 2600);
           }
         });
       } else {
