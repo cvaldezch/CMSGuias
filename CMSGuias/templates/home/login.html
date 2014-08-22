@@ -18,9 +18,11 @@
 		<button type="Submit" name="submit" class="btn btn-primary" value="Submit">Ingresar
 		 <span class="glyphicon glyphicon-log-in"></span>
 		</button>
-		<div class="content-msg">
-			<span class="msg">{{msg}}</span>
-		</div>
-	</form>	
+		{% if msg %}
+			<div class="content-msg">
+				<span class="msg">{{ msg }}</span>
+			</div>
+		{% endif %}
+	</form>
 </div>
 {% endblock %}

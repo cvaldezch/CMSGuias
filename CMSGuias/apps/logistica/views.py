@@ -1,6 +1,7 @@
  # -*- coding: utf-8 -*-
 
 import json
+import hashlib
 
 from django.db.models import Q, Count
 from django.core import serializers
@@ -627,13 +628,16 @@ class LoginSupplier(JSONResponseMixin, TemplateView):
             try:
                 if 'supplier' in request.POST:
                     obj = LoginProveedor.objects.filter(supplier_id=request.POST.get('supplier'))
+                    passwd = request.POST.get('password')
+                    passwd = hashlib.sha256(b'%s'%passwd)
+                    passwd = passwd.hexdigest()
                     if obj:
-                        obj[0].password = request.POST.get('password')
+                        obj[0].password = passwd
                         obj[0].save()
                     else:
                         obj = LoginProveedor()
                         obj.username = request.POST.get('username')
-                        obj.password = request.POST.get('password')
+                        obj.password = passwd
                         obj.supplier_id = request.POST.get('supplier')
                         obj.save()
                     context['status'] = True

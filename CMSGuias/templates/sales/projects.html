@@ -18,7 +18,7 @@
             <h3 class="text-primary">Proyectos</h3>
         </header>
         <aside>
-        {% if user.get_profile.empdni.charge.area == 'Administrator' or user.get_profile.empdni.charge.area == 'Ventas' %}
+        {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
             <div class="btn-group">
                 <button class="btn btn-primary btn-add">
                     <span class="glyphicon glyphicon-plus"></span>

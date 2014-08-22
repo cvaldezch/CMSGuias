@@ -38,8 +38,8 @@ save_or_update_username = ->
         if data.username isnt ""
             if data.password is confirm
                 data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
-                hash = CryptoJS.HmacSHA256("", data.password)
-                data.password = CryptoJS.enc.Hex.stringify(hash)
+                ###hash = CryptoJS.HmacSHA256("", data.password)
+                data.password = CryptoJS.enc.Hex.stringify(hash)###
                 $.post "", data, (response) ->
                     if response.status
                         $().toastmessage "showNoticeToast", "Se a registrado correctamente al proveedor."
