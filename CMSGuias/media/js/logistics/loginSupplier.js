@@ -40,14 +40,14 @@ save_or_update_username = function() {
   var confirm, data, hash;
   data = new Object();
   data.username = $("input[name=username]").val();
-  data.supplier = $("select[name=proveedor]").val();
-  data.password = $("input[name=passwd]").val();
-  confirm = $("input[name=confirm]").val();
+  data.supplier = $.trim($("select[name=proveedor]").val());
+  data.password = $.trim($("input[name=passwd]").val());
+  confirm = $.trim($("input[name=confirm]").val());
   if (data.supplier !== "") {
     if (data.username !== "") {
       if (data.password === confirm) {
         data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
-        hash = CryptoJS.HmacSHA256("Message", "secret");
+        hash = CryptoJS.HmacSHA256("", data.password);
         data.password = CryptoJS.enc.Hex.stringify(hash);
         $.post("", data, function(response) {
           if (response.status) {
@@ -55,6 +55,8 @@ save_or_update_username = function() {
             setTimeout(function() {
               return location.reload();
             }, 2600);
+          } else {
+            return $().toastmessage("showWarningToast", "Transaction Error: " + response.raise);
           }
         });
       } else {

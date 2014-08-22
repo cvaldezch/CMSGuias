@@ -626,11 +626,10 @@ class LoginSupplier(JSONResponseMixin, TemplateView):
         if request.is_ajax():
             try:
                 if 'supplier' in request.POST:
-                    obj = LoginProveedor.objects.get(supplier_id=request.POST.get('supplier'))
-                    print obj
+                    obj = LoginProveedor.objects.filter(supplier_id=request.POST.get('supplier'))
                     if obj:
-                        obj.password = request.POST.get('password')
-                        obj.save()
+                        obj[0].password = request.POST.get('password')
+                        obj[0].save()
                     else:
                         obj = LoginProveedor()
                         obj.username = request.POST.get('username')

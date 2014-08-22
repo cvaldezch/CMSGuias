@@ -31,14 +31,14 @@ openSupplier = ->
 save_or_update_username = ->
     data = new Object()
     data.username = $("input[name=username]").val()
-    data.supplier = $("select[name=proveedor]").val()
-    data.password = $("input[name=passwd]").val()
-    confirm = $("input[name=confirm]").val()
+    data.supplier = $.trim($("select[name=proveedor]").val())
+    data.password = $.trim($("input[name=passwd]").val())
+    confirm = $.trim($("input[name=confirm]").val())
     if data.supplier isnt ""
         if data.username isnt ""
             if data.password is confirm
                 data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
-                hash = CryptoJS.HmacSHA256("Message", "secret")
+                hash = CryptoJS.HmacSHA256("", data.password)
                 data.password = CryptoJS.enc.Hex.stringify(hash)
                 $.post "", data, (response) ->
                     if response.status
@@ -47,6 +47,8 @@ save_or_update_username = ->
                             location.reload()
                         , 2600
                         return
+                    else
+                        $().toastmessage "showWarningToast", "Transaction Error: #{response.raise}"
             else
                 $().toastmessage "showWarningToast", "la contraseña es inconrrecta."
         else

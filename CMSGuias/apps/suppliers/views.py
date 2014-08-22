@@ -16,6 +16,8 @@ from django.template import RequestContext, TemplateDoesNotExist
 from django.views.generic import TemplateView, View, ListView
 from django.views.generic.edit import CreateView
 
+from CMSGuias.apps.home.models import LoginProveedor
+
 
 ### Class Bases Views generic
 
@@ -33,6 +35,19 @@ class JSONResponseMixin(object):
 
 class SignUpSupplier(TemplateView):
     template_name = 'suppliers/signup.html'
+
+    def post(self, request, *args, **kwargs):
+        contextx = dict()
+        try:
+            supplier = request.POST.get('supplier')
+            username = request.POST.get('username')
+            passwd = request.POST.get('password')
+            if supplier != '':
+                if username != '':
+                    if password != '':
+                        obj = LoginProveedor.objects.
+        except ObjectDoesNotExist, e:
+            context['raise'] = e.__str__()
 
 # view home logistics
 class LogisticsHome(TemplateView):
