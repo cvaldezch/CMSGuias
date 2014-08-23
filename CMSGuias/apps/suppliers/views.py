@@ -121,3 +121,11 @@ class ListOrderPurchase(TemplateView):
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404('Template no Found')
+
+        def post(self, request, *args, **kwargs):
+            try:
+                obj = CotKeys.objects.get(proveedor_id=request.POST.get('ruc'), cotizacion_id=request.POST.get('quote'), keygen=request.POST.get('key'))
+                if obj:
+                    pass
+            except ObjectDoesNotExist, e:
+                raise e

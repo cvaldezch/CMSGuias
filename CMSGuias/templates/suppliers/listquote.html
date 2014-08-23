@@ -2,6 +2,9 @@
 {% block title %}
     Lista de Cotizaciones
 {% endblock title %}
+{% block script %}
+<script src="{{ MEDIA_URL }}js/suppliers/cotizacion.js"></script>
+{% endblock script %}
 {% block style %}
 <style>
     iframe{
@@ -36,7 +39,7 @@
                                         <h6><strong>Fecha de traslado:</strong> {{ x.cotizacion.traslado }}</h6>
                                     </p>
                                     <p>
-                                        <a href="#" class="btn btn-sm btn-block btn-primary" role="button">Ver</a>
+                                        <button data-ruc="{{ x.proveedor_id }}" data-quote="{{ x.cotizacion_id }}" class="btn btn-sm btn-block btn-primary btn-show-key" role="button">Ver</button>
                                     </p>
                                 </div>
                             </div>
@@ -67,12 +70,12 @@
                 </div>
                 <div class="form-group">
                     <label class="control-label">Key</label>
-                    <input type="text" name="keys" class="form-control input-sm">
+                    <input type="text" maxlength="11" name="keys" class="form-control input-sm">
                 </div>
             </div>
             <div class="modal-footer">
-                <button data-dimiss="modal" class="btn btn-sm btn-default pull-left"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-ok"></span> Ver</button>
+                <button data-dismiss="modal" class="btn btn-sm btn-default pull-left"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                <button class="btn btn-sm btn-primary btn-valid-key"><span class="glyphicon glyphicon-ok"></span> Ver</button>
             </div>
         </div>
     </div>
