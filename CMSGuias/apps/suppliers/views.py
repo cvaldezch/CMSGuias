@@ -108,7 +108,7 @@ class ListQuote(TemplateView):
         except TemplateDoesNotExist, e:
             raise Http404('Template no Found')
 
-class ListOrderPurchase(TemplateView):
+class ListOrderPurchase(JSONResponseMixin, TemplateView):
     template_name = 'suppliers/listpurchase.html'
 
     def get(self, request, *args, **kwargs):
@@ -123,9 +123,16 @@ class ListOrderPurchase(TemplateView):
             raise Http404('Template no Found')
 
         def post(self, request, *args, **kwargs):
-            try:
-                obj = CotKeys.objects.get(proveedor_id=request.POST.get('ruc'), cotizacion_id=request.POST.get('quote'), keygen=request.POST.get('key'))
-                if obj:
-                    pass
-            except ObjectDoesNotExist, e:
-                raise e
+            if request.is_ajax():
+                context = dict()
+                try:
+                    obj = CotKeys.objects.get(proveedor_id=request.POST.get('ruc'), cotizacion_id=request.POST.get('quote'), keygen=request.POST.get('key'))
+                    print obj
+                    if obj:
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+                except ObjectDoesNotExist, e:
+                    context['raise'] = e.__str__()
+                    context['status'] = False
+                return self.render_to_json_response(context)
