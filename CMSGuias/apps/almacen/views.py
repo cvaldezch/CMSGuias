@@ -21,12 +21,25 @@ from CMSGuias.apps.almacen import models
 from CMSGuias.apps.home.models import Cliente, Almacene, Transportista, Conductore, Transporte, userProfile
 from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
 from CMSGuias.apps.almacen import forms
-from CMSGuias.apps.tools import genkeys
+from CMSGuias.apps.tools import genkeys, globalVariable
+from CMSGuias.apps.logistica.models import Compra
 
 
 ##
 #  Declare variables
 ##
+
+class JSONResponseMixin(object):
+    def render_to_json_response(self, context, **response_kwargs):
+        return HttpResponse(
+            self.convert_context_to_json(context),
+            content_type='application/json',
+            mimetype='application/json',
+            **response_kwargs
+        )
+
+    def convert_context_to_json(self, context):
+        return simplejson.dumps(context, encoding='utf-8')
 
 FORMAT_DATE_STR = "%Y-%m-%d"
 
@@ -1163,3 +1176,33 @@ class ListDetOrders(TemplateView):
                 data['status'] = False
             data = simplejson.dumps(data)
             return HttpResponse(data, mimetype='application/json', content_type='application/json')
+
+# Input order purchase
+class InputOrderPurchase(JSONResponseMixin, TemplateView):
+    template_name = 'almacen/inputpurchase.html'
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        try:
+            context = dict()
+            if request.is_ajax():
+                try:
+                    if 'type' in request.GET:
+                        if request.GET.get('type') == 'code':
+                            context['list'] = [{'purchase' : x.compra_id, 'reason' : x.proveedor.razonsocial, 'supplier': x.proveedor_id, 'document' : x.documento.documento, 'transfer' : globalVariable.format_date_str(x.traslado)} for x in Compra.objects.filter(compra_id=request.GET.get('code'))]
+                            context['status'] = True
+                        elif request.GET.get('type') == 'dates':
+                            if 'end' not in request.GET and 'start' in request.GET:
+                                context['list'] = [{'purchase' : x.compra_id, 'reason' : x.proveedor.razonsocial, 'supplier': x.proveedor_id, 'document' : x.documento.documento, 'transfer' : globalVariable.format_date_str(x.traslado)} for x in Compra.objects.filter(registrado__startswith=globalVariable.format_str_date(request.GET.get('start')))]
+                                context['status'] = True
+                            elif 'end' in request.GET and 'start' in request.GET:
+                                context['list'] = [{'purchase' : x.compra_id, 'reason' : x.proveedor.razonsocial, 'supplier': x.proveedor_id, 'document' : x.documento.documento, 'transfer' : globalVariable.format_date_str(x.traslado)} for x in Compra.objects.filter(registrado__range=(globalVariable.format_str_date(request.GET.get('start')), globalVariable.format_str_date(request.GET.get('end'))))]
+                                context['status'] = True
+                except ObjectDoesNotExist, e:
+                    context['raise'] = e.__str__()
+                    context['status'] = False
+                return self.render_to_json_response(context)
+            context['purchase'] = Compra.objects.filter(flag=True, status='PE').order_by('-compra_id')
+            return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        except TemplateDoesNotExist, e:
+            raise Http404('Template not found')

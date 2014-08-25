@@ -2,12 +2,12 @@
 #from django.conf.urls.defaults import patterns, url
 from django.conf.urls import patterns, url
 
-import views
+from .views import *
 
 
 urlpatterns = patterns('CMSGuias.apps.almacen.views',
 
-    url(r'^$', views.StorageHome.as_view(), name='vista_storage'),
+    url(r'^$', StorageHome.as_view(), name='vista_storage'),
     # orders
     url(r'^pedido/generate/$','view_pedido',name='vista_pedido'),
     url(r'^orders/pending/$','view_orders_pending',name='vista_slope_orders'),
@@ -51,8 +51,9 @@ urlpatterns = patterns('CMSGuias.apps.almacen.views',
     url(r'^upkeep/conductor/edit/(?P<cid>.*)/(?P<tid>.*)/$','view_conductor_edit', name='vista_conductor_edit'),
     url(r'^upkeep/conductor/(?P<ruc>.*)/$','view_conductor', name='vista_conductor'),
     # urls module storage
-    url(r'^inventory/$', views.InventoryView.as_view(), name='vista_inventory'),
-    url(r'^supply/$', views.SupplyView.as_view(), name='vista_supply'),
-    url(r'^summary/list/orders/$', views.ListOrdersSummary.as_view(), name='vista_summary_orders'),
-    url(r'^orders/details/supply/$', views.ListDetOrders.as_view(), name='vista_orders_details'),
+    url(r'^inventory/$', InventoryView.as_view(), name='vista_inventory'),
+    url(r'^supply/$', SupplyView.as_view(), name='vista_supply'),
+    url(r'^summary/list/orders/$', ListOrdersSummary.as_view(), name='vista_summary_orders'),
+    url(r'^orders/details/supply/$', ListDetOrders.as_view(), name='vista_orders_details'),
+    url(r'purchase/input/$', InputOrderPurchase.as_view(), name='view_purchase_input'),
 )

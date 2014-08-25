@@ -45,7 +45,8 @@ class SignUpSupplier(TemplateView):
             if supplier != '':
                 if username != '':
                     if password != '':
-                        obj = LoginProveedor.objects.
+                        pass
+                        #obj = LoginProveedor.objects.
         except ObjectDoesNotExist, e:
             context['raise'] = e.__str__()
 

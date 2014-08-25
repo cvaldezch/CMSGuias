@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block titlte %}
+Input Order Purchase
+{% endblock titlte %}
+{% block script %}
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="{{ MEDIA_URL }}js/almacen/purchase.js"></script>
+{% endblock script %}
+{% block menu %}
+	{% include "menus/storage_menu.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+	<div class="well">
+		<header>
+			<h3>Lista de Ordenes de Compra</h3>
+		</header>
+		<section>
+			<article>
+				<div class="bs-callout bs-callout-warning">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group">
+								Buscar por: 
+								<label class="inline-radio">
+									<input type="radio" name="search" value="code">
+									Nro de Compra
+								</label>
+								<label class="inline-radio">
+									<input type="radio" name="search" value="dates">
+									Fechas
+								</label>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="row">
+								<div class="col-md-2">
+									<div class="form-group">
+										<label class="control-label">Nro Compra</label>
+										<input type="text" name="code" class="form-control input-sm" maxlength="10" placeholder="OCAA000000" disabled="disabled">
+									</div>
+								</div>
+								<div class="col-md-2">
+									<div class="form-group">
+										<label class="control-label">Fecha Incio </label>
+										<input type="text" name="start" maxlength="10" placeholder="aaaa-mm-dd" class="form-control input-sm" disabled="disabled">
+									</div>
+								</div>
+								<div class="col-md-2">
+									<div class="form-group">
+										<label class="control-label">Fecha Fin</label>
+										<input type="text" name="end" maxlength="10" placeholder="aaaa-mm-dd" class="form-control input-sm" disabled="disabled">
+									</div>
+								</div>
+								<div class="col-md-1">
+									<div class="form-group">
+										<label class="control-label"></label>
+										<button class="btn btn-block btn-warning text-black btn-search"><span class="glyphicon glyphicon-search"></span></button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</article>
+			<div class="panel panel-primary">
+				<div class="table-responsive">
+					<table class="table table-hover table-condensed">
+						<thead>
+							<th>Item</th><th>Nro Compra</th><th>Proveedor</th><th>Documento</th><th>Traslado</th><th>Deposito</th><th>Acción</th>
+						</thead>
+						<tbody>
+							{% for x in purchase %}
+								<tr>
+									<td>{{ forloop.counter }}</td>
+									<td>{{ x.compra_id }}</td>
+									<td>{{ x.proveedor.razonsocial }}</td>
+									<td>{{ x.documento.documento }}</td>
+									<td>{{ x.traslado }}</td>
+									<td>
+										<button value="{{ x.compra_id }}" data-ruc="{{ x.proveedor_id }}" class="btn btn-link btn-xs text-black btn-deposit"><span class="glyphicon glyphicon-credit-card"></span></button>
+									</td>
+									<td>
+										<button value="{{ x.compra_id }}" class="btn btn-link btn-xs text-black btn-action"><span class="glyphicon glyphicon-inbox"></span></button>
+									</td>
+								</tr>
+							{% empty %}
+								<div class="alert alert-block alert-warning">
+									<strong>Alerta</strong>
+									<p>
+										No se a encontrado <q>Ordenes de Compra</q>.
+									</p>
+								</div>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+<!-- block modal -->
+<div class="modal fade maction" data-backdrop="static">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="title-modal">
+					Que desea hacer con la orden de compra?
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<button class="btn btn-block btn-primary">
+						<span class="glyphicon glyphicon-inbox"></span> Ingresar al Inventario
+					</button>
+					<button class="btn btn-block btn-primary">
+						<span class="glyphicon glyphicon-credit-card"></span>
+						Nota de Credito
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- end block modal -->
+{% endblock content %}
