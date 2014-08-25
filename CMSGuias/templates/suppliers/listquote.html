@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}
+    Lista de Cotizaciones
+{% endblock title %}
+{% block script %}
+<script src="{{ MEDIA_URL }}js/suppliers/cotizacion.js"></script>
+{% endblock script %}
+{% block style %}
+<style>
+    iframe{
+        height: 100%;
+        overflow-y: hidden;
+        width: 100%;
+    }
+</style>
+{% endblock style %}
+{% block menu %}
+    {% include "menus/suppliers.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+    <div class="well">
+        <header>
+            <h3>
+                Lista de Cotización
+            </h3>
+        </header>
+        <article>
+            <div class="panel panel-primary">
+                <div class="row">
+                {% if quote %}
+                    {% for x in quote %}
+                        <div class="col-sm-5 col-md-3">
+                            <div class="thumbnail">
+                                <iframe src="/reports/quote/{{ x.cotizacion_id }}/{{ x.proveedor_id }}/" scrolling="no" seamless="seamless"></iframe>
+                                <div class="caption">
+                                    <h6><strong>Nro Cotización {{ x.cotizacion_id }}</strong></h6>
+                                    <p>
+                                        <h6><strong>Fecha de traslado:</strong> {{ x.cotizacion.traslado }}</h6>
+                                    </p>
+                                    <p>
+                                        <button data-ruc="{{ x.proveedor_id }}" data-quote="{{ x.cotizacion_id }}" class="btn btn-sm btn-block btn-primary btn-show-key" role="button">Ver</button>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                </div>
+            </div>
+        </article>
+    </div>
+</div>
+<!-- block modal -->
+<div class="modal fade mkey" data-backdrop="static">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4 class="modal-title">Autenticar Key</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">Ruc Proveedor</label>
+                    <input type="text" name="ruc" class="form-control input-sm" readonly="readonly">
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Nro Cotización</label>
+                    <input type="text" name="quote" class="form-control input-sm" readonly="readonly">
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Key</label>
+                    <input type="text" maxlength="11" name="keys" class="form-control input-sm">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-sm btn-default pull-left"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                <button class="btn btn-sm btn-primary btn-valid-key"><span class="glyphicon glyphicon-ok"></span> Ver</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end block modal -->
+{% endblock content %}

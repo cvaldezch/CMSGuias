@@ -37,7 +37,7 @@ openSupplier = function() {
 };
 
 save_or_update_username = function() {
-  var confirm, data, hash;
+  var confirm, data;
   data = new Object();
   data.username = $("input[name=username]").val();
   data.supplier = $.trim($("select[name=proveedor]").val());
@@ -47,8 +47,10 @@ save_or_update_username = function() {
     if (data.username !== "") {
       if (data.password === confirm) {
         data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
-        hash = CryptoJS.HmacSHA256("", data.password);
-        data.password = CryptoJS.enc.Hex.stringify(hash);
+
+        /*hash = CryptoJS.HmacSHA256("", data.password)
+        data.password = CryptoJS.enc.Hex.stringify(hash)
+         */
         $.post("", data, function(response) {
           if (response.status) {
             $().toastmessage("showNoticeToast", "Se a registrado correctamente al proveedor.");

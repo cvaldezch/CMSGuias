@@ -44,14 +44,13 @@ header h2{
 	border: solid 1px red;
 	border-radius: .5em;
 	color: red;
-	display: none;
 	margin-top: .2em;
 	padding: .5em;
 }
 @media screen and (max-width: 1120px) {
 	.content-login{
 		width: 20em;
-	}	
+	}
 }
 @media screen and (max-width: 980px) {
 	.content-login{
@@ -73,5 +72,5 @@ header h2{
 @media screen and (max-width: 480px) {
 	.content-login{
 		width: 18em;
-	}	
+	}
 }
