@@ -20,10 +20,11 @@ showQuotation = function() {
   data.key = $("[name=keys]").val();
   if (data.ruc !== "" && data.quote !== "" && data.key !== "") {
     if (data.key.length === 11) {
-      data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
+      data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
       $.post("", data, function(response) {
+        console.log(response);
         if (response.status) {
-          return location.href = "/suppliers//";
+          return location.href = "/proveedor/quote/details/" + response.quote + "/" + response.supplier + "/";
         } else {
           return $().toastmessage("showErrorToast", "El key ingresado es incorrecto.");
         }

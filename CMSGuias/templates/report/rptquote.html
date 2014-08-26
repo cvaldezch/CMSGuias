@@ -40,7 +40,7 @@
                         {{ v }}
                     {% endifequal %}
                 {% endfor %}</td></tr>
-                <tr><td><strong>Observación :</strong></td><td> {{bedside.obser}}</td></tr>
+                <tr><td><strong>Observación :</strong></td><td> {{bedside.obser|safe }}</td></tr>
             </table>
         </div>
     </header>

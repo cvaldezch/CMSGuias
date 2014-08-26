@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}
+Quote Details
+{% endblock title %}
+{% block script %}
+<script src="{{ MEDIA_URL }}js/suppliers/details.js"></script>
+{% endblock script %}
+{% block style %}
+<style>
+    input[name="dates"]{
+        width: 90px;
+    }
+    input[name="models"] {
+        width: 100px;
+    }
+    input[name="desct"] {
+        width: 60px;
+    }
+    /* table {
+        display: block;
+        width: 90%;
+        border: 1px solid #eee;
+        max-height: 320px;
+        overflow: auto;
+    }
+    table thead {
+        display: -webkit-flex;
+        -webkit-flex-flow: row;
+    }
+    table > thead tr {
+        display: -webkit-flex;
+        width: 100%;
+        -webkit-align-items: stretch;
+    }
+    table > tbody {
+        display: -webkit-flex;
+        height: 200px;
+        overflow: auto;
+        -webkit-flex-flow: row wrap;
+    }
+    table tbody tr{
+        display: -webkit-flex;
+        width: 100%;
+    }
+    table tr td, table tr th {
+       width: 15%;
+    } */
+</style>
+{% endblock style %}
+{% block menu %}
+    {% include "menus/suppliers.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+    <div class="well">
+        <header>
+            <h3>Nro Cotización {{ quote.cotizacion_id }}</h3>
+            <aside>
+                <dl class="dl-horizontal">
+                    <dt>Realizado: </dt>
+                    <dd>{{ quote.empdni.firstname }}, {{ quote.empdni.lastname }}</dd>
+                    <dt>Registrado</dt>
+                    <dd>{{ quote.registrado }}</dd>
+                    <dt>Fecha Traslado:</dt>
+                    <dd>{{ quote.traslado }}</dd>
+                    <dt>Observación</dt>
+                    <dd>{{ quote.obser|safe }}</dd>
+                    <dt></dt>
+                    <dd><a target="_blank" class="btn btn-link btn-default btn-xs text-black" href="/reports/quote/{{ quote.cotizacion_id }}/{{ request.session.ruc }}/"> <span class="glyphicon glyphicon-print"></span> Imprimir</a></dd>
+                </dl>
+            </aside>
+        </header>
+        <article>
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <button class="btn btn-warning btn-block text-black">
+                        Si has terminado de ingresar los precios de los materiales, presiona
+                        <q>Aqui</q>
+                        <span class="glyphicon glyphicon-chevron-down"></span>
+                    </button>
+                </div>
+            </div>
+        </article>
+        <section>
+            <div class="panel panel-warning">
+                <div class="panel-footer bg-warning">
+                    <h5>Lista de materiales a cotizar.</h5>
+                    <strong><small>Nota:</small></strong><br>
+                    <small>Ingrese los precio sin incluir el <q>IGV</q>. El <q>IGV</q> y el <q>Total</q> seran calculados automaticamente.</small>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-condensed table-hover">
+                        <thead>
+                            <tr class="brand-warning">
+                                <th class="text-center">Item</th>
+                                <!-- <th class="text-center">Código</th> -->
+                                <th class="text-center">Material</th>
+                                <th class="text-center">Unidad</th>
+                                <th class="text-center">Cantidad</th>
+                                <th class="text-center">Precio</th>
+                                <th class="text-center">Dsto. %</th>
+                                <th class="text-center">Importe</th>
+                                <th class="text-center">Marca</th>
+                                <th class="text-center">Modelo</th>
+                                <th class="text-center">F. Entrega</th>
+                                <th class="text-center">Hoja Tec.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for x in details %}
+                                <tr class="{{ x.materiales_id }}">
+                                    <td class="text-center">{{ forloop.counter }}</td>
+                                    <!-- <td>{{ x.materiales_id }}</td> -->
+                                    <td>{{ x.materiales.matnom }} - {{ x.materiales.matmed }}</td>
+                                    <td>{{ x.materiales.unidad.uninom }}</td>
+                                    <td>{{ x.cantidad|safe }}</td>
+                                    <td><input type="number" name="prices" class="form-control input-sm" value="{{ x.precio }}" min="0" max="9999999" data-mat="{{ x.materiales_id }}">
+                                    <td><input type="number" name="desct" class="form-control input-sm text-right" min="0" max="100" value="{{ x.discount }}" data-mat="{{ x.materiales_id }}"></td>
+                                    <td class="text-right">{{ x.amount|safe }}</td>
+                                    <td><input type="text" name="brands" class="form-control input-sm"></td>
+                                    <td><input type="text" name="models" class="form-control input-sm"></td>
+                                    <td><input type="text" placeholder="aaaa-mm-dd" maxlength="10" name="dates" class="form-control input-sm"></td>
+                                    <td class="text-center"><button class="btn btn-xs btn-link text-black" value="{{ x.materiales_id }}"><span class="glyphicon glyphicon-cloud-upload"></span></button></td>
+                                </tr>
+                            {% empty %}
+                                <div class="alert alert-danger alert-block">
+                                    <strong>Error!</strong>
+                                    <p>
+                                        Al parecer la cotización no cuenta con una lista de materiales, si esto es recurente comuniquese con nostros.
+                                    </p>
+                                </div>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th class="text-right brand-warning" colspan="6">Subtotal</th>
+                                <td class="warning subtc"></td>
+                            </tr>
+                            <tr>
+                                <th class="text-right brand-warning" colspan="6">IGV {{ igv }}%</th>
+                                <td class="warning igvc"></td>
+                            </tr>
+                            <tr>
+                                <th class="text-right brand-warning" colspan="6">Total</th>
+                                <td class="warning totalc"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<!-- block variable -->
+{% csrf_token %}
+<input type="hidden" value="{{ igv }}" name="igv">
+{% endblock content %}

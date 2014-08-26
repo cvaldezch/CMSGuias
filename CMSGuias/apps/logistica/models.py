@@ -8,7 +8,7 @@ from CMSGuias.apps.tools import globalVariable
 class Cotizacion(models.Model):
     cotizacion_id = models.CharField(primary_key=True, max_length=10)
     suministro = models.ForeignKey('almacen.Suministro', to_field='suministro_id', null=True, blank=True)
-    empdni = models.CharField(max_length=8)
+    empdni = models.ForeignKey(Employee, to_field='empdni_id', default='70492850')
     almacen = models.ForeignKey(Almacene, to_field='almacen_id')
     registrado = models.DateTimeField(auto_now=True)
     traslado = models.DateField()
@@ -98,7 +98,8 @@ class DetCotizacion(models.Model):
     proveedor = models.ForeignKey(Proveedor, to_field='proveedor_id')
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     cantidad = models.FloatField()
-    precio = models.FloatField(null=True,blank=True)
+    precio = models.FloatField(null=True,blank=True, default=0)
+    discount = models.PositiveSmallIntegerField(null=True, blank=True, default=0)
     entrega = models.DateField(null=True, blank=True)
     marca = models.CharField(max_length=60, null=True, blank=True)
     modelo = models.CharField(max_length=60, null=True, blank=True)
@@ -110,6 +111,13 @@ class DetCotizacion(models.Model):
     def __unicode__(self):
         return '%s %s %s %f %f'%(self.cotizacion, self.proveedor, self.materiales, self.cantidad, self.precio)
 
+    @property
+    def amount(self):
+        if not self.precio:
+            self.precio = 0
+        return (self.cantidad * self.precio)
+
+
 class CotKeys(models.Model):
     cotizacion = models.ForeignKey(Cotizacion, to_field='cotizacion_id')
     proveedor = models.ForeignKey(Proveedor, to_field='proveedor_id')
@@ -118,7 +126,7 @@ class CotKeys(models.Model):
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return '%s %s %s'%(self.cotizacion, self.proveedor, self.keygen)
+        return '%s %s %s'%(self.cotizacion_id, self.proveedor_id, self.keygen)
 
 class tmpcotizacion(models.Model):
     empdni = models.CharField(max_length=8, null=False)

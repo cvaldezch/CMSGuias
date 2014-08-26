@@ -16,10 +16,11 @@ showQuotation = ->
     data.key = $("[name=keys]").val()
     if data.ruc isnt "" and data.quote isnt "" and data.key isnt ""
         if data.key.length == 11
-            data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+            data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
             $.post "", data, (response) ->
+                console.log response
                 if response.status
-                    location.href = "/suppliers//"
+                    location.href = "/proveedor/quote/details/#{response.quote}/#{response.supplier}/"
                 else
                     $().toastmessage "showErrorToast", "El key ingresado es incorrecto."
             , "json"

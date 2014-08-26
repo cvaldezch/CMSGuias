@@ -18,8 +18,9 @@ from django.views.generic import TemplateView, View, ListView
 from django.views.generic.edit import CreateView
 from django.core.urlresolvers import reverse_lazy
 
-from CMSGuias.apps.home.models import LoginProveedor
+from CMSGuias.apps.home.models import LoginProveedor, Configuracion
 from CMSGuias.apps.logistica.models import Cotizacion, DetCotizacion, CotCliente, CotKeys, Compra, DetCompra
+from CMSGuias.apps.tools import globalVariable
 
 
 ### Class Bases Views generic
@@ -94,7 +95,7 @@ class SupplierHome(TemplateView):
                 return HttpResponseRedirect(reverse_lazy('view_supplier_signup'))
         return render_to_response(self.template_name, context_instance=RequestContext(request))
 
-class ListQuote(TemplateView):
+class ListQuote(JSONResponseMixin, TemplateView):
     template_name = 'suppliers/listquote.html'
 
     def get(self, request, *args, **kwargs):
@@ -108,7 +109,51 @@ class ListQuote(TemplateView):
         except TemplateDoesNotExist, e:
             raise Http404('Template no Found')
 
-class ListOrderPurchase(JSONResponseMixin, TemplateView):
+    def post(self, request, *args, **kwargs):
+
+        if request.is_ajax():
+            context = dict()
+            try:
+                obj = CotKeys.objects.get(cotizacion_id=request.POST.get('quote'), proveedor_id=request.POST.get('ruc'), keygen=request.POST.get('key'))
+                context['status'] = True
+                context['quote'] = obj.cotizacion_id
+                context['supplier'] = obj.proveedor_id
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
+
+class ListDetailsQuote(JSONResponseMixin, TemplateView):
+    templeta_name = "suppliers/detilsquote.html"
+
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if not 'access' in request.session:
+            if not request.session.get('access'):
+                return HttpResponseRedirect(reverse_lazy('view_supplier_signup'))
+        else:
+            try:
+                if kwargs['quote'] and kwargs['supplier']:
+                    if kwargs['quote'].__len__() == 10 and kwargs['supplier'].__len__() == 11:
+                        if kwargs['supplier'] == request.session.get('ruc'):
+                            context['quote'] = Cotizacion.objects.get(pk=kwargs['quote'])
+                            if context['quote'].status != 'PE':
+                                return HttpResponseRedirect(reverse_lazy('supplier_quote'))
+                            else:
+                                context['details'] = DetCotizacion.objects.filter(cotizacion_id=kwargs['quote'], proveedor_id=kwargs['supplier'])
+                                obj = Configuracion.objects.filter(periodo=globalVariable.get_year)[:1]
+                                context['igv'] = obj[0].igv
+                        else:
+                            return HttpResponseRedirect(reverse_lazy('supplier_quote'))
+                    else:
+                        return HttpResponseRedirect(reverse_lazy('supplier_quote'))
+                else:
+                    return HttpResponseRedirect(reverse_lazy('supplier_quote'))
+                return render_to_response(self.templeta_name, context, context_instance=RequestContext(request))
+            except TemplateDoesNotExist, e:
+                raise Http404('Template not found')
+
+class ListOrderPurchase(TemplateView):
     template_name = 'suppliers/listpurchase.html'
 
     def get(self, request, *args, **kwargs):
@@ -121,18 +166,3 @@ class ListOrderPurchase(JSONResponseMixin, TemplateView):
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404('Template no Found')
-
-        def post(self, request, *args, **kwargs):
-            if request.is_ajax():
-                context = dict()
-                try:
-                    obj = CotKeys.objects.get(proveedor_id=request.POST.get('ruc'), cotizacion_id=request.POST.get('quote'), keygen=request.POST.get('key'))
-                    print obj
-                    if obj:
-                        context['status'] = True
-                    else:
-                        context['status'] = False
-                except ObjectDoesNotExist, e:
-                    context['raise'] = e.__str__()
-                    context['status'] = False
-                return self.render_to_json_response(context)
