@@ -9,20 +9,21 @@ def upload(absolutePath,archive,options={}):
     #defaults= {"date": False,"time": False}
     try:
         # path absolute
-        path = "%s%s"%(settings.MEDIA_ROOT, absolutePath)
+        path = '%s%s'%(settings.MEDIA_ROOT, absolutePath)
         # verify path exists if not exists path makers the folders
         if not os.path.exists(path):
-            os.makedirs(path,774)
-            os.chmod(path,0774)
+            os.makedirs(path, 0774)
+            os.chmod(path, 0774)
         # verify aggregate options to name of file
         name = None
         if len(options) > 0:
             ext = archive.name.split('.')
             ext = ext[ext.__len__() - 1]
+            ext = ext.lower()
             name = '%s.%s'%(options['name'], ext)
         else:
           name = archive.name
-        filename = "%s%s"%(path,name)
+        filename = '%s%s'%(path, name)
         # recover full address of filename
         dirfilename = open(filename, "wb+")
         # walk all file and save im new address
@@ -32,15 +33,43 @@ def upload(absolutePath,archive,options={}):
         dirfilename.close()
         # changes file permissions
         os.chmod(filename, 0777)
+        return filename
     except Exception, e:
         print e
-    return filename
 
 def removeTmp(absolutePath):
     try:
         os.remove(absolutePath)
     except Exception, e:
         raise e
+
+def deleteFile(uriPath, partial=False):
+    try:
+        path = None
+        # path absolute
+        if partial:
+            path = '%s%s'%(settings.MEDIA_ROOT, uriPath)
+        else:
+            path = uriPath
+        if path is not None:
+            print os.remove(path)
+        else:
+            return False
+    except Exception, e:
+        print e
+        return False
+
+def fileExists(paths, partial=False):
+    try:
+        if partial:
+            # path absolute
+            path = '%s%s'%(settings.MEDIA_ROOT, paths)
+        else:
+            path = paths
+        return os.path.lexists(path)
+    except Exception, e:
+        print e
+        return False
 
 def descompressRAR(filename, path_to_extract):
     try:

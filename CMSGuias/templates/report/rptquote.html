@@ -51,8 +51,8 @@
                     <tr>
                         <th>Item</th>
                         <th width="2.5cm">Código</th>
-                        <th width="4cm">Descripción</th>
-                        <th width="4cm">Medida</th>
+                        <th width="7cm">Descripción</th>
+                        <!-- <th width="4cm">Medida</th> -->
                         <th>Unidad</th>
                         <th>Cantidad</th>
                         <th>Precio</th>
@@ -63,15 +63,17 @@
                 <tbody>
                 {% for x in details %}
                     <tr>
-                        <td class="text-center item">{{forloop.counter}}</td>
-                        <td class="text-center cod">{{x.materiales_id}}</td>
-                        <td>{{x.materiales.matnom}}</td>
-                        <td>{{x.materiales.matmed}}</td>
-                        <td class="text-center">{{x.materiales.unidad_id}}</td>
-                        <td class="text-center">{{x.cantidad}}</td>
-                        <td class="text-center">{{ x.precio }}</td>
+                        <td class="text-center item">{{ forloop.counter }}</td>
+                        <td class="text-center cod">{{ x.materiales_id }}</td>
+                        <td>{{ x.materiales.matnom }}
+                        <!-- </td>
+                        <td> -->
+                        {{ x.materiales.matmed }}</td>
+                        <td class="text-center">{{ x.materiales.unidad.uninom }}</td>
+                        <td class="text-center">{{ x.cantidad|safe }}</td>
+                        <td class="text-center">{{ x.precio|floatformat:"2" }}</td>
                         <td class="text-center">{{ x.marca }}</td>
-                        <td class="text-center">{{ x.entrega }}</td>
+                        <td class="text-center">{{ x.entrega|date:"d/m/Y" }}</td>
                     </tr>
                 {% endfor%}
                 </tbody>

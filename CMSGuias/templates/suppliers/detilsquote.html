@@ -3,6 +3,7 @@
 Quote Details
 {% endblock title %}
 {% block script %}
+<script src="{{ MEDIA_URL }}js/tinymce.js"></script>
 <script src="{{ MEDIA_URL }}js/suppliers/details.js"></script>
 {% endblock script %}
 {% block style %}
@@ -54,7 +55,11 @@ Quote Details
 <div class="container">
     <div class="well">
         <header>
-            <h3>Nro Cotización {{ quote.cotizacion_id }}</h3>
+            <h3>
+                Nro Cotización {{ quote.cotizacion_id }}
+                <br>
+                <small>Ingrese los precios, marca, modelo y la fecha de entrega del los materiales. Los campos obligatorios son <q>Precio y Fecha de envio</q> tambien puede subir las hojas técnicas de los materiales haciendo click en el icono <span class="glyphicon glyphicon-cloud-upload"></span>.</small>
+            </h3>
             <aside>
                 <dl class="dl-horizontal">
                     <dt>Realizado: </dt>
@@ -73,11 +78,83 @@ Quote Details
         <article>
             <div class="panel panel-warning">
                 <div class="panel-heading">
-                    <button class="btn btn-warning btn-block text-black">
-                        Si has terminado de ingresar los precios de los materiales, presiona
-                        <q>Aqui</q>
-                        <span class="glyphicon glyphicon-chevron-down"></span>
-                    </button>
+                    <div class="row bedside-before">
+                        <div class="col-md-12 col-sm-12">
+                            <h4 class="text-center">
+                                Si has terminado de ingresar los precios de los materiales, presiona este <q>Bottón</q>
+                            </h4>
+                        </div>
+                        <div class="col-md-4 col-md-offset-4 text-center">
+                            <h4>
+                                <span class="glyphicon glyphicon-chevron-down"></span>
+                            </h4>
+                        </div>
+                        <div class="col-md-4 col-md-offset-4 text-center">
+                            <button class="btn btn-warning text-black btn-show-bedside">
+                                <h5>Presiona Aqui</h5>
+                                <span class="glyphicon glyphicon-hand-up"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="btn-group bedside-after">
+                        <button class="btn btn-warning text-black btn-cancel">
+                            <!-- <span class="glyphicon glyphicon-remove-circle"></span> -->
+                            <span class="glyphicon glyphicon-chevron-up"></span>
+                            <p>
+                                Cancelar
+                            </p>
+                        </button>
+                        <button class="btn btn-default btn-send">
+                            <span class="glyphicon glyphicon-floppy-disk"></span>
+                            <span class="glyphicon glyphicon-send"></span>
+                            <p class="text">Guardar y enviar la cotización</p>
+                        </button>
+                    </div>
+                </div>
+                <div class="panel-body panel-bedside">
+                    <p class="text-warning">
+                        <small>
+                            Campos Obligatorios (*).
+                        </small>
+                    </p>
+                    <div class="row">
+                        <div class="col-md-2 col-sm-3">
+                            <div class="form-group has-warning">
+                                <label class="control-label">Fecha Traslado *</label>
+                                <input type="text" name="traslado" class="form-control input-control" maxlength="10" placeholder="AAAA-MM-DD">
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-sm-3">
+                            <div class="form-group has-warning">
+                                <label class="control-label">Tiempo de Validez *</label>
+                                <input type="text" class="form-control input-control" maxlength="10" name="validez" placeholder="AAAA-MM-DD">
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-4">
+                            <div class="form-group has-warning">
+                                <label class="control-label">Moneda *</label>
+                                <select name="moneda" id="moneda" class="form-control input-sm">
+                                    {% for x in currency %}
+                                        <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
+                                    {% empty %}
+                                        <option value=""> -- Nothing --</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-5 col-sm-5">
+                            <div class="form-group has-warning">
+                                <label class="control-label">Contacto</label>
+                                <input type="text" class="form-control input-control" name="contact" placeholder="Ingrese su Nombre">
+                            </div>
+                        </div>
+                        <div class="col-md-7 col-sm-8">
+                            <div class="form-group has-warning">
+                                <label class="control-label">Observaciones</label>
+                                <textarea name="obser" id="obser" class="form-control" rows="5"></textarea>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </article>
@@ -114,13 +191,13 @@ Quote Details
                                     <td>{{ x.materiales.matnom }} - {{ x.materiales.matmed }}</td>
                                     <td>{{ x.materiales.unidad.uninom }}</td>
                                     <td>{{ x.cantidad|safe }}</td>
-                                    <td><input type="number" name="prices" class="form-control input-sm" value="{{ x.precio }}" min="0" max="9999999" data-mat="{{ x.materiales_id }}">
+                                    <td><input type="number" name="prices" class="form-control input-sm" value="{{ x.precio|safe }}" min="0" max="9999999" data-mat="{{ x.materiales_id }}">
                                     <td><input type="number" name="desct" class="form-control input-sm text-right" min="0" max="100" value="{{ x.discount }}" data-mat="{{ x.materiales_id }}"></td>
                                     <td class="text-right">{{ x.amount|safe }}</td>
-                                    <td><input type="text" name="brands" class="form-control input-sm"></td>
-                                    <td><input type="text" name="models" class="form-control input-sm"></td>
-                                    <td><input type="text" placeholder="aaaa-mm-dd" maxlength="10" name="dates" class="form-control input-sm"></td>
-                                    <td class="text-center"><button class="btn btn-xs btn-link text-black" value="{{ x.materiales_id }}"><span class="glyphicon glyphicon-cloud-upload"></span></button></td>
+                                    <td><input type="text" data-mat="{{ x.materiales_id }}" value="{{ x.marca }}" name="brands" class="form-control input-sm"></td>
+                                    <td><input type="text" data-mat="{{ x.materiales_id }}" name="models" value="{{ x.modelo }}" class="form-control input-sm"></td>
+                                    <td><input type="text" data-mat="{{ x.materiales_id }}" placeholder="aaaa-mm-dd" maxlength="10" value="{{ x.entrega|date:"Y-m-d" }}" name="dates" class="form-control input-sm"></td>
+                                    <td class="text-center"><button class="btn btn-xs btn-link text-black btn-file" value="{{ x.materiales_id }}"><span class="glyphicon glyphicon-cloud-upload"></span></button></td>
                                 </tr>
                             {% empty %}
                                 <div class="alert alert-danger alert-block">
@@ -154,4 +231,7 @@ Quote Details
 <!-- block variable -->
 {% csrf_token %}
 <input type="hidden" value="{{ igv }}" name="igv">
+<input type="file" name="sheettech" class="hide" accept="application/pdf">
+<!-- <input type="hidden" name="quote" value="{{ quote.cotizacion_id }}">
+<input type="hidden" name="supplier" value="{{ request.session.ruc }}"> -->
 {% endblock content %}

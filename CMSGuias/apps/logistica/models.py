@@ -98,8 +98,8 @@ class DetCotizacion(models.Model):
     proveedor = models.ForeignKey(Proveedor, to_field='proveedor_id')
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     cantidad = models.FloatField()
-    precio = models.FloatField(null=True,blank=True, default=0)
-    discount = models.PositiveSmallIntegerField(null=True, blank=True, default=0)
+    precio = models.FloatField(blank=True, default=0)
+    discount = models.PositiveSmallIntegerField(blank=True, default=0)
     entrega = models.DateField(null=True, blank=True)
     marca = models.CharField(max_length=60, null=True, blank=True)
     modelo = models.CharField(max_length=60, null=True, blank=True)
@@ -115,7 +115,10 @@ class DetCotizacion(models.Model):
     def amount(self):
         if not self.precio:
             self.precio = 0
-        return (self.cantidad * self.precio)
+        if not self.discount:
+            self.discount = 0
+        precio = (self.precio - ((self.precio * self.discount) / 100))
+        return (self.cantidad * precio)
 
 
 class CotKeys(models.Model):

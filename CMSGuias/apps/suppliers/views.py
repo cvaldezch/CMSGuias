@@ -18,9 +18,9 @@ from django.views.generic import TemplateView, View, ListView
 from django.views.generic.edit import CreateView
 from django.core.urlresolvers import reverse_lazy
 
-from CMSGuias.apps.home.models import LoginProveedor, Configuracion
+from CMSGuias.apps.home.models import LoginProveedor, Configuracion, Moneda
 from CMSGuias.apps.logistica.models import Cotizacion, DetCotizacion, CotCliente, CotKeys, Compra, DetCompra
-from CMSGuias.apps.tools import globalVariable
+from CMSGuias.apps.tools import globalVariable, uploadFiles
 
 
 ### Class Bases Views generic
@@ -140,9 +140,10 @@ class ListDetailsQuote(JSONResponseMixin, TemplateView):
                             if context['quote'].status != 'PE':
                                 return HttpResponseRedirect(reverse_lazy('supplier_quote'))
                             else:
-                                context['details'] = DetCotizacion.objects.filter(cotizacion_id=kwargs['quote'], proveedor_id=kwargs['supplier'])
+                                context['details'] = DetCotizacion.objects.filter(cotizacion_id=kwargs['quote'], proveedor_id=kwargs['supplier']).order_by('materiales__matnom')
                                 obj = Configuracion.objects.filter(periodo=globalVariable.get_year)[:1]
                                 context['igv'] = obj[0].igv
+                                context['currency'] = Moneda.objects.filter(flag=True).order_by('moneda')
                         else:
                             return HttpResponseRedirect(reverse_lazy('supplier_quote'))
                     else:
@@ -152,6 +153,51 @@ class ListDetailsQuote(JSONResponseMixin, TemplateView):
                 return render_to_response(self.templeta_name, context, context_instance=RequestContext(request))
             except TemplateDoesNotExist, e:
                 raise Http404('Template not found')
+
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            context = dict()
+            try:
+                if 'blur' in request.POST:
+                    obj = DetCotizacion.objects.get(cotizacion_id=kwargs['quote'], proveedor_id=kwargs['supplier'], materiales_id=request.POST.get('materials'))
+                    if request.POST.get('blur') == 'price':
+                        obj.precio = request.POST.get('val')
+                        obj.save()
+                        context['quantity'] = obj.cantidad
+                        context['status'] = True
+                    elif request.POST.get('blur') == 'desct':
+                        obj.discount = request.POST.get('val')
+                        obj.save()
+                        context['quantity'] = obj.cantidad
+                        context['status'] = True
+                    elif request.POST.get('blur') == 'brands':
+                        obj.marca = request.POST.get('val')
+                        obj.save()
+                        context['status'] = True
+                    elif request.POST.get('blur') == 'models':
+                        obj.modelo = request.POST.get('val')
+                        obj.save()
+                        context['status'] = True
+                    elif request.POST.get('blur') == 'dates':
+                        obj.entrega = globalVariable.format_str_date(request.POST.get('val'))
+                        obj.save()
+                        context['status'] = True
+                if request.POST.get('type') == 'file':
+                    sheet = request.FILES['sheet']
+                    uri = '/storage/quotations/%s/%s/'%(kwargs['quote'], kwargs['supplier'])
+                    name = '%s%s.pdf'%(uri, request.POST.get('materials'))
+                    if uploadFiles.fileExists(name, True):
+                        uploadFiles.deleteFile(name, True)
+
+                    filename = uploadFiles.upload(uri, sheet, {'name':request.POST.get('materials')})
+                    if filename:
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
 
 class ListOrderPurchase(TemplateView):
     template_name = 'suppliers/listpurchase.html'
