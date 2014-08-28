@@ -9,6 +9,7 @@ $(document).ready ->
     calcTotals()
     $(".btn-show-bedside").on "click", showBedsideAfter
     $(".btn-cancel").on "click", showBedsideBefore
+    $(".btn-send").on "click", saveBedside
     tinymce.init
         selector: "textarea[name=obser]",
         theme: "modern",
@@ -143,13 +144,22 @@ showBedsideBefore = (event) ->
 
 saveBedside = (event) ->
     data = new Object()
-    data.traslado = $("input[name=traslado]").val().trim()
-    data.validez = $("input[name=validez]").val().trim()
-    data.moneda = $("select[name=moneda]").val().trim()
-    data.contacto =
-    data.obser = $("#obser_ifr").contents().find("body").html().trim()
+    data.traslado = $("input[name=traslado]").val()
+    data.validez = $("input[name=validez]").val()
+    data.moneda = $("select[name=moneda]").val()
+    data.contacto = $("input[name=contact]").val()
+    data.obser = $("#obser_ifr").contents().find("body").html()
     if data.traslado.length == 10 and data.traslado isnt "" and data.validez.length is 10 and data.validez isnt "" and data.moneda isnt ""
-        # ...
+        data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+        data.client = true
+        $.post "", data, (response) ->
+            if response.status
+                console.log(response)
+                $().toastmessage "showNoticeToast", "Se ha guardado y enviado la cotización."
+                setTimeout ->
+                    location.href = "/proveedor/quote/"
+                , 2600
+        return
     else
-        $().toastmessage ""
+        $().toastmessage "showWarningToast", "Existe un campo vacio o con formato incorrecto, revise y vuelva a intentarlo."
     return

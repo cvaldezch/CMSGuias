@@ -194,6 +194,21 @@ class ListDetailsQuote(JSONResponseMixin, TemplateView):
                         context['status'] = True
                     else:
                         context['status'] = False
+                if 'client' in request.POST:
+                    obj = CotCliente.objects.filter(proveedor_id=kwargs['supplier'], cotizacion_id=kwargs['quote'])
+                    if not obj:
+                        obj = CotCliente()
+                        obj.proveedor_id = kwargs['supplier']
+                        obj.cotizacion_id = kwargs['quote']
+                        obj.envio = globalVariable.format_str_date(request.POST.get('traslado'))
+                        obj.validez = globalVariable.format_str_date(request.POST.get('validez'))
+                        obj.contacto = request.POST.get('contacto')
+                        obj.moneda_id = request.POST.get('moneda')
+                        obj.obser = request.POST.get('obser')
+                        obj.status = 'SD'
+                        obj.flag = True
+                        obj.save()
+                        context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
