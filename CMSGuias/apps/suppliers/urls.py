@@ -12,4 +12,5 @@ urlpatterns = patterns('',
     url(r'^quote/$', ListQuote.as_view(), name='supplier_quote'),
     url(r'quote/details/(?P<quote>\w{10})/(?P<supplier>\w{11})/$', ListDetailsQuote.as_view(), name='supplier_quote_details'),
     url(r'^purchase/$', ListOrderPurchase.as_view(), name='supplier_purchase'),
+    url(r'^change/passwd/$', ChangePassword.as_view(), name='supplier_passwd'),
 )

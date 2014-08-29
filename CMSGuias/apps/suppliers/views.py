@@ -144,6 +144,13 @@ class ListDetailsQuote(JSONResponseMixin, TemplateView):
                                 obj = Configuracion.objects.filter(periodo=globalVariable.get_year)[:1]
                                 context['igv'] = obj[0].igv
                                 context['currency'] = Moneda.objects.filter(flag=True).order_by('moneda')
+                                cli = CotCliente.objects.filter(cotizacion_id=kwargs['quote'], proveedor_id=kwargs['supplier'])
+                                print cli
+                                if cli:
+                                    context['disabled'] = True
+                                else:
+                                    context['disabled'] = False
+                                print context['disabled']
                         else:
                             return HttpResponseRedirect(reverse_lazy('supplier_quote'))
                     else:
@@ -227,3 +234,13 @@ class ListOrderPurchase(TemplateView):
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404('Template no Found')
+
+class ChangePassword(TemplateView):
+    template_name = 'suppliers/changepasswd.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ChangePassword, self).get_context_data(**kwargs)
+        if not 'access' in request.session:
+            if not request.session.get('access'):
+                return HttpResponseRedirect(reverse_lazy('view_supplier_signup'))
+        return context

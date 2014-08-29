@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}
+Change Password
+{% endblock title %}
+{% block menu %}
+    {% include "menus/suppliers.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+    <div class="well">
+        <header>
+            <h3>Cambio de Password</h3>
+        </header>
+        <article>
+            <form method="POST" action="">
+                <p>
+                    <div class="form-group">
+                        <label class="control-label">Username</label>
+                        <strong>{{ request.session.usename }}</strong>
+                    </div>
+                </p>
+                 <p>
+                    <div class="form-group">
+                        <label class="control-label">Password</label>
+                        <input type="password" name="passwd" class="form-control">
+                    </div>
+                </p>
+                 <p>
+                    <div class="form-group">
+                        <label class="control-label">Confirmar</label>
+                        <input type="password" name="confirm" class="form-control">
+                    </div>
+                </p>
+            </form>
+        </article>
+    </div>
+</div>
+{% endblock content %}
