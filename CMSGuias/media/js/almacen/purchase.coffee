@@ -6,6 +6,10 @@ $(document).ready ->
 	$(document).on "click", ".btn-deposit", showDeposit
 	$(document).on "click", ".btn-action", showAction
 	$(".btn-ingress").on "click", showIngressInventory
+	$(document).on "blur", ".materials", validQuantityBlur
+	$(document).on "change", "input[name=mats]", changeCheck
+	$("[name=select]").on "change", changeSelect
+	$(".btn-generate-note").on "click", loadIngress
 	return
 
 changeSearch = ->
@@ -92,8 +96,67 @@ showAction = ->
 	return
 
 showIngressInventory = (event) ->
-	$(".purchase").html @value
-	$(".maction").modal "hide"
-	$(".step-first").fadeOut 200
-	$(".step-second").fadeIn 600
+	$.getJSON "", "purchase" : @value, (response) ->
+		if response.status
+			$(".supplier").html response.head.supplier
+			$(".quote").html response.head.quote
+			$(".place").html response.head.place
+			$(".document").html response.head.document
+			$(".payment").html response.head.payment
+			$(".currency").html response.head.currency
+			$(".register").html response.head.register
+			$(".transfer").html response.head.transfer
+			$(".contact").html response.head.contact
+			$(".performed").html response.head.performed
+			# $(".deposit").append "<a target=\"_blank\" class=\"btn btn-warning btn-xs text-black\" href=\"/media/#{response.head.deposit}\"><span class=\"glyphicon glyphicon-cloud-download\"></span></a>"
+			template = "<tr><td><input type=\"checkbox\" name=\"mats\" value=\"{{ materials }}\"></td><td>{{ item }}</td><td>{{ materials }}</td><td>{{ name }}</td><td>{{ measure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td><input type=\"number\" class=\"form-control input-sm materials\" name=\"{{ materials }}\" value=\"{{ quantity }}\" min=\"1\" max=\"{{ quantity }}\" disabled></td></tr>"
+			$tb = $("table.table-ingress > tbody")
+			$tb.empty()
+			for x of response.details
+				response.details[x].item = parseInt(x) + 1
+				$tb.append Mustache.render template, response.details[x]
+
+			$(".purchase").html @value
+			$(".maction").modal "hide"
+			$(".step-first").fadeOut 200
+			$(".step-second").fadeIn 600
+			return
+	return
+
+validQuantityBlur = (event) ->
+	min = parseFloat(@getAttribute("min").replace ",",".")
+	max = parseFloat(@getAttribute("max").replace ",",".")
+	val = parseFloat(@value.replace ",",".")
+	if val < min or val > max
+		if val < min
+			@value = min
+		else if val > max
+			@value = max
+	return
+
+changeCheck = (event) ->
+	$mat = $("input[name=#{@value}]")
+	if @checked
+		$mat.attr "disabled", false
+	else
+		$mat.attr "disabled", true
+	return
+
+changeSelect = (event) ->
+	if @checked
+		chek = Boolean(parseInt @value)
+		$("input[name=mats]").each (index, element) ->
+			element.checked = chek
+			$(element).change()
+			return
+	return
+
+loadIngress = (event) ->
+	data = new Object()
+	ar =  new Array()
+	$("input[name=mats]").each (index, element) ->
+		if element.checked
+			ar.push {"materials": element.value, "quantity": $("input[name=#{element.value}]").val()}
+			return
+	console.log data.list = ar
 	return

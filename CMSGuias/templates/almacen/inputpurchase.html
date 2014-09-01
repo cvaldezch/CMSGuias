@@ -21,7 +21,7 @@ Input Order Purchase
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
-								Buscar por: 
+								Buscar por:
 								<label class="inline-radio">
 									<input type="radio" name="search" value="code">
 									Nro de Compra
@@ -111,37 +111,67 @@ Input Order Purchase
 					<div class="col-md-6">
 						<dl class="dl-horizontal">
 							<dt>Proveedor :</dt>
-							<dd></dd>
+							<dd class="supplier"></dd>
 							<dt>Cotización :</dt>
-							<dd></dd>
+							<dd class="quote"></dd>
 							<dt>Entrega :</dt>
-							<dd></dd>
+							<dd class="place"></dd>
 							<dt>Documento :</dt>
-							<dd></dd>
+							<dd class="document"></dd>
 							<dt>Pago :</dt>
-							<dd></dd>
+							<dd class="payment"></dd>
 						</dl>
 					</div>
 					<div class="col-md-6">
-						
 						<dl class="dl-horizontal">
 							<dt>Moneda :</dt>
-							<dd></dd>
+							<dd class="currency"></dd>
 							<dt>Registrado :</dt>
-							<dd></dd>
+							<dd class="register"></dd>
 							<dt>Traslado :</dt>
-							<dd></dd>
+							<dd class="transfer"></dd>
 							<dt>Contacto :</dt>
-							<dd></dd>
+							<dd class="contact"></dd>
 							<dt>Realizado :</dt>
-							<dd></dd>
+							<dd class="performed"></dd>
 							<dt>Deposito :</dt>
-							<dd></dd>
+							<dd class="deposit"></dd>
 						</dl>
-
 					</div>
 				</div>
 			</article>
+			<div class="panel panel-primary">
+				<div class="table-responsive">
+					<table class="table table-hover table-condensed table-ingress">
+						<caption>
+							<div class="form-group pull-left">
+								Seleccionar :
+								<label class="radio-inline"><input name="select" type="radio" value="1"> Todo</label>
+								<label class="radio-inline"><input name="select" type="radio" value="0"> Ninguno.</label>
+							</div>
+							<div class="form-group pull-right">
+								<button class="btn btn-primary btn-generate-note">
+									<span class="glyphicon glyphicon-floppy-save"></span>
+									Generar Nota de Ingreso
+								</button>
+							</div>
+						</caption>
+						<thead>
+							<tr class="brand-primary text-white">
+								<th class="text-center"></th>
+								<th class="text-center">Item</th>
+								<th class="text-center">Código</th>
+								<th class="text-center">Descripción</th>
+								<th class="text-center">Medida</th>
+								<th class="text-center">Unidad</th>
+								<th class="text-center">Cantidad</th>
+								<th class="text-center">Ingreso</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
 		</section>
 	</div>
 </div>

@@ -54,7 +54,7 @@ class DetCompra(models.Model):
     precio = models.FloatField()
     discount = models.PositiveSmallIntegerField(default=0)
     cantstatic = models.FloatField()
-    flag = models.BooleanField(default=True)
+    flag = models.CharField(max_length=1, default='0')
 
     class Meta:
         ordering = ['materiales']
