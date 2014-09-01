@@ -11,7 +11,7 @@ Input Order Purchase
 {% endblock menu %}
 {% block content %}
 <div class="container">
-	<div class="well">
+	<div class="well step-first">
 		<header>
 			<h3>Lista de Ordenes de Compra</h3>
 		</header>
@@ -67,7 +67,7 @@ Input Order Purchase
 				<div class="table-responsive">
 					<table class="table table-hover table-condensed">
 						<thead>
-							<th>Item</th><th>Nro Compra</th><th>Proveedor</th><th>Documento</th><th>Traslado</th><th>Deposito</th><th>Acción</th>
+							<th class="text-center">Item</th><th class="text-center">Nro Compra</th><th class="text-center">Proveedor</th><th class="text-center">Documento</th><th class="text-center">Traslado</th><th class="text-center">Deposito</th><th class="text-center">Ver</th><th class="text-center">Acción</th>
 						</thead>
 						<tbody>
 							{% for x in purchase %}
@@ -77,10 +77,13 @@ Input Order Purchase
 									<td>{{ x.proveedor.razonsocial }}</td>
 									<td>{{ x.documento.documento }}</td>
 									<td>{{ x.traslado }}</td>
-									<td>
+									<td class="text-center">
 										<button value="{{ x.compra_id }}" data-ruc="{{ x.proveedor_id }}" class="btn btn-link btn-xs text-black btn-deposit"><span class="glyphicon glyphicon-credit-card"></span></button>
 									</td>
-									<td>
+									<td class="text-center">
+										<a href="{% url 'rpt_purchase' x.compra_id %}" target="_blank" class="btn btn-xs btn-link text-black"><span class="glyphicon glyphicon-eye-open"></span></a>
+									</td>
+									<td class="text-center">
 										<button value="{{ x.compra_id }}" class="btn btn-link btn-xs text-black btn-action"><span class="glyphicon glyphicon-inbox"></span></button>
 									</td>
 								</tr>
@@ -98,22 +101,66 @@ Input Order Purchase
 			</div>
 		</section>
 	</div>
+	<div class="well step-second">
+		<header>
+			<h3>Ingreso de Orden de Compra <span class="purchase"></span></h3>
+		</header>
+		<section>
+			<article>
+				<div class="row">
+					<div class="col-md-6">
+						<dl class="dl-horizontal">
+							<dt>Proveedor :</dt>
+							<dd></dd>
+							<dt>Cotización :</dt>
+							<dd></dd>
+							<dt>Entrega :</dt>
+							<dd></dd>
+							<dt>Documento :</dt>
+							<dd></dd>
+							<dt>Pago :</dt>
+							<dd></dd>
+						</dl>
+					</div>
+					<div class="col-md-6">
+						
+						<dl class="dl-horizontal">
+							<dt>Moneda :</dt>
+							<dd></dd>
+							<dt>Registrado :</dt>
+							<dd></dd>
+							<dt>Traslado :</dt>
+							<dd></dd>
+							<dt>Contacto :</dt>
+							<dd></dd>
+							<dt>Realizado :</dt>
+							<dd></dd>
+							<dt>Deposito :</dt>
+							<dd></dd>
+						</dl>
+
+					</div>
+				</div>
+			</article>
+		</section>
+	</div>
 </div>
 <!-- block modal -->
 <div class="modal fade maction" data-backdrop="static">
 	<div class="modal-dialog modal-sm">
 		<div class="modal-content">
 			<div class="modal-header">
+				<a data-dismiss="modal" class="close">&times;</a>
 				<h4 class="title-modal">
 					Que desea hacer con la orden de compra?
 				</h4>
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
-					<button class="btn btn-block btn-primary">
+					<button class="btn btn-block btn-primary btn-ingress">
 						<span class="glyphicon glyphicon-inbox"></span> Ingresar al Inventario
 					</button>
-					<button class="btn btn-block btn-primary">
+					<button class="btn btn-block btn-primary btn-credit">
 						<span class="glyphicon glyphicon-credit-card"></span>
 						Nota de Credito
 					</button>

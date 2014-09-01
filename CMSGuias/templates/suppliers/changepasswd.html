@@ -2,6 +2,9 @@
 {% block title %}
 Change Password
 {% endblock title %}
+{% block script %}
+<script src="{{ MEDIA_URL }}js/suppliers/changepasswd.js"></script>
+{% endblock script %}
 {% block menu %}
     {% include "menus/suppliers.htm" %}
 {% endblock menu %}
@@ -9,30 +12,65 @@ Change Password
 <div class="container">
     <div class="well">
         <header>
-            <h3>Cambio de Password</h3>
+            <h4>
+                Cambio de Password
+                <br>
+                <small>Las contraseñas no se almacenan en bruto, así que no hay manera de ver la contraseña del usuario, pero se puede cambiar la contraseña mediante este formulario.</small>
+            </h4>
         </header>
         <article>
             <form method="POST" action="">
-                <p>
-                    <div class="form-group">
-                        <label class="control-label">Username</label>
-                        <strong>{{ request.session.usename }}</strong>
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Username</label>
+                            <div>{{ request.session.username }}</div>
+                        </div>
                     </div>
-                </p>
-                 <p>
-                    <div class="form-group">
-                        <label class="control-label">Password</label>
-                        <input type="password" name="passwd" class="form-control">
+                    <div class="col-md-4 col-md-offset-8"></div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Password</label>
+                            <input type="password" name="passwd" class="form-control">
+                        </div>
                     </div>
-                </p>
-                 <p>
-                    <div class="form-group">
-                        <label class="control-label">Confirmar</label>
-                        <input type="password" name="confirm" class="form-control">
+                    <div class="col-md-4 col-md-offset-8"></div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Confirmar</label>
+                            <div class="input-group">
+                                <input type="password" name="confirm" class="form-control" required>
+                                <span class="input-group-addon confirm">
+                                    <span class="glyphicon"></span>
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                </p>
+                    <div class="col-md-4 col-md-offset-8"></div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <button type="reset" class="btn btn-default"><span class="glyphicon glyphicon-trash"></span> Descartar</button>
+                            <button type="submit" class="btn btn-primary" disabled="disabled"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Cambios</button>
+                        </div>
+                    </div>
+                </div>
             </form>
         </article>
+        {% if msg %}
+            <aside>
+                <div class="alert alert-block alert-{{ alert }}">
+                    <strong>
+                        {% if alert == 'success' %}
+                            Felicidades, 
+                        {% else %}
+                            Alerta,
+                        {% endif %}
+                    </strong>
+                    <p>{{ msg }}</p>
+                </div>
+            </aside>
+        {% endif %}
     </div>
 </div>
 {% endblock content %}

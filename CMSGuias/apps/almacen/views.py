@@ -22,7 +22,7 @@ from CMSGuias.apps.home.models import Cliente, Almacene, Transportista, Conducto
 from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
 from CMSGuias.apps.almacen import forms
 from CMSGuias.apps.tools import genkeys, globalVariable
-from CMSGuias.apps.logistica.models import Compra
+from CMSGuias.apps.logistica.models import Compra, DetCompra
 
 
 ##
@@ -1198,6 +1198,10 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                             elif 'end' in request.GET and 'start' in request.GET:
                                 context['list'] = [{'purchase' : x.compra_id, 'reason' : x.proveedor.razonsocial, 'supplier': x.proveedor_id, 'document' : x.documento.documento, 'transfer' : globalVariable.format_date_str(x.traslado)} for x in Compra.objects.filter(registrado__range=(globalVariable.format_str_date(request.GET.get('start')), globalVariable.format_str_date(request.GET.get('end'))))]
                                 context['status'] = True
+                    if 'purchase' in request.POST:
+                        buy = Compra.objects.get(pk=request.POST.get('purchase'))
+                        context['head'] = {'supplier':buy.proveedor_id, 'quote':buy.cotizacion_id,'lugar':buy.lugent}
+                        context['details'] = [{'materiales':x.materiales_id, 'name':x.materiales.matnom, 'measure':x.materiales.matmed, 'unit':x.materiales.unidad.uninom, 'quantity':x.cantidad,'static':x.cantstatic, 'price':x.precio, 'discount':x.discount} for x in DetCompra.objects.filter(compra_id=request.POST.get('purchase')).order_by('materiales__matnom')]
                 except ObjectDoesNotExist, e:
                     context['raise'] = e.__str__()
                     context['status'] = False

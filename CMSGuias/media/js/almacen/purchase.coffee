@@ -1,9 +1,11 @@
 $(document).ready ->
+	$(".step-second").hide()
 	$("input[name=start], input[name=end]").datepicker "showAnim" : "slide", "dateFormat" : "yy-mm-dd"
 	$("input[name=search]").on "change", changeSearch
 	$(".btn-search").on "click", searchPurchase
 	$(document).on "click", ".btn-deposit", showDeposit
 	$(document).on "click", ".btn-action", showAction
+	$(".btn-ingress").on "click", showIngressInventory
 	return
 
 changeSearch = ->
@@ -63,10 +65,13 @@ listTemplate = (list)->
 						<td>{{ reason }}</td>
 						<td>{{ document }}</td>
 						<td>{{ transfer }}</td>
-						<td>
+						<td class=\"text-center\">
 							<button value=\"{{ purchase }}\" data-ruc=\"{{ x.supplier }}\" class=\"btn btn-link btn-xs text-black btn-deposit\"><span class=\"glyphicon glyphicon-credit-card\"></span></button>
 						</td>
-						<td>
+						<td class=\"text-center\">
+							<a href=\"/reports/order/purchase/{{ purchase }}/\" target=\"_blank\" class=\"btn btn-xs btn-link text-black\"><span class=\"glyphicon glyphicon-eye-open\"></span></a>
+						</td>
+						<td class=\"text-center\">
 							<button value=\"{{ purchase }}\" data-ruc=\"{{ x.supplier }}\" class=\"btn btn-link btn-xs text-black btn-action\"><span class=\"glyphicon glyphicon-inbox\"></span></button>
 						</td>
 					</tr>"
@@ -83,5 +88,12 @@ showDeposit = ->
 	return
 
 showAction = ->
-	$(".maction").modal("toggle")
+	$(".maction").modal("show").find("button").val @value
+	return
+
+showIngressInventory = (event) ->
+	$(".purchase").html @value
+	$(".maction").modal "hide"
+	$(".step-first").fadeOut 200
+	$(".step-second").fadeIn 600
 	return

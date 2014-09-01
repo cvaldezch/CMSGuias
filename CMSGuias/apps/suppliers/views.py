@@ -65,7 +65,7 @@ class SignUpSupplier(TemplateView):
                             request.session['reason'] = obj.supplier.razonsocial
                             return HttpResponseRedirect(reverse_lazy('supplier_home'))
                         except ObjectDoesNotExist, e:
-                            context['msg'] = e.__str__()
+                            context['msg'] = 'El usuario o contraseña son incorrectos. Vuelva a intentarlo.'
                     else:
                         context['msg'] = 'El password es incorrecto.'
                 else:
@@ -240,7 +240,31 @@ class ChangePassword(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ChangePassword, self).get_context_data(**kwargs)
-        if not 'access' in request.session:
-            if not request.session.get('access'):
+        if not 'access' in self.request.session:
+            if not self.request.session.get('access'):
                 return HttpResponseRedirect(reverse_lazy('view_supplier_signup'))
         return context
+
+    def post(self, request, *args, **kwargs):
+        context =dict()
+        try:
+            if 'confirm' in request.POST:
+                if request.POST.get('passwd').strip() == request.POST.get('confirm').strip():
+                    try:
+                        obj = LoginProveedor.objects.get(supplier_id=request.session.get('ruc'))
+                        passwd = request.POST.get('confirm')
+                        passwd = hashlib.sha256(b'%s'%passwd)
+                        passwd = passwd.hexdigest()
+                        obj.password = passwd
+                        obj.save()
+                        context['msg'] = 'se ha cambiado la contraseña correctamente.'
+                        context['alert'] = 'success'
+                    except ObjectDoesNotExist, e:
+                        context['msg'] = 'El usuario no existe, comuniquese para proceder con el registro.'
+                        context['alert'] = 'warning'
+                else:
+                    context['msg'] = 'La contraseña ingresada no coinciden.'
+                    context['alert'] = 'warning'
+            return render_to_response(self.template_name, context,context_instance=RequestContext(request))
+        except TemplateDoesNotExist, e:
+            raise Http404
