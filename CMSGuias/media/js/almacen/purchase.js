@@ -165,16 +165,20 @@ changeSelect = function(event) {
 };
 
 loadIngress = function(event) {
-  var ar, data;
+  var arr, data;
   data = new Object();
-  ar = new Array();
+  arr = new Array();
   $("input[name=mats]").each(function(index, element) {
     if (element.checked) {
-      ar.push({
+      arr.push({
         "materials": element.value,
         "quantity": $("input[name=" + element.value + "]").val()
       });
     }
   });
-  console.log(data.list = ar);
+  if (arr.length) {
+    console.log(data.list = arr);
+  } else {
+    $().toastmessage("showWarningToast", "Seleccione por lo menos un material para hacer el ingreso a almacén.");
+  }
 };

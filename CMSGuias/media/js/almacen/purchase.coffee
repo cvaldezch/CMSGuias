@@ -153,10 +153,13 @@ changeSelect = (event) ->
 
 loadIngress = (event) ->
 	data = new Object()
-	ar =  new Array()
+	arr = new Array()
 	$("input[name=mats]").each (index, element) ->
 		if element.checked
-			ar.push {"materials": element.value, "quantity": $("input[name=#{element.value}]").val()}
+			arr.push {"materials": element.value, "quantity": $("input[name=#{element.value}]").val()}
 			return
-	console.log data.list = ar
+	if arr.length
+		console.log data.list = arr
+	else
+		$().toastmessage "showWarningToast", "Seleccione por lo menos un material para hacer el ingreso a almacén."
 	return
