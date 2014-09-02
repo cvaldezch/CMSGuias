@@ -2,6 +2,7 @@ from django.db import connection, models, transaction
 
 from CMSGuias.apps.ventas.models import Proyecto, Subproyecto, Sectore
 from CMSGuias.apps.home.models import Materiale, Almacene, Transportista, Transporte, Conductore, Cliente, Brand, Model, Employee
+from CMSGuias.apps.logistica.models import Cotizacion, Compra
 
 
 class Pedido(models.Model):
@@ -236,3 +237,38 @@ class InventoryBrand(models.Model):
 
     def __unicode__(self):
         return '%s %s %s %f'%(self.materials,self.period,self.brand,self.stock)
+
+class NoteIngress(models.Model):
+    ingress_id = models.CharField(primary_key=True, max_length=10)
+    storage = models.ForeignKey(Almacene, to_field='almacen_id')
+    purchase = models.ForeignKey(Compra, to_field='compra_id')
+    guide = models.CharField(max_length=12, null=True, blank=True)
+    invoice = models.CharField(max_length=12, null=True, blank=True)
+    register = models.DateTimeField(auto_now=True)
+    receive = models.ForeignKey(Employee, related_name='receiveAsEmployee')
+    inspection = models.ForeignKey(Employee, related_name='inspectionAsEmployee')
+    approval = models.ForeignKey(Employee, related_name='approvalAsEmployee')
+    observation = models.TextField()
+    status = models.CharField(max_length=2, default='IN')
+    flag = models.BooleanField(default=True)
+
+class DetIngress(models.Model):
+    ingress = models.ForeignKey(NoteIngress, to_field='ingress_id')
+    materials = models.ForeignKey(Materiale, to_field='materiales_id')
+    quantity = models.FloatField()
+    brand = models.ForeignKey(Brand, to_field='brand_id')
+    model = models.ForeignKey(Model, to_field='model_id')
+    report = models.CharField(max_length=1, default='0')
+    flag = models.BooleanField(default=True)
+
+class ReportInspect(models.Model):
+    inspect = models.CharField(primary_key=True, max_length=10)
+    ingress = models.ForeignKey(NoteIngress, to_field='ingress_id')
+    transport = models.CharField(max_length=60)
+    arrival = models.DateField()
+    instorage = models.DateField()
+    register = models.DateTimeField(auto_now=True)
+    boarding = models.CharField(max_length=10)
+    description = models.TextField()
+    observation = models.TextField()
+    empdni = models.ForeignKey(Employee, to_field='empdni_id')

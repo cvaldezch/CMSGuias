@@ -1212,3 +1212,12 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404('Template not found')
+
+
+
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            pass
+        except Exception, e:
+            raise e
