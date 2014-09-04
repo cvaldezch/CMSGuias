@@ -1,6 +1,6 @@
 from django.db import models
 
-from CMSGuias.apps.home.models import Almacene, Documentos, FormaPago, Materiale, Moneda, Proveedor, Employee
+from CMSGuias.apps.home.models import Almacene, Documentos, FormaPago, Materiale, Moneda, Proveedor, Employee, Brand, Model
 from CMSGuias.apps.tools import globalVariable
 #from CMSGuias.apps.almacen.models import Suministro
 
@@ -50,6 +50,8 @@ class Compra(models.Model):
 class DetCompra(models.Model):
     compra = models.ForeignKey(Compra, to_field='compra_id')
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
+    brand = models.ForeignKey(Brand, to_field='brand_id',default='BR000', blank=True)
+    model = models.ForeignKey(Model, to_field='model_id', default='MO000', blank=True)
     cantidad = models.FloatField()
     precio = models.FloatField()
     discount = models.PositiveSmallIntegerField(default=0)
@@ -65,6 +67,8 @@ class DetCompra(models.Model):
 class tmpcompra(models.Model):
     empdni = models.CharField(max_length=8, null=False)
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
+    brand = models.ForeignKey(Brand, to_field='brand_id', blank=True, default='BR000')
+    model = models.ForeignKey(Model, to_field='model_id', blank=True, default='MO000')
     cantidad = models.FloatField(null=False)
     discount = models.PositiveSmallIntegerField(default=0)
     precio = models.FloatField(null=False, default=0)

@@ -1,5 +1,5 @@
 $(document).ready ->
-	$(".step-second").hide()
+	$(".step-second,.step-tree").hide()
 	$("input[name=start], input[name=end]").datepicker "showAnim" : "slide", "dateFormat" : "yy-mm-dd"
 	$("input[name=search]").on "change", changeSearch
 	$(".btn-search").on "click", searchPurchase
@@ -152,14 +152,49 @@ changeSelect = (event) ->
 	return
 
 loadIngress = (event) ->
-	data = new Object()
 	arr = new Array()
 	$("input[name=mats]").each (index, element) ->
 		if element.checked
 			arr.push {"materials": element.value, "quantity": $("input[name=#{element.value}]").val()}
 			return
 	if arr.length
-		console.log data.list = arr
+		$(".mingress").modal "toggle"
 	else
 		$().toastmessage "showWarningToast", "Seleccione por lo menos un material para hacer el ingreso a almacén."
+	return
+
+saveNoteIngress = (response) ->
+	data = new Object()
+	mats = new Array()
+	$("input[name=mats]").each (index, element) ->
+		if element.checked
+			mats.push {"materials": element.value, "quantity": $("input[name=#{element.value}]").val()}
+			return
+	data.details = mats
+	pass = false
+	$(".mingress > div > div.modal-body > div.row").find("input, select").each (index, element) ->
+		if element.name isnt "guide"
+			if $.trim element.value isnt ""
+				data[element.name] = $.trim element.value
+				pass = true
+			else
+				$().toastmessage "showWarningToast", "Campo vacio, #{element.name}"
+				pass = false
+				return pass
+	if pass
+		$().toastmessage "showToast",
+			text : "Desea generar una <q>Nota de Ingreso</q> con los materiales seleccionados?"
+			sticky : true
+			type : "confirm"
+			buttons : [{value:"Si"},{value:"No"}]
+			success : (result) ->
+				if result is "Si"
+					data.ingress = true
+					$.post "", data, (response) ->
+						if response.status
+							$(".step-second").fadeOut 200
+							$(".step-tree").fadeIn 600
+							$().html response.ingress
+						else
+							$().toastmessage "showWarningToast", "No se a podido generar la Nota de Ingreso."
 	return

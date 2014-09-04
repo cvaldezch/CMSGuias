@@ -244,6 +244,7 @@ class NoteIngress(models.Model):
     purchase = models.ForeignKey(Compra, to_field='compra_id')
     guide = models.CharField(max_length=12, null=True, blank=True)
     invoice = models.CharField(max_length=12, null=True, blank=True)
+    motive = models.CharField(max_length=60, blank=True)
     register = models.DateTimeField(auto_now=True)
     receive = models.ForeignKey(Employee, related_name='receiveAsEmployee')
     inspection = models.ForeignKey(Employee, related_name='inspectionAsEmployee')

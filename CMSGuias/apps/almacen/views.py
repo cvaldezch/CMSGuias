@@ -1216,8 +1216,26 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
 
 
     def post(self, request, *args, **kwargs):
-        context = dict()
-        try:
-            pass
-        except Exception, e:
-            raise e
+        if request.is_ajax():
+            context = dict()
+            try:
+                if 'ingress' == request.POST:
+                    form = forms.addNoteIngress(request.POST)
+                    if form.is_valid():
+                        add = form.save(commit=False)
+                        ingress = ''
+                        add.ingress_id = ingress
+                        add.save() # save to bedside Note Ingress
+                        # save details Note Ingress
+                        details = json.loads(respost.POST.get('details'))
+                        for x in details:
+                            # details Note Ingress
+                            det = models.DetIngress()
+                            # det.
+                            inv = models.Inventario()
+                            #
+                            wbm = models.InventoryBrand()
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)

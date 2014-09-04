@@ -10,15 +10,15 @@ class addCustomersForm(forms.ModelForm ):
 		model   = Cliente
 		exclude = {'flag',}
 		widgets = {
-							'ruccliente_id': forms.TextInput(attrs ={'class': 'form-control'}),
-							'razonsocial': forms.TextInput(attrs   ={'class': 'form-control'}),
-							'pais': forms.Select(attrs             ={'class': 'form-control'}),
-							'departamento': forms.Select(attrs     ={'class': 'form-control'}),
-							'provincia': forms.Select(attrs        ={'class': 'form-control'}),
-							'distrito': forms.Select(attrs         ={'class': 'form-control'}),
-							'direccion': forms.Textarea(attrs      ={'class': 'form-control', 'maxlength': '200', 'rows': '4'}),
-							'telefono': forms.TextInput(attrs      ={'type':'tel','placeholder':'000-000-000','class': 'form-control'}),
-							}
+					'ruccliente_id': forms.TextInput(attrs ={'class': 'form-control'}),
+					'razonsocial': forms.TextInput(attrs   ={'class': 'form-control'}),
+					'pais': forms.Select(attrs             ={'class': 'form-control'}),
+					'departamento': forms.Select(attrs     ={'class': 'form-control'}),
+					'provincia': forms.Select(attrs        ={'class': 'form-control'}),
+					'distrito': forms.Select(attrs         ={'class': 'form-control'}),
+					'direccion': forms.Textarea(attrs      ={'class': 'form-control', 'maxlength': '200', 'rows': '4'}),
+					'telefono': forms.TextInput(attrs      ={'type':'tel','placeholder':'000-000-000','class': 'form-control'}),
+					}
 # Projects
 class addProjectForm(forms.ModelForm):
 	class Meta:
@@ -117,3 +117,9 @@ class addGuideReferral(forms.ModelForm):
     class Meta:
         model= models.GuiaRemision
         exclude= { 'guia_id','registrado','status','flag', }
+
+# Note Ingress
+class addNoteIngress(forms.ModelForm):
+	class Meta:
+		model = models.NoteIngress
+		exclude = {'ingress_id', 'status', 'flag',}

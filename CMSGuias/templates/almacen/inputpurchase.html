@@ -174,6 +174,7 @@ Input Order Purchase
 			</div>
 		</section>
 	</div>
+	<div class="well step-tree"></div>
 </div>
 <!-- block modal -->
 <div class="modal fade maction" data-backdrop="static">
@@ -199,77 +200,76 @@ Input Order Purchase
 		</div>
 	</div>
 </div>
-<div class="modal fade mcredit">
+<div class="modal fade mingress" data-backdrop="static">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title">
+				<a data-dismiss="modal" class="close">&times;</a>
+				<h4 class="modal-title text-primary">
 					Nota de Ingreso Almacén
 				</h4>
 			</div>
 			<div class="modal-body">
 				<div class="row">
-					<div class="col-md-3">
-						<div class="form-group">
+					<div class="col-md-4">
+						<div class="form-group has-primary">
 							<label class="control-label ">Almacén</label>
-							<select name="almacen" id="almacen" class="form-control"></select>
+							<select name="storage" id="storage" class="form-control"></select>
 						</div>
 					</div>
 					<div class="col-md-2">
-						<div class="form-group">
+						<div class="form-group has-primary">
 							<label class="control-label ">Nro Compra</label>
-							<input type="text" maxlength="10" name="compra" class="form-control">
-						</div>
-					</div>
-					<div class="col-md-2">
-						<div class="form-group">
-							<label class="control-label ">Guias Remision</label>
-							<input type="text" maxlength="12"  class="form-control">
-						</div>
-					</div>
-					<div class="col-md-2">
-						<div class="form-group">
-							<label class="control-label ">Guias Remision</label>
-							<input type="text" maxlength="12"  class="form-control">
-						</div>
-					</div>
-					<div class="col-md-2">
-						<div class="form-group">
-							<label class="control-label ">Nro Factura</label>
-							<input type="text" maxlength="12"  class="form-control">
+							<input type="text" maxlength="10" name="purchase" class="form-control">
 						</div>
 					</div>
 					<div class="col-md-3">
-						<div class="form-group">
-							<label class="control-label ">Motivo de Ingreso</label>
-							<input type="text"  class="form-control">
+						<div class="form-group has-primary">
+							<label class="control-label ">Guias Remision</label>
+							<input type="text" name="guide" maxlength="12"  class="form-control">
 						</div>
 					</div>
-					<div class="col-md-2">
-						<div class="form-group">
+					<div class="col-md-3">
+						<div class="form-group has-primary">
+							<label class="control-label ">Nro Factura</label>
+							<input type="text" name="invoice" maxlength="12"  class="form-control">
+						</div>
+					</div>
+					<div class="col-md-5">
+						<div class="form-group has-primary">
+							<label class="control-label ">Motivo de Ingreso</label>
+							<input type="text" name="motive" class="form-control">
+						</div>
+					</div>
+					<div class="col-md-7">
+						<div class="form-group has-primary">
 							<label class="control-label ">Observación</label>
 							<textarea name="observation" id="observation" class="form-control"></textarea>
 						</div>
 					</div>
-					<div class="col-md-3">
-						<div class="form-group">
+					<div class="col-md-4">
+						<div class="form-group has-primary">
 							<label class="control-label ">Recibido por</label>
 							<select name="receive" id="receive" class="form-control"></select>
 						</div>
 					</div>
-					<div class="col-md-3">
-						<div class="form-group">
+					<div class="col-md-4">
+						<div class="form-group has-primary">
 							<label class="control-label ">Inspeccionado por</label>
 							<select name="inspect" id="inspect" class="form-control"></select>
 						</div>
 					</div>
-					<div class="col-md-3">
-						<div class="form-group">
+					<div class="col-md-4">
+						<div class="form-group has-primary">
 							<label class="control-label ">Vista Bueno por</label>
 							<select name="approval" id="approval" class="form-control"></select>
 						</div>
 					</div>
 				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-default pull-left"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+				<button class="btn btn-primary"><span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios</button>
 			</div>
 		</div>
 	</div>
