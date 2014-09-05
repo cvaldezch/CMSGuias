@@ -258,7 +258,7 @@ Input Order Purchase
 							<label class="control-label ">Recibido por</label>
 							<select name="receive" id="receive" class="form-control">
 							{% for x in employee %}
-								<option value="{{ x.empdni }}">{{ x.firtsname }}{{ x.lastname }}</option>
+								<option value="{{ x.empdni_id }}">{{ x.firtsname }}{{ x.lastname }}</option>
 							{% empty %}
 								<option value="">-- Nothing --</option>
 							{% endfor %}
@@ -268,9 +268,9 @@ Input Order Purchase
 					<div class="col-md-4">
 						<div class="form-group has-primary">
 							<label class="control-label ">Inspeccionado por</label>
-							<select name="inspect" id="inspect" class="form-control">
+							<select name="inspection" id="inspection" class="form-control">
 							{% for x in employee %}
-								<option value="{{ x.empdni }}">{{ x.firtsname }}{{ x.lastname }}</option>
+								<option value="{{ x.empdni_id }}">{{ x.firtsname }}{{ x.lastname }}</option>
 							{% empty %}
 								<option value="">-- Nothing --</option>
 							{% endfor %}
@@ -282,7 +282,7 @@ Input Order Purchase
 							<label class="control-label ">Vista Bueno por</label>
 							<select name="approval" id="approval" class="form-control">
 							{% for x in employee %}
-								<option value="{{ x.empdni }}">{{ x.firtsname }}{{ x.lastname }}</option>
+								<option value="{{ x.empdni_id }}">{{ x.firtsname }}{{ x.lastname }}</option>
 							{% empty %}
 								<option value="">-- Nothing --</option>
 							{% endfor %}

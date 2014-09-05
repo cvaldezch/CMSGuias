@@ -1208,7 +1208,7 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                     context['raise'] = e.__str__()
                     context['status'] = False
                 return self.render_to_json_response(context)
-            
+
             context['purchase'] = Compra.objects.filter(flag=True, status='PE').order_by('-compra_id')
             context['storage'] = Almacene.objects.filter(flag=True)
             context['employee'] = Employee.objects.filter(flag=True)
@@ -1222,25 +1222,58 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
         if request.is_ajax():
             context = dict()
             try:
-                if 'ingress' == request.POST:
+                print request.POST
+                if 'ingress' in request.POST:
                     form = forms.addNoteIngress(request.POST)
+                    print form.is_valid(), 'form is valid'
                     if form.is_valid():
                         add = form.save(commit=False)
                         ingress = genkeys.GenerateIdNoteIngress()
                         add.ingress_id = ingress
                         # add.save() # save to bedside Note Ingress
                         # save details Note Ingress
-                        details = json.loads(respost.POST.get('details'))
+                        details = json.loads(request.POST.get('details'))
                         for x in details:
-                            print x
                             # details Note Ingress
-                            # det = models.DetIngress()
-                            # det.ingress_id = ingress
-                            # det.materiales_id = x['materials']
-                            # inv = models.Inventario()
-                            # #
-                            # wbm = models.InventoryBrand()
+                            det = models.DetIngress()
+                            det.ingress_id = ingress
+                            det.materiales_id = x['materials']
+                            det.quantity = x['quantity']
+                            det.brand_id = x['brand'] if 'brand' in x else 'BR000'
+                            det.model_id = x['model'] if 'model' in x else 'MO000'
+                            det.report = '0'
+                            #det.save()
+                            inv = models.Inventario.objects.filter(materiales_id=x['materials'], periodo=globalVariable.get_year, almacen_id=request.POST.get('storage'), flag=True)
+                            if inv:
+                                inv.0.stock = (inv.0.stock + x['quantity'])
+                                #inv.0.save()
+                            else:
+                                inv = models.Inventario()
+                                inv.almacen_id = request.POST.get('storage')
+                                inv.materiales_id = x['materials']
+                                inv.stock = x['quantity']
+                                inv.precompra = 0
+                                inv.preventa = 0
+                                inv.stkmin = 0
+                                inv.stockpendiente = 0
+                                inv.stockdevuelto = 0
+                                inv.periodo = globalVariable.get_year
+                                inv.compra = request.POST.get('purchase')
+                                #inv.save()
+                            wbm = models.InventoryBrand.objects.filter(storage=request.POST.get('storage'), materials_id=x['materials'], period=globalVariable.get_year, brand_id=x['brand'] if 'brand' in x else 'BR000', model_id=x['model'] if 'model' in x else 'MO000')
+                            if wbm:
+                                wbm.0.stock = wbm.0.stock + x['quantity']
+                                #wbm.0.save()
+                            else:
+                                bm = models.InventoryBrand()
+                                bm.storage_id = request.POST.get('storage')
+                                bm.materials_id = x['materials']
+                                bm.brand_id = x['brand'] if 'brand' in x else 'BR000'
+                                bm.model_id = x['model'] if 'model' in x else 'MO000'
+                                bm.stock = x['quantity']
+                                #bm.save()
                         context['status'] = True
+                        context['ingress'] = ingress
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

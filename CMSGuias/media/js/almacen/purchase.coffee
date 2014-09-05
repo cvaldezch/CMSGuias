@@ -174,12 +174,12 @@ saveNoteIngress = (response) ->
 		if element.checked
 			mats.push {"materials": element.value, "quantity": $("input[name=#{element.value}]").val()}
 			return
-	data.details = mats
+	data.details = JSON.stringify mats
 	$(".mingress > div > div > div.modal-body > div.row").find("input, select").each (index, element) ->
 		console.info element
 		if element.name isnt "guide"
 			if $.trim element.value isnt ""
-				data[element.name] = $.trim element.value
+				data[element.name] = $.trim $(element).val()
 				pass = true
 				return
 			else
@@ -197,7 +197,7 @@ saveNoteIngress = (response) ->
 				if result is "Si"
 					data.ingress = true
 					data.observation = $("textarea[name=observation]").val()
-					data.csrfmiddlewaretoken $("input[name=csrfmiddlewaretoken]").val()
+					data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
 					console.warn data
 					$.post "", data, (response) ->
 						if response.status

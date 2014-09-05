@@ -222,6 +222,7 @@ class Inventario(models.Model):
         return '%s %s %f'%(self.materiales,self.compra,self.stock)
 
 class InventoryBrand(models.Model):
+    storage = models.ForeignKey(Almacene, to_field='almacen_id')
     period = models.CharField(max_length=4)
     materials = models.ForeignKey(Materiale, to_field='materiales_id')
     brand = models.ForeignKey(Brand, to_field='brand_id')

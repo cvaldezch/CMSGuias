@@ -199,12 +199,12 @@ saveNoteIngress = function(response) {
       });
     }
   });
-  data.details = mats;
+  data.details = JSON.stringify(mats);
   $(".mingress > div > div > div.modal-body > div.row").find("input, select").each(function(index, element) {
     console.info(element);
     if (element.name !== "guide") {
       if ($.trim(element.value !== "")) {
-        data[element.name] = $.trim(element.value);
+        data[element.name] = $.trim($(element).val());
         pass = true;
       } else {
         $().toastmessage("showWarningToast", "Campo vacio, " + element.name);
@@ -230,7 +230,7 @@ saveNoteIngress = function(response) {
         if (result === "Si") {
           data.ingress = true;
           data.observation = $("textarea[name=observation]").val();
-          data.csrfmiddlewaretoken($("input[name=csrfmiddlewaretoken]").val());
+          data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
           console.warn(data);
           return $.post("", data, function(response) {
             if (response.status) {
