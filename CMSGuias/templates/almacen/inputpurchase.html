@@ -214,7 +214,13 @@ Input Order Purchase
 					<div class="col-md-4">
 						<div class="form-group has-primary">
 							<label class="control-label ">Almacén</label>
-							<select name="storage" id="storage" class="form-control"></select>
+							<select name="storage" id="storage" class="form-control">
+							{% for x in storage %}
+								<option value="{{ x.almacen_id }}">{{ x.nombre }}</option>
+							{% empty %}
+								<option value="">-- Nothing --</option>
+							{% endfor %}
+							</select>
 						</div>
 					</div>
 					<div class="col-md-2">
@@ -250,29 +256,49 @@ Input Order Purchase
 					<div class="col-md-4">
 						<div class="form-group has-primary">
 							<label class="control-label ">Recibido por</label>
-							<select name="receive" id="receive" class="form-control"></select>
+							<select name="receive" id="receive" class="form-control">
+							{% for x in employee %}
+								<option value="{{ x.empdni }}">{{ x.firtsname }}{{ x.lastname }}</option>
+							{% empty %}
+								<option value="">-- Nothing --</option>
+							{% endfor %}
+							</select>
 						</div>
 					</div>
 					<div class="col-md-4">
 						<div class="form-group has-primary">
 							<label class="control-label ">Inspeccionado por</label>
-							<select name="inspect" id="inspect" class="form-control"></select>
+							<select name="inspect" id="inspect" class="form-control">
+							{% for x in employee %}
+								<option value="{{ x.empdni }}">{{ x.firtsname }}{{ x.lastname }}</option>
+							{% empty %}
+								<option value="">-- Nothing --</option>
+							{% endfor %}
+							</select>
 						</div>
 					</div>
 					<div class="col-md-4">
 						<div class="form-group has-primary">
 							<label class="control-label ">Vista Bueno por</label>
-							<select name="approval" id="approval" class="form-control"></select>
+							<select name="approval" id="approval" class="form-control">
+							{% for x in employee %}
+								<option value="{{ x.empdni }}">{{ x.firtsname }}{{ x.lastname }}</option>
+							{% empty %}
+								<option value="">-- Nothing --</option>
+							{% endfor %}
+							</select>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
 				<button class="btn btn-default pull-left"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-				<button class="btn btn-primary"><span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios</button>
+				<button class="btn btn-primary btn-generate"><span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios</button>
 			</div>
 		</div>
 	</div>
 </div>
 <!-- end block modal -->
+<!-- block csrf_token -->
+{% csrf_token %}
 {% endblock content %}

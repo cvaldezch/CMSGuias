@@ -16,6 +16,7 @@ $(document).ready(function() {
   $(document).on("change", "input[name=mats]", changeCheck);
   $("[name=select]").on("change", changeSelect);
   $(".btn-generate-note").on("click", loadIngress);
+  $(".btn-generate").on("click", saveNoteIngress);
 });
 
 changeSearch = function() {
@@ -99,8 +100,10 @@ showAction = function() {
 };
 
 showIngressInventory = function(event) {
+  var btn;
+  btn = this.value;
   $.getJSON("", {
-    "purchase": this.value
+    "purchase": btn
   }, function(response) {
     var $tb, template, x;
     if (response.status) {
@@ -121,7 +124,8 @@ showIngressInventory = function(event) {
         response.details[x].item = parseInt(x) + 1;
         $tb.append(Mustache.render(template, response.details[x]));
       }
-      $(".purchase").html(this.value);
+      $(".purchase").html(btn);
+      $("[name=purchase]").val(btn);
       $(".maction").modal("hide");
       $(".step-first").fadeOut(200);
       $(".step-second").fadeIn(600);
@@ -177,10 +181,6 @@ loadIngress = function(event) {
   });
   if (arr.length) {
     $(".mingress").modal("toggle");
-
-    /*console.log data.list = arr
-    		""
-     */
   } else {
     $().toastmessage("showWarningToast", "Seleccione por lo menos un material para hacer el ingreso a almacén.");
   }
@@ -190,6 +190,7 @@ saveNoteIngress = function(response) {
   var data, mats, pass;
   data = new Object();
   mats = new Array();
+  pass = false;
   $("input[name=mats]").each(function(index, element) {
     if (element.checked) {
       mats.push({
@@ -199,12 +200,12 @@ saveNoteIngress = function(response) {
     }
   });
   data.details = mats;
-  pass = false;
-  $(".mingress > div > div.modal-body > div.row").find("input, select").each(function(index, element) {
+  $(".mingress > div > div > div.modal-body > div.row").find("input, select").each(function(index, element) {
+    console.info(element);
     if (element.name !== "guide") {
       if ($.trim(element.value !== "")) {
         data[element.name] = $.trim(element.value);
-        return pass = true;
+        pass = true;
       } else {
         $().toastmessage("showWarningToast", "Campo vacio, " + element.name);
         pass = false;
@@ -212,6 +213,7 @@ saveNoteIngress = function(response) {
       }
     }
   });
+  console.log(pass);
   if (pass) {
     $().toastmessage("showToast", {
       text: "Desea generar una <q>Nota de Ingreso</q> con los materiales seleccionados?",
@@ -226,13 +228,16 @@ saveNoteIngress = function(response) {
       ],
       success: function(result) {
         if (result === "Si") {
+          data.ingress = true;
+          data.observation = $("textarea[name=observation]").val();
+          data.csrfmiddlewaretoken($("input[name=csrfmiddlewaretoken]").val());
+          console.warn(data);
           return $.post("", data, function(response) {
             if (response.status) {
               $(".step-second").fadeOut(200);
-              $(".step-tree").fadeIn(600);
-              return $().html(response.ingress);
+              return $(".step-tree").fadeIn(600);
             } else {
-              return $().toastmessage("showWarningToast", "No se a podido generar la Nota de Ingreso.");
+              $().toastmessage("showWarningToast", "No se a podido generar la Nota de Ingreso.");
             }
           });
         }

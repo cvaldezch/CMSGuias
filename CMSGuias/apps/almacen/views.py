@@ -18,7 +18,7 @@ from django.views.generic import TemplateView, ListView, View
 from django.core import serializers
 
 from CMSGuias.apps.almacen import models
-from CMSGuias.apps.home.models import Cliente, Almacene, Transportista, Conductore, Transporte, userProfile
+from CMSGuias.apps.home.models import Cliente, Almacene, Transportista, Conductore, Transporte, userProfile, Employee
 from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
 from CMSGuias.apps.almacen import forms
 from CMSGuias.apps.tools import genkeys, globalVariable
@@ -1208,7 +1208,10 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                     context['raise'] = e.__str__()
                     context['status'] = False
                 return self.render_to_json_response(context)
+            
             context['purchase'] = Compra.objects.filter(flag=True, status='PE').order_by('-compra_id')
+            context['storage'] = Almacene.objects.filter(flag=True)
+            context['employee'] = Employee.objects.filter(flag=True)
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404('Template not found')
@@ -1223,18 +1226,21 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                     form = forms.addNoteIngress(request.POST)
                     if form.is_valid():
                         add = form.save(commit=False)
-                        ingress = ''
+                        ingress = genkeys.GenerateIdNoteIngress()
                         add.ingress_id = ingress
-                        add.save() # save to bedside Note Ingress
+                        # add.save() # save to bedside Note Ingress
                         # save details Note Ingress
                         details = json.loads(respost.POST.get('details'))
                         for x in details:
+                            print x
                             # details Note Ingress
-                            det = models.DetIngress()
-                            # det.
-                            inv = models.Inventario()
-                            #
-                            wbm = models.InventoryBrand()
+                            # det = models.DetIngress()
+                            # det.ingress_id = ingress
+                            # det.materiales_id = x['materials']
+                            # inv = models.Inventario()
+                            # #
+                            # wbm = models.InventoryBrand()
+                        context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

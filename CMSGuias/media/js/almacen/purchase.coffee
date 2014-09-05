@@ -10,6 +10,7 @@ $(document).ready ->
 	$(document).on "change", "input[name=mats]", changeCheck
 	$("[name=select]").on "change", changeSelect
 	$(".btn-generate-note").on "click", loadIngress
+	$(".btn-generate").on "click", saveNoteIngress
 	return
 
 changeSearch = ->
@@ -96,7 +97,8 @@ showAction = ->
 	return
 
 showIngressInventory = (event) ->
-	$.getJSON "", "purchase" : @value, (response) ->
+	btn = @value
+	$.getJSON "", "purchase" : btn, (response) ->
 		if response.status
 			$(".supplier").html response.head.supplier
 			$(".quote").html response.head.quote
@@ -116,7 +118,8 @@ showIngressInventory = (event) ->
 				response.details[x].item = parseInt(x) + 1
 				$tb.append Mustache.render template, response.details[x]
 
-			$(".purchase").html @value
+			$(".purchase").html btn
+			$("[name=purchase]").val btn
 			$(".maction").modal "hide"
 			$(".step-first").fadeOut 200
 			$(".step-second").fadeIn 600
@@ -166,21 +169,24 @@ loadIngress = (event) ->
 saveNoteIngress = (response) ->
 	data = new Object()
 	mats = new Array()
+	pass = false
 	$("input[name=mats]").each (index, element) ->
 		if element.checked
 			mats.push {"materials": element.value, "quantity": $("input[name=#{element.value}]").val()}
 			return
 	data.details = mats
-	pass = false
-	$(".mingress > div > div.modal-body > div.row").find("input, select").each (index, element) ->
+	$(".mingress > div > div > div.modal-body > div.row").find("input, select").each (index, element) ->
+		console.info element
 		if element.name isnt "guide"
 			if $.trim element.value isnt ""
 				data[element.name] = $.trim element.value
 				pass = true
+				return
 			else
 				$().toastmessage "showWarningToast", "Campo vacio, #{element.name}"
 				pass = false
 				return pass
+	console.log pass
 	if pass
 		$().toastmessage "showToast",
 			text : "Desea generar una <q>Nota de Ingreso</q> con los materiales seleccionados?"
@@ -190,11 +196,15 @@ saveNoteIngress = (response) ->
 			success : (result) ->
 				if result is "Si"
 					data.ingress = true
+					data.observation = $("textarea[name=observation]").val()
+					data.csrfmiddlewaretoken $("input[name=csrfmiddlewaretoken]").val()
+					console.warn data
 					$.post "", data, (response) ->
 						if response.status
 							$(".step-second").fadeOut 200
 							$(".step-tree").fadeIn 600
-							$().html response.ingress
+							# $().html response.ingress
 						else
 							$().toastmessage "showWarningToast", "No se a podido generar la Nota de Ingreso."
+							return
 	return

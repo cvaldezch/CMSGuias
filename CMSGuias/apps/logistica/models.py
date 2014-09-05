@@ -50,7 +50,7 @@ class Compra(models.Model):
 class DetCompra(models.Model):
     compra = models.ForeignKey(Compra, to_field='compra_id')
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
-    brand = models.ForeignKey(Brand, to_field='brand_id',default='BR000', blank=True)
+    brand = models.ForeignKey(Brand, to_field='brand_id', default='BR000', blank=True)
     model = models.ForeignKey(Model, to_field='model_id', default='MO000', blank=True)
     cantidad = models.FloatField()
     precio = models.FloatField()

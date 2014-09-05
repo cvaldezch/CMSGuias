@@ -6,7 +6,7 @@ from random import randint
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Max
 
-from CMSGuias.apps.almacen.models import Pedido, GuiaRemision, Suministro
+from CMSGuias.apps.almacen.models import Pedido, GuiaRemision, Suministro, NoteIngress
 from CMSGuias.apps.logistica.models import Cotizacion, Compra
 from CMSGuias.apps.ventas.models import Proyecto
 from CMSGuias.apps.home.models import Brand, Model
@@ -185,6 +185,26 @@ def GenerateIdModel():
         else:
             counter = 1
         id = '%s%s'%('MO', '{:0>3d}'.format(counter))
+    except ObjectDoesNotExist, e:
+        raise e
+    return id
+
+def GenerateIdNoteIngress():
+    id = None
+    try:
+        code = NoteIngress.objects.aggregate(max=Max('ingress_id'))
+        id = code['max']
+        yn = int(datetime.datetime.today().strftime(__year_str))
+        if id is not None:
+            yy = int(id[2:4])
+            counter = int(id[4:10])
+            if yn > yy:
+                counter = 1
+            else:
+                counter += 1
+        else:
+            counter = 1
+        id = '%s%s%s'%('NI',yn.__str__(), '{:0>6d}'.format(counter))
     except ObjectDoesNotExist, e:
         raise e
     return id
