@@ -111,7 +111,7 @@ showIngressInventory = (event) ->
 			$(".contact").html response.head.contact
 			$(".performed").html response.head.performed
 			# $(".deposit").append "<a target=\"_blank\" class=\"btn btn-warning btn-xs text-black\" href=\"/media/#{response.head.deposit}\"><span class=\"glyphicon glyphicon-cloud-download\"></span></a>"
-			template = "<tr><td><input type=\"checkbox\" name=\"mats\" value=\"{{ materials }}\"></td><td>{{ item }}</td><td>{{ materials }}</td><td>{{ name }}</td><td>{{ measure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td><input type=\"number\" class=\"form-control input-sm materials\" name=\"{{ materials }}\" value=\"{{ quantity }}\" min=\"1\" max=\"{{ quantity }}\" disabled></td></tr>"
+			template = "<tr><td><input type=\"checkbox\" name=\"mats\" value=\"{{ materials }}\"></td><td>{{ item }}</td><td>{{ materials }}</td><td>{{ name }}</td><td>{{ measure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td><input type=\"number\" class=\"form-control input-sm materials\" name=\"{{ materials }}\" value=\"{{ static }}\" min=\"1\" max=\"{{ static }}\" data-price=\"{{ price }}\" disabled></td></tr>"
 			$tb = $("table.table-ingress > tbody")
 			$tb.empty()
 			for x of response.details
@@ -172,7 +172,9 @@ saveNoteIngress = (response) ->
 	pass = false
 	$("input[name=mats]").each (index, element) ->
 		if element.checked
-			mats.push {"materials": element.value, "quantity": $("input[name=#{element.value}]").val()}
+			max = element.getAttribute "max"
+			tag = if parseFloat(element.value) < parseFloat(max) then "1" else  "2"
+			mats.push {"materials": element.value, "quantity": $("input[name=#{element.value}]", "price": element.getAttribute("data-price")).val(), "flag":flag}
 			return
 	data.details = JSON.stringify mats
 	$(".mingress > div > div > div.modal-body > div.row").find("input, select").each (index, element) ->
@@ -197,6 +199,7 @@ saveNoteIngress = (response) ->
 				if result is "Si"
 					data.ingress = true
 					data.observation = $("textarea[name=observation]").val()
+					data.purchase = $(".purchase").html()
 					data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
 					console.warn data
 					$.post "", data, (response) ->
