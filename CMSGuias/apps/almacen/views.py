@@ -8,10 +8,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.db.models import Count, Max, Sum
+from django.db.models import Count, Max, Sum, Q
 from django.utils import simplejson
 from django.core.paginator import EmptyPage, Paginator, PageNotAnInteger
 from django.views.generic import TemplateView, ListView, View
@@ -1209,7 +1208,7 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                     context['status'] = False
                 return self.render_to_json_response(context)
 
-            context['purchase'] = Compra.objects.filter(flag=True, status='PE').order_by('-compra_id')
+            context['purchase'] = Compra.objects.filter(Q(flag=True), Q(status='PE') | Q(status='IN')).order_by('-compra_id')
             context['storage'] = Almacene.objects.filter(flag=True)
             context['employee'] = Employee.objects.filter(flag=True)
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
@@ -1230,50 +1229,66 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                         add = form.save(commit=False)
                         ingress = genkeys.GenerateIdNoteIngress()
                         add.ingress_id = ingress
-                        # add.save() # save to bedside Note Ingress
+                        add.status = 'CO'
+                        add.save() # save to bedside Note Ingress
                         # save details Note Ingress
                         details = json.loads(request.POST.get('details'))
+                        counter = 0
                         for x in details:
                             # details Note Ingress
                             det = models.DetIngress()
                             det.ingress_id = ingress
-                            det.materiales_id = x['materials']
+                            det.materials_id = x['materials']
                             det.quantity = x['quantity']
                             det.brand_id = x['brand'] if 'brand' in x else 'BR000'
                             det.model_id = x['model'] if 'model' in x else 'MO000'
                             det.report = '0'
-                            #det.save()
+                            det.save()
                             inv = models.Inventario.objects.filter(materiales_id=x['materials'], periodo=globalVariable.get_year, almacen_id=request.POST.get('storage'), flag=True)
                             if inv:
-                                inv[0].stock = (inv[0].stock + x['quantity'])
-                                #inv.0.save()
+                                inv[0].stock = (inv[0].stock + float(x['quantity']))
+                                inv[0].save()
                             else:
                                 inv = models.Inventario()
                                 inv.almacen_id = request.POST.get('storage')
                                 inv.materiales_id = x['materials']
                                 inv.stock = x['quantity']
-                                inv.precompra = float(request.POST.get('price'))
-                                inv.preventa = (float(request.POST.get('price')) + (float(request.POST.get('price')) * 0.15))
+                                inv.precompra = float(x['price'])
+                                inv.preventa = (float(x['price']) + (float(x['price']) * 0.15))
                                 inv.stkmin = 0
-                                inv.stockpendiente = 0
-                                inv.stockdevuelto = 0
+                                inv.stkpendiente = 0
+                                inv.stkdevuelto = 0
                                 inv.periodo = globalVariable.get_year
-                                inv.compra = request.POST.get('purchase')
-                                #inv.save()
-                            wbm = models.InventoryBrand.objects.filter(storage=request.POST.get('storage'), materials_id=x['materials'], period=globalVariable.get_year, brand_id=x['brand'] if 'brand' in x else 'BR000', model_id=x['model'] if 'model' in x else 'MO000')
+                                inv.compra_id = request.POST.get('purchase')
+                                inv.save()
+                            wbm = models.InventoryBrand.objects.filter(storage_id=request.POST.get('storage'), materials_id=x['materials'], period=globalVariable.get_year, brand_id=x['brand'] if 'brand' in x else 'BR000', model_id=x['model'] if 'model' in x else 'MO000')
                             if wbm:
-                                wbm[0].stock = wbm[0].stock + x['quantity']
-                                #wbm.0.save()
+                                wbm[0].stock = wbm[0].stock + float(x['quantity'])
+                                wbm[0].save()
                             else:
                                 bm = models.InventoryBrand()
                                 bm.storage_id = request.POST.get('storage')
                                 bm.materials_id = x['materials']
+                                bm.period = globalVariable.get_year
                                 bm.brand_id = x['brand'] if 'brand' in x else 'BR000'
                                 bm.model_id = x['model'] if 'model' in x else 'MO000'
                                 bm.stock = x['quantity']
-                                bm.purchase = float(request.POST.get('price'))
-                                bm.sale = (float(request.POST.get('price')) + (float(request.POST.get('price')) * 0.15))
-                                #bm.save()
+                                bm.purchase = float(x['price'])
+                                bm.sale = (float(x['price']) + (float(x['price']) * 0.15))
+                                bm.save()
+                            buy = DetCompra.objects.get(compra_id=request.POST.get('purchase'),materiales_id=x['materials'])
+                            buy.flag = x['tag']
+                            buy.cantidad = (buy.cantidad - float(x['quantity']))
+                            buy.save()
+
+                        buy = Compra.objects.get(pk=request.POST.get('purchase'))
+                        det = DetCompra.objects.filter(Q(compra_id=request.POST.get('purchase')),Q(flag='1') | Q(flag='0')).aggregate(counter=Count('flag'))
+                        if det['counter'] > 0:
+                            buy.status = 'IN'
+                            buy.save()
+                        else:
+                            buy.status = 'CO'
+                            buy.save()
                         context['status'] = True
                         context['ingress'] = ingress
             except ObjectDoesNotExist, e:

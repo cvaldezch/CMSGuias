@@ -111,7 +111,7 @@ showIngressInventory = (event) ->
 			$(".contact").html response.head.contact
 			$(".performed").html response.head.performed
 			# $(".deposit").append "<a target=\"_blank\" class=\"btn btn-warning btn-xs text-black\" href=\"/media/#{response.head.deposit}\"><span class=\"glyphicon glyphicon-cloud-download\"></span></a>"
-			template = "<tr><td><input type=\"checkbox\" name=\"mats\" value=\"{{ materials }}\"></td><td>{{ item }}</td><td>{{ materials }}</td><td>{{ name }}</td><td>{{ measure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td><input type=\"number\" class=\"form-control input-sm materials\" name=\"{{ materials }}\" value=\"{{ static }}\" min=\"1\" max=\"{{ static }}\" data-price=\"{{ price }}\" disabled></td></tr>"
+			template = "<tr><td><input type=\"checkbox\" name=\"mats\" value=\"{{ materials }}\"></td><td>{{ item }}</td><td>{{ materials }}</td><td>{{ name }}</td><td>{{ measure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td><input type=\"number\" class=\"form-control input-sm materials\" name=\"{{ materials }}\" value=\"{{ quantity }}\" min=\"1\" max=\"{{ quantity }}\" data-price=\"{{ price }}\" disabled></td></tr>"
 			$tb = $("table.table-ingress > tbody")
 			$tb.empty()
 			for x of response.details
@@ -172,9 +172,10 @@ saveNoteIngress = (response) ->
 	pass = false
 	$("input[name=mats]").each (index, element) ->
 		if element.checked
-			max = element.getAttribute "max"
-			tag = if parseFloat(element.value) < parseFloat(max) then "1" else  "2"
-			mats.push {"materials": element.value, "quantity": $("input[name=#{element.value}]", "price": element.getAttribute("data-price")).val(), "flag":flag}
+			max = $("input[name=#{element.value}]").attr "max"
+			quantity = $("input[name=#{element.value}]").val()
+			tag = if parseFloat(quantity) < parseFloat(max) then "1" else  "2"
+			mats.push {"materials": element.value, "quantity": quantity, "price": $("input[name=#{element.value}]").attr("data-price"), "tag":tag}
 			return
 	data.details = JSON.stringify mats
 	$(".mingress > div > div > div.modal-body > div.row").find("input, select").each (index, element) ->
@@ -206,7 +207,8 @@ saveNoteIngress = (response) ->
 						if response.status
 							$(".step-second").fadeOut 200
 							$(".step-tree").fadeIn 600
-							# $().html response.ingress
+							$(".modal").modal "hide"
+							$(".note").html response.ingress
 						else
 							$().toastmessage "showWarningToast", "No se a podido generar la Nota de Ingreso."
 							return
