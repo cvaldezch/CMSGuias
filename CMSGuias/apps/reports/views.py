@@ -137,3 +137,17 @@ class RptPurchase(TemplateView):
             return generate_pdf(html)
         except TemplateDoesNotExist, e:
             raise Http404
+
+# Report Note Inrgess
+class RptNoteIngress(TemplateView):
+    template_name = "report/rptnoteingress.html"
+
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            context['bedside'] = models.NoteIngress.objects.get(ingress=kwargs['pk'])
+            context['details'] = models.DetIngress.objects.filter(ingress_id=kwargs['pk']).order_by('materials__matnom')
+            html = render_to_string(self.template_name, context, context_instance=RequestContext(request))
+            return generate_pdf(html)
+        except TemplateDoesNotExist, e:
+            raise Http404

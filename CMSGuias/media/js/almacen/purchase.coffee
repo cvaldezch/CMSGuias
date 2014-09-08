@@ -11,6 +11,9 @@ $(document).ready ->
 	$("[name=select]").on "change", changeSelect
 	$(".btn-generate-note").on "click", loadIngress
 	$(".btn-generate").on "click", saveNoteIngress
+	$(".btn-repeat").click (event) ->
+		location.reload()
+		return
 	return
 
 changeSearch = ->
