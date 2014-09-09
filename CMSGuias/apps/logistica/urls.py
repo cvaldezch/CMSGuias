@@ -17,5 +17,6 @@ urlpatterns = patterns('',
     url(r'^purchase/single/$', ViewPurchaseSingle.as_view(), name='view_purchase_single'),
     url(r'^purchase/list/$', ListPurchase.as_view(), name='view_purchase_list'),
     url(r'^supplier/login/$', LoginSupplier.as_view(), name='view_login_suppler'),
+    url(r'^compare/quote/(?P<quote>\w+)/', CompareQuote.as_view(), name='view_compare_quote'),
     url(r'^crud/', include(urlcrud)),
 )

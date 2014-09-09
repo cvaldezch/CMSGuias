@@ -17,6 +17,9 @@ $(document).ready(function() {
   $("[name=select]").on("change", changeSelect);
   $(".btn-generate-note").on("click", loadIngress);
   $(".btn-generate").on("click", saveNoteIngress);
+  $(".btn-repeat").click(function(event) {
+    location.reload();
+  });
 });
 
 changeSearch = function() {
@@ -244,7 +247,8 @@ saveNoteIngress = function(response) {
               $(".step-second").fadeOut(200);
               $(".step-tree").fadeIn(600);
               $(".modal").modal("hide");
-              return $(".note").html(response.ingress);
+              $(".note").html(response.ingress);
+              return $(".show-note-ingress").attr("href", "/reports/note/ingress/" + response.ingress + "/");
             } else {
               $().toastmessage("showWarningToast", "No se a podido generar la Nota de Ingreso.");
             }

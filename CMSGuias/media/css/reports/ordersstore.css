@@ -55,9 +55,24 @@ img{
 .details table > tbody > tr { border-left: .01cm solid olive; border-right: .01cm solid olive; padding-top: .05cm; padding-bottom: 0.01cm; }
 /*.details table > tfoot > tr { border-top: 0.01cm solid olive; }*/
 .details table > tbody > tr:last-child { border-bottom: 1px solid olive; }
-.nom{
+.nom {
 	width: 7cm;
 }
-.item{
+.item {
 	width: 1cm;
+}
+.table-note-footer {
+	/*border: 1px solid black;*/
+}
+.table-note-footer > tbody > tr:first-child > td {
+	border-top: 1px solid black;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+	padding-top: 0.03cm;
+	padding-left: 0.08cm;
+}
+.table-note-footer > tbody > tr:last-child > td {
+	border-bottom: 1px solid black;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
 }

@@ -145,8 +145,9 @@ class RptNoteIngress(TemplateView):
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
-            context['bedside'] = models.NoteIngress.objects.get(ingress=kwargs['pk'])
+            context['bedside'] = models.NoteIngress.objects.get(ingress_id=kwargs['pk'])
             context['details'] = models.DetIngress.objects.filter(ingress_id=kwargs['pk']).order_by('materials__matnom')
+            context['status'] = globalVariable.status
             html = render_to_string(self.template_name, context, context_instance=RequestContext(request))
             return generate_pdf(html)
         except TemplateDoesNotExist, e:

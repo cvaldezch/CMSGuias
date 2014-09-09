@@ -212,6 +212,7 @@ saveNoteIngress = (response) ->
 							$(".step-tree").fadeIn 600
 							$(".modal").modal "hide"
 							$(".note").html response.ingress
+							$(".show-note-ingress").attr "href", "/reports/note/ingress/#{response.ingress}/"
 						else
 							$().toastmessage "showWarningToast", "No se a podido generar la Nota de Ingreso."
 							return

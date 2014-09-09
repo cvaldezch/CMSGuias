@@ -18,14 +18,14 @@
         </div>
         <div id="nro-serie">
             <h1>Nro Solicitud Cotización</h1>
-            <h1 id="nro">{{bedside.cotizacion_id}}</h1>
+            <h1 id="nro">{{ bedside.cotizacion_id }}</h1>
         </div>
         <div id="bedside-col1">
             <table>
-                <tr><td><strong>Alamacén :</strong></td><td> {{bedside.suministro_id}}</td></tr>
-                <tr><td><strong>Orden de Compra :</strong></td><td> {{bedside.almacen.nombre}}</td></tr>
-                <tr><td width="3cm"><strong>Fecha Registrado :</strong></td><td> {{bedside.registrado}}</td></tr>
-                <tr><td><strong>Fecha Traslado :</strong></td><td> {{bedside.traslado}}</td></tr>
+                <tr><td><strong>Suministro :</strong></td><td> {{ bedside.suministro_id }}</td></tr>
+                <tr><td><strong>Almacén :</strong></td><td> {{ bedside.almacen.nombre }}</td></tr>
+                <tr><td width="3cm"><strong>Fecha Registrado :</strong></td><td> {{ bedside.registrado }}</td></tr>
+                <tr><td><strong>Fecha Traslado :</strong></td><td> {{ bedside.traslado }}</td></tr>
                 <tr><td><strong>RUC:</strong></td><td> {{ details.0.proveedor_id }}</td></tr>
                 <tr><td><strong>Razón Social:</strong></td><td> {{ details.0.proveedor.razonsocial }}</td></tr>
             </table>

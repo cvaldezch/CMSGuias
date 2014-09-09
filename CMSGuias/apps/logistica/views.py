@@ -660,3 +660,14 @@ class SupplierCreate(CreateView):
         #self.instance.save()
         form.save()
         return render_to_response(self.template_name, {'msg':'success'}, context_instance=RequestContext(self.request))
+
+class CompareQuote(TemplateView):
+    template_name = 'logistics/compraquote.html'
+
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            context['quote'] = Cotizacion.objects.filter(Q(flag=True), Q(status='PE'))
+            return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        except TemplateDoesNotExist, e:
+            raise Http404

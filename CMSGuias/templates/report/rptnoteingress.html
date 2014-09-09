@@ -18,29 +18,27 @@
         </div>
         <div id="nro-serie">
             <h1>Nro Nota de Ingreso</h1>
-            <h1 id="nro">{{bedside.ingress_id}}</h1>
+            <h1 id="nro">{{ bedside.ingress_id }}</h1>
         </div>
         <div id="bedside-col1">
             <table>
-                <tr><td><strong>Suministro :</strong></td><td> {{bedside.suministro_id}}</td></tr>
-                <tr><td><strong>Almacén :</strong></td><td> {{bedside.almacen.nombre}}</td></tr>
-                <tr><td width="3cm"><strong>Fecha Registrado :</strong></td><td> {{bedside.registrado}}</td></tr>
-                <tr><td><strong>Fecha Traslado :</strong></td><td> {{bedside.traslado}}</td></tr>
-                <tr><td><strong>RUC:</strong></td><td> {{ details.0.proveedor_id }}</td></tr>
-                <tr><td><strong>Razón Social:</strong></td><td> {{ details.0.proveedor.razonsocial }}</td></tr>
+                <tr><td><strong>Almacén :</strong></td><td> {{ bedside.storage.nombre }}</td></tr>
+                <tr><td width="3cm"><strong>Nro Compra :</strong></td><td> {{ bedside.purchase_id }}</td></tr>
+                <tr><td><strong>Guia Remisión :</strong></td><td> {{ bedside.guide }}</td></tr>
+                <tr><td><strong>Nro Factura :</strong></td><td> {{ bedside.invoice }}</td></tr>
+                <tr><td><strong>Motivo :</strong></td><td> {{ bedside.motive }}</td></tr>
             </table>
         </div>
         <div id="bedside-col2">
             <table>
-                <tr><td><strong>Envio Proveedor:</strong></td><td> {{ customers.envio }}</td></tr>
-                <tr><td><strong>Validez:</strong></td><td> {{ customers.validez }}</td></tr>
-                <tr><td><strong>Moneda:</strong></td><td> {{ customers.moneda.moneda }}</td></tr>
+                <tr><td><strong>Proveedor :</strong></td><td>{{ bedside.purchase.proveedor_id }} {{ bedside.purchase.proveedor.razonsocial }}</td></tr>
+                <tr><td><strong>Registrado:</strong></td><td> {{ bedside.register }}</td></tr>
                 <tr><td width="3cm"><strong>Estado :</strong></td><td> {% for k, v in status.iteritems %}
                     {% ifequal k bedside.status %}
                         {{ v }}
                     {% endifequal %}
                 {% endfor %}</td></tr>
-                <tr><td><strong>Observación :</strong></td><td> {{bedside.obser|safe }}</td></tr>
+                <tr><td><strong>Observación :</strong></td><td> {{bedside.observation|safe }}</td></tr>
             </table>
         </div>
     </header>
@@ -53,38 +51,56 @@
                         <th width="2.5cm">Código</th>
                         <th width="7cm">Descripción</th>
                         <!-- <th width="4cm">Medida</th> -->
+                        <th>Marca</th>
+                        <th>Modelo</th>
                         <th>Unidad</th>
                         <th>Cantidad</th>
-                        <th>Precio</th>
-                        <th>Marca</th>
-                        <th>Entrega</th>
                     </tr>
                 </thead>
                 <tbody>
                 {% for x in details %}
                     <tr>
                         <td class="text-center item">{{ forloop.counter }}</td>
-                        <td class="text-center cod">{{ x.materiales_id }}</td>
-                        <td>{{ x.materiales.matnom }}
-                        <!-- </td>
-                        <td> -->
-                        {{ x.materiales.matmed }}</td>
-                        <td class="text-center">{{ x.materiales.unidad.uninom }}</td>
-                        <td class="text-center">{{ x.cantidad|safe }}</td>
-                        <td class="text-center">{{ x.precio|floatformat:"2" }}</td>
-                        <td class="text-center">{{ x.marca }}</td>
-                        <td class="text-center">{{ x.entrega|date:"d/m/Y" }}</td>
+                        <td class="text-center cod">{{ x.materials_id }}</td>
+                        <td>{{ x.materials.matnom }}
+                        {{ x.materials.matmed }}</td>
+                        <td class="text-center">{{ x.brand.brand }}</td>
+                        <td class="text-center">{{ x.model.model }}</td>
+                        <td class="text-center">{{ x.materials.unidad.uninom }}</td>
+                        <td class="text-center">{{ x.quantity|safe }}</td>
                     </tr>
                 {% endfor%}
                 </tbody>
             </table>
         </div>
-        <p>
-            {% if customers.obser %}
-                <strong>Nota:</strong>
-                {{ customers.obser }}
-            {% endif %}
-        </p>
     </section>
+    <div id="footer_content">
+        <table class="table-note-footer">
+            <tbody>
+                <tr>
+                    <td width="6cm">
+                        <strong>Recibido por:</td></strong>
+                    </td>
+                    <td width="6cm">
+                        <strong>Inspeccionado por:</td></strong>
+                    </td>
+                    <td width="6cm">
+                        <strong>V. B. por:</td></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center">
+                        {{ bedside.receive_id }} <br> {{ bedside.receive.firstname }}, {{ bedside.receive.lastname }}
+                    </td>
+                    <td class="text-center">
+                        {{ bedside.inspection_id }} <br> {{ bedside.inspection.firstname }}, {{ bedside.inspection.lastname }}
+                    </td>
+                    <td class="text-center">
+                        {{ bedside.approval_id }} <br> {{ bedside.approval.firstname }}, {{ bedside.approval.lastname }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
