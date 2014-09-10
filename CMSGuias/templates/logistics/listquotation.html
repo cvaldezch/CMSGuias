@@ -87,7 +87,7 @@ List of Quotation with keys
 											<button class="btn btn-xs btn-link text-red btn-del" value="{{ x.cotizacion_id }}" data-sup="{{ x.proveedor_id }}"><span class="glyphicon glyphicon-fire"></span></button>
 										</td>
 										<td class="text-center">
-											<a href="compare/quote/{{ x.cotizacion_id }}/" target="_blank" class="btn btn-xs btn-link text-black">
+											<a href="{% url 'view_compare_quote'  x.cotizacion_id %}" class="btn btn-xs btn-link text-black">
 												<span class="glyphicon glyphicon-eye-open"></span>
 											</a>
 										</td>

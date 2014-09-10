@@ -2,13 +2,39 @@
 {% block title %}
     Compare Quotations
 {% endblock title %}
+{% block menu %}
+	{% include "menus/logistics.htm" %}
+{% endblock menu %}
 {% block content %}
 <div class="container">
     <div class="well">
         <header>
-            Compare Quotations
+            <h3>
+            	Comparar Cotizaciones
+            	<br>
+            	<small>
+            		Nro de Cotización {{ quote.cotizacion_id }}
+            	</small>
+            </h3>
         </header>
-        <article></article>
+        <article>
+        	<div class="panel panel-success">
+        		<div class="row">
+	        		{% for x in supplier %}
+	        			<div class="col-md-3">
+	        				<div class="alert alert-block alert-success text-center">
+	        					<span class="glyphicon glyphicon-chevron-right"></span>
+	        					<strong>{{ x.proveedor_id }}</strong>
+	        					<p>{{ x.proveedor.razonsocial }}</p>
+	        				</div>
+	        			</div>
+	        		{% endfor %}
+        		</div>
+        	</div>
+        </article>
+        <section>
+        {{ mats }}
+        </section>
     </div>
 </div>
 {% endblock content %}

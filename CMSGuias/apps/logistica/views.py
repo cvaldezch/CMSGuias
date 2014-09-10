@@ -662,12 +662,16 @@ class SupplierCreate(CreateView):
         return render_to_response(self.template_name, {'msg':'success'}, context_instance=RequestContext(self.request))
 
 class CompareQuote(TemplateView):
-    template_name = 'logistics/compraquote.html'
+    template_name = 'logistics/comparequote.html'
 
+    @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
-            context['quote'] = Cotizacion.objects.filter(Q(flag=True), Q(status='PE'))
+            context['quote'] = Cotizacion.objects.get(Q(cotizacion_id=kwargs['quote']),Q(flag=True), Q(status='PE'))
+            context['mats'] = DetCotizacion.objects.filter(cotizacion_id=kwargs['quote'])#.order_by('materiales__materiales_id').distinct('materiales__materiales_id')
+            context['supplier'] = CotKeys.objects.filter(cotizacion_id=kwargs['quote'])
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
+            print e
             raise Http404
