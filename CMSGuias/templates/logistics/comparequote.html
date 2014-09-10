@@ -33,8 +33,56 @@
         	</div>
         </article>
         <section>
-        {{ mats }}
+            <table class="table table-condensed table-hover table-striped">
+                <thead>
+                    <!-- <tr></tr> -->
+                    <tr>
+                        <th colspan="7"></th>
+                        {% for s in supplier %}
+                            <th class="text-center" colspan="4">{{ s.proveedor_id }}</th>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th>Código</th>
+                        <th>Descripción</th>
+                        <th>Medida</th>
+                        <th>Unidad</th>
+                        <th>Cantidad</th>
+                        {% for s in supplier %}
+                            <th>Precio</th>
+                            <th>Dsct.</th>
+                            <th>Edit</th>
+                            <th>Marca</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for x in details %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td></td>
+                            <td>{{ x.materials }}</td>
+                            <td>{{ x.name }}</td>
+                            <td>{{ x.measure }}</td>
+                            <td>{{ x.unit }}</td>
+                            <td>{{ x.quantity|safe }}</td>
+                             {% for s in supplier %}
+                                {% for k in x.others %}
+                                    {{ k. }}
+                                {% endfor %}
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </section>
+        {{ details }}
     </div>
 </div>
 {% endblock content %}
