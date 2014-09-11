@@ -671,6 +671,8 @@ class CompareQuote(TemplateView):
             context['quote'] = Cotizacion.objects.get(Q(cotizacion_id=kwargs['quote']),Q(flag=True), Q(status='PE'))
             context['supplier'] = CotKeys.objects.filter(cotizacion_id=kwargs['quote'])
             mats = DetCotizacion.objects.filter(cotizacion_id=kwargs['quote']).order_by('materiales__materiales_id').distinct('materiales__materiales_id')
+            context['client'] = CotCliente.objects.filter(cotizacion_id=kwargs['quote'])
+            context['conf'] = Configuracion.objects.get(periodo=globalVariable.get_year)
             arm = list()
             for x in mats:
                 arr = list()
@@ -678,10 +680,13 @@ class CompareQuote(TemplateView):
                 arsu = list()
                 for j in context['supplier']:
                     dsup = DetCotizacion.objects.get(cotizacion_id=kwargs['quote'], proveedor_id=j.proveedor_id, materiales_id=x.materiales_id)
-                    arsu.append({'price':dsup.precio, 'discount': dsup.discount, 'brand':dsup.marca, 'model':dsup.modelo})
-                    data[j.proveedor_id] = arsu #{'price':dsup.precio, 'discount': dsup.discount, 'brand':dsup.marca, 'model':dsup.modelo}
+                    discount = (float(dsup.discount) / 100)
+                    price = (dsup.precio - (float(dsup.precio) * discount))
+                    amount = (price * float(x.cantidad))
+                    arsu.append({'supplier':j.proveedor_id,'materiales_id':x.materiales_id, 'price':dsup.precio, 'discount': dsup.discount, 'brand':dsup.marca, 'model':dsup.modelo, 'amount':amount})
+                    #data[j.proveedor_id] = arsu #{'price':dsup.precio, 'discount': dsup.discount, 'brand':dsup.marca, 'model':dsup.modelo}
                 arr.append(data)
-                arm.append({'materials':x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'quantity':x.cantidad, 'others': arr })
+                arm.append({'materials':x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'quantity':x.cantidad, 'others': arsu })
             context['details'] = arm
             print arm
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))

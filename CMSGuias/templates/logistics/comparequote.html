@@ -2,6 +2,16 @@
 {% block title %}
     Compare Quotations
 {% endblock title %}
+{% block script %}
+<script src="{{ MEDIA_URL }}js/logistics/comparequote.js"></script>
+{% endblock script %}
+{% block style %}
+<style>
+    input[type="number"] {
+        width: 80px;
+    }
+</style>
+{% endblock style %}
 {% block menu %}
 	{% include "menus/logistics.htm" %}
 {% endblock menu %}
@@ -23,7 +33,7 @@
 	        		{% for x in supplier %}
 	        			<div class="col-md-3">
 	        				<div class="alert alert-block alert-success text-center">
-	        					<span class="glyphicon glyphicon-chevron-right"></span>
+	        					<span class="glyphicon glyphicon-ok-circle"></span>
 	        					<strong>{{ x.proveedor_id }}</strong>
 	        					<p>{{ x.proveedor.razonsocial }}</p>
 	        				</div>
@@ -33,56 +43,163 @@
         	</div>
         </article>
         <section>
-            <table class="table table-condensed table-hover table-striped">
-                <thead>
-                    <!-- <tr></tr> -->
-                    <tr>
-                        <th colspan="7"></th>
-                        {% for s in supplier %}
-                            <th class="text-center" colspan="4">{{ s.proveedor_id }}</th>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <th></th>
-                        <th></th>
-                        <th>Código</th>
-                        <th>Descripción</th>
-                        <th>Medida</th>
-                        <th>Unidad</th>
-                        <th>Cantidad</th>
-                        {% for s in supplier %}
-                            <th>Precio</th>
-                            <th>Dsct.</th>
-                            <th>Edit</th>
-                            <th>Marca</th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for x in details %}
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td></td>
-                            <td>{{ x.materials }}</td>
-                            <td>{{ x.name }}</td>
-                            <td>{{ x.measure }}</td>
-                            <td>{{ x.unit }}</td>
-                            <td>{{ x.quantity|safe }}</td>
-                             {% for s in supplier %}
-                                {% for k in x.others %}
-                                    {{ k. }}
-                                {% endfor %}
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+            <div class="panel panel-danger">
+                <table class="table table-condensed table-hover table-striped table-bordered">
+                    <thead>
+                        <tr class="brand-danger text-white">
+                            <th colspan="7"></th>
+                            {% for s in supplier %}
+                                <th class="text-center" colspan="5">
+                                    {{ s.proveedor.razonsocial }}
+                                    <button class="btn btn-xs btn-warning text-black btn-purchase" value="{{ s.proveedor_id }}">
+                                        <span class="glyphicon glyphicon-shopping-cart"></span>
+                                    </button>
+                                </th>
                             {% endfor %}
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                        <tr class="brand-danger text-white">
+                            <th></th>
+                            <th></th>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th>Medida</th>
+                            <th>Unidad</th>
+                            <th>Cantidad</th>
+                            {% for s in supplier %}
+                                <th class="text-center">Precio</th>
+                                <th class="text-center">Dsct.</th>
+                                <th class="text-center">Importe</th>
+                                <th class="text-center">Edit</th>
+                                <th class="text-center">Marca</th>
+                            {% endfor %}
+                        </tr>
+                        <tr class="brand-danger text-white">
+                            <th colspan="7">
+                                Seleccionar
+                                <label class="radio-inline">
+                                    <input type="radio" name="select" value="1"> Todo
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="select" value="0"> Ninguno.
+                                </label>
+                            </th>
+                            {% for s in supplier %}
+                                {% for c in client %}
+                                    {% if s.proveedor_id == c.proveedor_id %}
+                                        <th colspan="5" class="text-center">
+                                           {{ c.moneda.moneda }}
+                                        </th>
+                                    {% else %}
+                                        <th colspan="5" class="text-center">
+                                            Nothing
+                                        </th>
+                                    {% endif %}
+                                {% empty %}
+                                    <th colspan="5" class="text-center">
+                                        Nothing
+                                    </th>
+                                {% endfor %}
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for x in details %}
+                            <tr>
+                                <td><input type="checkbox" name="mats" value="{{ x.materials }}"></td>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ x.materials }}</td>
+                                <td>{{ x.name }}</td>
+                                <td>{{ x.measure }}</td>
+                                <td>{{ x.unit }}</td>
+                                <td>{{ x.quantity|safe }}</td>
+                                 {% for s in supplier %}
+                                    {% for k in x.others %}
+                                        {% if s.proveedor_id == k.supplier %}
+                                            <td>{{ k.price|floatformat:"2" }}</td>
+                                            <td>{{ k.discount|safe }}%</td>
+                                            <td>{{ k.amount|safe }}</td>
+                                            <td>
+                                                <input type="number" class="form-control input-sm input-number" name="edit{{ k.supplier }}" value="{{ k.price|safe }}" min="0" data-price="{{ k.price|safe }}" data-discount="{{ k.discount|safe }}" data-quantity="{{ x.quantity|safe }}" data-amount="{{ k.amount|safe }}" data-id="{{ x.materials }}" data-supplier="{{ k.supplier }}" >
+                                            </td>
+                                            <td>{{ k.brand }}</td>
+                                        {% endif %}
+                                    {% empty %}
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="brand-warning">
+                            <th colspan="7" class="text-right"><small>(No incluye IGV)</small></th>
+                            {% for x in supplier %}
+                                <th colspan="2">Importe</th>
+                                <td class="amount{{ x.proveedor_id }}"></td>
+                                <td colspan="2" class="amountedit{{ x.proveedor_id }} text-right"></td>
+                            {% endfor %}
+                        </tr>
+                        <tr class="brand-warning">
+                            <th colspan="7"></th>
+                            {% for x in supplier %}
+                                <th colspan="2">IGV {{ conf.igv }}%</th>
+                                <td class="igv{{ x.proveedor_id }}"></td>
+                                <td colspan="2" class="igvedit{{ x.proveedor_id }} text-right"></td>
+                            {% endfor %}
+                        </tr>
+                        <tr class="brand-warning">
+                            <th colspan="7" class="text-right"></th>
+                            {% for x in supplier %}
+                                <td colspan="2">
+                                    <button class="btn btn-xs btn-danger btn-refresh-price" value="{{ x.proveedor_id }}">
+                                        <span class="glyphicon glyphicon-refresh"></span>
+                                    <small>TE</small>
+                                    </button>
+                                </td>
+                                <td class="total{{ x.proveedor_id }}"></td>
+                                <td colspan="2" class="totaledit{{ x.proveedor_id }} text-right"></td>
+                            {% endfor %}
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
         </section>
-        {{ details }}
     </div>
 </div>
+<!-- block modals -->
+<div class="modal fade choice-price" data-backdrop="static">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4 class="modal-title">Elije los precios?</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <button class="btn btn-lg btn-block btn-danger btn-origin text-black">
+                        <span class="glyphicon glyphicon-euro"></span>
+                        <span class="glyphicon glyphicon-signal"></span>
+                        Precios Originales
+                    </button>
+                </p>
+                <p>
+                    <button class="btn btn-lg btn-block btn-success btn-edit text-black">
+                        <span class="glyphicon glyphicon-euro"></span>
+                        <span class="glyphicon glyphicon-stats"></span>
+                        Precios Editados
+                    </button>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end block modals -->
+<!-- block variable -->
+<input type="hidden" name="igv" value="{{ conf.igv }}">
+{% for x in supplier %}
+    <input type="hidden" name="suppliers" value="{{ x.proveedor_id }}">
+{% endfor %}
 {% endblock content %}

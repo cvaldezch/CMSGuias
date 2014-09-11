@@ -374,7 +374,12 @@ class SectorManage(JSONResponseMixin, View):
                     # get stock of Inventory
                     # if x.brand_id == 'BR000':
                     stock = Inventario.objects.filter(materiales_id=x.materiales_id, periodo=globalVariable.get_year)
-                    data.append({'materiales_id':x.materiales_id, 'name':x.materiales.matnom,'measure':x.materiales.matmed,'unit':x.materiales.unidad.uninom,'brand':x.brand.brand, 'model':x.model.model,'quantity':x.quantityorder, 'cantidad':x.cantidad , 'price':x.precio, 'stock':stock[0].stock, 'comment':x.comment})
+                    if not stock:
+                        stock = '-'
+                    else:
+                        stock = stock[0].stock
+                    print stock
+                    data.append({'materiales_id':x.materiales_id, 'name':x.materiales.matnom,'measure':x.materiales.matmed,'unit':x.materiales.unidad.uninom,'brand':x.brand.brand, 'model':x.model.model,'quantity':x.quantityorder, 'cantidad':x.cantidad , 'price':x.precio, 'stock': stock, 'comment':x.comment})
                 context['meter'] = data
                 context['niple'] = globalVariable.tipo_nipples
                 context['store'] = Almacene.objects.filter(flag=True).order_by('nombre')

@@ -232,11 +232,11 @@
                                 {% endifequal %}
                                 <th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Marca</th><th>Modelo</th><th>Cantidad</th>
                                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
-                                <th>Precio</th>
+                                    <th>Precio</th>
                                 {% endif %}
                                 {% ifequal project.status 'AC' %}
-                                <th>Stock</th>
-                                <th>Observación</th>
+                                    <th>Stock</th>
+                                    <th>Observación</th>
                                 {% endifequal %}
                                 {% ifequal project.status 'PE'  %}
                                     <th>Editar</th><th>Eliminar</th>
@@ -259,7 +259,7 @@
                                         <td>{{ x.brand.brand }}</td>
                                         <td>{{ x.model.model }}</td>
                                         <td>{{ x.cantidad|safe }}</td>
-                                        {% if user.get_profile.empdni.charge.area|capfirst == 'Administrator' or user.get_profile.empdni.charge.area == 'Ventas'  %}
+                                        {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
                                             <td>{{ x.precio|safe }}</td>
                                         {% endif %}
                                         {% ifequal project.status 'PE'  %}
@@ -300,7 +300,7 @@
                                         <td>{{ x.quantity|safe }}</td>
                                         {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
                                             <td>{{ x.price|safe }}</td>
-                                            <td>{{ x.stock|safe|floatformat:"2" }}</td>
+                                            <td>{{ x.stock|safe }}</td>
                                         {% endif %}
                                         <td>
                                             {% if x.quantity <= 0 %}
