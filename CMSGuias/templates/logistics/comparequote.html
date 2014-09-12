@@ -17,7 +17,7 @@
 {% endblock menu %}
 {% block content %}
 <div class="container">
-    <div class="well">
+    <div class="well step-one">
         <header>
             <h3>
             	Comparar Cotizaciones
@@ -35,7 +35,7 @@
 	        				<div class="alert alert-block alert-success text-center">
 	        					<span class="glyphicon glyphicon-ok-circle"></span>
 	        					<strong>{{ x.proveedor_id }}</strong>
-	        					<p>{{ x.proveedor.razonsocial }}</p>
+	        					<p class="get-reason-{{ x.proveedor_id }}">{{ x.proveedor.razonsocial }}</p>
 	        				</div>
 	        			</div>
 	        		{% endfor %}
@@ -168,6 +168,98 @@
             </div>
         </section>
     </div>
+    <div class="well step-two">
+        <header>
+            <h3>
+                Generar Orden de Compra
+                <br>
+                <small name="data-supplier">
+
+                </small>
+            </h3>
+        </header>
+        <div class="panel panel-primary">
+            <div class="panel-footer">
+                <button class="btn btn-default btn-back">
+                    <span class="glyphicon glyphicon-remove"></span>
+                    Cancelar
+                </button>
+                <button class="btn btn-primary">
+                    <span class="glyphicon glyphicon-floppy-disk"></span>
+                    Generar Orden de Compra
+                </button>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">Ruc</label>
+                            <input type="text" class="form-control" name="ruc" readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label class="control-label">Razón Social</label>
+                            <input type="text" class="form-control" name="reason" readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label class="control-label">Lugar de Entrega</label>
+                            <input type="text" class="form-control" name="ruc">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label">Documento</label>
+                            <select class="form-control" name="document">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label">Pago</label>
+                            <select class="form-control" name="payment">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label">Moneda</label>
+                            <select name="currency" id="" class="form-control"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">Traslado</label>
+                            <input type="text" maxlength="10" placeholder="aaaa-mm-dd" class="form-control" name="ruc">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Contacto</label>
+                            <input type="text" class="form-control" name="contact">
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label class="control-label">Deposito</label>
+                            <input type="file" class="hide" name="deposit" accept="application/pdf">
+                            <div class="alert alert-inverse alert-inverse-border">
+                                <div class="text-center">
+                                    <span class="glyphicon glyphicon-paperclip"></span> Click
+                                    <button class="btn btn-sm text-white upload-green">
+                                        Aqui
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="prices">
+    </div>
 </div>
 <!-- block modals -->
 <div class="modal fade choice-price" data-backdrop="static">
@@ -179,17 +271,23 @@
             </div>
             <div class="modal-body">
                 <p>
-                    <button class="btn btn-lg btn-block btn-danger btn-origin text-black">
+                    <button class="btn btn-lg btn-block btn-danger btn-origin text-black" value="origin">
                         <span class="glyphicon glyphicon-euro"></span>
                         <span class="glyphicon glyphicon-signal"></span>
                         Precios Originales
                     </button>
                 </p>
                 <p>
-                    <button class="btn btn-lg btn-block btn-success btn-edit text-black">
+                    <button class="btn btn-lg btn-block btn-success btn-edit text-black" value="editable">
                         <span class="glyphicon glyphicon-euro"></span>
                         <span class="glyphicon glyphicon-stats"></span>
                         Precios Editados
+                    </button>
+                </p>
+                <p class="text-center">
+                    <button class="btn btn-default" data-dimiss="modal">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        Cancelar
                     </button>
                 </p>
             </div>
