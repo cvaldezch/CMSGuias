@@ -661,7 +661,7 @@ class SupplierCreate(CreateView):
         form.save()
         return render_to_response(self.template_name, {'msg':'success'}, context_instance=RequestContext(self.request))
 
-class CompareQuote(TemplateView):
+class CompareQuote(JSONResponseMixin, TemplateView):
     template_name = 'logistics/comparequote.html'
 
     @method_decorator(login_required)
@@ -688,7 +688,23 @@ class CompareQuote(TemplateView):
                 arr.append(data)
                 arm.append({'materials':x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'quantity':x.cantidad, 'others': arsu })
             context['details'] = arm
-            print arm
+            context['currency'] = Moneda.objects.filter(flag=True)
+            context['document'] = Documentos.objects.filter(flag=True)
+            context['payment'] = FormaPago.objects.filter(flag=True)
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax:
+            try:
+                if 'purchase' in request.POST:
+                    form = CompraForm(request.POST, request.FILES)
+                    if form.is_valid():
+                        context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise']  = e.__str__()
+                context['status'] = False
+            self.render_to_json_response(context)

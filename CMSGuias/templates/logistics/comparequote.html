@@ -19,12 +19,16 @@
 <div class="container">
     <div class="well step-one">
         <header>
+            <button class="btn btn-lg btn-danger pull-right btn-kill" value="{{ quote.cotizacion_id }}">
+                <span class="glyphicon glyphicon-saved"></span>
+                Terminar la Cotización
+            </button>
             <h3>
-            	Comparar Cotizaciones
-            	<br>
-            	<small>
-            		Nro de Cotización {{ quote.cotizacion_id }}
-            	</small>
+                Comparar Cotizaciones
+                <br>
+                <small>
+                    Nro de Cotización {{ quote.cotizacion_id }}
+                </small>
             </h3>
         </header>
         <article>
@@ -44,127 +48,129 @@
         </article>
         <section>
             <div class="panel panel-danger">
-                <table class="table table-condensed table-hover table-striped table-bordered">
-                    <thead>
-                        <tr class="brand-danger text-white">
-                            <th colspan="7"></th>
-                            {% for s in supplier %}
-                                <th class="text-center" colspan="5">
-                                    {{ s.proveedor.razonsocial }}
-                                    <button class="btn btn-xs btn-warning text-black btn-purchase" value="{{ s.proveedor_id }}">
-                                        <span class="glyphicon glyphicon-shopping-cart"></span>
-                                    </button>
+                <div class="table-responsive">
+                    <table class="table table-condensed table-hover table-striped table-bordered">
+                        <thead>
+                            <tr class="brand-danger text-white">
+                                <th colspan="7"></th>
+                                {% for s in supplier %}
+                                    <th class="text-center" colspan="5">
+                                        {{ s.proveedor.razonsocial }}
+                                        <button class="btn btn-xs btn-warning text-black btn-purchase" value="{{ s.proveedor_id }}">
+                                            <span class="glyphicon glyphicon-shopping-cart"></span>
+                                        </button>
+                                    </th>
+                                {% endfor %}
+                            </tr>
+                            <tr class="brand-danger text-white">
+                                <th></th>
+                                <th></th>
+                                <th>Código</th>
+                                <th>Descripción</th>
+                                <th>Medida</th>
+                                <th>Unidad</th>
+                                <th>Cantidad</th>
+                                {% for s in supplier %}
+                                    <th class="text-center">Precio</th>
+                                    <th class="text-center">Dsct.</th>
+                                    <th class="text-center">Importe</th>
+                                    <th class="text-center">Edit</th>
+                                    <th class="text-center">Marca</th>
+                                {% endfor %}
+                            </tr>
+                            <tr class="brand-danger text-white">
+                                <th colspan="7">
+                                    Seleccionar
+                                    <label class="radio-inline">
+                                        <input type="radio" name="select" value="1"> Todo
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="select" value="0"> Ninguno.
+                                    </label>
                                 </th>
-                            {% endfor %}
-                        </tr>
-                        <tr class="brand-danger text-white">
-                            <th></th>
-                            <th></th>
-                            <th>Código</th>
-                            <th>Descripción</th>
-                            <th>Medida</th>
-                            <th>Unidad</th>
-                            <th>Cantidad</th>
-                            {% for s in supplier %}
-                                <th class="text-center">Precio</th>
-                                <th class="text-center">Dsct.</th>
-                                <th class="text-center">Importe</th>
-                                <th class="text-center">Edit</th>
-                                <th class="text-center">Marca</th>
-                            {% endfor %}
-                        </tr>
-                        <tr class="brand-danger text-white">
-                            <th colspan="7">
-                                Seleccionar
-                                <label class="radio-inline">
-                                    <input type="radio" name="select" value="1"> Todo
-                                </label>
-                                <label class="radio-inline">
-                                    <input type="radio" name="select" value="0"> Ninguno.
-                                </label>
-                            </th>
-                            {% for s in supplier %}
-                                {% for c in client %}
-                                    {% if s.proveedor_id == c.proveedor_id %}
-                                        <th colspan="5" class="text-center">
-                                           {{ c.moneda.moneda }}
-                                        </th>
-                                    {% else %}
+                                {% for s in supplier %}
+                                    {% for c in client %}
+                                        {% if s.proveedor_id == c.proveedor_id %}
+                                            <th colspan="5" class="text-center">
+                                               {{ c.moneda.moneda }}
+                                            </th>
+                                        {% else %}
+                                            <th colspan="5" class="text-center">
+                                                Nothing
+                                            </th>
+                                        {% endif %}
+                                    {% empty %}
                                         <th colspan="5" class="text-center">
                                             Nothing
                                         </th>
-                                    {% endif %}
-                                {% empty %}
-                                    <th colspan="5" class="text-center">
-                                        Nothing
-                                    </th>
-                                {% endfor %}
-                            {% endfor %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for x in details %}
-                            <tr>
-                                <td><input type="checkbox" name="mats" value="{{ x.materials }}"></td>
-                                <td>{{ forloop.counter }}</td>
-                                <td>{{ x.materials }}</td>
-                                <td>{{ x.name }}</td>
-                                <td>{{ x.measure }}</td>
-                                <td>{{ x.unit }}</td>
-                                <td>{{ x.quantity|safe }}</td>
-                                 {% for s in supplier %}
-                                    {% for k in x.others %}
-                                        {% if s.proveedor_id == k.supplier %}
-                                            <td>{{ k.price|floatformat:"2" }}</td>
-                                            <td>{{ k.discount|safe }}%</td>
-                                            <td>{{ k.amount|safe }}</td>
-                                            <td>
-                                                <input type="number" class="form-control input-sm input-number" name="edit{{ k.supplier }}" value="{{ k.price|safe }}" min="0" data-price="{{ k.price|safe }}" data-discount="{{ k.discount|safe }}" data-quantity="{{ x.quantity|safe }}" data-amount="{{ k.amount|safe }}" data-id="{{ x.materials }}" data-supplier="{{ k.supplier }}" >
-                                            </td>
-                                            <td>{{ k.brand }}</td>
-                                        {% endif %}
-                                    {% empty %}
-                                        <td>-</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                        <td>-</td>
                                     {% endfor %}
                                 {% endfor %}
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                    <tfoot>
-                        <tr class="brand-warning">
-                            <th colspan="7" class="text-right"><small>(No incluye IGV)</small></th>
-                            {% for x in supplier %}
-                                <th colspan="2">Importe</th>
-                                <td class="amount{{ x.proveedor_id }}"></td>
-                                <td colspan="2" class="amountedit{{ x.proveedor_id }} text-right"></td>
+                        </thead>
+                        <tbody>
+                            {% for x in details %}
+                                <tr>
+                                    <td><input type="checkbox" name="mats" value="{{ x.materials }}"></td>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ x.materials }}</td>
+                                    <td>{{ x.name }}</td>
+                                    <td>{{ x.measure }}</td>
+                                    <td>{{ x.unit }}</td>
+                                    <td>{{ x.quantity|safe }}</td>
+                                     {% for s in supplier %}
+                                        {% for k in x.others %}
+                                            {% if s.proveedor_id == k.supplier %}
+                                                <td>{{ k.price|floatformat:"2" }}</td>
+                                                <td>{{ k.discount|safe }}%</td>
+                                                <td>{{ k.amount|safe }}</td>
+                                                <td>
+                                                    <input type="number" class="form-control input-sm input-number" name="edit{{ k.supplier }}" value="{{ k.price|safe }}" min="0" data-price="{{ k.price|safe }}" data-discount="{{ k.discount|safe }}" data-quantity="{{ x.quantity|safe }}" data-amount="{{ k.amount|safe }}" data-id="{{ x.materials }}" data-supplier="{{ k.supplier }}" >
+                                                </td>
+                                                <td>{{ k.brand }}</td>
+                                            {% endif %}
+                                        {% empty %}
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </tr>
                             {% endfor %}
-                        </tr>
-                        <tr class="brand-warning">
-                            <th colspan="7"></th>
-                            {% for x in supplier %}
-                                <th colspan="2">IGV {{ conf.igv }}%</th>
-                                <td class="igv{{ x.proveedor_id }}"></td>
-                                <td colspan="2" class="igvedit{{ x.proveedor_id }} text-right"></td>
-                            {% endfor %}
-                        </tr>
-                        <tr class="brand-warning">
-                            <th colspan="7" class="text-right"></th>
-                            {% for x in supplier %}
-                                <td colspan="2">
-                                    <button class="btn btn-xs btn-danger btn-refresh-price" value="{{ x.proveedor_id }}">
-                                        <span class="glyphicon glyphicon-refresh"></span>
-                                    <small>TE</small>
-                                    </button>
-                                </td>
-                                <td class="total{{ x.proveedor_id }}"></td>
-                                <td colspan="2" class="totaledit{{ x.proveedor_id }} text-right"></td>
-                            {% endfor %}
-                        </tr>
-                    </tfoot>
-                </table>
+                        </tbody>
+                        <tfoot>
+                            <tr class="brand-warning">
+                                <th colspan="7" class="text-right"><small>(No incluye IGV)</small></th>
+                                {% for x in supplier %}
+                                    <th colspan="2">Importe</th>
+                                    <td class="amount{{ x.proveedor_id }}"></td>
+                                    <td colspan="2" class="amountedit{{ x.proveedor_id }} text-right"></td>
+                                {% endfor %}
+                            </tr>
+                            <tr class="brand-warning">
+                                <th colspan="7"></th>
+                                {% for x in supplier %}
+                                    <th colspan="2">IGV {{ conf.igv }}%</th>
+                                    <td class="igv{{ x.proveedor_id }}"></td>
+                                    <td colspan="2" class="igvedit{{ x.proveedor_id }} text-right"></td>
+                                {% endfor %}
+                            </tr>
+                            <tr class="brand-warning">
+                                <th colspan="7" class="text-right"></th>
+                                {% for x in supplier %}
+                                    <td colspan="2">
+                                        <button class="btn btn-xs btn-danger btn-refresh-price" value="{{ x.proveedor_id }}">
+                                            <span class="glyphicon glyphicon-refresh"></span>
+                                        <small>TE</small>
+                                        </button>
+                                    </td>
+                                    <td class="total{{ x.proveedor_id }}"></td>
+                                    <td colspan="2" class="totaledit{{ x.proveedor_id }} text-right"></td>
+                                {% endfor %}
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
         </section>
     </div>
@@ -173,7 +179,7 @@
             <h3>
                 Generar Orden de Compra
                 <br>
-                <small name="data-supplier">
+                <small name="rucandreason">
 
                 </small>
             </h3>
@@ -184,7 +190,7 @@
                     <span class="glyphicon glyphicon-remove"></span>
                     Cancelar
                 </button>
-                <button class="btn btn-primary">
+                <button class="btn btn-primary btn-save-purchase">
                     <span class="glyphicon glyphicon-floppy-disk"></span>
                     Generar Orden de Compra
                 </button>
@@ -206,13 +212,16 @@
                     <div class="col-md-5">
                         <div class="form-group">
                             <label class="control-label">Lugar de Entrega</label>
-                            <input type="text" class="form-control" name="ruc">
+                            <input type="text" class="form-control" name="delivery">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label class="control-label">Documento</label>
                             <select class="form-control" name="document">
+                            {% for x in document %}
+                                <option value="{{ x.documento_id }}">{{ x.documento }}</option>
+                            {% endfor %}
                             </select>
                         </div>
                     </div>
@@ -220,19 +229,26 @@
                         <div class="form-group">
                             <label class="control-label">Pago</label>
                             <select class="form-control" name="payment">
+                                {% for x in payment %}
+                                    <option value="{{ x.pago_id }}">{{ x.pagos }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label class="control-label">Moneda</label>
-                            <select name="currency" id="" class="form-control"></select>
+                            <select name="currency" id="" class="form-control">
+                                {% for x in currency %}
+                                    <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
                             <label class="control-label">Traslado</label>
-                            <input type="text" maxlength="10" placeholder="aaaa-mm-dd" class="form-control" name="ruc">
+                            <input type="text" maxlength="10" placeholder="aaaa-mm-dd" class="form-control" name="transfer">
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -248,7 +264,7 @@
                             <div class="alert alert-inverse alert-inverse-border">
                                 <div class="text-center">
                                     <span class="glyphicon glyphicon-paperclip"></span> Click
-                                    <button class="btn btn-sm text-white upload-green">
+                                    <button class="btn btn-sm text-white upload-green btn-show-deposit">
                                         Aqui
                                     </button>
                                 </div>
