@@ -99,8 +99,8 @@ showStepOne = function(event) {
 };
 
 savePurchase = function() {
-  var $deposit, data, form, k, pass, v;
-  form = new FormatData();
+  var $deposit, arr, data, form, k, pass, type, v;
+  form = new FormData();
   data = new Object();
   data.proveedor = $("[name=ruc]").val();
   data.lugent = $("[name=delivery]").val();
@@ -126,14 +126,58 @@ savePurchase = function() {
     if ($deposit.files[0] !== null) {
       form.append("deposito", $deposit.files[0]);
     }
-    form.append("save-purchase", true);
+    arr = new Array();
+    type = $("input[name=prices]").val();
+    $("input[name=mats]").each(function(index, element) {
+      var ruc;
+      data = new Object();
+      if (element.checked) {
+        data["materials"] = element.value;
+        ruc = $("[name=ruc]").val();
+        $("input[name=edit" + ruc + "]").each(function(index, input) {
+          var dis, pre;
+          if (input.getAttribute("data-id") === element.value) {
+            if (type === "origin") {
+              data["price"] = parseFloat(input.getAttribute("data-price"));
+              data["discount"] = parseInt(input.getAttribute("data-discount"));
+            } else if (type === "edit") {
+              data["price"] = parseFloat(input.value);
+              pre = parseFloat(input.getAttribute("data-price"));
+              if (parseFloat(input.value) < pre) {
+                dis = pre - parseFloat(input.value);
+                dis = (dis * 100) / pre;
+                if (parseInt(input.getAttribute("data-discount")) > 0) {
+                  data["discount"] = parseInt(input.getAttribute("data-discount")) + dis;
+                } else {
+                  data["discount"] = dis;
+                }
+              } else {
+                if (parseInt(input.getAttribute("data-discount")) > 0) {
+                  data["discount"] = parseInt(input.getAttribute("data-discount"));
+                } else {
+                  data["discount"] = 0;
+                }
+              }
+            }
+            data["brand"] = input.getAttribute("data-brand");
+            data["modal"] = input.getAttribute("data-model");
+            return data["quantity"] = parseFloat(input.getAttribute("data-quantity"));
+          }
+        });
+        arr.push(data);
+      }
+    });
+    console.log(arr);
+    form.append("details", JSON.stringify(arr));
+    form.append("purchase", true);
+    form.append("csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val());
     $.ajax({
       url: "",
       type: "POST",
       data: form,
       dataType: "json",
-      proccessData: false,
       cache: false,
+      processData: false,
       contentType: false,
       success: function(response) {
         if (response.status) {
@@ -142,7 +186,7 @@ savePurchase = function() {
             return location.href = "/logistics/compare/quote/" + ($(".btn-kill").val()) + "/";
           }, 2600);
         } else {
-          return $().toastmessage("showWErrorToast", "No se a podido generar la Orden de compra. Vuelva a intentarlo.");
+          return $().toastmessage("showErrorToast", "No se a podido generar la Orden de compra. Vuelva a intentarlo.");
         }
       }
     });

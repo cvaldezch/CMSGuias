@@ -81,7 +81,7 @@ showStepOne = (event) ->
     return
 
 savePurchase = ->
-    form = new FormatData()
+    form = new FormData()
     data = new Object()
     data.proveedor = $("[name=ruc]").val()
     data.lugent = $("[name=delivery]").val()
@@ -103,14 +103,49 @@ savePurchase = ->
     if pass
         if $deposit.files[0] isnt null
             form.append "deposito", $deposit.files[0]
-        form.append "save-purchase", true
+        arr = new Array()
+        type = $("input[name=prices]").val()
+        $("input[name=mats]").each (index, element) ->
+            data = new Object()
+            if element.checked
+                data["materials"] = element.value
+                ruc = $("[name=ruc]").val()
+                $("input[name=edit#{ruc}]").each (index, input) ->
+                    if input.getAttribute("data-id") is element.value
+                        if type is "origin"
+                            data["price"] = parseFloat input.getAttribute "data-price"
+                            data["discount"] = parseInt input.getAttribute "data-discount"
+                        else if type is "edit"
+                            data["price"] = parseFloat input.value
+                            pre = parseFloat(input.getAttribute("data-price"))
+                            if parseFloat(input.value) < pre
+                                dis = (pre - parseFloat(input.value))
+                                dis = ((dis*100)/pre)
+                                if parseInt(input.getAttribute("data-discount")) > 0
+                                    data["discount"] = (parseInt(input.getAttribute("data-discount")) + dis)
+                                else
+                                    data["discount"] = dis
+                            else
+                                if parseInt(input.getAttribute("data-discount")) > 0
+                                    data["discount"] = parseInt(input.getAttribute("data-discount"))
+                                else
+                                    data["discount"] = 0
+                        data["brand"] = input.getAttribute "data-brand"
+                        data["modal"] = input.getAttribute "data-model"
+                        data["quantity"] = parseFloat input.getAttribute "data-quantity"
+                arr.push data
+                return
+        console.log arr
+        form.append "details", JSON.stringify(arr)
+        form.append "purchase", true
+        form.append "csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val()
         $.ajax
             url : ""
             type : "POST"
             data : form
             dataType : "json"
-            proccessData : false
             cache : false
+            processData : false
             contentType : false
             success : (response) ->
                 if response.status
@@ -119,5 +154,5 @@ savePurchase = ->
                         location.href = "/logistics/compare/quote/#{$(".btn-kill").val()}/"
                     , 2600
                 else
-                    $().toastmessage "showWErrorToast", "No se a podido generar la Orden de compra. Vuelva a intentarlo."
+                    $().toastmessage "showErrorToast", "No se a podido generar la Orden de compra. Vuelva a intentarlo."
     return

@@ -124,7 +124,7 @@
                                                 <td>{{ k.discount|safe }}%</td>
                                                 <td>{{ k.amount|safe }}</td>
                                                 <td>
-                                                    <input type="number" class="form-control input-sm input-number" name="edit{{ k.supplier }}" value="{{ k.price|safe }}" min="0" data-price="{{ k.price|safe }}" data-discount="{{ k.discount|safe }}" data-quantity="{{ x.quantity|safe }}" data-amount="{{ k.amount|safe }}" data-id="{{ x.materials }}" data-supplier="{{ k.supplier }}" >
+                                                    <input type="number" class="form-control input-sm input-number" name="edit{{ k.supplier }}" value="{{ k.price|safe }}" min="0" data-price="{{ k.price|safe }}" data-discount="{{ k.discount|safe }}" data-quantity="{{ x.quantity|safe }}" data-amount="{{ k.amount|safe }}" data-id="{{ x.materials }}" data-supplier="{{ k.supplier }}" data-brand="{{ k.brand }}" data-model="{{ k.model }}">
                                                 </td>
                                                 <td>{{ k.brand }}</td>
                                             {% endif %}
@@ -230,7 +230,7 @@
                             <label class="control-label">Pago</label>
                             <select class="form-control" name="payment">
                                 {% for x in payment %}
-                                    <option value="{{ x.pago_id }}">{{ x.pagos }}</option>
+                                    <option value="{{ x.pagos_id }}">{{ x.pagos }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -312,6 +312,7 @@
 </div>
 <!-- end block modals -->
 <!-- block variable -->
+{% csrf_token %}
 <input type="hidden" name="igv" value="{{ conf.igv }}">
 {% for x in supplier %}
     <input type="hidden" name="suppliers" value="{{ x.proveedor_id }}">

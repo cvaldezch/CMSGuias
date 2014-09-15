@@ -1,3 +1,4 @@
+
  # -*- coding: utf-8 -*-
 
 import json
@@ -702,9 +703,10 @@ class CompareQuote(JSONResponseMixin, TemplateView):
             try:
                 if 'purchase' in request.POST:
                     form = CompraForm(request.POST, request.FILES)
+                    print form.is_valid()
                     if form.is_valid():
                         context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise']  = e.__str__()
                 context['status'] = False
-            self.render_to_json_response(context)
+            return self.render_to_json_response(context)
