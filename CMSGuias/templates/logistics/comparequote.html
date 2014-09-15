@@ -56,7 +56,13 @@
                                 {% for s in supplier %}
                                     <th class="text-center" colspan="5">
                                         {{ s.proveedor.razonsocial }}
-                                        <button class="btn btn-xs btn-warning text-black btn-purchase" value="{{ s.proveedor_id }}">
+                                        <button class="btn btn-xs btn-warning text-black btn-purchase" value="{{ s.proveedor_id }}"
+                                        {% for p in purchase %}
+                                            {% if p.proveedor_id == s.proveedor_id %}
+                                                disabled="disabled"
+                                            {% endif %}
+                                        {% endfor %}
+                                        >
                                             <span class="glyphicon glyphicon-shopping-cart"></span>
                                         </button>
                                     </th>
@@ -93,6 +99,29 @@
                                         {% if s.proveedor_id == c.proveedor_id %}
                                             <th colspan="5" class="text-center">
                                                {{ c.moneda.moneda }}
+                                            </th>
+                                        {% else %}
+                                            <th colspan="5" class="text-center">
+                                                Nothing
+                                            </th>
+                                        {% endif %}
+                                    {% empty %}
+                                        <th colspan="5" class="text-center">
+                                            Nothing
+                                        </th>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tr>
+                            <tr class="brand-danger text-white">
+                                <th colspan="7">
+                                </th>
+                                {% for s in supplier %}
+                                    {% for c in client %}
+                                        {% if s.proveedor_id == c.proveedor_id %}
+                                            <th colspan="5" class="text-center">
+                                               <label class="chekbox-inline">
+                                                   <input type="checkbox" id="dscto{{ c.proveedor_id }}"> Acumular Descto. %
+                                               </label>
                                             </th>
                                         {% else %}
                                             <th colspan="5" class="text-center">
@@ -212,7 +241,7 @@
                     <div class="col-md-5">
                         <div class="form-group">
                             <label class="control-label">Lugar de Entrega</label>
-                            <input type="text" class="form-control" name="delivery">
+                            <input type="text" class="form-control" name="delivery" value="Jr. Gral. Jose de San Martin Mz. E Lote 6 Huachipa - Lurigancho Lima, Peru">
                         </div>
                     </div>
                     <div class="col-md-3">

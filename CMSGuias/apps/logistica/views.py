@@ -20,7 +20,7 @@ from django.views.generic.edit import CreateView
 from xlrd import open_workbook, XL_CELL_EMPTY
 
 from CMSGuias.apps.almacen.models import Suministro
-from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda, Configuracion, LoginProveedor
+from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda, Configuracion, LoginProveedor, Brand, Model
 from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra, tmpcotizacion, tmpcompra
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles
 from .forms import addTmpCotizacionForm, addTmpCompraForm, CompraForm, ProveedorForm
@@ -209,7 +209,8 @@ class ViewListQuotation(TemplateView):
                 elif request.GET.get('dates') != '' and request.GET.get('datee') != '':
                     model = CotKeys.objects.filter(cotizacion__registrado__range=(globalVariable.format_str_date(request.GET.get('dates')),globalVariable.format_str_date(request.GET.get('datee'))), flag=True)
         else:
-            model = CotKeys.objects.filter(flag=True).order_by('-cotizacion__registrado')
+            model = CotKeys.objects.filter(Q(flag=True)).order_by('-cotizacion__registrado')
+
 
         paginator = Paginator(model, 15)
         page = request.GET.get('page')
@@ -669,7 +670,7 @@ class CompareQuote(JSONResponseMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
-            context['quote'] = Cotizacion.objects.get(Q(cotizacion_id=kwargs['quote']),Q(flag=True), Q(status='PE'))
+            context['quote'] = Cotizacion.objects.get(Q(cotizacion_id=kwargs['quote']),Q(flag=True), ~Q(status='CO'))
             context['supplier'] = CotKeys.objects.filter(cotizacion_id=kwargs['quote'])
             mats = DetCotizacion.objects.filter(cotizacion_id=kwargs['quote']).order_by('materiales__materiales_id').distinct('materiales__materiales_id')
             context['client'] = CotCliente.objects.filter(cotizacion_id=kwargs['quote'])
@@ -692,6 +693,7 @@ class CompareQuote(JSONResponseMixin, TemplateView):
             context['currency'] = Moneda.objects.filter(flag=True)
             context['document'] = Documentos.objects.filter(flag=True)
             context['payment'] = FormaPago.objects.filter(flag=True)
+            context['purchase'] = Compra.objects.filter(cotizacion_id=kwargs['quote'],flag=True)
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404
@@ -705,7 +707,71 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                     form = CompraForm(request.POST, request.FILES)
                     print form.is_valid()
                     if form.is_valid():
+                        add = form.save(commit=False)
+                        purchase = genkeys.GenerateKeyPurchase()
+                        add.compra_id = purchase
+                        add.cotizacion_id = kwargs['quote']
+                        add.flag = True
+                        add.empdni_id = request.user.get_profile().empdni_id
+                        add.save()
+                        # save the details
+                        details = json.loads(request.POST.get('details'))
+                        print details
+                        for x in details:
+                            # consult if brand exists and model
+                            brand = Brand.objects.filter(brand__icontains=x['brand'])
+                            if brand:
+                                brand = brand[0].brand_id
+                            else:
+                                br = Brand()
+                                brand = genkeys.GenerateIdBrand()
+                                br.brand_id = brand
+                                br.brand = x['brand']
+                                br.save()
+                            print brand
+                            model = Model.objects.filter(model__icontains=x['model'])
+                            if model:
+                                model = model[0].model_id
+                            else:
+                                mo = Model()
+                                model = genkeys.GenerateIdModel()
+                                mo.model_id = model
+                                mo.brand_id = brand
+                                mo.model = x['model']
+                                mo.save()
+                            print model
+                            det = DetCompra()
+                            det.compra_id = purchase
+                            det.materiales_id = x['materials']
+                            det.brand_id = brand
+                            det.model_id = model
+                            det.cantidad = x['quantity']
+                            det.cantstatic = x['quantity']
+                            det.precio = x['price']
+                            det.discount = x['discount']
+                            det.flag = '1'
+                            det.save()
+                        # change status of models CotCliente
+                        try:
+                            cust = CotCliente.objects.get(cotizacion_id=kwargs['quote'], proveedor_id=request.POST.get('proveedor'))
+                            cust.status = "CO"
+                            cust.save()
+                        except ObjectDoesNotExist, e:
+                            context['client'] = 'No change model CotClient'
+                        # Change status of models CotKeys
+                        try:
+                            keys = CotKeys.objects.get(cotizacion_id=kwargs['quote'], proveedor_id=request.POST.get('proveedor'))
+                            keys.status = "CO"
+                            keys.save()
+                        except ObjectDoesNotExist, e:
+                            context['keys'] = 'No change model CotKeys'
+                        context['purchase'] = purchase
                         context['status'] = True
+                if 'finish' in request.POST:
+                    cot = Cotizacion.objects.get(pk=kwargs['quote'])
+                    cot.status = 'CO'
+                    cot.save()
+                    context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise']  = e.__str__()
                 context['status'] = False

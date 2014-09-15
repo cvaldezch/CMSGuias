@@ -177,7 +177,7 @@ def GenerateIdBrand():
 def GenerateIdModel():
     id = None
     try:
-        code = Model.objects.aggregate(max=Max('brand_id'))
+        code = Model.objects.aggregate(max=Max('model_id'))
         id = code['max']
         if id is not None:
             counter = int(id[2:5])

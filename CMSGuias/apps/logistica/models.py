@@ -54,7 +54,7 @@ class DetCompra(models.Model):
     model = models.ForeignKey(Model, to_field='model_id', default='MO000', blank=True)
     cantidad = models.FloatField()
     precio = models.FloatField()
-    discount = models.PositiveSmallIntegerField(default=0)
+    discount = models.DecimalField(max_digits=5, decimal_places=2, default=0) #models.PositiveSmallIntegerField(default=0)
     cantstatic = models.FloatField()
     flag = models.CharField(max_length=1, default='0')
 
