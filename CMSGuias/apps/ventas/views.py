@@ -61,6 +61,7 @@ class ProjectsList(JSONResponseMixin, TemplateView):
             context['list'] = Proyecto.objects.filter(Q(flag=True), ~Q(status='DA'))
             context['country'] = Pais.objects.filter(flag=True)
             context['customers'] = Cliente.objects.filter(flag=True)
+            context['currency'] = Moneda.objects.filter(flag=True)
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, "Template Does Not Exist %s"%e)

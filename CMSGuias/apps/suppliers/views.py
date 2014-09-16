@@ -124,7 +124,7 @@ class ListQuote(JSONResponseMixin, TemplateView):
             return self.render_to_json_response(context)
 
 class ListDetailsQuote(JSONResponseMixin, TemplateView):
-    templeta_name = "suppliers/detilsquote.html"
+    template_name = "suppliers/detilsquote.html"
 
     def get(self, request, *args, **kwargs):
         context = dict()
@@ -157,7 +157,7 @@ class ListDetailsQuote(JSONResponseMixin, TemplateView):
                         return HttpResponseRedirect(reverse_lazy('supplier_quote'))
                 else:
                     return HttpResponseRedirect(reverse_lazy('supplier_quote'))
-                return render_to_response(self.templeta_name, context, context_instance=RequestContext(request))
+                return render_to_response(self.template_name, context, context_instance=RequestContext(request))
             except TemplateDoesNotExist, e:
                 raise Http404('Template not found')
 

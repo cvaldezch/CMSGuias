@@ -65,7 +65,7 @@ List of Quotation with keys
 							<table class="table table-condensed table-hover">
 								<thead>
 									<tr class="brand-warning">
-										<th class="text-center">Item</th><th class="text-center">Cotización</th><th class="text-center">Ruc</th><th class="text-center">Razón Social</th><th class="text-center">Key</th><th class="text-center">Fecha Traslado</th><th class="text-center">Ver</th><th class="text-center">Envia</th><th class="text-center">Anular</th><th class="text-center">Comparar</th>
+										<th class="text-center">Item</th><th class="text-center">Cotización</th><th class="text-center">Ruc</th><th class="text-center">Razón Social</th><th class="text-center">Key</th><th class="text-center">Fecha Traslado</th><th class="text-center">Ver</th><th class="text-center">Envia</th><th class="text-center">Anular</th><th class="text-center">Precios</th><th class="text-center">Comparar</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -78,13 +78,18 @@ List of Quotation with keys
 										<td>{{ x.keygen }}</td>
 										<td>{{ x.cotizacion.traslado }}</td>
 										<td class="text-center">
-											<button class="btn btn-xs btn-link text-blue btn-view" value="{{ x.cotizacion_id }}" data-sup="{{ x.proveedor_id }}"><span class="glyphicon glyphicon-eye-open"></span></button>
+											<button class="btn btn-xs btn-link text-blue btn-view" value="{{ x.cotizacion_id }}" data-sup="{{ x.proveedor_id }}"><span class="glyphicon glyphicon-file"></span></button>
 										</td>
 										<td class="text-center">
 											<button class="btn btn-xs btn-link text-green btn-show-send" value="{{ x.cotizacion_id }}" data-name="{{ x.proveedor.razonsocial }}" data-key="{{ x.keygen }}" data-mail="{{ x.proveedor.email }}"><span class="glyphicon glyphicon-envelope"></span></button>
 										</td>
 										<td class="text-center">
 											<button class="btn btn-xs btn-link text-red btn-del" value="{{ x.cotizacion_id }}" data-sup="{{ x.proveedor_id }}"><span class="glyphicon glyphicon-fire"></span></button>
+										</td>
+										<td class="text-center">
+											<a href="/logistics/ingress/price/supplier/{{ x.cotizacion_id }}/{{ x.proveedor_id }}/" class="btn btn-link btn-xs text-black">
+												<span class="glyphicon glyphicon-euro"></span>
+											</a>
 										</td>
 										<td class="text-center">
 											<a href="{% url 'view_compare_quote'  x.cotizacion_id %}" class="btn btn-xs btn-link text-black">

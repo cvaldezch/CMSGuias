@@ -1,5 +1,5 @@
 from django.db import models
-from CMSGuias.apps.home.models import Pais, Departamento, Provincia, Distrito, Cliente, Materiale, Employee, Brand, Model, Cargo
+from CMSGuias.apps.home.models import Pais, Departamento, Provincia, Distrito, Cliente, Materiale, Employee, Brand, Model, Cargo, Moneda
 
 
 class Proyecto(models.Model):
@@ -18,6 +18,8 @@ class Proyecto(models.Model):
     status = models.CharField(max_length=2,null=False,default='00')
     empdni = models.ForeignKey(Employee, related_name='proyectoAsEmployee', null=True, blank=True)
     approved = models.ForeignKey(Employee, related_name='approvedAsEmployee', null=True, blank=True)
+    currency = models.ForeignKey(Moneda, to_field='moneda_id', null=True, blank=True)
+    exchange = models.FloatField(null=True, blank=True)
     flag = models.BooleanField(default=True,null=False)
 
     class Meta:

@@ -127,6 +127,22 @@
                                 <input type="text" name="direccion" class="form-control input-sm">
                             </div>
                         </div>
+                        <div class="col-md-3">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Moneda</label>
+                                <select name="currency" class="form-control input-sm">
+                                {% for x in currency %}
+                                    <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
+                                {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Tipo Cambio</label>
+                                <input type="text" name="exchange" class="form-control input-sm">
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             <div class="form-group has-primary">
                                 <label class="control-label">Observación</label>

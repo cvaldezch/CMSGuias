@@ -202,15 +202,14 @@ class ViewListQuotation(TemplateView):
         context = super(ViewListQuotation, self).get_context_data(**kwargs)
         if request.is_ajax():
             if request.GET.get('by') == 'code':
-                model = CotKeys.objects.filter(cotizacion_id=request.GET.get('code'),flag=True)
+                model = CotKeys.objects.filter(Q(cotizacion_id=request.GET.get('code')), Q(flag=True),~Q(status='CO'), ~Q(status='NC') )
             elif request.GET.get('by') == 'dates':
                 if request.GET.get('dates') != '' and request.GET.get('datee') == '':
-                    model = CotKeys.objects.filter(cotizacion__registrado__startswith=globalVariable.format_str_date(request.GET.get('dates')),flag=True)
+                    model = CotKeys.objects.filter(Q(cotizacion__registrado__startswith=globalVariable.format_str_date(request.GET.get('dates'))), Q(flag=True),~Q(status='CO'), ~Q(status='NC'))
                 elif request.GET.get('dates') != '' and request.GET.get('datee') != '':
-                    model = CotKeys.objects.filter(cotizacion__registrado__range=(globalVariable.format_str_date(request.GET.get('dates')),globalVariable.format_str_date(request.GET.get('datee'))), flag=True)
+                    model = CotKeys.objects.filter(Q(cotizacion__registrado__range=(globalVariable.format_str_date(request.GET.get('dates')),globalVariable.format_str_date(request.GET.get('datee')))), Q(flag=True),~Q(status='CO'), ~Q(status='NC'))
         else:
-            model = CotKeys.objects.filter(Q(flag=True)).order_by('-cotizacion__registrado')
-
+            model = CotKeys.objects.filter(Q(flag=True),~Q(status='CO'), ~Q(status='NC')).order_by('-cotizacion__registrado')
 
         paginator = Paginator(model, 15)
         page = request.GET.get('page')
@@ -670,7 +669,7 @@ class CompareQuote(JSONResponseMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
-            context['quote'] = Cotizacion.objects.get(Q(cotizacion_id=kwargs['quote']),Q(flag=True), ~Q(status='CO'))
+            context['quote'] = Cotizacion.objects.get(Q(cotizacion_id=kwargs['quote']), Q(flag=True), ~Q(status='CO'))
             context['supplier'] = CotKeys.objects.filter(cotizacion_id=kwargs['quote'])
             mats = DetCotizacion.objects.filter(cotizacion_id=kwargs['quote']).order_by('materiales__materiales_id').distinct('materiales__materiales_id')
             context['client'] = CotCliente.objects.filter(cotizacion_id=kwargs['quote'])
@@ -695,7 +694,7 @@ class CompareQuote(JSONResponseMixin, TemplateView):
             context['payment'] = FormaPago.objects.filter(flag=True)
             context['purchase'] = Compra.objects.filter(cotizacion_id=kwargs['quote'],flag=True)
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
-        except TemplateDoesNotExist, e:
+        except ObjectDoesNotExist, e:
             raise Http404
 
     @method_decorator(login_required)
@@ -771,8 +770,112 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                     cot = Cotizacion.objects.get(pk=kwargs['quote'])
                     cot.status = 'CO'
                     cot.save()
+                    # change status of cotkeys and cot cli
+                    keys = CotKeys.objects.filter(Q(cotizacion_id=kwargs['quote']), ~Q(status='CO'))
+                    if keys:
+                        for x in keys:
+                            x.status = 'NC'
+                            x.save()
+                    cust = CotCliente.objects.filter(Q(cotizacion_id=kwargs['quote']), ~Q(status='CO'))
+                    if cust:
+                        for x in cust:
+                            x.status = 'NC'
+                            x.save()
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise']  = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
+
+class IngressPriceQuote(JSONResponseMixin, TemplateView):
+    template_name = 'logistics/ingressprices.html'
+
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if kwargs['quote'] and kwargs['supplier']:
+                if kwargs['quote'].__len__() == 10 and kwargs['supplier'].__len__() == 11:
+                    context['quote'] = Cotizacion.objects.get(pk=kwargs['quote'])
+                    if context['quote'].status != 'PE':
+                        return HttpResponseRedirect(reverse_lazy('view_quote_list'))
+                    else:
+                        context['details'] = DetCotizacion.objects.filter(cotizacion_id=kwargs['quote'], proveedor_id=kwargs['supplier']).order_by('materiales__matnom')
+                        obj = Configuracion.objects.filter(periodo=globalVariable.get_year)[:1]
+                        context['igv'] = obj[0].igv
+                        context['currency'] = Moneda.objects.filter(flag=True).order_by('moneda')
+                        cli = CotCliente.objects.filter(cotizacion_id=kwargs['quote'], proveedor_id=kwargs['supplier'])
+                        if cli:
+                            if cli[0].status == 'CO':
+                                context['disabled'] = True
+                            else:
+                                context['disabled'] = False
+                        else:
+                            context['disabled'] = False
+                        context['supplier'] = kwargs['supplier']
+                else:
+                    return HttpResponseRedirect(reverse_lazy('view_quote_list'))
+            else:
+                return HttpResponseRedirect(reverse_lazy('view_quote_list'))
+            return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        except TemplateDoesNotExist, e:
+            raise Http404('Template not found')
+
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            context = dict()
+            try:
+                if 'blur' in request.POST:
+                    obj = DetCotizacion.objects.get(cotizacion_id=kwargs['quote'], proveedor_id=kwargs['supplier'], materiales_id=request.POST.get('materials'))
+                    if request.POST.get('blur') == 'price':
+                        obj.precio = request.POST.get('val')
+                        obj.save()
+                        context['quantity'] = obj.cantidad
+                        context['status'] = True
+                    elif request.POST.get('blur') == 'desct':
+                        obj.discount = request.POST.get('val')
+                        obj.save()
+                        context['quantity'] = obj.cantidad
+                        context['status'] = True
+                    elif request.POST.get('blur') == 'brands':
+                        obj.marca = request.POST.get('val')
+                        obj.save()
+                        context['status'] = True
+                    elif request.POST.get('blur') == 'models':
+                        obj.modelo = request.POST.get('val')
+                        obj.save()
+                        context['status'] = True
+                    elif request.POST.get('blur') == 'dates':
+                        obj.entrega = globalVariable.format_str_date(request.POST.get('val'))
+                        obj.save()
+                        context['status'] = True
+                if request.POST.get('type') == 'file':
+                    sheet = request.FILES['sheet']
+                    uri = '/storage/quotations/%s/%s/'%(kwargs['quote'], kwargs['supplier'])
+                    name = '%s%s.pdf'%(uri, request.POST.get('materials'))
+                    if uploadFiles.fileExists(name, True):
+                        uploadFiles.deleteFile(name, True)
+
+                    filename = uploadFiles.upload(uri, sheet, {'name':request.POST.get('materials')})
+                    if filename:
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+                if 'client' in request.POST:
+                    obj = CotCliente.objects.filter(proveedor_id=kwargs['supplier'], cotizacion_id=kwargs['quote'])
+                    if not obj:
+                        obj = CotCliente()
+                        obj.proveedor_id = kwargs['supplier']
+                        obj.cotizacion_id = kwargs['quote']
+                        obj.envio = globalVariable.format_str_date(request.POST.get('traslado'))
+                        obj.validez = globalVariable.format_str_date(request.POST.get('validez'))
+                        obj.contacto = request.POST.get('contacto')
+                        obj.moneda_id = request.POST.get('moneda')
+                        obj.obser = request.POST.get('obser')
+                        obj.status = 'SD'
+                        obj.flag = True
+                        obj.save()
+                        context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)

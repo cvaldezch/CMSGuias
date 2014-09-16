@@ -18,5 +18,6 @@ urlpatterns = patterns('',
     url(r'^purchase/list/$', ListPurchase.as_view(), name='view_purchase_list'),
     url(r'^supplier/login/$', LoginSupplier.as_view(), name='view_login_suppler'),
     url(r'^compare/quote/(?P<quote>\w+)/', CompareQuote.as_view(), name='view_compare_quote'),
+    url(r'^ingress/price/supplier/(?P<quote>\w{10})/(?P<supplier>\w{11})/', IngressPriceQuote.as_view(), name='view_ingress_price_supplier'),
     url(r'^crud/', include(urlcrud)),
 )

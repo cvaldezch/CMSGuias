@@ -32,9 +32,9 @@
         </div>
         <div id="bedside-col2">
             <table>
-                <tr><td><strong>Envio Proveedor:</strong></td><td> {{ customers.envio }}</td></tr>
-                <tr><td><strong>Validez:</strong></td><td> {{ customers.validez }}</td></tr>
-                <tr><td><strong>Moneda:</strong></td><td> {{ customers.moneda.moneda }}</td></tr>
+                <tr><td><strong>Envio Proveedor:</strong></td><td> {{ customers.0.envio }}</td></tr>
+                <tr><td><strong>Validez:</strong></td><td> {{ customers.0.validez }}</td></tr>
+                <tr><td><strong>Moneda:</strong></td><td> {{ customers.0.moneda.moneda }}</td></tr>
                 <tr><td width="3cm"><strong>Estado :</strong></td><td> {% for k, v in status.iteritems %}
                     {% ifequal k bedside.status %}
                         {{ v }}

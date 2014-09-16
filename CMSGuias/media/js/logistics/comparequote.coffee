@@ -165,7 +165,7 @@ savePurchase = ->
             contentType : false
             success : (response) ->
                 if response.status
-                    $().toastmessage "showWarningToast", "Felicidades! se a generar la <q>Orden de Compra</q> Nro #{response.purchase}"
+                    $().toastmessage "showNoticeToast", "Felicidades! se a generar la <q>Orden de Compra</q> Nro #{response.purchase}"
                     setTimeout ->
                         #location.href = "/logistics/compare/quote/#{$(".btn-kill").val()}/"
                         $("input[name=edit#{$("[name=ruc]").val()}]").attr "disabled","disabled"
