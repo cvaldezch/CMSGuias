@@ -164,6 +164,7 @@
                                 <th class="text-center">Codigo</th>
                                 <th>Nombre de Proyecto</th>
                                 <th>Dirección</th>
+                                <th class="text-center">Registrado</th>
                                 <th class="text-center">Fecha Inicio</th>
                                 <th class="text-center">Fecha Fin</th>
                                 {% if user.get_profile.empdni.charge.area == "Administrator" or user.get_profile.empdni.charge.area == "Ventas"  %}
@@ -185,6 +186,7 @@
                                 <td>{{ x.proyecto_id }}</td>
                                 <td>{{ x.nompro }}</td>
                                 <td>{{ x.direccion }}</td>
+                                <td class="text-center">{{ x.registrado|date:"Y-m-d" }}</td>
                                 <td>{{ x.comienzo }}</td>
                                 <td>{{ x.fin }}</td>
                                 {% if user.get_profile.empdni.charge.area == "Administrator" or user.get_profile.empdni.charge.area == "Ventas"  %}

@@ -32,10 +32,10 @@ var terminateSupply = function (event) {
 				data['type'] = "finish";
 				$.post('', data, function(response) {
 					console.log(response);
-					if (response.status) {
+					if (response.obj) {
 						$().toastmessage("showNoticeToast","Bien, se a completado el suministro <b>Nro "+data.supply+".</b>");
 						setTimeout(function() {
-							location.href="/logistics/"
+							location.href="/logistics/supply/to/convert/"
 						}, 3000);
 					};
 				}, "json");

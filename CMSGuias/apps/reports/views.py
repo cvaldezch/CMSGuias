@@ -122,11 +122,11 @@ class RptPurchase(TemplateView):
             context['details'] = list()
             for x in tmp:
                 disc = ((x.precio * float(x.discount)) / 100)
-                tdiscount += (disc * x.cantidad)
+                tdiscount += (disc * x.cantstatic)
                 precio = x.precio - disc
-                amount = (x.cantidad * precio)
+                amount = (x.cantstatic * precio)
                 subt += amount
-                context['details'].append({'materials_id':x.materiales_id, 'matname':x.materiales.matnom, 'measure': x.materiales.matmed, 'unit':x.materiales.unidad_id, 'quantity':x.cantidad, 'price':x.precio, 'discount': float(x.discount), 'amount':amount})
+                context['details'].append({'materials_id':x.materiales_id, 'matname':x.materiales.matnom, 'measure': x.materiales.matmed, 'unit':x.materiales.unidad_id, 'quantity':x.cantstatic, 'price':x.precio, 'discount': float(x.discount), 'amount':amount})
             context['discount'] = tdiscount
             context['igvval'] = ((conf.igv * subt) / 100)
             context['igv'] = conf.igv

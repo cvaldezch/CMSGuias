@@ -816,15 +816,15 @@ def view_generate_document_out(request,oid):
             return render_to_response("almacen/documentout.html",ctx,context_instance=RequestContext(request))
         elif request.method == 'POST':
             if request.is_ajax():
-                form= forms.addGuideReferral(request.POST)
+                form = forms.addGuideReferral(request.POST)
                 if form.is_valid():
-                    data= {}
+                    data = {}
                     try:
-                        add= form.save(commit=False)
-                        guidekeys= genkeys.GenerateSerieGuideRemision()
-                        add.guia_id= guidekeys
-                        add.status= 'GE'
-                        add.flag= True
+                        add = form.save(commit=False)
+                        guidekeys = genkeys.GenerateSerieGuideRemision()
+                        add.guia_id = guidekeys
+                        add.status = 'GE'
+                        add.flag = True
                         # commit true save bedside guide
                         add.save()
                         # save details guide referral
@@ -840,6 +840,10 @@ def view_generate_document_out(request,oid):
                             ob = models.Detpedido.objects.get(pk__exact=x.id)
                             ob.tag= '2' if x.cantshop <= 0 else '0'
                             ob.save()
+                            # here discount inventory
+                            inv = models.Inventario.objects.filter(materiales_id=x.materiales_id, periodo=globalVariable.get_year)
+                            #brands = models.InventoryBrand.objects.filter(materiales_id=x.materiales_id, periodo=globalVariable.get_year)
+
                         # recover details nipples
                         nip= models.Niple.objects.filter(pedido_id__exact=request.POST.get('pedido'),tag='1',flag=True)
                         for x in nip:
@@ -1201,7 +1205,7 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                     if 'purchase' in request.GET:
                         buy = Compra.objects.get(pk=request.GET.get('purchase'))
                         context['head'] = {'supplier':buy.proveedor_id, 'quote': buy.cotizacion_id if buy.cotizacion_id else 'None','place':buy.lugent,'document':buy.documento.documento, 'payment':buy.pagos.pagos,'currency':buy.moneda.moneda,'register':globalVariable.format_date_str(buy.registrado), 'transfer':globalVariable.format_date_str(buy.traslado), 'contact':buy.contacto,'deposit':'%s'%buy.deposito,'performed':'%s, %s'%(buy.empdni.firstname, buy.empdni.lastname)}
-                        context['details'] = [{'materials':x.materiales_id, 'name':x.materiales.matnom, 'measure':x.materiales.matmed, 'unit':x.materiales.unidad.uninom, 'quantity':x.cantidad,'static':x.cantstatic, 'price':x.precio, 'discount':x.discount} for x in DetCompra.objects.filter(compra_id=request.GET.get('purchase')).order_by('materiales__matnom') if x.flag != '2']
+                        context['details'] = [{'materials':x.materiales_id, 'name':x.materiales.matnom, 'measure':x.materiales.matmed, 'unit':x.materiales.unidad.uninom, 'quantity':x.cantidad,'static':x.cantstatic, 'price':x.precio, 'discount': float(x.discount)} for x in DetCompra.objects.filter(compra_id=request.GET.get('purchase')).order_by('materiales__matnom') if x.flag != '2']
                         context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = e.__str__()

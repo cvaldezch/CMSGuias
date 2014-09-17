@@ -151,7 +151,7 @@ class SupplytoDocumentIn(TemplateView):
                         obj = Cotizacion()
                         obj.cotizacion_id = idquote
                         obj.suministro_id = request.POST.get('supply')
-                        obj.empdni = request.user.get_profile().empdni_id
+                        obj.empdni_id = request.user.get_profile().empdni_id
                         obj.almacen_id = request.POST.get('storage')
                         obj.traslado = globalVariable.format_str_date(request.POST.get('traslado'))
                         obj.obser = request.POST.get('obser')

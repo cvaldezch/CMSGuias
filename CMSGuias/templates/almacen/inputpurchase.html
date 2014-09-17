@@ -78,7 +78,7 @@ Input Order Purchase
 									<td>{{ x.documento.documento }}</td>
 									<td>{{ x.traslado }}</td>
 									<td class="text-center">
-										<button value="{{ x.compra_id }}" data-ruc="{{ x.proveedor_id }}" class="btn btn-link btn-xs text-black btn-deposit"><span class="glyphicon glyphicon-credit-card"></span></button>
+										<a href="{{ MEDIA_URL }}{{ x.deposito }}" value="{{ x.compra_id }}" data-ruc="{{ x.proveedor_id }}" class="btn btn-link btn-xs text-black" target="_blank"><span class="glyphicon glyphicon-credit-card"></span></a>
 									</td>
 									<td class="text-center">
 										<a href="{% url 'rpt_purchase' x.compra_id %}" target="_blank" class="btn btn-xs btn-link text-black"><span class="glyphicon glyphicon-eye-open"></span></a>

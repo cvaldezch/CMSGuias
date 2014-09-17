@@ -104,7 +104,7 @@ class ListQuote(JSONResponseMixin, TemplateView):
             if not request.session.get('access'):
                 return HttpResponseRedirect(reverse_lazy('view_supplier_signup'))
         try:
-            context['quote'] = CotKeys.objects.filter(proveedor_id=request.session.get('ruc'))
+            context['quote'] = CotKeys.objects.filter(Q(proveedor_id=request.session.get('ruc')), ~Q(status='CO'))
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404('Template no Found')
@@ -230,7 +230,7 @@ class ListOrderPurchase(TemplateView):
             if not request.session.get('access'):
                 return HttpResponseRedirect(reverse_lazy('view_supplier_signup'))
         try:
-            context['purchase'] = Compra.objects.filter(proveedor_id=request.session.get('ruc'))
+            context['purchase'] = Compra.objects.filter(Q(proveedor_id=request.session.get('ruc')), ~Q(status='CO'))
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404('Template no Found')
