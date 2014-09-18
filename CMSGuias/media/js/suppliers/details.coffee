@@ -155,9 +155,20 @@ saveBedside = (event) ->
         $.post "", data, (response) ->
             if response.status
                 console.log(response)
+                data = new Object()
+                data.texto = "System<br><br>Se a respondido a la cotización Nro #{response.quote} del proveedor RUC #{response.supplier} #{response.reason}<br><br><br>---------------------------------<br><strong>System ICR PERU S.A.</strong>"
+                data.para = "logistica@icrperusa.com"
+                data.asunto = "Respuesta de Cotización"
+                parameter = $.param data
+                url = "http://190.41.246.91:3000/?#{ parameter }"
+                windowmsg = window.open url, "Send Msg", "toolbar=no, scrollbars=no, resizable=no, width=100, height=100"
+                setTimeout ->
+                    windowmsg.close()
+                    return
+                , 8000
                 $().toastmessage "showNoticeToast", "Se ha guardado y enviado la cotización."
                 setTimeout ->
-                    location.href = "/proveedor/quote/"
+                    location.reload()
                 , 2600
         return
     else

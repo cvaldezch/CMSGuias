@@ -28,10 +28,12 @@
                 <tr><td><strong>Fecha Traslado :</strong></td><td> {{ bedside.traslado }}</td></tr>
                 <tr><td><strong>RUC:</strong></td><td> {{ details.0.proveedor_id }}</td></tr>
                 <tr><td><strong>Razón Social:</strong></td><td> {{ details.0.proveedor.razonsocial }}</td></tr>
+                <tr><td><strong>Observación :</strong></td><td> {{ bedside.obser|safe }}</td></tr>
             </table>
         </div>
         <div id="bedside-col2">
             <table>
+                <tr><td><strong>Contacto Proveedor:</strong></td><td> {{ customers.0.contacto }}</td></tr>
                 <tr><td><strong>Envio Proveedor:</strong></td><td> {{ customers.0.envio }}</td></tr>
                 <tr><td><strong>Validez:</strong></td><td> {{ customers.0.validez }}</td></tr>
                 <tr><td><strong>Moneda:</strong></td><td> {{ customers.0.moneda.moneda }}</td></tr>
@@ -40,7 +42,7 @@
                         {{ v }}
                     {% endifequal %}
                 {% endfor %}</td></tr>
-                <tr><td><strong>Observación :</strong></td><td> {{bedside.obser|safe }}</td></tr>
+                <tr><td><strong>Observación :</strong></td><td> {{ customers.0.obser|safe }}</td></tr>
             </table>
         </div>
     </header>

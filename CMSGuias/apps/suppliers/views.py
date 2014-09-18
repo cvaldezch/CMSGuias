@@ -18,7 +18,7 @@ from django.views.generic import TemplateView, View, ListView
 from django.views.generic.edit import CreateView
 from django.core.urlresolvers import reverse_lazy
 
-from CMSGuias.apps.home.models import LoginProveedor, Configuracion, Moneda
+from CMSGuias.apps.home.models import LoginProveedor, Configuracion, Moneda, Proveedor
 from CMSGuias.apps.logistica.models import Cotizacion, DetCotizacion, CotCliente, CotKeys, Compra, DetCompra
 from CMSGuias.apps.tools import globalVariable, uploadFiles
 
@@ -216,6 +216,15 @@ class ListDetailsQuote(JSONResponseMixin, TemplateView):
                         obj.flag = True
                         obj.save()
                         context['status'] = True
+                        context['supplier'] = kwargs['supplier']
+                        su = None
+                        try:
+                            su = Proveedor.objects.get(pk=kwargs['supplier'])
+                            context['reason'] = su.razonsocial
+                        except ObjectDoesNotExist, e:
+                            su = 'Nothing'
+                            print e
+                        context['quote'] = kwargs['quote']
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

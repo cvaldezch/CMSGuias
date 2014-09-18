@@ -841,8 +841,22 @@ def view_generate_document_out(request,oid):
                             ob.tag= '2' if x.cantshop <= 0 else '0'
                             ob.save()
                             # here discount inventory
-                            inv = models.Inventario.objects.filter(materiales_id=x.materiales_id, periodo=globalVariable.get_year)
-                            #brands = models.InventoryBrand.objects.filter(materiales_id=x.materiales_id, periodo=globalVariable.get_year)
+                            #get nro orders
+                            store = ''
+                            try:
+                                store = models.Pedido.objects.get(pk=request.POST.get('pedido'))
+                                store = store.almacen_id
+                            except ObjectDoesNotExist, e:
+                                print e
+                                store = 'AL01'
+                            try:
+                                inv = models.Inventario.objects.get(materiales_id=x.materiales_id, periodo=globalVariable.get_year, almacen_id=store)
+                                stock = inv.stock
+                                inv.stock = (stock - float(x.cantguide))
+                                inv.save()
+                            except ObjectDoesNotExist, e:
+                                print e
+                            # brands = models.InventoryBrand.objects.filter(materiales_id=x.materiales_id, periodo=globalVariable.get_year)
 
                         # recover details nipples
                         nip= models.Niple.objects.filter(pedido_id__exact=request.POST.get('pedido'),tag='1',flag=True)

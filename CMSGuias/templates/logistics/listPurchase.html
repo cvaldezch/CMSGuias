@@ -21,7 +21,7 @@
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group">
-								Buscar por: 
+								Buscar por:
 								<label class="inline-radio"><input type="radio" name="search" value="code"> Código</label>
 								<label class="inline-radio"><input type="radio" name="search" value="status"> Estado</label>
 								<label class="inline-radio"><input type="radio" name="search" value="dates"> Fechas</label>
@@ -71,7 +71,7 @@
 					<div class="table-responsive">
 						<table class="table table-hover table-condensed">
 							<thead>
-								<th></th><th>Nro Orden Compra</th><th>Documento</th><th>Traslado</th><th>Moneda</th><th>Deposito</th><th>Ver</th>
+								<th></th><th>Nro Orden Compra</th><th>Documento</th><th>Traslado</th><th>Moneda</th><th>Deposito</th><th>Ver</th><th>Acción</th>
 							</thead>
 							<tbody>
 								{% for x in purchase %}
@@ -83,6 +83,11 @@
 										<td>{{ x.moneda.moneda }}</td>
 										<td><a class="text-black" target="_blank" href="{{ MEDIA_URL }}{{ x.deposito }}"><span class="glyphicon glyphicon-file"></span></a></td>
 										<td><a class="text-black" target="_blank" href="{% url 'rpt_purchase' x.compra_id %}"><span class="glyphicon glyphicon-list"></span></a></td>
+										<td>
+											<button class="btn btn-xs text-black btn-actions">
+												<span class="glyphicon glyphicon-ok"></span>
+											</button>
+										</td>
 									</tr>
 								{% endfor %}
 							</tbody>
@@ -93,4 +98,26 @@
 		</section>
 	</div>
 </div>
+<!-- block modals -->
+<div class="modal fade mactions">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<a data-dismiss="modal" class="close">&times;</a>
+				<h4 class="modal-title">
+					Actiones
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<button class="btn btn-block btn-priamry">
+						<span class="glypgicon glyphicon-saved"></span>
+
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- endblock modals -->
 {% endblock content %}

@@ -1,4 +1,3 @@
-
  # -*- coding: utf-8 -*-
 
 import json
@@ -875,6 +874,15 @@ class IngressPriceQuote(JSONResponseMixin, TemplateView):
                         obj.flag = True
                         obj.save()
                         context['status'] = True
+                        context['supplier'] = kwargs['supplier']
+                        su = None
+                        try:
+                            su = Proveedor.objects.get(pk=kwargs['supplier'])
+                            context['reason'] = su.razonsocial
+                        except ObjectDoesNotExist, e:
+                            su = 'Nothing'
+                            print e
+                        context['quote'] = kwargs['quote']
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
