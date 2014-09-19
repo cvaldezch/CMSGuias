@@ -9,7 +9,12 @@
 <script src="{{ MEDIA_URL }}js/sales/projects.js"></script>
 {% endblock script %}
 {% block menu %}
-    {% include "menus/sale.htm" %}
+    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
+        {% include "menus/sale.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+        {% include "menus/operations.htm" %}
+    {% endif %}
 {% endblock menu %}
 {% block content %}
 <div class="container">
@@ -175,31 +180,31 @@
                         </thead>
                         <tbody>
                             {% for x in list %}
-                            {% ifequal x.status 'AC' %}
-                            <tr class="tr-{{ x.proyecto_id }} success">
-                            {% endifequal %}
-                            {% ifequal x.status 'PE'  %}
-                            <tr class="tr-{{ x.proyecto_id }} info">
-                            {% endifequal %}
-                                <td>{{ forloop.counter }}</td>
-                                <td><a href="{% url 'managerpro_view' x.proyecto_id %}" class="btn btn-link btn-xs btn-open text-black"><span class="glyphicon glyphicon-folder-close"></span></a></td>
-                                <td>{{ x.proyecto_id }}</td>
-                                <td>{{ x.nompro }}</td>
-                                <td>{{ x.direccion }}</td>
-                                <td class="text-center">{{ x.registrado|date:"Y-m-d" }}</td>
-                                <td>{{ x.comienzo }}</td>
-                                <td>{{ x.fin }}</td>
-                                {% if user.get_profile.empdni.charge.area == "Administrator" or user.get_profile.empdni.charge.area == "Ventas"  %}
-                                <td class="text-center">
-                                    <button class="btn btn-link btn-xs text-black btn-show-edit" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-edit"></span>
-                                    </button>
-                                </td>
-                                <td class="text-center">
-                                    <button type="Button" class="btn btn-xs btn-link text-black btn-show-delete" title="{{ x.nompro }}" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-trash"></span>
-                                    </button>
-                                </td>
-                                {% endif %}
-                            </tr>
+                                {% ifequal x.status 'AC' %}
+                                <tr class="tr-{{ x.proyecto_id }} success">
+                                {% endifequal %}
+                                {% ifequal x.status 'PE'  %}
+                                <tr class="tr-{{ x.proyecto_id }} info">
+                                {% endifequal %}
+                                    <td>{{ forloop.counter }}</td>
+                                    <td><a href="{% url 'managerpro_view' x.proyecto_id %}" class="btn btn-link btn-xs btn-open text-black"><span class="glyphicon glyphicon-folder-close"></span></a></td>
+                                    <td>{{ x.proyecto_id }}</td>
+                                    <td>{{ x.nompro }}</td>
+                                    <td>{{ x.direccion }}</td>
+                                    <td class="text-center">{{ x.registrado|date:"Y-m-d" }}</td>
+                                    <td>{{ x.comienzo }}</td>
+                                    <td>{{ x.fin }}</td>
+                                    {% if user.get_profile.empdni.charge.area == "Administrator" or user.get_profile.empdni.charge.area == "Ventas"  %}
+                                    <td class="text-center">
+                                        <button class="btn btn-link btn-xs text-black btn-show-edit" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-edit"></span>
+                                        </button>
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="Button" class="btn btn-xs btn-link text-black btn-show-delete" title="{{ x.nompro }}" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    </td>
+                                    {% endif %}
+                                </tr>
                             {% empty %}
                                 <div class="alert alert-warning">
                                     <strong>Warning</strong>

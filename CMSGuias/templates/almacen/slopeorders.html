@@ -21,7 +21,7 @@
 					};
 				}
 			});
-		});	
+		});
 	});
 	var approvedOrder = function (id,sts) {
 		if (id != "") {
@@ -79,14 +79,14 @@
 							{% if lista %}
 							{% for x in lista %}
 							<tr class="tr-{{x.pedido_id}}">
-								<td class="text-center">{{forloop.counter}}</td>
+								<td class="text-center">{{ forloop.counter }}</td>
 								<td class="text-center"><button class="btn btn-xs btn-link text-black btn-approved" value="{{x.pedido_id}}"><span class="glyphicon glyphicon-ok"></span></button></td>
-								<td>{{x.pedido_id}}</td>
-								<td>{{x.proyecto.nompro}}</td>
-								<td>{{x.almacen.nombre}}</td>
-								<td class="text-center">{{x.traslado}}</td>
-								<td class="text-center">{{x.status}}</td>
-								<td class="text-center"><a href="{% url 'rpt_orders' x.pedido_id x.status %}" target="_blank" class="btn btn-xs btn-link text-black" value="{{x.pedido_id}}"><span class="glyphicon glyphicon-list"></span></a></td>
+								<td>{{ x.pedido_id }}</td>
+								<td>{{ x.proyecto.nompro }}</td>
+								<td>{{ x.almacen.nombre }}</td>
+								<td class="text-center">{{ x.traslado }}</td>
+								<td class="text-center">{{ x.status }}</td>
+								<td class="text-center"><a href="{% url 'rpt_orders' x.pedido_id x.status %}" target="_blank" class="btn btn-xs btn-link text-black" value="{{ x.pedido_id }}"><span class="glyphicon glyphicon-list"></span></a></td>
 							</tr>
 							{% endfor%}
 							{% else %}

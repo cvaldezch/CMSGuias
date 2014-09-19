@@ -635,7 +635,7 @@ list_temp_nipples = function(idmat) {
   $.getJSON("", data, function(response) {
     var $tb, template, x;
     if (response.status) {
-      template = "<tr class=\"trnip{{ id }}\"> <td>{{ quantity }}</td> <td>{{ name }}</td> <td>{{ diameter }}</td> <td>x</td> <td>{{ measure }}</td> <td>{{ unit }}</td> <td>{{ comment }}</td> <td> <button class=\"btn btn-xs btn-link text-green btn-nip-edit {{ view }}\" data-edit-nip=\"{{ materials }}\" value=\"{{ id }}\"> <span class=\"glyphicon glyphicon-pencil\"></span> </button> </td> <td> <button class=\"btn btn-xs btn-link btn-nip-del text-red {{ view }}\" data-del-nip=\"{{ materials }}\" value=\"{{ id }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> </tr>";
+      template = "<tr class=\"trnip{{ id }}\"> <td>{{ quantity }}</td> <td>{{ name }}</td> <td>{{ diameter }}</td> <td>x</td> <td>{{ measure }}</td> <td>{{ unit }}</td> <td>{{ comment }}</td> <td> <button class=\"btn btn-xs btn-link text-green btn-nip-edit {{ view }}\" data-edit-nip=\"{{ materials }}\" value=\"{{ id }}\" data-tag=\"{{ tag }}\"> <span class=\"glyphicon glyphicon-pencil\"></span> </button> </td> <td> <button class=\"btn btn-xs btn-link btn-nip-del text-red {{ view }}\" data-del-nip=\"{{ materials }}\" value=\"{{ id }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> </tr>";
       $tb = $("#des" + idmat + " > div > table > tbody");
       $tb.empty();
       for (x in response.list) {
@@ -803,7 +803,7 @@ showOrders = function() {
 };
 
 showListNipp = function() {
-  var $mat, $tb, $tr, arr, counter, dat, data, idmat, template, x;
+  var $mat, $tb, $tr, arr, counter, dat, data, idmat, template, two, x;
   idmat = this.value;
   data = new Object();
   arr = new Array();
@@ -825,7 +825,8 @@ showListNipp = function() {
         "measure": $td.eq(4).text(),
         "unit": "cm",
         "comment": $td.eq(6).text(),
-        "id": $td.eq(7).find("button").val()
+        "id": $td.eq(7).find("button").val(),
+        "tag": $td.eq(7).find("button").attr("data-tag")
       });
     });
   } else {
@@ -837,9 +838,14 @@ showListNipp = function() {
       data.nip = arr;
       $tb = $(".torders > tbody.nipples");
       template = "<tr class=\"" + idmat + "nip{{ id }}\"><td><input type=\"checkbox\" class=\"chknipp chknipp" + idmat + "\" value=\"" + idmat + "nip{{ id }}\" value=\"{{ id }}\"></td><td><input type=\"number\" class=\"form-control input-sm valquamax\" style=\"width:90px;\" data-id=\"{{ id }}\" min=\"1\" max=\"{{ quantity }}\" value=\"{{ quantity }}\" data-mat=\"" + idmat + "\" disabled></td><td>{{ quantity }}</td><td>{{ name }}</td><td>{{ diameter }}</td><td>x</td><td>{{ measure }}</td><td>{{ unit }}</td><td>{{ comment }}</td></tr>";
+      template - (two = "<tr class=\"" + idmat + "nip{{ id }}\"><td><input type=\"checkbox\" class=\"chknipp chknipp" + idmat + "\" value=\"" + idmat + "nip{{ id }}\" value=\"{{ id }}\" disabled></td><td><input type=\"number\" class=\"form-control input-sm valquamax\" style=\"width:90px;\" data-id=\"{{ id }}\" min=\"1\" max=\"{{ quantity }}\" value=\"{{ quantity }}\" data-mat=\"" + idmat + "\" disabled></td><td>{{ quantity }}</td><td>{{ name }}</td><td>{{ diameter }}</td><td>x</td><td>{{ measure }}</td><td>{{ unit }}</td><td>{{ comment }}</td></tr>");
       dat = "";
       for (x in data.nip) {
-        dat = dat.concat(Mustache.render(template, data.nip[x]));
+        if (data.nip[x].tag === "2") {
+          dat = dat.concat(Mustache.render(template - two, data.nip[x]));
+        } else {
+          dat = dat.concat(Mustache.render(template, data.nip[x]));
+        }
       }
       $mat = $("." + idmat + " > td");
       template = "<tr class=\"prenip" + idmat + "\"><td colspan=\"9\"> <table class=\"table table-condensed table" + idmat + "\"> <thead> <tr> <td colspan=\"8\">" + ($mat.eq(3).text()) + " - " + ($mat.eq(4).text()) + " <div class=\"form-group\">seleccionar : <label class=\"radio-inline\"><input type=\"radio\" data-mat=\"" + idmat + "\" value=\"1\" name=\"rdonipp\"> todo</label> <label class=\"radio-inline\"><input type=\"radio\" data-mat=\"" + idmat + "\" value=\"0\" name=\"rdonipp\"> ninguno.</label> </div></td> </tr> <tr><th><button value=\"" + idmat + "\" class=\"btn btn-xs btn-link showhidenipp\"><span class=\"glyphicon glyphicon-chevron-up\"></span></button></th><th>Pedido</th><th>Cantidad</th><th>Tipo</th><th>Diametro</th><th></th><th>Medida</th><th>Unidad</th></tr> </thead> <tbody>{rows}</tbody> </table> </td></tr>";

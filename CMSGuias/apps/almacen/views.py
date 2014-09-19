@@ -829,9 +829,9 @@ def view_generate_document_out(request,oid):
                         add.save()
                         # save details guide referral
                         # recover details orders
-                        det= models.Detpedido.objects.filter(pedido_id__exact=request.POST.get('pedido'),tag='1',flag=True)
+                        det = models.Detpedido.objects.filter(pedido_id__exact=request.POST.get('pedido'),tag='1',flag=True)
                         for x in det:
-                            obj= models.DetGuiaRemision()
+                            obj = models.DetGuiaRemision()
                             obj.guia_id= guidekeys
                             obj.materiales_id= x.materiales_id
                             obj.cantguide= x.cantguide

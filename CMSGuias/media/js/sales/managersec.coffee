@@ -560,7 +560,7 @@ list_temp_nipples = (idmat)->
                             <td>{{ unit }}</td>
                             <td>{{ comment }}</td>
                             <td>
-                                <button class=\"btn btn-xs btn-link text-green btn-nip-edit {{ view }}\" data-edit-nip=\"{{ materials }}\" value=\"{{ id }}\">
+                                <button class=\"btn btn-xs btn-link text-green btn-nip-edit {{ view }}\" data-edit-nip=\"{{ materials }}\" value=\"{{ id }}\" data-tag=\"{{ tag }}\">
                                     <span class=\"glyphicon glyphicon-pencil\"></span>
                                 </button>
                             </td>
@@ -737,7 +737,7 @@ showListNipp = ->
         $tr.each ()->
             $td = $(@).find("td")
             counter += 1
-            arr.push {"item":counter, "quantity":$td.eq(0).text(), "name": $td.eq(1).text(), "diameter":$td.eq(2).text(),"measure":$td.eq(4).text(), "unit":"cm", "comment":$td.eq(6).text(),"id":$td.eq(7).find("button").val()}
+            arr.push {"item":counter, "quantity":$td.eq(0).text(), "name": $td.eq(1).text(), "diameter":$td.eq(2).text(),"measure":$td.eq(4).text(), "unit":"cm", "comment":$td.eq(6).text(),"id":$td.eq(7).find("button").val(), "tag":$td.eq(7).find("button").attr("data-tag")}
             return
     else
         console.log "row exists"
@@ -747,9 +747,13 @@ showListNipp = ->
             data.nip = arr
             $tb = $(".torders > tbody.nipples")
             template = "<tr class=\"#{idmat}nip{{ id }}\"><td><input type=\"checkbox\" class=\"chknipp chknipp#{idmat}\" value=\"#{idmat}nip{{ id }}\" value=\"{{ id }}\"></td><td><input type=\"number\" class=\"form-control input-sm valquamax\" style=\"width:90px;\" data-id=\"{{ id }}\" min=\"1\" max=\"{{ quantity }}\" value=\"{{ quantity }}\" data-mat=\"#{idmat}\" disabled></td><td>{{ quantity }}</td><td>{{ name }}</td><td>{{ diameter }}</td><td>x</td><td>{{ measure }}</td><td>{{ unit }}</td><td>{{ comment }}</td></tr>"
+            template-two = "<tr class=\"#{idmat}nip{{ id }}\"><td><input type=\"checkbox\" class=\"chknipp chknipp#{idmat}\" value=\"#{idmat}nip{{ id }}\" value=\"{{ id }}\" disabled></td><td><input type=\"number\" class=\"form-control input-sm valquamax\" style=\"width:90px;\" data-id=\"{{ id }}\" min=\"1\" max=\"{{ quantity }}\" value=\"{{ quantity }}\" data-mat=\"#{idmat}\" disabled></td><td>{{ quantity }}</td><td>{{ name }}</td><td>{{ diameter }}</td><td>x</td><td>{{ measure }}</td><td>{{ unit }}</td><td>{{ comment }}</td></tr>"
             dat = ""
             for x of data.nip
-                dat = dat.concat Mustache.render template, data.nip[x]
+                if data.nip[x].tag == "2"
+                    dat = dat.concat Mustache.render template-two, data.nip[x]
+                else
+                    dat = dat.concat Mustache.render template, data.nip[x]
 
             $mat = $(".#{idmat} > td")
             template = "<tr class=\"prenip#{idmat}\"><td colspan=\"9\">

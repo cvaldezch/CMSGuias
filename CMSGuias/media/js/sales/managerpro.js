@@ -194,13 +194,14 @@ toggleComment = function() {
 };
 
 treeAdminaandOpera = function() {
-  var admin, opera;
+  var admin, opera, year;
+  year = new Date().getFullYear();
   if ($("input[name=sub]").val() === "") {
-    admin = "/storage/projects/" + ($("input[name=pro]").val()) + "/administrative/";
-    opera = "/storage/projects/" + ($("input[name=pro]").val()) + "/operation/";
+    admin = "/storage/projects/" + year + "/" + ($("input[name=pro]").val()) + "/administrative/";
+    opera = "/storage/projects/" + year + "/" + ($("input[name=pro]").val()) + "/operation/";
   } else {
-    admin = "/storage/projects/" + ($("input[name=pro]").val()) + "/" + ($("input[name=sub]").val()) + "/administrative/";
-    opera = "/storage/projects/" + ($("input[name=pro]").val()) + "/" + ($("input[name=sub]").val()) + "/operation/";
+    admin = "/storage/projects/" + year + "/" + ($("input[name=pro]").val()) + "/" + ($("input[name=sub]").val()) + "/administrative/";
+    opera = "/storage/projects/" + year + "/" + ($("input[name=pro]").val()) + "/" + ($("input[name=sub]").val()) + "/operation/";
   }
   fileTree('filetree_administrative', admin);
   fileTree('filetree_operation', opera);
@@ -215,6 +216,7 @@ fileTree = function(id, path) {
     collapseSpeed: 750,
     multiFolder: true
   }, function(file) {
+    console.log(file);
     return window.open(file, "_blank");
   });
 };

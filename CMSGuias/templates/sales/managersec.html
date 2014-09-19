@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}
-    Manager Sec
+    Manager Sector
 {% endblock title %}
 {% block script %}
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>
@@ -235,7 +235,9 @@
                                     <th>Precio</th>
                                 {% endif %}
                                 {% ifequal project.status 'AC' %}
-                                    <th>Stock</th>
+                                    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
+                                        <th>Stock</th>
+                                        {% endif %}
                                     <th>Observación</th>
                                 {% endifequal %}
                                 {% ifequal project.status 'PE'  %}
@@ -416,7 +418,7 @@
                                                                 <th>Editar</th>
                                                                 <th>Eliminar</th>
                                                             </thead>
-                                                            <tbody class="tb{{materiales_id}}"></tbody>
+                                                            <tbody class="tb{{ materiales_id }}"></tbody>
                                                         </table>
                                                     </div>
                                                     <!-- </div> -->

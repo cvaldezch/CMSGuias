@@ -58,7 +58,10 @@ class ProjectsList(JSONResponseMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         context = super(ProjectsList, self).get_context_data(**kwargs)
         try:
-            context['list'] = Proyecto.objects.filter(Q(flag=True), ~Q(status='DA'))
+            if request.user.get_profile().empdni.charge.area.lower() == 'ventas' or request.user.get_profile().empdni.charge.area.lower() == 'administrator':
+                context['list'] = Proyecto.objects.filter(Q(flag=True), ~Q(status='DA'))
+            elif request.user.get_profile().empdni.charge.area.lower() == 'operaciones':
+                context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC'), empdni_id=request.user.get_profile().empdni_id)
             context['country'] = Pais.objects.filter(flag=True)
             context['customers'] = Cliente.objects.filter(flag=True)
             context['currency'] = Moneda.objects.filter(flag=True)
@@ -226,14 +229,15 @@ class ProjectManager(JSONResponseMixin, View):
         if request.is_ajax():
             context = dict()
             if request.POST.get('type') == 'files':
+                year = globalVariable.get_year
                 try:
                     # charge file to server
                     if request.POST.get('sub') == '':
-                        admin = '/storage/projects/%s/administrative/'%(request.POST.get('pro'))
-                        opera = '/storage/projects/%s/operation/'%(request.POST.get('pro'))
+                        admin = '/storage/projects/%s/%s/administrative/'%(year, request.POST.get('pro'))
+                        opera = '/storage/projects/%s/%s/operation/'%(year, request.POST.get('pro'))
                     else:
-                        admin = '/storage/projects/%s/%s/administrative/'%(request.POST.get('pro'), request.POST.get('sub'))
-                        opera = '/storage/projects/%s/%s/operation/'%(request.POST.get('pro'), request.POST.get('sub'))
+                        admin = '/storage/projects/%s/%s/%s/administrative/'%(year, request.POST.get('pro'), request.POST.get('sub'))
+                        opera = '/storage/projects/%s/%s/%s/operation/'%(year, request.POST.get('pro'), request.POST.get('sub'))
 
                     if 'administrative' in request.FILES:
                         fileadmin = uploadFiles.upload(admin, request.FILES['administrative'], {'name': 'admin'})
@@ -347,7 +351,7 @@ class SectorManage(JSONResponseMixin, View):
                             attend = 'show'
                         else:
                             attend = 'hide'
-                        context['list'] = [{'id':x.id, 'quantity':x.cantshop, 'diameter':x.materiales.matmed, 'measure':x.metrado,'unit':'cm','name': 'Niple%s %s, %s'%('s' if x.cantshop > 1 else '',globalVariable.tipo_nipples[x.tipo], x.tipo),'comment':x.comment, 'materials':x.materiales_id, 'view': attend} for x in obj if x.cantshop > 0]
+                        context['list'] = [{'id':x.id, 'quantity':x.cantshop, 'diameter':x.materiales.matmed, 'measure':x.metrado,'unit':'cm','name': 'Niple%s %s, %s'%('s' if x.cantshop > 1 else '',globalVariable.tipo_nipples[x.tipo], x.tipo),'comment':x.comment, 'materials':x.materiales_id, 'view': attend, 'tag':x.tag} for x in obj] #if x.cantshop > 0]
                         ingress = 0
                         for x in obj:
                             ingress += (x.cantshop * x.metrado)
@@ -487,7 +491,7 @@ class SectorManage(JSONResponseMixin, View):
                         nipples = json.loads(request.POST.get('nipples'))
                         print nipples
                         for x in nipples:
-                            obj = Niple()
+                            obj = Niple() # Niple for Almacen
                             obj.pedido_id = id
                             obj.proyecto_id = request.POST.get('proyecto')
                             obj.subproyecto_id = request.POST.get('subproyecto')
@@ -498,9 +502,9 @@ class SectorManage(JSONResponseMixin, View):
                             obj.cantshop = x['quantity']
                             obj.metrado = x['meter']
                             obj.tipo = x['type'].strip()
-                            obj.comment = x['comment']
+                            obj.comment = x['comment'].strip()
                             obj.save()
-                            # update table od nipples
+                            # update table od nipples - operations
                             nip = Nipple.objects.get(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') != '' else None, sector_id=request.POST.get('sector'), materiales_id=x['idmat'], id=x['idnip'])
                             if nip.cantshop == nip.cantidad:
                                 nip.cantshop = (nip.cantidad - x['quantity'])

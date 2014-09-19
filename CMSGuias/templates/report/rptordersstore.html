@@ -18,15 +18,15 @@
 		</div>
 		<div id="nro-serie">
 			<h1>Nro Pedido Almacén</h1>
-			<h1 id="nro">{{order.pedido_id}}</h1>
+			<h1 id="nro">{{ order.pedido_id}}</h1>
 		</div>
 		<div id="bedside-col1">
 			<table>
-			<tr><td width="2cm"><strong>Proyecto :</strong></td><td> {{order.proyecto.nompro}}</td></tr>
-			<tr><td><strong>Subproyecto :</strong></td><td> {{order.subproyecto.nomsub}}</td></tr>
-			<tr><td><strong>Sector :</strong></td><td> {{order.sector.nomsec}}</td></tr>
-			<tr><td><strong>Almacén :</strong></td><td> {{order.almacen.nombre}}</td></tr>
-			<tr><td><strong>Asunto :</strong></td><td> {{order.asunto}}</td></tr>
+			<tr><td width="2cm"><strong>Proyecto :</strong></td><td> {{ order.proyecto.nompro}}</td></tr>
+			<tr><td><strong>Subproyecto :</strong></td><td> {{ order.subproyecto.nomsub}}</td></tr>
+			<tr><td><strong>Sector :</strong></td><td> {{ order.sector.nomsec}}</td></tr>
+			<tr><td><strong>Almacén :</strong></td><td> {{ order.almacen.nombre}}</td></tr>
+			<tr><td><strong>Asunto :</strong></td><td> {{ order.asunto}}</td></tr>
 			</table>
 		</div>
 		<div id="bedside-col2">
@@ -100,19 +100,20 @@
 				<tbody>
 					{% for x in nipples %}
 						<tr>
-							<td class="text-center item">{{forloop.counter}}</td>
-							<td class="text-center cod">{{x.materiales_id}}</td>
-							<td class="text-center">{{x.cantidad}}</td>
-							<td class="">{{x.materiales.matnom}} - Niple{{x.cantidad|pluralize}}
+							<td class="text-center item">{{ forloop.counter }}</td>
+							<td class="text-center cod">{{ x.materiales_id }}</td>
+							<td class="text-center">{{ x.cantidad }}</td>
+							<td class="">{{ x.materiales.matnom }} - Niple{{ x.cantidad|pluralize }}
 										{% for k,v in tipo.items %}
 											{% ifequal k x.tipo %}
-												{{v}}{{x.cantidad|pluralize}}
+												{{ v }}{{ x.cantidad|pluralize }}
 											{% endifequal %}
 										{% endfor %}
+							--- {{ x.comment }}
 							</td>
-							<td>{{x.materiales.matmed}}</td>
+							<td>{{ x.materiales.matmed }}</td>
 							<td class="text-center">x</td>
-							<td class="text-center">{{x.metrado}}</td>
+							<td class="text-center">{{ x.metrado }}</td>
 							<td class="text-center">cm</td>
 						</tr>
 					{% endfor%}

@@ -166,12 +166,13 @@ toggleComment = ->
     return
 
 treeAdminaandOpera = ->
+    year = new Date().getFullYear()
     if $("input[name=sub]").val() == ""
-        admin = "/storage/projects/#{ $("input[name=pro]").val() }/administrative/"
-        opera = "/storage/projects/#{ $("input[name=pro]").val() }/operation/"
+        admin = "/storage/projects/#{year}/#{ $("input[name=pro]").val() }/administrative/"
+        opera = "/storage/projects/#{year}/#{ $("input[name=pro]").val() }/operation/"
     else
-        admin = "/storage/projects/#{ $("input[name=pro]").val() }/#{$("input[name=sub]").val()}/administrative/"
-        opera = "/storage/projects/#{ $("input[name=pro]").val() }/#{$("input[name=sub]").val()}/operation/"
+        admin = "/storage/projects/#{year}/#{ $("input[name=pro]").val() }/#{$("input[name=sub]").val()}/administrative/"
+        opera = "/storage/projects/#{year}/#{ $("input[name=pro]").val() }/#{$("input[name=sub]").val()}/operation/"
 
     fileTree 'filetree_administrative', admin
     fileTree 'filetree_operation', opera
@@ -186,6 +187,7 @@ fileTree = (id, path)->
         collapseSpeed: 750
         multiFolder: true
         , (file) ->
+            console.log file
             window.open file, "_blank"
     return
 setSubproject = (event) ->

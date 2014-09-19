@@ -1,5 +1,7 @@
 from django.db import models
+
 from CMSGuias.apps.home.models import Pais, Departamento, Provincia, Distrito, Cliente, Materiale, Employee, Brand, Model, Cargo, Moneda
+from CMSGuias.apps.tools import globalVariable
 
 
 class Proyecto(models.Model):
@@ -68,9 +70,9 @@ class Sectore(models.Model):
 class SectorFiles(models.Model):
     def url(self, filename):
         if self.subproyecto is None:
-            ruta = "storage/projects/%s/%s/%s"%(self.proyecto_id,self.sector_id,filename)
+            ruta = 'storage/projects/%s/%s/%s/%s'%(globalVariable.get_year,self.proyecto_id,self.sector_id,filename)
         else:
-            ruta = "storage/projects/%s/%s/%s/%s"%(self.proyecto_id, self.subproyecto_id,self.sector_id,filename)
+            ruta = 'storage/projects/%s/%s/%s/%s/%s'%(globalVariable.get_year,self.proyecto_id, self.subproyecto_id,self.sector_id,filename)
         return ruta
 
     sector = models.ForeignKey(Sectore, to_field='sector_id')

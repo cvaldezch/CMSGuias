@@ -41,11 +41,15 @@
 							<dt>Realizado</dt><dd>{{ orders.traslado }}</dd>
 							<dt>Observación</dt><dd>{{ orders.obser|safe }}</dd>
 							<dt>Estado</dt><dd>{{ orders.status }}</dd>
-							<dt>Adjunto</dt><dd><a class="btn btn-default btn-xs btn-warning text-black" target="_blank" href="/media/{{orders.orderfile}}"><span class="glyphicon glyphicon-download"></span></a></dd>
+							{% if orders.orderfile %}
+								<dt>Adjunto</dt><dd><a class="btn btn-default btn-xs btn-warning text-black" target="_blank" href="{{ MEDIA_URL }}/{{ orders.orderfile }}"><span class="glyphicon glyphicon-download"></span></a></dd>
+							{% endif %}
 						</dl>
 					</div>
 					<div class="col-md-12">
-						<button class="btn btn-warning text-black btn-attend"><span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios</button>
+						<button class="btn btn-warning text-black btn-attend">
+							<span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios
+						</button>
 					</div>
 				</div>
 			</div>
@@ -54,8 +58,8 @@
 					<table class="table table-striped table-hover table-bordered table-condensed">
 					<caption>
 						<div class="bg-warning text-left">
-							<label class="radio-inline"><input type="radio" name="bedside" value="true" {{radio}}> Todo</label>
-							<label class="radio-inline"><input type="radio" name="bedside" value="false" {{radio}} checked /> Ninguno</label>
+							<label class="radio-inline"><input type="radio" name="bedside" value="true" {{ radio }}> Todo</label>
+							<label class="radio-inline"><input type="radio" name="bedside" value="false" {{ radio }} checked /> Ninguno</label>
 						</div>
 					</caption>
 						<thead>
@@ -75,7 +79,7 @@
 						<tbody>
 							{% if det %}
 							{% for x in det %}
-							<tr class="tr-{{x.materiales_id}}
+							<tr class="tr-{{ x.materiales_id }}
 							{% if x.cantshop <= 0.0 %}
 								success
 							{% else %}
@@ -87,17 +91,17 @@
 										info
 									{% endif %}
 							{% endif %}">
-								<td><input type="checkbox" name="bed" value="{{x.materiales_id}}"
+								<td><input type="checkbox" name="bed" value="{{ x.materiales_id }}"
 								{% if x.cantshop <= 0.0 or x.stock <= 0 or x.stock < x.cantshop %}
 									disabled
 								{% endif %}/></td>
-								<td class="text-center">{{forloop.counter}}</td>
-								<td>{{x.materiales_id}}</td>
-								<td>{{x.materiales.matnom}}</td>
-								<td>{{x.materiales.matmed}}</td>
-								<td class="text-center">{{x.materiales.unidad_id}}</td>
-								<td class="text-center">{{x.cantidad}}</td>
-								<td class="col-md-1"><input type="number" step="any" name="{{x.cantidad|safe}}" value="{{x.cantshop|safe}}" min="1" max="{{x.cantshop|safe}}" class="form-control input-xs bed{{x.materiales_id}}" disabled></td>
+								<td class="text-center">{{ forloop.counter }}</td>
+								<td>{{ x.materiales_id }}</td>
+								<td>{{ x.materiales.matnom }}</td>
+								<td>{{ x.materiales.matmed }}</td>
+								<td class="text-center">{{ x.materiales.unidad_id }}</td>
+								<td class="text-center">{{ x.cantidad }}</td>
+								<td class="col-md-1"><input type="number" step="any" name="{{ x.cantidad|safe }}" value="{{ x.cantshop|safe }}" min="1" max="{{ x.cantshop|safe }}" class="form-control input-xs bed{{ x.materiales_id }}" disabled></td>
 								<td class="text-center">{{ x.stock }}</td>
 								{% if x.spptag %}
 									<td class="bg-success text-center">
@@ -131,44 +135,54 @@
 							{% for c in det %}
 								{% if c.materiales_id|truncatechars:6 == "115..." %}
 									<tr class="warning">
-										<td>{{forloop.counter0}}</td>
-										<td>{{c.materiales_id}}</td>
-										<td>{{c.materiales.matnom}}</td>
-										<td>{{c.materiales.matmed}}</td>
-										<td class="text-center">{{c.materiales.unidad_id}}</td>
-										<td class="text-center">{{c.cantshop}}</td>
+										<td>{{ forloop.counter0 }}</td>
+										<td>{{ c.materiales_id }}</td>
+										<td>{{ c.materiales.matnom }}</td>
+										<td>{{ c.materiales.matmed }}</td>
+										<td class="text-center">{{ c.materiales.unidad_id }}</td>
+										<td class="text-center">{{ c.cantshop }}</td>
 									</tr>
 									<tr>
 										<td colspan="6">
 											<table cellspacing="0" cellpadding="0" class="table table-condensed tbl" width="100%">
 												<caption>
 													<div class="bg-warning text-left">
-														<label class="radio-inline"><input type="radio" onChange="changeradio(this);" name="{{c.materiales_id}}" value="true" disabled> Todo</label>
+														<label class="radio-inline"><input type="radio" onChange="changeradio(this);" name="{{ c.materiales_id}}" value="true" disabled> Todo</label>
 														<label class="radio-inline"><input type="radio" onChange="changeradio(this);" name="{{c.materiales_id}}" value="false" checked disabled /> Ninguno</label>
 													</div>
 												</caption>
 												<thead>
-													<tr><th class="col-md-1"></th><th class="col-md-1">Cantidad</th><th class="col-md-2">Descripción</th><th class="col-md-2">Diametro</th><th class="col-md-1">Medida</th><th class="col-md-1">Unidad</th><th class="col-md-1">Atender</th></tr>
+													<tr>
+														<th class="col-md-1"></th>
+														<th class="col-md-1">Cantidad</th>
+														<th class="col-md-2">Descripción</th>
+														<th class="col-md-1">Diametro</th>
+														<th class="col-md-1">Medida</th>
+														<th class="col-md-1">Unidad</th>
+														<th class="col-md-1">Atender</th>
+														<th class="col-md-2">Comentario</th>
+													</tr>
 												</thead>
 												<tbody>
 													{% for x in nipples %}
 														{% ifequal x.materiales_id c.materiales_id %}
-															<tr class="{{x.id}} {% if x.cantshop <= 0 %}success{% endif %}">
+															<tr class="{{ x.id }} {% if x.cantshop <= 0 %}success{% endif %}">
 																<td>
 																{% if x.cantshop > 0 %}
-																<input type="checkbox" class="chknip" name="sc{{c.materiales_id}}" value="{{x.id}}" onchange="enablenquantitynip(this);" disabled>
+																<input type="checkbox" class="chknip" name="sc{{ c.materiales_id }}" value="{{x.id}}" onchange="enablenquantitynip(this);" disabled>
 																{% endif %}
 																</td>
-																<td>{{x.cantidad}}</td>
+																<td>{{ x.cantidad|safe }}</td>
 																<td>{% for k,v in tipo.items %}
 																	{% if k == x.tipo %}
-																		Niple{{x.cantidad|pluralize}} {{v}}{{x.cantidad|pluralize}}
+																		Niple{{ x.cantidad|pluralize }} {{ v }}{{ x.cantidad|pluralize }}
 																	{% endif %}
 																{% endfor %}</td>
-																<td>{{c.materiales.matmed}}</td>
-																<td>{{x.metrado}}</td>
+																<td>{{ c.materiales.matmed }}</td>
+																<td>{{ x.metrado }}</td>
 																<td>cm</td>
 																<td><input type="number" class="form-control input-xs n{{x.id}}" min="1" name="{{x.cantidad|safe}}" max="{{x.cantshop|safe}}" value="{{x.cantshop|safe}}" id="{{x.metrado|safe}}" onchange="recoverVal({{x.materiales_id}});" title="{{x.materiales_id}}" disabled></td>
+																<td>{{ x.comment }}</td>
 															</tr>
 														{% endifequal %}
 													{% endfor %}
