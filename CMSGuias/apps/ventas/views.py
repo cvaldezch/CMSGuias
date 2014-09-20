@@ -361,6 +361,7 @@ class SectorManage(JSONResponseMixin, View):
                     context['raise'] = e.__str__()
                     context['status'] = False
                 return self.render_to_json_response(context)
+            ### block manager sector global
             context['project'] = Proyecto.objects.get(pk=kwargs['pro'])
             if kwargs['sub'] != unicode(None):
                 context['subproject'] = Subproyecto.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'])
@@ -369,25 +370,27 @@ class SectorManage(JSONResponseMixin, View):
             context['system'] = Configuracion.objects.get(periodo=globalVariable.get_year)
             context['currency'] = Moneda.objects.filter(flag=True).order_by('moneda')
             context['exchange'] = TipoCambio.objects.filter(fecha=globalVariable.date_now())
-            if context['project'].status != 'AC':
-                context['materials'] = Metradoventa.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom')
-            else:
-                met = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom')
+            ### end block global
+
+            materials = Metradoventa.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom')
+            met = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom')
+            if materials:
+                    context['materials'] = materials
+            if context['project'].status == 'AC' and met:
+                del context['materials']
                 data = list()
                 for x in met:
                     stock = None
-                    # get stock of Inventory
-                    # if x.brand_id == 'BR000':
                     stock = Inventario.objects.filter(materiales_id=x.materiales_id, periodo=globalVariable.get_year)
                     if not stock:
                         stock = '-'
                     else:
                         stock = stock[0].stock
-                    print stock
                     data.append({'materiales_id':x.materiales_id, 'name':x.materiales.matnom,'measure':x.materiales.matmed,'unit':x.materiales.unidad.uninom,'brand':x.brand.brand, 'model':x.model.model,'quantity':x.quantityorder, 'cantidad':x.cantidad , 'price':x.precio, 'stock': stock, 'comment':x.comment})
                 context['meter'] = data
                 context['niple'] = globalVariable.tipo_nipples
                 context['store'] = Almacene.objects.filter(flag=True).order_by('nombre')
+            print context
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)

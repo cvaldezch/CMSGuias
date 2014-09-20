@@ -79,19 +79,17 @@
               <li><a href="#tools" role="tab" data-toggle="tab">Herramientas</a></li>
               <li><a href="#hand" role="tab" data-toggle="tab">Mano de Obra</a></li>
             </ul>
-
             <!-- Tab panes -->
             <div class="tab-content">
               <div class="tab-pane active" id="materials">
                     <div class="panel panel-warning">
                         <div class="btn-group btn-group-justified">
-                            {% ifequal project.status 'PE' %}
+                            {% if not meter %}
                                 <div class="btn-group">
                                     <button class="btn btn-warning btn-sm text-black btn-show-mat">
                                         <span class="glyphicon glyphicon-chevron-down"></span> Materiales
                                     </button>
                                 </div>
-
                                 <!-- <div class="btn-group">
                                     <button class="btn btn-warning btn-sm text-black btn-show-file">
                                         <span class="glyphicon glyphicon-cloud-upload"></span> Subir Archivo
@@ -107,218 +105,277 @@
                                         <span class="glyphicon glyphicon-trash"></span> Eliminar Lista
                                     </button>
                                 </div>
-                            {% endifequal %}
+                            {% endif %}
                         </div>
                     </div>
                     <div class="alert alert-warning alert-block panel-add-mat">
-                      <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group has-warning">
-                                <label class="control-label">Descripción / Nombre de material</label>
-                                <input type="text" class="form-control input-sm" name="description">
-                                <ul id="matname-global" class="matname-global"></ul>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-group has-warning">
-                                <label class="control-label">Código</label>
-                                <input type="text" class="form-control input-sm" maxlength="15" name="code">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group has-warning">
-                                <label class="control-label">Medida</label>
-                                <select class="form-control input-sm" name="meter"></select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="row">
+                        <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group has-warning">
-                                    <label class="control-label">Metrado/Cantidad</label>
-                                    <input type="number" class="form-control input-sm" name="cantidad" min="1" placeholder="1">
+                                    <label class="control-label">Descripción / Nombre de material</label>
+                                    <input type="text" class="form-control input-sm" name="description">
+                                    <ul id="matname-global" class="matname-global"></ul>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group has-warning">
-                                    <label class="control-label">Precio</label>
-                                    <input type="number" class="form-control input-sm" name="precio" min="1" placeholder="1">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group has-warning">
-                                    <label class="control-label">Marca</label>
-                                    <div class="input-group">
-                                        <select name="brand" id="brand" class="form-control input-sm"></select>
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-sm btn-default btn-new-brand"><span class="glyphicon glyphicon-plus"></span></button>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group has-warning">
-                                    <label class="control-label">Modelo</label>
-                                    <div class="input-group">
-                                        <select name="model" id="model" class="form-control input-sm"></select>
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-default btn-sm btn-new-model"><span class="span glyphicon glyphicon-plus"></span></button>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                              <div class="form-group has-warning">
-                                <label class="control-label">Moneda</label>
-                                <select name="moneda" id="moneda" class="form-control input-sm">
-                                  {% for x in currency %}
-                                    {% ifequal x.moneda_id system.moneda_id %}
-                                      <option value="{{ x.moneda_id }}" selected readonly>{{ x.moneda }}</option>
-                                    {% else %}
-                                      <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
-                                    {% endifequal %}
-                                  {% endfor %}
-                                </select>
-                              </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group has-warning">
-                                    <label class="control-label">Agregar</label>
-                                    <button class="btn btn-block btn-warning text-black btn-add"><span class="glyphicon glyphicon-plus"></span></button>
+                                    <label class="control-label">Código</label>
+                                    <input type="text" class="form-control input-sm" maxlength="15" name="code">
                                 </div>
                             </div>
-                            <div class="col-md-12">
-                                <small>
-                                    El precio del sistema esta expresado en <q class="currency-name">{{ system.moneda.moneda }}</q>
-                                </small>
+                            <div class="col-md-6">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Medida</label>
+                                    <select class="form-control input-sm" name="meter"></select>
+                                </div>
                             </div>
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="alert alert-warning alert-block">
-                                <strong>Resumén</strong>
-                                <table class="table-condensed tb-details">
-                                    <tbody></tbody>
-                                </table>
+                            <div class="col-md-6">
+                              <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Metrado/Cantidad</label>
+                                        <input type="number" class="form-control input-sm" name="cantidad" min="1" placeholder="1">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Precio</label>
+                                        <input type="number" class="form-control input-sm" name="precio" min="1" placeholder="1">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Marca</label>
+                                        <div class="input-group">
+                                            <select name="brand" id="brand" class="form-control input-sm"></select>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-sm btn-default btn-new-brand"><span class="glyphicon glyphicon-plus"></span></button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Modelo</label>
+                                        <div class="input-group">
+                                            <select name="model" id="model" class="form-control input-sm"></select>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default btn-sm btn-new-model"><span class="span glyphicon glyphicon-plus"></span></button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                  <div class="form-group has-warning">
+                                    <label class="control-label">Moneda</label>
+                                    <select name="moneda" id="moneda" class="form-control input-sm">
+                                      {% for x in currency %}
+                                        {% ifequal x.moneda_id system.moneda_id %}
+                                          <option value="{{ x.moneda_id }}" selected readonly>{{ x.moneda }}</option>
+                                        {% else %}
+                                          <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
+                                        {% endifequal %}
+                                      {% endfor %}
+                                    </select>
+                                  </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Agregar</label>
+                                        {% if project.status == 'PE' %}
+                                            <button class="btn btn-block btn-warning text-black btn-add">
+                                                <span class="glyphicon glyphicon-plus"></span>
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <small>
+                                        El precio del sistema esta expresado en <q class="currency-name">{{ system.moneda.moneda }}</q>
+                                    </small>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-warning alert-block">
+                                    <strong>Resumén</strong>
+                                    <table class="table-condensed tb-details">
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    </div>
+                    {% if project.status == 'AC' and not meter %}
+                        <div class="btn-group">
+                            <button class="btn btn-danger create-deductivo">
+                                <span class="glyphicon glyphicon-list"></span>
+                                <span>Crear Deductivo</span>
+                            </button>
+                            <button class="btn btn-danger btn-approval-addcional">
+                                <span class="glyphicon glyphicon-saved"></span>
+                                <span>Aprobar Sector</span>
+                            </button>
+                        </div>
+                    {% endif %}
                     <div class="panel panel-primary">
                         <div class="table-responsive">
-                          <table class="table table-hover table-condensed table-details">
-                            {% ifequal project.status 'AC'  %}
-                            <caption>
-                                <div class="form-group pull-left">
-                                        <strong>Seleccionar :</strong>
-                                    <label class="radio-inline">
-                                        <input type="radio" value="1" name="choice"> Todo
-                                    </label>
-                                    <label class="radio-inline">
-                                        <input type="radio" value="0" name="choice"> Ninguno.
-                                    </label>
-                                </div>
-                                <div class="form-group pull-right">
-                                    <button class="btn btn-xs btn-primary btn-show-orders">
-                                        <span class="glyphicon glyphicon-saved"></span> Pedido Almacén
-                                    </button>
-                                </div>
-                            </caption>
-                            {% endifequal %}
-                            <thead>
-                              <tr class="brand-primary text-white">
-                                {% ifequal project.status 'AC' %}
-                                <th></th>
-                                {% endifequal %}
-                                <th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Marca</th><th>Modelo</th><th>Cantidad</th>
-                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
-                                    <th>Precio</th>
-                                {% endif %}
-                                {% ifequal project.status 'AC' %}
-                                    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
-                                        <th>Stock</th>
-                                        {% endif %}
-                                    <th>Observación</th>
-                                {% endifequal %}
-                                {% ifequal project.status 'PE'  %}
-                                    <th>Editar</th><th>Eliminar</th>
-                                {% endifequal %}
-                              </tr>
-                            </thead>
-                            <tbody>
-                                {% for x in materials %}
-                                    <tr class="{{ x.materiales_id }}-{{ x.id }}">
-                                        <td>{{ forloop.counter }}</td>
-                                        {% ifequal project.status 'AC' %}
-                                        <td>
-                                            <input type="checkbox" name="mats" value="{{ x.materiales_id }}-{{ x.id }}">
-                                        </td>
-                                        {% endifequal %}
-                                        <td>{{ x.materiales_id }}</td>
-                                        <td>{{ x.materiales.matnom }}</td>
-                                        <td>{{ x.materiales.matmed }}</td>
-                                        <td>{{ x.materiales.unidad.uninom }}</td>
-                                        <td>{{ x.brand.brand }}</td>
-                                        <td>{{ x.model.model }}</td>
-                                        <td>{{ x.cantidad|safe }}</td>
-                                        {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
-                                            <td>{{ x.precio|safe }}</td>
-                                        {% endif %}
-                                        {% ifequal project.status 'PE'  %}
-                                            <td>
-                                                <button class="btn btn-xs btn-link text-green btn-show-edit" value="{{ x.materiales_id }}-{{ x.id }}">
-                                                    <span class="glyphicon glyphicon-pencil"></span>
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-xs btn-link text-red btn-del-mat" value="{{ x.materiales_id }}-{{ x.id }}">
-                                                    <span class="glyphicon glyphicon-trash"></span>
-                                                </button>
-                                            </td>
-                                        {% endifequal %}
-                                    </tr>
-                                {% endfor %}
-                                {% if meter %}
-                                    {% for x in meter %}
-                                    {% if x.quantity <= 0 %}
-                                        <tr class="success {{ x.materiales_id }}">
-                                    {% else  %}
-                                        <tr class="info {{ x.materiales_id }}">
-                                    {% endif %}
-                                        <td>{{ forloop.counter }}</td>
-                                        <td>
-                                            {% if x.quantity > 0 %}
-                                                <input type="checkbox" name="mats" value="{{ x.materiales_id }}">
-                                            {% else %}
-                                                <!-- <input type="hidden" name="mats" value="{{ x.materiales_id }}" disabled> -->
+                            {% if materials %}
+                                <table class="table table-hover table condensed table-details">
+                                    <thead>
+                                        <tr class="brand-primary text-white">
+                                            <th></th>
+                                            <th>Código</th>
+                                            <th>Descripción</th>
+                                            <th>Medida</th>
+                                            <th>Unidad</th>
+                                            <th>Marca</th>
+                                            <th>Modelo</th>
+                                            <th>Cantidad</th>
+                                            {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
+                                                <th>Precio</th>
                                             {% endif %}
-                                        </td>
-                                        <td>{{ x.materiales_id }}</td>
-                                        <td>{{ x.name }}</td>
-                                        <td>{{ x.measure }}</td>
-                                        <td>{{ x.unit }}</td>
-                                        <td>{{ x.brand }}</td>
-                                        <td>{{ x.model }}</td>
-                                        <td>{{ x.quantity|safe }}</td>
-                                        {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
-                                            <td>{{ x.price|safe }}</td>
-                                            <td>{{ x.stock|safe }}</td>
+                                            {% if meter %}
+                                                {% ifequal project.status 'AC' %}
+                                                    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
+                                                        <th>Stock</th>
+                                                        {% endif %}
+                                                    <th>Observación</th>
+                                                {% endifequal %}
+                                            {% endif %}
+                                                <th>Editar</th>
+                                                <th>Eliminar</th>
+                                          </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for x in materials %}
+                                            <tr class="{{ x.materiales_id }}-{{ x.id }}">
+                                                <td>{{ forloop.counter }}</td>
+                                                {% ifequal project.status 'AC' %}
+                                                <td>
+                                                    <input type="checkbox" name="mats" value="{{ x.materiales_id }}-{{ x.id }}">
+                                                </td>
+                                                {% endifequal %}
+                                                <td>{{ x.materiales_id }}</td>
+                                                <td>{{ x.materiales.matnom }}</td>
+                                                <td>{{ x.materiales.matmed }}</td>
+                                                <td>{{ x.materiales.unidad.uninom }}</td>
+                                                <td>{{ x.brand.brand }}</td>
+                                                <td>{{ x.model.model }}</td>
+                                                <td>{{ x.cantidad|safe }}</td>
+                                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
+                                                    <td>{{ x.precio|safe }}</td>
+                                                {% endif %}
+                                                {% ifequal project.status 'PE'  %}
+                                                    <td>
+                                                        <button class="btn btn-xs btn-link text-green btn-show-edit" value="{{ x.materiales_id }}-{{ x.id }}">
+                                                            <span class="glyphicon glyphicon-pencil"></span>
+                                                        </button>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-xs btn-link text-red btn-del-mat" value="{{ x.materiales_id }}-{{ x.id }}">
+                                                            <span class="glyphicon glyphicon-trash"></span>
+                                                        </button>
+                                                    </td>
+                                                {% endifequal %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% endif %}
+                            {% if meter %}
+                                <table class="table table-hover table-condensed table-details">
+                                    {% ifequal project.status 'AC'  %}
+                                        <caption>
+                                            <div class="form-group pull-left">
+                                                    <strong>Seleccionar :</strong>
+                                                <label class="radio-inline">
+                                                    <input type="radio" value="1" name="choice"> Todo
+                                                </label>
+                                                <label class="radio-inline">
+                                                    <input type="radio" value="0" name="choice"> Ninguno.
+                                                </label>
+                                            </div>
+                                            <div class="form-group pull-right">
+                                                <button class="btn btn-xs btn-primary btn-show-orders">
+                                                    <span class="glyphicon glyphicon-saved"></span> Pedido Almacén
+                                                </button>
+                                            </div>
+                                        </caption>
+                                    {% endifequal %}
+                                    <thead>
+                                      <tr class="brand-primary text-white">
+                                        {% if meter %}
+                                            {% ifequal project.status 'AC' %}
+                                                <th></th>
+                                            {% endifequal %}
                                         {% endif %}
-                                        <td>
+                                        <th></th>
+                                        <th>Código</th>
+                                        <th>Descripción</th>
+                                        <th>Medida</th>
+                                        <th>Unidad</th>
+                                        <th>Marca</th>
+                                        <th>Modelo</th>
+                                        <th>Cantidad</th>
+                                        {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
+                                            <th>Precio</th>
+                                        {% endif %}
+                                        {% if meter %}
+                                            {% ifequal project.status 'AC' %}
+                                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
+                                                    <th>Stock</th>
+                                                    {% endif %}
+                                                <th>Observación</th>
+                                            {% endifequal %}
+                                        {% endif %}
+                                        {% if materials and not meter  %}
+                                            <th>Editar</th>
+                                            <th>Eliminar</th>
+                                        {% endif %}
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for x in meter %}
                                             {% if x.quantity <= 0 %}
-                                                <input type="text" class="form-control input-sm comment-mat" data-mat="{{ x.materiales_id }}" value="{{ x.comment }}" style="width: 160px;" disabled>
-                                            {% else %}
-                                                <input type="text" class="form-control input-sm comment-mat" data-mat="{{ x.materiales_id }}" value="{{ x.comment }}" style="width: 160px;">
+                                                <tr class="success {{ x.materiales_id }}">
+                                            {% else  %}
+                                                <tr class="info {{ x.materiales_id }}">
                                             {% endif %}
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                {% endif %}
-                            </tbody>
-                          </table>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>
+                                                    {% if x.quantity > 0 %}
+                                                        <input type="checkbox" name="mats" value="{{ x.materiales_id }}">
+                                                    {% else %}
+                                                        <!-- <input type="hidden" name="mats" value="{{ x.materiales_id }}" disabled> -->
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ x.materiales_id }}</td>
+                                                <td>{{ x.name }}</td>
+                                                <td>{{ x.measure }}</td>
+                                                <td>{{ x.unit }}</td>
+                                                <td>{{ x.brand }}</td>
+                                                <td>{{ x.model }}</td>
+                                                <td>{{ x.quantity|safe }}</td>
+                                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
+                                                    <td>{{ x.price|safe }}</td>
+                                                    <td>{{ x.stock|safe }}</td>
+                                                {% endif %}
+                                                <td>
+                                                    {% if x.quantity <= 0 %}
+                                                        <input type="text" class="form-control input-sm comment-mat" data-mat="{{ x.materiales_id }}" value="{{ x.comment }}" style="width: 160px;" disabled>
+                                                    {% else %}
+                                                        <input type="text" class="form-control input-sm comment-mat" data-mat="{{ x.materiales_id }}" value="{{ x.comment }}" style="width: 160px;">
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% endif %}
                         </div>
                     </div>
-                    {% ifequal project.status 'AC' %}
+                    {% if meter %}
                     <div class="panel panel-warning">
                         <div class="table-responsive">
                             <table class="table table-condensed table-hover table-niple">
@@ -432,7 +489,7 @@
                             </table>
                         </div>
                     </div>
-                    {% endifequal %}
+                    {% endif %}
               </div>
               <div class="tab-pane" id="tools">
                   <div class="alert alert-inverse alert-inverse-border alert-block text-center">
