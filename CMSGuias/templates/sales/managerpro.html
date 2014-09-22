@@ -101,6 +101,7 @@ $(window).resize(function(){
                                       </h5>
                                     </div>
                                     <div id="{{ x.subproyecto_id }}" class="panel-collapse collapse">
+                                    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
                                         <div class="panel-footer">
                                             <div class="btn-group btn-group-justified">
                                                 <div class="btn-group">
@@ -111,6 +112,7 @@ $(window).resize(function(){
                                                 </div>
                                             </div>
                                         </div>
+                                    {% endif %}
                                         <div class="panel-body">
                                             <ul class="sectors sectors{{ x.subproyecto_id }}">
                                                 {% for j in sectors %}

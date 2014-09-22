@@ -22,6 +22,7 @@ $(document).ready ->
     $(".btn-message-del").on "click", showEditComment
     $(".btn-assigned").on "click", assignedResponsible
     $(".btn-approved").on "click", approvedProject
+    $(document).on "click", ".btn-del-sub", deleteSubproject
     $("#message").focus ->
         $(@).animate
             "height": "102px"
@@ -249,7 +250,7 @@ openNewSector = (event) ->
     pro = $("input[name=pro]").val()
     sub = $("input[name=sub]").val()
     url = "/sales/projects/sectors/crud/?pro=#{pro}&sub=#{sub}&type=new"
-    openWindow(url)
+    openWindow(url, false)
     return
 
 openUpdateSector = (event) ->
@@ -257,28 +258,31 @@ openUpdateSector = (event) ->
     sub = $("input[name=sub]").val()
     sec = @value
     url = "/sales/projects/sectors/crud/?pro=#{pro}&sub=#{sub}&sec=#{sec}&type=update"
-    openWindow(url)
+    openWindow(url, false)
     return
 
 openNewSubproyecto = (event) ->
     pro = $("input[name=pro]").val()
     url = "/sales/projects/subprojects/crud/?pro=#{pro}&type=new"
-    openWindow(url)
+    openWindow(url, true)
     return
 
 openUpdateSubproject = (event) ->
     pro = $("input[name=pro]").val()
     sub = @value
     url = "/sales/projects/subprojects/crud/?pro=#{pro}&sub=#{sub}&type=update"
-    openWindow(url)
+    openWindow(url, true)
     return
 
-openWindow = (url) ->
+openWindow = (url, reload) ->
     win = window.open url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600"
     interval = window.setInterval ->
         if win == null or win.closed
             window.clearInterval interval
-            getSectors()
+            if reload
+                location.reload()
+            else
+                getSectors()
             return
     , 1000
     return win;
@@ -317,4 +321,30 @@ uploadFiles = (event) ->
                 location.reload()
             else
                 $().toastmessage "showErrorToast", "Error al subir los archivos al servidor"
+    return
+
+deleteSubproject = ->
+    del = @
+    $().toastmessage "showToast",
+        text : "Debe tener en cuenta que al eliminar el Subproyecto (Adicional) este eliminara todos los sectores y materiales que contenga. Desea Eliminar el subproyecto (Adicional)?"
+        sticky : true
+        type : "confirm"
+        buttons : [{value:"Si"}, {value:"No"}]
+        success : (result) ->
+            if result is "Si"
+                data = new Object()
+                data.delsub = true
+                data.sub = del.value
+                data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+                $.post "", data, (response) ->
+                    if response.status
+                        $().toastmessage "showNoticeToast", "Se a eliminado correctamente."
+                        setTimeout ->
+                            location.reload()
+                        , 2600
+                    else
+                        $().toastmessage "showErrorToast", "No se a podido eliminar el Subproyecto. #{response.raise}"
+                , "json"
+            return
+        
     return

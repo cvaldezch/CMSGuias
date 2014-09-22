@@ -78,7 +78,7 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                 if request.POST.get('type') == 'new':
                     form = ProjectForm(request.POST)
                     key = genkeys.GenerateIdPorject()
-                    print form, form.is_valid(), request.user.get_profile().empdni_id, key
+                    #print form, form.is_valid(), request.user.get_profile().empdni_id, key
                     if form.is_valid():
                         add = form.save(commit=False)
                         add.proyecto_id = key
@@ -135,6 +135,7 @@ class SectorsView(JSONResponseMixin, View):
                     context['msg'] = 'error'
             elif request.POST.get('type') == 'new':
                 form = SectoreForm(request.POST)
+                print form, form.is_valid()
                 if form.is_valid():
                     add = form.save(commit=False)
                     id = "%s%s"%(add.proyecto_id, add.sector_id)
@@ -214,7 +215,10 @@ class ProjectManager(JSONResponseMixin, View):
                     context['status'] = False
                 return self.render_to_json_response(context)"""
             context['project'] = Proyecto.objects.get(pk=kwargs['project'])
-            context['subpro'] = Subproyecto.objects.filter(proyecto_id=kwargs['project'])
+            try:
+                context['subpro'] = Subproyecto.objects.filter(proyecto_id=kwargs['project'])
+            except ObjectDoesNotExist, e:
+                context['subpro'] = list()
             context['sectors'] = Sectore.objects.filter(proyecto_id=kwargs['project']).order_by('subproyecto','planoid')
             context['operation'] = Employee.objects.filter(charge__area__istartswith='opera').order_by('charge__area')
             context['admin'] = Employee.objects.filter(charge__area__istartswith='admin').order_by('charge__area')
@@ -228,107 +232,139 @@ class ProjectManager(JSONResponseMixin, View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             context = dict()
-            if request.POST.get('type') == 'files':
-                year = globalVariable.get_year
-                try:
-                    # charge file to server
-                    if request.POST.get('sub') == '':
-                        admin = '/storage/projects/%s/%s/administrative/'%(year, request.POST.get('pro'))
-                        opera = '/storage/projects/%s/%s/operation/'%(year, request.POST.get('pro'))
-                    else:
-                        admin = '/storage/projects/%s/%s/%s/administrative/'%(year, request.POST.get('pro'), request.POST.get('sub'))
-                        opera = '/storage/projects/%s/%s/%s/operation/'%(year, request.POST.get('pro'), request.POST.get('sub'))
+            try:
+                if request.POST.get('type') == 'files':
+                    year = globalVariable.get_year
+                    try:
+                        # charge file to server
+                        if request.POST.get('sub') == '':
+                            admin = '/storage/projects/%s/%s/administrative/'%(year, request.POST.get('pro'))
+                            opera = '/storage/projects/%s/%s/operation/'%(year, request.POST.get('pro'))
+                        else:
+                            admin = '/storage/projects/%s/%s/%s/administrative/'%(year, request.POST.get('pro'), request.POST.get('sub'))
+                            opera = '/storage/projects/%s/%s/%s/operation/'%(year, request.POST.get('pro'), request.POST.get('sub'))
 
-                    if 'administrative' in request.FILES:
-                        fileadmin = uploadFiles.upload(admin, request.FILES['administrative'], {'name': 'admin'})
-                        # descompress files in the server
-                        context['descompress'] =  uploadFiles.descompressRAR(fileadmin, admin)
-                        # delete files temp
-                        uploadFiles.removeTmp(fileadmin)
-                    if 'operation' in request.FILES:
-                        fileopera = uploadFiles.upload(opera, request.FILES['operation'], {'name': 'opera'})
-                        # descompress files in the server
-                        context['descompress'] = uploadFiles.descompressRAR(fileopera, opera)
-                        # delete files temp
-                        uploadFiles.removeTmp(fileopera)
-                    context['status'] = True
-                except ObjectDoesNotExist, e:
-                    print e
-                    context['raise'] = e.__str__()
-                    context['status'] = False
-
-            if request.POST.get('type') == 'add':
-                form = AlertasproyectoForm(request.POST)
-                if form.is_valid():
-                    add = form.save(commit=False)
-                    add.empdni_id = request.user.get_profile().empdni_id
-                    add.charge_id = request.user.get_profile().empdni.charge_id
-                    add.save()
-                    context['status'] = True
-                else:
-                    context['status'] = False
-            if request.POST.get('type') == 'edit':
-                obj = Alertasproyecto.objects.get(pk=request.POST.get('edit'))
-                form = AlertasproyectoForm(request.POST, instance=obj)
-                if form.is_valid():
-                    form.save()
-                    context['status'] = True
-                else:
-                    context['status'] = False
-            if request.POST.get('type') == 'responsible':
-                try:
-                    user = userProfile.objects.get(empdni_id=request.POST.get('admin'))
-                    # authenticate password admin
-                    if user.user.check_password(request.POST.get('passwd')):
-                        #if user.user.is_superuser:
-                        pro = Proyecto.objects.get(pk=kwargs['project'])
-                        pro.empdni_id = request.POST.get('responsible')
-                        pro.save()
+                        if 'administrative' in request.FILES:
+                            fileadmin = uploadFiles.upload(admin, request.FILES['administrative'], {'name': 'admin'})
+                            # descompress files in the server
+                            context['descompress'] =  uploadFiles.descompressRAR(fileadmin, admin)
+                            # delete files temp
+                            uploadFiles.removeTmp(fileadmin)
+                        if 'operation' in request.FILES:
+                            fileopera = uploadFiles.upload(opera, request.FILES['operation'], {'name': 'opera'})
+                            # descompress files in the server
+                            context['descompress'] = uploadFiles.descompressRAR(fileopera, opera)
+                            # delete files temp
+                            uploadFiles.removeTmp(fileopera)
+                        context['status'] = True
+                    except ObjectDoesNotExist, e:
+                        print e
+                        context['raise'] = e.__str__()
+                        context['status'] = False
+                if request.POST.get('type') == 'add':
+                    form = AlertasproyectoForm(request.POST)
+                    if form.is_valid():
+                        add = form.save(commit=False)
+                        add.empdni_id = request.user.get_profile().empdni_id
+                        add.charge_id = request.user.get_profile().empdni.charge_id
+                        add.save()
                         context['status'] = True
                     else:
-                        context['raise'] = 'Password incorrect!'
                         context['status'] = False
-                except ObjectDoesNotExist, e:
-                    context['raise'] = e.__str__()
-                    context['status'] = False
-            if request.POST.get('type') == 'approved':
-                # this function is for approve the project
-                try:
-                    user = userProfile.objects.get(empdni_id=request.POST.get('admin'))
-                    # authenticate password admin
-                    if user.user.check_password(request.POST.get('passwd')):
-                        #if user.user.is_superuser:
-                        pro = Proyecto.objects.get(pk=kwargs['project'])
-                        pro.approved_id = request.POST.get('admin')
-                        pro.status = 'AC'
-                        pro.save()
-                        sub = Subproyecto.objects.filter(proyecto_id=kwargs['project'])
-                        if sub:
-                            sub.update(status='AC')
-                        sec = Sectore.objects.filter(proyecto_id=kwargs['project'])
-                        if sec:
-                            sec.update(status='AC')
-                        # paste all list of materials to "MetProject"
-                        for x in Metradoventa.objects.filter(proyecto_id=kwargs['project']):
-                            obj = MetProject()
-                            obj.proyecto_id = x.proyecto_id
-                            obj.subproyecto_id = x.subproyecto_id
-                            obj.sector_id = x.sector_id
-                            obj.materiales_id = x.materiales_id
-                            obj.cantidad = x.cantidad
-                            obj.precio = x.precio
-                            obj.brand_id = x.brand_id
-                            obj.model_id = x.model_id
-                            obj.quantityorder = x.cantidad
-                            obj.save()
+                if request.POST.get('type') == 'edit':
+                    obj = Alertasproyecto.objects.get(pk=request.POST.get('edit'))
+                    form = AlertasproyectoForm(request.POST, instance=obj)
+                    if form.is_valid():
+                        form.save()
                         context['status'] = True
                     else:
-                        context['raise'] = 'Password incorrect!'
                         context['status'] = False
-                except ObjectDoesNotExist, e:
-                    context['raise'] = e.__str__()
-                    context['status'] = False
+                if request.POST.get('type') == 'responsible':
+                    try:
+                        user = userProfile.objects.get(empdni_id=request.POST.get('admin'))
+                        # authenticate password admin
+                        if user.user.check_password(request.POST.get('passwd')):
+                            #if user.user.is_superuser:
+                            pro = Proyecto.objects.get(pk=kwargs['project'])
+                            pro.empdni_id = request.POST.get('responsible')
+                            pro.save()
+                            context['status'] = True
+                        else:
+                            context['raise'] = 'Password incorrect!'
+                            context['status'] = False
+                    except ObjectDoesNotExist, e:
+                        context['raise'] = e.__str__()
+                        context['status'] = False
+                if request.POST.get('type') == 'approved':
+                    # this function is for approve the project
+                    try:
+                        user = userProfile.objects.get(empdni_id=request.POST.get('admin'))
+                        # authenticate password admin
+                        if user.user.check_password(request.POST.get('passwd')):
+                            #if user.user.is_superuser:
+                            pro = Proyecto.objects.get(pk=kwargs['project'])
+                            pro.approved_id = request.POST.get('admin')
+                            pro.status = 'AC'
+                            pro.save()
+                            sub = Subproyecto.objects.filter(proyecto_id=kwargs['project'])
+                            if sub:
+                                sub.update(status='AC')
+                            sec = Sectore.objects.filter(proyecto_id=kwargs['project'])
+                            if sec:
+                                sec.update(status='AC')
+                            # paste all list of materials to "MetProject"
+                            for x in Metradoventa.objects.filter(proyecto_id=kwargs['project']):
+                                obj = MetProject()
+                                obj.proyecto_id = x.proyecto_id
+                                obj.subproyecto_id = x.subproyecto_id
+                                obj.sector_id = x.sector_id
+                                obj.materiales_id = x.materiales_id
+                                obj.cantidad = x.cantidad
+                                obj.precio = x.precio
+                                obj.brand_id = x.brand_id
+                                obj.model_id = x.model_id
+                                obj.quantityorder = x.cantidad
+                                obj.save()
+                            context['status'] = True
+                        else:
+                            context['raise'] = 'Password incorrect!'
+                            context['status'] = False
+                    except ObjectDoesNotExist, e:
+                        context['raise'] = e.__str__()
+                        context['status'] = False
+                if 'delsub' in request.POST:
+                    # Delete subproject
+                    obj = Subproyecto.objects.get(proyecto_id=kwargs['project'], subproyecto_id=request.POST.get('sub'))
+                    obj.status = 'DL'
+                    obj.flag = False
+                    obj.save()
+                    # Delete all sectors of the Subproject
+                    for x in Sectore.objects.filter(proyecto_id=kwargs['project'], subproyecto_id=request.POST.get('sub')):
+                        x.status = 'DL'
+                        x.flag = False
+                        x.save()
+                    # Delete Meter of Sales
+                    for x in Metradoventa.objects.filter(proyecto_id=kwargs['project'], subproyecto_id=request.POST.get('sub')):
+                        x.flag = False
+                        x.save()
+                    # Delete files of Sector
+                    for x in SectorFiles.objects.filter(proyecto_id=kwargs['project'], subproyecto_id=request.POST.get('sub')):
+                        x.flag = False
+                        x.save()
+                    # Delete Meter of Project
+                    for x in MetProject.objects.filter(proyecto_id=kwargs['project'], subproyecto_id=request.POST.get('sub')):
+                        x.flag = False
+                        x.save()
+                    # Delete Meter Project Nipples
+                    for x in Nipple.objects.filter(proyecto_id=kwargs['project'], subproyecto_id=request.POST.get('sub')):
+                        x.flag = False
+                        x.save()
+                    context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
             return self.render_to_json_response(context)
+
 # Manager View Sectors
 class SectorManage(JSONResponseMixin, View):
     template_name = 'sales/managersec.html'

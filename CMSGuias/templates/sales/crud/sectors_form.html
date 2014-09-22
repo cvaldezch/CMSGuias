@@ -60,6 +60,20 @@
                     <label class="control-label">Observación</label>
                     {{ form.obser }}
                 </div>
+                <div class="form-group">
+                    <label class="control-label">Importe <small>(Aproximado)</small></label>
+                    {{ form.amount }}
+                </div>
+                {% if sub %}
+                    <div class="form-group">
+                        <label class="control-label">Tipo Adicional</label>
+                        {{ form.atype }}
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Código </label>
+                        {{ form.atype }}
+                    </div>
+                {% endif %}
                 <button type="reset" class="btn btn-default"><span class="glyphicon glyphicon-trash"></span> Limpiar</button>
                 <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Cambios</button>
             </form>
