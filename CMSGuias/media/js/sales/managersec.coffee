@@ -95,6 +95,9 @@ $(document).ready ->
     $(".btn-generate-orders").on "click", generateOrders
     $("#orderf").click ->
         $("#orderfile").click()
+
+    # second step
+    $(".btn-approval-addcional").on "click", approvedAdditional
     tinymce.init
         selector: "textarea[name=obser]",
         theme: "modern",
@@ -491,6 +494,7 @@ dellAllMaterial = (event) ->
     return
 
 pasteMaterials = ->
+    console.log "here Click"
     $cp = $("input[name=copy]")
     data = new Object()
     arr = new Array()
@@ -499,7 +503,8 @@ pasteMaterials = ->
         if @checked
             counter += 1
             $td = $("##{@value} > td")
-            arr.push($td.eq(2).text())
+            arr.push $td.eq(2).text()
+            return
     data.materials = arr
     data.paste = true
     data.pro = $("input[name=pro]").val()
@@ -509,8 +514,10 @@ pasteMaterials = ->
     data.csub = $("input[name=csub]").val()
     data.csec = $("input[name=csec]").val()
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
-    if counter > 0 and counter >= $cp.length
-        $.post "/json/projects/lists/",data, (response) ->
+    console.log data
+    if counter > 0 and counter <= $cp.length
+        $.post "/json/projects/lists/", data, (response) ->
+            console.log response
             if response.status
                 location.reload()
             else
@@ -971,4 +978,25 @@ generateOrders = ->
         return
     else
         $().toastmessage "showWarningToast", "existe un error de formatado, revise los campos del formulario"
+    return
+
+approvedAdditional = (event) ->
+    $().toastmessage "showToast",
+        text : "Desea aprobar y pasar a producción esta lista de materiales?"
+        sticky : true
+        type : "confirm"
+        buttons : [{value:"Si"},{value:"No"}]
+        success : (result) ->
+            if result is "Si"
+                data = new Object()
+                arr = new Array()
+                $("table.table-details > tbody > tr").each (index, element) ->
+                    $td = $(element).find "td"
+                    arr.push {"materials" : $td.eq(1).text(), "quantity" : parseFloat($td.eq(7).text()), "price" : parseFloat($td.eq(8).text()), "brand" : $td.eq(9).find("button").eq(0).attr("data-brand"), "model" : $td.eq(9).find("button").eq(0).attr("data-model")}
+                    console.log $td.eq(9).find("button").eq(0).attr("data-brand")
+                    return
+                data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+                data.approvedadditional = true
+                data.details = JSON.stringify arr
+                console.log data
     return

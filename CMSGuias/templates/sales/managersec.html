@@ -220,7 +220,7 @@
                     {% endif %}
                     <div class="panel panel-primary">
                         <div class="table-responsive">
-                            {% if materials %}
+                            {% if not meter %}
                                 <table class="table table-hover table condensed table-details">
                                     <thead>
                                         <tr class="brand-primary text-white">
@@ -251,11 +251,11 @@
                                         {% for x in materials %}
                                             <tr class="{{ x.materiales_id }}-{{ x.id }}">
                                                 <td>{{ forloop.counter }}</td>
-                                                {% ifequal project.status 'AC' %}
+                                                {% if project.status == 'AC' and meter %}
                                                 <td>
                                                     <input type="checkbox" name="mats" value="{{ x.materiales_id }}-{{ x.id }}">
                                                 </td>
-                                                {% endifequal %}
+                                                {% endif %}
                                                 <td>{{ x.materiales_id }}</td>
                                                 <td>{{ x.materiales.matnom }}</td>
                                                 <td>{{ x.materiales.matmed }}</td>
@@ -266,9 +266,9 @@
                                                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
                                                     <td>{{ x.precio|safe }}</td>
                                                 {% endif %}
-                                                {% ifequal project.status 'PE'  %}
+                                                {% if project.status == 'PE' or not meter  %}
                                                     <td>
-                                                        <button class="btn btn-xs btn-link text-green btn-show-edit" value="{{ x.materiales_id }}-{{ x.id }}">
+                                                        <button data-brand="{{ x.brand_id }}" data-model="{{ x.model_id }}" class="btn btn-xs btn-link text-green btn-show-edit" value="{{ x.materiales_id }}-{{ x.id }}">
                                                             <span class="glyphicon glyphicon-pencil"></span>
                                                         </button>
                                                     </td>
@@ -277,7 +277,7 @@
                                                             <span class="glyphicon glyphicon-trash"></span>
                                                         </button>
                                                     </td>
-                                                {% endifequal %}
+                                                {% endif %}
                                             </tr>
                                         {% endfor %}
                                     </tbody>

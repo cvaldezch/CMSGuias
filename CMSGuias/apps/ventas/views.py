@@ -101,7 +101,7 @@ class SectorsView(JSONResponseMixin, View):
         context = dict()
         if request.is_ajax():
             try:
-                obj = Sectore.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None).order_by('subproyecto','planoid')
+                obj = Sectore.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, flag=True).order_by('subproyecto','planoid')
                 context['list'] =[{'sector_id': x.sector_id, 'nomsec': x.nomsec, 'planoid' : x.planoid} for x in obj]
                 context['status'] = True
             except ObjectDoesNotExist, e:
@@ -214,12 +214,12 @@ class ProjectManager(JSONResponseMixin, View):
                     context['raise'] = e.__str__()
                     context['status'] = False
                 return self.render_to_json_response(context)"""
-            context['project'] = Proyecto.objects.get(pk=kwargs['project'])
+            context['project'] = Proyecto.objects.get(pk=kwargs['project'], flag=True)
             try:
-                context['subpro'] = Subproyecto.objects.filter(proyecto_id=kwargs['project'])
+                context['subpro'] = Subproyecto.objects.filter(proyecto_id=kwargs['project'], flag=True)
             except ObjectDoesNotExist, e:
                 context['subpro'] = list()
-            context['sectors'] = Sectore.objects.filter(proyecto_id=kwargs['project']).order_by('subproyecto','planoid')
+            context['sectors'] = Sectore.objects.filter(proyecto_id=kwargs['project'], flag=True).order_by('subproyecto','planoid')
             context['operation'] = Employee.objects.filter(charge__area__istartswith='opera').order_by('charge__area')
             context['admin'] = Employee.objects.filter(charge__area__istartswith='admin').order_by('charge__area')
             context['alerts'] = Alertasproyecto.objects.filter(Q(proyecto_id=kwargs['project']) | ~Q(subproyecto_id=None), Q(sector_id=None), Q(flag=True)).order_by('-registrado')
@@ -377,11 +377,11 @@ class SectorManage(JSONResponseMixin, View):
                 try:
                     if 'type' in request.GET:
                         if request.GET.get('type') == 'list':
-                            obj = Metradoventa.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec')).order_by('materiales__matnom')
+                            obj = Metradoventa.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), flag=True).order_by('materiales__matnom')
                             context['list'] = [{'id':x.id,'materials_id': x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'brand' : x.brand.brand, 'model' : x.model.model , 'quantity':x.cantidad, 'price':x.precio} for x in obj]
                             context['status'] = True
                     if 'list-nip' in request.GET:
-                        obj = Nipple.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), materiales_id=request.GET.get('mat')).order_by('metrado')
+                        obj = Nipple.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), materiales_id=request.GET.get('mat'), flag=True).order_by('metrado')
                         mat = MetProject.objects.get(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), materiales_id=request.GET.get('mat'))
                         if mat.quantityorder == mat.cantidad:
                             attend = 'show'
@@ -556,6 +556,14 @@ class SectorManage(JSONResponseMixin, View):
                             nip.save()
                         context['nro'] = id
                         context['status'] = True
+                if 'approvedadditional':
+                    details = json.loads(request.POST.get('details'))
+                    for x in details:
+                        # save Metprojet addtional
+                        obj = Metproyect()
+                        obj.
+                        obj.save()
+                    context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
