@@ -10,6 +10,7 @@ from CMSGuias.apps.almacen.models import Pedido, GuiaRemision, Suministro, NoteI
 from CMSGuias.apps.logistica.models import Cotizacion, Compra
 from CMSGuias.apps.ventas.models import Proyecto
 from CMSGuias.apps.home.models import Brand, Model
+from CMSGuias.apps.operations.models import Deductive
 
 
 ### format date str
@@ -205,6 +206,26 @@ def GenerateIdNoteIngress():
         else:
             counter = 1
         id = '%s%s%s'%('NI',yn.__str__(), '{:0>6d}'.format(counter))
+    except ObjectDoesNotExist, e:
+        raise e
+    return id
+
+def GenerateIdDeductive():
+    id = None
+    try:
+        code = Deductive.objects.aggregate(max=Max('deductive_id'))
+        id = code['max']
+        yn = int(datetime.datetime.today().strftime(__year_str))
+        if id is not None:
+            yy = int(id[2:4])
+            counter = int(id[4:10])
+            if yn > yy:
+                counter = 1
+            else:
+                counter += 1
+        else:
+            counter = 1
+        id = '%s%s%s'%('DC', yn.__str__(), '{:0>6d}'.format(counter))
     except ObjectDoesNotExist, e:
         raise e
     return id

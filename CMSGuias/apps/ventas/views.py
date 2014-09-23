@@ -19,7 +19,7 @@ from django.views.generic import ListView, TemplateView, View
 from django.views.generic.edit import UpdateView, CreateView
 
 from CMSGuias.apps.home.models import *
-from CMSGuias.apps.operations.models import MetProject, Nipple
+from CMSGuias.apps.operations.models import MetProject, Nipple, Deductive, DeductiveInputs, DeductiveOutputs
 from CMSGuias.apps.almacen.models import Inventario, tmpniple, Pedido, Detpedido, Niple
 from .models import *
 from .forms import *
@@ -561,8 +561,19 @@ class SectorManage(JSONResponseMixin, View):
                     for x in details:
                         # save Metprojet addtional
                         obj = Metproyect()
-                        obj.
+                        obj.proyecto_id = kwargs['pro']
+                        obj.subproyecto_id = kwargs['sub']
+                        obj.sector_id = kwargs['sec']
+                        obj.materiales_id = x['materials']
+                        obj.cantidad = x['quantity']
+                        obj.precio = x['price']
+                        obj.brand_id = x['brand']
+                        obj.model_id = x['model']
+                        obj.flag = True
                         obj.save()
+                    context['status'] = True
+                if 'modifystart' in request.POST:
+
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()

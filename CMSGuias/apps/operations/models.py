@@ -45,3 +45,40 @@ class Nipple(models.Model):
 
     def __unicode__(self):
         return ''
+
+class Deductive(models.Model):
+    REL = (('NN', 'Nothing'),('GL', 'Global'),('ST', 'Un Sector'),('PR', 'Personalido'),)
+    deductive_id = models.CharField(primary_key=True, max_length=10)
+    proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
+    subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
+    sector = models.ForeignKey(Sectore, to_field='sector_id', null=True, blank=True)
+    register = models.DateTimeField(auto_now_add=True)
+    rtype = models.CharField(max_length=2, choices=REL, default='NN')
+    relations = models.TextField()
+
+    class Meta:
+        ordering = ['deductive_id']
+
+class DeductiveInputs(models.Model):
+    deductive = models.ForeignKey(Deductive, to_field='deductive_id')
+    materials = models.ForeignKey(Materiale, to_field='materiales_id')
+    brand = models.ForeignKey(Brand, to_field='brand_id', default='BR000')
+    model = models.ForeignKey(Model, to_field='model_id', default='MO000')
+    quantity = models.FloatField(default=0)
+    price = models.FloatField(default=0)
+    related = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        ordering = ['deductive', 'materials']
+
+class DeductiveOutputs(models.Model):
+    deductive = models.ForeignKey(Deductive, to_field='deductive_id')
+    materials = models.ForeignKey(Materiale, to_field='materiales_id')
+    brand = models.ForeignKey(Brand, to_field='brand_id', default='BR000')
+    model = models.ForeignKey(Model, to_field='model_id', default='MO000')
+    quantity = models.FloatField(default=0)
+    price = models.FloatField(default=0)
+    related = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        ordering = ['deductive', 'materials']

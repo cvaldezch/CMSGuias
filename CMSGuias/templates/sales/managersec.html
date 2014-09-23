@@ -107,6 +107,35 @@
                                 </div>
                             {% endif %}
                         </div>
+                        {% if meter and user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
+                            <div class="btn-group">
+                            <button class="btn btn-default btn-update-meter-cancel">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                    Cancelar
+                                </button>
+                                <button class="btn btn-danger text-black btn-update-meter">
+                                    <span class="glyphicon glyphicon-link"></span>
+                                    Modificar Sector
+                                </button>
+                                <button class="btn btn-danger text-black btn-show-materials-meter">
+                                    <span class="glyphicon glyphicon-list"></span>
+                                    Materiales
+                                </button>
+                                <button class="btn btn-danger text-black btn-deductivo-meter">
+                                    <span class="glyphicon glyphicon-indent-left"></span>
+                                    <span class="glyphicon glyphicon-indent-right"></span>
+                                    Deductivo
+                                </button>
+                                <button class="btn btn-danger text-black btn-upload-plane-meter">
+                                    <span class="glyphicon glyphicon-file"></span>
+                                    Cargar Plano Modicado
+                                </button>
+                                <button class="btn btn-danger text-black btn-save-modify-meter">
+                                    <span class="glyphicon glyphicon-saved"></span>
+                                    Aprobar Modificación
+                                </button>
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="alert alert-warning alert-block panel-add-mat">
                         <div class="row">
@@ -232,7 +261,7 @@
                                             <th>Marca</th>
                                             <th>Modelo</th>
                                             <th>Cantidad</th>
-                                            {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
+                                            {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
                                                 <th>Precio</th>
                                             {% endif %}
                                             {% if meter %}
@@ -490,6 +519,31 @@
                         </div>
                     </div>
                     {% endif %}
+                    <div class="panel panel-success panel-modify">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-condensed table-hover table-modify">
+                                <thead>
+                                    <tr class="brand-warning">
+                                        <th class="text-center">Item</th>
+                                        <th class="text-center">Código</th>
+                                        <th class="text-center">Descripción</th>
+                                        <th class="text-center">Medida</th>
+                                        <th class="text-center">Unidad</th>
+                                        <th class="text-center">Marca</th>
+                                        <th class="text-center">Modelo</th>
+                                        <th class="text-center">Cantidad</th>
+                                        <th class="text-center">Precio</th>
+                                        <th class="text-center">Importe</th>
+                                        <th class="text-center">Editar</th>
+                                        <th class="text-center">Eliminar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
               </div>
               <div class="tab-pane" id="tools">
                   <div class="alert alert-inverse alert-inverse-border alert-block text-center">

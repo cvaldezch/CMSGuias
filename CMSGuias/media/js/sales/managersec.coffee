@@ -1,8 +1,8 @@
 $(document).ready ->
-    $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials, .ordersbedside").hide()
+    $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials, .ordersbedside, .panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter").hide()
     $("input[name=traslado]").datepicker "dateFormat": "yy-mm-dd", changeMonth : true, changeYear : true, minDate : "0"
     $(".panel-add-mat, .view-full").hide()
-    $(".btn-show-mat").on "click", openAddMaterial
+    $(".btn-show-mat, .btn-show-materials-meter").on "click", openAddMaterial
     $("input[name=plane]").on "change", uploadPlane
     $(".btn-show-planes").on "click", panelPlanes
     $("[name=show-full]").on "click", viewFull
@@ -96,6 +96,8 @@ $(document).ready ->
     $("#orderf").click ->
         $("#orderfile").click()
 
+    $(".btn-update-meter").on "click", showModify
+    $(".btn-update-meter-cancel").on "click", backModify
     # second step
     $(".btn-approval-addcional").on "click", approvedAdditional
     tinymce.init
@@ -999,4 +1001,23 @@ approvedAdditional = (event) ->
                 data.approvedadditional = true
                 data.details = JSON.stringify arr
                 console.log data
+                $.post "", data, (response) ->
+                    if response.status
+                        $().toastmessage "showNoticeToast", "Correcto se ha aprovado el sector."
+                        setTimeout ->
+                            location.reload()
+                        , 2600
+                    else
+                        $().toastmessage "showWarningToast", "No se a podido realizar la aprovación del sector."
+                , "json"
+    return
+
+showModify = ->
+    $(".table-details, .table-niple, .btn-update-meter").fadeOut 200
+    $(".panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter").fadeIn 680
+    return
+
+backModify = ->
+    $(".panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter").fadeOut 200
+    $(".table-details, .table-niple, .btn-update-meter").fadeIn 680
     return
