@@ -556,7 +556,7 @@ class SectorManage(JSONResponseMixin, View):
                             nip.save()
                         context['nro'] = id
                         context['status'] = True
-                if 'approvedadditional':
+                if 'approvedadditional' in request.POST:
                     details = json.loads(request.POST.get('details'))
                     for x in details:
                         # save Metprojet addtional
@@ -573,7 +573,42 @@ class SectorManage(JSONResponseMixin, View):
                         obj.save()
                     context['status'] = True
                 if 'modifystart' in request.POST:
-
+                    update = UpdateMetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], flag=True).order_by('materials__matnom')
+                    list_ = list()
+                    if not update:
+                        for x in MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom'):
+                            obj = UpdateMetProject()
+                            obj.proyecto_id = kwargs['pro']
+                            obj.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
+                            obj.sector_id = kwargs['sec']
+                            obj.materials_id = x.materiales_id
+                            obj.brand_id = x.brand_id
+                            obj.model_id = x.model_id
+                            obj.quantity = x.cantidad
+                            obj.price = x.precio
+                            obj.comment = x.comment
+                            obj.quantityorders = x.quantityorder
+                            obj.tag = x.tag
+                            obj.save()
+                            list_.append({'materials' : x.materiales_id, 'name' : x.materiales.matnom, 'measure' : x.materiales.matmed, 'unit' : x.materiales.unidad.uninom, 'brand_id' :x.brand_id, 'model_id' : x.model_id, 'brand' :x.brand.brand, 'model' : x.model.model, 'quantity' : x.cantidad, 'price' :x.precio, 'amount' : '{0:.2f}'.format((x.cantidad * x.precio)), 'tag':x.tag})
+                    else:
+                        for x in update:
+                            list_.append({'materials' : x.materials_id, 'name' : x.materials.matnom, 'measure' : x.materials.matmed, 'unit' : x.materials.unidad.uninom, 'brand_id' :x.brand_id, 'model_id' : x.model_id, 'brand' :x.brand.brand, 'model' : x.model.model, 'quantity' : x.quantity, 'price' :x.price, 'amount' :'{0:.2f}'.format(x.amount), 'tag':x.tag})
+                    context['details'] = list_
+                    context['listBrand'] = [{'brand_id':x.brand_id,'brand':x.brand} for x in Brand.objects.filter(flag=True).order_by('brand')]
+                    context['listModel'] = [{'model_id':x.model_id, 'model':x.model} for x in Model.objects.filter(flag=True).order_by('model')]
+                    context['status'] = True
+                if 'updatematerialMeter' in request.POST:
+                    obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=request.POST.get('materials'), flag=True)
+                    obj.brand_id = request.POST.get('brand')
+                    obj.model_id = request.POST.get('model')
+                    obj.quantity = request.POST.get('quantity')
+                    obj.price = request.POST.get('price')
+                    obj.save()
+                    context['status'] = True
+                if 'deletematerialMeter' in request.POST:
+                    obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=request.POST.get('materials'), flag=True)
+                    obj.delete()
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()

@@ -1204,7 +1204,6 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
             context = dict()
             if request.is_ajax():
                 try:
-
                     if 'type' in request.GET:
                         if request.GET.get('type') == 'code':
                             context['list'] = [{'purchase' : x.compra_id, 'reason' : x.proveedor.razonsocial, 'supplier': x.proveedor_id, 'document' : x.documento.documento, 'transfer' : globalVariable.format_date_str(x.traslado)} for x in Compra.objects.filter(compra_id=request.GET.get('code'))]
@@ -1219,7 +1218,7 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                     if 'purchase' in request.GET:
                         buy = Compra.objects.get(pk=request.GET.get('purchase'))
                         context['head'] = {'supplier':buy.proveedor_id, 'quote': buy.cotizacion_id if buy.cotizacion_id else 'None','place':buy.lugent,'document':buy.documento.documento, 'payment':buy.pagos.pagos,'currency':buy.moneda.moneda,'register':globalVariable.format_date_str(buy.registrado), 'transfer':globalVariable.format_date_str(buy.traslado), 'contact':buy.contacto,'deposit':'%s'%buy.deposito,'performed':'%s, %s'%(buy.empdni.firstname, buy.empdni.lastname)}
-                        context['details'] = [{'materials':x.materiales_id, 'name':x.materiales.matnom, 'measure':x.materiales.matmed, 'unit':x.materiales.unidad.uninom, 'quantity':x.cantidad,'static':x.cantstatic, 'price':x.precio, 'discount': float(x.discount)} for x in DetCompra.objects.filter(compra_id=request.GET.get('purchase')).order_by('materiales__matnom') if x.flag != '2']
+                        context['details'] = [{'materials':x.materiales_id, 'name':x.materiales.matnom, 'measure':x.materiales.matmed, 'unit':x.materiales.unidad.uninom, 'quantity':x.cantidad,'static':x.cantstatic, 'price':x.precio, 'discount': float(x.discount), 'brand':x.brand.brand, 'brand_id': x.brand_id, 'model':x.model.model, 'model_id': x.model_id} for x in DetCompra.objects.filter(compra_id=request.GET.get('purchase')).order_by('materiales__matnom') if x.flag != '2']
                         context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = e.__str__()

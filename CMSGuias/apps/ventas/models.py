@@ -84,6 +84,8 @@ class SectorFiles(models.Model):
     subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id',null=True, blank=True)
     files = models.FileField(upload_to=url, max_length=200)
     note = models.TextField(default='', blank=True)
+    date = models.DateField(auto_now=True, default=globalVariable.getToday.date())
+    time = models.TimeField(auto_now=True, default=globalVariable.getToday.time())
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):
@@ -152,6 +154,9 @@ class UpdateMetProject(models.Model):
     model = models.ForeignKey(Model, to_field='model_id', default='MO000')
     quantity = models.FloatField()
     price = models.FloatField()
+    comment = models.CharField(max_length=250,default='',null=True, blank=True)
+    quantityorders = models.FloatField(default=0, blank=True)
+    tag = models.CharField(max_length=1, default='0')
     flag = models.BooleanField(default=True)
 
     @property

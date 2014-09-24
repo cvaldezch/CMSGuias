@@ -120,7 +120,7 @@ showIngressInventory = function(event) {
       $(".transfer").html(response.head.transfer);
       $(".contact").html(response.head.contact);
       $(".performed").html(response.head.performed);
-      template = "<tr><td><input type=\"checkbox\" name=\"mats\" value=\"{{ materials }}\"></td><td>{{ item }}</td><td>{{ materials }}</td><td>{{ name }}</td><td>{{ measure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td><input type=\"number\" class=\"form-control input-sm materials\" name=\"{{ materials }}\" value=\"{{ quantity }}\" min=\"1\" max=\"{{ quantity }}\" data-price=\"{{ price }}\" disabled></td></tr>";
+      template = "<tr><td><input type=\"checkbox\" name=\"mats\" value=\"{{ materials }}\"></td><td>{{ item }}</td><td>{{ materials }}</td><td>{{ name }}</td><td>{{ measure }}</td><td>{{ brand }}</td><td>{{ model }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td><input type=\"number\" class=\"form-control input-sm materials\" name=\"{{ materials }}\" value=\"{{ quantity }}\" min=\"1\" max=\"{{ quantity }}\" data-price=\"{{ price }}\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\" disabled></td></tr>";
       $tb = $("table.table-ingress > tbody");
       $tb.empty();
       for (x in response.details) {
@@ -204,7 +204,9 @@ saveNoteIngress = function(response) {
         "materials": element.value,
         "quantity": quantity,
         "price": $("input[name=" + element.value + "]").attr("data-price"),
-        "tag": tag
+        "tag": tag,
+        "brand": $("input[name=" + element.value + "]").attr("data-brand"),
+        "model": $("input[name=" + element.value + "]").attr("data-model")
       });
     }
   });

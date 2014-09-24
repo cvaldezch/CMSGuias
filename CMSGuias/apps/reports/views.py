@@ -62,8 +62,8 @@ def rpt_guide_referral_format(request,gid,pg):
     try:
         if request.method == 'GET':
             guide = get_object_or_404(models.GuiaRemision, pk=gid, flag=True)
-            det = get_list_or_404(models.DetGuiaRemision, guia_id__exact=gid, flag=True)
-            nipples = get_list_or_404(models.NipleGuiaRemision, guia_id__exact= gid, flag=True)
+            det = models.DetGuiaRemision.objects.filter(guia_id__exact=gid, flag=True)
+            nipples = models.NipleGuiaRemision.objects.filter(guia_id__exact= gid, flag=True)
             tipo = globalVariable.tipo_nipples #{ "A":"Roscado", "B": "Ranurado","C":"Roscado - Ranurado" }
             ctx = { 'guide': guide, 'det': det, 'nipples': nipples, "tipo": tipo }
             page = 'rptguidereferral' if pg == 'format' else 'rptguidereferralwithout'
@@ -126,7 +126,7 @@ class RptPurchase(TemplateView):
                 precio = x.precio - disc
                 amount = (x.cantstatic * precio)
                 subt += amount
-                context['details'].append({'materials_id':x.materiales_id, 'matname':x.materiales.matnom, 'measure': x.materiales.matmed, 'unit':x.materiales.unidad_id, 'quantity':x.cantstatic, 'price':x.precio, 'discount': float(x.discount), 'amount':amount})
+                context['details'].append({'materials_id':x.materiales_id, 'matname':x.materiales.matnom, 'measure': x.materiales.matmed, 'unit':x.materiales.unidad_id, 'brand': x.brand.brand, 'quantity':x.cantstatic, 'price':x.precio, 'discount': float(x.discount), 'amount':amount})
             context['discount'] = tdiscount
             context['igvval'] = ((conf.igv * subt) / 100)
             context['igv'] = conf.igv

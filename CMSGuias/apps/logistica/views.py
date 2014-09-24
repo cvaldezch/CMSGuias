@@ -703,7 +703,7 @@ class CompareQuote(JSONResponseMixin, TemplateView):
             try:
                 if 'purchase' in request.POST:
                     form = CompraForm(request.POST, request.FILES)
-                    print form.is_valid()
+                    # print form.is_valid()
                     if form.is_valid():
                         add = form.save(commit=False)
                         purchase = genkeys.GenerateKeyPurchase()
@@ -714,22 +714,28 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                         add.save()
                         # save the details
                         details = json.loads(request.POST.get('details'))
-                        print details
+                        # print details
                         for x in details:
                             # consult if brand exists and model
                             brand = Brand.objects.filter(brand__icontains=x['brand'])
-                            if brand:
-                                brand = brand[0].brand_id
+                            if brand or x['brand'] == unicode(None):
+                                if x['brand'] == unicode(None):
+                                    brand = 'BR000'
+                                else:
+                                    brand = brand[0].brand_id
                             else:
                                 br = Brand()
                                 brand = genkeys.GenerateIdBrand()
                                 br.brand_id = brand
                                 br.brand = x['brand']
                                 br.save()
-                            print brand
+                            # print brand
                             model = Model.objects.filter(model__icontains=x['model'])
-                            if model:
-                                model = model[0].model_id
+                            if model or x['model'] == unicode(None):
+                                if x['model'] == unicode(None):
+                                    model = 'MO000'
+                                else:
+                                    model = model[0].model_id
                             else:
                                 mo = Model()
                                 model = genkeys.GenerateIdModel()
@@ -737,7 +743,7 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                                 mo.brand_id = brand
                                 mo.model = x['model']
                                 mo.save()
-                            print model
+                            # print model
                             det = DetCompra()
                             det.compra_id = purchase
                             det.materiales_id = x['materials']

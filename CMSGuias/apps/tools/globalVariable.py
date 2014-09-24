@@ -123,9 +123,11 @@ def format_str_date(_str=None, format="%Y-%m-%d"):
         messages.add_message(e)
         raise Http404('Method Error')
     return str_date
-
+# Block Dates and Times
 # get year current str
-get_year = datetime.datetime.today().date().strftime("%Y")
+get_year = datetime.datetime.today().date().strftime('%Y')
+
+getToday = datetime.datetime.today()
 
 # get Relative path
 relative_path = settings.MEDIA_ROOT

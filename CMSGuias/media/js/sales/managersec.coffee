@@ -1,5 +1,5 @@
 $(document).ready ->
-    $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials, .ordersbedside, .panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter").hide()
+    $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials, .ordersbedside, .panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter").hide()
     $("input[name=traslado]").datepicker "dateFormat": "yy-mm-dd", changeMonth : true, changeYear : true, minDate : "0"
     $(".panel-add-mat, .view-full").hide()
     $(".btn-show-mat, .btn-show-materials-meter").on "click", openAddMaterial
@@ -11,7 +11,7 @@ $(document).ready ->
     $(".btn-show-del").on "click", dellAllMaterial
     $(".btn-new-brand").on "click", openBrand
     $(".btn-new-model").on "click", openModel
-    $("[name=show-plane]").on "click", (event) ->
+    $("[name=show-plane], .btn-upload-plane-meter").on "click", (event) ->
         $("input[name=plane]").click()
     $(document).on "click", ".btn-del-mat", delMaterials
     $(document).on "click", ".btn-show-secsub", loadSecandSub
@@ -98,6 +98,10 @@ $(document).ready ->
 
     $(".btn-update-meter").on "click", showModify
     $(".btn-update-meter-cancel").on "click", backModify
+    $(".btn-reload-modify").on "click", startModidfy
+    $(document).on "blur", "table.table-modify > tbody > tr > td > input[type=number]", validBlurNumber
+    $(document).on "click", ".btn-update-update", updateMaterialUpdateMeter
+    $(document).on "click", ".btn-delete-update", deleteMaterialUpdateMeter
     # second step
     $(".btn-approval-addcional").on "click", approvedAdditional
     tinymce.init
@@ -1013,11 +1017,124 @@ approvedAdditional = (event) ->
     return
 
 showModify = ->
+    startModidfy()
     $(".table-details, .table-niple, .btn-update-meter").fadeOut 200
-    $(".panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter").fadeIn 680
+    $(".panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter").fadeIn 680
     return
 
 backModify = ->
-    $(".panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter").fadeOut 200
+    $(".panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter").fadeOut 200
     $(".table-details, .table-niple, .btn-update-meter").fadeIn 680
+    return
+
+startModidfy = ->
+    data = new Object()
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    data.modifystart = true
+    $.post "", data , (response) ->
+        if response.status
+            selectBrand =  "<option value=\"{{ brand_id }}\" {{!sel}}>{{ brand }}</option>"
+            selectModel =  "<option value=\"{{ model_id }}\" {{!sel}}>{{ model }}</option>"
+            template = "<tr id=\"trm-{{ materials }}\">
+                        <td class=\"text-center\">{{ item }}</td>
+                        <td class=\"text-center\">{{ materials }}</td>
+                        <td>{{ name }}</td>
+                        <td>{{ measure }}</td>
+                        <td class=\"text-center\">{{ unit }}</td>
+                        <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"brand-{{ materials }}\"</select></td>
+                        <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"model-{{ materials }}\"</select></td>
+                        <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm\" value=\"{{ quantity }}\" min=\"0\" id=\"quantity-{{ materiales }}\"></td>
+                        <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm\" value=\"{{ price }}\" id=\"price-{{ materials }}\"></td>
+                        <td>{{ amount }}</td>
+                        <td class=\"text-center\">
+                            <button class=\"btn btn-xs btn-link text-green btn-update-update\" value=\"{{ materials }}\" data-tag=\"{{ tag }}\">
+                                <span class=\"glyphicon glyphicon-edit\"></span>
+                            </button>
+                        </td>
+                        <td class=\"text-center\">
+                            <button class=\"btn btn-xs btn-link text-red btn-delete-update\" value=\"{{ materials }}\">
+                                <span class=\"glyphicon glyphicon-trash\"></span>
+                            </button>
+                        </td>
+                        </tr>"
+            $tb = $(".table-modify > tbody")
+            $tb.empty()
+            for x of response.details
+                response.details[x].item = (parseInt(x) + 1)
+                $tb.append Mustache.render template, response.details[x]
+                $sel = $("#brand-#{response.details[x].materials}")
+                $sel.empty()
+                for b of response.listBrand
+                    if response.listBrand[b].brand_id is response.details[x].brand_id
+                        selectBrand = selectBrand.replace "{{!sel}}", "selected"
+                    $sel.append Mustache.render selectBrand, response.listBrand[b]
+                $sel = $("#model-#{response.details[x].materials}")
+                $sel.empty()
+                for b of response.listModel
+                    if response.listModel[b].model_id is response.details[x].model_id
+                        selectModel = selectModel.replace "{{!sel}}", "selected"
+                    $sel.append Mustache.render selectModel, response.listModel[b]
+        else
+            $().toastmessage "showErrorToast", "No se puede traer la modificación para este sector."
+    , "json"
+    return
+
+validBlurNumber = ->
+    pass = false
+    val = @value
+    val = val.replace ",", "."
+    val = parseFloat val
+    if not isNaN val
+        if val < 0
+           $().toastmessage "showWarningToast", "El monto ingresado tiene que ser mayor a 0."
+           @value = 0
+        else
+            pass = true
+    else
+        $().toastmessage "showErrorToast", "Solo se aceptan Digitos."
+        @value = 0
+        pass = false
+    return pass
+
+updateMaterialUpdateMeter = ->
+    material = @value
+    $td = $("table.table-modify > tbody > tr#trm-#{material} > td")
+    data = new Object()
+    data.materials = material
+    data.brand = $td.eq(5).find("select").val()
+    data.model = $td.eq(6).find("select").val()
+    data.quantity = $td.eq(7).find("input").val().replace ",", "."
+    data.price = $td.eq(8).find("input").val().replace ",", "."
+    data.updatematerialMeter = true
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    console.log data
+    $.post "", data, (response) ->
+        if response.status
+            tot = (parseFloat(data.quantity) * parseFloat(data.price))
+            $td.eq(9).text tot.toFixed(2)
+        else
+            $().toastmessage "showErrorToast", "No se a podido modificar el material."
+    , "json"
+    return
+
+deleteMaterialUpdateMeter = ->
+    material = @value
+    $().toastmessage "showToast",
+        text : "Realmente desea eliminar el material #{@value}?"
+        type : "confirm"
+        sticky : true
+        buttons : [{value:"Si"},{value:"No"}]
+        success : (result) ->
+            if result is "Si"
+                data = new Object()
+                data.materials = material
+                data.deletematerialMeter = true
+                data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+                console.log data
+                $.post "", data, (response) ->
+                    if response.status
+                        startModidfy()
+                    else
+                        $().toastmessage "showErrorToast", "No se a podido eliminar el material."
+                , "json"
     return

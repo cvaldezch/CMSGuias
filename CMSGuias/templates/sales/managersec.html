@@ -36,7 +36,6 @@
                     {% if not planes %}
                         <div class="alert alert-inverse alert-inverse-border text-center">
                             <h4>CLICK AQUI <button name="show-plane" class="btn text-white upload-green"><strong>BROWSE</strong></button>
-                            <input type="file" name="plane" class="hide" accept="application/pdf">
                             </h4>
                         </div>
                     {% else %}
@@ -59,7 +58,7 @@
                                             {% endif %}
                                             <p>
                                                 <button name="show-full" class="btn btn-xs btn-primary" role="button" value="{{ MEDIA_URL }}{{ x.files }}"><span class="glyphicon glyphicon-fullscreen"></span></button>
-                                                {% ifequal project.status 'PE' %}
+                                                {% ifequal user.get_profile.empdni.charge.area|lower 'administrator' %}
                                                     <button name="plane-del" class="btn btn-xs btn-danger pull-right" role="button" value="{{ x.files }}"><span class="glyphicon glyphicon-fire"></span></button>
                                                 {% endifequal %}
                                             </p>
@@ -214,6 +213,11 @@
                                         {% if project.status == 'PE' %}
                                             <button class="btn btn-block btn-warning text-black btn-add">
                                                 <span class="glyphicon glyphicon-plus"></span>
+                                            </button>
+                                        {% endif %}
+                                        {% if project.status == 'AC' and meter %}
+                                            <button class="btn btn-block btn-warning text-black btn-add-meter">
+                                                <span class="glyphicon glyphicon-saved"></span>
                                             </button>
                                         {% endif %}
                                     </div>
@@ -521,6 +525,14 @@
                     {% endif %}
                     <div class="panel panel-success panel-modify">
                         <div class="table-responsive">
+                            <caption>
+                                <div class="forn-group pull-left">
+                                    <button class="btn btn-default btn-sm btn-reload-modify">
+                                        <span class="glyphicon glyphicon-refresh"></span>
+                                        Recargar
+                                    </button>
+                                </div>
+                            </caption>
                             <table class="table table-bordered table-condensed table-hover table-modify">
                                 <thead>
                                     <tr class="brand-warning">
@@ -833,4 +845,6 @@
 {% for x in exchange %}
   <input type="hidden" name="{{ x.moneda_id }}" value="{{ x.compra|safe }}">
 {% endfor %}
+<!-- block files -->
+<input type="file" name="plane" class="hide" accept="application/pdf">
 {% endblock content %}
