@@ -571,7 +571,7 @@ def view_transport(request,ruc):
     try:
         if request.method == 'GET':
             lista = Transporte.objects.filter(flag=True,traruc_id=ruc)
-            print lista
+            # print lista
             ctx = { "lista": lista, "ruc":ruc, "nom": lista[0].traruc.tranom if len(lista) > 0 else "" }
             return render_to_response("upkeep/transport.html",ctx,context_instance=RequestContext(request))
         elif request.method == 'POST':
@@ -633,7 +633,7 @@ def view_conductor(request,ruc):
     try:
         if request.method == 'GET':
             lista = Conductore.objects.filter(flag=True,traruc_id=ruc)
-            print lista
+            # print lista
             ctx = { "lista": lista, "ruc":ruc, "nom": lista[0].traruc.tranom if len(lista) > 0 else "" }
             return render_to_response("upkeep/conductor.html",ctx,context_instance=RequestContext(request))
         elif request.method == 'POST':
@@ -1238,10 +1238,10 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
         if request.is_ajax():
             context = dict()
             try:
-                print request.POST
+                # print request.POST
                 if 'ingress' in request.POST:
                     form = forms.addNoteIngress(request.POST)
-                    print form.is_valid(), 'form is valid'
+                    # print form.is_valid(), 'form is valid'
                     if form.is_valid():
                         add = form.save(commit=False)
                         ingress = genkeys.GenerateIdNoteIngress()

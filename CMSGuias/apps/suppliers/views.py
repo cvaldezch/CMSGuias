@@ -145,12 +145,12 @@ class ListDetailsQuote(JSONResponseMixin, TemplateView):
                                 context['igv'] = obj[0].igv
                                 context['currency'] = Moneda.objects.filter(flag=True).order_by('moneda')
                                 cli = CotCliente.objects.filter(cotizacion_id=kwargs['quote'], proveedor_id=kwargs['supplier'])
-                                print cli
+                                # print cli
                                 if cli:
                                     context['disabled'] = True
                                 else:
                                     context['disabled'] = False
-                                print context['disabled']
+                                # print context['disabled']
                         else:
                             return HttpResponseRedirect(reverse_lazy('supplier_quote'))
                     else:

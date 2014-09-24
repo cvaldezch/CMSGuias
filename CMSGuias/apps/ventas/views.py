@@ -125,7 +125,7 @@ class SectorsView(JSONResponseMixin, View):
             if request.POST.get('type') == 'update':
                 obj = Sectore.objects.get(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('sub') if request.POST.get('subproyecto') != '' else None, sector_id=request.POST.get('sector_id'))
                 form = SectoreForm(request.POST, instance=obj)
-                print form, form.is_valid()
+                # print form, form.is_valid()
                 if form.is_valid():
                     form.save()
                     context['status'] = True
@@ -135,11 +135,11 @@ class SectorsView(JSONResponseMixin, View):
                     context['msg'] = 'error'
             elif request.POST.get('type') == 'new':
                 form = SectoreForm(request.POST)
-                print form, form.is_valid()
+                # print form, form.is_valid()
                 if form.is_valid():
                     add = form.save(commit=False)
                     id = "%s%s"%(add.proyecto_id, add.sector_id)
-                    print id, len(id)
+                    # print id, len(id)
                     add.sector_id = id
                     add.save()
                     context['status'] = True
@@ -174,7 +174,7 @@ class SubprojectsView(JSONResponseMixin, View):
             if request.POST.get('type') == 'update':
                 obj = Subproyecto.objects.get(proyecto_id=request.POST.get('proyecto'),subproyecto_id=request.POST.get('subproyecto_id'))
                 form = SubprojectForm(request.POST, instance=obj)
-                print form, form.is_valid()
+                # print form, form.is_valid()
                 if form.is_valid():
                     form.save()
                     context['status'] = True
@@ -184,7 +184,7 @@ class SubprojectsView(JSONResponseMixin, View):
                     context['msg'] = 'error'
             elif request.POST.get('type') == 'new':
                 form = SubprojectForm(request.POST)
-                print form, form.is_valid()
+                #print form, form.is_valid()
                 if form.is_valid():
                     form.save()
                     context['status'] = True
@@ -426,7 +426,7 @@ class SectorManage(JSONResponseMixin, View):
                 context['meter'] = data
                 context['niple'] = globalVariable.tipo_nipples
                 context['store'] = Almacene.objects.filter(flag=True).order_by('nombre')
-            print context
+            # print context
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)
@@ -495,8 +495,8 @@ class SectorManage(JSONResponseMixin, View):
                         context['status'] = True
                 if 'saveorders' in request.POST:
                     form = addOrdersForm(request.POST, request.FILES)
-                    print form
-                    print 'form valid', form.is_valid()
+                    # print form
+                    # print 'form valid', form.is_valid()
                     if form.is_valid():
                         # save bedside Orders
                         add = form.save(commit=False)
@@ -506,7 +506,7 @@ class SectorManage(JSONResponseMixin, View):
                         add.save()
                         # save to detail
                         details = json.loads(request.POST.get('details'))
-                        print details
+                        # print details
                         for x in details:
                             obj = Detpedido()
                             obj.pedido_id = id
@@ -528,7 +528,7 @@ class SectorManage(JSONResponseMixin, View):
                             pro.save()
                         # save to nipples
                         nipples = json.loads(request.POST.get('nipples'))
-                        print nipples
+                        #print nipples
                         for x in nipples:
                             obj = Niple() # Niple for Almacen
                             obj.pedido_id = id
