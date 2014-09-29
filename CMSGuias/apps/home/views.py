@@ -5,6 +5,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext, TemplateDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 # necesario para el login y autenticacion
 from django.contrib.auth import login, logout, authenticate
@@ -318,9 +319,14 @@ class BrandCreate(CreateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        self.object.brand_id = genkeys.GenerateIdBrand()
-        self.save()
-        return super(BrandCreate, self).form_valid(form)
+        try:
+            brand = Brand.objects.get(brand__icontains=self.object.brand)
+            if brand:
+                return HttpResponseRedirect(self.success_url)
+        except ObjectDoesNotExist, e:
+            self.object.brand_id = genkeys.GenerateIdBrand()
+            self.object.save()
+            return super(BrandCreate, self).form_valid(form)
 
 class BrandUpdate(UpdateView):
     form_class = BrandForm
@@ -369,9 +375,14 @@ class ModelCreate(CreateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        self.object.model_id = genkeys.GenerateIdModel()
-        self.save()
-        return super(BrandCreate, self).form_valid(form)
+        try:
+            model = Model.objects.get(model__icontains=self.object.model)
+            if model:
+                return HttpResponseRedirect(self.success_url)
+        except Exception, e:
+            self.object.model_id = genkeys.GenerateIdModel()
+            self.save()
+            return super(BrandCreate, self).form_valid(form)
 
 class ModelUpdate(UpdateView):
     form_class = ModelForm

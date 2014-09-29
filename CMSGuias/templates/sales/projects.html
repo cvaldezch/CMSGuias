@@ -20,7 +20,7 @@
 <div class="container">
     <div class="well">
         <header>
-            <h3 class="text-primary">Proyectos</h3>
+            <h3>Proyectos</h3>
         </header>
         <aside>
         {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
@@ -159,11 +159,11 @@
             </div>
         </aside>
         <article>
-            <div class="panel panel-primary">
+            <div class="panel panel-danger">
                 <div class="table-responsive">
                     <table class="table table-hover table-condensed">
                         <thead>
-                            <tr class="brand-primary text-white">
+                            <tr class="brand-danger text-white">
                                 <th class="text-center">Item</th>
                                 <th></th>
                                 <th class="text-center">Codigo</th>
@@ -172,7 +172,7 @@
                                 <th class="text-center">Registrado</th>
                                 <th class="text-center">Fecha Inicio</th>
                                 <th class="text-center">Fecha Fin</th>
-                                {% if user.get_profile.empdni.charge.area == "Administrator" or user.get_profile.empdni.charge.area == "Ventas"  %}
+                                {% if user.get_profile.empdni.charge.area|lower == "administrator" or user.get_profile.empdni.charge.area|lower == "ventas"  %}
                                 <th class="text-center">Editar</th>
                                 <th class="text-center">Eliminar</th>
                                 {% endif %}
@@ -181,10 +181,10 @@
                         <tbody>
                             {% for x in list %}
                                 {% ifequal x.status 'AC' %}
-                                <tr class="tr-{{ x.proyecto_id }} success">
+                                <tr class="tr-{{ x.proyecto_id }} warning">
                                 {% endifequal %}
                                 {% ifequal x.status 'PE'  %}
-                                <tr class="tr-{{ x.proyecto_id }} info">
+                                <tr class="tr-{{ x.proyecto_id }} danger">
                                 {% endifequal %}
                                     <td>{{ forloop.counter }}</td>
                                     <td><a href="{% url 'managerpro_view' x.proyecto_id %}" class="btn btn-link btn-xs btn-open text-black"><span class="glyphicon glyphicon-folder-close"></span></a></td>
@@ -200,7 +200,7 @@
                                         </button>
                                     </td>
                                     <td class="text-center">
-                                        <button type="Button" class="btn btn-xs btn-link text-black btn-show-delete" title="{{ x.nompro }}" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-trash"></span>
+                                        <button type="Button" class="btn btn-xs btn-link text-red btn-show-delete" title="{{ x.nompro }}" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-trash"></span>
                                         </button>
                                     </td>
                                     {% endif %}

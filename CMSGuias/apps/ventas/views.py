@@ -602,6 +602,28 @@ class SectorManage(JSONResponseMixin, View):
                     obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=request.POST.get('materials'), flag=True)
                     obj.brand_id = request.POST.get('brand')
                     obj.model_id = request.POST.get('model')
+                    if obj.tag != '0':
+                        if obj.quantity < request.POST.get('quantity'):
+                            if obj.tag == '1':
+                                obj.quantityorders = (obj.quantityorders + (request.POST.get('quantity') - obj.quantity))
+                                obj.tag = '1'
+                            elif obj.tag == '2':
+                                obj.quantityorders = (request.POST.get('quantity') - obj.quantity)
+                                obj.tag = '1'
+                        elif obj.quantity > request.POST.get('quantity'):
+                            if obj.tag == '1':
+                                o = (obj.quantityorders - (obj.quantity - request.POST.get('quantity')))
+                                if o <= 0:
+                                    obj.quantityorders = 0
+                                    obj.tag = '2'
+                                else:
+                                    obj.quantityorders = o
+                                    obj.tag = '1'
+                            elif obj.tag == '2':
+                                obj.quantityorders = 0
+                                obj.tag = '2'
+                    else:
+                        obj.tag = '0'
                     obj.quantity = request.POST.get('quantity')
                     obj.price = request.POST.get('price')
                     obj.save()
@@ -610,6 +632,25 @@ class SectorManage(JSONResponseMixin, View):
                     obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=request.POST.get('materials'), flag=True)
                     obj.delete()
                     context['status'] = True
+                if 'addupdatemeter' in request.POST:
+                    try:
+                        obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=request.POST.get('materials'), flag=True)
+
+                    except ObjectDoesNotExist, e:
+                        obj = UpdateMetProject()
+                        obj.proyecto_id = kwargs['pro']
+                        obj.subproyecto_id = kwargs['sub']
+                        obj.sector_id = kwargs['sec']
+                        obj.materials_id = request.POST.get('materials')
+                        obj.brand_id = request.POST.get('brand')
+                        obj.model = request.POST.get('model')
+                        obj.quantity = request.POST.get('quantity')
+                        obj.price = request.POST.get('price')
+                        obj.comment = ''
+                        obj.quantityorders = request.POST.get('quantity')
+                        obj.tag = '0'
+                        obj.flag = True
+                        obj.save()
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

@@ -53,7 +53,7 @@ $(window).resize(function(){
 <div class="container">
     <div class="well">
         <h3>
-            Administrador de Proyecto
+            Administrador de Proyecto {{ project.nompro }}
             <br>
             <a href="{% url 'view_projects' %}" class="btn btn-default btn-xs">
                 <span class="glyphicon glyphicon-chevron-left"></span> Regresar
@@ -284,7 +284,7 @@ $(window).resize(function(){
                                     <select name="message-status" id="message-status" class="form-control">
                                         <option value="success">Normal</option>
                                         <option value="warning">Importante</option>
-                                        <option value="danger">Error</option>
+                                        <option value="danger">Urgente</option>
                                     </select>
                                 </div>
                                 <input type="hidden" name="edit-message">

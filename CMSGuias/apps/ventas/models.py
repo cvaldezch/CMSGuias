@@ -5,6 +5,7 @@ from CMSGuias.apps.tools import globalVariable
 
 
 class Proyecto(models.Model):
+    STATUS_PROJECT = (('PE','PEDIENTE'),('AC', 'ACTIVO'),('CO', 'COMPLETO'),)
     proyecto_id = models.CharField(primary_key=True, max_length=7,null=False)
     ruccliente = models.ForeignKey(Cliente, to_field='ruccliente_id',null=True)
     nompro = models.CharField(max_length=200)

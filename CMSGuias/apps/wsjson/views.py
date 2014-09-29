@@ -84,7 +84,7 @@ class SearchModel(JSONResponseMixin, DetailView):
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
-            context['model'] = [{'model_id': x.model_id, 'model': x.model} for x in Model.objects.filter(brand_id=request.GET.get('brand'),flag=True).order_by('model')]
+            context['model'] = [{'model_id': x.model_id, 'model': x.model} for x in Model.objects.filter(flag=True).order_by('model')]
             context['status'] = True
         except ObjectDoesNotExist, e:
             context['raise'] = e.__str__()

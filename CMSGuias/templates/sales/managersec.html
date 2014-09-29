@@ -106,15 +106,16 @@
                                 </div>
                             {% endif %}
                         </div>
-                        {% if meter and user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
+                        {% if meter %}
+                            {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
                             <div class="btn-group">
-                            <button class="btn btn-default btn-update-meter-cancel">
-                                    <span class="glyphicon glyphicon-remove"></span>
-                                    Cancelar
+                                <button class="btn btn-default btn-update-meter-cancel">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                        Cancelar
                                 </button>
                                 <button class="btn btn-danger text-black btn-update-meter">
                                     <span class="glyphicon glyphicon-link"></span>
-                                    Modificar Sector
+                                    Modificar Sector {{ user.get_profile.empdni.charge.area|lower }}
                                 </button>
                                 <button class="btn btn-danger text-black btn-show-materials-meter">
                                     <span class="glyphicon glyphicon-list"></span>
@@ -134,6 +135,7 @@
                                     Aprobar Modificación
                                 </button>
                             </div>
+                            {% endif %}
                         {% endif %}
                     </div>
                     <div class="alert alert-warning alert-block panel-add-mat">
@@ -162,13 +164,13 @@
                                 <div class="col-md-4">
                                     <div class="form-group has-warning">
                                         <label class="control-label">Metrado/Cantidad</label>
-                                        <input type="number" class="form-control input-sm" name="cantidad" min="1" placeholder="1">
+                                        <input type="number" class="form-control input-sm" name="cantidad" min="1" placeholder="0">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group has-warning">
                                         <label class="control-label">Precio</label>
-                                        <input type="number" class="form-control input-sm" name="precio" min="1" placeholder="1">
+                                        <input type="number" class="form-control input-sm" name="precio" min="1" placeholder="0">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -216,16 +218,28 @@
                                             </button>
                                         {% endif %}
                                         {% if project.status == 'AC' and meter %}
-                                            <button class="btn btn-block btn-warning text-black btn-add-meter">
+                                            <button class="btn btn-block btn-warning text-black btn-add-update-meter">
                                                 <span class="glyphicon glyphicon-saved"></span>
+                                            </button>
+                                        {% endif %}
+                                        {% if project.status == 'AC' and not meter %}
+                                            <button class="btn btn-block btn-warning text-black btn-add">
+                                                <span class="glyphicon glyphicon-floppy-save"></span>
                                             </button>
                                         {% endif %}
                                     </div>
                                 </div>
                                 <div class="col-md-12">
-                                    <small>
-                                        El precio del sistema esta expresado en <q class="currency-name">{{ system.moneda.moneda }}</q>
-                                    </small>
+                                    <p>
+                                        <small>
+                                            El precio del sistema esta expresado en <q class="currency-name">{{ system.moneda.moneda }}</q>
+                                        </small>
+                                    </p>
+                                    <p>
+                                         <small>
+                                            El precio del proyecto esta expresado en <q class="currency-name">{{ project.currency.moneda }}</q>
+                                        </small>
+                                    </p>
                                 </div>
                               </div>
                             </div>

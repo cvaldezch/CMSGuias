@@ -24,20 +24,20 @@ class addProjectForm(forms.ModelForm):
 	class Meta:
 		model   = Proyecto
 		exclude = {'flag','proyecto_id',}
-		STATUS  = (('PE', 'PENDIENTE'),)
+		STATUS_PROJECT = (('PE','PEDIENTE'),('AC', 'ACTIVO'),('CO', 'COMPLETO'),)
 		widgets = {
-							'ruccliente': forms.Select(attrs    ={'class': 'form-control'}),
-							'nompro': forms.TextInput(attrs     ={'class': 'form-control'}),
-							'comienzo': forms.TextInput(attrs   ={'class': 'form-control in-date','maxlength':'10','placeholder':'aaaa-mm-dd'}),
-							'fin': forms.TextInput(attrs        ={'class': 'form-control in-date','maxlength':'10','placeholder':'aaaa-mm-dd'}),
-							'pais': forms.Select(attrs          ={'class': 'form-control'}),
-							'departamento': forms.Select(attrs  ={'class': 'form-control'}),
-							'provincia': forms.Select(attrs     ={'class': 'form-control'}),
-							'distrito': forms.Select(attrs      ={'class': 'form-control'}),
-							'direccion': forms.TextInput(attrs  ={'class': 'form-control'}),
-							'obser': forms.Textarea(attrs       ={'class': 'form-control', 'maxlength': '200', 'rows': '4'}),
-							'status': forms.Select(attrs        ={'class': 'form-control'}, choices=STATUS),
-							}
+					'ruccliente': forms.Select(attrs = {'class': 'form-control'}),
+					'nompro': forms.TextInput(attrs = {'class': 'form-control'}),
+					'comienzo': forms.TextInput(attrs = {'class': 'form-control in-date','maxlength':'10','placeholder':'aaaa-mm-dd'}),
+					'fin': forms.TextInput(attrs = {'class': 'form-control in-date','maxlength':'10','placeholder':'aaaa-mm-dd'}),
+					'pais': forms.Select(attrs = {'class': 'form-control'}),
+					'departamento': forms.Select(attrs = {'class': 'form-control'}),
+					'provincia': forms.Select(attrs = {'class': 'form-control'}),
+					'distrito': forms.Select(attrs = {'class': 'form-control'}),
+					'direccion': forms.TextInput(attrs = {'class': 'form-control'}),
+					'obser': forms.Textarea(attrs = {'class': 'form-control', 'maxlength': '200', 'rows': '4'}),
+					'status': forms.Select(attrs ={'class': 'form-control'}, choices=STATUS_PROJECT),
+				}
 # sectores
 class addSectoresForm(forms.ModelForm):
 	class Meta:

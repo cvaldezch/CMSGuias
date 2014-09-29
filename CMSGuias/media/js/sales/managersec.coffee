@@ -102,6 +102,7 @@ $(document).ready ->
     $(document).on "blur", "table.table-modify > tbody > tr > td > input[type=number]", validBlurNumber
     $(document).on "click", ".btn-update-update", updateMaterialUpdateMeter
     $(document).on "click", ".btn-delete-update", deleteMaterialUpdateMeter
+    $(".btn-add-update-meter").on "click", addMaterialUpdateMeter
     # second step
     $(".btn-approval-addcional").on "click", approvedAdditional
     tinymce.init
@@ -1137,4 +1138,39 @@ deleteMaterialUpdateMeter = ->
                     else
                         $().toastmessage "showErrorToast", "No se a podido eliminar el material."
                 , "json"
+    return
+
+addMaterialUpdateMeter = ->
+    data = new Object()
+    # data.proyecto = $("input[name=pro]").val()
+    # data.subproyecto = $("input[name=sub]").val()
+    # data.sector = $("input[name=sec]").val()
+    data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+    data.addupdatemeter = true
+    data.materials = $(".id-mat").text()
+    data.quantity = $("input[name=cantidad]").val()
+    data.quantity = parseFloat(data.quantity.replace(",","."))
+    data.price = $("input[name=precio]").val()
+    data.price = parseFloat(data.price.replace(",","."))
+    data.brand = $("select[name=brand]").val()
+    data.model = $("select[name=model]").val()
+    if data.materials != "" and data.quantity != "" and data.price != ""
+        currency = $("select[name=moneda]").val()
+        if $("[name=currency]").val() isnt currency
+            # valid exists exchange rate for today
+            if $("[name=#{$("[name=currency]").val()}]").val() is null or $("[name=#{$("[name=currency]").val()}]").val() is undefined
+                $().toastmessage "showWarningToast", "El tipo de cambio no esta registrado."
+                return false
+            purchase = $("[name=#{$("[name=currency]").val()}]").val()
+            data['price'] = data['price'] * parseFloat(purchase)
+
+        $.post "", data, (response) ->
+            if response.status
+                startModidfy()
+            else
+                $().toastmessage "showErrorToast", "No found Transaction #{response.raise }"
+        , "json"
+        return
+    else
+        $().toastmessage "showWarningToast", "Existe campos vacio."
     return
