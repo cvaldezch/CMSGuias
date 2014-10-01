@@ -1034,8 +1034,6 @@ startModidfy = ->
     data.modifystart = true
     $.post "", data , (response) ->
         if response.status
-            selectBrand =  "<option value=\"{{ brand_id }}\" {{!sel}}>{{ brand }}</option>"
-            selectModel =  "<option value=\"{{ model_id }}\" {{!sel}}>{{ model }}</option>"
             template = "<tr id=\"trm-{{ materials }}\">
                         <td class=\"text-center\">{{ item }}</td>
                         <td class=\"text-center\">{{ materials }}</td>
@@ -1066,12 +1064,17 @@ startModidfy = ->
                 $sel = $("#brand-#{response.details[x].materials}")
                 $sel.empty()
                 for b of response.listBrand
+                    selectBrand =  "<option value=\"{{ brand_id }}\" {{!sel}}>{{ brand }}</option>"
+                    console.log response.listBrand[b].brand_id + "  -  update " + response.details[x].brand_id
                     if response.listBrand[b].brand_id is response.details[x].brand_id
+                        console.info "<--"
                         selectBrand = selectBrand.replace "{{!sel}}", "selected"
                     $sel.append Mustache.render selectBrand, response.listBrand[b]
+                console.warn "------------------------------------------------------"
                 $sel = $("#model-#{response.details[x].materials}")
                 $sel.empty()
                 for b of response.listModel
+                    selectModel =  "<option value=\"{{ model_id }}\" {{!sel}}>{{ model }}</option>"
                     if response.listModel[b].model_id is response.details[x].model_id
                         selectModel = selectModel.replace "{{!sel}}", "selected"
                     $sel.append Mustache.render selectModel, response.listModel[b]

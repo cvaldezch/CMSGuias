@@ -1177,8 +1177,6 @@ startModidfy = function() {
   $.post("", data, function(response) {
     var $sel, $tb, b, selectBrand, selectModel, template, x, _results;
     if (response.status) {
-      selectBrand = "<option value=\"{{ brand_id }}\" {{!sel}}>{{ brand }}</option>";
-      selectModel = "<option value=\"{{ model_id }}\" {{!sel}}>{{ model }}</option>";
       template = "<tr id=\"trm-{{ materials }}\"> <td class=\"text-center\">{{ item }}</td> <td class=\"text-center\">{{ materials }}</td> <td>{{ name }}</td> <td>{{ measure }}</td> <td class=\"text-center\">{{ unit }}</td> <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"brand-{{ materials }}\"</select></td> <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"model-{{ materials }}\"</select></td> <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm\" value=\"{{ quantity }}\" min=\"0\" id=\"quantity-{{ materiales }}\"></td> <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm\" value=\"{{ price }}\" id=\"price-{{ materials }}\"></td> <td>{{ amount }}</td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-green btn-update-update\" value=\"{{ materials }}\" data-tag=\"{{ tag }}\"> <span class=\"glyphicon glyphicon-edit\"></span> </button> </td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-red btn-delete-update\" value=\"{{ materials }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> </tr>";
       $tb = $(".table-modify > tbody");
       $tb.empty();
@@ -1189,17 +1187,22 @@ startModidfy = function() {
         $sel = $("#brand-" + response.details[x].materials);
         $sel.empty();
         for (b in response.listBrand) {
+          selectBrand = "<option value=\"{{ brand_id }}\" {{!sel}}>{{ brand }}</option>";
+          console.log(response.listBrand[b].brand_id + "  -  update " + response.details[x].brand_id);
           if (response.listBrand[b].brand_id === response.details[x].brand_id) {
+            console.info("<--");
             selectBrand = selectBrand.replace("{{!sel}}", "selected");
           }
           $sel.append(Mustache.render(selectBrand, response.listBrand[b]));
         }
+        console.warn("------------------------------------------------------");
         $sel = $("#model-" + response.details[x].materials);
         $sel.empty();
         _results.push((function() {
           var _results1;
           _results1 = [];
           for (b in response.listModel) {
+            selectModel = "<option value=\"{{ model_id }}\" {{!sel}}>{{ model }}</option>";
             if (response.listModel[b].model_id === response.details[x].model_id) {
               selectModel = selectModel.replace("{{!sel}}", "selected");
             }
