@@ -183,7 +183,7 @@
                                 {% ifequal x.status 'AC' %}
                                 <tr class="tr-{{ x.proyecto_id }} warning">
                                 {% endifequal %}
-                                {% ifequal x.status 'PE'  %}
+                                {% ifequal x.status 'PE' %}
                                 <tr class="tr-{{ x.proyecto_id }} danger">
                                 {% endifequal %}
                                     <td>{{ forloop.counter }}</td>
@@ -194,7 +194,7 @@
                                     <td class="text-center">{{ x.registrado|date:"Y-m-d" }}</td>
                                     <td>{{ x.comienzo }}</td>
                                     <td>{{ x.fin }}</td>
-                                    {% if user.get_profile.empdni.charge.area == "Administrator" or user.get_profile.empdni.charge.area == "Ventas"  %}
+                                    {% if user.get_profile.empdni.charge.area|lower == "administrator" or user.get_profile.empdni.charge.area|lower == "ventas"  %}
                                     <td class="text-center">
                                         <button class="btn btn-link btn-xs text-black btn-show-edit" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-edit"></span>
                                         </button>
