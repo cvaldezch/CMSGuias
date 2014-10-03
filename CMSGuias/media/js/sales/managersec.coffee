@@ -1177,3 +1177,21 @@ addMaterialUpdateMeter = ->
     else
         $().toastmessage "showWarningToast", "Existe campos vacio."
     return
+
+createTableDeductive = (event) ->
+    tbla = new Array()
+    tblb = new Array()
+    $("table.table-details > tbody > tr").each (index, element) ->
+        $td = $(element).find("td")
+        tbla.push {"materials":$td.eq(2).text(), "brand": $td.eq(6).text(), "model": $td.eq(7).text(), "quantity" : $td.eq(8).text(), "price":$td.eq(9).text()}
+    $("table.table-modify > tbody > tr").each (index, element) ->
+        $td = $(element).find("td")
+        tblb.push {"materials":$td.eq(1).text(), "brand": $td.eq(5).text(), "model": $td.eq(6).text(), "quantity" : $td.eq(7).text(), "price":$td.eq(8).text()}
+    #console.log JSON.stringify tbla
+    table = new Array()
+    for i of tblb
+        for j of tbla
+            if tblb[i].materials == tbla[j].materials
+                table.push {"materials": tbla[j].materials, "brand": tbla[j].brand, "model": tbla[j].model, "quantity" : $td.eq(7).text(), "price":$td.eq(8).text()}
+
+    return
