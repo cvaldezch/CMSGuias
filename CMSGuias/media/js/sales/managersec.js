@@ -1333,7 +1333,7 @@ addMaterialUpdateMeter = function() {
 };
 
 createTableDeductive = function(event) {
-  var i, tbla, tblb;
+  var i, j, price, quantity, table, tbla, tblb;
   tbla = new Array();
   tblb = new Array();
   $("table.table-details > tbody > tr").each(function(index, element) {
@@ -1352,14 +1352,41 @@ createTableDeductive = function(event) {
     $td = $(element).find("td");
     return tblb.push({
       "materials": $td.eq(1).text(),
-      "brand": $td.eq(5).text(),
-      "model": $td.eq(6).text(),
-      "quantity": $td.eq(7).text(),
-      "price": $td.eq(8).text()
+      "brand": $td.eq(5).find("select").val(),
+      "model": $td.eq(6).find("select").val(),
+      "quantity": $td.eq(7).find("input").val(),
+      "price": $td.eq(8).find("input").val()
     });
   });
-  console.log(JSON.stringify(tbla));
+  table = new Array();
   for (i in tblb) {
-    console.log(tblb[i].materials);
+    for (j in tbla) {
+      if (tblb[i].materials === tbla[j].materials) {
+        console.log(tblb[i].quantity + " - " + tbla[j].quantity);
+        if (tblb[i].quantity !== tbla[j].quantity) {
+          quantity = 0;
+          price = 0;
+          if (tblb[i].quantity > tbla[j].quantity) {
+            quantity = parseFloat(tbla[i].quantity) - parseFloat(tblb[i].quantity);
+          } else if (tbla[j].quantity > tblb[i].quantity) {
+            quantity = parseFloat(tbla[i].quantity) - parseFloat(tblb[i].quantity);
+          } else {
+            quantity = parseFloat(tblb[i].quantity);
+          }
+          table.push({
+            "materials": tbla[j].materials,
+            "brand": tbla[j].brand,
+            "model": tbla[j].model,
+            "quantity": quantity,
+            "price": price
+          });
+        }
+      } else {
+        console.log;
+      }
+    }
   }
+  console.table(tbla);
+  console.table(tblb);
+  console.table(table);
 };

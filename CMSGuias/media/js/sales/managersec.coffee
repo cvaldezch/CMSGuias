@@ -1186,12 +1186,27 @@ createTableDeductive = (event) ->
         tbla.push {"materials":$td.eq(2).text(), "brand": $td.eq(6).text(), "model": $td.eq(7).text(), "quantity" : $td.eq(8).text(), "price":$td.eq(9).text()}
     $("table.table-modify > tbody > tr").each (index, element) ->
         $td = $(element).find("td")
-        tblb.push {"materials":$td.eq(1).text(), "brand": $td.eq(5).text(), "model": $td.eq(6).text(), "quantity" : $td.eq(7).text(), "price":$td.eq(8).text()}
+        tblb.push {"materials":$td.eq(1).text(), "brand": $td.eq(5).find("select").val(), "model": $td.eq(6).find("select").val(), "quantity" : $td.eq(7).find("input").val(), "price":$td.eq(8).find("input").val()}
     #console.log JSON.stringify tbla
     table = new Array()
     for i of tblb
         for j of tbla
             if tblb[i].materials == tbla[j].materials
-                table.push {"materials": tbla[j].materials, "brand": tbla[j].brand, "model": tbla[j].model, "quantity" : $td.eq(7).text(), "price":$td.eq(8).text()}
-
+                console.log tblb[i].quantity + " - " + tbla[j].quantity
+                if tblb[i].quantity != tbla[j].quantity
+                    quantity = 0
+                    price = 0
+                    if tblb[i].quantity > tbla[j].quantity
+                        quantity = (parseFloat(tbla[i].quantity) - parseFloat(tblb[i].quantity))
+                    else if tbla[j].quantity > tblb[i].quantity
+                        quantity = (parseFloat(tbla[i].quantity) - parseFloat(tblb[i].quantity))
+                    else
+                        quantity = parseFloat(tblb[i].quantity)
+                    table.push {"materials": tbla[j].materials, "brand": tbla[j].brand, "model": tbla[j].model, "quantity" : quantity, "price": price}
+            else
+                console.log
+                #table.push {"materials": tbla[j].materials, "brand": tbla[j].brand, "model": tbla[j].model, "quantity" : tbla[j].quantity, "price":tbla[j].price}
+    console.table tbla
+    console.table tblb
+    console.table table
     return
