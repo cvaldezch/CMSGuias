@@ -1333,7 +1333,7 @@ addMaterialUpdateMeter = function() {
 };
 
 createTableDeductive = function(event) {
-  var i, j, price, quantity, table, tbla, tblb;
+  var $tb, amount, i, j, price, quanmof, quanori, quantity, table, tbla, tblb, template, tre, x;
   tbla = new Array();
   tblb = new Array();
   $("table.table-details > tbody > tr").each(function(index, element) {
@@ -1341,6 +1341,9 @@ createTableDeductive = function(event) {
     $td = $(element).find("td");
     return tbla.push({
       "materials": $td.eq(2).text(),
+      "name": $td.eq(3).text(),
+      "measure": $td.eq(4).text(),
+      "unit": $td.eq(5).text(),
       "brand": $td.eq(6).text(),
       "model": $td.eq(7).text(),
       "quantity": $td.eq(8).text(),
@@ -1352,6 +1355,9 @@ createTableDeductive = function(event) {
     $td = $(element).find("td");
     return tblb.push({
       "materials": $td.eq(1).text(),
+      "name": $td.eq(2).text(),
+      "measure": $td.eq(3).text(),
+      "unit": $td.eq(4).text(),
       "brand": $td.eq(5).find("select").val(),
       "model": $td.eq(6).find("select").val(),
       "quantity": $td.eq(7).find("input").val(),
@@ -1359,11 +1365,14 @@ createTableDeductive = function(event) {
     });
   });
   table = new Array();
+  console.warn(tblb.length);
   for (i in tblb) {
+    tre = 0;
     for (j in tbla) {
       if (tblb[i].materials === tbla[j].materials) {
-        console.log(tblb[i].quantity + " - " + tbla[j].quantity);
-        if (tblb[i].quantity !== tbla[j].quantity) {
+        quanori = parseFloat(tblb[i].quantity);
+        quanmof = parseFloat(tbla[j].quantity);
+        if (quanori !== quanmof) {
           quantity = 0;
           price = 0;
           if (tblb[i].quantity > tbla[j].quantity) {
@@ -1373,20 +1382,50 @@ createTableDeductive = function(event) {
           } else {
             quantity = parseFloat(tblb[i].quantity);
           }
-          table.push({
-            "materials": tbla[j].materials,
-            "brand": tbla[j].brand,
-            "model": tbla[j].model,
-            "quantity": quantity,
-            "price": price
-          });
+          if (quantity > 0) {
+            amount = parseFloat(tbla[i].quantity) * parseFloat(tbla[i].price);
+            table.push({
+              "materials": tbla[j].materials,
+              "name": tblb[i].name,
+              "measure": tblb[i].measure,
+              "unit": tblb[i].unit,
+              "brand": tbla[j].brand,
+              "model": tbla[j].model,
+              "quantity": quantity,
+              "price": price,
+              "amount": amount.toFixed(2)
+            });
+          }
         }
       } else {
-        console.log;
+        tre++;
       }
     }
+    if ((tbla.length - 1) !== tre) {
+      amount = parseFloat(tblb[i].quantity) * parseFloat(tblb[i].price);
+      table.push({
+        "materials": tblb[i].materials,
+        "name": tblb[i].name,
+        "measure": tblb[i].measure,
+        "unit": tblb[i].unit,
+        "brand": tblb[i].brand,
+        "model": tblb[i].model,
+        "quantity": tblb[i].quantity,
+        "price": tblb[i].price,
+        "amount": amount.toFixed(2)
+      });
+    }
   }
-  console.table(tbla);
-  console.table(tblb);
-  console.table(table);
+  if (table.length) {
+    console.log("ingreso a mostrar deductive");
+    console.table(table);
+    template = "<tr> <td> <input type=\"checkbox\" name=\"\"> </td> <td>{{ materials }}</td> <td>{{ name }}</td> <td>{{ measure }}</td> <td>{{ unit }}</td> <td>{{ brand }}</td> <td>{{ model }}</td> <td>{{ quantity }}</td> <td>{{ price }}</td> <td>{{ amount }}</td> <td> <div class=\"input-group\" style=\"width: 160px;\"> <input type=\"text\" class=\"form-control input-sm\"> <span class=\"input-group-btn\"> <button class=\"btn btn btn-default btn-sm\"> <span class=\"glyphicon glyphicon-edit\"></span> </button> </span> </div> </td> </tr>";
+    $tb = $("table.table-deductive > tbody");
+    $tb.empty();
+    for (x in table) {
+      $tb.append(Mustache.render(template, table[x]));
+    }
+    $(".principal").fadeOut(200);
+    $(".deductive-one").fadeIn(800);
+  }
 };

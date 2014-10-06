@@ -13,7 +13,7 @@
 {% endblock menu %}
 {% block content %}
 <div class="container">
-    <div class="well">
+    <div class="well principal">
         <header>
             <h3>
                 Sector {{ sector.nomsec }} - {{ sector.planoid }}<br>
@@ -589,6 +589,10 @@
             Generar Deductivo Sector {{ sector.nomsec }} - {{ sector.planoid }}
         </h4>
         <div class="panel panel-succcess">
+            <div class="btn-group">
+                <button class="btn btn-default"><span class="glyphicon glyphicon-remove"></span></button>
+                <button class="btn btn-success text-black"><span class="glyphicon glyphicon-saved"></span></button>
+            </div>
             <div class="table-responsive">
                 <table class="table table-condensed table-hover table-deductive">
                     <thead>

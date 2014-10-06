@@ -1183,17 +1183,20 @@ createTableDeductive = (event) ->
     tblb = new Array()
     $("table.table-details > tbody > tr").each (index, element) ->
         $td = $(element).find("td")
-        tbla.push {"materials":$td.eq(2).text(), "brand": $td.eq(6).text(), "model": $td.eq(7).text(), "quantity" : $td.eq(8).text(), "price":$td.eq(9).text()}
+        tbla.push {"materials":$td.eq(2).text(), "name": $td.eq(3).text(), "measure": $td.eq(4).text(), "unit": $td.eq(5).text(), "brand": $td.eq(6).text(), "model": $td.eq(7).text(), "quantity" : $td.eq(8).text(), "price":$td.eq(9).text()}
     $("table.table-modify > tbody > tr").each (index, element) ->
         $td = $(element).find("td")
-        tblb.push {"materials":$td.eq(1).text(), "brand": $td.eq(5).find("select").val(), "model": $td.eq(6).find("select").val(), "quantity" : $td.eq(7).find("input").val(), "price":$td.eq(8).find("input").val()}
+        tblb.push {"materials":$td.eq(1).text(), "name": $td.eq(2).text(), "measure": $td.eq(3).text(), "unit": $td.eq(4).text(), "brand": $td.eq(5).find("select").val(), "model": $td.eq(6).find("select").val(), "quantity" : $td.eq(7).find("input").val(), "price":$td.eq(8).find("input").val()}
     #console.log JSON.stringify tbla
     table = new Array()
+    console.warn tblb.length
     for i of tblb
+        tre = 0
         for j of tbla
-            if tblb[i].materials == tbla[j].materials
-                console.log tblb[i].quantity + " - " + tbla[j].quantity
-                if tblb[i].quantity != tbla[j].quantity
+            if tblb[i].materials is tbla[j].materials
+                quanori = parseFloat tblb[i].quantity
+                quanmof = parseFloat tbla[j].quantity
+                if quanori isnt quanmof
                     quantity = 0
                     price = 0
                     if tblb[i].quantity > tbla[j].quantity
@@ -1202,11 +1205,47 @@ createTableDeductive = (event) ->
                         quantity = (parseFloat(tbla[i].quantity) - parseFloat(tblb[i].quantity))
                     else
                         quantity = parseFloat(tblb[i].quantity)
-                    table.push {"materials": tbla[j].materials, "brand": tbla[j].brand, "model": tbla[j].model, "quantity" : quantity, "price": price}
+                    if quantity > 0
+                        amount = (parseFloat(tbla[i].quantity) * parseFloat(tbla[i].price))
+                        table.push {"materials": tbla[j].materials, "name":tblb[i].name, "measure":tblb[i].measure, "unit": tblb[i].unit, "brand": tbla[j].brand, "model": tbla[j].model, "quantity" : quantity, "price": price, "amount": amount.toFixed(2)}
             else
-                console.log
-                #table.push {"materials": tbla[j].materials, "brand": tbla[j].brand, "model": tbla[j].model, "quantity" : tbla[j].quantity, "price":tbla[j].price}
-    console.table tbla
-    console.table tblb
-    console.table table
+                tre++
+
+        if (tbla.length - 1) isnt tre
+            amount = (parseFloat(tblb[i].quantity) * parseFloat(tblb[i].price))
+            table.push {"materials": tblb[i].materials, "name":tblb[i].name, "measure":tblb[i].measure, "unit": tblb[i].unit, "brand": tblb[i].brand, "model": tblb[i].model, "quantity" : tblb[i].quantity, "price": tblb[i].price, "amount": amount.toFixed(2)}
+    if table.length
+        console.log "ingreso a mostrar deductive"
+        console.table table
+        template = "<tr>
+                        <td>
+                            <input type=\"checkbox\" name=\"\">
+                        </td>
+                        <td>{{ materials }}</td>
+                        <td>{{ name }}</td>
+                        <td>{{ measure }}</td>
+                        <td>{{ unit }}</td>
+                        <td>{{ brand }}</td>
+                        <td>{{ model }}</td>
+                        <td>{{ quantity }}</td>
+                        <td>{{ price }}</td>
+                        <td>{{ amount }}</td>
+                        <td>
+                            <div class=\"input-group\" style=\"width: 160px;\">
+                                <input type=\"text\" class=\"form-control input-sm\">
+                                <span class=\"input-group-btn\">
+                                    <button class=\"btn btn btn-default btn-sm\">
+                                    <span class=\"glyphicon glyphicon-edit\"></span>
+                                </button>
+                                </span>
+                            </div>
+                        </td>
+                    </tr>"
+        $tb = $("table.table-deductive > tbody")
+        $tb.empty()
+        for x of table
+            $tb.append Mustache.render template, table[x]
+
+        $(".principal").fadeOut 200
+        $(".deductive-one").fadeIn 800
     return
