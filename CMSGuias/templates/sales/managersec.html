@@ -4,6 +4,7 @@
 {% endblock title %}
 {% block script %}
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="{{ MEDIA_URL }}js/scrollTo.js"></script>
 <script src="{{ MEDIA_URL }}js/getMaterials.js"></script>
 <script src="{{ MEDIA_URL }}js/sales/managersec.js"></script>
 <script src="{{ MEDIA_URL }}js/tinymce.js"></script>
@@ -365,6 +366,7 @@
                                         <th>Marca</th>
                                         <th>Modelo</th>
                                         <th>Cantidad</th>
+                                        <th>Cantidad Pedido</th>
                                         {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
                                             <th>Precio</th>
                                         {% endif %}
@@ -403,6 +405,7 @@
                                                 <td>{{ x.unit }}</td>
                                                 <td>{{ x.brand }}</td>
                                                 <td>{{ x.model }}</td>
+                                                <td>{{ x.cantidad|safe }}</td>
                                                 <td>{{ x.quantity|safe }}</td>
                                                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
                                                     <td>{{ x.price|safe }}</td>
@@ -562,6 +565,7 @@
                                         <th class="text-center">Importe</th>
                                         <th class="text-center">Editar</th>
                                         <th class="text-center">Eliminar</th>
+                                        <th class="text-center">Attendido</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -590,8 +594,12 @@
         </h4>
         <div class="panel panel-succcess">
             <div class="btn-group">
-                <button class="btn btn-default"><span class="glyphicon glyphicon-remove"></span></button>
-                <button class="btn btn-success text-black"><span class="glyphicon glyphicon-saved"></span></button>
+                <button class="btn btn-default btn-deductive-one-cancel">
+                    <span class="glyphicon glyphicon-remove"></span> Cancelar
+                </button>
+                <button class="btn btn-success text-black">
+                    <span class="glyphicon glyphicon-saved"></span> Generar Deductivo
+                </button>
             </div>
             <div class="table-responsive">
                 <table class="table table-condensed table-hover table-deductive">
@@ -869,6 +877,21 @@
         </div>
     </div>
 </div>
+<!-- block deductive One -->
+<div class="modal fade mdeductivereplace">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a data-dismiss="modal" class="close"></a>
+                <h4 class="modal-title">Por que material lo cambiaste?</h4>
+            </div>
+            <div class="modal-body">
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- deductive one endblock -->
 <!-- end block -->
 <!-- utils -->
 <div class="full-screen view-full">

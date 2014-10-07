@@ -1,5 +1,5 @@
 $(document).ready ->
-    $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials, .ordersbedside, .panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter").hide()
+    $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials, .ordersbedside, .panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter, .deductive-one").hide()
     $("input[name=traslado]").datepicker "dateFormat": "yy-mm-dd", changeMonth : true, changeYear : true, minDate : "0"
     $(".panel-add-mat, .view-full").hide()
     $(".btn-show-mat, .btn-show-materials-meter").on "click", openAddMaterial
@@ -105,6 +105,8 @@ $(document).ready ->
     $(".btn-add-update-meter").on "click", addMaterialUpdateMeter
     # second step
     $(".btn-approval-addcional").on "click", approvedAdditional
+    $(".btn-deductivo-meter").on "click", createTableDeductive
+    $(".btn-deductive-one-cancel").on "click", deductiveOneCancel
     tinymce.init
         selector: "textarea[name=obser]",
         theme: "modern",
@@ -1034,7 +1036,10 @@ startModidfy = ->
     data.modifystart = true
     $.post "", data , (response) ->
         if response.status
-            template = "<tr id=\"trm-{{ materials }}\">
+            $tb = $(".table-modify > tbody")
+            $tb.empty()
+            for x of response.details
+                template = "<tr id=\"trm-{{ materials }}\">
                         <td class=\"text-center\">{{ item }}</td>
                         <td class=\"text-center\">{{ materials }}</td>
                         <td>{{ name }}</td>
@@ -1055,22 +1060,27 @@ startModidfy = ->
                                 <span class=\"glyphicon glyphicon-trash\"></span>
                             </button>
                         </td>
+                        <td class=\"text-center\">{{!attend}}</td>
                         </tr>"
-            $tb = $(".table-modify > tbody")
-            $tb.empty()
-            for x of response.details
                 response.details[x].item = (parseInt(x) + 1)
+                att = ""
+                #console.error response.details[x].tag
+                if response.details[x].tag is "2"
+                    att = "<span class=\"glyphicon glyphicon-check\"></span>"
+                else if response.details[x].tag is "0"
+                    att = "<span class=\"glyphicon glyphicon-unchecked\"></span>"
+                template = template.replace "{{!attend}}", att
                 $tb.append Mustache.render template, response.details[x]
                 $sel = $("#brand-#{response.details[x].materials}")
                 $sel.empty()
                 for b of response.listBrand
                     selectBrand =  "<option value=\"{{ brand_id }}\" {{!sel}}>{{ brand }}</option>"
-                    console.log response.listBrand[b].brand_id + "  -  update " + response.details[x].brand_id
+                    #console.log response.listBrand[b].brand_id + "  -  update " + response.details[x].brand_id
                     if response.listBrand[b].brand_id is response.details[x].brand_id
-                        console.info "<--"
+                        #console.info "<--"
                         selectBrand = selectBrand.replace "{{!sel}}", "selected"
                     $sel.append Mustache.render selectBrand, response.listBrand[b]
-                console.warn "------------------------------------------------------"
+                #console.warn "------------------------------------------------------"
                 $sel = $("#model-#{response.details[x].materials}")
                 $sel.empty()
                 for b of response.listModel
@@ -1183,7 +1193,7 @@ createTableDeductive = (event) ->
     tblb = new Array()
     $("table.table-details > tbody > tr").each (index, element) ->
         $td = $(element).find("td")
-        tbla.push {"materials":$td.eq(2).text(), "name": $td.eq(3).text(), "measure": $td.eq(4).text(), "unit": $td.eq(5).text(), "brand": $td.eq(6).text(), "model": $td.eq(7).text(), "quantity" : $td.eq(8).text(), "price":$td.eq(9).text()}
+        tbla.push {"materials":$td.eq(2).text(), "name": $td.eq(3).text(), "measure": $td.eq(4).text(), "unit": $td.eq(5).text(), "brand": $td.eq(6).text(), "model": $td.eq(7).text(), "quantity" : $td.eq(8).text(), "price":$td.eq(10).text()}
     $("table.table-modify > tbody > tr").each (index, element) ->
         $td = $(element).find("td")
         tblb.push {"materials":$td.eq(1).text(), "name": $td.eq(2).text(), "measure": $td.eq(3).text(), "unit": $td.eq(4).text(), "brand": $td.eq(5).find("select").val(), "model": $td.eq(6).find("select").val(), "quantity" : $td.eq(7).find("input").val(), "price":$td.eq(8).find("input").val()}
@@ -1199,21 +1209,30 @@ createTableDeductive = (event) ->
                 if quanori isnt quanmof
                     quantity = 0
                     price = 0
-                    if tblb[i].quantity > tbla[j].quantity
+                    if quanori > quanmof
+                        quantity = (parseFloat(tblb[i].quantity) - parseFloat(tbla[i].quantity))
+                        console.log "quantity original"
+                    else if quanmof > quanori
                         quantity = (parseFloat(tbla[i].quantity) - parseFloat(tblb[i].quantity))
-                    else if tbla[j].quantity > tblb[i].quantity
-                        quantity = (parseFloat(tbla[i].quantity) - parseFloat(tblb[i].quantity))
+                        console.warn "quantity modifid"
                     else
-                        quantity = parseFloat(tblb[i].quantity)
+                        console.error "quantity default"
+                        #quantity = parseFloat(tblb[i].quantity)
+                        continue
+
+                    console.warn quantity
                     if quantity > 0
-                        amount = (parseFloat(tbla[i].quantity) * parseFloat(tbla[i].price))
-                        table.push {"materials": tbla[j].materials, "name":tblb[i].name, "measure":tblb[i].measure, "unit": tblb[i].unit, "brand": tbla[j].brand, "model": tbla[j].model, "quantity" : quantity, "price": price, "amount": amount.toFixed(2)}
+                        console.info "append table materials exists"
+                        amount = (parseFloat(tbla[j].quantity) * parseFloat(tbla[j].price))
+                        table.push {"materials": tbla[j].materials, "name":tbla[j].name, "measure":tbla[j].measure, "unit": tbla[j].unit, "brand": tbla[j].brand, "model": tbla[j].model, "quantity" : quantity, "price": tbla[j].price, "amount": amount.toFixed(2)}
             else
                 tre++
 
         if (tbla.length - 1) isnt tre
             amount = (parseFloat(tblb[i].quantity) * parseFloat(tblb[i].price))
-            table.push {"materials": tblb[i].materials, "name":tblb[i].name, "measure":tblb[i].measure, "unit": tblb[i].unit, "brand": tblb[i].brand, "model": tblb[i].model, "quantity" : tblb[i].quantity, "price": tblb[i].price, "amount": amount.toFixed(2)}
+            table.push {"materials": tblb[i].materials, "name":tblb[i].name, "measure":tblb[i].measure, "unit": tblb[i].unit, "brand": tblb[i].brand, "model": tblb[i].model, "quantity" : parseFloat(tblb[i].quantity), "price": tblb[i].price, "amount": amount.toFixed(2)}
+
+    console.log table
     if table.length
         console.log "ingreso a mostrar deductive"
         console.table table
@@ -1246,6 +1265,13 @@ createTableDeductive = (event) ->
         for x of table
             $tb.append Mustache.render template, table[x]
 
-        $(".principal").fadeOut 200
         $(".deductive-one").fadeIn 800
+        $(".deductive-one").ScrollTo duration : 800
+    else
+        $().toastmessage "showWarningToast", "No se han encontrado diferencias entre las modificaciones"
+    return
+
+deductiveOneCancel = (event) ->
+    $(".deductive-one").fadeOut 800
+    $(".nav-tabs").ScrollTo duration : 800
     return
