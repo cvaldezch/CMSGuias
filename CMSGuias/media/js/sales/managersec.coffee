@@ -107,6 +107,7 @@ $(document).ready ->
     $(".btn-approval-addcional").on "click", approvedAdditional
     $(".btn-deductivo-meter").on "click", createTableDeductive
     $(".btn-deductive-one-cancel").on "click", deductiveOneCancel
+    $(document).on "click", ".btn-deductive-meter-select", showaddtableoutdeductivemeter
     tinymce.init
         selector: "textarea[name=obser]",
         theme: "modern",
@@ -1251,9 +1252,9 @@ createTableDeductive = (event) ->
                         <td>{{ amount }}</td>
                         <td>
                             <div class=\"input-group\" style=\"width: 160px;\">
-                                <input type=\"text\" class=\"form-control input-sm\">
+                                <input type=\"text\" class=\"form-control input-sm\" readonly>
                                 <span class=\"input-group-btn\">
-                                    <button class=\"btn btn btn-default btn-sm\">
+                                    <button class=\"btn btn btn-default btn-sm btn-deductive-meter-select\">
                                     <span class=\"glyphicon glyphicon-edit\"></span>
                                 </button>
                                 </span>
@@ -1265,13 +1266,48 @@ createTableDeductive = (event) ->
         for x of table
             $tb.append Mustache.render template, table[x]
 
+        $("table.table-modify > tbody > tr > td").find("input, select, button").attr "disabled", true
+        $(".btn-show-materials-meter, .btn-upload-plane-meter").attr "disabled", true
         $(".deductive-one").fadeIn 800
         $(".deductive-one").ScrollTo duration : 800
+
+        # create table select quantity deductive
+        $tb = $("table.table-select-deductive-meter > tbody")
+        $tb.empty()
+        template = "<tr>
+                        <td>{{ item }}</td>
+                        <td>{{ materials }}</td>
+                        <td>{{ name }}</td>
+                        <td>{{ measure }}</td>
+                        <td>{{ unit }}</td>
+                        <td>{{ brand }}</td>
+                        <td>{{ model }}</td>
+                        <td>{{ quantity }}</td>
+                        <td class=\"text-center\">
+                            <input type=\"checkbox\" data-mat=\"{{ materials }}\" data-brnad=\"{{ brand }}\" data-model=\"{{ model }}\">
+                        </td>
+                    </tr>"
+        for x of tbla
+            tbla[x].item = (parseInt(x) + 1)
+            $tb.append Mustache.render template, tbla[x]
     else
         $().toastmessage "showWarningToast", "No se han encontrado diferencias entre las modificaciones"
     return
 
 deductiveOneCancel = (event) ->
+    $("table.table-modify > tbody > tr > td").find("input, select, buttons").attr "disabled", false
+    $(".btn-show-materials-meter, .btn-upload-plane-meter").attr "disabled", false
     $(".deductive-one").fadeOut 800
     $(".nav-tabs").ScrollTo duration : 800
+    return
+
+showaddtableoutdeductivemeter = (event) ->
+    $(".mdeductivereplace").modal "show"
+    return
+
+changeSelectDeductiveMeter = (event) ->
+    $("[name=dedmeterradio]").each ->
+        if @checked
+            $().each ->
+
     return
