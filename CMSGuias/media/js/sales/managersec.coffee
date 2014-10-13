@@ -1328,15 +1328,15 @@ aggregateMaterialsOutMeter = (event) ->
             data.push {"materials": @getAttribute("data-mat"), "quantity": $("#dedmeterquan#{@getAttribute('data-mat')}").val()}
             count++
             return
-        
+
     if count > 0
         value = ""
         for x of data
             if value is ""
                 value = "#{data[x].materials}|#{data[x].quantity}"
             else
-                value += ", #{data[x].materials}|#{data[x].quantity}"  
-            
+                value += ", #{data[x].materials}|#{data[x].quantity}"
+
         $("#dedmeterquanout#{btn.value}").val value
         $(".btn-aggregate-deductive-meter-materials").val ""
         $(".mdeductivereplace").modal "hide"
@@ -1381,10 +1381,29 @@ approvedModify = (event) ->
     tblb = new Array()
     $("table.table-details > tbody > tr").each (index, element) ->
         $td = $(element).find("td")
-        tbla.push {"materials":$td.eq(2).text(), "name": $td.eq(3).text(), "measure": $td.eq(4).text(), "unit": $td.eq(5).text(), "brand": $td.eq(6).text(), "model": $td.eq(7).text(), "quantity" : $td.eq(8).text(), "price":$td.eq(10).text()}
+        tbla.push {"materials":$td.eq(2).text(), "name": $td.eq(3).text(), "measure": $td.eq(4).text(), "unit": $td.eq(5).text(), "brand": $td.eq(6).text(), "model": $td.eq(7).text(), "quantity" : $td.eq(8).text(), "quantityorders" : $td.eq(9).text(), "price":$td.eq(10).text()}
     $("table.table-modify > tbody > tr").each (index, element) ->
         $td = $(element).find("td")
         tblb.push {"materials":$td.eq(1).text(), "name": $td.eq(2).text(), "measure": $td.eq(3).text(), "unit": $td.eq(4).text(), "brand": $td.eq(5).find("select").val(), "model": $td.eq(6).find("select").val(), "quantity" : $td.eq(7).find("input").val(), "price":$td.eq(8).find("input").val()}
-    for x of tbla
-            
+    for x of tblb
+        for c of tbla
+            if x.materials is c.materials
+                qoriginal = parseFloat(c.quantity)
+                qmodify = parseFloat(x.quantity)
+                if qoriginal > qmodify
+                    x.tag = "2"
+                    x.devolutions = (parseFloat(qoriginal) - parseFloat(qmodify))
+                else if qoriginal < qmodify
+                    x.tag = "1"
+                else if qoriginal is qmodify
+                    if parseFloat(c.quantityorders) > 0  or parseFloat(c.quantityorders) < qoriginal
+                        x.tag = "1"
+                    else if parseFloat(c.quantityorders) is qoriginal
+                        x.tag = "0"
+                    else if parseFloat(c.quantityorders) is "0"
+                        if qmodify > 0
+                            x.tag = "0"
+            else
+                x.tag = "0"
+                count++
     return
