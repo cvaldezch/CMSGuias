@@ -103,6 +103,10 @@ $(document).ready ->
     $(document).on "click", ".btn-update-update", updateMaterialUpdateMeter
     $(document).on "click", ".btn-delete-update", deleteMaterialUpdateMeter
     $(".btn-add-update-meter").on "click", addMaterialUpdateMeter
+    $("[name=dedmeterradio]").on "change", changeSelectDeductiveMeter
+    $(".btn-aggregate-deductive-meter-materials").on "click", aggregateMaterialsOutMeter
+    $(".btn-deductive-meter-clear-fields").on "click", clearFieldsDeductiveMeter
+    $(".btn-deductive-generate-meter").on "click", generateDeductiveMeter
     # second step
     $(".btn-approval-addcional").on "click", approvedAdditional
     $(".btn-deductivo-meter").on "click", createTableDeductive
@@ -1233,14 +1237,12 @@ createTableDeductive = (event) ->
             amount = (parseFloat(tblb[i].quantity) * parseFloat(tblb[i].price))
             table.push {"materials": tblb[i].materials, "name":tblb[i].name, "measure":tblb[i].measure, "unit": tblb[i].unit, "brand": tblb[i].brand, "model": tblb[i].model, "quantity" : parseFloat(tblb[i].quantity), "price": tblb[i].price, "amount": amount.toFixed(2)}
 
-    console.log table
+    #console.log table
     if table.length
-        console.log "ingreso a mostrar deductive"
-        console.table table
+        #console.log "ingreso a mostrar deductive"
+        #console.table table
         template = "<tr>
-                        <td>
-                            <input type=\"checkbox\" name=\"\">
-                        </td>
+                        <td>{{ item }}</td>
                         <td>{{ materials }}</td>
                         <td>{{ name }}</td>
                         <td>{{ measure }}</td>
@@ -1252,9 +1254,9 @@ createTableDeductive = (event) ->
                         <td>{{ amount }}</td>
                         <td>
                             <div class=\"input-group\" style=\"width: 160px;\">
-                                <input type=\"text\" class=\"form-control input-sm\" readonly>
+                                <input type=\"text\" class=\"form-control input-sm\" id=\"dedmeterquanout{{ materials }}\" readonly>
                                 <span class=\"input-group-btn\">
-                                    <button class=\"btn btn btn-default btn-sm btn-deductive-meter-select\">
+                                    <button class=\"btn btn btn-default btn-sm btn-deductive-meter-select\" value=\"{{ materials }}\">
                                     <span class=\"glyphicon glyphicon-edit\"></span>
                                 </button>
                                 </span>
@@ -1264,6 +1266,7 @@ createTableDeductive = (event) ->
         $tb = $("table.table-deductive > tbody")
         $tb.empty()
         for x of table
+            table[x].item = (parseInt(x) + 1)
             $tb.append Mustache.render template, table[x]
 
         $("table.table-modify > tbody > tr > td").find("input, select, button").attr "disabled", true
@@ -1282,9 +1285,9 @@ createTableDeductive = (event) ->
                         <td>{{ unit }}</td>
                         <td>{{ brand }}</td>
                         <td>{{ model }}</td>
-                        <td>{{ quantity }}</td>
+                        <td><input type=\"number\" min=\"0\" id=\"dedmeterquan{{ materials }}\" class=\"form-control input-sm\" style=\"width: 120px;\" max=\"{{ quantity }}\" value=\"{{ quantity }}\"></td>
                         <td class=\"text-center\">
-                            <input type=\"checkbox\" data-mat=\"{{ materials }}\" data-brnad=\"{{ brand }}\" data-model=\"{{ model }}\">
+                            <input type=\"checkbox\" name=\"chkdeductivemeter\" data-mat=\"{{ materials }}\" data-brnad=\"{{ brand }}\" data-model=\"{{ model }}\">
                         </td>
                     </tr>"
         for x of tbla
@@ -1302,12 +1305,86 @@ deductiveOneCancel = (event) ->
     return
 
 showaddtableoutdeductivemeter = (event) ->
+    $(".btn-aggregate-deductive-meter-materials").val @value
     $(".mdeductivereplace").modal "show"
     return
 
 changeSelectDeductiveMeter = (event) ->
     $("[name=dedmeterradio]").each ->
         if @checked
-            $().each ->
+            val = Boolean parseInt(@value)
+            $("input[name=chkdeductivemeter]").each ->
+                @checked = val
+                return
+            return
+    return
 
+aggregateMaterialsOutMeter = (event) ->
+    count = 0
+    data = new Array
+    btn = @
+    $("input[name=chkdeductivemeter]").each ->
+        if @checked
+            data.push {"materials": @getAttribute("data-mat"), "quantity": $("#dedmeterquan#{@getAttribute('data-mat')}").val()}
+            count++
+            return
+        
+    if count > 0
+        value = ""
+        for x of data
+            if value is ""
+                value = "#{data[x].materials}|#{data[x].quantity}"
+            else
+                value += ", #{data[x].materials}|#{data[x].quantity}"  
+            
+        $("#dedmeterquanout#{btn.value}").val value
+        $(".btn-aggregate-deductive-meter-materials").val ""
+        $(".mdeductivereplace").modal "hide"
+    else
+        $().toastmessage "showWarningToast", "Debe de seleccionar por lo menos un material."
+    return
+
+clearFieldsDeductiveMeter = (event) ->
+    $("table.table-deductive > tbody > tr > td > div > input[type=text]").each ->
+        @.value = ""
+        return
+    return
+
+generateDeductiveMeter = (event) ->
+    $tr = $("table.table-deductive > tbody > tr")
+    if $tr.length
+        data = new Array
+        $tr.each ->
+            $td = $(@).find("td")
+            data.push {"materials": $td.eq(1).text(), "brand": $td.eq(5).text(), "model":$td.eq(6).text(), "quantity": $td.eq(7).text(), "price": $td.eq(8).text(), "output": $td.eq(10).find("input").val()}
+            return
+        if data?
+            prm = new Object
+            prm.generateDeductiveOne = true
+            prm.details = JSON.stringify data
+            prm.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+            $.post "", prm, (response) ->
+                if response.status
+                    $().toastmessage "showNoticeToast", "Se genero correctamente el deductivo. Nro Deductivo #{response.deductive}"
+                    #$("table.table-modify > tbody > tr > td").find("input, select, buttons").attr "disabled", false
+                    #$(".btn-show-materials-meter, .btn-upload-plane-meter").attr "disabled", false
+                    $(".btn-deductivo-meter").attr "disabled", true
+                    $(".deductive-one").fadeOut 800
+                    $(".nav-tabs").ScrollTo duration : 800
+
+    else
+        $().toastmessage "showWarningToast", "Alerta! No se puede generar deductivo por no tener materiales."
+    return
+
+approvedModify = (event) ->
+    tbla = new Array()
+    tblb = new Array()
+    $("table.table-details > tbody > tr").each (index, element) ->
+        $td = $(element).find("td")
+        tbla.push {"materials":$td.eq(2).text(), "name": $td.eq(3).text(), "measure": $td.eq(4).text(), "unit": $td.eq(5).text(), "brand": $td.eq(6).text(), "model": $td.eq(7).text(), "quantity" : $td.eq(8).text(), "price":$td.eq(10).text()}
+    $("table.table-modify > tbody > tr").each (index, element) ->
+        $td = $(element).find("td")
+        tblb.push {"materials":$td.eq(1).text(), "name": $td.eq(2).text(), "measure": $td.eq(3).text(), "unit": $td.eq(4).text(), "brand": $td.eq(5).find("select").val(), "model": $td.eq(6).find("select").val(), "quantity" : $td.eq(7).find("input").val(), "price":$td.eq(8).find("input").val()}
+    for x of tbla
+            
     return

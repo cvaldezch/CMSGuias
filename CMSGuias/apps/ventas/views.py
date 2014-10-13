@@ -25,7 +25,7 @@ from .models import *
 from .forms import *
 from CMSGuias.apps.almacen.forms import addOrdersForm
 from CMSGuias.apps.operations.forms import NippleForm
-from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles
+from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles, search
 
 
 ## Class Bases Views Generic
@@ -608,7 +608,7 @@ class SectorManage(JSONResponseMixin, View):
                                 obj.quantityorders = (obj.quantityorders + (request.POST.get('quantity') - obj.quantity))
                                 obj.tag = '1'
                             elif obj.tag == '2':
-                                obj.quantityorders = (request.POST.get('quantity') - obj.quantity)
+                                obj.quantityorders = (float(request.POST.get('quantity')) - obj.quantity)
                                 obj.tag = '1'
                         elif obj.quantity > request.POST.get('quantity'):
                             if obj.tag == '1':
@@ -677,6 +677,38 @@ class SectorManage(JSONResponseMixin, View):
                         obj.flag = True
                         obj.save()
                         context['status'] = True
+                if 'generateDeductiveOne' in request.POST:
+                    key = genkeys.GenerateIdDeductive()
+                    # Generate bedside deductive
+                    bed = Deductive()
+                    bed.deductive_id = key
+                    bed.proyecto_id = kwargs['pro']
+                    bed.subproyecto_id = subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
+                    bed.sector_id = kwargs['sec']
+                    bed.rtype = 'LO'
+                    bed.relations = ''
+                    bed.save()
+                    # deductive inputs details
+                    details = json.loads(request.POST.get('details'))
+                    for x in details:
+                        print x
+                        detin = DeductiveInputs()
+                        detin.deductive_id = key
+                        detin.materials_id = x['materials']
+                        sr = search.searchBrands()
+                        sr.brand = x['brand']
+                        sr = sr.autoDetected()
+                        detin.brand_id = sr['pk']
+                        sr = search.searchModels()
+                        sr.model = x['model']
+                        sr = sr.autoDetected()
+                        detin.model_id = sr['pk']
+                        detin.quantity = x['quantity']
+                        detin.price = x['price']
+                        detin.related = x['output']
+                        detin.save()
+                    context['deductive'] = key
+                    context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

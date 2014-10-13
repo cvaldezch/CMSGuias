@@ -597,7 +597,10 @@
                 <button class="btn btn-default btn-deductive-one-cancel">
                     <span class="glyphicon glyphicon-remove"></span> Cancelar
                 </button>
-                <button class="btn btn-success text-black">
+                <button class="btn btn-default btn-deductive-meter-clear-fields">
+                    <span class="glyphicon glyphicon-unchecked"></span> Limpiar Campos
+                </button>
+                <button class="btn btn-success text-black btn-deductive-generate-meter">
                     <span class="glyphicon glyphicon-saved"></span> Generar Deductivo
                 </button>
             </div>
@@ -886,20 +889,26 @@
                 <h4 class="modal-title">Por que material lo cambiaste?</h4>
             </div>
             <div class="modal-body">
+                <div class="form-group">
+                    <span class="text-left">
+                        Selecionar:
+                        <label class="radio-inline">
+                            <input type="radio" value="1" name="dedmeterradio">
+                            Todo
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" value="0" name="dedmeterradio">
+                            Ninguno.
+                        </label>
+                    </span>
+                    <span class="pull-right">
+                        <button class="btn btn-default btn-sm btn-aggregate-deductive-meter-materials">
+                            <span class="glyphicon glyphicon-edit"></span>
+                            Agregar
+                        </button>
+                    </span>
+                 </div>
                 <table class="table table-condensed table-hover table-select-deductive-meter">
-                    <caption>
-                         <div class="form-group text-left">
-                            Seleccionar
-                            <label class="radio-inline">
-                                Todo
-                                <input type="radio" value="1" name="dedmeterradio">
-                            </label>
-                            <label class="radio-inline">
-                                Ninguno
-                                <input type="radio" value="0" name="dedmeterradio">
-                            </label>
-                         </div>
-                    </caption>
                     <thead>
                         <tr>
                             <th>Item</th>
