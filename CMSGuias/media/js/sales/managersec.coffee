@@ -1237,10 +1237,7 @@ createTableDeductive = (event) ->
             amount = (parseFloat(tblb[i].quantity) * parseFloat(tblb[i].price))
             table.push {"materials": tblb[i].materials, "name":tblb[i].name, "measure":tblb[i].measure, "unit": tblb[i].unit, "brand": tblb[i].brand, "model": tblb[i].model, "quantity" : parseFloat(tblb[i].quantity), "price": tblb[i].price, "amount": amount.toFixed(2)}
 
-    #console.log table
     if table.length
-        #console.log "ingreso a mostrar deductive"
-        #console.table table
         template = "<tr>
                         <td>{{ item }}</td>
                         <td>{{ materials }}</td>
@@ -1381,29 +1378,67 @@ approvedModify = (event) ->
     tblb = new Array()
     $("table.table-details > tbody > tr").each (index, element) ->
         $td = $(element).find("td")
-        tbla.push {"materials":$td.eq(2).text(), "name": $td.eq(3).text(), "measure": $td.eq(4).text(), "unit": $td.eq(5).text(), "brand": $td.eq(6).text(), "model": $td.eq(7).text(), "quantity" : $td.eq(8).text(), "quantityorders" : $td.eq(9).text(), "price":$td.eq(10).text()}
+        tbla.push {"materials": $td.eq(2).text(), "name": $td.eq(3).text(), "measure": $td.eq(4).text(), "unit": $td.eq(5).text(), "brand": $td.eq(6).text(), "model": $td.eq(7).text(), "quantity": $td.eq(8).text(), "quantityorders": $td.eq(9).text(), "price": $td.eq(10).text()}
+
     $("table.table-modify > tbody > tr").each (index, element) ->
         $td = $(element).find("td")
-        tblb.push {"materials":$td.eq(1).text(), "name": $td.eq(2).text(), "measure": $td.eq(3).text(), "unit": $td.eq(4).text(), "brand": $td.eq(5).find("select").val(), "model": $td.eq(6).find("select").val(), "quantity" : $td.eq(7).find("input").val(), "price":$td.eq(8).find("input").val()}
+        tag = ""
+        console.log $td
+        if $td.eq(12).find("span").attr("class").search("-check") > 0
+            tag = "2"
+        else
+            tag = "0"
+        tblb.push {"materials": $td.eq(1).text(), "name": $td.eq(2).text(), "measure": $td.eq(3).text(), "unit": $td.eq(4).text(), "brand": $td.eq(5).find("select").val(), "model": $td.eq(6).find("select").val(), "quantity": $td.eq(7).find("input").val(), "price": $td.eq(8).find("input").val(), "tag": tag}
+
+    console.table tbla
+    console.table tblb
+
     for x of tblb
+        count = 0
+        qmodify = 0
+        qoriginal = 0
+        quantityorders = 0
         for c of tbla
-            if x.materials is c.materials
-                qoriginal = parseFloat(c.quantity)
-                qmodify = parseFloat(x.quantity)
-                if qoriginal > qmodify
-                    x.tag = "2"
-                    x.devolutions = (parseFloat(qoriginal) - parseFloat(qmodify))
-                else if qoriginal < qmodify
-                    x.tag = "1"
-                else if qoriginal is qmodify
-                    if parseFloat(c.quantityorders) > 0  or parseFloat(c.quantityorders) < qoriginal
-                        x.tag = "1"
-                    else if parseFloat(c.quantityorders) is qoriginal
-                        x.tag = "0"
-                    else if parseFloat(c.quantityorders) is "0"
-                        if qmodify > 0
-                            x.tag = "0"
+            if tblb[x].materials is tbla[c].materials
+                qmodify = parseFloat(tblb[x].quantity)
+                qoriginal = parseFloat(tbla[c].quantity)
+                quantityorders = parseFloat(tbla[c].quantityorders)
             else
-                x.tag = "0"
+                if tblb[x].materials is "115100030400034"
+                    console.error  "ha ingreso no teniendo que ingresar"
                 count++
+                continue
+
+        if (tbla.length - 1) isnt count
+            tblb[x].tag = "0"
+        else
+            console.log qoriginal + " | " + qmodify + " | " + quantityorders
+            if qmodify > qoriginal
+                console.info "modify > original"
+                if quantityorders > 0 and quantityorders < qoriginal
+                    tblb[x].tag = "1"
+                if qoriginal is quantityorders and quantityorders > 0
+                    tblb[x].tag = "0"
+                console.error tblb[x].tag
+            else if qmodify < qoriginal
+                console.info "modify < original"
+                if qmodify > 0 and quantityorders > 0
+                    tblb[x].tag = "2"
+                else if quantityorders is 0
+                    tblb[x].tag = "0"
+                console.error tblb[x].tag
+            else if qmodify is qoriginal
+                if qmodify > 0 and quantityorders is qoriginal
+                    tblb[x].tag = "0"
+                else if qmodify > 0 and quantityorders < qoriginal and quantityorders > 0
+                    tblb[x].tag = "1"
+                else if quantityorders is 0
+                    tblb[x].tag = "2"
+                console.info "modify equal original"
+                console.error tblb[x].tag
+
+        if tblb[x].materials is "115100030400034"
+            console.info tblb[x]
+
+    console.table tblb
     return
