@@ -1070,10 +1070,13 @@ startModidfy = ->
                 response.details[x].item = (parseInt(x) + 1)
                 att = ""
                 #console.error response.details[x].tag
+                console.info response.details[x].tag
                 if response.details[x].tag is "2"
                     att = "<span class=\"glyphicon glyphicon-check\"></span>"
                 else if response.details[x].tag is "0"
                     att = "<span class=\"glyphicon glyphicon-unchecked\"></span>"
+                else if response.details[x].tag is "1"
+                    att = "<span class=\"glyphicon glyphicon-minus\"></span>"
                 template = template.replace "{{!attend}}", att
                 $tb.append Mustache.render template, response.details[x]
                 $sel = $("#brand-#{response.details[x].materials}")
@@ -1378,7 +1381,15 @@ approvedModify = (event) ->
     tblb = new Array()
     $("table.table-details > tbody > tr").each (index, element) ->
         $td = $(element).find("td")
-        tbla.push {"materials": $td.eq(2).text(), "name": $td.eq(3).text(), "measure": $td.eq(4).text(), "unit": $td.eq(5).text(), "brand": $td.eq(6).text(), "model": $td.eq(7).text(), "quantity": $td.eq(8).text(), "quantityorders": $td.eq(9).text(), "price": $td.eq(10).text()}
+        tag = ""
+        console.log $td
+        if $td.eq(13).find("span").attr("class").search("-check") > 0
+            tag = "2"
+        else if $td.eq(13).find("span").attr("class").search("-uncheck") > 0
+            tag = "0"
+        else
+            tag = "1"
+        tbla.push {"materials": $td.eq(2).text(), "name": $td.eq(3).text(), "measure": $td.eq(4).text(), "unit": $td.eq(5).text(), "brand": $td.eq(6).text(), "model": $td.eq(7).text(), "quantity": $td.eq(8).text(), "quantityorders": $td.eq(9).text(), "price": $td.eq(10).text(), "tag":tag}
 
     $("table.table-modify > tbody > tr").each (index, element) ->
         $td = $(element).find("td")
@@ -1404,8 +1415,6 @@ approvedModify = (event) ->
                 qoriginal = parseFloat(tbla[c].quantity)
                 quantityorders = parseFloat(tbla[c].quantityorders)
             else
-                if tblb[x].materials is "115100030400034"
-                    console.error  "ha ingreso no teniendo que ingresar"
                 count++
                 continue
 
@@ -1422,9 +1431,9 @@ approvedModify = (event) ->
                 console.error tblb[x].tag
             else if qmodify < qoriginal
                 console.info "modify < original"
-                if qmodify > 0 and quantityorders > 0
+                if qmodify > 0 and quantityorders is 0
                     tblb[x].tag = "2"
-                else if quantityorders is 0
+                else if quantityorders > 0
                     tblb[x].tag = "0"
                 console.error tblb[x].tag
             else if qmodify is qoriginal
@@ -1436,9 +1445,6 @@ approvedModify = (event) ->
                     tblb[x].tag = "2"
                 console.info "modify equal original"
                 console.error tblb[x].tag
-
-        if tblb[x].materials is "115100030400034"
-            console.info tblb[x]
 
     console.table tblb
     return

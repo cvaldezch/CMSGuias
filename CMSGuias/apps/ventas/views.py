@@ -422,7 +422,7 @@ class SectorManage(JSONResponseMixin, View):
                         stock = '-'
                     else:
                         stock = stock[0].stock
-                    data.append({'materiales_id':x.materiales_id, 'name':x.materiales.matnom,'measure':x.materiales.matmed,'unit':x.materiales.unidad.uninom,'brand':x.brand.brand, 'model':x.model.model,'quantity':x.quantityorder, 'cantidad':x.cantidad , 'price':x.precio, 'stock': stock, 'comment':x.comment})
+                    data.append({'materiales_id':x.materiales_id, 'name':x.materiales.matnom,'measure':x.materiales.matmed,'unit':x.materiales.unidad.uninom,'brand':x.brand.brand, 'model':x.model.model,'quantity':x.quantityorder, 'cantidad':x.cantidad , 'price':x.precio, 'stock': stock, 'comment':x.comment, 'tag': x.tag})
                 context['meter'] = data
                 context['niple'] = globalVariable.tipo_nipples
                 context['store'] = Almacene.objects.filter(flag=True).order_by('nombre')

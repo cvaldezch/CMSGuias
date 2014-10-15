@@ -374,8 +374,9 @@
                                             {% ifequal project.status 'AC' %}
                                                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
                                                     <th>Stock</th>
-                                                    {% endif %}
+                                                {% endif %}
                                                 <th>Observación</th>
+                                                <th>Estado</th>
                                             {% endifequal %}
                                         {% endif %}
                                         {% if materials and not meter  %}
@@ -417,6 +418,19 @@
                                                     {% else %}
                                                         <input type="text" class="form-control input-sm comment-mat" data-mat="{{ x.materiales_id }}" value="{{ x.comment }}" style="width: 160px;">
                                                     {% endif %}
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="glyphicon
+                                                    {% if x.tag == "0" %}
+                                                        glyphicon-unchecked
+                                                    {% endif %}
+                                                    {% if x.tag == "1" %}
+                                                        glyphicon-minus
+                                                    {% endif %}
+                                                    {% if x.tag == "2" %}
+                                                        glyphicon-check
+                                                    {% endif %}
+                                                    "></span>
                                                 </td>
                                             </tr>
                                         {% endfor %}

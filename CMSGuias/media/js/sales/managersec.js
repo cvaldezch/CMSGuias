@@ -1191,10 +1191,13 @@ startModidfy = function() {
         template = "<tr id=\"trm-{{ materials }}\"> <td class=\"text-center\">{{ item }}</td> <td class=\"text-center\">{{ materials }}</td> <td>{{ name }}</td> <td>{{ measure }}</td> <td class=\"text-center\">{{ unit }}</td> <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"brand-{{ materials }}\"</select></td> <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"model-{{ materials }}\"</select></td> <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm\" value=\"{{ quantity }}\" min=\"0\" id=\"quantity-{{ materiales }}\"></td> <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm\" value=\"{{ price }}\" id=\"price-{{ materials }}\"></td> <td>{{ amount }}</td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-green btn-update-update\" value=\"{{ materials }}\" data-tag=\"{{ tag }}\"> <span class=\"glyphicon glyphicon-edit\"></span> </button> </td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-red btn-delete-update\" value=\"{{ materials }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> <td class=\"text-center\">{{!attend}}</td> </tr>";
         response.details[x].item = parseInt(x) + 1;
         att = "";
+        console.info(response.details[x].tag);
         if (response.details[x].tag === "2") {
           att = "<span class=\"glyphicon glyphicon-check\"></span>";
         } else if (response.details[x].tag === "0") {
           att = "<span class=\"glyphicon glyphicon-unchecked\"></span>";
+        } else if (response.details[x].tag === "1") {
+          att = "<span class=\"glyphicon glyphicon-minus\"></span>";
         }
         template = template.replace("{{!attend}}", att);
         $tb.append(Mustache.render(template, response.details[x]));
@@ -1564,8 +1567,17 @@ approvedModify = function(event) {
   tbla = new Array();
   tblb = new Array();
   $("table.table-details > tbody > tr").each(function(index, element) {
-    var $td;
+    var $td, tag;
     $td = $(element).find("td");
+    tag = "";
+    console.log($td);
+    if ($td.eq(13).find("span").attr("class").search("-check") > 0) {
+      tag = "2";
+    } else if ($td.eq(13).find("span").attr("class").search("-uncheck") > 0) {
+      tag = "0";
+    } else {
+      tag = "1";
+    }
     return tbla.push({
       "materials": $td.eq(2).text(),
       "name": $td.eq(3).text(),
@@ -1575,7 +1587,8 @@ approvedModify = function(event) {
       "model": $td.eq(7).text(),
       "quantity": $td.eq(8).text(),
       "quantityorders": $td.eq(9).text(),
-      "price": $td.eq(10).text()
+      "price": $td.eq(10).text(),
+      "tag": tag
     });
   });
   $("table.table-modify > tbody > tr").each(function(index, element) {
@@ -1613,9 +1626,6 @@ approvedModify = function(event) {
         qoriginal = parseFloat(tbla[c].quantity);
         quantityorders = parseFloat(tbla[c].quantityorders);
       } else {
-        if (tblb[x].materials === "115100030400034") {
-          console.error("ha ingreso no teniendo que ingresar");
-        }
         count++;
         continue;
       }
@@ -1635,9 +1645,9 @@ approvedModify = function(event) {
         console.error(tblb[x].tag);
       } else if (qmodify < qoriginal) {
         console.info("modify < original");
-        if (qmodify > 0 && quantityorders > 0) {
+        if (qmodify > 0 && quantityorders === 0) {
           tblb[x].tag = "2";
-        } else if (quantityorders === 0) {
+        } else if (quantityorders > 0) {
           tblb[x].tag = "0";
         }
         console.error(tblb[x].tag);
@@ -1652,9 +1662,6 @@ approvedModify = function(event) {
         console.info("modify equal original");
         console.error(tblb[x].tag);
       }
-    }
-    if (tblb[x].materials === "115100030400034") {
-      console.info(tblb[x]);
     }
   }
   console.table(tblb);
