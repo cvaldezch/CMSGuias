@@ -131,6 +131,7 @@ $(document).ready(function() {
   $(".btn-approval-addcional").on("click", approvedAdditional);
   $(".btn-deductivo-meter").on("click", createTableDeductive);
   $(".btn-deductive-one-cancel").on("click", deductiveOneCancel);
+  $(".btn-save-modify-meter").on("click", approvedModify);
   $(document).on("click", ".btn-deductive-meter-select", showaddtableoutdeductivemeter);
   tinymce.init({
     selector: "textarea[name=obser]",
@@ -1563,11 +1564,11 @@ generateDeductiveMeter = function(event) {
 };
 
 approvedModify = function(event) {
-  var c, count, qmodify, qoriginal, quantityorders, tbla, tblb, x;
+  var c, comment, count, data, qmodify, qoriginal, quantityorders, tbla, tblb, x;
   tbla = new Array();
   tblb = new Array();
   $("table.table-details > tbody > tr").each(function(index, element) {
-    var $td, tag;
+    var $td, comment, tag;
     $td = $(element).find("td");
     tag = "";
     console.log($td);
@@ -1578,7 +1579,8 @@ approvedModify = function(event) {
     } else {
       tag = "1";
     }
-    return tbla.push({
+    comment = $td.eq(12).find("input").val();
+    tbla.push({
       "materials": $td.eq(2).text(),
       "name": $td.eq(3).text(),
       "measure": $td.eq(4).text(),
@@ -1588,7 +1590,8 @@ approvedModify = function(event) {
       "quantity": $td.eq(8).text(),
       "quantityorders": $td.eq(9).text(),
       "price": $td.eq(10).text(),
-      "tag": tag
+      "tag": tag,
+      "comment": comment
     });
   });
   $("table.table-modify > tbody > tr").each(function(index, element) {
@@ -1601,7 +1604,7 @@ approvedModify = function(event) {
     } else {
       tag = "0";
     }
-    return tblb.push({
+    tblb.push({
       "materials": $td.eq(1).text(),
       "name": $td.eq(2).text(),
       "measure": $td.eq(3).text(),
@@ -1620,11 +1623,14 @@ approvedModify = function(event) {
     qmodify = 0;
     qoriginal = 0;
     quantityorders = 0;
+    comment = "";
     for (c in tbla) {
       if (tblb[x].materials === tbla[c].materials) {
         qmodify = parseFloat(tblb[x].quantity);
         qoriginal = parseFloat(tbla[c].quantity);
         quantityorders = parseFloat(tbla[c].quantityorders);
+        comment = tbla[c].comment;
+        count--;
       } else {
         count++;
         continue;
@@ -1632,7 +1638,12 @@ approvedModify = function(event) {
     }
     if ((tbla.length - 1) !== count) {
       tblb[x].tag = "0";
+      tblb[x].comment = "";
+      tblb[x].quantityorders = tblb[x].quantity;
+      tblb[x].dev = 0;
     } else {
+      tblb[x].comment = comment;
+      tblb[x].quantityorders = quantityorders;
       console.log(qoriginal + " | " + qmodify + " | " + quantityorders);
       if (qmodify > qoriginal) {
         console.info("modify > original");
@@ -1642,13 +1653,19 @@ approvedModify = function(event) {
         if (qoriginal === quantityorders && quantityorders > 0) {
           tblb[x].tag = "0";
         }
+        tblb[x].dev = 0;
         console.error(tblb[x].tag);
       } else if (qmodify < qoriginal) {
         console.info("modify < original");
         if (qmodify > 0 && quantityorders === 0) {
           tblb[x].tag = "2";
-        } else if (quantityorders > 0) {
+        } else if (quantityorders > 0 && qmodify === (quantityorders - (qoriginal - qmodify))) {
           tblb[x].tag = "0";
+        } else if (quantityorders > 0 && qmodify > (quantityorders - (qoriginal - qmodify))) {
+          tblb[x].tag = "1";
+        }
+        if (tblb[x].tag === "2" || tblb[x].tag === "1") {
+          tblb[x].dev = qoriginal - qmodify;
         }
         console.error(tblb[x].tag);
       } else if (qmodify === qoriginal) {
@@ -1659,10 +1676,37 @@ approvedModify = function(event) {
         } else if (quantityorders === 0) {
           tblb[x].tag = "2";
         }
+        tblb[x].dev = 0;
         console.info("modify equal original");
         console.error(tblb[x].tag);
       }
     }
   }
   console.table(tblb);
+  data = new Object;
+  data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken").val();
+  data.approvedModifyFinal = true;
+  data.meter = JSON.stringify(tblb);
+  data.history = JSON.stringify(tbla);
+
+  /*$().toastmessage "showToast",
+      text: "Seguro(a) que desea aprobar"
+      sticky: true
+      type: "confirm"
+      buttons: [{value: "Si"}, {value: "No"}]
+      success: (result) ->
+          if result is "Si"
+              $.post "", data, (response) ->
+                  if response.status
+                      $().toastmessage "showNoticeToast", "Se a realizado los cambios"
+                      setTimeout ->
+                          location.reload()
+                          return
+                      , 2600
+                      return
+                  else
+                      $().toastmessage "showErrorToast", ""
+                      return
+              return
+   */
 };

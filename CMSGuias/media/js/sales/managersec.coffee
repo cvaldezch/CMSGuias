@@ -111,6 +111,7 @@ $(document).ready ->
     $(".btn-approval-addcional").on "click", approvedAdditional
     $(".btn-deductivo-meter").on "click", createTableDeductive
     $(".btn-deductive-one-cancel").on "click", deductiveOneCancel
+    $(".btn-save-modify-meter").on "click", approvedModify
     $(document).on "click", ".btn-deductive-meter-select", showaddtableoutdeductivemeter
     tinymce.init
         selector: "textarea[name=obser]",
@@ -1389,7 +1390,9 @@ approvedModify = (event) ->
             tag = "0"
         else
             tag = "1"
-        tbla.push {"materials": $td.eq(2).text(), "name": $td.eq(3).text(), "measure": $td.eq(4).text(), "unit": $td.eq(5).text(), "brand": $td.eq(6).text(), "model": $td.eq(7).text(), "quantity": $td.eq(8).text(), "quantityorders": $td.eq(9).text(), "price": $td.eq(10).text(), "tag":tag}
+        comment = $td.eq(12).find("input").val()
+        tbla.push {"materials": $td.eq(2).text(), "name": $td.eq(3).text(), "measure": $td.eq(4).text(), "unit": $td.eq(5).text(), "brand": $td.eq(6).text(), "model": $td.eq(7).text(), "quantity": $td.eq(8).text(), "quantityorders": $td.eq(9).text(), "price": $td.eq(10).text(), "tag":tag, "comment": comment}
+        return
 
     $("table.table-modify > tbody > tr").each (index, element) ->
         $td = $(element).find("td")
@@ -1400,6 +1403,7 @@ approvedModify = (event) ->
         else
             tag = "0"
         tblb.push {"materials": $td.eq(1).text(), "name": $td.eq(2).text(), "measure": $td.eq(3).text(), "unit": $td.eq(4).text(), "brand": $td.eq(5).find("select").val(), "model": $td.eq(6).find("select").val(), "quantity": $td.eq(7).find("input").val(), "price": $td.eq(8).find("input").val(), "tag": tag}
+        return
 
     console.table tbla
     console.table tblb
@@ -1409,18 +1413,27 @@ approvedModify = (event) ->
         qmodify = 0
         qoriginal = 0
         quantityorders = 0
+        comment = ""
         for c of tbla
             if tblb[x].materials is tbla[c].materials
                 qmodify = parseFloat(tblb[x].quantity)
                 qoriginal = parseFloat(tbla[c].quantity)
                 quantityorders = parseFloat(tbla[c].quantityorders)
+                comment = tbla[c].comment
+                count--
             else
                 count++
                 continue
 
         if (tbla.length - 1) isnt count
             tblb[x].tag = "0"
+            tblb[x].comment = ""
+            tblb[x].quantityorders = tblb[x].quantity
+            tblb[x].dev = 0
         else
+            tblb[x].comment = comment
+            tblb[x].quantityorders = quantityorders
+
             console.log qoriginal + " | " + qmodify + " | " + quantityorders
             if qmodify > qoriginal
                 console.info "modify > original"
@@ -1428,13 +1441,18 @@ approvedModify = (event) ->
                     tblb[x].tag = "1"
                 if qoriginal is quantityorders and quantityorders > 0
                     tblb[x].tag = "0"
+                tblb[x].dev = 0
                 console.error tblb[x].tag
             else if qmodify < qoriginal
                 console.info "modify < original"
                 if qmodify > 0 and quantityorders is 0
                     tblb[x].tag = "2"
-                else if quantityorders > 0
+                else if quantityorders > 0 and qmodify is (quantityorders - (qoriginal - qmodify))
                     tblb[x].tag = "0"
+                else if quantityorders > 0 and qmodify > (quantityorders - (qoriginal - qmodify))
+                    tblb[x].tag = "1"
+                if tblb[x].tag is "2" or tblb[x].tag is "1"
+                    tblb[x].dev = (qoriginal - qmodify)
                 console.error tblb[x].tag
             else if qmodify is qoriginal
                 if qmodify > 0 and quantityorders is qoriginal
@@ -1443,8 +1461,35 @@ approvedModify = (event) ->
                     tblb[x].tag = "1"
                 else if quantityorders is 0
                     tblb[x].tag = "2"
+                tblb[x].dev = 0
                 console.info "modify equal original"
                 console.error tblb[x].tag
 
     console.table tblb
+    data = new Object
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken").val()
+    data.approvedModifyFinal = true
+    data.meter = JSON.stringify tblb
+    data.history = JSON.stringify tbla
+
+    ###$().toastmessage "showToast",
+        text: "Seguro(a) que desea aprobar"
+        sticky: true
+        type: "confirm"
+        buttons: [{value: "Si"}, {value: "No"}]
+        success: (result) ->
+            if result is "Si"
+                $.post "", data, (response) ->
+                    if response.status
+                        $().toastmessage "showNoticeToast", "Se a realizado los cambios"
+                        setTimeout ->
+                            location.reload()
+                            return
+                        , 2600
+                        return
+                    else
+                        $().toastmessage "showErrorToast", ""
+                        return
+                return
+    ###
     return

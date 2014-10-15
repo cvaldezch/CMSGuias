@@ -515,7 +515,7 @@ class SectorManage(JSONResponseMixin, View):
                             obj.cantshop = x['quantity']
                             obj.comment = x['comment']
                             obj.save()
-                            # update quantity in Metproyect
+                            # update quantity in Metproject
                             pro = MetProject.objects.get(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') != '' else None, sector_id=request.POST.get('sector'), materiales_id=x['idmat'])
                             if pro.quantityorder == pro.cantidad:
                                 pro.quantityorder = (pro.cantidad - x['quantity'])
@@ -560,12 +560,13 @@ class SectorManage(JSONResponseMixin, View):
                     details = json.loads(request.POST.get('details'))
                     for x in details:
                         # save Metprojet addtional
-                        obj = Metproyect()
+                        obj = MetProject()
                         obj.proyecto_id = kwargs['pro']
-                        obj.subproyecto_id = kwargs['sub']
+                        obj.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
                         obj.sector_id = kwargs['sec']
                         obj.materiales_id = x['materials']
                         obj.cantidad = x['quantity']
+                        obj.quantityorder = x['quantity']
                         obj.precio = x['price']
                         obj.brand_id = x['brand']
                         obj.model_id = x['model']
@@ -691,7 +692,6 @@ class SectorManage(JSONResponseMixin, View):
                     # deductive inputs details
                     details = json.loads(request.POST.get('details'))
                     for x in details:
-                        print x
                         detin = DeductiveInputs()
                         detin.deductive_id = key
                         detin.materials_id = x['materials']
@@ -706,8 +706,82 @@ class SectorManage(JSONResponseMixin, View):
                         detin.quantity = x['quantity']
                         detin.price = x['price']
                         detin.related = x['output']
+                        if x['output'] != '':
+                            det = x['output'].split(',')
+                            for o in det:
+                                row = o.split('|')
+                                deto = DeductiveOutputs()
+                                deto.deductive_id = key
+                                deto.materials_id = row[0]
+                                deto.quantity = row[1]
+                                deto.save()
                         detin.save()
                     context['deductive'] = key
+                    context['status'] = True
+                if 'approvedModifyFinal' in request.POST:
+                    # request parameters #  first save history sector
+                    meter = json.loads(request.POST.get('meter'))
+                    history = json.loads(request.POST.get('history'))
+                    # delete details sector of the meter
+                    print 'pro', kwargs['pro']
+                    print 'sub', kwargs['sub']
+                    print 'sec', kwargs['sec']
+                    sec = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])
+                    print 'list sec met project', sec
+
+                    for x in sec:
+                        h = HistoryMetProject()
+                        h.proyecto_id = kwargs['pro']
+                        h.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
+                        h.sector_id = kwargs['sec']
+                        h.materials_id = x.materiales_id
+                        h.quantity = x.cantidad
+                        h.brand_id = x.brand_id
+                        h.model_id = x.model_id
+                        h.price = x.precio
+                        h.comment = x.comment
+                        h.quantityorders = x.quantityorder
+                        h.tag = x.tag
+                        h.flag = x.flag
+                        h.save()
+                        # if x.materials_id[:3] == '115':
+                        #     for n in Nipple.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id= kwargs['sub'] if kwargs['sub'] != unicode(None) else '', sector_id=kwargs['sec'], materiales_id=x.materials_id):
+                        #         n.flag = False
+                        #         n.save()
+                        x.delete()
+                    # save new details sector of the meter
+                    for x in meter:
+                        s = MetProject()
+                        s.proyecto_id = kwargs['pro']
+                        s.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
+                        s.sector_id = kwargs['sec']
+                        s.materiales_id = x['materials']
+                        s.brand_id = x['brand']
+                        s.model_id = x['model']
+                        s.cantidad = x['quantity']
+                        s.precio = x['price']
+                        s.flag = True
+                        s.comment = x['comment']
+                        s.quantityorder = x['quantityorders']
+                        s.tag = x['tag']
+                        if float(x['dev']) > 0:
+                            d = RestoreStorage()
+                            d.proyecto_id = kwargs['pro']
+                            d.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
+                            d.sector_id = kwargs['sec']
+                            d.materials_id = x['materials']
+                            d.brand_id = x['brand']
+                            d.model_id = x['model']
+                            d.quantity = float(x['dev'])
+                            d.price = x['price']
+                            #d.save()
+                        s.save()
+
+                    up = UpdateMetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])
+                    print 'list update', up
+                    for x in up:
+                        pass
+                        x.delete()
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()

@@ -127,6 +127,7 @@ class Alertasproyecto(models.Model):
         return '%s %s %s %s %s'%(self.proyecto, self.sector, self.charge, self.message, self.registrado)
 
 class HistoryMetProject(models.Model):
+    date = models.DateField(auto_now=True)
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id', default='')
     subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
     sector = models.ForeignKey(Sectore, to_field='sector_id')
@@ -146,6 +147,25 @@ class HistoryMetProject(models.Model):
     def __unicode__(self):
         return '%s %s %s %f %f'%(self.proyecto, self.sector, self.materials_id, self.quantity, self.price)
 
+class RestoreStorage(models.Model):
+    date = models.DateField(auto_now=True)
+    proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id', default='')
+    subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
+    sector = models.ForeignKey(Sectore, to_field='sector_id')
+    materials = models.ForeignKey(Materiale, to_field='materiales_id', default='')
+    brand = models.ForeignKey(Brand, to_field='brand_id', default='BR000')
+    model = models.ForeignKey(Model, to_field='model_id', default='MO000')
+    quantity = models.FloatField()
+    price = models.FloatField()
+    tag = models.CharField(max_length=1, default='0')
+    flag = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['proyecto']
+
+    def __unicode__(self):
+        return '%s %s %s %f %f'%(self.proyecto, self.sector, self.materials_id, self.quantity, self.price)
+
 class UpdateMetProject(models.Model):
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id', default='')
     subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
@@ -155,7 +175,7 @@ class UpdateMetProject(models.Model):
     model = models.ForeignKey(Model, to_field='model_id', default='MO000')
     quantity = models.FloatField()
     price = models.FloatField()
-    comment = models.CharField(max_length=250,default='',null=True, blank=True)
+    comment = models.CharField(max_length=250, default='',null=True, blank=True)
     quantityorders = models.FloatField(default=0, blank=True)
     tag = models.CharField(max_length=1, default='0')
     flag = models.BooleanField(default=True)

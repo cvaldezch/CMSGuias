@@ -54,6 +54,7 @@ class Deductive(models.Model):
     sector = models.ForeignKey(Sectore, to_field='sector_id', null=True, blank=True)
     register = models.DateTimeField(auto_now_add=True)
     rtype = models.CharField(max_length=2, choices=REL, default='NN')
+    date = models.DateField(auto_now=True)
     relations = models.TextField()
 
     class Meta:
@@ -61,6 +62,7 @@ class Deductive(models.Model):
 
 class DeductiveInputs(models.Model):
     deductive = models.ForeignKey(Deductive, to_field='deductive_id')
+    date = models.DateField(auto_now=True)
     materials = models.ForeignKey(Materiale, to_field='materiales_id')
     brand = models.ForeignKey(Brand, to_field='brand_id', default='BR000')
     model = models.ForeignKey(Model, to_field='model_id', default='MO000')
@@ -73,12 +75,13 @@ class DeductiveInputs(models.Model):
 
 class DeductiveOutputs(models.Model):
     deductive = models.ForeignKey(Deductive, to_field='deductive_id')
+    date = models.DateField(auto_now=True)
     materials = models.ForeignKey(Materiale, to_field='materiales_id')
-    brand = models.ForeignKey(Brand, to_field='brand_id', default='BR000')
-    model = models.ForeignKey(Model, to_field='model_id', default='MO000')
+    #brand = models.ForeignKey(Brand, to_field='brand_id', default='BR000')
+    #model = models.ForeignKey(Model, to_field='model_id', default='MO000')
     quantity = models.FloatField(default=0)
-    price = models.FloatField(default=0)
-    related = models.CharField(max_length=255, null=True, blank=True)
+    #price = models.FloatField(default=0)
+    #related = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         ordering = ['deductive', 'materials']
