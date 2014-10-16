@@ -723,14 +723,12 @@ class SectorManage(JSONResponseMixin, View):
                     meter = json.loads(request.POST.get('meter'))
                     history = json.loads(request.POST.get('history'))
                     # delete details sector of the meter
-                    print 'pro', kwargs['pro']
-                    print 'sub', kwargs['sub']
-                    print 'sec', kwargs['sec']
-                    sec = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])
-                    print 'list sec met project', sec
 
+                    sec = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])
+                    token = globalVariable.get_Token()
                     for x in sec:
                         h = HistoryMetProject()
+                        h.token = token
                         h.proyecto_id = kwargs['pro']
                         h.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
                         h.sector_id = kwargs['sec']
@@ -766,6 +764,7 @@ class SectorManage(JSONResponseMixin, View):
                         s.tag = x['tag']
                         if float(x['dev']) > 0:
                             d = RestoreStorage()
+                            d.token = token
                             d.proyecto_id = kwargs['pro']
                             d.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
                             d.sector_id = kwargs['sec']
@@ -778,9 +777,7 @@ class SectorManage(JSONResponseMixin, View):
                         s.save()
 
                     up = UpdateMetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])
-                    print 'list update', up
                     for x in up:
-                        pass
                         x.delete()
                     context['status'] = True
             except ObjectDoesNotExist, e:

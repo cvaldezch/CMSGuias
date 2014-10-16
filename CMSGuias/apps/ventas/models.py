@@ -128,6 +128,7 @@ class Alertasproyecto(models.Model):
 
 class HistoryMetProject(models.Model):
     date = models.DateField(auto_now=True)
+    token = models.CharField(max_length=6, default=globalVariable.get_Token())
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id', default='')
     subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
     sector = models.ForeignKey(Sectore, to_field='sector_id')
@@ -149,6 +150,7 @@ class HistoryMetProject(models.Model):
 
 class RestoreStorage(models.Model):
     date = models.DateField(auto_now=True)
+    token = models.CharField(max_length=6, default=globalVariable.get_Token())
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id', default='')
     subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
     sector = models.ForeignKey(Sectore, to_field='sector_id')

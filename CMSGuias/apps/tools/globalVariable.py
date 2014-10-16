@@ -3,6 +3,7 @@
 
 import datetime
 import pytz
+from random import randint
 
 from django.conf import settings
 from django.contrib import messages
@@ -131,3 +132,14 @@ getToday = datetime.datetime.today()
 
 # get Relative path
 relative_path = settings.MEDIA_ROOT
+
+def get_Token():
+    token = ''
+    try:
+        chars = settings.SECRET_KEY
+        for x in xrange(1,6):
+            index = randint(0, (chars.__len__() - 1))
+            token = '%s%s'%(token, chars[index])
+    except Exception, e:
+        raise e
+    return token

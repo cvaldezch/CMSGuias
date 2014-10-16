@@ -1420,20 +1420,22 @@ approvedModify = (event) ->
                 qoriginal = parseFloat(tbla[c].quantity)
                 quantityorders = parseFloat(tbla[c].quantityorders)
                 comment = tbla[c].comment
-                count--
+                break
             else
                 count++
                 continue
 
-        if (tbla.length - 1) isnt count
+        console.log "cantidad de count #{count}"
+        if tbla.length is count
+            console.info tblb[x].materials
             tblb[x].tag = "0"
             tblb[x].comment = ""
-            tblb[x].quantityorders = tblb[x].quantity
+            tblb[x].quantityorders = parseFloat tblb[x].quantity
             tblb[x].dev = 0
-        else
+        else if tbla.length isnt count
             tblb[x].comment = comment
             tblb[x].quantityorders = quantityorders
-
+            console.warn tblb[x].materials
             console.log qoriginal + " | " + qmodify + " | " + quantityorders
             if qmodify > qoriginal
                 console.info "modify > original"
@@ -1472,7 +1474,7 @@ approvedModify = (event) ->
     data.meter = JSON.stringify tblb
     data.history = JSON.stringify tbla
 
-    ###$().toastmessage "showToast",
+    $().toastmessage "showToast",
         text: "Seguro(a) que desea aprobar"
         sticky: true
         type: "confirm"
@@ -1491,5 +1493,10 @@ approvedModify = (event) ->
                         $().toastmessage "showErrorToast", ""
                         return
                 return
-    ###
     return
+
+# this part is for generate deductive global
+
+###########
+showTablesDeductiveGlobal = ->
+    # ...

@@ -439,6 +439,62 @@
                             {% endif %}
                         </div>
                     </div>
+                    {% if project.status == 'AC' and not meter %}
+                        <div class="panel panel-success">
+                            <div class="panel-heading">
+                                <h4>Lista de materiales nuevos</h4>
+                                <button class="btn btn-link close">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-condensed table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">Item</th>
+                                            <th class="text-center">Código</th>
+                                            <th class="text-center">Descripción</th>
+                                            <th class="text-center">Medida</th>
+                                            <th class="text-center">Unidad</th>
+                                            <th class="text-center">Cantidad</th>
+                                            <th class="text-center">Precio</th>
+                                            <th class="text-center">Importe</th>
+                                            <th class="text-center">Sectores</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="panel panel-danger">
+                            <div class="panel-heading">
+                                <h4>Lista de materiales que se quitaran</h4>
+                                <button class="btn btn-link close">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </button>
+                            </div>
+                            <div class="table table-responsive">
+                                <table class="table table-condensed table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <tr>
+                                            <th>Item</th>
+                                            <th>Código</th>
+                                            <th>Descripción</th>
+                                            <th>Medida</th>
+                                            <th>Unidad</th>
+                                            <th>Cantidad</th>
+                                            <th>Precio</th>
+                                            <th>Importe</th>
+                                            <th>Sectores</th>
+                                        </tr>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    {% endif %}
                     {% if meter %}
                     <div class="panel panel-warning">
                         <div class="table-responsive">

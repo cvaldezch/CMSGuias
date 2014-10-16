@@ -106,15 +106,15 @@ def GenerateKeyQuotation():
     return id
 
 def GeneratekeysQuoteClient():
-    keys = ""
+    keys = ''
     try:
-        chars = "aObAcPdB1Qe2Cf3Dg4Rh5Ei6S7jF8kT9lG0UmnHoWpIqJrYsKtLuZwMyzN-*!#^*()=_|"
+        chars = '@ObAcPdB1Qe2Cf3Dg4Rh5Ei6S7jF8kT9lG0UmnHoWpIqJrYsKtLuZwMyzN!()=|'
         for x in xrange(1, 10):
             index = randint(0, (chars.__len__() - 1))
-            keys = "%s%s"%(keys, chars[index])
+            keys = '%s%s'%(keys, chars[index])
     except Exception, e:
         raise e
-    return "SC%s"%keys
+    return 'SC%s'%keys
 
 # Generate id for order Quotation
 def GenerateKeyPurchase():
