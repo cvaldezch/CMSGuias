@@ -256,7 +256,7 @@
                     </div>
                     {% if project.status == 'AC' and not meter %}
                         <div class="btn-group">
-                            <button class="btn btn-danger create-deductivo">
+                            <button class="btn btn-danger btn-create-deductivo">
                                 <span class="glyphicon glyphicon-list"></span>
                                 <span>Crear Deductivo</span>
                             </button>
@@ -314,7 +314,7 @@
                                                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
                                                     <td>{{ x.precio|safe }}</td>
                                                 {% endif %}
-                                                {% if project.status == 'PE' or not meter  %}
+                                                {% if project.status == 'PE' or not meter %}
                                                     <td>
                                                         <button data-brand="{{ x.brand_id }}" data-model="{{ x.model_id }}" class="btn btn-xs btn-link text-green btn-show-edit" value="{{ x.materiales_id }}-{{ x.id }}">
                                                             <span class="glyphicon glyphicon-pencil"></span>
@@ -440,17 +440,62 @@
                         </div>
                     </div>
                     {% if project.status == 'AC' and not meter %}
-                        <div class="panel panel-success">
+                        <div class="panel panel-warning panel-deductive-global">
                             <div class="panel-heading">
-                                <h4>Lista de materiales nuevos</h4>
+                                <h4>Lista de materiales que se quitaran</h4>
                                 <button class="btn btn-link close">
                                     <span class="glyphicon glyphicon-chevron-down"></span>
                                 </button>
                             </div>
-                            <div class="table-responsive">
-                                <table class="table table-condensed table-hover table-striped table-deductive-input-new">
+                            <div class="btn-group">
+                                <button class="btn btn-xs btn-warning text-black btn-add-materials-deductive-global">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                    <span>Agregar</span>
+                                </button>
+                                <button class="btn btn-xs btn-danger btn-delete-materials-deductive-global">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                    <span>Eliminar Todo</span>
+                                </button>
+                            </div>
+                            <div class="bg-warning panel-search-material-old">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label"></label>
+                                            <input type="text" class="form-control" placeholder="Ingrese Descripcion del material" name="searchdesc">
+                                            <div class="panel-materials-old">
+                                                <div class="panel panel-defaulf">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-condensed table-striped table-hover table-materials-old">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Código</th>
+                                                                    <th>Nombre</th>
+                                                                    <th>Medida</th>
+                                                                    <th>Unidad</th>
+                                                                    <th>Cantidad</th>
+                                                                    <th>Ingresar</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody></tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="control-label"></label>
+                                            <input type="text" class="form-control" placeholder="Ingrese Código" name="searchcode">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table table-responsive">
+                                <table class="table table-condensed table-hover table-striped table-deductive-output">
                                     <thead>
-                                        <tr>
+                                        <tr class="brand-warning">
                                             <th class="text-center">Item</th>
                                             <th class="text-center">Código</th>
                                             <th class="text-center">Descripción</th>
@@ -466,28 +511,26 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="panel panel-warning">
+                        <div class="panel panel-success panel-deductive-global">
                             <div class="panel-heading">
-                                <h4>Lista de materiales que se quitaran</h4>
+                                <h4>Lista de materiales nuevos</h4>
                                 <button class="btn btn-link close">
                                     <span class="glyphicon glyphicon-chevron-down"></span>
                                 </button>
                             </div>
-                            <div class="table table-responsive">
-                                <table class="table table-condensed table-hover table-striped table-deductive-output">
+                            <div class="table-responsive">
+                                <table class="table table-condensed table-hover table-striped table-deductive-input-new">
                                     <thead>
-                                        <tr>
-                                            <tr>
-                                            <th>Item</th>
-                                            <th>Código</th>
-                                            <th>Descripción</th>
-                                            <th>Medida</th>
-                                            <th>Unidad</th>
-                                            <th>Cantidad</th>
-                                            <th>Precio</th>
-                                            <th>Importe</th>
-                                            <th>Sectores</th>
-                                        </tr>
+                                        <tr class="brand-success">
+                                            <th class="text-center">Item</th>
+                                            <th class="text-center">Código</th>
+                                            <th class="text-center">Descripción</th>
+                                            <th class="text-center">Medida</th>
+                                            <th class="text-center">Unidad</th>
+                                            <th class="text-center">Cantidad</th>
+                                            <th class="text-center">Precio</th>
+                                            <th class="text-center">Importe</th>
+                                            <th class="text-center">Sectores</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>

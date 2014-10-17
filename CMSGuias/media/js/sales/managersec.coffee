@@ -1,5 +1,5 @@
 $(document).ready ->
-    $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials, .ordersbedside, .panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter, .deductive-one").hide()
+    $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials, .ordersbedside, .panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter, .deductive-one, .panel-deductive-global, .panel-search-material-old, .panel-materials-old").hide()
     $("input[name=traslado]").datepicker "dateFormat": "yy-mm-dd", changeMonth : true, changeYear : true, minDate : "0"
     $(".panel-add-mat, .view-full").hide()
     $(".btn-show-mat, .btn-show-materials-meter").on "click", openAddMaterial
@@ -112,6 +112,9 @@ $(document).ready ->
     $(".btn-deductivo-meter").on "click", createTableDeductive
     $(".btn-deductive-one-cancel").on "click", deductiveOneCancel
     $(".btn-save-modify-meter").on "click", approvedModify
+    $(".btn-create-deductivo").on "click", showInitDeductive
+    $(".btn-add-materials-deductive-global").on "click", showPanelAddMateialsOldDeductiveGlobal
+    $("input[name=searchdesc]").on "keyup", searchDescDeductiveGlobal
     $(document).on "click", ".btn-deductive-meter-select", showaddtableoutdeductivemeter
     tinymce.init
         selector: "textarea[name=obser]",
@@ -1496,39 +1499,97 @@ approvedModify = (event) ->
     return
 
 # this part is for generate deductive global
+showInitDeductive = (event) ->
+    $(".panel-deductive-global").fadeToggle 600, ->
+        $btn = $(".btn-create-deductivo")
+        if @style.display is "block"
+            $(".btn-create-deductivo").removeClass "btn-danger"
+            .addClass "btn-default"
+            $btn.find("span").eq(0).removeClass "glyphicon-list"
+            .addClass "glyphicon-remove"
+            tbl = new Array()
+            # append data already
+            $("table.table-details > tbody > tr").each (index, element)->
+                $td = $(element).find "td"
+                tbl.push {"materials": $td.eq(1).text(), "name": $td.eq(2).text(), "measure": $td.eq(3).text(), "unit": $td.eq(4).text(), "brand": $td.eq(5).text(), "model": $td.eq(6).text(), "quantity": parseFloat($td.eq(7).text()), "price": parseFloat($td.eq(8).text())}
+                return
+            # generate table of new materials
+            $tnew = $("table.table-deductive-input-new > tbody")
+            $tnew.empty()
+            template = "<tr>
+                        <td class=\"text-center\">{{ item }}</td>
+                        <td>{{ materials }}</td>
+                        <td>{{ name }}</td>
+                        <td>{{ measure }}</td>
+                        <td class=\"text-center\">{{ unit }}</td>
+                        <td class=\"text-center\">{{ quantity }}</td>
+                        <td class=\"text-center\">{{ price }}</td>
+                        <td class=\"text-center\">{{ amount }}</td>
+                        <td class=\"text-center\">
+                            <div class=\"input-group\" style=\"width: 160px;\">
+                                <input type=\"text\" class=\"form-control input-sm\" readonly>
+                                <span class=\"input-group-btn\">
+                                    <button class=\"btn btn-default btn-sm\">
+                                        <span class=\"glyphicon glyphicon-list\"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </td>
+                        </tr>"
+            for x of tbl
+                tbl[x].item = (parseInt(x) + 1)
+                tbl[x].amount = (tbl[x].quantity * tbl[x].price).toFixed()
+                $tnew.append Mustache.render template, tbl[x]
 
-###########
-showTablesDeductiveGlobal = ->
-    tbl = new Array
-    # append data already 
-    $("table.table-details > tbody > tr").each (index, element)->
-        $td = $(element).find "td"
-        tbl.push {"materials": $td.eq(1).text(), "name": $td.eq(2).text(), "measure": $td.eq(3).text(), "unit": $td.eq(4).text(), "brand": $td.eq(5).text(), "model": $td.eq(6).text(), "quantity": parseFloat($td.eq(7).text()), "price": parseFloat($td.eq(8).text())}
-    # generate table of new materials
-    $tnew = $("table.table-deductive-input-new > tbody")
-    $tnew.empty()
-    template = "<tr>
-                <td class=\"text-center\">{{ item }}</td>
-                <td>{{ materials }}</td>
-                <td>{{ name }}</td>
-                <td>{{ measure }}</td>
-                <td class=\"text-center\">{{ unit }}</td>
-                <td class=\"text-center\">{{ quantity }}</td>
-                <td class=\"text-center\">{{ price }}</td>
-                <td class=\"text-center\">{{ amount }}</td>
-                <td class=\"text-center\">
-                    <div class=\"input-group\" style=\"width: 160px;\">
-                        <input type=\"text\" class=\"form-control input-sm\" readonly>
-                        <span class=\"input-group-btn\">
-                            <button class=\"btn btn-default btn-sm\">
-                                <span class=\"glyphicon glyphicon-list\"></span>
-                            </button>
-                        </span>
-                    </div>
-                </td>
-                </tr>"
-    for x of tbl
-        tbl[x].item = (parseInt(x) + 1)
-        tbl[x].amount = (tbl[x].quantity * tbl[x].price).toFixed()
-        $tnew.append Mustache.render template, tbl[x]
+        else if @style.display is "none"
+            $btn.removeClass "btn-default"
+            .addClass "btn-danger"
+            $btn.find("span").eq(0).removeClass "glyphicon-remove"
+            .addClass "glyphicon-list"
+            return
+    return
+
+showPanelAddMateialsOldDeductiveGlobal = (event) ->
+    $btn = $(@)
+    $(".panel-search-material-old").fadeToggle 400, ->
+        if @style.display is "block"
+            $btn.removeClass "btn-warning"
+            .addClass "btn-default"
+            $btn.find("span").eq(0).removeClass "glyphicon-plus"
+            .addClass "glyphicon-remove"
+            $btn.find("span").eq(1).text "Cancelar"
+        else if @style.display is "none"
+            $btn.removeClass "btn-default"
+            .addClass "btn-warning"
+            $btn.find("span").eq(0).removeClass "glyphicon-remove"
+            .addClass "glyphicon-plus"
+            $btn.find("span").eq(1).text "Agregar"
+    return
+
+searchDescDeductiveGlobal = (event) ->
+    key = `window.Event ? event.keyCode : event.which`
+    if key isnt 13
+        displayResultTable $.trim @value.toLowerCase()
+    return
+
+displayResultTable = (text) ->
+    data = new Object
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    data.text = text
+    data.searchdescdeductive = true
+    $.post "", data, (response) ->
+        if response.status
+            $tb = $("table.table-materials-old > tbody")
+            template = "<tr>
+                        <th>{{ materials }}</th>
+                        <th>{{ name }}</th>
+                        <th>{{ measure }}</th>
+                        <th>{{ unit }}</th>
+                        <th>{{ quantity }}</th>
+                        <th>Ingresar</th>
+                        </tr>"
+            $tb.empty()
+            for k of response.list
+                $tb.append Mustache.render template, response.list[k]
+    $("input[name=searchdesc]").focus().after $(".panel-materials-old").fadeIn 600
     return

@@ -487,7 +487,7 @@ class SectorManage(JSONResponseMixin, View):
                     if form.is_valid():
                         form.save()
                         context['status'] = True
-                if'upcomment' in request.POST:
+                if 'upcomment' in request.POST:
                     obj = MetProject.objects.get(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') != '' else None, sector_id=request.POST.get('sec'), materiales_id=request.POST.get('mat'))
                     if obj:
                         obj.comment = request.POST.get('comment')
@@ -779,6 +779,10 @@ class SectorManage(JSONResponseMixin, View):
                     up = UpdateMetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])
                     for x in up:
                         x.delete()
+                    context['status'] = True
+                if 'searchdescdeductive' in request.POST:
+                    obj = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None,materiales__matnom__icontains=request.POST.get('text')).order_by('materiales').distinct('materiales_id')
+                    context['list'] = [{'materials': x.materiales_id} for x in obj]
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()

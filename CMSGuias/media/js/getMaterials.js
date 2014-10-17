@@ -43,7 +43,6 @@ var getMeters = function () {
     if ($nom.val() != "" ) {
         var data = { "matnom": $nom.val().trim() }
         $.getJSON("/json/get/meter/materials/", data, function (response) {
-            console.log(response);
             var template = "<option value='{{ matmed }}'>{{ matmed }}</option>";
             $med = $("[name=meter]");
             $med.empty();
