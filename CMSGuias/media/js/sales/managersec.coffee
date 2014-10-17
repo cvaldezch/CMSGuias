@@ -1499,4 +1499,36 @@ approvedModify = (event) ->
 
 ###########
 showTablesDeductiveGlobal = ->
-    # ...
+    tbl = new Array
+    # append data already 
+    $("table.table-details > tbody > tr").each (index, element)->
+        $td = $(element).find "td"
+        tbl.push {"materials": $td.eq(1).text(), "name": $td.eq(2).text(), "measure": $td.eq(3).text(), "unit": $td.eq(4).text(), "brand": $td.eq(5).text(), "model": $td.eq(6).text(), "quantity": parseFloat($td.eq(7).text()), "price": parseFloat($td.eq(8).text())}
+    # generate table of new materials
+    $tnew = $("table.table-deductive-input-new > tbody")
+    $tnew.empty()
+    template = "<tr>
+                <td class=\"text-center\">{{ item }}</td>
+                <td>{{ materials }}</td>
+                <td>{{ name }}</td>
+                <td>{{ measure }}</td>
+                <td class=\"text-center\">{{ unit }}</td>
+                <td class=\"text-center\">{{ quantity }}</td>
+                <td class=\"text-center\">{{ price }}</td>
+                <td class=\"text-center\">{{ amount }}</td>
+                <td class=\"text-center\">
+                    <div class=\"input-group\" style=\"width: 160px;\">
+                        <input type=\"text\" class=\"form-control input-sm\" readonly>
+                        <span class=\"input-group-btn\">
+                            <button class=\"btn btn-default btn-sm\">
+                                <span class=\"glyphicon glyphicon-list\"></span>
+                            </button>
+                        </span>
+                    </div>
+                </td>
+                </tr>"
+    for x of tbl
+        tbl[x].item = (parseInt(x) + 1)
+        tbl[x].amount = (tbl[x].quantity * tbl[x].price).toFixed()
+        $tnew.append Mustache.render template, tbl[x]
+    return
