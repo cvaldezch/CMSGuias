@@ -1581,12 +1581,11 @@ displayResultTable = (text) ->
         if response.status
             $tb = $("table.table-materials-old > tbody")
             template = "<tr>
-                        <th>{{ materials }}</th>
-                        <th>{{ name }}</th>
-                        <th>{{ measure }}</th>
-                        <th>{{ unit }}</th>
-                        <th>{{ quantity }}</th>
-                        <th>Ingresar</th>
+                        <td>{{ materials }}</td>
+                        <td>{{ name }} - {{ measure }}</td>
+                        <td>{{ unit }}</td>
+                        <td>{{ quantity }}</td>
+                        <td>Ingresar</td>
                         </tr>"
             $tb.empty()
             for k of response.list

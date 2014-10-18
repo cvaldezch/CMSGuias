@@ -1795,7 +1795,7 @@ displayResultTable = function(text) {
     var $tb, k, template, _results;
     if (response.status) {
       $tb = $("table.table-materials-old > tbody");
-      template = "<tr> <th>{{ materials }}</th> <th>{{ name }}</th> <th>{{ measure }}</th> <th>{{ unit }}</th> <th>{{ quantity }}</th> <th>Ingresar</th> </tr>";
+      template = "<tr> <td>{{ materials }}</td> <td>{{ name }} - {{ measure }}</td> <td>{{ unit }}</td> <td>{{ quantity }}</td> <td>Ingresar</td> </tr>";
       $tb.empty();
       _results = [];
       for (k in response.list) {

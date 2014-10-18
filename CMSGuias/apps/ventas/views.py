@@ -4,7 +4,7 @@
 import json
 import datetime
 
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Sum
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
@@ -781,8 +781,11 @@ class SectorManage(JSONResponseMixin, View):
                         x.delete()
                     context['status'] = True
                 if 'searchdescdeductive' in request.POST:
-                    obj = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None,materiales__matnom__icontains=request.POST.get('text')).order_by('materiales').distinct('materiales_id')
-                    context['list'] = [{'materials': x.materiales_id} for x in obj]
+                    obj = MetProject.objects.extra(select = {'quantity': 'SELECT SUM(cantidad) FROM operations_metproject WHERE operations_metproject.materiales_id LIKE operations_metproject.materiales_id'}).filter(proyecto_id=kwargs['pro'], subproyecto_id=None,materiales__matnom__icontains=request.POST.get('text')).order_by('materiales__materiales_id').distinct('materiales__materiales_id')
+                    #.distinct('materiales__materiales_id')
+                    #obj = obj.order_by('materiales__materiales_id').distinct('materiales__materiales_id')
+                    print obj
+                    context['list'] = [{'materials': x.materiales_id, 'name': x.materiales.matnom, 'measure': x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'quantity': x.quantity} for x in obj]
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
