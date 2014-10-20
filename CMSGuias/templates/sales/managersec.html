@@ -440,6 +440,39 @@
                         </div>
                     </div>
                     {% if project.status == 'AC' and not meter %}
+                        <div class="panel panel-deductive-global">
+                            <div class="panel-body">
+                                <p>
+                                    Seleccionar el tipo de deductivo
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label class="control-label">Tipo de Deductivo</label>
+                                                <select name="typeDeductive" class="form-control">
+                                                    <option value="ALL">Todo los Sectores</option>
+                                                    <option value="ONE">Un Sector</option>
+                                                    <option value="CUS">Personalizar</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 control-deductive-one">
+                                            <label class="label-control">Sectores</label>
+                                            <select name="" id="" class="form-control">
+                                            {% for x in dsectors %}
+                                                <option value="{{ x.sector_id }}">{{ x.secnom }}</option>
+                                            {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 control-deductive-cus">
+                                            <div class="form-group">
+                                                <label class="control-label">Personalizado</label>
+                                                <input type="text" class="form-control" readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </p>
+                            </div>
+                        </div>
                         <div class="panel panel-warning panel-deductive-global">
                             <div class="panel-heading">
                                 <h4>Lista de materiales que se quitaran</h4>
@@ -741,6 +774,37 @@
     </div>
 </div>
 <!-- modals -->
+<div class="modal modal-customization">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- <div class="modal-header">
+            </div> -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label class="control-label">Sectores</label>
+                            <select name="" id="" class="form-control" multiple>
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label class="control-label">Sectores afectados</label>
+                            <select name="" id="" class="form-control" multiple>
+
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade medit" data-backdrop="static">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">

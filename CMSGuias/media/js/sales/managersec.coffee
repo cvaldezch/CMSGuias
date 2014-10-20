@@ -1,5 +1,5 @@
 $(document).ready ->
-    $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials, .ordersbedside, .panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter, .deductive-one, .panel-deductive-global, .panel-search-material-old, .panel-materials-old").hide()
+    $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials, .ordersbedside, .panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter, .deductive-one, .panel-deductive-global, .panel-search-material-old, .panel-materials-old, .control-deductive-one, .control-deductive-cus").hide()
     $("input[name=traslado]").datepicker "dateFormat": "yy-mm-dd", changeMonth : true, changeYear : true, minDate : "0"
     $(".panel-add-mat, .view-full").hide()
     $(".btn-show-mat, .btn-show-materials-meter").on "click", openAddMaterial
@@ -114,6 +114,7 @@ $(document).ready ->
     $(".btn-save-modify-meter").on "click", approvedModify
     $(".btn-create-deductivo").on "click", showInitDeductive
     $(".btn-add-materials-deductive-global").on "click", showPanelAddMateialsOldDeductiveGlobal
+    $("[name=typeDeductive]").on "click", changeTypeDeductive
     $("input[name=searchdesc]").on "keyup", searchDescDeductiveGlobal
     $(document).on "click", ".btn-deductive-meter-select", showaddtableoutdeductivemeter
     tinymce.init
@@ -1591,4 +1592,18 @@ displayResultTable = (text) ->
             for k of response.list
                 $tb.append Mustache.render template, response.list[k]
     $("input[name=searchdesc]").focus().after $(".panel-materials-old").fadeIn 600
+    return
+
+changeTypeDeductive = (event) ->
+    if @value is "ALL"
+        # ...
+    else if @value is "ONE"
+        $(".control-deductive-one").fadeIn()
+        $(".modal-customization").modal("hide")
+    else if @value is "CUS"
+        $(".control-deductive-one").fadeOut()
+        showSelectCustomization
+    return
+showSelectCustomization = (event) ->
+    $(".modal-customization").modal("show")
     return

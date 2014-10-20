@@ -408,6 +408,11 @@ class SectorManage(JSONResponseMixin, View):
             context['exchange'] = TipoCambio.objects.filter(fecha=globalVariable.date_now())
             ### end block global
 
+            ##
+            #   Deductive
+            ##
+            context['dsectors'] = Sectore.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None)
+            #
             materials = Metradoventa.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom')
             met = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom')
             if materials:
@@ -781,11 +786,20 @@ class SectorManage(JSONResponseMixin, View):
                         x.delete()
                     context['status'] = True
                 if 'searchdescdeductive' in request.POST:
-                    obj = MetProject.objects.extra(select = {'quantity': 'SELECT SUM(cantidad) FROM operations_metproject WHERE operations_metproject.materiales_id LIKE operations_metproject.materiales_id'}).filter(proyecto_id=kwargs['pro'], subproyecto_id=None,materiales__matnom__icontains=request.POST.get('text')).order_by('materiales__materiales_id').distinct('materiales__materiales_id')
+                    # obj = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None,materiales__matnom__icontains=request.POST.get('text')).annotate('quantity'=Sum('cantidad')).order_by('materiales__materiales_id').distinct('materiales__materiales_id')
+                    list_ = list()
+                    obj = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None,materiales__matnom__icontains=request.POST.get('text'))
+                    o = obj
+                    #extra(select = {'quantity': 'SELECT SUM(cantidad) FROM operations_metproject WHERE operations_metproject.proyecto_id LIKE %s AND operations_metproject.sector_id LIKE %s'}, select_params=[kwargs['pro'], kwargs['sec']],).order_by('materiales__materiales_id')
                     #.distinct('materiales__materiales_id')
-                    #obj = obj.order_by('materiales__materiales_id').distinct('materiales__materiales_id')
-                    print obj
-                    context['list'] = [{'materials': x.materiales_id, 'name': x.materiales.matnom, 'measure': x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'quantity': x.quantity} for x in obj]
+                    obj = obj.order_by('materiales__materiales_id').distinct('materiales__materiales_id')
+                    for x in obj:
+                        quan = o.filter(materiales_id=x.materiales_id).aggregate(quantity=Sum('cantidad'))
+                        o = o.filter(materiales_id=x.materiales_id)
+                        for c in o:
+                            print c.subproyecto_id
+                        list_.append({'materials': x.materiales_id, 'name': x.materiales.matnom, 'measure': x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'quantity': quan['quantity']})
+                    context['list'] = list_
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
