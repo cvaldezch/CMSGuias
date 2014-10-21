@@ -457,16 +457,16 @@
                                         </div>
                                         <div class="col-md-3 control-deductive-one">
                                             <label class="label-control">Sectores</label>
-                                            <select name="" id="" class="form-control">
+                                            <select name="sectorone" class="form-control">
                                             {% for x in dsectors %}
-                                                <option value="{{ x.sector_id }}">{{ x.secnom }}</option>
+                                                <option value="{{ x.sector_id }}">{{ x.nomsec }}</option>
                                             {% endfor %}
                                             </select>
                                         </div>
                                         <div class="col-md-3 control-deductive-cus">
                                             <div class="form-group">
                                                 <label class="control-label">Personalizado</label>
-                                                <input type="text" class="form-control" readonly="readonly">
+                                                <input type="text" name="inputcust" class="form-control" readonly="readonly">
                                             </div>
                                         </div>
                                     </div>
@@ -774,33 +774,53 @@
     </div>
 </div>
 <!-- modals -->
-<div class="modal modal-customization">
-    <div class="modal-dialog">
+<div class="modal modal-customization" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <!-- <div class="modal-header">
-            </div> -->
+            <div class="modal-header">
+                <a data-dismiss="modal" class="close">&times;</a>
+            </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-5">
                         <div class="form-group">
                             <label class="control-label">Sectores</label>
-                            <select name="" id="" class="form-control" multiple>
-
+                            <select name="dsectors" id="" class="form-control" multiple>
+                                {% for x in dsectors %}
+                                    <option value="{{ x.sector_id }}">{{ x.nomsec }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
                     <div class="col-md-2">
-
+                        <div class="form-group">
+                            <button class="btn btn-sm btn-default btn-block btn-all-right">
+                                <strong>>></strong>
+                            </button>
+                            <button class="btn btn-sm btn-default btn-block btn-one-right">
+                                <strong>></strong>
+                            </button>
+                            <button class="btn btn-sm btn-default btn-block btn-one-left">
+                                <strong><</strong>
+                            </button>
+                            <button class="btn btn-sm btn-default btn-block btn-all-left">
+                                <strong><<</strong>
+                            </button>
+                        </div>
                     </div>
                     <div class="col-md-5">
                         <div class="form-group">
                             <label class="control-label">Sectores afectados</label>
-                            <select name="" id="" class="form-control" multiple>
-
-                            </select>
+                            <select name="psectors" id="" class="form-control" multiple></select>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary btn-cust-ok">
+                    <span class="glyphicon glyphicon-saved"></span>
+                    Listo
+                </button>
             </div>
         </div>
     </div>

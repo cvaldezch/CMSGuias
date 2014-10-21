@@ -116,6 +116,12 @@ $(document).ready ->
     $(".btn-add-materials-deductive-global").on "click", showPanelAddMateialsOldDeductiveGlobal
     $("[name=typeDeductive]").on "click", changeTypeDeductive
     $("input[name=searchdesc]").on "keyup", searchDescDeductiveGlobal
+    $(".btn-all-right").on "click", pasteAllRight
+    $(".btn-all-left").on "click", pasteAllLeft
+    $(".btn-one-right").on "click", pasteOneRight
+    $(".btn-one-left").on "click", pasteOneLeft
+    $(".btn-cust-ok").on "click", addListCusSectors
+    $(document).on "click", ".btn-add-material-remove", addoldMaterialRemoveDeductive
     $(document).on "click", ".btn-deductive-meter-select", showaddtableoutdeductivemeter
     tinymce.init
         selector: "textarea[name=obser]",
@@ -1577,6 +1583,11 @@ displayResultTable = (text) ->
     data = new Object
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
     data.text = text
+    data.typedeductive = $("select[name=typeDeductive]").val()
+    if data.typedeductive is "ONE"
+        data.sector = $("select[name=sectorone]").val()
+    else if data.typedeductive is "CUS"
+        data.cus = $("input[name=inputcust]").val()
     data.searchdescdeductive = true
     $.post "", data, (response) ->
         if response.status
@@ -1586,7 +1597,11 @@ displayResultTable = (text) ->
                         <td>{{ name }} - {{ measure }}</td>
                         <td>{{ unit }}</td>
                         <td>{{ quantity }}</td>
-                        <td>Ingresar</td>
+                        <td>
+                            <button class=\"btn btn-xs btn-warning btn-add-material-remove text-black\" data-id=\"{{ materials }}\" data-name=\"{{ name }}\" data-measure=\"{{ measure }}\" data-unit=\"{{ unit }}\" data-quanity=\"{{ quantity }}\" data-price=\"{{ price }}\">
+                                <span class=\"glyphicon glyphicon-plus\"></span>
+                            </button>
+                        </td>
                         </tr>"
             $tb.empty()
             for k of response.list
@@ -1595,15 +1610,80 @@ displayResultTable = (text) ->
     return
 
 changeTypeDeductive = (event) ->
+    console.log @value
     if @value is "ALL"
-        # ...
+        $(".modal-customization").modal("hide")
+        $(".control-deductive-one").fadeOut()
     else if @value is "ONE"
         $(".control-deductive-one").fadeIn()
         $(".modal-customization").modal("hide")
     else if @value is "CUS"
         $(".control-deductive-one").fadeOut()
-        showSelectCustomization
+        $(".modal-customization").modal("show")
     return
-showSelectCustomization = (event) ->
-    $(".modal-customization").modal("show")
+
+pasteAllRight = (event) ->
+    $ds = $("select[name=dsectors]")
+    $ps = $("select[name=psectors]")
+    $ds.find("option").each (index, element) ->
+        $ps.append "<option value=\"#{element.value}\">#{element.innerHTML}</option>"
+        @remove()
+    return
+
+pasteAllLeft = (event) ->
+    $ds = $("select[name=dsectors]")
+    $ps = $("select[name=psectors]")
+    $ps.find("option").each (index, element) ->
+        $ds.append "<option value=\"#{element.value}\">#{element.innerHTML}</option>"
+        @remove()
+    return
+
+pasteOneRight = (event) ->
+    $ds = $("select[name=dsectors]")
+    $ps = $("select[name=psectors]")
+    $ds.find("option").each (index, element) ->
+        if $(@).is(":selected")
+            $ps.append "<option value=\"#{element.value}\">#{element.innerHTML}</option>"
+            @remove()
+    return
+
+pasteOneLeft = (event) ->
+    $ds = $("select[name=dsectors]")
+    $ps = $("select[name=psectors]")
+    $ps.find("option").each (index, element) ->
+        if $(@).is(":selected")
+            $ds.append "<option value=\"#{element.value}\">#{element.innerHTML}</option>"
+            @remove()
+    return
+
+addListCusSectors = (event) ->
+    secs = ""
+    if $("select[name=psectors]").find("option").length
+        $("select[name=psectors]").find "option"
+        .each (index, element) ->
+            if secs.length is 0
+                secs = element.value
+                return
+            else
+                secs += "," + element.value
+                return
+        $("input[name=inputcust]").val secs
+    $(".modal-customization").modal("hide")
+    return
+
+addoldMaterialRemoveDeductive = (event) ->
+    $tb = $("table.table-deductive-output > tbody")
+    data = {"mateials": @getAttribute("data-id"), "name": @getAttribute("data-name"), "measure": @getAttribute("data-measure"), "unit": @getAttribute("data-unit"), "quantity": @getAttribute("data-quanity"), "price": @getAttribute("data-price"), "amount": (parseFloat(@getAttribute("data-quanity")) * parseFloat(@getAttribute("data-price")))}
+    template = "<tr>
+                <td>{{ item }}</td>
+                <td>{{ materials }}</td>
+                <td>{{ name }}</td>
+                <td>{{ measure }}</td>
+                <td>{{ unit }}</td>
+                <td>{{ quantity }}</td>
+                <td>{{ price }}</td>
+                <td>{{ amount }}</td>
+                <td>Sectores</td>
+            </tr>"
+    $tb.append Mustache.render template, data
     return

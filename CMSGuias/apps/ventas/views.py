@@ -786,19 +786,23 @@ class SectorManage(JSONResponseMixin, View):
                         x.delete()
                     context['status'] = True
                 if 'searchdescdeductive' in request.POST:
-                    # obj = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None,materiales__matnom__icontains=request.POST.get('text')).annotate('quantity'=Sum('cantidad')).order_by('materiales__materiales_id').distinct('materiales__materiales_id')
                     list_ = list()
-                    obj = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None,materiales__matnom__icontains=request.POST.get('text'))
+                    obj = None
+                    if request.POST.get('typedeductive') == 'ONE':
+                        obj = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None,sector_id=request.POST.get('sector') ,materiales__matnom__icontains=request.POST.get('text'))
+                    elif request.POST.get('typedeductive') == 'CUS':
+                        sec = request.POST.get('cus').split(",")
+                        obj = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None,sector_id__in=sec,materiales__matnom__icontains=request.POST.get('text'))
+                    elif request.POST.get('typedeductive') == 'ALL':
+                        obj = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None,materiales__matnom__icontains=request.POST.get('text'))
                     o = obj
-                    #extra(select = {'quantity': 'SELECT SUM(cantidad) FROM operations_metproject WHERE operations_metproject.proyecto_id LIKE %s AND operations_metproject.sector_id LIKE %s'}, select_params=[kwargs['pro'], kwargs['sec']],).order_by('materiales__materiales_id')
-                    #.distinct('materiales__materiales_id')
                     obj = obj.order_by('materiales__materiales_id').distinct('materiales__materiales_id')
                     for x in obj:
                         quan = o.filter(materiales_id=x.materiales_id).aggregate(quantity=Sum('cantidad'))
                         o = o.filter(materiales_id=x.materiales_id)
                         for c in o:
                             print c.subproyecto_id
-                        list_.append({'materials': x.materiales_id, 'name': x.materiales.matnom, 'measure': x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'quantity': quan['quantity']})
+                        list_.append({'materials': x.materiales_id, 'name': x.materiales.matnom, 'measure': x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'quantity': quan['quantity'], 'price': x.precio})
                     context['list'] = list_
                     context['status'] = True
             except ObjectDoesNotExist, e:
