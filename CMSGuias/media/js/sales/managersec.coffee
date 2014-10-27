@@ -123,6 +123,7 @@ $(document).ready ->
     $(".btn-cust-ok").on "click", addListCusSectors
     $(document).on "click", ".btn-add-material-remove", addoldMaterialRemoveDeductive
     $(document).on "click", ".btn-deductive-meter-select", showaddtableoutdeductivemeter
+    $(document).on "click", ".btn-show-table-deductive-global", showTableDeductiveGlobal
     tinymce.init
         selector: "textarea[name=obser]",
         theme: "modern",
@@ -1534,9 +1535,9 @@ showInitDeductive = (event) ->
                         <td class=\"text-center\">{{ amount }}</td>
                         <td class=\"text-center\">
                             <div class=\"input-group\" style=\"width: 160px;\">
-                                <input type=\"text\" class=\"form-control input-sm\" readonly>
+                                <input type=\"text\" class=\"form-control input-sm\" id=\"dedmeterquanout{{ materials }}\" readonly>
                                 <span class=\"input-group-btn\">
-                                    <button class=\"btn btn-default btn-sm\">
+                                    <button class=\"btn btn-default btn-sm btn-show-table-deductive-global\" value=\"{{ materials }}\">
                                         <span class=\"glyphicon glyphicon-list\"></span>
                                     </button>
                                 </span>
@@ -1673,7 +1674,7 @@ addListCusSectors = (event) ->
 
 addoldMaterialRemoveDeductive = (event) ->
     $tb = $("table.table-deductive-output > tbody")
-    data = {"mateials": @getAttribute("data-id"), "name": @getAttribute("data-name"), "measure": @getAttribute("data-measure"), "unit": @getAttribute("data-unit"), "quantity": @getAttribute("data-quanity"), "price": @getAttribute("data-price"), "amount": (parseFloat(@getAttribute("data-quanity")) * parseFloat(@getAttribute("data-price")))}
+    data = {"materials": @getAttribute("data-id"), "name": @getAttribute("data-name"), "measure": @getAttribute("data-measure"), "unit": @getAttribute("data-unit"), "quantity": @getAttribute("data-quanity"), "price": @getAttribute("data-price"), "amount": (parseFloat(@getAttribute("data-quanity")) * parseFloat(@getAttribute("data-price"))).toFixed(2)}
     template = "<tr>
                 <td>{{ item }}</td>
                 <td>{{ materials }}</td>
@@ -1683,7 +1684,35 @@ addoldMaterialRemoveDeductive = (event) ->
                 <td>{{ quantity }}</td>
                 <td>{{ price }}</td>
                 <td>{{ amount }}</td>
-                <td>Sectores</td>
             </tr>"
     $tb.append Mustache.render template, data
+    $(".panel-materials-old").fadeOut 600
+    return
+
+showTableDeductiveGlobal = (event) ->
+    $btn = @
+    $tb = $("table.table-select-deductive-meter > tbody")
+    $tb.empty()
+    template = "<tr>
+                    <td>{{ item }}</td>
+                    <td>{{ materials }}</td>
+                    <td>{{ name }}</td>
+                    <td>{{ measure }}</td>
+                    <td>{{ unit }}</td>
+                    <td>ALL</td>
+                    <td>ALL</td>
+                    <td><input type=\"number\" id=\"#dedmeterquan{{ materials }}\" class=\"form-control\" value=\"{{ quantity }}\"></td>
+                    <td>
+                        <input type=\"checkbox\" data-mat=\"{{ materials }}\" name=\"chkdeductivemeter\" >
+                    </td>
+                </tr>"
+    $table = $("table.table-deductive-output > tbody > tr")
+    data = new Object
+    $table.each (index, element) ->
+        $td = $(element).find("td")
+        data = {"item": (index + 1), "materials":$td.eq(1).text(), "name": $td.eq(2).text(), "measure": $td.eq(3).text(), "unit": $td.eq(4).text(), "quantity": $td.eq(5).text(), "price": $td.eq(6).text()}
+        $tb.append Mustache.render template, data
+        return
+    $(".btn-aggregate-deductive-meter-materials").val $btn.value
+    $(".mdeductivereplace").modal("show")
     return
