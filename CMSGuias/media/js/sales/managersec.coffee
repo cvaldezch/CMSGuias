@@ -124,6 +124,8 @@ $(document).ready ->
     $(document).on "click", ".btn-add-material-remove", addoldMaterialRemoveDeductive
     $(document).on "click", ".btn-deductive-meter-select", showaddtableoutdeductivemeter
     $(document).on "click", ".btn-show-table-deductive-global", showTableDeductiveGlobal
+    $(".btn-delete-materials-deductive-global").on "click", delAllMaterialDeductiveGlobal
+    $(document).on "click", ".btn-delete-deductive-global-tr", delUnitDeductiveGlobal
     tinymce.init
         selector: "textarea[name=obser]",
         theme: "modern",
@@ -1014,26 +1016,32 @@ approvedAdditional = (event) ->
         buttons : [{value:"Si"},{value:"No"}]
         success : (result) ->
             if result is "Si"
-                data = new Object()
-                arr = new Array()
-                $("table.table-details > tbody > tr").each (index, element) ->
-                    $td = $(element).find "td"
-                    arr.push {"materials" : $td.eq(1).text(), "quantity" : parseFloat($td.eq(7).text()), "price" : parseFloat($td.eq(8).text()), "brand" : $td.eq(9).find("button").eq(0).attr("data-brand"), "model" : $td.eq(9).find("button").eq(0).attr("data-model")}
-                    console.log $td.eq(9).find("button").eq(0).attr("data-brand")
-                    return
-                data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
-                data.approvedadditional = true
-                data.details = JSON.stringify arr
-                console.log data
-                $.post "", data, (response) ->
-                    if response.status
-                        $().toastmessage "showNoticeToast", "Correcto se ha aprovado el sector."
-                        setTimeout ->
-                            location.reload()
-                        , 2600
-                    else
-                        $().toastmessage "showWarningToast", "No se a podido realizar la aprovación del sector."
-                , "json"
+                # question if exists deductive
+                $tr = $("table.table-deductive-input-new > tbody > tr")
+                if $tr.length
+                    # ...
+                else
+                    # else save additional
+                    data = new Object()
+                    arr = new Array()
+                    $("table.table-details > tbody > tr").each (index, element) ->
+                        $td = $(element).find "td"
+                        arr.push {"materials" : $td.eq(1).text(), "quantity" : parseFloat($td.eq(7).text()), "price" : parseFloat($td.eq(8).text()), "brand" : $td.eq(9).find("button").eq(0).attr("data-brand"), "model" : $td.eq(9).find("button").eq(0).attr("data-model")}
+                        console.log $td.eq(9).find("button").eq(0).attr("data-brand")
+                        return
+                    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+                    data.approvedadditional = true
+                    data.details = JSON.stringify arr
+                    console.log data
+                    $.post "", data, (response) ->
+                        if response.status
+                            $().toastmessage "showNoticeToast", "Correcto se ha aprovado el sector."
+                            setTimeout ->
+                                location.reload()
+                            , 2600
+                        else
+                            $().toastmessage "showWarningToast", "No se a podido realizar la aprovación del sector."
+                    , "json"
     return
 
 showModify = ->
@@ -1675,7 +1683,7 @@ addListCusSectors = (event) ->
 addoldMaterialRemoveDeductive = (event) ->
     $tb = $("table.table-deductive-output > tbody")
     data = {"materials": @getAttribute("data-id"), "name": @getAttribute("data-name"), "measure": @getAttribute("data-measure"), "unit": @getAttribute("data-unit"), "quantity": @getAttribute("data-quanity"), "price": @getAttribute("data-price"), "amount": (parseFloat(@getAttribute("data-quanity")) * parseFloat(@getAttribute("data-price"))).toFixed(2)}
-    template = "<tr>
+    template = "<tr class=\"deductive-global-tr-{{ materials }}\">
                 <td>{{ item }}</td>
                 <td>{{ materials }}</td>
                 <td>{{ name }}</td>
@@ -1684,9 +1692,18 @@ addoldMaterialRemoveDeductive = (event) ->
                 <td>{{ quantity }}</td>
                 <td>{{ price }}</td>
                 <td>{{ amount }}</td>
+                <td>
+                    <button class=\"btn btn-xs btn-link text-red btn-delete-deductive-global-tr\" value=\"{{ materials }}\">
+                        <span class=\"glyphicon glyphicon-trash\"></span>
+                    </button>
+                </td>
             </tr>"
     $tb.append Mustache.render template, data
     $(".panel-materials-old").fadeOut 600
+
+    $tb.find("tr").each (index, element) ->
+        $(element).find("td").eq(0).text(index + 1)
+        return
     return
 
 showTableDeductiveGlobal = (event) ->
@@ -1701,7 +1718,9 @@ showTableDeductiveGlobal = (event) ->
                     <td>{{ unit }}</td>
                     <td>ALL</td>
                     <td>ALL</td>
-                    <td><input type=\"number\" id=\"#dedmeterquan{{ materials }}\" class=\"form-control\" value=\"{{ quantity }}\"></td>
+                    <td>
+                        <input type=\"number\" id=\"dedmeterquan{{ materials }}\" class=\"form-control\" value=\"{{ quantity }}\">
+                    </td>
                     <td>
                         <input type=\"checkbox\" data-mat=\"{{ materials }}\" name=\"chkdeductivemeter\" >
                     </td>
@@ -1715,4 +1734,33 @@ showTableDeductiveGlobal = (event) ->
         return
     $(".btn-aggregate-deductive-meter-materials").val $btn.value
     $(".mdeductivereplace").modal("show")
+    return
+
+delUnitDeductiveGlobal = (event) ->
+    btn = @
+    $().toastmessage "showToast",
+        type: "confirm"
+        text: "Desea elminar el material de la lista?"
+        sticky: true
+        buttons: [{value:"Si"},{value: "No"}]
+        success: (result) ->
+            if result is "Si"
+                $("tr.deductive-global-tr-#{btn.value}").remove()
+    return
+
+delAllMaterialDeductiveGlobal = (event) ->
+    $().toastmessage "showToast",
+        type: "confirm"
+        text: "Desea elminar toda la lista de materiales?"
+        sticky: true
+        buttons: [{value:"Si"},{value: "No"}]
+        success: (result) ->
+            if result is "Si"
+                $("table.table-deductive-output > tbody").empty()
+                $("table.table-select-deductive-meter > tbody").empty()
+                $("table.table-deductive-input-new > tbody > tr").each ->
+                    $td = $(@).find("td")
+                    $td.eq(8).find("input").val("")
+                    return
+                return
     return

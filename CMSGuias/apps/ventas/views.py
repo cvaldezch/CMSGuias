@@ -805,6 +805,8 @@ class SectorManage(JSONResponseMixin, View):
                         list_.append({'materials': x.materiales_id, 'name': x.materiales.matnom, 'measure': x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'quantity': quan['quantity'], 'price': x.precio})
                     context['list'] = list_
                     context['status'] = True
+                if 'registerdeductivegl' in request.POST:
+                    pass
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
