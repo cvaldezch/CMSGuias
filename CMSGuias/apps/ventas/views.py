@@ -689,7 +689,7 @@ class SectorManage(JSONResponseMixin, View):
                     bed = Deductive()
                     bed.deductive_id = key
                     bed.proyecto_id = kwargs['pro']
-                    bed.subproyecto_id = subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
+                    bed.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
                     bed.sector_id = kwargs['sec']
                     bed.rtype = 'LO'
                     bed.relations = ''
@@ -806,7 +806,17 @@ class SectorManage(JSONResponseMixin, View):
                     context['list'] = list_
                     context['status'] = True
                 if 'registerdeductivegl' in request.POST:
-                    pass
+                    key = genkeys.GenerateIdDeductive()
+                    bed = Decductive()
+                    bed.decductive_id = key
+                    bed.proyecto_id = kwargs['pro']
+                    bed.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
+                    bed.sector_id = kwargs['sec']
+                    bed.rtype = request.POST.get('rtype')
+                    bed.relations = request.POST.get('relations')
+                    #bed.save()
+                    # save deductive inputs details
+
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

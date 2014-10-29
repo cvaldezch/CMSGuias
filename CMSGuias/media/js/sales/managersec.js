@@ -1144,11 +1144,52 @@ approvedAdditional = function(event) {
       }
     ],
     success: function(result) {
-      var $tr, arr, data;
+      var $tr, arr, data, inputs, outputs, x, _i, _len, _ref;
       if (result === "Si") {
         $tr = $("table.table-deductive-input-new > tbody > tr");
         if ($tr.length) {
-
+          data = new Object;
+          data.rtype = $("select[name=typeDeductive]").val();
+          if (data.rtype === "ONE") {
+            data.relations = $("select[name=sectorone]").val();
+          } else if (data.rtype === "CUS") {
+            _ref = $("[name=inputcust]").val().split(",");
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              x = _ref[_i];
+              x;
+            }
+            data.relations = JSON.stringify(x);
+          }
+          inputs = Array;
+          $("table.table-deductive-input-new > tbody > tr").each(function(index, element) {
+            var $td, relations;
+            $td = $(element).find("td");
+            relations = $td.eq(8).find("input").val().split(",");
+            inputs.push({
+              "materials": $td.eq(1).text(),
+              "name": $td.eq(2).text(),
+              "measure": $td.eq(3).text(),
+              "unit": $td.eq(4).text(),
+              "quantity": parseFloat($td.eq(5).text()),
+              "price": parseFloat($td.eq(6).text()),
+              "outputs": relations
+            });
+          });
+          data.inputs = JSON.stringify(inputs);
+          outputs = Array;
+          $("table.table-deductive-output > tbody > tr").each(function(index, element) {
+            var $td;
+            $td = $(element).find("td");
+            outputs.push({
+              "materials": $td.eq(1).text(),
+              "name": $td.eq(2).text(),
+              "measure": $td.eq(3).text(),
+              "unit": $td.eq(4).text(),
+              "quantity": parseFloat($td.eq(5).text()),
+              "price": parseFloat($td.eq(6).text())
+            });
+          });
+          data.outputs = JSON.stringify(outputs);
         } else {
           data = new Object();
           arr = new Array();

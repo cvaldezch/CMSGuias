@@ -1019,7 +1019,42 @@ approvedAdditional = (event) ->
                 # question if exists deductive
                 $tr = $("table.table-deductive-input-new > tbody > tr")
                 if $tr.length
-                    # ...
+                    data = new Object
+                    data.rtype = $("select[name=typeDeductive]").val()
+                    if data.rtype is "ONE"
+                        data.relations = $("select[name=sectorone]").val()
+                    else if data.rtype is "CUS"
+                        x for x in $("[name=inputcust]").val().split(",")
+                        data.relations = JSON.stringify x
+                    # get data list inputs
+                    inputs = Array
+                    $("table.table-deductive-input-new > tbody > tr").each (index, element)->
+                        $td = $(element).find("td")
+                        relations = $td.eq(8).find("input").val().split(",")
+                        inputs.push
+                            "materials": $td.eq(1).text()
+                            "name": $td.eq(2).text()
+                            "measure": $td.eq(3).text()
+                            "unit": $td.eq(4).text()
+                            "quantity": parseFloat $td.eq(5).text()
+                            "price": parseFloat $td.eq(6).text()
+                            "outputs": relations
+                        return
+                    data.inputs = JSON.stringify(inputs)
+                    # get data list outputs
+                    outputs = Array
+                    $("table.table-deductive-output > tbody > tr").each (index, element)->
+                        $td = $(element).find("td")
+                        outputs.push
+                            "materials": $td.eq(1).text()
+                            "name": $td.eq(2).text()
+                            "measure": $td.eq(3).text()
+                            "unit": $td.eq(4).text()
+                            "quantity": parseFloat $td.eq(5).text()
+                            "price": parseFloat $td.eq(6).text()
+                        return
+                    data.outputs = JSON.stringify(outputs)
+                    return
                 else
                     # else save additional
                     data = new Object()
