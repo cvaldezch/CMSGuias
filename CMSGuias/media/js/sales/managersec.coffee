@@ -1054,6 +1054,23 @@ approvedAdditional = (event) ->
                             "price": parseFloat $td.eq(6).text()
                         return
                     data.outputs = JSON.stringify(outputs)
+                    arr = new Array()
+                    $("table.table-details > tbody > tr").each (index, element) ->
+                        $td = $(element).find "td"
+                        arr.push {"materials" : $td.eq(1).text(), "quantity" : parseFloat($td.eq(7).text()), "price" : parseFloat($td.eq(8).text()), "brand" : $td.eq(9).find("button").eq(0).attr("data-brand"), "model" : $td.eq(9).find("button").eq(0).attr("data-model")}
+                        console.log $td.eq(9).find("button").eq(0).attr("data-brand")
+                        return
+                    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+                    data.registerdeductivegl = true
+                    $.post "", data, (response) ->
+                        if response.status
+                            $().toastmessage "showNoticeToast", "Correcto se ha aprovado el sector."
+                            setTimeout ->
+                                location.reload()
+                            , 2600
+                        else
+                            $().toastmessage "showWarningToast", "No se a podido realizar la aprovación del sector."
+                    , "json"
                     return
                 else
                     # else save additional

@@ -816,7 +816,15 @@ class SectorManage(JSONResponseMixin, View):
                     bed.relations = request.POST.get('relations')
                     #bed.save()
                     # save deductive inputs details
-
+                    inputs = json.loads(request.POST.get('inputs'))
+                    for x in inputs:
+                        din = Deductive()
+                        #din.save()
+                    #
+                    outputs = request.POST.get('outputs')
+                    for x in outputs:
+                        dout = DeductiveOutputs()
+                        pass
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
