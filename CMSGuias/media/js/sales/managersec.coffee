@@ -1038,7 +1038,7 @@ approvedAdditional = (event) ->
                             "unit": $td.eq(4).text()
                             "quantity": parseFloat $td.eq(5).text()
                             "price": parseFloat $td.eq(6).text()
-                            "outputs": relations
+                            "output": relations
                         return
                     data.inputs = JSON.stringify(inputs)
                     # get data list outputs

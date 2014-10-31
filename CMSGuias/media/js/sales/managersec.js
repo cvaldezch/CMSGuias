@@ -1172,7 +1172,7 @@ approvedAdditional = function(event) {
               "unit": $td.eq(4).text(),
               "quantity": parseFloat($td.eq(5).text()),
               "price": parseFloat($td.eq(6).text()),
-              "outputs": relations
+              "output": relations
             });
           });
           data.inputs = JSON.stringify(inputs);
@@ -1190,6 +1190,31 @@ approvedAdditional = function(event) {
             });
           });
           data.outputs = JSON.stringify(outputs);
+          arr = new Array();
+          $("table.table-details > tbody > tr").each(function(index, element) {
+            var $td;
+            $td = $(element).find("td");
+            arr.push({
+              "materials": $td.eq(1).text(),
+              "quantity": parseFloat($td.eq(7).text()),
+              "price": parseFloat($td.eq(8).text()),
+              "brand": $td.eq(9).find("button").eq(0).attr("data-brand"),
+              "model": $td.eq(9).find("button").eq(0).attr("data-model")
+            });
+            console.log($td.eq(9).find("button").eq(0).attr("data-brand"));
+          });
+          data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
+          data.registerdeductivegl = true;
+          $.post("", data, function(response) {
+            if (response.status) {
+              $().toastmessage("showNoticeToast", "Correcto se ha aprovado el sector.");
+              return setTimeout(function() {
+                return location.reload();
+              }, 2600);
+            } else {
+              return $().toastmessage("showWarningToast", "No se a podido realizar la aprovación del sector.");
+            }
+          }, "json");
         } else {
           data = new Object();
           arr = new Array();

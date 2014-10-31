@@ -818,13 +818,91 @@ class SectorManage(JSONResponseMixin, View):
                     # save deductive inputs details
                     inputs = json.loads(request.POST.get('inputs'))
                     for x in inputs:
-                        din = Deductive()
-                        #din.save()
-                    #
+                        detin = DeductiveInputs()
+                        detin.deductive_id = key
+                        detin.materials_id = x['materials']
+                        sr = search.searchBrands()
+                        sr.brand = x['brand']
+                        sr = sr.autoDetected()
+                        detin.brand_id = sr['pk']
+                        sr = search.searchModels()
+                        sr.model = x['model']
+                        sr = sr.autoDetected()
+                        detin.model_id = sr['pk']
+                        detin.quantity = x['quantity']
+                        detin.price = x['price']
+                        detin.related = x['output']
+                        #detin.save()
+                    # save deductive outputs details
                     outputs = request.POST.get('outputs')
-                    for x in outputs:
-                        dout = DeductiveOutputs()
-                        pass
+                    if outputs:
+                        for x in outputs:
+                            dout = DeductiveOutputs()
+                            dout.deductive_id = key
+                            dout.materials_id = x['materials']
+                            dout.quantity = x['quantity']
+                            #dout.save()
+                    # register thoe history of sectors if relations
+                    relations = None
+                    token = globalVariable.get_Token()
+                    if request.POST.get('rtype') == 'ONE':
+                        relations = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(kwargs['sub']) else '',sector_id=request.POST.get('relations'))
+                        for x in relations:
+                            h = HistoryMetProject()
+                            h.token = token
+                            h.proyecto_id = kwargs['pro']
+                            h.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
+                            h.sector_id = kwargs['sec']
+                            h.materials_id = x.materiales_id
+                            h.quantity = x.cantidad
+                            h.brand_id = x.brand_id
+                            h.model_id = x.model_id
+                            h.price = x.precio
+                            h.comment = x.comment
+                            h.quantityorders = x.quantityorder
+                            h.tag = x.tag
+                            h.flag = x.flag
+                            h.save()
+                    elif request.POST.get('rtype') == 'CUS':
+                        for s in json.loads(request.POST.get('relations')):
+                            relations = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(kwargs['sub']) else '',sector_id=s)
+                            for x in relations:
+                                h = HistoryMetProject()
+                                h.token = token
+                                h.proyecto_id = kwargs['pro']
+                                h.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
+                                h.sector_id = s
+                                h.materials_id = x.materiales_id
+                                h.quantity = x.cantidad
+                                h.brand_id = x.brand_id
+                                h.model_id = x.model_id
+                                h.price = x.precio
+                                h.comment = x.comment
+                                h.quantityorders = x.quantityorder
+                                h.tag = x.tag
+                                h.flag = x.flag
+                                h.save()
+                    elif request.POST.get('rtype') == 'ALL':
+                        sectors = Sectore.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id='')
+                        for s in sectore:
+                            relations = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(kwargs['sub']) else '',sector_id=s.sector_id)
+                            for x in relations:
+                                h = HistoryMetProject()
+                                h.token = token
+                                h.proyecto_id = kwargs['pro']
+                                h.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
+                                h.sector_id = s
+                                h.materials_id = x.materiales_id
+                                h.quantity = x.cantidad
+                                h.brand_id = x.brand_id
+                                h.model_id = x.model_id
+                                h.price = x.precio
+                                h.comment = x.comment
+                                h.quantityorders = x.quantityorder
+                                h.tag = x.tag
+                                h.flag = x.flag
+                                h.save()
+                    # for the registers
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
