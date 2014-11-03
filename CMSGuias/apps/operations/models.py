@@ -25,7 +25,7 @@ class MetProject(models.Model):
         ordering = ['proyecto']
 
     def __unicode__(self):
-        return '%s %s %s %f %f'%(self.proyecto, self.sector, self.materiales_id, self.cantidad, self.precio)
+        return ''#'%s %s %s %f %f'%(self.proyecto, self.sector_id, self.materiales_id, self.cantidad, self.precio)
 
 class Nipple(models.Model):
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
@@ -53,7 +53,7 @@ class Deductive(models.Model):
     subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
     sector = models.ForeignKey(Sectore, to_field='sector_id', null=True, blank=True)
     register = models.DateTimeField(auto_now_add=True)
-    rtype = models.CharField(max_length=2, choices=REL, default='NN')
+    rtype = models.CharField(max_length=3, choices=REL, default='NN')
     date = models.DateField(auto_now=True)
     relations = models.TextField()
 

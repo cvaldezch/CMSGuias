@@ -778,7 +778,7 @@ class SectorManage(JSONResponseMixin, View):
                             d.model_id = x['model']
                             d.quantity = float(x['dev'])
                             d.price = x['price']
-                            #d.save()
+                            d.save()
                         s.save()
 
                     up = UpdateMetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])
@@ -807,41 +807,35 @@ class SectorManage(JSONResponseMixin, View):
                     context['status'] = True
                 if 'registerdeductivegl' in request.POST:
                     key = genkeys.GenerateIdDeductive()
-                    bed = Decductive()
-                    bed.decductive_id = key
+                    bed = Deductive()
+                    bed.deductive_id = key
                     bed.proyecto_id = kwargs['pro']
                     bed.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
                     bed.sector_id = kwargs['sec']
                     bed.rtype = request.POST.get('rtype')
-                    bed.relations = request.POST.get('relations')
-                    #bed.save()
+                    bed.relations = request.POST.get('relations') if 'relations' in request.POST else ''
+                    bed.save()
                     # save deductive inputs details
                     inputs = json.loads(request.POST.get('inputs'))
                     for x in inputs:
                         detin = DeductiveInputs()
                         detin.deductive_id = key
                         detin.materials_id = x['materials']
-                        sr = search.searchBrands()
-                        sr.brand = x['brand']
-                        sr = sr.autoDetected()
-                        detin.brand_id = sr['pk']
-                        sr = search.searchModels()
-                        sr.model = x['model']
-                        sr = sr.autoDetected()
-                        detin.model_id = sr['pk']
+                        detin.brand_id = 'BR000'
+                        detin.model_id = 'MO000'
                         detin.quantity = x['quantity']
                         detin.price = x['price']
                         detin.related = x['output']
-                        #detin.save()
+                        detin.save()
                     # save deductive outputs details
-                    outputs = request.POST.get('outputs')
+                    outputs = json.loads(request.POST.get('outputs'))
                     if outputs:
                         for x in outputs:
                             dout = DeductiveOutputs()
                             dout.deductive_id = key
                             dout.materials_id = x['materials']
                             dout.quantity = x['quantity']
-                            #dout.save()
+                            dout.save()
                     # register thoe history of sectors if relations
                     relations = None
                     token = globalVariable.get_Token()
@@ -851,8 +845,8 @@ class SectorManage(JSONResponseMixin, View):
                             h = HistoryMetProject()
                             h.token = token
                             h.proyecto_id = kwargs['pro']
-                            h.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
-                            h.sector_id = kwargs['sec']
+                            h.subproyecto_id = ''
+                            h.sector_id = request.POST.get('relations')
                             h.materials_id = x.materiales_id
                             h.quantity = x.cantidad
                             h.brand_id = x.brand_id
@@ -865,7 +859,8 @@ class SectorManage(JSONResponseMixin, View):
                             h.save()
                     elif request.POST.get('rtype') == 'CUS':
                         for s in json.loads(request.POST.get('relations')):
-                            relations = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(kwargs['sub']) else '',sector_id=s)
+                            print s
+                            relations = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None,sector_id=s)
                             for x in relations:
                                 h = HistoryMetProject()
                                 h.token = token
@@ -884,7 +879,7 @@ class SectorManage(JSONResponseMixin, View):
                                 h.save()
                     elif request.POST.get('rtype') == 'ALL':
                         sectors = Sectore.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id='')
-                        for s in sectore:
+                        for s in sectors:
                             relations = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(kwargs['sub']) else '',sector_id=s.sector_id)
                             for x in relations:
                                 h = HistoryMetProject()
@@ -903,7 +898,143 @@ class SectorManage(JSONResponseMixin, View):
                                 h.flag = x.flag
                                 h.save()
                     # for the registers
+                    # delete materials in list outputs
+                    if outputs:
+                        if request.POST.get('rtype') == 'ONE':
+                            for x in outputs:
+                                outs = MetProject.objects.get(proyecto_id=kwargs['pro'],sector_id=request.POST.get('relations'), materiales_id=x['materials'])
+                                if (outs.cantidad - x['quantity']) > 0:
+                                    d = RestoreStorage()
+                                    d.token = token
+                                    d.proyecto_id = kwargs['pro']
+                                    d.subproyecto_id = ''
+                                    d.sector_id = request.POST.get('relations')
+                                    d.materials_id = x['materials']
+                                    d.brand_id = 'BR000'
+                                    d.model_id = 'MO000'
+                                    d.quantity = float((outs.cantidad - x['quantity']))
+                                    d.price = x['price']
+                                    d.save()
+                                    # update qunaity
+                                    outs.cantidad = (outs.cantidad - x['quantity'])
+                                    outs.save()
+                                else:
+                                    outs.delete()
+                        elif request.POST.get('rtype') == 'CUS':
+                            print outputs
+                            for x in outputs:
+                                for o in json.loads(request.POST.get('relations')):
+                                    print o, x['materials']
+                                    outs = MetProject.objects.get(proyecto_id=kwargs['pro'],sector_id=o, materiales_id=x['materials'])
+                                    if (outs.cantidad - x['quantity']) > 0:
+                                        d = RestoreStorage()
+                                        d.token = token
+                                        d.proyecto_id = kwargs['pro']
+                                        d.subproyecto_id = ''
+                                        d.sector_id = o
+                                        d.materials_id = x['materials']
+                                        d.brand_id = 'BR000'
+                                        d.model_id = 'MO000'
+                                        d.quantity = float((outs.cantidad - x['quantity']))
+                                        d.price = x['price']
+                                        d.save()
+                                        outs.cantidad = (outs.cantidad - x['quantity'])
+                                        outs.save()
+                                    else:
+                                        outs.delete()
+                        elif request.POST.get('rtype') == 'ALL':
+                            for x in outputs:
+                                for o in Sectore.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=''):
+                                    outs = MetProject.objects.get(proyecto_id=kwargs['pro'],sector_id=o.sector_id, materiales_id=x['materials'])
+                                    if (outs.cantidad - x['quantity']) > 0:
+                                        d = RestoreStorage()
+                                        d.token = token
+                                        d.proyecto_id = kwargs['pro']
+                                        d.subproyecto_id = ''
+                                        d.sector_id = request.POST.get('relations')
+                                        d.materials_id = x['materials']
+                                        d.brand_id = 'BR000'
+                                        d.model_id = 'MO000'
+                                        d.quantity = float((outs.cantidad - x['quantity']))
+                                        d.price = x['price']
+                                        d.save()
+                                        outs.cantidad = (outs.cantidad - x['quantity'])
+                                        outs.save()
+                                    else:
+                                        outs.delete()
+
+                    if request.POST.get('rtype') == 'ONE':
+                        for x in inputs:
+                            s = MetProject()
+                            s.proyecto_id = kwargs['pro']
+                            s.subproyecto_id = ''
+                            s.sector_id = request.POST.get('relations')
+                            s.materiales_id = x['materials']
+                            s.brand_id = 'BR000'
+                            s.model_id = 'MO000'
+                            s.cantidad = x['quantity']
+                            s.precio = x['price']
+                            s.flag = True
+                            s.comment = ''
+                            s.quantityorder = x['quantity']
+                            # s.tag = x['tag']
+                            s.save()
+                    if request.POST.get('rtype') == 'CUS':
+                        print json.loads(request.POST.get('relations'))
+                        for sn in json.loads(request.POST.get('relations')):
+                            print s, 'CUS '
+                            for x in inputs:
+                                s = MetProject()
+                                s.proyecto_id = kwargs['pro']
+                                s.subproyecto_id = ''
+                                s.sector_id = sn
+                                s.materiales_id = x['materials']
+                                s.brand_id = 'BR000'
+                                s.model_id = 'MO000'
+                                s.cantidad = float(x['quantity']) / len(json.loads(request.POST.get('relations')))
+                                s.precio = x['price']
+                                s.flag = True
+                                s.comment = ''
+                                s.quantityorder = float(x['quantity']) / len(json.loads(request.POST.get('relations')))
+                                # s.tag = x['tag']
+                                s.save()
+                    if request.POST.get('rtype') == 'ALL':
+                        ln = Sectore.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id='').count()
+                        for s in Sectore.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=''):
+                            for x in inputs:
+                                s = MetProject()
+                                s.proyecto_id = kwargs['pro']
+                                s.subproyecto_id = ''
+                                s.sector_id = s.sector_id
+                                s.materiales_id = x['materials']
+                                s.brand_id = 'BR000'
+                                s.model_id = 'MO000'
+                                s.cantidad = float(x['quantity']) / ln
+                                s.precio = x['price']
+                                s.flag = True
+                                s.comment = ''
+                                s.quantityorder = float(x['quantity']) / ln
+                                # s.tag = x['tag']
+                                s.save()
+
+                    for x in inputs:
+                        s = MetProject()
+                        s.proyecto_id = kwargs['pro']
+                        s.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
+                        s.sector_id = kwargs['sec']
+                        s.materiales_id = x['materials']
+                        s.brand_id = 'BR000'
+                        s.model_id = 'MO000'
+                        s.cantidad = x['quantity']
+                        s.precio = x['price']
+                        s.flag = True
+                        s.comment = ''
+                        s.quantityorder = x['quantity']
+                        # s.tag = x['tag']
+                        s.save()
+                    context['status'] = True
             except ObjectDoesNotExist, e:
+                print e
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)

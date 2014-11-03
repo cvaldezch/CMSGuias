@@ -1019,15 +1019,15 @@ approvedAdditional = (event) ->
                 # question if exists deductive
                 $tr = $("table.table-deductive-input-new > tbody > tr")
                 if $tr.length
-                    data = new Object
+                    data = new Object()
                     data.rtype = $("select[name=typeDeductive]").val()
                     if data.rtype is "ONE"
                         data.relations = $("select[name=sectorone]").val()
                     else if data.rtype is "CUS"
-                        x for x in $("[name=inputcust]").val().split(",")
+                        x = $("[name=inputcust]").val().split(",")
                         data.relations = JSON.stringify x
                     # get data list inputs
-                    inputs = Array
+                    inputs = new Array()
                     $("table.table-deductive-input-new > tbody > tr").each (index, element)->
                         $td = $(element).find("td")
                         relations = $td.eq(8).find("input").val().split(",")
@@ -1042,7 +1042,7 @@ approvedAdditional = (event) ->
                         return
                     data.inputs = JSON.stringify(inputs)
                     # get data list outputs
-                    outputs = Array
+                    outputs = new Array()
                     $("table.table-deductive-output > tbody > tr").each (index, element)->
                         $td = $(element).find("td")
                         outputs.push

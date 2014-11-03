@@ -250,7 +250,7 @@ class NoteIngress(models.Model):
     receive = models.ForeignKey(Employee, related_name='receiveAsEmployee')
     inspection = models.ForeignKey(Employee, related_name='inspectionAsEmployee')
     approval = models.ForeignKey(Employee, related_name='approvalAsEmployee')
-    observation = models.TextField()
+    observation = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=2, default='IN')
     flag = models.BooleanField(default=True)
 
@@ -272,5 +272,5 @@ class ReportInspect(models.Model):
     register = models.DateTimeField(auto_now=True)
     boarding = models.CharField(max_length=10)
     description = models.TextField()
-    observation = models.TextField()
+    observation = models.TextField(null=True, blank=True)
     empdni = models.ForeignKey(Employee, to_field='empdni_id')

@@ -1144,23 +1144,19 @@ approvedAdditional = function(event) {
       }
     ],
     success: function(result) {
-      var $tr, arr, data, inputs, outputs, x, _i, _len, _ref;
+      var $tr, arr, data, inputs, outputs, x;
       if (result === "Si") {
         $tr = $("table.table-deductive-input-new > tbody > tr");
         if ($tr.length) {
-          data = new Object;
+          data = new Object();
           data.rtype = $("select[name=typeDeductive]").val();
           if (data.rtype === "ONE") {
             data.relations = $("select[name=sectorone]").val();
           } else if (data.rtype === "CUS") {
-            _ref = $("[name=inputcust]").val().split(",");
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              x = _ref[_i];
-              x;
-            }
+            x = $("[name=inputcust]").val().split(",");
             data.relations = JSON.stringify(x);
           }
-          inputs = Array;
+          inputs = new Array();
           $("table.table-deductive-input-new > tbody > tr").each(function(index, element) {
             var $td, relations;
             $td = $(element).find("td");
@@ -1176,7 +1172,7 @@ approvedAdditional = function(event) {
             });
           });
           data.inputs = JSON.stringify(inputs);
-          outputs = Array;
+          outputs = new Array();
           $("table.table-deductive-output > tbody > tr").each(function(index, element) {
             var $td;
             $td = $(element).find("td");
