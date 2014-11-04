@@ -730,7 +730,8 @@ def view_attend_order(request,oid):
                 if x.cantshop <= 0:
                     radio= 'disabled'
                     break
-            nipples= get_list_or_404(models.Niple.objects.order_by('metrado'),pedido_id__exact=oid,flag=True)
+            # nipples= get_list_or_404(models.Niple.objects.order_by('metrado'),pedido_id__exact=oid,flag=True)
+            nipples = models.Niple.objects.filter(pedido_id__exact=oid, flag=True).order_by('metrado')
             usr= userProfile.objects.get(empdni__exact=obj.empdni)
             tipo= {"A":"Roscado","B":"Ranurado","C":"Rosca-Ranura"}
             ctx= { 'orders': obj, 'det': det, 'nipples': nipples, 'usr': usr,'tipo':tipo,'radio':radio }
