@@ -322,10 +322,171 @@ $(window).resize(function(){
                     </div>
                 </div>
             </div>
+            <div class="col-md-12">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h4>
+                            Ordenes de Compra
+                            <button class="btn btn-lg btn-link text-primary btn-add-purchase-order">
+                                <span class="glyphicon glyphicon-plus-sign"></span>
+                            </button>
+                        </h4>
+                        <button class="btn btn-lg btn-link close btn-sh-purchase-order">
+                            <span class="glyphicon glyphicon-chevron-down"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 <!-- block modal -->
+<div class="modal fade mpurchase" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4 class="modal-title">Orden de Compra</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">N de Documento</label>
+                            <input type="text" maxlength="14" name="pond" class="form-control input-sm" placeholder="Nro Documento">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label">Fecha de Emisión</label>
+                            <input type="text" class="form-control input-sm" name="podt" placeholder="aaaa-mm-dd">
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label class="control-label">Moneda</label>
+                            <select name="pocu" class="form-control input-sm">
+                                {% for x in currency %}
+                                    <option value="{{ x.monedad_id }}">{{ x.moneda }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Documento</label>
+                            <select name="popy" class="form-control input-sm">
+                                {% for x in document %}
+                                    <option value="{{ x.documento_id }}">{{ x.documento }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Con. de Pago</label>
+                            <select name="popy" class="form-control input-sm">
+                                {% for x in method %}
+                                    <option value="{{ x.pagos_id }}">{{ x.pagos }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Orden de Compra (Digital)</label>
+                            <input type="file" class="form-control upfile" accept="application/pdf">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <button class="btn btn-link text-green btn-details-purchare-order-toggle">
+                            <span class="glyphicon glyphicon-plus-sign"></span>
+                            <span class="glyphicon-class">Agregar Detalle</span>
+                        </button>
+                        <div class="panel panel-default panel-purchase-order-toggle">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control input-sm" name="podd" placeholder="Descripción" title="Descripción">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <select name="podu" class="form-control input-sm">
+                                            {% for x in unit %}
+                                                <option value="{{ x.unidad_id }}">{{ x.uninom }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control input-sm" name="podf" placeholder="aaaa-mm-dd" title="aaaa-mm-dd" maxlength="10">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control input-sm" name="podq" placeholder="Cantidad" title="Cantidad">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control input-sm" name="podp" placeholder="Precio" title="Precio">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <button class="btn btn-sm btn-success text-black">
+                                            <span class="glyphicon glyphicon-plus"></span>
+                                            Agregar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-condensed table-hover table-bordered">
+                                <thead>
+                                    <th>Item</th>
+                                    <th>Descripción</th>
+                                    <th>Cantidad</th>
+                                    <th>Unidad</th>
+                                    <th>Fecha Entrega</th>
+                                    <th>Precio</th>
+                                    <th>Importe</th>
+                                </thead>
+                                <tbody style="max-height: 250px;">
+
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                       <th colspan="5" rowspan="4">Monto</th>
+                                       <th class="h6">SUBTOTAL</th>
+                                       <th></th>
+                                    </tr>
+                                    <tr>
+                                        <th class="h6">DCTO.</th>
+                                        <th></th>
+                                    </tr>
+                                    <tr>
+                                        <th class="h6">IGV</th>
+                                        <th></th>
+                                    </tr>
+                                    <tr>
+                                        <th class="h6">TOTAL</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade mresponsible">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">

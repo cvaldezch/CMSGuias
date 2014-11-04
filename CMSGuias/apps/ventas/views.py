@@ -205,6 +205,9 @@ class ProjectManager(JSONResponseMixin, View):
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
+            if request.is_ajax():
+                if 'savepurchase' in request.GET:
+                    pass
             """if request.is_ajax():
             if 'list' in request.GET:
                 try:
@@ -223,6 +226,10 @@ class ProjectManager(JSONResponseMixin, View):
             context['operation'] = Employee.objects.filter(charge__area__istartswith='opera').order_by('charge__area')
             context['admin'] = Employee.objects.filter(charge__area__istartswith='admin').order_by('charge__area')
             context['alerts'] = Alertasproyecto.objects.filter(Q(proyecto_id=kwargs['project']) | ~Q(subproyecto_id=None), Q(sector_id=None), Q(flag=True)).order_by('-registrado')
+            context['currency'] = Moneda.objects.filter(flag=True)
+            context['document'] = Documentos.objects.filter(flag=True)
+            context['method'] = FormaPago.objects.filter(flag=True)
+            context['unit'] = Unidade.objects.filter(flag=True)
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)

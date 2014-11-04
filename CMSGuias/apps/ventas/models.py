@@ -1,6 +1,6 @@
 from django.db import models
 
-from CMSGuias.apps.home.models import Pais, Departamento, Provincia, Distrito, Cliente, Materiale, Employee, Brand, Model, Cargo, Moneda
+from CMSGuias.apps.home.models import Pais, Departamento, Provincia, Distrito, Cliente, Materiale, Employee, Brand, Model, Cargo, Moneda, Documentos, FormaPago, Unidade
 from CMSGuias.apps.tools import globalVariable
 
 
@@ -191,3 +191,34 @@ class UpdateMetProject(models.Model):
 
     def __unicode__(self):
         return '%s %s %s %f %f'%(self.proyecto, self.sector, self.materials_id, self.quantity, self.price)
+
+class PurchaseOrder(models.Model):
+    project = models.ForeignKey(Proyecto, to_field='proyecto_id')
+    subproject = models.ForeignKey(Subproyecto, to_field='subproyecto_id',null=True, blank=True)
+    sector = models.ForeignKey(Sectore, to_field='sector_id')
+    nropurchase = models.CharField(max_length=14)
+    issued = models.DateField()
+    currency = models.ForeignKey(Moneda, to_field='moneda_id')
+    document = models.ForeignKey(Documentos, to_field='documento_id')
+    method = models.ForeignKey(FormaPago, to_field='pagos_id')
+    observation = models.TextField(null=True, blank=True)
+    dsct = models.FloatField(default=0, blank=True)
+    flag = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['project']
+
+    def __unicode__(self):
+        return '%s - %s'%(self.project, self.purchase_id)
+
+class DetailsPurchaseOrder(models.Model):
+    purchase = models.ForeignKey(PurchaseOrder, to_field='id')
+    nropurchase = models.CharField(max_length=14)
+    description = models.CharField(max_length=250)
+    unit = models.ForeignKey(Unidade, to_field='unidad_id')
+    delivery = models.DateField()
+    quantity = models.FloatField()
+    price = models.FloatField()
+
+    class Meta:
+        ordering = ['nropurchase']

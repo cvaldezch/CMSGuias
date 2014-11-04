@@ -1,4 +1,11 @@
 $(document).ready ->
+    $(".panel-purchase-order-toggle").hide()
+    $("input[name=podt],input[name=podf]").datepicker
+        "changeYear": true
+        "changeMonth": true
+        "showAnim": "slide"
+        "dateFormat": "yy-mm-dd"
+
     $(".new-sector").on "click", openNewSector
     $(document).on "click", ".btn-edit-sector", openUpdateSector
     $(".new-subproject").on "click", openNewSubproyecto
@@ -23,6 +30,46 @@ $(document).ready ->
     $(".btn-assigned").on "click", assignedResponsible
     $(".btn-approved").on "click", approvedProject
     $(document).on "click", ".btn-del-sub", deleteSubproject
+    $(".btn-details-purchare-order-toggle").click ->
+        $btn = $(@)
+        $("div.panel-purchase-order-toggle").toggle 600
+        , ->
+            if $(".panel-purchase-order-toggle").is(":visible")
+                $btn.find "span"
+                .eq 0
+                .removeClass "glyphicon-plus-sign"
+                .addClass "glyphicon-minus-sign"
+                $btn.find "span"
+                .eq 1
+                .text "Cancelar"
+                $btn.removeClass "text-green"
+                .addClass "text-red"
+                return
+            else
+                $btn.find "span"
+                .eq 0
+                .removeClass "glyphicon-minus-sign"
+                .addClass "glyphicon-plus-sign"
+                $btn.find "span"
+                .eq 1
+                .text "Agregar Detalle"
+                $btn.removeClass "text-red"
+                .addClass "text-green"
+                return
+        return
+    $("button.btn-add-purchase-order").mouseover ->
+        $(@).find "span"
+        .removeClass "glyphicon-plus-sign"
+        .addClass "glyphicon-plus"
+        return
+    .mouseout ->
+        $(@).find "span"
+        .removeClass "glyphicon-plus"
+        .addClass "glyphicon-plus-sign"
+        return
+    .click ->
+        $("div.mpurchase").modal "toggle"
+        return
     $("#message").focus ->
         $(@).animate
             "height": "102px"
@@ -191,6 +238,7 @@ fileTree = (id, path)->
             console.log file
             window.open file, "_blank"
     return
+
 setSubproject = (event) ->
     # console.log $(@).attr("data-sub")
     $("input[name=sub]").val($(@).attr("data-sub"))
@@ -346,5 +394,6 @@ deleteSubproject = ->
                         $().toastmessage "showErrorToast", "No se a podido eliminar el Subproyecto. #{response.raise}"
                 , "json"
             return
-        
+
     return
+

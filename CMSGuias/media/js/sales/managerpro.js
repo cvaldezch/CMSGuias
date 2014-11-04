@@ -2,6 +2,13 @@
 var approvedProject, assignedResponsible, changeView, deleteSubproject, fileTree, getSectors, openNewSector, openNewSubproyecto, openUpdateSector, openUpdateSubproject, openWindow, publisherCommnet, setSubproject, showEditComment, toggleComment, treeAdminaandOpera, uploadFiles;
 
 $(document).ready(function() {
+  $(".panel-purchase-order-toggle").hide();
+  $("input[name=podt],input[name=podf]").datepicker({
+    "changeYear": true,
+    "changeMonth": true,
+    "showAnim": "slide",
+    "dateFormat": "yy-mm-dd"
+  });
   $(".new-sector").on("click", openNewSector);
   $(document).on("click", ".btn-edit-sector", openUpdateSector);
   $(".new-subproject").on("click", openNewSubproyecto);
@@ -32,6 +39,28 @@ $(document).ready(function() {
   $(".btn-assigned").on("click", assignedResponsible);
   $(".btn-approved").on("click", approvedProject);
   $(document).on("click", ".btn-del-sub", deleteSubproject);
+  $(".btn-details-purchare-order-toggle").click(function() {
+    var $btn;
+    $btn = $(this);
+    $("div.panel-purchase-order-toggle").toggle(600, function() {
+      if ($(".panel-purchase-order-toggle").is(":visible")) {
+        $btn.find("span").eq(0).removeClass("glyphicon-plus-sign").addClass("glyphicon-minus-sign");
+        $btn.find("span").eq(1).text("Cancelar");
+        $btn.removeClass("text-green").addClass("text-red");
+      } else {
+        $btn.find("span").eq(0).removeClass("glyphicon-minus-sign").addClass("glyphicon-plus-sign");
+        $btn.find("span").eq(1).text("Agregar Detalle");
+        $btn.removeClass("text-red").addClass("text-green");
+      }
+    });
+  });
+  $("button.btn-add-purchase-order").mouseover(function() {
+    $(this).find("span").removeClass("glyphicon-plus-sign").addClass("glyphicon-plus");
+  }).mouseout(function() {
+    $(this).find("span").removeClass("glyphicon-plus").addClass("glyphicon-plus-sign");
+  }).click(function() {
+    $("div.mpurchase").modal("toggle");
+  });
   $("#message").focus(function() {
     $(this).animate({
       "height": "102px"

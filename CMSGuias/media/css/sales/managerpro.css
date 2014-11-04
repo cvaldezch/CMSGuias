@@ -48,3 +48,19 @@
         overflow: auto;
     }
 }
+.upfile::-webkit-file-upload-button {
+  visibility: hidden;
+}
+.upfile{
+    content: 'Select';
+    color: #fff;
+    background: #428bca;
+    border: 1px solid #2b669a;
+    border-radius: 5px;
+    cursor: pointer;
+
+}
+.upfile::before{
+      content: 'Seleccione';
+      display: inline-block;
+}
