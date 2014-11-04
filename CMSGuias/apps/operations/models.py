@@ -25,7 +25,7 @@ class MetProject(models.Model):
         ordering = ['proyecto']
 
     def __unicode__(self):
-        return ''#'%s %s %s %f %f'%(self.proyecto, self.sector_id, self.materiales_id, self.cantidad, self.precio)
+        return '%s %s %s %f %f'%(self.proyecto, self.sector_id, self.materiales_id, self.cantidad, self.precio)
 
 class Nipple(models.Model):
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
