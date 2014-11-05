@@ -13,55 +13,55 @@ CENTIMOS_PLURAL = 'centimos'
 MAX_NUMERO = 999999999999
 
 UNIDADES = (
-    'cero',
-    'uno',
-    'dos',
-    'tres',
-    'cuatro',
-    'cinco',
-    'seis',
-    'siete',
-    'ocho',
-    'nueve'
+    'CERO',
+    'UNO',
+    'DOS',
+    'TRES',
+    'CUATRO',
+    'CINCO',
+    'SEIS',
+    'SIETE',
+    'OCHO',
+    'NUEVE'
 )
 
 DECENAS = (
-    'diez',
-    'once',
-    'doce',
-    'trece',
-    'catorce',
-    'quince',
-    'dieciseis',
-    'diecisiete',
-    'dieciocho',
-    'diecinueve'
+    'DIEZ',
+    'ONCE',
+    'DOCE',
+    'TRECE',
+    'CATORCE',
+    'QUINCE',
+    'DIECISEIS',
+    'DIECISIETE',
+    'DIECIOCHO',
+    'DIECINUEVE'
 )
 
 DIEZ_DIEZ = (
-    'cero',
-    'diez',
-    'veinte',
-    'treinta',
-    'cuarenta',
-    'cincuenta',
-    'sesenta',
-    'setenta',
-    'ochenta',
-    'noventa'
+    'CERO',
+    'DIEZ',
+    'VEINTE',
+    'TREINTA',
+    'CUARENTA',
+    'CINCUENTA',
+    'SESENTA',
+    'SETENTA',
+    'OCHENTA',
+    'NOVENTA'
 )
 
 CIENTOS = (
     '_',
-    'ciento',
-    'doscientos',
-    'trescientos',
-    'cuatroscientos',
-    'quinientos',
-    'seiscientos',
-    'setecientos',
-    'ochocientos',
-    'novecientos'
+    'CIENTO',
+    'DOSCIENTOS',
+    'TRESCIENTOS',
+    'CUATROSCIENTOS',
+    'QUINIENTOS',
+    'SEISCIENTOS',
+    'SETECIENTOS',
+    'OCHOCIENTOS',
+    'NOVECIENTOS'
 )
 
 def numero_a_letras(numero):
@@ -72,10 +72,14 @@ def numero_a_letras(numero):
         return 'menos %s' % numero_a_letras(abs(numero))
     letras_decimal = ''
     parte_decimal = int(round((abs(numero) - abs(numero_entero)) * 100))
-    if parte_decimal > 9:
-        letras_decimal = 'punto %s' % numero_a_letras(parte_decimal)
+    print parte_decimal, 'decimal'
+    if parte_decimal == 0:
+        letras_decimal = 'CON CERO'
+    elif parte_decimal > 9:
+        letras_decimal = 'CON %s' % numero_a_letras_con(parte_decimal)
     elif parte_decimal > 0:
-        letras_decimal = 'punto cero %s' % numero_a_letras(parte_decimal)
+        letras_decimal = 'CON CERO %s' % numero_a_letras_con(parte_decimal)
+
     if (numero_entero <= 99):
         resultado = leer_decenas(numero_entero)
     elif (numero_entero <= 999):
@@ -86,7 +90,38 @@ def numero_a_letras(numero):
         resultado = leer_millones(numero_entero)
     else:
         resultado = leer_millardos(numero_entero)
-    resultado = resultado.replace('uno mil', 'un mil')
+    resultado = resultado.replace('UNO MIL', 'UN MIL')
+    resultado = resultado.strip()
+    resultado = resultado.replace(' _ ', ' ')
+    resultado = resultado.replace('  ', ' ')
+    if parte_decimal >= 0:
+        resultado = '%s %s' % (resultado, letras_decimal)
+    return resultado
+
+def numero_a_letras_con(numero):
+    numero_entero = int(numero)
+    if numero_entero > MAX_NUMERO:
+        raise OverflowError('Número demasiado alto')
+    if numero_entero < 0:
+        return 'menos %s' % numero_a_letras(abs(numero))
+    letras_decimal = ''
+    parte_decimal = int(round((abs(numero) - abs(numero_entero)) * 100))
+    if parte_decimal > 9:
+        letras_decimal = 'CON %s' % numero_a_letras(parte_decimal)
+    elif parte_decimal > 0:
+        letras_decimal = 'CON CERO %s' % numero_a_letras(parte_decimal)
+
+    if (numero_entero <= 99):
+        resultado = leer_decenas(numero_entero)
+    elif (numero_entero <= 999):
+        resultado = leer_centenas(numero_entero)
+    elif (numero_entero <= 999999):
+        resultado = leer_miles(numero_entero)
+    elif (numero_entero <= 999999999):
+        resultado = leer_millones(numero_entero)
+    else:
+        resultado = leer_millardos(numero_entero)
+    resultado = resultado.replace('UNO MIL', 'UN MIL')
     resultado = resultado.strip()
     resultado = resultado.replace(' _ ', ' ')
     resultado = resultado.replace('  ', ' ')
@@ -120,17 +155,17 @@ def leer_decenas(numero):
     if numero <= 19:
         resultado = DECENAS[unidad]
     elif numero <= 29:
-        resultado = 'veinti%s' % UNIDADES[unidad]
+        resultado = 'VEINTI%s' % UNIDADES[unidad]
     else:
         resultado = DIEZ_DIEZ[decena]
         if unidad > 0:
-            resultado = '%s y %s' % (resultado, UNIDADES[unidad])
+            resultado = '%s Y %s' % (resultado, UNIDADES[unidad])
     return resultado
 
 def leer_centenas(numero):
     centena, decena = divmod(numero, 100)
     if numero == 0:
-        resultado = 'cien'
+        resultado = 'CIEN'
     else:
         resultado = CIENTOS[centena]
         if decena > 0:
@@ -148,7 +183,7 @@ def leer_miles(numero):
         resultado = leer_decenas(millar)
     elif (millar >= 100) and (millar <= 999):
         resultado = leer_centenas(millar)
-    resultado = '%s mil' % resultado
+    resultado = '%s MIL' % resultado
     if centena > 0:
         resultado = '%s %s' % (resultado, leer_centenas(centena))
     return resultado
@@ -157,7 +192,7 @@ def leer_millones(numero):
     millon, millar = divmod(numero, 1000000)
     resultado = ''
     if (millon == 1):
-        resultado = ' un millon '
+        resultado = ' UN MILLON '
     if (millon >= 2) and (millon <= 9):
         resultado = UNIDADES[millon]
     elif (millon >= 10) and (millon <= 99):
@@ -165,7 +200,7 @@ def leer_millones(numero):
     elif (millon >= 100) and (millon <= 999):
         resultado = leer_centenas(millon)
     if millon > 1:
-        resultado = '%s millones' % resultado
+        resultado = '%s MILLONES' % resultado
     if (millar > 0) and (millar <= 999):
         resultado = '%s %s' % (resultado, leer_centenas(millar))
     elif (millar >= 1000) and (millar <= 999999):
@@ -174,4 +209,4 @@ def leer_millones(numero):
 
 def leer_millardos(numero):
     millardo, millon = divmod(numero, 1000000)
-    return '%s millones %s' % (leer_miles(millardo), leer_millones(millon))
+    return '%s MILLONES %s' % (leer_miles(millardo), leer_millones(millon))

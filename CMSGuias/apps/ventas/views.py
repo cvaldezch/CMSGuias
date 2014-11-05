@@ -230,6 +230,7 @@ class ProjectManager(JSONResponseMixin, View):
             context['document'] = Documentos.objects.filter(flag=True)
             context['method'] = FormaPago.objects.filter(flag=True)
             context['unit'] = Unidade.objects.filter(flag=True)
+            context['conf'] = Configuracion.objects.get(periodo=globalVariable.get_year)
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)

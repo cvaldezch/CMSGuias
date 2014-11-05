@@ -8,6 +8,7 @@ from random import randint
 from django.conf import settings
 from django.contrib import messages
 from django.http import Http404
+from CMSGuias.apps.tools import number_to_char
 
 
 #######################
@@ -120,7 +121,7 @@ def format_str_date(_str=None, format="%Y-%m-%d"):
         else:
             str_date = "str invalid!"
     except Exception, e:
-        print 'Error   '
+        print 'Error'
         messages.add_message(e)
         raise Http404('Method Error')
     return str_date
@@ -143,3 +144,11 @@ def get_Token():
     except Exception, e:
         raise e
     return token
+
+def convertNumberLiteral(number=0):
+    literal = ''
+    try:
+        literal = number_to_char.numero_a_letras(number)
+    except Exception, e:
+        literal = 'Nothing'
+    return literal

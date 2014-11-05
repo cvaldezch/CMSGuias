@@ -375,7 +375,7 @@ $(window).resize(function(){
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">Documento</label>
-                            <select name="popy" class="form-control input-sm">
+                            <select name="podc" class="form-control input-sm">
                                 {% for x in document %}
                                     <option value="{{ x.documento_id }}">{{ x.documento }}</option>
                                 {% endfor %}
@@ -394,7 +394,7 @@ $(window).resize(function(){
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="control-label">Orden de Compra (Digital)</label>
+                            <label class="control-label">Orden de Compra (Digital opcional)</label>
                             <input type="file" class="form-control upfile" accept="application/pdf">
                         </div>
                     </div>
@@ -436,7 +436,8 @@ $(window).resize(function(){
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <button class="btn btn-sm btn-success text-black">
+                                        <input type="hidden" name="podedit">
+                                        <button class="btn btn-sm btn-success text-black btn-add-purchase-order-details">
                                             <span class="glyphicon glyphicon-plus"></span>
                                             Agregar
                                         </button>
@@ -446,43 +447,63 @@ $(window).resize(function(){
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <div class="table-responsive">
-                            <table class="table table-condensed table-hover table-bordered">
+                        <div class="table-responsive" style="max-height: 250px; overflow: auto;">
+                            <table class="table table-condensed table-hover table-bordered table-details-purchase-order">
                                 <thead>
                                     <th>Item</th>
                                     <th>Descripción</th>
-                                    <th>Cantidad</th>
                                     <th>Unidad</th>
                                     <th>Fecha Entrega</th>
+                                    <th width="2cm">Cantidad</th>
                                     <th>Precio</th>
                                     <th>Importe</th>
+                                    <th>Editar</th>
+                                    <th>Eliminar</th>
                                 </thead>
-                                <tbody style="max-height: 250px;">
-
-                                </tbody>
+                                <tbody></tbody>
                                 <tfoot>
                                     <tr>
-                                       <th colspan="5" rowspan="4">Monto</th>
+                                       <th colspan="5"></th>
                                        <th class="h6">SUBTOTAL</th>
-                                       <th></th>
+                                       <th class="pos text-right"></th>
                                     </tr>
                                     <tr>
-                                        <th class="h6">DCTO.</th>
-                                        <th></th>
+                                        <th colspan="4"></th>
+                                        <th>
+                                            <div class="input-group input-group-sm poids">
+                                                <input type="number" name="poids" step="any" min="0" max="100" class="form-control input-sm text-right" value="0" placeholder="Descuento">
+                                                <span class="input-group-addon">
+                                                    %
+                                                </span>
+                                            </div>
+                                        </th>
+                                        <th class="h6">DSCT <span class="pods">0%</span></th>
+                                        <th class="pod text-right"></th>
                                     </tr>
                                     <tr>
-                                        <th class="h6">IGV</th>
-                                        <th></th>
+                                        <th colspan="5" rowspan="2" class="literal-amount h6"></th>
+                                        <th class="h6">IGV <span class="povigv">{{ conf.igv }}%</span></th>
+                                        <th class="poi text-right"></th>
                                     </tr>
                                     <tr>
                                         <th class="h6">TOTAL</th>
-                                        <th></th>
+                                        <th class="pot text-right"></th>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left">
+                    <span class="glyphicon glyphicon-remove"></span>
+                    Cancelar
+                </button>
+                <button class="btn btn-primary">
+                    <span class="glyphicon glyphicon-saved"></span>
+                    Guardar Cambios
+                </button>
             </div>
         </div>
     </div>

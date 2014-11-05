@@ -3,7 +3,9 @@
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from CMSGuias.apps.home.models import Brand, Model
+from CMSGuias.apps.home.models import Brand, Model, Configuracion
+from CMSGuias.apps.ventas.models import *
+from CMSGuias.apps.tools import globalVariable
 
 class searchBrands:
     """docstring for searchBrands"""
@@ -53,3 +55,26 @@ class searchModels:
             obj = Model.objects.filter(model__istartswith=self.model.lower())[:1]
             print obj
             return dict((('pk',obj[0].model_id),))
+
+## Get period of project
+def searchPeriodProject(code=''):
+    period = ''
+    if code == '':
+        period = globalVariable.get_year
+    else:
+        try:
+            period = Proyecto.objects.get(proyecto_id)
+            period = period.registrado.strftime('%Y')
+        except ObjectDoesNotExist, e:
+            period = globalVariable.get_year
+    return period
+
+# Get igv for year current
+def getigvCurrent():
+    igv = ''
+    try:
+        igv = Configuracion.objects.get(periodo__exact=globalVariable.get_year)
+        igv = igv.igv
+    except ObjectDoesNotExist, e:
+        raise e
+    return igv

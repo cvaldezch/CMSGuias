@@ -19,7 +19,7 @@ from django.core import serializers
 from CMSGuias.apps.almacen.models import *
 from CMSGuias.apps.home.models import *
 from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto, Metradoventa
-from CMSGuias.apps.tools import uploadFiles
+from CMSGuias.apps.tools import uploadFiles, globalVariable, search
 
 
 class JSONResponseMixin(object):
@@ -693,3 +693,35 @@ class TreePath(View):
     def post(self, request, *args, **kwargs):
         path = uploadFiles.listDir(request.POST.get('dir'))
         return HttpResponse(path, 'text/plain')
+
+# Request IVA by year
+class GetIVAYear(JSONResponseMixin, View):
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if request.is_ajax():
+                if 'percentigv' in request.GET:
+                    if 'year' in request.GET:
+                        try:
+                            conf = Configuracion.objects.get(periodo__exact=request.GET.get('year'))
+                            context['igv'] = conf.igv
+                        except ObjectDoesNotExist, e:
+                            context['igv'] = search.getigvCurrent()
+                    else:
+                        context['igv'] = search.getigvCurrent()
+                    context['status'] = True
+        except ObjectDoesNotExist, e:
+            context['raise'] = e.__str__()
+            context['status'] = False
+        return self.render_to_json_response(context)
+
+class GetNumberLiteral(JSONResponseMixin, View):
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            context['literal'] = globalVariable.convertNumberLiteral(float(request.GET.get('number')))
+            context['status'] = True
+        except ObjectDoesNotExist, e:
+            context['raise'] = e.__str__()
+            context['status'] = False
+        return self.render_to_json_response(context)

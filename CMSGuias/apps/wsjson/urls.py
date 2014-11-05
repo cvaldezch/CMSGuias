@@ -14,6 +14,9 @@ urls_brands = patterns('',
 urls_models = patterns('',
     url(r'^list/option/$', SearchModel.as_view()),
 )
+urls_conf = patterns('',
+    url(r'^igv/$', GetIVAYear.as_view()),
+)
 urlpatterns = patterns('CMSGuias.apps.wsjson.views',
   # temp Orders
     url(r'^get/materials/code/$', GetDetailsMaterialesByCode.as_view()),
@@ -60,4 +63,7 @@ urlpatterns = patterns('CMSGuias.apps.wsjson.views',
     url(r'^projects/lists/$', ViewCopyMaterialesProjectsSale.as_view()),
     url(r'^get/path/$', TreePath.as_view()),
     url(r'^restful/', include(urls_crossdomain)),
+    url(r'^general/conf/', include(urls_conf)),
+    # convert number a literal
+    url(r'^convert/number/to/literal/', GetNumberLiteral.as_view()),
 )

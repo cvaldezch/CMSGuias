@@ -1,7 +1,7 @@
 from django.db import models
 
 from CMSGuias.apps.home.models import Pais, Departamento, Provincia, Distrito, Cliente, Materiale, Employee, Brand, Model, Cargo, Moneda, Documentos, FormaPago, Unidade
-from CMSGuias.apps.tools import globalVariable
+from CMSGuias.apps.tools import globalVariable, search
 
 
 class Proyecto(models.Model):
@@ -193,6 +193,10 @@ class UpdateMetProject(models.Model):
         return '%s %s %s %f %f'%(self.proyecto, self.sector, self.materials_id, self.quantity, self.price)
 
 class PurchaseOrder(models.Model):
+    def url(self, filename):
+        ruta = "storage/projects/%s/%s/purchase_order_customers/%s.pdf"%(search.searchPeriodProject(self.project_id),self.project_id,self.nropurchase)
+        return ruta
+
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
     subproject = models.ForeignKey(Subproyecto, to_field='subproyecto_id',null=True, blank=True)
     sector = models.ForeignKey(Sectore, to_field='sector_id')
@@ -203,6 +207,8 @@ class PurchaseOrder(models.Model):
     method = models.ForeignKey(FormaPago, to_field='pagos_id')
     observation = models.TextField(null=True, blank=True)
     dsct = models.FloatField(default=0, blank=True)
+    igv = models.FloatField(default=0, blank=True)
+    order = models.FileField(upload_to=url,null=True, blank=True, max_length=200)
     flag = models.BooleanField(default=True)
 
     class Meta:

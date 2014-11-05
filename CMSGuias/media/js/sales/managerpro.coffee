@@ -30,6 +30,10 @@ $(document).ready ->
     $(".btn-assigned").on "click", assignedResponsible
     $(".btn-approved").on "click", approvedProject
     $(document).on "click", ".btn-del-sub", deleteSubproject
+    $(".btn-add-purchase-order-details").on "click", addDetailsPurchase
+    $("input[name=podt]").on "change", getPercentIVA
+    $(document).on "click", ".btn-edit-pod", showEditDetailsPurchase
+    $(document).on "click", ".btn-del-pod", deleteDetailsPurchase
     $(".btn-details-purchare-order-toggle").click ->
         $btn = $(@)
         $("div.panel-purchase-order-toggle").toggle 600
@@ -56,6 +60,7 @@ $(document).ready ->
                 $btn.removeClass "text-red"
                 .addClass "text-green"
                 return
+            $("input[name=podedit]").val ""
         return
     $("button.btn-add-purchase-order").mouseover ->
         $(@).find "span"
@@ -79,6 +84,20 @@ $(document).ready ->
         $(@).animate
             "height": "34px"
         , 500
+        return
+    $("input[name=poids]").blur (event) ->
+        percent = parseFloat(@value)
+        if not isNaN(percent)
+            @value = percent.toFixed 3
+            calAmountPurchaseOrder()
+        else
+            @value = 0
+            $().toastmessage "showWarningToast", "Solo se aceptan Números."
+        $(".pods").text("#{@value}%")
+        return
+    .change (event) ->
+        $(".pods").text("#{@value}%")
+        calAmountPurchaseOrder()
         return
     treeAdminaandOpera()
     tinymce.init
@@ -397,3 +416,130 @@ deleteSubproject = ->
 
     return
 
+calAmountPurchaseOrder = ->
+    amount = 0
+    $(".table-details-purchase-order > tbody > tr").each (index, element) ->
+        $td = $(element).find("td")
+        amount += convertNumber $td.eq(6).text()
+    $(".pos").text(amount)
+    # amount = parseFloat($(".pos").text())
+    if isNaN(amount)
+        amount = 0
+    pdsct = parseFloat $("input[name=poids]").val()
+    dsct = ((amount * pdsct) / 100)
+    amount = (amount - dsct)
+    pigv = $(".povigv").text().split "%"
+    pigv = parseInt pigv[0]
+    igv = ((amount * pigv) / 100)
+    total = (amount + igv)
+    dsct = dsct.toFixed 2
+    igv = igv.toFixed 2
+    total = total.toFixed 2
+    $(".pod").text dsct
+    $(".poi").text igv
+    $(".pot").text total
+    getAmountLiteral()
+    return
+
+addDetailsPurchase = (event) ->
+    data = new Object
+    data.desc = $.trim($("input[name=podd").val())
+    data.unit = $("select[name=podu]").find("option:selected").text()
+    data.date = $("input[name=podf]").val()
+    data.quantity = convertNumber $("input[name=podq]").val()
+    data.price = convertNumber $("input[name=podp]").val()
+    data.amount = data.quantity * data.price
+    if data.desc isnt "" and not isNaN(data.price) and not isNaN(data.quantity)
+        if $.trim($("input[name=podedit]").val()) isnt ""
+            $td = $("tr.pod#{$.trim($("input[name=podedit]").val())} > td")
+            $td.eq(1).text $("input[name=podd").val()
+            $td.eq(2).text $("select[name=podu]").val()
+            $td.eq(3).text $("input[name=podf]").val()
+            $td.eq(4).text $("input[name=podq]").val()
+            $td.eq(5).text $("input[name=podp]").val()
+            $td.eq(6).text (parseFloat($("input[name=podq]").val()) * parseFloat($("input[name=podp]").val()))
+            $("input[name=podedit]").val ""
+        else
+            $tb = $(".table-details-purchase-order > tbody")
+            temp = "<tr class=\"pod{{ item }}\">
+                    <td>{{ item }}</td>
+                    <td>{{ desc }}</td>
+                    <td>{{ unit }}</td>
+                    <td>{{ date }}</td>
+                    <td>{{ quantity }}</td>
+                    <td>{{ price }}</td>
+                    <td>{{ amount }}</td>
+                    <td class=\"text-center\">
+                        <button class=\"btn btn-link btn-xs text-primary btn-edit-pod\" value=\"{{ item }}\">
+                            <span class=\"glyphicon glyphicon-edit\"></span>
+                        </button>
+                    </td>
+                    <td class=\"text-center\">
+                        <button class=\"btn btn-link btn-xs text-red btn-del-pod\" value=\"{{ item }}\">
+                            <span class=\"glyphicon glyphicon-trash\"></span>
+                        </button>
+                    </td>
+                    </tr>"
+            data.item = $tb.find("tr").length + 1
+            $tb.append Mustache.render temp, data
+        calAmountPurchaseOrder()
+        $(".btn-details-purchare-order-toggle").click()
+    else
+        $().toastmessage "showWarningToast", "Existen campos vacios!"
+    return
+
+getPercentIVA = (event) ->
+    data = new Object
+    data.percentigv = true
+    date = $.trim $("input[name=podt]").val()
+    if date isnt ""
+        data.year = new Date("#{date} 00:00").getFullYear()
+
+    $.getJSON "/json/general/conf/igv/", data, (response) ->
+        if response.status
+            $(".povigv").text "#{response.igv}%"
+            return
+    return
+
+getAmountLiteral = (event) ->
+    data = new Object
+    data.number = $(".pot").text()
+    $.getJSON "/json/convert/number/to/literal/", data, (response) ->
+        if response.status
+            $(".literal-amount").text "SON: #{response.literal} /100 #{$("select[name=pocu]").find("option:selected").text()}"
+            return
+    return
+
+showEditDetailsPurchase = (event) ->
+    $("input[name=podedit]").val @value
+    $td = $("tr.pod#{@value} > td")
+    $("input[name=podd").val($td.eq(1).text())
+    $("select[name=podu]").val($td.eq(2).text())
+    $("input[name=podf]").val($td.eq(3).text())
+    $("input[name=podq]").val($td.eq(4).text())
+    $("input[name=podp]").val($td.eq(5).text())
+    $(".btn-details-purchare-order-toggle").click()
+    return
+
+deleteDetailsPurchase = (event) ->
+    $tr = $("tr.pod#{@value}")
+    $tr.remove()
+    $(".table-details-purchase-order > tbody > tr").each (index, element) ->
+        $td = $(element).find "td"
+        $td.eq(0).text index + 1
+        $td.eq(7).find("button").val index + 1
+        $td.eq(8).find("button").val index + 1
+        return
+    calAmountPurchaseOrder()
+    return
+
+savePurchaseOrder = (event) ->
+    data = new FormData
+    data.append "nro", $.trim $("input[name=pond]").val()
+    data.append "issued", validateFormatDate $.trim $("input[name=podt]")
+    data.append "currency", $("select[name=pocu]").val()
+    data.append "document", $("select[name=podc]").val()
+    data.append "method", $("select[name=popy]").val()
+    data.append "purchase", $("input.upfile").get(0).files[0]
+    data.append "observation", $("textarea[name=obser]").text()
+    return

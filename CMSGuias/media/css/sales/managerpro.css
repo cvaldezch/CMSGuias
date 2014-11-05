@@ -64,3 +64,7 @@
       content: 'Seleccione';
       display: inline-block;
 }
+.poids {
+    width: 90px;
+    max-width: 100%;
+}
