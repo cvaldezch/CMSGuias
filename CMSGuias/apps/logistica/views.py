@@ -21,7 +21,7 @@ from xlrd import open_workbook, XL_CELL_EMPTY
 from CMSGuias.apps.almacen.models import Suministro
 from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda, Configuracion, LoginProveedor, Brand, Model
 from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra, tmpcotizacion, tmpcompra
-from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles
+from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles, search
 from .forms import addTmpCotizacionForm, addTmpCompraForm, CompraForm, ProveedorForm
 
 
@@ -578,29 +578,35 @@ class ListPurchase(JSONResponseMixin, TemplateView):
             if request.is_ajax():
                 try:
                     if 'code' in request.GET:
-                        context['list'] = [{'purchase' : x.compra_id, 'document' : x.documento.documento, 'transfer' :  globalVariable.format_date_str(x.traslado), 'currency' : x.moneda.moneda, 'deposito' : str(x.deposito)} for x in Compra.objects.filter(flag=True, pk=request.GET.get('code'))]
-                    elif 'status' in request.GET:
-                        context['list'] = [{'purchase' : x.compra_id, 'document' : x.documento.documento, 'transfer' :  globalVariable.format_date_str(x.traslado), 'currency' : x.moneda.moneda, 'deposito' : str(x.deposito)} for x in Compra.objects.filter(flag=True, status=request.GET.get('status'))]
-                    elif 'dates' in request.GET:
+                        context['list'] = [{'purchase' : x.compra_id, 'document' : x.documento.documento, 'transfer' :  globalVariable.format_date_str(x.traslado), 'currency' : x.moneda.moneda, 'deposito' : str(x.deposito), 'status':x.status} for x in Compra.objects.filter(flag=True, pk=request.GET.get('code'))]
+
+                    if 'status' in request.GET:
+                        context['list'] = [{'purchase' : x.compra_id, 'document' : x.documento.documento, 'transfer' :  globalVariable.format_date_str(x.traslado), 'currency' : x.moneda.moneda, 'deposito' : str(x.deposito), 'status':x.status} for x in Compra.objects.filter(flag=True, status=request.GET.get('status'))]
+                    if 'dates' in request.GET:
                         if 'start' in request.GET and 'end' not in request.GET:
                             obj = Compra.objects.filter(flag=True, registrado__startswith=globalVariable.format_str_date(request.GET.get('start')))
                         elif 'start' in request.GET and 'end' in request.GET:
                             obj = Compra.objects.filter(flag=True, registrado__range=(globalVariable.format_str_date(request.GET.get('start')), globalVariable.format_str_date(request.GET.get('end'))))
-                        context['list'] = [{'purchase':x.compra_id, 'document':x.documento.documento, 'transfer': globalVariable.format_date_str(x.traslado),'currency':x.moneda.moneda, 'deposito':str(x.deposito)} for x in obj]
+                        context['list'] = [{'purchase':x.compra_id, 'document':x.documento.documento, 'transfer': globalVariable.format_date_str(x.traslado),'currency':x.moneda.moneda, 'deposito':str(x.deposito), 'status':x.status} for x in obj]
+                    if 'getpurchase' in request.GET:
+                        p = Compra.objects.get(pk=request.GET.get('purchase'))
+                        context['supplier'] = p.proveedor_id
+                        context['reason'] = p.proveedor.razonsocial
+                        context['space'] = p.lugent
+                        context['document'] = p.documento_id
+                        context['method'] = p.pagos_id
+                        context['currency'] = p.moneda_id
+                        context['transfer'] = globalVariable.format_date_str(p.traslado)
+                        context['contact'] = p.contacto
                     context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = e.__str__()
                     context['status'] = False
                 return self.render_to_json_response(context)
             obj = Compra.objects.filter(status='PE', flag=True).order_by('-registrado')
-            # paginator = Paginator(obj, 20)
-            # page = request.GET.get('page')
-            # try:
-            #     purchase = paginator.page(page)
-            # except PageNotAnInteger:
-            #     purchase = paginator.page(1)
-            # except EmptyPage:
-            #     purchase = paginator.page(paginator.num_pages)
+            context['document'] = Documentos.objects.filter(flag=True).order_by('documento')
+            context['payment'] = FormaPago.objects.filter(flag=True).order_by('pagos')
+            context['currency'] = Moneda.objects.filter(flag=True)
             context['purchase'] = obj
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
@@ -686,7 +692,7 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                     arsu.append({'supplier':j.proveedor_id,'materiales_id':x.materiales_id, 'price':dsup.precio, 'discount': dsup.discount, 'brand':dsup.marca, 'model':dsup.modelo, 'amount':amount})
                     #data[j.proveedor_id] = arsu #{'price':dsup.precio, 'discount': dsup.discount, 'brand':dsup.marca, 'model':dsup.modelo}
                 arr.append(data)
-                arm.append({'materials':x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'quantity':x.cantidad, 'others': arsu })
+                arm.append({'materials':x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'quantity':x.cantidad, 'priceold': search.getPricePurchaseInventory(x.materiales_id), 'others': arsu })
             context['details'] = arm
             context['currency'] = Moneda.objects.filter(flag=True)
             context['document'] = Documentos.objects.filter(flag=True)

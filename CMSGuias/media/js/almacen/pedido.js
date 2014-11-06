@@ -2,15 +2,15 @@
 $(function () {
 	$('.description, .block-add-mat').hide();
 	$('.in-date').datepicker({ "minDate": "0", maxDate: "+2M", changeMonth: true, changeYear: true, showAnim:"slide", dateFormat: "yy-mm-dd"});
-	$('.matnom').keypress(function (event) {
+	/*$('.matnom').keypress(function (event) {
 		var key = ( event.keyCode ? event.keyCode : event.which );
 		if ( key != 13 ) {
 			//event.preventDefault();
 			getdescription(this.value.trim().toLowerCase());
 		};
-	});
+	});*/
 	// get back list of materials
-	var getdescription = function (name) {
+	/*var getdescription = function (name) {
 		$.getJSON('/json/get/materials/name/', {'nom': name }, function (response) {
 			var template = "<li id='li{{id}}' onClick=getidli(this);><a class='text-primary' onClick='selectMaterial(this);'>{{matnom}}</a></li>";
 			$opt = $('.description');
@@ -24,8 +24,8 @@ $(function () {
 			$('.description').show();
 			$(".matnom").focus().after($('.description'));
 		});
-	}
-	$(".matnom").keyup(function (event) {
+	}*/
+	/*$(".matnom").keyup(function (event) {
 		var key = ( event.keyCode || event.which );
 		if (key == 40 || key == 38 || key == 39 || key == 37) {
 			moveTopBottom(key);
@@ -36,8 +36,8 @@ $(function () {
 			count = 0;
 			getMeters();
 		};
-	});
-	$(".matmed").click(function () {
+	});*/
+	/*$(".matmed").click(function () {
 		var $nom = $(".matnom"), $med = $(".matmed");
 		if ($nom.val().trim() != "" && $med.val() != "" ) {
 			var template = "<tr><th>Codigo :</th><td class='id-mat'>{{materialesid}}</td></tr>"+
@@ -53,7 +53,7 @@ $(function () {
 				};
 			});
 		};
-	});
+	});*/
 	$(".btnadd").click(function () {
 		aggregate_materials();
 	});
@@ -228,7 +228,7 @@ $(function () {
 				};
 			}
 		});
-		
+
 	});
 	$('.obs').focus(function () {
 		$(this).animate({height:"102px"},600);
@@ -276,7 +276,7 @@ $(function () {
 	});
 });
 
-/// functions 
+/// functions
 var blockAdd = Boolean(true).valueOf();
 // recover details of materials code, name, measure
 var getMeters = function () {
@@ -295,7 +295,7 @@ var getMeters = function () {
 	};
 }
 // select materials with click a "a"
-var getidli = function (item) {
+/*var getidli = function (item) {
 	$('.matnom').val($('#'+item.id+' > a').text());
 	$('.description').hide();
 	count = 0;
@@ -305,8 +305,8 @@ var selectMaterial = function (all) {
 	$('.matnom').val(all.innerHTML);
 	$('.description').hide();
 	count=0;
-}
-var count = 0;
+}*/
+/*var count = 0;
 // move in a autocomplete
 var moveTopBottom = function (key) {
 	var code = key;
@@ -338,7 +338,7 @@ var moveTopBottom = function (key) {
 			count--;
 		}
 	}
-}
+}*/
 // add material a temp
 var aggregate_materials = function () {
 	var $mid = $(".id-mat"), $cant = $(".cantidad"), $dni = $(".empdni"), $token = $("[name=csrfmiddlewaretoken]");
@@ -369,7 +369,7 @@ var list_temp_materials = function () {
 			if (response.list.length > 0) {
 				for (var x in response.list){
 					if (response.list[x].materiales_id == $mid.html()) {
-						var template = "<tr class='success'><td class='text-center'>{{item}}</td><td>{{materiales_id}}</td><td>{{matnom}}</td><td>{{matmed}}</td><td class='text-center'>{{unidad}}</td><td class='text-center'>{{cantidad}}</td><td class='text-center'><button class='btn btn-xs btn-info text-black' onClick='btn_edit_show({{materiales_id}},{{cantidad}});'><span class='glyphicon glyphicon-edit'></span></button></td><td class='text-center'><button class='btn btn-xs btn-danger text-black' onClick='btn_delete_show({{materiales_id}},{{cantidad}})'><span class='glyphicon glyphicon-remove'></span></button></td></tr>";	
+						var template = "<tr class='success'><td class='text-center'>{{item}}</td><td>{{materiales_id}}</td><td>{{matnom}}</td><td>{{matmed}}</td><td class='text-center'>{{unidad}}</td><td class='text-center'>{{cantidad}}</td><td class='text-center'><button class='btn btn-xs btn-info text-black' onClick='btn_edit_show({{materiales_id}},{{cantidad}});'><span class='glyphicon glyphicon-edit'></span></button></td><td class='text-center'><button class='btn btn-xs btn-danger text-black' onClick='btn_delete_show({{materiales_id}},{{cantidad}})'><span class='glyphicon glyphicon-remove'></span></button></td></tr>";
 					}else{
 						var template = "<tr><td class='text-center'>{{item}}</td><td>{{materiales_id}}</td><td>{{matnom}}</td><td>{{matmed}}</td><td class='text-center'>{{unidad}}</td><td class='text-center'>{{cantidad}}</td><td class='text-center'><button class='btn btn-xs btn-info text-black' onClick='btn_edit_show({{materiales_id}},{{cantidad}});'><span class='glyphicon glyphicon-edit'></span></button></td><td class='text-center'><button class='btn btn-xs btn-danger text-black' onClick='btn_delete_show({{materiales_id}},{{cantidad}})'><span class='glyphicon glyphicon-remove'></span></button></td></tr>";
 					}
@@ -475,7 +475,7 @@ var get_niples = function () {
 													"<thead><th>Cantidad</th><th>Descripción</th><th>Diametro</th><th><th><th>Medida</th><th>Unidad</th><th>Editar</th><th>Eliminar</th></thead>"+
 													"<tbody class='tb{{materiales_id}}'></tbody>"+
 												"</table>"+
-											"</div>"+	
+											"</div>"+
 											"</div>"+
 										"</div>"+
 									"</div>";
@@ -563,7 +563,7 @@ var edit_temp_nipple = function(id,mid,cant,med,tipo){
 	mid = String(mid).valueOf();
 	$(".mt"+mid).val(med);
 	$(".nv"+mid).val(cant);
-	$(".tn"+mid).val(tipo);	
+	$(".tn"+mid).val(tipo);
 	$(".tn"+mid).attr("DISABLED",true);
 	//$(".nv"+mid).attr("DISABLED",true);
 	$(".update-id-"+mid).val(id);

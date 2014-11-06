@@ -36,38 +36,66 @@ class JSONResponseMixin(object):
 
 
 def get_description_materials(request):
-    try:
-        if request.method == 'GET':
-            data = {'name':[]}
-            name = Materiale.objects.values('matnom').filter(matnom__icontains=request.GET['nom']).distinct('matnom').order_by('matnom')
-            i = 0
-            for x in name:
-                data['name'].append({'matnom':x['matnom'],'id':i})
-                i+=1
-            return HttpResponse(simplejson.dumps(data), mimetype='application/json')
-    except ObjectDoesNotExist:
-        raise Http404
+    context = dict()
+    if request.method == 'GET':
+        try:
+            name = Materiale.objects.values('matnom').filter(matnom__icontains=request.GET.get('nom')).distinct('matnom').order_by('matnom')
+            context['name'] = [{'matnom': x['matnom']} for x in name]
+            context['status'] = True
+        except ObjectDoesNotExist:
+            context['status'] = False
+        return HttpResponse(simplejson.dumps(context), mimetype='application/json')
+    # try:
+    #     if request.method == 'GET':
+    #         try:
+    #             data = {'name':[]}
+    #             name = Materiale.objects.values('matnom').filter(matnom__icontains=request.GET['nom']).distinct('matnom').order_by('matnom')
+    #             i = 0
+    #             for x in name:
+    #                 data['name'].append({'matnom':x['matnom'],'id':i})
+    #                 i += 1
+    #         except ObjectDoesNotExist, e:
+    #             raise e
+    #         return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+    # except ObjectDoesNotExist:
+    #     raise Http404
 
 def get_meter_materials(request):
-    try:
-        if request.method == 'GET':
-            data = { "list": [] }
-            meter = Materiale.objects.values('matmed').filter(matnom__contains=request.GET['matnom']).distinct('matnom','matmed').order_by('matmed')
-            for x in meter:
-                data["list"].append({ "matmed": x["matmed"] })
-            return HttpResponse(simplejson.dumps(data), mimetype="application/json")
-    except ObjectDoesNotExist:
-        raise Http404
+    if request.method == 'GET':
+        context = {}
+        try:
+            meter = Materiale.objects.values('matmed').filter(matnom__icontains=request.GET['matnom']).distinct('matmed').order_by('matmed')
+            context['list'] = [{'matmed': x['matmed']} for x in meter]
+            context['status'] = True
+        except ObjectDoesNotExist:
+            context['status'] = False
+        return HttpResponse(simplejson.dumps(context), mimetype='application/json')
+    # try:
+    #     if request.method == 'GET':
+    #         data = { "list": [] }
+    #         meter = Materiale.objects.values('matmed').filter(matnom__contains=request.GET['matnom']).distinct('matnom','matmed').order_by('matmed')
+    #         for x in meter:
+    #             data["list"].append({ "matmed": x["matmed"] })
+    #         return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+    # except ObjectDoesNotExist:
+    #     raise Http404
 
 def get_resumen_details_materiales(request):
-    try:
         if request.method == 'GET':
-            data = {'list': []}
-            res = Materiale.objects.values('materiales_id','matnom','matmed','unidad').filter(matnom__icontains=request.GET['matnom'],matmed__icontains=request.GET['matmed'])[:1]
-            data['list'].append({ "materialesid": res[0]['materiales_id'], "matnom": res[0]['matnom'], "matmed": res[0]['matmed'], "unidad": res[0]['unidad'] })
-            return HttpResponse(simplejson.dumps(data), mimetype='application/json')
-    except ObjectDoesNotExist:
-        raise e
+            context = dict()
+            try:
+                #data = {'list': []}
+                summ = Materiale.objects.filter(matnom__icontains=request.GET.get('matnom'), matmed__icontains=request.GET.get('matmed'))
+                for x in summ:
+                   if x.matmed == request.GET.get('matmed'):
+                      context['list'] = [{'materialesid': x.materiales_id, 'matnom': x.matnom, 'matmed': x.matmed, 'unidad': x.unidad.uninom}]
+                #res = Materiale.objects.values('materiales_id','matnom','matmed','unidad').filter(matnom__icontains=request.GET['matnom'],matmed__icontains=request.GET['matmed'])[:1]
+                #data['list'].append({ "materialesid": res[0]['materiales_id'], "matnom": res[0]['matnom'], "matmed": res[0]['matmed'], "unidad": res[0]['unidad'] })
+                context['status'] = True
+            except ObjectDoesNotExist:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return HttpResponse(simplejson.dumps(context), mimetype='application/json')
 
 class SearchBrand(JSONResponseMixin, DetailView):
     def get(self, request, *args, **kwargs):
@@ -97,17 +125,16 @@ class GetDetailsMaterialesByCode(DetailView):
         if request.is_ajax():
             try:
                 mat = Materiale.objects.values('materiales_id','matnom','matmed','unidad').get(pk=request.GET.get('code'))
-                context['list'] = {"materialesid": mat['materiales_id'], "matnom": mat['matnom'], "matmed": mat['matmed'], "unidad": mat['unidad']}
+                context['list'] = {'materialesid': mat['materiales_id'], 'matnom': mat['matnom'], 'matmed': mat['matmed'], 'unidad': mat['unidad']}
                 context['status'] = True
             except ObjectDoesNotExist, e:
-                raise e
                 context['status'] = False
             return HttpResponse(simplejson.dumps(context), mimetype='application/json')
 
 def save_order_temp_materials(request):
     try:
         data = {}
-        if request.method == "POST":
+        if request.method == 'POST':
             c = tmppedido.objects.filter(empdni__exact=request.POST['dni'],materiales_id__exact=request.POST['mid']).count()
             quantity_old = 0
             if c > 0:

@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from django.core.exceptions import ObjectDoesNotExist
-
+import CMSGuias
 from CMSGuias.apps.home.models import Brand, Model, Configuracion
-from CMSGuias.apps.ventas.models import *
+#from CMSGuias.apps.ventas.models import 'Proyecto'
 from CMSGuias.apps.tools import globalVariable
 
 class searchBrands:
@@ -63,7 +63,7 @@ def searchPeriodProject(code=''):
         period = globalVariable.get_year
     else:
         try:
-            period = Proyecto.objects.get(proyecto_id)
+            period = CMSGuias.apps.ventas.models.Proyecto.objects.get(proyecto_id__exact=code)
             period = period.registrado.strftime('%Y')
         except ObjectDoesNotExist, e:
             period = globalVariable.get_year
@@ -78,3 +78,12 @@ def getigvCurrent():
     except ObjectDoesNotExist, e:
         raise e
     return igv
+
+def getPricePurchaseInventory(code=''):
+    price = 0
+    try:
+        if code != '' and len(code) == 15:
+            price = CMSGuias.apps.almacen.models.Inventario.objects.filter(materiales_id=code).order_by('-periodo').distinct('periodo')[:1][0].precompra
+    except ObjectDoesNotExist, e:
+        price = 0
+    return price

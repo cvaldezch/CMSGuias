@@ -57,7 +57,7 @@
                     <table class="table table-condensed table-hover table-striped table-bordered">
                         <thead>
                             <tr class="brand-danger text-white">
-                                <th colspan="7"></th>
+                                <th colspan="8"></th>
                                 {% for s in supplier %}
                                     <th class="text-center" colspan="5">
                                         {{ s.proveedor.razonsocial }}
@@ -81,6 +81,7 @@
                                 <th>Medida</th>
                                 <th>Unidad</th>
                                 <th>Cantidad</th>
+                                <th>P. OLD</th>
                                 {% for s in supplier %}
                                     <th class="text-center">Precio</th>
                                     <th class="text-center">Dsct.</th>
@@ -90,7 +91,7 @@
                                 {% endfor %}
                             </tr>
                             <tr class="brand-danger text-white">
-                                <th colspan="7">
+                                <th colspan="8">
                                     Seleccionar
                                     <label class="radio-inline">
                                         <input type="radio" name="select" value="1"> Todo
@@ -118,7 +119,7 @@
                                 {% endfor %}
                             </tr>
                             <tr class="brand-danger text-white">
-                                <th colspan="7">
+                                <th colspan="8">
                                 </th>
                                 {% for s in supplier %}
                                     {% for c in client %}
@@ -151,6 +152,7 @@
                                     <td>{{ x.measure }}</td>
                                     <td>{{ x.unit }}</td>
                                     <td>{{ x.quantity|safe }}</td>
+                                    <td>{{ x.priceold|safe }}</td>
                                      {% for s in supplier %}
                                         {% for k in x.others %}
                                             {% if s.proveedor_id == k.supplier %}
@@ -174,7 +176,7 @@
                         </tbody>
                         <tfoot>
                             <tr class="brand-warning">
-                                <th colspan="7" class="text-right"><small>(No incluye IGV)</small></th>
+                                <th colspan="8" class="text-right"><small>(No incluye IGV)</small></th>
                                 {% for x in supplier %}
                                     <th colspan="2">Importe</th>
                                     <td class="amount{{ x.proveedor_id }}"></td>
@@ -182,7 +184,7 @@
                                 {% endfor %}
                             </tr>
                             <tr class="brand-warning">
-                                <th colspan="7"></th>
+                                <th colspan="8"></th>
                                 {% for x in supplier %}
                                     <th colspan="2">IGV {{ conf.igv }}%</th>
                                     <td class="igv{{ x.proveedor_id }}"></td>
@@ -190,7 +192,7 @@
                                 {% endfor %}
                             </tr>
                             <tr class="brand-warning">
-                                <th colspan="7" class="text-right"></th>
+                                <th colspan="8" class="text-right"></th>
                                 {% for x in supplier %}
                                     <td colspan="2">
                                         <button class="btn btn-xs btn-danger btn-refresh-price" value="{{ x.proveedor_id }}">
@@ -246,7 +248,7 @@
                     <div class="col-md-5">
                         <div class="form-group">
                             <label class="control-label">Lugar de Entrega</label>
-                            <input type="text" class="form-control" name="delivery" value="Jr. Gral. Jose de San Martin Mz. E Lote 6 Huachipa - Lurigancho Lima, Peru">
+                            <input type="text" class="form-control" name="delivery" value="Jr. Gral. Jose de San Martin Mz. F Lote 8A Huachipa - Lurigancho Lima, Peru">
                         </div>
                     </div>
                     <div class="col-md-3">

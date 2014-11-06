@@ -4,6 +4,7 @@
 {% endblock %}
 {% block script %}
 <script src="/media/js/almacen/pedido.js"></script>
+<script src="{{ MEDIA_URL }}js/getMaterials.js"></script>
 {% endblock %}
 {% block menu %}
 	{% include "menus/storage_menu.htm" %}
@@ -32,14 +33,14 @@
 						<div class="col-md-6">
 							<div class="form-group">
 								<label class="control-label">Descripción</label>
-								<input type="text" class="form-control matnom">
-								<ul id="description" class="description"></ul>
+								<input type="text" class="form-control matnom" name="description">
+								<ul id="description" class="description matname-global"></ul>
 							</div>
 						</div>
 						<div class="col-md-6">
 							<div class="form-group">
 								<label class="control-label">Medida</label>
-								<select type="text" class="form-control matmed">
+								<select type="text" name="meter" class="form-control matmed">
 									<option value=""> Nothing </option>
 								</select>
 							</div>
@@ -62,7 +63,7 @@
 						<div class="col-md-6">
 							<label for="alert" class="control-label">Resumén</label>
 							<div class="alert alert-success">
-								<table class="table table-condensed details-table">
+								<table class="table table-condensed details-table tb-details">
 									<tbody></tbody>
 								</table>
 							</div>

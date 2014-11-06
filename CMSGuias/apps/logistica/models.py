@@ -30,6 +30,7 @@ class Compra(models.Model):
     proveedor = models.ForeignKey(Proveedor, to_field='proveedor_id')
     empdni = models.ForeignKey(Employee, to_field='empdni_id', default='')
     cotizacion = models.ForeignKey(Cotizacion, to_field='cotizacion_id', null=True, blank=True)
+    projects = models.CharField(max_length=250, null=True, blank=True, default='')
     lugent = models.CharField(max_length=200, null=True, blank=True)
     documento = models.ForeignKey(Documentos, to_field='documento_id', null=True, blank=True)
     pagos = models.ForeignKey(FormaPago, to_field='pagos_id', null=True, blank=True)

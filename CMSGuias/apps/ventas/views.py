@@ -206,17 +206,44 @@ class ProjectManager(JSONResponseMixin, View):
         context = dict()
         try:
             if request.is_ajax():
-                if 'savepurchase' in request.GET:
-                    pass
-            """if request.is_ajax():
-            if 'list' in request.GET:
                 try:
-                    context['alerts'] = [{'id':x.id, 'date': globalVariable.format_date_str(x.registrado,'%d de %B de %Y'), 'time':globalVariable.format_time_str(_date=x.registrado,options={'tz':True}), 'name': x.empdni.name_complete, 'charge':x.charge.area, 'message': mark_safe(escape(x.message)), 'status': x.status } for x in Alertasproyecto.objects.filter(Q(proyecto_id=kwargs['project']) | ~Q(subproyecto_id=None) | Q(subproyecto_id=None), Q(sector_id=None), Q(flag=True)).order_by('-registrado')]
-                    context['status'] = True
+                    if 'listPurchase' in request.GET:
+                        context['list'] = [{
+                                            'nro': x.nropurchase,
+                                            'issued': globalVariable.format_date_str(x.issued),
+                                            'document': x.document.documento,
+                                            'order': str(x.order),
+                                            'id': x.id
+                                            }
+                                            for x in PurchaseOrder.objects.filter(flag=True).order_by('register')
+                                            ]
+                        context['status'] = True
+                    if 'editPurchase' in request.GET:
+                        obj = PurchaseOrder.objects.get(pk=request.GET.get('pk'))
+                        context['nropurchase'] = obj.nropurchase
+                        context['issued'] = globalVariable.format_date_str(obj.issued)
+                        context['currency'] = obj.currency_id
+                        context['document'] = obj.document_id
+                        context['method'] = obj.method_id
+                        context['observation'] = obj.observation
+                        context['dsct'] = obj.dsct
+                        context['igv'] = obj.igv
+                        context['details'] = [
+                                            {
+                                            'description': x.description,
+                                            'unit': x.unit.uninom,
+                                            'delivery': globalVariable.format_date_str(x.delivery),
+                                            'quantity': x.quantity,
+                                            'price': x.price,
+                                            'amount': (x.quantity * x.price)
+                                            }
+                                            for x in DetailsPurchaseOrder.objects.filter(purchase_id=request.GET.get('pk'))
+                                            ]
+                        context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = e.__str__()
                     context['status'] = False
-                return self.render_to_json_response(context)"""
+                return self.render_to_json_response(context)
             context['project'] = Proyecto.objects.get(pk=kwargs['project'], flag=True)
             try:
                 context['subpro'] = Subproyecto.objects.filter(proyecto_id=kwargs['project'], flag=True)
@@ -367,6 +394,44 @@ class ProjectManager(JSONResponseMixin, View):
                     for x in Nipple.objects.filter(proyecto_id=kwargs['project'], subproyecto_id=request.POST.get('sub')):
                         x.flag = False
                         x.save()
+                    context['status'] = True
+                if 'savedPurchase' in request.POST:
+                    if 'editpurchse' in request.POST:
+                        obj = PurchaseOrder.objects.get(pk=request.POST.get('editpurchse'))
+                        form = PurchaseOrderForm(request.POST, request.FILES, instance=obj)
+                    else:
+                        form = PurchaseOrderForm(request.POST, request.FILES)
+                    if form.is_valid():
+                        add = form.save(commit=False)
+                        add.project_id = kwargs['project']
+                        add.save()
+                        # save details purchase
+                        details = json.loads(request.POST.get('details'))
+                        if 'editpurchse' in request.POST:
+                            # Delete details purchase
+                            DetailsPurchaseOrder.objects.filter(purchase=request.POST.get('editpurchse')).delete()
+                            purid = request.POST.get('editpurchse')
+                        else:
+                            purid = PurchaseOrder.objects.filter(project_id=kwargs['project']).order_by('-register')[:1][0].id
+                        for x in details:
+                            dp = DetailsPurchaseOrder()
+                            dp.purchase_id = purid
+                            dp.nropurchase = request.POST.get('nropurchase')
+                            dp.description = x['description']
+                            dp.unit_id = x['unit']
+                            dp.delivery = globalVariable.format_str_date(x['date'])
+                            dp.quantity = x['quantity']
+                            dp.price = x['price']
+                            dp.save()
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+                        context['raise'] = 'Form Incorrect.'
+                if 'deletePurchase' in request.POST:
+                    # Detele details
+                    DetailsPurchaseOrder.objects.filter(purchase_id=request.POST.get('pk')).delete()
+                    # Delete Bedside
+                    PurchaseOrder.objects.get(pk=request.POST.get('pk')).delete()
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()

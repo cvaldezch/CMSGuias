@@ -11,7 +11,7 @@
 {% endblock menu %}
 {% block content %}
 <div class="container">
-	<div class="well">
+	<div class="well step-one">
 		<header>
 			<h1>Ordenes de Compra</h1>
 		</header>
@@ -84,9 +84,11 @@
 										<td><a class="text-black" target="_blank" href="{{ MEDIA_URL }}{{ x.deposito }}"><span class="glyphicon glyphicon-file"></span></a></td>
 										<td><a class="text-black" target="_blank" href="{% url 'rpt_purchase' x.compra_id %}"><span class="glyphicon glyphicon-list"></span></a></td>
 										<td>
-											<button class="btn btn-xs text-black btn-actions">
-												<span class="glyphicon glyphicon-ok"></span>
-											</button>
+											{% if x.status == 'PE' %}
+												<button class="btn btn-xs btn-link text-black btn-actions" value="{{ x.compra_id }}">
+													<span class="glyphicon glyphicon-ok"></span>
+												</button>
+											{% endif %}
 										</td>
 									</tr>
 								{% endfor %}
@@ -97,22 +99,128 @@
 			</article>
 		</section>
 	</div>
+	<div class="well step-two">
+        <header>
+            <h3>
+                Editar Orden de Compra <span class="nrop"></span>
+                <br>
+                <small name="rucandreason">
+
+                </small>
+            </h3>
+        </header>
+        <div class="panel panel-primary">
+            <div class="panel-footer">
+                <button class="btn btn-default btn-back">
+                    <span class="glyphicon glyphicon-remove"></span>
+                    Cancelar
+                </button>
+                <button class="btn btn-primary btn-save-purchase">
+                    <span class="glyphicon glyphicon-floppy-disk"></span>
+                    Guardar Cambios
+                </button>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">Ruc</label>
+                            <input type="text" class="form-control" name="ruc" readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label class="control-label">Razón Social</label>
+                            <input type="text" class="form-control" name="reason" readonly="readonly">
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label class="control-label">Lugar de Entrega</label>
+                            <input type="text" class="form-control" name="delivery" value="Jr. Gral. Jose de San Martin Mz. F Lote 8A Huachipa - Lurigancho Lima, Peru">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label">Documento</label>
+                            <select class="form-control" name="document">
+                            {% for x in document %}
+                                <option value="{{ x.documento_id }}">{{ x.documento }}</option>
+                            {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label">Pago</label>
+                            <select class="form-control" name="payment">
+                                {% for x in payment %}
+                                    <option value="{{ x.pagos_id }}">{{ x.pagos }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label">Moneda</label>
+                            <select name="currency" id="" class="form-control">
+                                {% for x in currency %}
+                                    <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">Traslado</label>
+                            <input type="text" maxlength="10" placeholder="aaaa-mm-dd" class="form-control" name="transfer">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Contacto</label>
+                            <input type="text" class="form-control" name="contact">
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label class="control-label">Deposito</label>
+                            <input type="file" class="hide" name="deposit" accept="application/pdf">
+                            <div class="alert alert-inverse alert-inverse-border">
+                                <div class="text-center">
+                                    <span class="glyphicon glyphicon-paperclip"></span> Click
+                                    <button class="btn btn-sm text-white upload-green btn-show-deposit">
+                                        Aqui
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="prices">
+    </div>
 </div>
 <!-- block modals -->
-<div class="modal fade mactions">
+<div class="modal fade mactions" data-backdrop="static">
 	<div class="modal-dialog modal-sm">
 		<div class="modal-content">
 			<div class="modal-header">
 				<a data-dismiss="modal" class="close">&times;</a>
 				<h4 class="modal-title">
-					Actiones
+					Acciones
 				</h4>
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
-					<button class="btn btn-block btn-priamry">
-						<span class="glypgicon glyphicon-saved"></span>
-
+					<button class="btn btn-primary btn-block btn-priamry btn-edtp">
+						<span class="glyphicon glyphicon-pencil"></span>
+						Editar
+					</button>
+					<button class="btn btn-danger btn-block btn-priamry btn-delp">
+						<span class="glyphicon glyphicon-remove-sign"></span>
+						Anular
 					</button>
 				</div>
 			</div>

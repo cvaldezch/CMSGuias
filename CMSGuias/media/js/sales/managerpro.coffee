@@ -34,6 +34,10 @@ $(document).ready ->
     $("input[name=podt]").on "change", getPercentIVA
     $(document).on "click", ".btn-edit-pod", showEditDetailsPurchase
     $(document).on "click", ".btn-del-pod", deleteDetailsPurchase
+    $(".btn-re-purchase-order").on "click", getListPurchaseOrder
+    $(".btn-saved-purchase").on "click", savePurchaseOrder
+    $(document).on "click", ".btn-edit-purchase", getEditPurchase
+    $(document).on "click", ".btn-del-purchase", deleteOrderPurchase
     $(".btn-details-purchare-order-toggle").click ->
         $btn = $(@)
         $("div.panel-purchase-order-toggle").toggle 600
@@ -100,6 +104,7 @@ $(document).ready ->
         calAmountPurchaseOrder()
         return
     treeAdminaandOpera()
+    getListPurchaseOrder()
     tinymce.init
         selector: "textarea#message",
         theme: "modern",
@@ -535,11 +540,152 @@ deleteDetailsPurchase = (event) ->
 
 savePurchaseOrder = (event) ->
     data = new FormData
-    data.append "nro", $.trim $("input[name=pond]").val()
-    data.append "issued", validateFormatDate $.trim $("input[name=podt]")
+    data.append "savedPurchase", true
+    data.append "nropurchase", $.trim $("input[name=pond]").val()
+    data.append "issued", $.trim($("input[name=podt]").val())
     data.append "currency", $("select[name=pocu]").val()
     data.append "document", $("select[name=podc]").val()
     data.append "method", $("select[name=popy]").val()
-    data.append "purchase", $("input.upfile").get(0).files[0]
-    data.append "observation", $("textarea[name=obser]").text()
+    if $("input.upfile").get(0).files.length
+        data.append "order", $("input.upfile").get(0).files[0]
+    data.append "observation", $("textarea[name=obser]").val()
+    data.append "dsct", parseFloat $("input[name=poids]").val()
+    data.append "igv", parseFloat $(".povigv").text().split("%")[0]
+    if $.trim($("input[name=editpurchse]").val()) isnt ""
+        data.append "editpurchse", $.trim($("input[name=editpurchse]").val())
+    details = new Array
+    $(".table-details-purchase-order > tbody > tr").each (index, element) ->
+        $td = $(element).find "td"
+        details.push
+            "description": $td.eq(1).text()
+            "unit": $td.eq(2).text()
+            "date": $td.eq(3).text()
+            "quantity": parseFloat $td.eq(4).text()
+            "price": parseFloat $td.eq(5).text()
+        return
+    data.append "details", JSON.stringify details
+    data.append "csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val()
+    $.ajax
+        url: ""
+        data: data
+        type: "POST"
+        dataType: "json"
+        cache : false
+        processData: false
+        contentType: false
+        success: (response) ->
+            if response.status
+                getListPurchaseOrder()
+                $("input[name=editpurchse]").val("")
+                $("div.mpurchase").modal "hide"
+            else
+                $().toastmessage "showWarningToast", "No se a podido Guardar la Orden de compra. #{response.raise}"
+    return
+
+getListPurchaseOrder = (event) ->
+    data = new Object
+    data.listPurchase = true
+    $.getJSON "", data, (response) ->
+        if response.status
+            template = "<tr>
+                        <td>{{ item }}</td>
+                        <td>{{ nro }}</td>
+                        <td>{{ issued }}</td>
+                        <td>{{ document }}</td>
+                        <td class=\"text-center\">{{!file}}</td>
+                        <td class=\"text-center\">
+                            <button class=\"btn btn-link btn-xs text-primary btn-edit-purchase\" value=\"{{ id }}\">
+                                <span class=\"glyphicon glyphicon-edit\"></span>
+                            </button>
+                        </td>
+                        <td class=\"text-center\">
+                            <button class=\"btn btn-link btn-xs text-red btn-del-purchase\" value=\"{{ id }}\">
+                                <span class=\"glyphicon glyphicon-trash\"></span>
+                            </button>
+                        </td>
+                        </tr>"
+            $tb = $("table.tpurchase > tbody")
+            $tb.empty()
+            for x of response.list
+                if response.list[x].order isnt ""
+                    temp = template.replace "{{!file}}","<a href=\"/media/{{ order }}\" target=\"_blank\"><span class=\"glyphicon glyphicon-file\"></span></a>"
+                else
+                    temp = template
+                response.item = (parseInt(x) + 1)
+                $tb.append Mustache.render temp, response.list[x]
+            return
+        else
+            $().toastmessage "showWarningToast", "Error list ordenes de compra. #{response.raise}"
+    return
+
+getEditPurchase = (event) ->
+    $("input[name=editpurchse]").val @value
+    data = new Object
+    data.editPurchase = true
+    data.pk = @value
+    $.getJSON "", data, (response) ->
+        if  response.status
+            $("input[name=pond]").val(response.nropurchase)
+            $("input[name=podt]").val(response.issued)
+            $("select[name=pocu]").val(response.currency)
+            $("select[name=podc]").val(response.document)
+            $("select[name=popy]").val(response.method)
+            $("textarea[name=obser]").val(response.observation)
+            $("input[name=poids]").val(response.dsct)
+            $(".povigv").text("#{response.igv}%")
+
+            $tb = $(".table-details-purchase-order > tbody")
+            template = "<tr class=\"pod{{ item }}\">
+                    <td>{{ item }}</td>
+                    <td>{{ description }}</td>
+                    <td>{{ unit }}</td>
+                    <td>{{ delivery }}</td>
+                    <td>{{ quantity }}</td>
+                    <td>{{ price }}</td>
+                    <td>{{ amount }}</td>
+                    <td class=\"text-center\">
+                        <button class=\"btn btn-link btn-xs text-primary btn-edit-pod\" value=\"{{ item }}\">
+                            <span class=\"glyphicon glyphicon-edit\"></span>
+                        </button>
+                    </td>
+                    <td class=\"text-center\">
+                        <button class=\"btn btn-link btn-xs text-red btn-del-pod\" value=\"{{ item }}\">
+                            <span class=\"glyphicon glyphicon-trash\"></span>
+                        </button>
+                    </td>
+                    </tr>"
+            $tb.empty()
+            for x of response.details
+                response.details[x].item = (parseInt(x) + 1)
+                $tb.append Mustache.render template, response.details[x]
+            calAmountPurchaseOrder()
+            $("div.mpurchase").modal "show"
+            return
+        else
+            $().toastmessage "showWarningToast", "No se recupero los datos."
+            return
+    return
+
+deleteOrderPurchase = (event) ->
+    val = @value
+    $().toastmessage "showToast",
+        text: "Realmente desea eliminar la Orden de Compra?"
+        type: "confirm"
+        sticky: true
+        buttons: [{value:"Si"},{value:"No"}]
+        success: (result) ->
+            if result is "Si"
+                data = new Object
+                data.deletePurchase = true
+                data.pk = val
+                data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+                $.post "", data, (response) ->
+                    if response.status
+                        getListPurchaseOrder()
+                        return
+                    else
+                        $().toastmessage "showErrorToast", "No se a eliminado la Orden de Compra"
+                        return
+                , "json"
+                return
     return

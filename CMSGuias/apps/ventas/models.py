@@ -198,8 +198,8 @@ class PurchaseOrder(models.Model):
         return ruta
 
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
-    subproject = models.ForeignKey(Subproyecto, to_field='subproyecto_id',null=True, blank=True)
-    sector = models.ForeignKey(Sectore, to_field='sector_id')
+    #subproject = models.ForeignKey(Subproyecto, to_field='subproyecto_id',null=True, blank=True)
+    register = models.DateTimeField(auto_now_add=True)
     nropurchase = models.CharField(max_length=14)
     issued = models.DateField()
     currency = models.ForeignKey(Moneda, to_field='moneda_id')
