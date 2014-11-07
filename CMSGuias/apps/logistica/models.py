@@ -40,6 +40,7 @@ class Compra(models.Model):
     contacto = models.CharField(max_length=200, null=True, blank=True)
     status = models.CharField(max_length=2, default='PE')
     deposito = models.FileField(upload_to=url, null=True, blank=True)
+    discount = models.FloatField(default=0, blank=True)
     flag = models.BooleanField(default=True)
 
     class Meta:

@@ -83,6 +83,26 @@ class Materiale(models.Model):
     def __unicode__(self):
         return '%s %s %s %s'%(self.materiales_id,self.matnom,self.matmed,self.unidad.uninom)
 
+class GroupMaterials(models.Model):
+    mgroup_id = models.CharField(max_length=6, primary_key=True)
+    description = models.CharField(max_length=200)
+    materials_id = models.ForeignKey(Materiale, to_field='materiales_id')
+    parent = models.CharField(max_length=13, null=True, blank=True)
+    observation = models.CharField(max_length=250)
+    flag = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return '%s %s %s'%(self.mgroup_id, self.materials_id, self.parent)
+
+class DetailsGroup(models.Model):
+    mgroup = models.ForeignKey(GroupMaterials, to_field='mgroup_id')
+    materials = models.ForeignKey(Materiale, to_field='materiales_id')
+    quantity = models.FloatField()
+    flag = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return '%s %s %f'%(self.mgroup_id, self.materials, self.quantity)
+
 class Cargo(models.Model):
     cargo_id = models.CharField(primary_key=True, max_length=9)
     cargos = models.CharField(max_length=60)
