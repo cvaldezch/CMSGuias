@@ -83,10 +83,19 @@ class Materiale(models.Model):
     def __unicode__(self):
         return '%s %s %s %s'%(self.materiales_id,self.matnom,self.matmed,self.unidad.uninom)
 
+class TypeGroup(models.Model):
+    tgroup_id = models.CharField(max_length=7, primary_key=True)
+    typeg = models.CharField(max_length=200)
+    flag = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return '%s %s'%(self.tgroup_id, self.typeg)
+
 class GroupMaterials(models.Model):
-    mgroup_id = models.CharField(max_length=6, primary_key=True)
-    description = models.CharField(max_length=200)
-    materials_id = models.ForeignKey(Materiale, to_field='materiales_id')
+    mgroup_id = models.CharField(max_length=10, primary_key=True)
+    tgroup = models.ForeignKey(TypeGroup, to_field='tgroup_id', default='TG00000')
+    description = models.CharField(max_length=200, blank=True)
+    materials = models.ForeignKey(Materiale, to_field='materiales_id')
     parent = models.CharField(max_length=13, null=True, blank=True)
     observation = models.CharField(max_length=250)
     flag = models.BooleanField(default=True)

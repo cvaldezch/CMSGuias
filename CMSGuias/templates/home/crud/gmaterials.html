@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}
+    Grupo de Materiales
+{% endblock title %}
+{% block menu %}
+    {% include "menus/sale.htm" %}
+{% endblock menu %}
+{% block content %}
+    <div class="container">
+        <div class="well">
+            <h1>Grupo de Materiales</h1>
+            <div class="panel panel-primary">
+                <div class="btn-group">
+                    <a href="{% url 'gmaterials_new' %}" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Nuevo Grupo de Materiales
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered table-condensed">
+                        <thead>
+                            <tr class="brand-primary">
+                                <th>Item</th><th>Código</th><th>Descripción</th><th>Tipo Grupo</th><th>Materials</th><th>Grupo Material</th><th>Observación</th><th>Details</th><th></th><th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for x in gmaterials %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ x.mgroup_id }}</td>
+                                <td>{{ x.description }}</td>
+                                <td>{{ x.tgroup }}</td>
+                                <td>{{ x.materials_id }}</td>
+                                <td>{{ x.parent }}</td>
+                                <td>{{ x.observation }}</td>
+                                <td class="text-center">
+                                    {# {% url '' x.mgroup %} #}
+                                    <a href="#">
+                                        <span class="glyphicon glyphicon-list"></span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'gmaterials_edit' x.mgroup_id %}" class="btn btn-xs btn-link text-green">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'gmaterials_del' x.mgroup_id %}" class="btn btn-xs btn-link text-red">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

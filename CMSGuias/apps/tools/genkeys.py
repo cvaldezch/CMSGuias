@@ -9,7 +9,7 @@ from django.db.models import Max
 from CMSGuias.apps.almacen.models import Pedido, GuiaRemision, Suministro, NoteIngress
 from CMSGuias.apps.logistica.models import Cotizacion, Compra
 from CMSGuias.apps.ventas.models import Proyecto
-from CMSGuias.apps.home.models import Brand, Model, GroupMaterials
+from CMSGuias.apps.home.models import Brand, Model, GroupMaterials, TypeGroup
 from CMSGuias.apps.operations.models import Deductive
 
 
@@ -236,11 +236,26 @@ def GenerateIdGroupMaterials():
         code = GroupMaterials.objects.aggregate(max=Max('mgroup_id'))
         id = code['max']
         if id is not None:
-            counter = int(id[2:6])
+            counter = int(id[2:10])
             counter += 1
         else:
             counter = 1
-        id = '%s%s'%('G', '{:0>5d}'.format(counter))
+        id = '%s%s'%('GM', '{:0>8d}'.format(counter))
+    except ObjectDoesNotExist, e:
+        raise e
+    return id
+
+def GenerateIdTypeGroupMaterials():
+    id = None
+    try:
+        code = TypeGroup.objects.aggregate(max=Max('tgroup_id'))
+        id = code['max']
+        if id is not None:
+            counter = int(id[2:7])
+            counter += 1
+        else:
+            counter = 1
+        id = '%s%s'%('TG', '{:0>5d}'.format(counter))
     except ObjectDoesNotExist, e:
         raise e
     return id

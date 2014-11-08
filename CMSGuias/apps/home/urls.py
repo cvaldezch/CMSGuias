@@ -55,6 +55,20 @@ model_urls = patterns('',
     url(r'^edit/(?P<model_id>\w+)/$', ModelUpdate.as_view(), name='model_edit'),
     url(r'^delete/(?P<model_id>\w+)/$', ModelDelete.as_view(), name='model_del'),
 )
+# Type Group Materials
+tgroup_urls = patterns('',
+    url(r'^list/$', TGroupList.as_view(), name='tgroup_list'),
+    url(r'^new/$', TGroupCreate.as_view(), name='tgroup_new'),
+    url(r'^edit/(?P<tgroup_id>\w+)/$', TGroupUpdate.as_view(), name='tgroup_edit'),
+    url(r'^delete/(?P<tgroup_id>\w+)/$', TGroupDelete.as_view(), name='tgroup_del'),
+)
+# Type Group Materials
+gmaterials_urls = patterns('',
+    url(r'^list/$', GMaterialsList.as_view(), name='gmaterials_list'),
+    url(r'^new/$', GMaterialsCreate.as_view(), name='gmaterials_new'),
+    url(r'^edit/(?P<mgroup_id>\w+)/$', GMaterialsUpdate.as_view(), name='gmaterials_edit'),
+    url(r'^delete/(?P<mgroup_id>\w+)/$', GMaterialsDelete.as_view(), name='gmaterials_del'),
+)
 # urls main
 urlpatterns = patterns('',
 	url(r'^SignUp/$', LoginView.as_view(), name='vista_login'),
@@ -67,4 +81,6 @@ urlpatterns = patterns('',
     url(r'^district/', include(district_urls)),
     url(r'^brand/', include(brand_urls)),
     url(r'^model/', include(model_urls)),
+    url(r'^tgroup/', include(tgroup_urls)),
+    url(r'^gmaterials/', include(gmaterials_urls)),
 )

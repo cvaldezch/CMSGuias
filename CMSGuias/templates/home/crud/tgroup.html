@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block menu %}
+    {% include "menus/sale.htm" %}
+{% endblock menu %}
+{% block content %}
+    <div class="container">
+        <div class="well">
+            <h1>Tipo de Grupo de Materiales</h1>
+            <div class="panel panel-primary">
+                <div class="btn-group">
+                    <a href="{% url 'tgroup_new' %}" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Nuevo Tipo de Grupo
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered table-condensed">
+                        <thead>
+                            <tr class="brand-primary">
+                                <th>Item</th><th>Código</th><th>Descripción</th><th></th><th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for x in tgroup %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ x.tgroup_id }}</td>
+                                <td>{{ x.typeg }}</td>
+                                <td>
+                                    <a href="{% url 'tgroup_edit' x.tgroup_id %}" class="btn btn-xs btn-link text-green">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'tgroup_del' x.tgroup_id %}" class="btn btn-xs btn-link text-red">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

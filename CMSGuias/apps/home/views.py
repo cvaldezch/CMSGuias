@@ -381,8 +381,8 @@ class ModelCreate(CreateView):
                 return HttpResponseRedirect(self.success_url)
         except Exception, e:
             self.object.model_id = genkeys.GenerateIdModel()
-            self.save()
-            return super(BrandCreate, self).form_valid(form)
+            self.object.save()
+            return super(ModelCreate, self).form_valid(form)
 
 class ModelUpdate(UpdateView):
     form_class = ModelForm
@@ -406,3 +406,118 @@ class ModelDelete(DeleteView):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(ModelDelete, self).dispatch(request, *args, **kwargs)
+
+class TGroupList(ListView):
+    template_name = 'home/crud/tgroup.html'
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.GET.get('menu'):
+            context['menu'] = request.GET.get('get')
+        context['tgroup'] = TypeGroup.objects.filter(flag=True)
+        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+
+class TGroupCreate(CreateView):
+    form_class = TGroupForm
+    model = TypeGroup
+    success_url = reverse_lazy('tgroup_list')
+    template_name = 'home/crud/tgroup_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(TGroupCreate, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        try:
+            tgroup = TypeGroup.objects.get(typeg__icontains=self.object.typeg)
+            if tgroup:
+                return HttpResponseRedirect(self.success_url)
+        except Exception, e:
+            self.object.tgroup_id = genkeys.GenerateIdTypeGroupMaterials()
+            self.object.save()
+            return super(TGroupCreate, self).form_valid(form)
+
+class TGroupUpdate(UpdateView):
+    form_class = TGroupForm
+    model = TypeGroup
+    slug_field = 'tgroup_id'
+    slug_url_kwarg = 'tgroup_id'
+    success_url = reverse_lazy('tgroup_list')
+    template_name = 'home/crud/tgroup_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(TGroupUpdate, self).dispatch(request, *args, **kwargs)
+
+class TGroupDelete(DeleteView):
+    model = TypeGroup
+    slug_field = 'tgroup_id'
+    slug_url_kwarg = 'tgroup_id'
+    success_url = reverse_lazy('tgroup_list')
+    template_name = 'home/crud/tgroup_del.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(TGroupDelete, self).dispatch(request, *args, **kwargs)
+
+class GMaterialsList(ListView):
+    template_name = 'home/crud/gmaterials.html'
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.GET.get('menu'):
+            context['menu'] = request.GET.get('get')
+        context['gmaterials'] = GroupMaterials.objects.filter(flag=True)
+        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+
+class GMaterialsCreate(CreateView):
+    form_class = GMaterialsForm
+    model = GroupMaterials
+    success_url = reverse_lazy('gmaterials_list')
+    template_name = 'home/crud/gmaterials_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(GMaterialsCreate, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        try:
+            tgroup = GroupMaterials.objects.get(materials_id=self.object.materials, tgroup_id=self.object.tgroup)
+            print tgroup, 'tgroup question'
+            if tgroup:
+                return HttpResponseRedirect(self.success_url)
+            else:
+                self.object.mgroup_id = genkeys.GenerateIdGroupMaterials()
+                self.object.save()
+                return super(GMaterialsCreate, self).form_valid(form)
+        except Exception, e:
+            self.object.mgroup_id = genkeys.GenerateIdGroupMaterials()
+            self.object.save()
+            return super(GMaterialsCreate, self).form_valid(form)
+
+class GMaterialsUpdate(UpdateView):
+    form_class = GMaterialsForm
+    model = GroupMaterials
+    slug_field = 'mgroup_id'
+    slug_url_kwarg = 'mgroup_id'
+    success_url = reverse_lazy('gmaterials_list')
+    template_name = 'home/crud/gmaterials_form.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(GMaterialsUpdate, self).dispatch(request, *args, **kwargs)
+
+class GMaterialsDelete(DeleteView):
+    model = GroupMaterials
+    slug_field = 'mgroup_id'
+    slug_url_kwarg = 'mgroup_id'
+    success_url = reverse_lazy('gmaterials_list')
+    template_name = 'home/crud/gmaterials_del.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(GMaterialsDelete, self).dispatch(request, *args, **kwargs)

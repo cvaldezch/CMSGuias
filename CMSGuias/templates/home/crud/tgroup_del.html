@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}
+    Delete Tipo de Grupo
+{% endblock title %}
+{% block content %}
+<div class="container">
+    <div class="alert alert-block brand-danger">
+        <h1>Eliminar Tipo de Grupo</h1>
+        <form method="post">
+            {% csrf_token %}
+            <p>
+                Estas Seguro(a) que desea eliminar "{{ object }}"?
+            </p>
+            <a href="{% url 'tgroup_list' %}" class="btn btn-default">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+                Regresar
+            </a>
+            <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Eliminar</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

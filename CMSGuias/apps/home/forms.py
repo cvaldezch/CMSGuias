@@ -101,3 +101,24 @@ class ModelForm(forms.ModelForm):
             'brand' : forms.Select(attrs = {'class':'form-control'}),
             'model' : forms.TextInput(attrs = {'class':'form-control'}),
         }
+
+# Type Group
+class TGroupForm(forms.ModelForm):
+    class Meta:
+        model = TypeGroup
+        exclude = {'tgroup_id','flag'}
+        widgets = {
+            'typeg' : forms.TextInput(attrs = {'class':'form-control'}),
+        }
+
+class GMaterialsForm(forms.ModelForm):
+    class Meta:
+        model = GroupMaterials
+        exclude = {'mgroup_id', 'flag',}
+        widgets = {
+            'tgroup': forms.Select(attrs = {'class': 'form-control'}),
+            'description': forms.TextInput(attrs = {'class': 'form-control'}),
+            'materials_id': forms.Select(attrs = {'class': 'form-control'}),
+            'parent': forms.TextInput(attrs = {'class': 'form-control'}),
+            'observation': forms.Textarea(attrs = {'class': 'form-control'}),
+        }
