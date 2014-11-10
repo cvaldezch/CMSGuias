@@ -10,6 +10,7 @@ from django.db.models import Count
 # necesario para el login y autenticacion
 from django.contrib.auth import login, logout, authenticate
 from django.core.urlresolvers import reverse_lazy
+from django.utils import simplejson
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, View
@@ -21,6 +22,18 @@ from CMSGuias.apps.tools import genkeys
 from .models import *
 from .forms import *
 
+
+class JSONResponseMixin(object):
+    def render_to_json_response(self, context, **response_kwargs):
+        return HttpResponse(
+            self.convert_context_to_json(context),
+            content_type='application/json',
+            mimetype='application/json',
+            **response_kwargs
+        )
+
+    def convert_context_to_json(self, context):
+        return simplejson.dumps(context, encoding='utf-8')
 
 class HomeManager(ListView):
     template_name = 'home/home.html'
@@ -521,3 +534,58 @@ class GMaterialsDelete(DeleteView):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(GMaterialsDelete, self).dispatch(request, *args, **kwargs)
+
+class DetailsGMaterials(JSONResponseMixin, View):
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if request.is_ajax():
+                try:
+                    if 'listMaterials' in request.GET:
+                        context['details'] = [
+                                            {
+                                            'code': x.materials_id,
+                                            'name': x.materials.matnom,
+                                            'meter': x.materials.matmed,
+                                            'unit': x.materials.unidad.uninom,
+                                            'quantity': x.quantity
+                                            }
+                                            for x in DetailsGroup.objects.filter(mgroup_id=kwargs['mgroup']).order_by('materials__matnom')]
+                        context['status'] = True
+                except ObjectDoesNotExist, e:
+                    context['raise'] = e.__str__()
+                    context['status'] = False
+                return self.render_to_json_response(context)
+            context['mgroup'] = get_object_or_404(GroupMaterials, mgroup_id=kwargs['mgroup'])
+            context['gmaterials'] = DetailsGroup.objects.filter(mgroup_id=kwargs['mgroup']).order_by('materials__matnom')
+            # print kwargs['mgroup']
+            return render_to_response('home/crud/detailsgmaterials.html', context, context_instance=RequestContext(request))
+        except TemplateDoesNotExist, e:
+            raise Http404('Template Does Not Exist')
+
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'addMaterials' in request.POST:
+                    try:
+                        dt = DetailsGroup.objects.get(mgroup_id=kwargs['mgroup'], materials_id=request.POST.get('code'))
+                        dt.quantity = (dt.quantity + float(request.POST.get('quantity')))
+                        dt.save()
+                    except ObjectDoesNotExist:
+                        nw = DetailsGroup()
+                        nw.mgroup_id = kwargs['mgroup']
+                        nw.materials_id = request.POST.get('code')
+                        nw.quantity = request.POST.get('quantity')
+                        nw.save()
+                    context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
+
+
+# 229591478001006
+# 225011468013194
+# 224181036317004
+# 113063060600001

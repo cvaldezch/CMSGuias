@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block script %}
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="{{ MEDIA_URL }}js/getMaterials.js"></script>
+<script src="{{ MEDIA_URL }}js/home/gmaterialsdetails.js"></script>
+{% endblock script %}
+{% block menu %}
+    {% include "menus/sale.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+    <div class="well">
+        <header>
+            <h3>
+                Detalle de Grupo de Materiales
+                <small>{{ mgroup.mgroup_id }}</small>
+            </h3>
+        </header>
+        <section>
+            <div class="panel panel-warning">
+                <div class="panel-body">
+                    <dl class="dl-horizontal">
+                        <dt>Descripción</dt>
+                        <dd>{{ mgroup.description }}</dd>
+                        <dt>Grupo</dt>
+                        <dd>{{ mgroup.tgroup.typeg }}</dd>
+                        <dt>Material</dt>
+                        <dd>{{ mgroup.materials }}</dd>
+                        <dt>Referencial</dt>
+                        <dd>{{ mgroup.parent }}</dd>
+                        <dt>Observación</dt>
+                        <dd>{{ mgroup.observation }}</dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-footer">
+                    <button class="btn btn-success btn-sm text-black btn-add-show">
+                        <span class="glyphicon glyphicon-plus-sign"></span>
+                        <span class="glyhicon-class">Agregar</span>
+                    </button>
+                    <button class="btn btn-danger btn-sm btn-del-all">
+                        <span class="glyphicon glyphicon-trash"></span>
+                        Eliminar Todo
+                    </button>
+                    <button class="btn btn-primary btn-sm btn-save pull-right">
+                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                        Guardar
+                    </button>
+                </div>
+                <div class="panel-body bg-warning panel-add-materials">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group has-warning">
+                                <label class="control-label">Descripción / Nombre de material</label>
+                                <input type="text" class="form-control input-sm" name="description">
+                                <ul id="matname-global" class="matname-global"></ul>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group has-warning">
+                                <label class="control-label">Código</label>
+                                <input type="text" class="form-control input-sm" maxlength="15" name="code">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group has-warning">
+                                <label class="control-label">Medida</label>
+                                <select class="form-control input-sm" name="meter"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Metrado/Cantidad</label>
+                                    <input type="text" class="form-control input-sm text-right" name="cantidad" min="1" placeholder="0.0">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Incluir Grupo</label>
+                                    <input type="checkbox" name="mgroup" checked="checked">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Agregar</label>
+                                    <button class="btn btn-block btn-warning text-black btn-add">
+                                        <span class="glyphicon glyphicon-plus-sign"></span>
+                                    </button>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="alert alert-warning alert-block">
+                                <strong>Resumén</strong>
+                                <table class="table-condensed tb-details">
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-condended table-details">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Código</th>
+                                <th>Descripción</th>
+                                <th>Diametro</th>
+                                <th>Unidad</th>
+                                <th>Cantidad</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for x in gmaterials %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ x.materials_id }}</td>
+                                    <td>{{ x.materials.matnom }}</td>
+                                    <td>{{ x.materials.matmed }}</td>
+                                    <td> {{ x.materials.unidad.uninom }}</td>
+                                    <td>{{ x.quantity|safe }}</td>
+                                    <td class="text-center">
+                                        <button class="btn btn-xs btn-link text-green btn-edit" value="{{ x.materials_id }}">
+                                            <span class="glyphicon glyphicon-edit"></span>
+                                        </button>
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-xs btn-link text-red btn-del" value="{{ x.materils_id }}">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            {#{% empty %}#}
+                                <!-- <tr>
+                                    <td colspan="8" class="h5 text-center text-warning">
+                                        Agrege materiales para crear un grupo.
+                                    </td>
+                                </tr> -->
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<!-- tools  aux -->
+{% csrf_token %}
+{% endblock content %}

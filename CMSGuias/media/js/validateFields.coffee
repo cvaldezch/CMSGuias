@@ -15,3 +15,14 @@ convertNumber = (val) ->
     else
         num = parseFloat(val)
     return num
+
+numberOnly = (event) ->
+    #@value = @value.replace `/[^0-9\.]/g`, '' # OK
+    #if (String.fromCharCode(event.KeyCode).match(`/[^0-9]/g`))
+    #    return false
+    #console.info event.keyCode
+    # Level Key Window
+    key = `window.Event ? event.keyCode : event.which`
+    if key isnt 37 and key isnt 39 and key isnt 8 and key isnt 190 and key isnt 110 and (key < 48 or key > 57) and (key < 96 or key > 105)
+        event.preventDefault()
+    return

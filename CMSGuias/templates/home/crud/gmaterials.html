@@ -34,8 +34,7 @@
                                 <td>{{ x.parent }}</td>
                                 <td>{{ x.observation }}</td>
                                 <td class="text-center">
-                                    {# {% url '' x.mgroup %} #}
-                                    <a href="#">
+                                    <a href="{% url 'gmaterials_details' x.mgroup_id %}">
                                         <span class="glyphicon glyphicon-list"></span>
                                     </a>
                                 </td>
