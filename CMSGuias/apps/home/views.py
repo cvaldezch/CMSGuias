@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
+import json
+
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext, TemplateDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
@@ -552,6 +554,33 @@ class DetailsGMaterials(JSONResponseMixin, View):
                                             }
                                             for x in DetailsGroup.objects.filter(mgroup_id=kwargs['mgroup']).order_by('materials__matnom')]
                         context['status'] = True
+                    if 'searchGruop' in request.GET:
+                        if request.GET.get('name') == 'gcode':
+                            details = GroupMaterials.objects.filter(pk=request.GET.get('val'))
+                        elif request.GET.get('name') == 'gdesc':
+                            details = GroupMaterials.objects.filter(description__icontains=request.GET.get('val'))
+                        context['details'] =[
+                                            {
+                                            'mgroup_id': x.mgroup_id,
+                                            'desc': x.description,
+                                            'materials': '%s %s'%(x.materials.matnom, x.materials.matmed),
+                                            'parent': x.parent,
+                                            'tgroup': x.tgroup.typeg
+                                            }
+                                            for x in details]
+                        print details, 'details'
+                        context['status'] = True
+                    if 'listDetails' in request.GET:
+                        context['details'] = [
+                                            {
+                                            'code': x.materials_id,
+                                            'name': x.materials.matnom,
+                                            'meter': x.materials.matmed,
+                                            'unit': x.materials.unidad.uninom,
+                                            'quantity': x.quantity
+                                            }
+                                            for x in DetailsGroup.objects.filter(mgroup_id=request.GET.get('code')).order_by('materials__matnom')]
+                        context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = e.__str__()
                     context['status'] = False
@@ -579,13 +608,33 @@ class DetailsGMaterials(JSONResponseMixin, View):
                         nw.quantity = request.POST.get('quantity')
                         nw.save()
                     context['status'] = True
+                if 'eMaterials' in request.POST:
+                    dt = DetailsGroup.objects.get(mgroup_id=kwargs['mgroup'], materials_id=request.POST.get('code'))
+                    dt.quantity = float(request.POST.get('quantity'))
+                    dt.save()
+                    context['status'] = True
+                if 'delMaterial' in request.POST:
+                    DetailsGroup.objects.get(mgroup_id=kwargs['mgroup'],materials_id=request.POST.get('materials')).delete()
+                    context['status'] = True
+                if 'delall' in request.POST:
+                    DetailsGroup.objects.filter(mgroup_id=kwargs['mgroup']).delete()
+                    context['status'] = True
+                if 'copyClipboard' in request.POST:
+                    if json.loads(request.POST.get('replace')):
+                        DetailsGroup.objects.filter(mgroup_id=kwargs['mgroup']).delete()
+                    for x in json.loads(request.POST.get('details')):
+                        try:
+                            dt = DetailsGroup.objects.get(mgroup_id=kwargs['mgroup'], materials_id=x['materials'])
+                            dt.quantity = (dt.quantity + float(x['quantity']))
+                            dt.save()
+                        except ObjectDoesNotExist:
+                            nw = DetailsGroup()
+                            nw.mgroup_id = kwargs['mgroup']
+                            nw.materials_id = x['materials']
+                            nw.quantity = x['quantity']
+                            nw.save()
+                    context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
-
-
-# 229591478001006
-# 225011468013194
-# 224181036317004
-# 113063060600001

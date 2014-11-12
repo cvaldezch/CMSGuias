@@ -17,6 +17,10 @@
             </h3>
         </header>
         <section>
+            <a href="{% url 'gmaterials_list' %}" class="btn btn-sm btn-default">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+                Regresar
+            </a>
             <div class="panel panel-warning">
                 <div class="panel-body">
                     <dl class="dl-horizontal">
@@ -43,9 +47,9 @@
                         <span class="glyphicon glyphicon-trash"></span>
                         Eliminar Todo
                     </button>
-                    <button class="btn btn-primary btn-sm btn-save pull-right">
-                        <span class="glyphicon glyphicon-floppy-disk"></span>
-                        Guardar
+                    <button class="btn btn-primary btn-sm btn-cp pull-right">
+                        <span class="fa fa-files-o fa-lg"></span>
+                        Copiar
                     </button>
                 </div>
                 <div class="panel-body bg-warning panel-add-materials">
@@ -119,7 +123,7 @@
                         </thead>
                         <tbody>
                             {% for x in gmaterials %}
-                                <tr>
+                                <tr class="tr-{{ x.materials_id }}">
                                     <td>{{ forloop.counter }}</td>
                                     <td>{{ x.materials_id }}</td>
                                     <td>{{ x.materials.matnom }}</td>
@@ -132,7 +136,7 @@
                                         </button>
                                     </td>
                                     <td class="text-center">
-                                        <button class="btn btn-xs btn-link text-red btn-del" value="{{ x.materils_id }}">
+                                        <button class="btn btn-xs btn-link text-red btn-del" value="{{ x.materials_id }}">
                                             <span class="glyphicon glyphicon-trash"></span>
                                         </button>
                                     </td>
@@ -153,4 +157,114 @@
 </div>
 <!-- tools  aux -->
 {% csrf_token %}
+<!-- block modals -->
+<div class="modal fade mequantity">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                Editar cantidad
+                <span class="emname"></span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">Cantidad</label>
+                    <input type="text" name="equantity" class="form-control input-sm">
+                    <input type="hidden" name="ematerials">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-default btn-sm" data-dismiss="modal">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        Cancelar
+                    </button>
+                    <button class="btn btn-primary btn-sm btn-save-e">
+                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                        Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- copy materials -->
+<div class="modal fade mcopy">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a data-dismiss="modal" class="close">&times;</a>
+                Copiar Grupo de Materiales
+            </div>
+            <div class="modal-body body-one">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group has-primary">
+                            <input type="text" name="gdesc" placehoder="Descripción" class="form-control input-sm">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group has-primary">
+                            <input type="text" name="gcode" class="form-control input-sm" placeholder="Codigo" maxlength="10">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-condensed table-hover tgroup">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Descrición</th>
+                                        <th>Material</th>
+                                        <th>Group</th>
+                                        <th>Tipo</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body body-two">
+                <div class="row">
+                    <div class="col-md-12">
+                        <strong class="capdet"></strong>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table condensed table-bordered table-striped table-copy">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Código</th>
+                                        <th>Descripción</th>
+                                        <th>Diametro</th>
+                                        <th>Unidad</th>
+                                        <th>Cantidad</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <button class="btn btn-sm btn-default btn-back-copy">
+                            <span class="fa fa-chevron-circle-left"></span>
+                            regresar
+                        </button>
+                        <div class="btn-group" data-toggle="buttons">
+                            <label class="btn btn-danger btn-sm">
+                                <input type="checkbox" name="replace" autocomplete="off"> Reemplazar y copiar
+                            </label>
+                        </div>
+                        <button class="btn btn-sm btn-primary pull-right btn-save-clipboard">
+                            <span class="fa fa-clipboard fa-lg"></span>
+                            Guardar Lista
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end blocks -->
 {% endblock content %}

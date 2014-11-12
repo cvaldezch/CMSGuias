@@ -9,8 +9,8 @@ $(document).ready ->
     $("[name=plane-del]").on "click", delPlane
     $(".btn-add").on "click", addMaterial
     $(".btn-show-del").on "click", dellAllMaterial
-    $(".btn-new-brand").on "click", openBrand
-    $(".btn-new-model").on "click", openModel
+    #$(".btn-new-brand").on "click", openBrand
+    #$(".btn-new-model").on "click", openModel
     $("[name=show-plane], .btn-upload-plane-meter").on "click", (event) ->
         $("input[name=plane]").click()
     $(document).on "click", ".btn-del-mat", delMaterials

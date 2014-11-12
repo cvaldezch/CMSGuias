@@ -14,6 +14,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Sum
 from django.utils import simplejson
+from django.utils.decorators import method_decorator
 from django.core import serializers
 
 from CMSGuias.apps.almacen.models import *
@@ -743,6 +744,7 @@ class GetIVAYear(JSONResponseMixin, View):
         return self.render_to_json_response(context)
 
 class GetNumberLiteral(JSONResponseMixin, View):
+    @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
@@ -752,3 +754,72 @@ class GetNumberLiteral(JSONResponseMixin, View):
             context['raise'] = e.__str__()
             context['status'] = False
         return self.render_to_json_response(context)
+
+# Search Group materials
+class SearchGroupMaterials(JSONResponseMixin, View):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            context = dict()
+            try:
+                if 'searchGroupMaterial' in request.GET:
+                    gl = GroupMaterials.objects.filter(materials_id=request.GET.get('materials'))
+                    if gl:
+                        context['result'] = True
+                        context['list'] = [
+                            {
+                                'mgroup': x.mgroup_id,
+                                'description': x.description,
+                                'materials': x.materials_id,
+                                'name': '%s - %s'%(x.materials.matnom,x.materials.matmed),
+                                'type': x.tgroup_id,
+                                'tdesc': x.tgroup.typeg
+                            }
+                            for x in gl
+                        ]
+                        context['result'] = True
+                    else:
+                        pt = request.GET.get('materials')[0:12]
+                        gl = GroupMaterials.objects.filter(parent=pt)
+                        if gl:
+                            context['list'] = [
+                                {
+                                    'mgroup': x.mgroup_id,
+                                    'description': x.description,
+                                    'materials': x.materials_id,
+                                    'name': '%s - %s'%(x.materials.matnom,x.materials.matmed),
+                                    'type': x.tgroup_id,
+                                    'tdesc': x.tgroup.typeg
+                                }
+                                for x in gl
+                            ]
+                            context['result'] = True
+                            context['parent'] = True
+                        else:
+                            context['result'] = False
+                    context['status'] = True
+                if 'DetailsGroupMaterials' in request.GET:
+                    context['details'] = [
+                        {
+                            'materials': x.materials_id,
+                            'name': x.materials.matnom,
+                            'diameter': x.materials.matmed,
+                            'unit': x.materials.unidad.uninom,
+                            'quantity': x.quantity
+                        }
+                        for x in DetailsGroup.objects.filter(mgroup_id=request.GET.get('mgroup')).order_by('materials__matnom')
+                    ]
+                    for x in DetailsGroup.objects.filter(mgroup_id=request.GET.get('mgroup')).order_by('materials__matnom'):
+                        context[x.materials_id] = [
+                            {
+                                'materials': m.materiales_id,
+                                'meter': m.matmed
+                            }
+                            for m in Materiale.objects.filter(materiales_id__startswith=x.materials_id[0:12])
+                        ]
+                    context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)

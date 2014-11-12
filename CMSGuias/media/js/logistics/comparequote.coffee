@@ -12,6 +12,8 @@ $(document).ready ->
         $("[name=deposit]").click()
         return
     calcamounts()
+    if $("table").width() >= 1100
+        $(".table-responsive").css("overflow-x","scroll")
     return
 
 calcamounts = (event) ->

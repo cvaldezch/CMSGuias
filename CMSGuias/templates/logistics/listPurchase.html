@@ -6,6 +6,7 @@
 <script src="{{ MEDIA_URL }}js/getMaterials.js"></script>
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>
 <script src="{{ MEDIA_URL }}js/logistics/listPurchase.js"></script>
+<script src="{{ MEDIA_URL }}js/annimated.js"></script>
 {% endblock script %}
 {% block menu %}
     {% include "menus/logistics.htm" %}
@@ -204,15 +205,135 @@
             <div class="panel-footer">
                 <h5 class="text-bold">Detalle de Orden de Compra</h5>
             </div>
+            <div class="panel-footer">
+                <div class="form-group">
+                    <button class="btn btn-sm btn-success text-black btn-show-add">
+                        <span class="fa fa-plus-square-o fa-lg"></span>
+                        <span>Agregar Material</span>
+                    </button>
+                    <button class="btn btn-sm btn-danger text-black btn-delete">
+                        <span class="fa fa-check-square-o fa-lg"></span>
+                        <span class="fa fa-trash-o fa-lg"></span> Elimimar
+                    </button>
+                </div>
+            </div>
+            <div class="panel-body panel-add bg-warning">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Descripción / Nombre de material</label>
+                                    <input type="text" class="form-control input-sm" name="description">
+                                    <ul id="matname-global" class="matname-global"></ul>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Código</label>
+                                    <input type="text" class="form-control input-sm" maxlength="15" name="code">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Medida</label>
+                                    <select class="form-control input-sm" name="meter"></select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Metrado/Cantidad</label>
+                                        <input type="text" class="form-control input-sm" name="quantity" min="1" placeholder="0">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Precio</label>
+                                        <input type="text" class="form-control input-sm" name="price" min="1" placeholder="0">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Marca</label>
+                                        <div class="input-group">
+                                            <select name="brand" id="brand" class="form-control input-sm"></select>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-sm btn-default btn-new-brand"><span class="glyphicon glyphicon-plus"></span></button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Modelo</label>
+                                        <div class="input-group">
+                                            <select name="model" id="model" class="form-control input-sm"></select>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default btn-sm btn-new-model"><span class="span glyphicon glyphicon-plus"></span></button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Incluir Grupo</label>
+                                        <input type="checkbox" name="gincludegroup" value="0">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Agregar</label>
+                                        <button class="btn btn-block btn-warning text-black btn-add">
+                                            <span class="glyphicon glyphicon-plus"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <p>
+                                        <small>
+                                            El precio del sistema esta expresado en <q class="currency-name">{{ system.moneda.moneda }}</q>
+                                        </small>
+                                    </p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-warning alert-block">
+                                    <strong>Resumén</strong>
+                                    <table class="table-condensed tb-details">
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="table table-responsive">
-                <table class="table table-condensed table-hover">
+                <table class="table table-condensed table-hover table-pod">
+                    <caption>
+                        <div class="form-group text-left">
+                            Seleccionar
+                            <label class="radio-inline">
+                                <input type="radio" name="select" value="1"> Todo
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="select" value="0"> Ninguno.
+                            </label>
+                        </div>
+                    </caption>
                     <thead>
                         <tr>
+                            <th></th>
                             <th>Item</th>
                             <th>Codigo</th>
                             <th>Descripción</th>
                             <th>Medida</th>
                             <th>Unidad</th>
+                            <th>Marca</th>
+                            <th>Modelo</th>
                             <th>Cantidad</th>
                             <th>Precio</th>
                             <th width="2cm">Dscto</th>
@@ -222,9 +343,9 @@
                     <tbody></tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="7" rowspan="4"></td>
+                            <td colspan="10" rowspan="4"></td>
                             <td>Subtotal</td>
-                            <td></td>
+                            <td class="text-bold tamount"></td>
                         </tr>
                         <tr>
                             <td>
@@ -232,21 +353,21 @@
                                     <span class="input-group-addon">
                                         DSCTO.
                                     </span>
-                                    <input type="text" class="form-control input-sm">
+                                    <input type="text" class="form-control input-sm edsct">
                                     <span class="input-group-addon">
                                         %
                                     </span>
                                 </div>
                             </td>
-                            <td></td>
+                            <td class="tdsct"></td>
                         </tr>
                         <tr>
-                            <td>IGV</td>
-                            <td></td>
+                            <td>IGV <span class="eigv"></span></td>
+                            <td class="tigv"></td>
                         </tr>
                         <tr>
                             <th>Total</th>
-                            <th></th>
+                            <th class="text-bold ttotal"></th>
                         </tr>
                     </tfoot>
                 </table>

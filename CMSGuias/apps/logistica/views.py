@@ -364,7 +364,7 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
                         # Save quotation
                         obj = Cotizacion()
                         obj.cotizacion_id = quote
-                        obj.empdni = request.user.get_profile().empdni_id
+                        obj.empdni_id = request.user.get_profile().empdni_id
                         obj.almacen_id = request.POST.get('almacen')
                         obj.traslado = request.POST.get('traslado')
                         obj.obser = request.POST.get('obser')
@@ -572,16 +572,36 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
 
 class ListPurchase(JSONResponseMixin, TemplateView):
     template_name = 'logistics/listPurchase.html'
+
+    @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         try:
             context = dict()
             if request.is_ajax():
                 try:
                     if 'code' in request.GET:
-                        context['list'] = [{'purchase' : x.compra_id, 'document' : x.documento.documento, 'transfer' :  globalVariable.format_date_str(x.traslado), 'currency' : x.moneda.moneda, 'deposito' : str(x.deposito), 'status':x.status} for x in Compra.objects.filter(flag=True, pk=request.GET.get('code'))]
-
+                        context['list'] = [
+                                        {
+                                        'purchase': x.compra_id,
+                                        'document': x.documento.documento,
+                                        'transfer':  globalVariable.format_date_str(x.traslado),
+                                        'currency': x.moneda.moneda,
+                                        'deposito': str(x.deposito),
+                                        'status':x.status
+                                        } for x in Compra.objects.filter(flag=True, pk=request.GET.get('code'))
+                                        ]
                     if 'status' in request.GET:
-                        context['list'] = [{'purchase' : x.compra_id, 'document' : x.documento.documento, 'transfer' :  globalVariable.format_date_str(x.traslado), 'currency' : x.moneda.moneda, 'deposito' : str(x.deposito), 'status':x.status} for x in Compra.objects.filter(flag=True, status=request.GET.get('status'))]
+                        context['list'] = [
+                                        {
+                                        'purchase': x.compra_id,
+                                        'document': x.documento.documento,
+                                        'transfer': globalVariable.format_date_str(x.traslado),
+                                        'currency': x.moneda.moneda,
+                                        'deposito': str(x.deposito),
+                                        'status':x.status
+                                        }
+                                        for x in Compra.objects.filter(flag=True, status=request.GET.get('status'))
+                                        ]
                     if 'dates' in request.GET:
                         if 'start' in request.GET and 'end' not in request.GET:
                             obj = Compra.objects.filter(flag=True, registrado__startswith=globalVariable.format_str_date(request.GET.get('start')))
@@ -598,6 +618,23 @@ class ListPurchase(JSONResponseMixin, TemplateView):
                         context['currency'] = p.moneda_id
                         context['transfer'] = globalVariable.format_date_str(p.traslado)
                         context['contact'] = p.contacto
+                        context['discount'] = p.discount
+                        context['igv'] = search.getIGVCurrent(p.registrado.strftime('%Y'))
+                        context['details'] = [
+                            {
+                                'materials': x.materiales_id,
+                                'name': x.materiales.matnom,
+                                'meter': x.materiales.matmed,
+                                'unit': x.materiales.unidad.uninom,
+                                'brand': x.brand.brand,
+                                'model': x.model.model,
+                                'quantity': x.cantidad,
+                                'price': x.precio,
+                                'discount': float(x.discount),
+                                'amount': ((x.precio - float(x.discount)) * x.cantidad)
+                            }
+                            for x in DetCompra.objects.filter(compra_id=request.GET.get('purchase')).order_by('materiales__materiales_id')
+                        ]
                     context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = e.__str__()
@@ -611,6 +648,19 @@ class ListPurchase(JSONResponseMixin, TemplateView):
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404('Template not found')
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'addDPurchase' in request.POST:
+
+                    pass
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
 
 class LoginSupplier(JSONResponseMixin, TemplateView):
     template_name = 'logistics/loginSupplier.html'

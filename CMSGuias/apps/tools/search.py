@@ -7,6 +7,7 @@ from CMSGuias.apps.home.models import Brand, Model, Configuracion
 #from CMSGuias.apps.ventas.models import 'Proyecto'
 from CMSGuias.apps.tools import globalVariable
 
+
 class searchBrands:
     """docstring for searchBrands"""
 
@@ -70,13 +71,14 @@ def searchPeriodProject(code=''):
     return period
 
 # Get igv for year current
-def getigvCurrent():
+def getIGVCurrent(year=''):
     igv = ''
     try:
-        igv = Configuracion.objects.get(periodo__exact=globalVariable.get_year)
-        igv = igv.igv
+        conf = Configuracion.objects.get(periodo__exact=year)
+        igv = conf.igv
     except ObjectDoesNotExist, e:
-        raise e
+        conf = Configuracion.objects.get(periodo__exact=globalVariable.get_year)
+        igv = conf.igv
     return igv
 
 def getPricePurchaseInventory(code=''):

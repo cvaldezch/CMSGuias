@@ -1,5 +1,5 @@
 $(document).ready ->
-    $(".step-two").hide()
+    $(".step-two, .panel-add").hide()
     $("input[name=star],input[name=end]").datepicker dateFormat : "yy-mm-dd", showAnim : "slide"
     $("input[name=search]").on "change", changeSearch
     $(".btn-search").on "click", getSearch
@@ -7,6 +7,9 @@ $(document).ready ->
     $(document).on "click", ".btn-actions", showActions
     $(".btn-edtp").on "click", showEditPurchasae
     $(".btn-back").on "click", showStepOne
+    $("input[name=select]").on "change", changeSelect
+    $(".btn-show-add").on "mouseenter mouseleave", animateAdd
+    .on "click", showPanelAdd
     return
 
 changeSearch = ->
@@ -125,4 +128,122 @@ getDataPurchase = (purchase) ->
             $("select[name=currency]").val response.currency
             $("input[name=transfer]").val response.transfer
             $("input[name=contact]").val response.contact
+            $("input.edsct").val response.discount
+            $("span.eigv").text "#{response.igv}%"
+            $tb = $("table.table-pod > tbody")
+            $tb.empty()
+            template = "<tr>
+                        <td>
+                        <input type=\"checkbox\" name=\"mats\" value=\"{{ materials }}\">
+                        </td>
+                        <td>{{ item }}</td>
+                        <td>{{ materials }}</td>
+                        <td>{{ name }}</td>
+                        <td>{{ meter }}</td>
+                        <td>{{ unit }}</td>
+                        <td>{{ brand }}</td>
+                        <td>{{ model }}</td>
+                        <td>{{ quantity }}</td>
+                        <td>{{ price }}</td>
+                        <td>{{ discount }}</td>
+                        <td>{{ amount }}</td>
+                        <td>
+                            <button class=\"btn btn-xs btn-link text-green\">
+                                <span class=\"glyphicon glyphicon-edit\"></span>
+                            </button>
+                        </td>
+                        </tr>"
+            for x of response.details
+                response.details[x].item = parseInt(x) + 1
+                $tb.append Mustache.render template, response.details[x]
+            calcAmount()
+            return
+        else
+            $().toastmessage "showWarningToast", "No se han conseguidos los datos. #{response.raise}"
+    return
+
+calcAmount = (event) ->
+    amount = 0
+    $("table.table-pod > tbody > tr").each (index, element) ->
+        $td = $(element).find "td"
+        amount += convertNumber $td.eq(11).text()
+        return
+    $(".tamount").text amount.toFixed 2
+    dsct = ((amount * convertNumber($("input.edsct").val())) / 100)
+    $(".tdsct").text dsct.toFixed 2
+    amount = (amount - dsct)
+    igv = $("span.eigv").text().split("%")[0]
+    igv = (amount * convertNumber(igv) / 100)
+    $(".tigv").text igv.toFixed 2
+    $(".ttotal").text (amount + igv).toFixed 2
+    return
+
+changeSelect = (event) ->
+    $("input[name=select]").each (ind, radio)->
+        if @checked
+            $("input[name=mats]").each (index, element) ->
+                element.checked = Boolean parseInt radio.value
+                return
+            return
+    return
+
+showPanelAdd = (event) ->
+    btn = @
+    $(".panel-add").fadeToggle 600, ->
+        if @style.display is 'block'
+            $(btn).removeClass "btn-success text-black"
+            .addClass "btn-default"
+            .find "span"
+            .eq 0
+            .removeClass "fa-plus-square-o"
+            .addClass "fa-times-circle-o"
+            $(btn).find "span"
+            .eq 1
+            .text "Cancelar"
+            return
+        else
+            $(btn).removeClass "btn-default"
+            .addClass "btn-success"
+            .addClass "text-black"
+            .find "span"
+            .eq 0
+            .removeClass "fa-times-circle-o"
+            .addClass "fa-plus-square-o"
+            $(btn).find "span"
+            .eq 1
+            .text "Agregar Material"
+            return
+    return
+
+addNewMaterialPurchase = (event) ->
+    data = new Object
+    data.code = $.trim $(".id-mat").text()
+    if data.code.length isnt 15
+        $().toastmessage "showWarningToast", "Seleccione por lo menos un material para ingresar."
+        return false
+    data.quantity = convertNumber $("input[name=quantity]").val()
+    if isNaN(data.quantity) or data.quantity <= 0
+        $().toastmessage "showWarningToast", "La cantidad ingresada debe ser mayor a 0."
+        return false
+    data.price = convertNumber $("input[name=price]").val()
+    if isNaN(data.price) or data.quantity <= 0
+        $().toastmessage "showWarningToast", "El precio ingresado debe ser mayor a 0."
+        return false
+    data.brand = $("select[name=brand]").val()
+    data.model = $("select[name=model]").val()
+    if data.brand isnt "" and data.model isnt ""
+        $().toastmessage "showWarningToast", "Debe de seleccionar una marca y modelo."
+        return false
+    if $("input[name=gincludegroup]").length and $("input[name=gincludegroup]").is(":checked")
+        if tmpObjectDetailsGroupMaterials.details.length
+            data.details = tmpObjectDetailsGroupMaterials.details
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    $.post "", data, (response) ->
+        if response.status
+            listDetails()
+            return
+    return
+
+listDetails = (event) ->
+    calcAmount()
     return

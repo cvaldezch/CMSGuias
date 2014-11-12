@@ -21,6 +21,9 @@ $(document).ready(function() {
     $("[name=deposit]").click();
   });
   calcamounts();
+  if ($("table").width() >= 1100) {
+    $(".table-responsive").css("overflow-x", "scroll");
+  }
 });
 
 calcamounts = function(event) {
@@ -198,7 +201,7 @@ savePurchase = function() {
       contentType: false,
       success: function(response) {
         if (response.status) {
-          $().toastmessage("showWarningToast", "Felicidades! se a generar la <q>Orden de Compra</q> Nro " + response.purchase);
+          $().toastmessage("showNoticeToast", "Felicidades! se a generar la <q>Orden de Compra</q> Nro " + response.purchase);
           return setTimeout(function() {
             $("input[name=edit" + ($("[name=ruc]").val()) + "]").attr("disabled", "disabled");
             $(".btn-purchase").each(function(index, element) {

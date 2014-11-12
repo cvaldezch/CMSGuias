@@ -24,6 +24,9 @@
 	<link rel="stylesheet" href="/media/bootstrap/css/bootstrap-theme.css">
 	<script src="/media/bootstrap/js/bootstrap.js"></script>
 	{% endblock %}
+	{% block fontawesome %}
+		<link rel="stylesheet" href="{{ MEDIA_URL }}font-awesome-4/css/font-awesome.css">
+	{% endblock fontawesome %}
 	<!-- Part Styles -->
 	{% block style %}{% endblock %}
 	<!-- Part Scripts -->
@@ -47,12 +50,12 @@
 		{% block header %}
 		{% endblock %}
 		{% block menu %}
-		
+
 		{% endblock %}
 	</header>
 	<section>
 	{% block content %}
-	{% endblock %}	
+	{% endblock %}
 	</section>
 	<footer>{% block footer %}{% endblock %}</footer>
 </body>
