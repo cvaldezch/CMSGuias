@@ -26,7 +26,8 @@ convertNumber = function(val) {
 numberOnly = function(event) {
   var key;
   key = window.Event ? event.keyCode : event.which;
-  if (key !== 37 && key !== 39 && key !== 8 && key !== 190 && key !== 110 && (key < 48 || key > 57) && (key < 96 || key > 105)) {
+  if (key !== 37 && key !== 39 && key !== 8 && key !== 46 && (key < 48 || key > 57)) {
     event.preventDefault();
+    return false;
   }
 };

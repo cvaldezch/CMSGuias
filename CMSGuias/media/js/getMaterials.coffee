@@ -241,15 +241,14 @@ bgModalErase = (event)->
         $(".msgparent").addClass "hide"
     return
 
-
 tmpObjectDetailsGroupMaterials = new Object
 bgModalAddMaterials = (event) ->
-    tm = Array
+    tm = new Array
     $("table.table-group-materials-details-global > tbody > tr").each (index, element) ->
         $td = $(element).find("td")
         tm.push
-            "materials": $td.eq(4).find("select").val(),
-            "quantity": $td.eq(6).find("input").val()
+            "materials": $td.eq(3).find("select").val(),
+            "quantity": $td.eq(5).find("input").val()
         return
     tmpObjectDetailsGroupMaterials.details = tm
     $("#searchGroupModalGlobal").modal "hide"
@@ -291,7 +290,7 @@ searchModelOption = ->
       return
   return
 
-getDataBrand = (event) ->
+getDataBrand = ->
   $.getJSON "/json/brand/list/option/", (response) ->
     if response.status
       return response.brand
@@ -299,7 +298,7 @@ getDataBrand = (event) ->
       return new Object
   return
 
-getDataModel = (event) ->
+getDataModel = ->
   $.getJSON "/json/model/list/option/", (response) ->
       if response.status
         return response.model
@@ -356,12 +355,10 @@ openModel = ->
 $(document).on "click", "select[name=brand]", (event) ->
   searchModelOption()
   return
-
 $(document).on "keyup", "input[name=description]", keyDescription
 $(document).on "keypress", "input[name=description]", keyUpDescription
 $(document).on "click", "select[name=meter]", getSummaryMaterials
 $(document).on "keypress", "input[name=code]", keyCode
-$(document).on "ketup", "input[name=quantity], input[name=price]", numberOnly
 # Listeners groups
 $(document).on "click", ".bg-modal-view-details", getDetailsGroupMaterials
 $(document).on "click", ".bg-modal-back", bgModalBack

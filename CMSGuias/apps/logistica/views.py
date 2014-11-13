@@ -633,7 +633,23 @@ class ListPurchase(JSONResponseMixin, TemplateView):
                                 'discount': float(x.discount),
                                 'amount': ((x.precio - float(x.discount)) * x.cantidad)
                             }
-                            for x in DetCompra.objects.filter(compra_id=request.GET.get('purchase')).order_by('materiales__materiales_id')
+                            for x in DetCompra.objects.filter(compra_id=request.GET.get('purchase')).order_by('materiales__matnom')
+                        ]
+                    if 'listDetails' in request.GET:
+                        context['details'] = [
+                            {
+                                'materials': x.materiales_id,
+                                'name': x.materiales.matnom,
+                                'meter': x.materiales.matmed,
+                                'unit': x.materiales.unidad.uninom,
+                                'brand': x.brand.brand,
+                                'model': x.model.model,
+                                'quantity': x.cantidad,
+                                'price': x.precio,
+                                'discount': float(x.discount),
+                                'amount': ((x.precio - float(x.discount)) * x.cantidad)
+                            }
+                            for x in DetCompra.objects.filter(compra_id=request.GET.get('purchase')).order_by('materiales__matnom')
                         ]
                     context['status'] = True
                 except ObjectDoesNotExist, e:
@@ -655,8 +671,58 @@ class ListPurchase(JSONResponseMixin, TemplateView):
         if request.is_ajax():
             try:
                 if 'addDPurchase' in request.POST:
-
-                    pass
+                    try:
+                        obj = DetCompra.objects.get(compra_id=request.POST.get('purchase'), materiales_id=request.POST.get('code'))
+                        obj.cantidad = float(request.POST.get('quantity')) + obj.cantidad
+                        obj.cantstatic = float(request.POST.get('quantity')) + obj.cantidad
+                        obj.precio = float(request.POST.get('price')) if 'price' in request.POST else obj.precio
+                        obj.discount = float(request.POST.get('discount'))
+                        obj.brand_id = request.POST.get('brand') if 'brand' in request.POST else obj.brand_id
+                        obj.model_id = request.POST.get('model') if 'model' in request.POST else obj.model_id
+                        obj.save()
+                    except ObjectDoesNotExist:
+                        obj = DetCompra()
+                        obj.compra_id = request.POST.get('purchase')
+                        obj.materiales_id = request.POST.get('code')
+                        obj.cantidad = float(request.POST.get('quantity'))
+                        obj.precio = float(request.POST.get('price'))
+                        obj.cantstatic = float(request.POST.get('quantity'))
+                        obj.flag = '0'
+                        obj.brand_id = request.POST.get('brand')
+                        obj.model_id = request.POST.get('model')
+                        obj.save()
+                    if 'details' in request.POST:
+                        for x in json.loads(request.POST.get('details')):
+                            try:
+                                obj = DetCompra.objects.get(compra_id=request.POST.get('purchase'), materiales_id=x['materials'])
+                                obj.cantidad = (float(request.POST.get('quantity')) * float(x['quantity'])) + obj.cantidad
+                                obj.cantstatic = (float(request.POST.get('quantity')) * float(x['quantity'])) + obj.cantidad
+                                obj.save()
+                            except ObjectDoesNotExist:
+                                obj = DetCompra()
+                                obj.compra_id = request.POST.get('purchase')
+                                obj.materiales_id = x['materials']
+                                obj.cantidad = (float(request.POST.get('quantity')) * float(x['quantity']))
+                                obj.precio = 0
+                                obj.cantstatic = (float(request.POST.get('quantity')) * float(x['quantity']))
+                                obj.flag = '0'
+                                obj.brand_id = 'BR000'
+                                obj.model_id = 'MO000'
+                                obj.save()
+                    context['status'] = True
+                if 'editDPurchase' in request.POST:
+                    obj = DetCompra.objects.get(compra_id=request.POST.get('purchase'), materiales_id=request.POST.get('materials'))
+                    obj.cantidad = float(request.POST.get('quantity'))
+                    obj.cantstatic = float(request.POST.get('quantity'))
+                    obj.precio = float(request.POST.get('price'))
+                    obj.discount = float(request.POST.get('discount'))
+                    obj.brand_id = request.POST.get('brand')
+                    obj.model_id = request.POST.get('model')
+                    obj.save()
+                    context['status'] = True
+                if 'delDPurchase' in request.POST:
+                    DetCompra.objects.filter(compra_id=request.POST.get('purchase'), materiales_id__in=json.loads(request.POST.get('materials'))).delete()
+                    context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
@@ -735,11 +801,34 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                 data = dict()
                 arsu = list()
                 for j in context['supplier']:
-                    dsup = DetCotizacion.objects.get(cotizacion_id=kwargs['quote'], proveedor_id=j.proveedor_id, materiales_id=x.materiales_id)
-                    discount = (float(dsup.discount) / 100)
-                    price = (dsup.precio - (float(dsup.precio) * discount))
-                    amount = (price * float(x.cantidad))
-                    arsu.append({'supplier':j.proveedor_id,'materiales_id':x.materiales_id, 'price':dsup.precio, 'discount': dsup.discount, 'brand':dsup.marca, 'model':dsup.modelo, 'amount':amount})
+                    try:
+                        dsup = DetCotizacion.objects.get(cotizacion_id=kwargs['quote'], proveedor_id=j.proveedor_id, materiales_id=x.materiales_id)
+                        discount = (float(dsup.discount) / 100)
+                        price = (dsup.precio - (float(dsup.precio) * discount))
+                        amount = (price * float(x.cantidad))
+                        arsu.append(
+                            {
+                                'supplier':j.proveedor_id,
+                                'materiales_id':x.materiales_id,
+                                'price':dsup.precio,
+                                'discount': dsup.discount,
+                                'brand':dsup.marca,
+                                'model':dsup.modelo,
+                                'amount':amount
+                            }
+                        )
+                    except ObjectDoesNotExist:
+                        arsu.append(
+                            {
+                                'supplier':j.proveedor_id,
+                                'materiales_id':x.materiales_id,
+                                'price': 0,
+                                'discount': 0,
+                                'brand':'-',
+                                'model': '-',
+                                'amount': '0'
+                            }
+                        )
                     #data[j.proveedor_id] = arsu #{'price':dsup.precio, 'discount': dsup.discount, 'brand':dsup.marca, 'model':dsup.modelo}
                 arr.append(data)
                 arm.append({'materials':x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'quantity':x.cantidad, 'priceold': search.getPricePurchaseInventory(x.materiales_id), 'others': arsu })
@@ -750,7 +839,7 @@ class CompareQuote(JSONResponseMixin, TemplateView):
             context['purchase'] = Compra.objects.filter(cotizacion_id=kwargs['quote'],flag=True)
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except ObjectDoesNotExist, e:
-            raise Http404
+            raise Http404('Error model %s'%(e.__str__()))
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):

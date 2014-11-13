@@ -10,6 +10,11 @@ $(document).ready ->
     $("input[name=select]").on "change", changeSelect
     $(".btn-show-add").on "mouseenter mouseleave", animateAdd
     .on "click", showPanelAdd
+    $("input[name=quantity],input[name=price],input[name=equantity],input[name=eprice],input[name=ediscount]").on "keypress", numberOnly
+    $("button.btn-add").on "click", addNewMaterialPurchase
+    $("button.btn-delete").on "click", deleCheckMaterials
+    $(document).on "click", ".btn-sedit", showEditDetailsPurchase
+    $(".btn-edit-details-purchase").on "click", saveEditDetailsPurchase
     return
 
 changeSearch = ->
@@ -148,7 +153,7 @@ getDataPurchase = (purchase) ->
                         <td>{{ discount }}</td>
                         <td>{{ amount }}</td>
                         <td>
-                            <button class=\"btn btn-xs btn-link text-green\">
+                            <button class=\"btn btn-xs btn-link text-green btn-sedit\" value=\"{{ materials }}\" data-name=\"{{ name }}\" data-met=\"{{ meter }}\" data-brand=\"{{ brand }}\" data-model=\"{{ model }}\" data-quantity=\"{{ quantity }}\" data-price=\"{{ price }}\" data-discount=\"{{ discount }}\">
                                 <span class=\"glyphicon glyphicon-edit\"></span>
                             </button>
                         </td>
@@ -226,24 +231,192 @@ addNewMaterialPurchase = (event) ->
         $().toastmessage "showWarningToast", "La cantidad ingresada debe ser mayor a 0."
         return false
     data.price = convertNumber $("input[name=price]").val()
-    if isNaN(data.price) or data.quantity <= 0
+    if isNaN(data.price) or data.price <= 0
         $().toastmessage "showWarningToast", "El precio ingresado debe ser mayor a 0."
         return false
+    if isNaN(data.discount)
+        data.discount = 0
     data.brand = $("select[name=brand]").val()
     data.model = $("select[name=model]").val()
-    if data.brand isnt "" and data.model isnt ""
+    if data.brand is "" or data.model is ""
         $().toastmessage "showWarningToast", "Debe de seleccionar una marca y modelo."
         return false
     if $("input[name=gincludegroup]").length and $("input[name=gincludegroup]").is(":checked")
         if tmpObjectDetailsGroupMaterials.details.length
-            data.details = tmpObjectDetailsGroupMaterials.details
+            data.details = JSON.stringify tmpObjectDetailsGroupMaterials.details
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    data.purchase = $.trim $("span.nrop").text()
+    data.addDPurchase = true
     $.post "", data, (response) ->
         if response.status
+            tmpObjectDetailsGroupMaterials = new Object
             listDetails()
+            return
+        else
+            $().toastmessage "showErrorToast", "No se a podido añadir el/los materiales. #{response.raise}"
             return
     return
 
 listDetails = (event) ->
-    calcAmount()
+    data = new Object
+    data.listDetails = true
+    data.purchase = $.trim $("span.nrop").text()
+    $.getJSON "", data, (response) ->
+        if response.status
+            $tb = $("table.table-pod > tbody")
+            $tb.empty()
+            template = "<tr>
+                        <td>
+                        <input type=\"checkbox\" name=\"mats\" value=\"{{ materials }}\">
+                        </td>
+                        <td>{{ item }}</td>
+                        <td>{{ materials }}</td>
+                        <td>{{ name }}</td>
+                        <td>{{ meter }}</td>
+                        <td>{{ unit }}</td>
+                        <td>{{ brand }}</td>
+                        <td>{{ model }}</td>
+                        <td>{{ quantity }}</td>
+                        <td>{{ price }}</td>
+                        <td>{{ discount }}</td>
+                        <td>{{ amount }}</td>
+                        <td>
+                            <button class=\"btn btn-xs btn-link text-green btn-sedit\" value=\"{{ materials }}\" data-name=\"{{ name }}\" data-met=\"{{ meter }}\" data-brand=\"{{ brand }}\" data-model=\"{{ model }}\" data-quantity=\"{{ quantity }}\" data-price=\"{{ price }}\" data-discount=\"{{ discount }}\">
+                                <span class=\"glyphicon glyphicon-edit\"></span>
+                            </button>
+                        </td>
+                        </tr>"
+            for x of response.details
+                response.details[x].item = parseInt(x) + 1
+                $tb.append Mustache.render template, response.details[x]
+            calcAmount()
+    return
+
+deleCheckMaterials = (event) ->
+    $chk = $("input[name=mats]")
+    size = $chk.length
+    counter = 0
+    codes = new Array
+    $chk.each (index, element) ->
+        if element.checked
+            codes.push element.value
+            counter++
+        return
+    if counter > 0 and counter <= size
+        $().toastmessage "showToast",
+            text: "Seguro(a) que desea eliminar el/los material(es) seleccionado(s)."
+            sticky: true
+            type: "confirm"
+            buttons: [{value:"Si"},{value:"No"}]
+            success: (result) ->
+                if result is "Si"
+                    data = new Object
+                    data.purchase = $.trim $("span.nrop").text()
+                    data.materials = JSON.stringify codes
+                    data.delDPurchase = true
+                    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+                    $.post "", data, (response) ->
+                        if response.status
+                            listDetails()
+                            return
+                        else
+                            $().toastmessage "showErrorToast", "No se a podido eliminar el/los material(es)."
+                            return
+                return
+    else
+        $().toastmessage "showWarningToast", "Seleccione por lo menos un material para eliminar."
+    return
+
+showEditDetailsPurchase = (event) ->
+    $btn = @
+    $(".nmaterial").text "#{@getAttribute "data-name"}  -  #{@getAttribute "data-met"}"
+    $("input[name=ecmaterial]").val @value
+    brand = ''
+    model = ''
+    $.getJSON "/json/brand/list/option/", (response) ->
+        brand = response
+        return
+    $.getJSON "/json/model/list/option/", (response) ->
+        model = response
+        return
+    setTimeout ->
+        opb = "<option value=\"{{ brand_id }}\" {{!se}}>{{ brand }}</option>"
+        opm = "<option value=\"{{ model_id }}\" {{!se}}>{{ model }}</option>"
+        $ob = $("select[name=ebrand]")
+        $ob.empty()
+        for x of brand.brand
+            tob = opb
+            if brand.brand[x].brand is $btn.getAttribute("data-brand")
+                tob = tob.replace "{{!se}}", "selected"
+            $ob.append Mustache.render tob, brand.brand[x]
+        $om = $("select[name=emodel]")
+        $om.empty()
+        for x of model.model
+            tom = opm
+            if model.model[x].model is $btn.getAttribute("data-model")
+                tom = tom.replace "{{!se}}", "selected"
+            $om.append Mustache.render tom, model.model[x]
+
+        $("input[name=equantity]").val $btn.getAttribute "data-quantity"
+        $("input[name=eprice]").val  $btn.getAttribute "data-price"
+        $("input[name=ediscount]").val $btn.getAttribute "data-discount"
+        $(".mdpurchase").modal "show"
+        objectDataBrand = new Object
+        objectDataModel = new Object
+    , 1000
+    return
+
+saveEditDetailsPurchase = (event) ->
+    data = new Object
+    data.materials = $("input[name=ecmaterial]").val()
+    if data.materials.length isnt 15
+        $().toastmessage "showWarningToast", "Seleccione por lo menos un material para modificar."
+        return false
+    data.quantity = convertNumber $("input[name=equantity]").val()
+    if isNaN(data.quantity) or data.quantity <= 0
+        $().toastmessage "showWarningToast", "La cantidad ingresada debe ser mayor que 0."
+        return false
+    data.price = convertNumber $("input[name=eprice]").val()
+    if isNaN(data.price) or data.price <= 0
+        $().toastmessage "showWarningToast", "El precio ingresado debe ser mayor que 0."
+        return false
+    if isNaN(data.discount)
+        data.discount = 0
+    data.brand = $("select[name=ebrand]").val()
+    data.model = $("select[name=emodel]").val()
+    if data.brand is "" or data.model is ""
+        $().toastmessage "showWarningToast", "Debe de seleccionar una marca y modelo."
+        return false
+    data.editDPurchase = true
+    data.purchase = $.trim $("span.nrop").text()
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    #console.log data
+    $.post "", data, (response) ->
+        if response.status
+            $("input[name=equantity]").val ""
+            $("input[name=eprice]").val ""
+            $("input[name=ediscount]").val ""
+            $(".mdpurchase").modal "hide"
+            listDetails()
+            return
+        else
+            $().toastmessage "showErrorToast", "No se a actualizado el material."
+    return
+
+$(".btn-show-deposit")
+showChoiceDeposit = (event) ->
+    $("input[name=deposit]").click()
+
+
+SavePurchase = (event) ->
+    data = new FormData
+    data.append "delivery", $("input[name=delivery]").val()
+    data.append "document", $("select[name=document]").val()
+    data.append "payment", $("select[name=payment]").val()
+    data.append "currency", $("select[name=currency]").val()
+    data.append "transfer", $("input[name=transfer]").val()
+    data.append "contact", $("input[name=contact]").val()
+    data.append "purchase", $.trim $("span.nrop").text()
+    data.append "csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val()
+    data.
     return

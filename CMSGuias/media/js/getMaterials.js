@@ -271,13 +271,13 @@ tmpObjectDetailsGroupMaterials = new Object;
 
 bgModalAddMaterials = function(event) {
   var tm;
-  tm = Array;
+  tm = new Array;
   $("table.table-group-materials-details-global > tbody > tr").each(function(index, element) {
     var $td;
     $td = $(element).find("td");
     tm.push({
-      "materials": $td.eq(4).find("select").val(),
-      "quantity": $td.eq(6).find("input").val()
+      "materials": $td.eq(3).find("select").val(),
+      "quantity": $td.eq(5).find("input").val()
     });
   });
   tmpObjectDetailsGroupMaterials.details = tm;
@@ -330,7 +330,7 @@ searchModelOption = function() {
   }
 };
 
-getDataBrand = function(event) {
+getDataBrand = function() {
   $.getJSON("/json/brand/list/option/", function(response) {
     if (response.status) {
       return response.brand;
@@ -340,7 +340,7 @@ getDataBrand = function(event) {
   });
 };
 
-getDataModel = function(event) {
+getDataModel = function() {
   $.getJSON("/json/model/list/option/", function(response) {
     if (response.status) {
       return response.model;
@@ -421,8 +421,6 @@ $(document).on("keypress", "input[name=description]", keyUpDescription);
 $(document).on("click", "select[name=meter]", getSummaryMaterials);
 
 $(document).on("keypress", "input[name=code]", keyCode);
-
-$(document).on("ketup", "input[name=quantity], input[name=price]", numberOnly);
 
 $(document).on("click", ".bg-modal-view-details", getDetailsGroupMaterials);
 
