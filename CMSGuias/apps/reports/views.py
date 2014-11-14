@@ -17,9 +17,10 @@ from django.db.models import Count, Sum
 from django.views.generic import TemplateView
 
 from CMSGuias.apps.almacen import models
-from CMSGuias.apps.tools import globalVariable
+from CMSGuias.apps.tools import globalVariable, search, number_to_char
 from CMSGuias.apps.logistica.models import Cotizacion, CotCliente, DetCotizacion, Compra, DetCompra
 from CMSGuias.apps.home.models import Configuracion
+
 
 def fetch_resources(uri, rel):
     path = os.path.join(settings.MEDIA_ROOT, uri.replace(settings.MEDIA_URL, ""))
@@ -97,7 +98,7 @@ class RptQuote(TemplateView):
 
     def get(self, request, *args, **kwargs):
         context = super(RptQuote, self).get_context_data(**kwargs)
-        context['bedside'] = get_object_or_404(Cotizacion, pk=kwargs['qid'], flag=True)
+        context['bedside'] = get_object_or_404(Cotizacion, pk=kwargs['qid'])
         context['customers'] = CotCliente.objects.filter(cotizacion_id=kwargs['qid'], proveedor_id=kwargs['pid'])
         context['details'] = DetCotizacion.objects.filter(cotizacion_id=kwargs['qid'],proveedor_id=kwargs['pid'])
         context['status'] = globalVariable.status
@@ -116,22 +117,32 @@ class RptPurchase(TemplateView):
             igv = 0
             subt = 0
             total = 0
-            conf = Configuracion.objects.get(periodo=globalVariable.get_year)
+            #conf = Configuracion.objects.get(periodo=globalVariable.get_year)
+            search.getIGVCurrent(context['bedside'].registrado.strftime('%Y'))
             tdiscount = 0
             # print conf.igv
             context['details'] = list()
             for x in tmp:
                 disc = ((x.precio * float(x.discount)) / 100)
-                tdiscount += (disc * x.cantstatic)
+                #tdiscount += (disc * x.cantstatic)
                 precio = x.precio - disc
                 amount = (x.cantstatic * precio)
                 subt += amount
                 context['details'].append({'materials_id':x.materiales_id, 'matname':x.materiales.matnom, 'measure': x.materiales.matmed, 'unit':x.materiales.unidad_id, 'brand': x.brand.brand, 'quantity':x.cantstatic, 'price':x.precio, 'discount': float(x.discount), 'amount':amount})
-            context['discount'] = tdiscount
-            context['igvval'] = ((conf.igv * subt) / 100)
-            context['igv'] = conf.igv
+
+            igv = search.getIGVCurrent(context['bedside'].registrado.strftime('%Y'))
             context['subtotal'] = subt
-            context['total'] = (context['igvval'] + subt)
+            print context['bedside'].discount, 'DISCOUNT'
+            discount = ((subt * context['bedside'].discount) / 100)
+            print discount
+            ns = (subt - discount)
+            print ns
+            context['discount'] = discount
+            context['igvval'] = ((igv * ns) / 100)
+            context['igv'] = igv
+            total = (context['igvval'] + ns)
+            context['total'] = total
+            context['literal'] = number_to_char.numero_a_letras(total)
             context['status'] = globalVariable.status
             html = render_to_string(self.template_name, context, context_instance=RequestContext(request))
             return generate_pdf(html)

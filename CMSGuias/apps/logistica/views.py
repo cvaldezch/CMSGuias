@@ -409,7 +409,7 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                 context = dict()
                 try:
                     tmp = tmpcompra.objects.filter(empdni=request.user.get_profile().empdni_id)
-                    context['list'] = []
+                    context['list'] = list()
                     igv = 0
                     subt = 0
                     total = 0
@@ -422,7 +422,21 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                         precio = x.precio - disc
                         amount = (x.cantidad * precio)
                         subt += amount
-                        context['list'].append({'id':x.id, 'materials_id':x.materiales_id, 'matname':x.materiales.matnom, 'matmeasure': x.materiales.matmed, 'unit':x.materiales.unidad_id, 'quantity':x.cantidad, 'price':x.precio, 'discount':x.discount, 'amount':amount})
+                        context['list'].append(
+                            {
+                                'id':x.id,
+                                'materials_id': x.materiales_id,
+                                'matname': x.materiales.matnom,
+                                'matmeasure': x.materiales.matmed,
+                                'unit': x.materiales.unidad_id,
+                                'brand': x.brand.brand,
+                                'model': x.model.model,
+                                'quantity':x.cantidad,
+                                'price':x.precio,
+                                'discount':x.discount,
+                                'amount':amount
+                            }
+                        )
                     context['discount'] = tdiscount
                     context['igv'] = ((conf.igv * subt) / 100)
                     context['subtotal'] = subt
@@ -477,6 +491,8 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                     tmp.cantidad = request.POST.get('quantity')
                     tmp.precio = request.POST.get('price')
                     tmp.discount = request.POST.get('discount')
+                    tmp.brand_id = request.POST.get('brand')
+                    tmp.model_id = request.POST.get('model')
                     tmp.save()
                     context['status'] = True
                 except ObjectDoesNotExist, e:
@@ -546,21 +562,23 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                         add.compra_id = id
                         add.empdni_id = request.user.get_profile().empdni_id
                         add.status = 'PE'
+                        add.discount = float(request.POST.get('discount'))
                         add.save()
                         # save details os the order purchase
-                        details = json.loads(request.POST.get('details'))
-                        for x in details:
+                        #details = json.loads(request.POST.get('details'))
+                        for x in tmpcompra.objects.filter(empdni=request.user.get_profile().empdni_id):
                             obj = DetCompra()
                             obj.compra_id = id
-                            obj.materiales_id = x['materials']
-                            obj.cantidad = x['quantity']
-                            obj.precio = x['price']
-                            obj.cantstatic = x['quantity']
-                            obj.discount = x['discount']
+                            obj.materiales_id = x.materiales_id
+                            obj.brand_id = x.brand_id
+                            obj.model_id = x.model_id
+                            obj.cantidad = x.cantidad
+                            obj.precio = x.precio
+                            obj.cantstatic = x.cantidad
+                            obj.discount = x.discount
                             obj.save()
-                        # if all success delete all data of the temp purchase
-                        obj = tmpcompra.objects.filter(empdni=request.user.get_profile().empdni_id)
-                        obj.delete()
+                            # if all success delete all data of the temp purchase
+                            x.delete()
                         context['status'] = True
                         context['nro'] = id
                     else:
@@ -723,6 +741,21 @@ class ListPurchase(JSONResponseMixin, TemplateView):
                 if 'delDPurchase' in request.POST:
                     DetCompra.objects.filter(compra_id=request.POST.get('purchase'), materiales_id__in=json.loads(request.POST.get('materials'))).delete()
                     context['status'] = True
+                if 'purchaseSave' in request.POST:
+                    ob = Compra.objects.get(compra_id=request.POST.get('purchase'))
+                    ob.lugent = request.POST.get('delivery')
+                    ob.documento_id = request.POST.get('document')
+                    ob.pagos_id = request.POST.get('payment')
+                    ob.moneda_id = request.POST.get('currency')
+                    ob.traslado = globalVariable.format_str_date(request.POST.get('transfer'))
+                    ob.contacto = request.POST.get('contact')
+                    ob.discount = float(request.POST.get('discount'))
+                    ob.deposito = request.FILES['deposit']
+                    ob.save()
+                    context['status'] = True
+                if 'annularPurchase' in request.POST:
+                    Compra.objects.get(compra_id=request.POST.get('purchase')).delete()
+                    context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
@@ -790,8 +823,10 @@ class CompareQuote(JSONResponseMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
-            context['quote'] = Cotizacion.objects.get(Q(cotizacion_id=kwargs['quote']), Q(flag=True), ~Q(status='CO'))
-            context['supplier'] = CotKeys.objects.filter(cotizacion_id=kwargs['quote'])
+            print 'before quote'
+            context['quote'] = Cotizacion.objects.get(Q(cotizacion_id=kwargs['quote']), ~Q(status='CO'))
+            print context['quote']
+            context['supplier'] = CotKeys.objects.filter(cotizacion_id=kwargs['quote'], flag=True)
             mats = DetCotizacion.objects.filter(cotizacion_id=kwargs['quote']).order_by('materiales__materiales_id').distinct('materiales__materiales_id')
             context['client'] = CotCliente.objects.filter(cotizacion_id=kwargs['quote'])
             context['conf'] = Configuracion.objects.get(periodo=globalVariable.get_year)
@@ -839,7 +874,7 @@ class CompareQuote(JSONResponseMixin, TemplateView):
             context['purchase'] = Compra.objects.filter(cotizacion_id=kwargs['quote'],flag=True)
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except ObjectDoesNotExist, e:
-            raise Http404('Error model %s'%(e.__str__()))
+            raise Http404('Error %s'%(e.__str__()))
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):

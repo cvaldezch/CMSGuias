@@ -1,6 +1,6 @@
 $(document).ready ->
     $(".step-two, .panel-add").hide()
-    $("input[name=star],input[name=end]").datepicker dateFormat : "yy-mm-dd", showAnim : "slide"
+    $("input[name=star],input[name=end],input[name=transfer]").datepicker dateFormat : "yy-mm-dd", showAnim : "slide"
     $("input[name=search]").on "change", changeSearch
     $(".btn-search").on "click", getSearch
     $(document).on "click", ".btn-purchase", openWindow
@@ -15,6 +15,10 @@ $(document).ready ->
     $("button.btn-delete").on "click", deleCheckMaterials
     $(document).on "click", ".btn-sedit", showEditDetailsPurchase
     $(".btn-edit-details-purchase").on "click", saveEditDetailsPurchase
+    $("input.edsct").on "keyup", calcAmount
+    $(".btn-show-deposit").on "click", showChoiceDeposit
+    $("button.btn-save-purchase").on "click", savePurchase
+    $("button.btn-delp").on "click", annularPurchase
     return
 
 changeSearch = ->
@@ -403,12 +407,11 @@ saveEditDetailsPurchase = (event) ->
             $().toastmessage "showErrorToast", "No se a actualizado el material."
     return
 
-$(".btn-show-deposit")
 showChoiceDeposit = (event) ->
     $("input[name=deposit]").click()
+    return
 
-
-SavePurchase = (event) ->
+savePurchase = (event) ->
     data = new FormData
     data.append "delivery", $("input[name=delivery]").val()
     data.append "document", $("select[name=document]").val()
@@ -417,6 +420,46 @@ SavePurchase = (event) ->
     data.append "transfer", $("input[name=transfer]").val()
     data.append "contact", $("input[name=contact]").val()
     data.append "purchase", $.trim $("span.nrop").text()
+    data.append "discount", convertNumber $("input.edsct").val()
+    data.append "purchaseSave", true
     data.append "csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val()
-    data.
+    $files = $("input[name=deposit]")
+    if $files.get(0).files.length
+        data.append "deposit", $files.get(0).files[0]
+    $.ajax
+        data: data
+        url: ""
+        type: "POST"
+        dataType: "json"
+        cache: false
+        processData: false
+        contentType: false
+        success: (response) ->
+            console.log response
+            if response.status
+                location.reload()
+            else
+                $().toastmessage "showErrorToast", "No se han realizado los cambios en la Orden de Compra. #{response.raise}"
+            return
+    return
+
+annularPurchase = (event) ->
+    btn = @
+    $().toastmessage "showToast",
+        text: "Realmente desea anular la Orden de compra Nro #{@value}"
+        sticky: true
+        type: "confirm"
+        buttons: [{value:"Si"}, {value:"No"}]
+        success: (result) ->
+            if result is "Si"
+                data = new Object
+                data.annularPurchase = true
+                data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+                data.purchase = btn.value
+                $.post "", data, (response) ->
+                    if response.status
+                        location.reload()
+                    else
+                        $().toastmessage "showErrorToast", "No se a anulado la Orden de Compra. #{response.raise}"
+                return
     return

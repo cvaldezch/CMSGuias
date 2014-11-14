@@ -23,8 +23,6 @@ $(document).ready ->
     $("input[name=discount],input[name=edist]").on "blur", blurRange
     $(".btn-deposito").on "click", toggleDeposito
     $(".btn-purchase").on "click", saveOrderPurchase
-    $("input[name=pdiscount]").on "keyup", calcTotal
-    .on "keypress", numberOnly
     listTmpBuy()
     return
 
@@ -71,8 +69,6 @@ addTmpPurchase = (event) ->
                 data.materiales = code
                 data.cantidad = quantity
                 data.precio = price
-                data.brand = $("select[name=brand]").val()
-                data.model = $("select[name=model]").val()
                 data.discount = discount
                 data.type = "add"
                 data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
@@ -94,20 +90,7 @@ addTmpPurchase = (event) ->
 listTmpBuy = (event) ->
     $.getJSON "", "type":"list", (response) ->
         if response.status
-            template = "<tr name=\"{{ id }}\">
-                    <td>{{ item }}</td><td>{{ materials_id }}</td>
-                    <td>{{ matname }}</td>
-                    <td>{{ matmeasure }}</td>
-                    <td>{{ unit }}</td>
-                    <td>{{ brand }}</td>
-                    <td>{{ brand }}</td>
-                    <td>{{ quantity }}</td>
-                    <td>{{ price }}</td>
-                    <td>{{ discount }}%</td>
-                    <td>{{ amount }}</td>
-                    <td><button class=\"btn btn-xs btn-link\" name=\"btn-edit\" value=\"{{ quantity }}\" data-price=\"{{ price }}\" data-brand=\"{{ brand }}\" data-model=\"{{ model }}\" data-id=\"{{ id }}\" data-mat=\"{{ materials_id }}\" data-discount=\"{{ discount }}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td>
-                    <td><button class=\"btn btn-xs btn-link text-red\" name=\"btn-del\" value=\"{{ id }}\" data-mat=\"{{ materials_id }}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td>
-                    </tr>"
+            template = "<tr name=\"{{ id }}\"><td>{{ item }}</td><td>{{ materials_id }}</td><td>{{ matname }}</td><td>{{ matmeasure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td>{{ price }}</td><td>{{ discount }}%</td><td>{{ amount }}</td><td><button class=\"btn btn-xs btn-link\" name=\"btn-edit\" value=\"{{ quantity }}\" data-price=\"{{ price }}\" data-id=\"{{ id }}\" data-mat=\"{{ materials_id }}\" data-discount=\"{{ discount }}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td><td><button class=\"btn btn-xs btn-link text-red\" name=\"btn-del\" value=\"{{ id }}\" data-mat=\"{{ materials_id }}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>"
             $tb = $("table.table-list > tbody")
             $tb.empty()
             for x of response.list
@@ -123,33 +106,13 @@ listTmpBuy = (event) ->
     return
 
 showEdit = (event) ->
-    btn = @
-    getDataBrand()
-    getDataModel()
-    opb = "<option value=\"{{ brand_id }}\" {{!se}}>{{ brand }}</option>"
-    opm = "<option value=\"{{ model_id }}\" {{!se}}>{{ model }}</option>"
+    event.preventDefault()
     $("input[name=ematid]").val $(@).attr "data-mat"
     $("input[name=eidtmp]").val $(@).attr "data-id"
     $("input[name=equantity]").val @value
     $("input[name=eprice]").val $(@).attr "data-price"
     $("input[name=edist]").val $(@).attr "data-discount"
-    setTimeout  ->
-        $bra = $("select[name=ebrand]")
-        $bra.empty()
-        for x of globalDataBrand
-            tb = opb
-            if globalDataBrand[x].brand is btn.getAttribute "data-brand"
-                tb = tb.replace "{{!se}}", "selected"
-            $bra.append Mustache.render tb, globalDataBrand[x]
-        $mo = $("select[name=emodel]")
-        $mo.empty()
-        for x of globalDataModel
-            tm = opm
-            if globalDataModel[x].model is btn.getAttribute "data-model"
-                tm = tm.replace "{{!se}}", "selected"
-            $mo.append Mustache.render tm, globalDataModel[x]
-        $(".medit").modal "show"
-    , 1000
+    $(".medit").modal "show"
     return
 
 editMaterial = (event) ->
@@ -165,8 +128,6 @@ editMaterial = (event) ->
         data.materials_id = $mat.val()
         data.quantity = parseFloat $quantity.val()
         data.price = parseFloat $price.val()
-        data.brand = $("select[name=ebrand]").val()
-        data.model = $("select[name=emodel]").val()
         data.type = "edit"
         data.discount = parseFloat $discount
         data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
@@ -293,7 +254,6 @@ showBedside = ->
     $tb = $("table.table-list > tbody > tr")
     if $tb.length
         $(".mpurchase").modal "toggle"
-        calcTotal()
     else
         $().toastmessage "showWarningToast", "Debe de ingresar por lo menos un material."
     return
@@ -325,9 +285,6 @@ saveOrderPurchase = ->
                         discount = parseInt $td.eq(7).text().split("%")[0]
                         arr.push {"materials":$td.eq(1).text(), "quantity": parseFloat($td.eq(5).text()), "price":parseFloat($td.eq(6).text()), "discount": discount}
                         return
-                    discount = $("input[name=pdiscount]").val()
-                    if discount is ""
-                        discount = 0
                     prm = new FormData()
                     prm.append "proveedor", data.proveedor
                     prm.append "lugent", data.lugent
@@ -336,7 +293,6 @@ saveOrderPurchase = ->
                     prm.append "moneda", data.moneda
                     prm.append "traslado", data.traslado
                     prm.append "contacto", data.contacto
-                    prm.append "discount", discount
                     prm.append "savePurchase", true
                     prm.append "details", JSON.stringify arr
                     if $("input[name=deposito]").get(0).files.length
@@ -362,18 +318,4 @@ saveOrderPurchase = ->
                     return
     else
         $().toastmessage "showWarningToast", "Alerta!<br>Campo vacio, #{data.element}"
-    return
-
-calcTotal = (event) ->
-    sub = convertNumber $(".sub").text()
-    igv = convertNumber $(".igv").text()
-    igv = ((igv * 100) / sub)
-    discount = convertNumber $("input[name=pdiscount]").val()
-    $("label[name=vamount]").text sub
-    discount = ((sub * discount) / 100)
-    $("label[name=vdsct]").text discount
-    igv = (((sub - discount) * igv) / 100)
-    $("label[name=vigv]").text igv.toFixed 2
-    total = (sub - discount + igv)
-    $("label[name=vtotal]").text total.toFixed 2
     return

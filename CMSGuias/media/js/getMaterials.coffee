@@ -290,17 +290,20 @@ searchModelOption = ->
       return
   return
 
+globalDataBrand = new Object
 getDataBrand = ->
   $.getJSON "/json/brand/list/option/", (response) ->
+    globalDataBrand = response.brand
     if response.status
       return response.brand
     else
       return new Object
   return
-
+globalDataModel = new Object
 getDataModel = ->
   $.getJSON "/json/model/list/option/", (response) ->
       if response.status
+        globalDataModel = response.model
         return response.model
       else
         return new Object

@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Order Purchase</title>
-    <link rel="stylesheet" type="text/css" href="/media/css/reports/ordersstore.css">
+    <link rel="stylesheet" type="text/css" href="/media/css/reports/purchaseorder.css">
 </head>
 <body>
     <header>
         <img id="logo" src="/media/images/icrlogo.png" alt="image">
         <div id="dir" >
-            Jr. Gral. Jose de San Martin Mz. E Lote 6 Huachipa - Lurigancho Lima 15, Peru<br >
+            Jr. Gral. Jose de San Martin Mz. F Lote 8A Huachipa - Lurigancho Lima 15, Peru<br >
             Central Telefonica: (511) 371-0443<br >
             E-mail: logistica@icrperusa.com
         </div>
@@ -50,50 +50,83 @@
                 <thead>
                     <tr>
                         <th>Item</th>
-                        <th width="2.5cm">Código</th>
-                        <th width="8cm">Descripción</th>
+                        <th width="2cm">Código</th>
+                        <th width="7cm">Descripción</th>
                         <!-- <th width="4cm">Medida</th> -->
                         <th>Unidad</th>
                         <th>Cantidad</th>
                         <th>Precio</th>
-                        <th>Dsto.</th>
+                        <th width="2cm">Dsto.</th>
                         <th>Importe</th>
                     </tr>
                 </thead>
                 <tbody>
-                {% for x in details %}
-                    <tr>
-                        <td class="text-center item">{{ forloop.counter|floatformat:"2" }}</td>
-                        <td class="text-center cod">{{ x.materials_id }}</td>
-                        <td>{{ x.matname }} {{ x.measure }} - {{ x.brand }}</td>
-                        <td class="text-center">{{ x.unit }}</td>
-                        <td class="text-center">{{ x.quantity|safe }}</td>
-                        <td class="text-center">{{ x.price|safe }}</td>
-                        <td class="text-center">{{ x.discount }}%</td>
-                        <td class="text-center">{{ x.amount|safe|floatformat:"2" }}</td>
-                    </tr>
-                {% endfor%}
+                    {% for x in details %}
+                        <tr>
+                            <td class="text-center item font-small">{{ forloop.counter|floatformat:"2" }}</td>
+                            <td class="text-center font-small">{{ x.materials_id }}</td>
+                            <td>{{ x.matname }} {{ x.measure }} - {{ x.brand }}</td>
+                            <td class="text-center">{{ x.unit }}</td>
+                            <td class="text-center">{{ x.quantity|safe }}</td>
+                            <td class="text-center">{{ x.price|safe }}</td>
+                            <td class="text-center">{{ x.discount }}%</td>
+                            <td class="text-right">{{ x.amount|safe|floatformat:"2" }}</td>
+                        </tr>
+                    {% endfor%}
                 </tbody>
                 <tfoot>
-                    <tr></tr>
-                    <tr>
-                        <th colspan="6"></th>
-                        <th>Sub Total</th>
-                        <th>{{ subtotal|safe|floatformat:"2" }}</th>
+                    <tr class="border">
+                        <td colspan="6" rowspan="4">
+                            <strong>
+                                SON: {{ literal }} /100 {{ bedside.moneda.moneda }}
+                            </strong>
+                        </td>
+                        <td class="text-left border">SUBTOTAL</td>
+                        <td class="text-right border">{{ subtotal|safe|floatformat:"2" }}</td>
                     </tr>
-                    <tr>
-                        <th colspan="6"></th>
-                        <th>IGV {{ igv }}%</th>
-                        <th>{{ igvval|safe|floatformat:"2" }}</th>
+                    <tr class="border">
+                        <td class="text-left">DSCTO {{ bedside.discount }}%</td>
+                        <td  class="text-right">{{ discount|safe|floatformat:"2" }}</td>
                     </tr>
-                    <tr>
-                        <th colspan="6"></th>
-                        <th>Total</th>
-                        <th>{{ total|safe|floatformat:"2" }}</td>
+                    <tr class="border">
+                        <!-- <td colspan="6"></td> -->
+                        <td class="text-left">IGV {{ igv }}%</td>
+                        <td class="text-right">{{ igvval|safe|floatformat:"2" }}</td>
+                    </tr>
+                    <tr class="border">
+                        <!-- <td colspan="6"></td> -->
+                        <th class="text-left">TOTAL</th>
+                        <th class="text-right">{{ total|safe|floatformat:"2" }}</th>
                     </tr>
                 </tfoot>
             </table>
         </div>
     </section>
+    <footer>
+        <div id="footerContent">
+            <table>
+                <tbody>
+                    <tr class="border">
+                        <th class="text-center">
+                            DATOS DE FACTURACION
+                        </th>
+                    </tr>
+                    <tr class="border">
+                        <td>
+                            MESA DE PARTES EN EL HORARIO DE LUNES A VIERNES DE 8:00 AM A 5:30 PM Y SABADOS DE 8:00 A 1:00PM
+                            <p>
+                               <strong>
+                                   ICR PERU INSTALACIONES S.A.C. <br>
+                                   RUC 20555029277
+                                   <br>
+                               </strong>
+                               Jr. Gral. Jose de San Martin Mz. F Lote 8A Huachipa - Lurigancho Lima 15, Peru.
+                           </p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </footer>
 </body>
 </html>
