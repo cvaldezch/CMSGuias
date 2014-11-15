@@ -543,6 +543,26 @@ class SectorManage(JSONResponseMixin, View):
                                     obj.save()
                                 else:
                                     form.save()
+                                if not 'edit' in request.POST and 'details' in request.POST:
+                                    # save Details Material Group
+                                    for x in json.loads(request.POST.get('details')):
+                                        try:
+                                            obj = Metradoventa.objects.get(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') else None, sector_id=request.POST.get('sector'), materiales_id=x['materials'])
+                                            obj.cantidad = obj.cantidad + (float(x.quantity) * float(request.POST.get('cantidad')))
+                                            obj.save()
+                                        except ObjectDoesNotExist:
+                                            obj = Metradoventa()
+                                            obj.proyecto_id = request.POST.get('proyecto')
+                                            obj.subproyecto_id = request.POST.get('subproyecto') if request.POST.get('subproyecto') else ''
+                                            obj.sector_id=request.POST.get('sector')
+                                            obj.materiales_id = x['materials']
+                                            obj.cantidad = (float(x['quantity']) * float(request.POST.get('cantidad')))
+                                            obj.precio = 0
+                                            obj.brand_id = 'BR000'
+                                            obj.model_id = 'MO000'
+                                            obj.flag = True
+                                            obj.save()
+
                             context['status'] = True
                         else:
                             context['status'] = False
@@ -739,6 +759,7 @@ class SectorManage(JSONResponseMixin, View):
                             obj.tag = '0'
                         obj.quantity = quantity
                         obj.save()
+
                         context['status'] = True
                     except ObjectDoesNotExist, e:
                         obj = UpdateMetProject()
@@ -755,7 +776,41 @@ class SectorManage(JSONResponseMixin, View):
                         obj.tag = '0'
                         obj.flag = True
                         obj.save()
-                        context['status'] = True
+
+                    # save details materail group
+                    if 'details' in request.POST:
+                        print request.POST.get('details')
+                        for x in json.loads(request.POST.get('details')):
+                            try:
+                                obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=x['materials'], flag=True)
+                                quantity = (obj.quantity + (float(x['quantity']) * float(request.POST.get('quantity'))))
+                                if obj.tag != '0':
+                                    if obj.tag == '1':
+                                        if obj.quantity > quantity:
+                                            obj.tag = '2'
+                                    elif obj.tag == '2':
+                                        if obj.quantity < quantity:
+                                            obj.tag = '1'
+                                    else:
+                                        obj.tag = '0'
+                                obj.quantity = quantity
+                                obj.save()
+                            except ObjectDoesNotExist:
+                                obj = UpdateMetProject()
+                                obj.proyecto_id = kwargs['pro']
+                                obj.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
+                                obj.sector_id = kwargs['sec']
+                                obj.materials_id = x['materials']
+                                obj.brand_id = 'BR000'
+                                obj.model_id = 'MO000'
+                                obj.quantity = (float(x['quantity']) * float(request.POST.get('quantity')))
+                                obj.price = 0
+                                obj.comment = ''
+                                obj.quantityorders = x['quantity']
+                                obj.tag = '0'
+                                obj.flag = True
+                                obj.save()
+                    context['status'] = True
                 if 'generateDeductiveOne' in request.POST:
                     key = genkeys.GenerateIdDeductive()
                     # Generate bedside deductive

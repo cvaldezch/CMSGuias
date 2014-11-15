@@ -3,303 +3,334 @@
 <link rel="stylesheet" href="/media/css/almacen/pedido.css">
 {% endblock %}
 {% block script %}
-<script src="/media/js/almacen/pedido.js"></script>
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="{{ MEDIA_URL }}js/scrollTo.js"></script>
 <script src="{{ MEDIA_URL }}js/getMaterials.js"></script>
+<script src="{{ MEDIA_URL }}js/almacen/pedido.js"></script>
 {% endblock %}
 {% block menu %}
-	{% include "menus/storage_menu.htm" %}
+    {% include "menus/storage_menu.htm" %}
 {% endblock menu %}
 {% block content %}
 <div class="container">
-	<div class="well">
-		<h1>Generar Pedido</h1>
-		{% csrf_token %}
-		<input type="hidden" class="empdni" value="{{user.get_profile.empdni_id}}">
-		<div class="row">
-			<div class="col-md-12">
-				<div class="btn-group">
-					<button class="btn btn-warning text-black btn-up-file-show"><span class="glyphicon glyphicon-upload"></span> <span>Subir Archivo</span></button>
-					<button class="btn btn-warning text-black btn-list"><span class="glyphicon glyphicon-list"></span> <span>Actualizar</span></button>
-					<button class="btn btn-warning text-black btn-del-all-temp-show"><span class="glyphicon glyphicon-trash"></span> <span>Eliminar</span></button>
-					<button class="btn btn-warning text-black btn-niples"><span class="glyphicon glyphicon-th"></span> <span>Niples</span></button>
-					<button class="btn btn-warning text-black btn-order-show"><span class="glyphicon glyphicon-floppy-disk"></span> <span>Guardar</span></button>
-				</div>
-			</div>
-			<div class="col-md-12">
-				<button class="btn btn-warning text-black btn-xs btn-add-mat"><span class="glyphicon glyphicon-plus"></span> <q>Agregar Material</q></button>
-				<div class="alert alert-warning alertt-block block-add-mat">
-					<!--<a href="#" data-dismiss="alert" id="aid" class="close">&times;</a>-->
-					<div class="row show-grid">
-						<div class="col-md-6">
-							<div class="form-group">
-								<label class="control-label">Descripción</label>
-								<input type="text" class="form-control matnom" name="description">
-								<ul id="description" class="description matname-global"></ul>
-							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="form-group">
-								<label class="control-label">Medida</label>
-								<select type="text" name="meter" class="form-control matmed">
-									<option value=""> Nothing </option>
-								</select>
-							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="col-md-4">
-								<div class="form-group">
-									<label for="cantidad" class="control-label">Metrado</label>
-									<input type="number" min="0" placeholder="0" title="Ingrese cantidad" class="form-control cantidad">
-								</div>
-							</div>
-							<div class="col-md-4">
-								<br>
-								<button class="btn btn-success text-black btn-lg btnadd">
-									<span class="glyphicon glyphicon-ok"></span>
-									<span> Agregar</span>
-								</button>
-							</div>
-						</div>
-						<div class="col-md-6">
-							<label for="alert" class="control-label">Resumén</label>
-							<div class="alert alert-success">
-								<table class="table table-condensed details-table tb-details">
-									<tbody></tbody>
-								</table>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-12">
-				<div class="table-responsive">
-					<table class="table table-bordered table-condensed table-hover">
-						<caption class="text-left"><h4>Lista de Pedido</h4></caption>
-						<thead>
-							<tr class="warning">
-								<th>Item</th>
-								<th>Codigo</th>
-								<th>Descripción</th>
-								<th>Medida</th>
-								<th>Unidad</th>
-								<th>Cantidad</th>
-								<th>Editar</th>
-								<th>Eliminar</th>
-							</tr>
-						</thead>
-						<tbody template-data-user="tmporder"></tbody>
-					</table>
-				</div>
-			</div>
-			<div class="col-md-12">
-				<h4 class="text-warning"><em>Lista de Niples</em></h4>
-				<div class="panel-group bg-warning" id="niples">
+    <div class="well">
+        <h1>Generar Pedido</h1>
+        {% csrf_token %}
+        <input type="hidden" class="empdni" value="{{ user.get_profile.empdni_id }}">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="btn-group">
+                    <button class="btn btn-warning text-black btn-add-mat"><span class="glyphicon glyphicon-plus"></span> <q>Agregar Material</q></button>
+                    <button class="btn btn-warning text-black btn-up-file-show"><span class="glyphicon glyphicon-upload"></span> <span>Subir Archivo</span></button>
+                    <button class="btn btn-warning text-black btn-list"><span class="glyphicon glyphicon-list"></span> <span>Actualizar</span></button>
+                    <button class="btn btn-warning text-black btn-del-all-temp-show"><span class="glyphicon glyphicon-trash"></span> <span>Eliminar</span></button>
+                    <button class="btn btn-warning text-black btn-niples"><span class="glyphicon glyphicon-th"></span> <span>Niples</span></button>
+                    <button class="btn btn-warning text-black btn-order-show"><span class="glyphicon glyphicon-floppy-disk"></span> <span>Guardar</span></button>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="alert alert-warning alertt-block block-add-mat">
+                    <!--<a href="#" data-dismiss="alert" id="aid" class="close">&times;</a>-->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group has-warning">
+                                <label class="control-label">Descripción</label>
+                                <input type="text" class="form-control input-sm" name="description">
+                                <ul id="description" class="description matname-global"></ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group has-warning">
+                                <label class="control-label">Medida</label>
+                                <select type="text" name="meter" class="form-control input-sm matmed"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Metrado/Cantidad</label>
+                                        <input type="text" class="form-control input-sm cantidad" name="quantity" min="1" placeholder="0">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Marca</label>
+                                        <div class="input-group">
+                                            <select name="brand" id="brand" class="form-control input-sm"></select>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-sm btn-default btn-new-brand"><span class="glyphicon glyphicon-plus"></span></button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Modelo</label>
+                                        <div class="input-group">
+                                            <select name="model" id="model" class="form-control input-sm"></select>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default btn-sm btn-new-model"><span class="span glyphicon glyphicon-plus"></span></button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Incluir</label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" name="gincludegroup" value="0"> Grupo de Materiales
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-1 col-md-offset-1">
+                                    <div class="form-group">
+                                        <label class="control-label">Agregar</label>
+                                        <button class="btn btn-warning text-black btnadd">
+                                            <span class="glyphicon glyphicon-plus-sign"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="alert" class="control-label">Resumén</label>
+                            <div class="alert alert-warning">
+                                <table class="table table-condensed details-table tb-details">
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-condensed table-hover">
+                        <caption class="text-left"><h4>Lista de Pedido</h4></caption>
+                        <thead>
+                            <tr class="warning">
+                                <th>Item</th>
+                                <th>Codigo</th>
+                                <th>Descripción</th>
+                                <th>Medida</th>
+                                <th>Marcar</th>
+                                <th>Modelo</th>
+                                <th>Unidad</th>
+                                <th>Cantidad</th>
+                                <th>Editar</th>
+                                <th>Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody template-data-user="tmporder"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <h4 class="text-warning"><em>Lista de Niples</em></h4>
+                <div class="panel-group bg-warning" id="niples">
 
-				</div>
-			</div>
-		</div>
-	</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- block modals -->
 <!-- modal for edit quantity tmp orders -->
 <div class="modal fade modal-edit-cant">
-	<div class="modal-dialog modal-sm">
-		<div class="modal-content">
-			<div class="modal-header bg-warning">
-				<a class="close" data-dismiss="modal">&times;</a>
-				<h4>Modificar Cantidad</h4>
-			</div>
-			<div class="modal-body bg-warning">
-				<p><strong>Materiales ID: </strong><small class="form-control-static edit-mid"></small></p>
-				<p><strong>Descripción: </strong><small class="form-control-static edit-des"></small></p>
-				<p><strong>Medida: </strong><small class="form-control-static edit-med"></small></p>
-				<p><strong>Unidad: </strong><small class="form-control-static edit-unid"></small></p>
-				<p><strong>Cantidad: </strong><input type="number" class="form-control edit-cant" placeholder="0"></p>
-			</div>
-			<div class="modal-footer bg-warning">
-				<button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-				<button class="btn btn-warning text-black btn-edit-cantidad" data-loading-text='Proccess...'><span class="glyphicon glyphicon-edit"></span> Cambiar</button>
-			</div>
-		</div>
-	</div>
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <a class="close" data-dismiss="modal">&times;</a>
+                <h4>Modificar Cantidad</h4>
+            </div>
+            <div class="modal-body bg-warning">
+                <p><strong>Materiales ID: </strong><small class="form-control-static edit-mid"></small></p>
+                <p><strong>Descripción: </strong><small class="form-control-static edit-des"></small></p>
+                <p><strong>Medida: </strong><small class="form-control-static edit-med"></small></p>
+                <p><strong>Unidad: </strong><small class="form-control-static edit-unid"></small></p>
+                <p><strong>Cantidad: </strong><input type="number" class="form-control edit-cant" placeholder="0"></p>
+            </div>
+            <div class="modal-footer bg-warning">
+                <button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                <button class="btn btn-warning text-black btn-edit-cantidad" data-loading-text='Proccess...'><span class="glyphicon glyphicon-edit"></span> Cambiar</button>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- modal for delete materials order tmp -->
 <div class="modal fade modal-delete-mid">
-	<div class="modal-dialog modal-sm">
-		<div class="modal-content">
-			<div class="modal-header bg-warning">
-				<a class="close" data-dismiss="modal">&times;</a>
-				<h4>Desea eliminar material?</h4>
-			</div>
-			<div class="modal-body bg-warning">
-				<p><strong>Materiales ID: </strong><small class="form-control-static del-mid"></small></p>
-				<p><strong>Descripción: </strong><small class="form-control-static del-des"></small></p>
-				<p><strong>Medida: </strong><small class="form-control-static del-med"></small></p>
-				<p><strong>Unidad: </strong><small class="form-control-static del-unid"></small></p>
-				<p><strong>Cantidad: </strong><small class="form-control-static del-cant"></small></p>
-			</div>
-			<div class="modal-footer bg-warning">
-				<button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Salir</button>
-				<button class="btn btn-warning text-black btn-delete-mat" data-loading-text="Process..."><span class="glyphicon glyphicon-trash"></span> Eliminar!</button>
-			</div>
-		</div>
-	</div>
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <a class="close" data-dismiss="modal">&times;</a>
+                <h4>Desea eliminar material?</h4>
+            </div>
+            <div class="modal-body bg-warning">
+                <p><strong>Materiales ID: </strong><small class="form-control-static del-mid"></small></p>
+                <p><strong>Descripción: </strong><small class="form-control-static del-des"></small></p>
+                <p><strong>Medida: </strong><small class="form-control-static del-med"></small></p>
+                <p><strong>Unidad: </strong><small class="form-control-static del-unid"></small></p>
+                <p><strong>Cantidad: </strong><small class="form-control-static del-cant"></small></p>
+            </div>
+            <div class="modal-footer bg-warning">
+                <button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Salir</button>
+                <button class="btn btn-warning text-black btn-delete-mat" data-loading-text="Process..."><span class="glyphicon glyphicon-trash"></span> Eliminar!</button>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- modal delete all temp -->
 <div class="modal fade modal-delete-all-temp">
-	<div class="modal-dialog modal-sm">
-		<div class="modal-content brand-danger text-white">
-			<div class="modal-body">
-				<a class="close" data-dismiss="modal">&times;</a>
-				<h4><em>Desea eliminar todo el pedido temp?</em></h4>
-				<small>
-					Esto incluye los niples; estos se perderan permanentemente si decide continuar.
-				</small>
-			</div>
-			<div class="modal-footer">
-				<button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Salir</button>
-				<button class="btn btn-danger btn-del-all-temp" data-loading-text="Process..."><span class="glyphicon glyphicon-fire"></span> Eliminar Todo</button>
-			</div>
-		</div>
-	</div>
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content brand-danger text-white">
+            <div class="modal-body">
+                <a class="close" data-dismiss="modal">&times;</a>
+                <h4><em>Desea eliminar todo el pedido temp?</em></h4>
+                <small>
+                    Esto incluye los niples; estos se perderan permanentemente si decide continuar.
+                </small>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Salir</button>
+                <button class="btn btn-danger btn-del-all-temp" data-loading-text="Process..."><span class="glyphicon glyphicon-fire"></span> Eliminar Todo</button>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="modal fade modal-up-file">
-	<div class="modal-dialog modal-sm">
-		<div class="modal-content brand-primary text-white">
-			<div class="modal-body">
-				<a class="close" data-dismiss="modal">&times;</a>
-				<h4>Cargar archivo Temp.</h4>
-				<button class="btn btn-info btn-sm btn-down-temp"><span class="glyphicon glyphicon-file"></span> Plantilla</button>
-				<div class="form-group">
-					<input type="file" class="form-control hide input-file-temp" name="input-file-temp" accept="application/vnd.ms-excel" />
-					<hr>
-					<div class="alert alert-inverse alert-inverse-border">
-						<div class="text-center">
-							<a class="text-white show-input-file-temp">Click Here!</a>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Salir</button>
-				<button class="btn btn-primary text-black btn-upload-file-temp" data-loading-text="Upload..." data-complete-text="Complete!"><span class="glyphicon glyphicon-upload"></span> Subir</button>
-			</div>
-		</div>
-	</div>
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content brand-primary text-white">
+            <div class="modal-body">
+                <a class="close" data-dismiss="modal">&times;</a>
+                <h4>Cargar archivo Temp.</h4>
+                <button class="btn btn-info btn-sm btn-down-temp"><span class="glyphicon glyphicon-file"></span> Plantilla</button>
+                <div class="form-group">
+                    <input type="file" class="form-control hide input-file-temp" name="input-file-temp" accept="application/vnd.ms-excel" />
+                    <hr>
+                    <div class="alert alert-inverse alert-inverse-border">
+                        <div class="text-center">
+                            <a class="text-white show-input-file-temp">Click Here!</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Salir</button>
+                <button class="btn btn-primary text-black btn-upload-file-temp" data-loading-text="Upload..." data-complete-text="Complete!"><span class="glyphicon glyphicon-upload"></span> Subir</button>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="modal fade modal-delete-nipple-temp">
-	<div class="modal-dialog modal-sm">
-		<div class="modal-content">
-			<div class="modal-header bg-warning">
-				<a class="close" data-dismiss="modal">&times;</a>
-				<h4>Desea eliminar Material?</h4>
-			</div>
-			<div class="modal-body bg-warning">
-				<p><strong>Materiales ID: </strong><small class="form-control-static del-mid"></small></p>
-				<p><strong>Descripción: </strong><small class="form-control-static del-des"></small></p>
-				<p><strong>Medida: </strong><small class="form-control-static del-med"></small></p>
-				<p><strong>Unidad: </strong><small class="form-control-static del-unid"></small></p>
-				<p><strong>Cantidad: </strong><small class="form-control-static del-cant"></small></p>
-			</div>
-			<div class="modal-footer bg-warning">
-				<button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Salir</button>
-				<button class="btn btn-warning text-black btn-delete-mat" data-loading-text="Process..."><span class="glyphicon glyphicon-trash"></span> Eliminar!</button>
-			</div>
-		</div>
-	</div>
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <a class="close" data-dismiss="modal">&times;</a>
+                <h4>Desea eliminar Material?</h4>
+            </div>
+            <div class="modal-body bg-warning">
+                <p><strong>Materiales ID: </strong><small class="form-control-static del-mid"></small></p>
+                <p><strong>Descripción: </strong><small class="form-control-static del-des"></small></p>
+                <p><strong>Medida: </strong><small class="form-control-static del-med"></small></p>
+                <p><strong>Unidad: </strong><small class="form-control-static del-unid"></small></p>
+                <p><strong>Cantidad: </strong><small class="form-control-static del-cant"></small></p>
+            </div>
+            <div class="modal-footer bg-warning">
+                <button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Salir</button>
+                <button class="btn btn-warning text-black btn-delete-mat" data-loading-text="Process..."><span class="glyphicon glyphicon-trash"></span> Eliminar!</button>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="modal fade modal-order">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header bg-success">
-				<a class="close" data-dismiss="modal">&times;</a>
-				<h4 class="text-success">Generar Pedido
-					<!-- <small class="text-success"><em>Generar pedido a almacén.</em></small>-->
-				</h4>
-			</div>
-			<div class="modal-body bg-success">
-				<form action="" method="POST">
-				{% csrf_token %}
-				<div class="row show-grid">
-					<div class="col-md-6">
-						<div class="form-group has-success">
-							<label for="" class="control-label">Proyecto</label>
-							<select name="proyecto" id="id_proyecto" class="form-control input-sm pro"></select>
-						</div>
-					</div>
-					<div class="col-md-6">
-						<div class="form-group has-success">
-							<label for="" class="control-label">Subproyecto</label>
-							<select name="subproyecto" id="id_subproyecto" class="form-control input-sm sub"></select>
-						</div>
-					</div>
-					<div class="col-md-6">
-						<div class="form-group has-success">
-							<label for="" class="control-label">Sector</label>
-							<select name="sector" id="id_sector" class="form-control input-sm sec"></select>
-						</div>
-					</div>
-					<div class="col-md-6">
-						<div class="form-group has-success">
-							<label for="" class="control-label">Almacén</label>
-							<select name="almacen" id="id_almacen" class="form-control input-sm al"></select>
-						</div>
-					</div>
-					<div class="col-md-12">
-						<div class="form-group has-success">
-							<label for="" class="control-label">Asunto</label>
-							<input name="asunto" id="issue" class="form-control input-sm issue">
-						</div>
-					</div>
-					<div class="col-md-12">
-						<div class="form-group has-success">
-							<label for="" class="control-label">Empleado</label>
-							<div class="row show-grid">
-								<div class="col-md-4">
-									<input name="empdni" id="dni" class="form-control input-sm dni" value="{{user.get_profile.empdni_id}}" readonly />
-								</div>
-								<div class="col-md-8">
-									<input name="nom" id="nom" class="form-control input-sm nom" value="{{ user.get_profile.empdni.firstname }}, {{ user.get_profile.empdni.lastname }}" readonly />
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="form-group has-success">
-							<label for="" class="control-label">Fecha de Traslado</label>
-							<input name="traslado" id="traslado" class="form-control input-sm in-date traslado">
-						</div>
-					</div>
-					<div class="col-md-8">
-						<div class="form-group has-success">
-							<label for="" class="control-label">Adjunte un archivo <small>(Opcional)</small></label>
-							<div class="alert alert-warning text-center file-container">
-								<a href="#file" class="text-warning tofile">Click Here <span class="glyphicon glyphicon-paperclip"></span></a>
-							</div>
-							<input type="file" name="orderfile" id="file" class="hide form-control input-sm" accept="application/pdf">
-						</div>
-					</div>
-					<div class="col-md-12">
-						<div class="form-group has-success">
-							<label for="" class="control-label">Observación</label>
-							<textarea name="obser" id="obs" class="form-control input-sm obs" rows="1" maxlength="200"></textarea>
-						</div>
-					</div>
-				</div>
-				</form>
-			</div>
-			<div class="modal-footer bg-success">
-				<button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Salir</button>
-				<button class="btn btn-success text-black btn-saved-order"><span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios</button>
-			</div>
-		</div>
-	</div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success">
+                <a class="close" data-dismiss="modal">&times;</a>
+                <h4 class="text-success">Generar Pedido
+                    <!-- <small class="text-success"><em>Generar pedido a almacén.</em></small>-->
+                </h4>
+            </div>
+            <div class="modal-body bg-success">
+                <form action="" method="POST">
+                {% csrf_token %}
+                <div class="row show-grid">
+                    <div class="col-md-6">
+                        <div class="form-group has-success">
+                            <label for="" class="control-label">Proyecto</label>
+                            <select name="proyecto" id="id_proyecto" class="form-control input-sm pro"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group has-success">
+                            <label for="" class="control-label">Subproyecto</label>
+                            <select name="subproyecto" id="id_subproyecto" class="form-control input-sm sub"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group has-success">
+                            <label for="" class="control-label">Sector</label>
+                            <select name="sector" id="id_sector" class="form-control input-sm sec"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group has-success">
+                            <label for="" class="control-label">Almacén</label>
+                            <select name="almacen" id="id_almacen" class="form-control input-sm al"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group has-success">
+                            <label for="" class="control-label">Asunto</label>
+                            <input name="asunto" id="issue" class="form-control input-sm issue">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group has-success">
+                            <label for="" class="control-label">Empleado</label>
+                            <div class="row show-grid">
+                                <div class="col-md-4">
+                                    <input name="empdni" id="dni" class="form-control input-sm dni" value="{{user.get_profile.empdni_id}}" readonly />
+                                </div>
+                                <div class="col-md-8">
+                                    <input name="nom" id="nom" class="form-control input-sm nom" value="{{ user.get_profile.empdni.firstname }}, {{ user.get_profile.empdni.lastname }}" readonly />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group has-success">
+                            <label for="" class="control-label">Fecha de Traslado</label>
+                            <input name="traslado" id="traslado" class="form-control input-sm in-date traslado">
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group has-success">
+                            <label for="" class="control-label">Adjunte un archivo <small>(Opcional)</small></label>
+                            <div class="alert alert-warning text-center file-container">
+                                <a href="#file" class="text-warning tofile">Click Here <span class="glyphicon glyphicon-paperclip"></span></a>
+                            </div>
+                            <input type="file" name="orderfile" id="file" class="hide form-control input-sm" accept="application/pdf">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group has-success">
+                            <label for="" class="control-label">Observación</label>
+                            <textarea name="obser" id="obs" class="form-control input-sm obs" rows="1" maxlength="200"></textarea>
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-success">
+                <button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Salir</button>
+                <button class="btn btn-success text-black btn-saved-order"><span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- end block-->
-<!-- Scripts -->
-<script src="/media/js/mustache.js"></script>
-<script src="/media/js/scrollTo.js"></script>
-<!-- end scripts -->
 {% endblock %}

@@ -16,7 +16,7 @@ class Pedido(models.Model):
     sector = models.ForeignKey(Sectore, to_field='sector_id',blank=True,null=True)
     almacen = models.ForeignKey(Almacene, to_field='almacen_id')
     asunto = models.CharField(max_length=160,null=True)
-    empdni = models.CharField(max_length=8,null=False)
+    empdni = models.ForeignKey(Employee, to_field='empdni_id', null=True, default='70492850') #models.CharField(max_length=8,null=False)
     registrado = models.DateTimeField(auto_now=True)
     traslado = models.DateField()
     obser = models.TextField(null=True,blank=True)
@@ -30,6 +30,8 @@ class Pedido(models.Model):
 class Detpedido(models.Model):
     pedido = models.ForeignKey(Pedido, to_field='pedido_id')
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
+    brand = models.ForeignKey(Brand, to_field='brand_id', default='BR000', blank=True)
+    model = models.ForeignKey(Model, to_field='model_id', default='MO000', blank=True)
     cantidad = models.FloatField(null=False)
     cantshop = models.FloatField(default=0,null=False)
     cantguide = models.FloatField(default=0,null=True,blank=True)
@@ -48,6 +50,8 @@ class tmppedido(models.Model):
     empdni = models.CharField(max_length=8, null=False)
     materiales = models.ForeignKey(Materiale,to_field='materiales_id')
     cantidad = models.FloatField(null=False)
+    brand = models.ForeignKey(Brand, to_field='brand_id', default='BR000', blank=True)
+    model = models.ForeignKey(Model, to_field='model_id', default='MO000', blank=True)
 
     def __unicode__(self):
         return '%s %s %f'%(self.empdni, self.materiales, self.cantidad)

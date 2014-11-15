@@ -133,40 +133,53 @@ class GetDetailsMaterialesByCode(DetailView):
             return HttpResponse(simplejson.dumps(context), mimetype='application/json')
 
 def save_order_temp_materials(request):
-    try:
-        data = {}
-        if request.method == 'POST':
-            c = tmppedido.objects.filter(empdni__exact=request.POST['dni'],materiales_id__exact=request.POST['mid']).count()
-            quantity_old = 0
-            if c > 0:
-                obj = tmppedido.objects.get(empdni__exact=request.POST['dni'],materiales_id__exact=request.POST['mid'])
-                quantity_old = float(obj.cantidad)
-            else:
-                obj = tmppedido()
-            obj.empdni = request.POST['dni']
-            obj.materiales_id = request.POST['mid']
-            obj.cantidad = ( float(request.POST['cant']) + quantity_old)
+    data = dict()
+    if request.method == 'POST':
+        try:
+            c = tmppedido.objects.get(empdni__exact=request.user.get_profile().empdni_id,materiales_id__exact=request.POST['mid'])
+            c.cantidad += float(request.POST.get('cant'))
+            c.brand_id = request.POST.get('brand')
+            c.model_id = request.POST.get('model')
+            c.save()
+        except ObjectDoesNotExist:
+            obj = tmppedido()
+            obj.empdni = request.user.get_profile().empdni_id
+            obj.materiales_id = request.POST.get('mid')
+            obj.cantidad = float(request.POST.get('cant'))
+            obj.brand_id = request.POST.get('brand')
+            obj.model_id = request.POST.get('model')
             obj.save()
-            data['status'] = True
-        else:
-            data['status'] = False
-        return HttpResponse(simplejson.dumps(data), mimetype="application/json")
-    except ObjectDoesNotExist, e:
-        raise e
+        if 'details' in request.POST:
+            for x in json.loads(request.POST.get('details')):
+                try:
+                    c = tmppedido.objects.get(empdni__exact=request.user.get_profile().empdni_id,materiales_id__exact=x['materials'])
+                    c.cantidad += (float(x['quantity']) * float(request.POST.get('cant')))
+                    c.save()
+                except ObjectDoesNotExist:
+                    obj = tmppedido()
+                    obj.empdni = request.user.get_profile().empdni_id
+                    obj.materiales_id = x['materials']
+                    obj.cantidad = (float(x['quantity']) * float(request.POST.get('cant')))
+                    obj.brand_id = 'BR000'
+                    obj.model_id = 'MO000'
+                    obj.save()
+        data['status'] = True
+    return HttpResponse(simplejson.dumps(data), mimetype="application/json")
 
 def update_order_temp_materials(request):
     try:
-        data = {}
+        data = dict()
         if request.method == "POST":
-            obj = tmppedido.objects.get(empdni__exact=request.POST['dni'],materiales_id__exact=request.POST['mid'])
-            obj.cantidad = request.POST['cantidad']
+            obj = tmppedido.objects.get(empdni__exact=request.user.get_profile().empdni_id,materiales_id__exact=request.POST['mid'])
+            obj.cantidad = request.POST.get('cantidad')
+            obj.brand_id = request.POST.get('brand')
+            obj.model_id = request.POST.get('model')
             obj.save()
             data['status'] = True
-        else:
-            data['status'] = False
-        return HttpResponse(simplejson.dumps(data), mimetype="application/json")
     except ObjectDoesNotExist, e:
-        raise e
+        data['status'] = False
+        data['raise'] = e.__str__()
+    return HttpResponse(simplejson.dumps(data), mimetype="application/json")
 
 def delete_order_temp_material(request):
     try:
@@ -202,16 +215,27 @@ def get_list_order_temp(request):
     try:
         data = {'list':[]}
         if request.method == 'GET':
-            ls = tmppedido.objects.filter(empdni__startswith=request.GET['dni']).order_by('materiales__matnom')
+            ls = tmppedido.objects.filter(empdni__startswith=request.user.get_profile().empdni_id).order_by('materiales__matnom')
             #lista = [ {"cant": x.cantidad, "materiales_id": x.materiales_id, "matnom": x.materiales.matnom } for x in ls ]
-            i = 1
+            counter = 1
             for x in ls:
-                data['list'].append({'item': i, 'materiales_id': x.materiales_id, 'matnom': x.materiales.matnom, 'matmed': x.materiales.matmed, 'unidad': x.materiales.unidad_id, 'cantidad': x.cantidad })
-                i+=1
+                data['list'].append(
+                    {
+                        'item': counter,
+                        'materiales_id': x.materiales_id,
+                        'matnom': x.materiales.matnom,
+                        'matmed': x.materiales.matmed,
+                        'brand': x.brand.brand,
+                        'model': x.model.model,
+                        'unidad': x.materiales.unidad.uninom,
+                        'cantidad': x.cantidad
+                    }
+                )
+                counter+=1
             data['status'] = True
         else:
             data['status'] = False
-        return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+        return HttpResponse(simplejson.dumps(data),mimetype='application/json')
     except ObjectDoesNotExist, e:
         raise e
 

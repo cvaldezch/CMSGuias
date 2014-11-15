@@ -379,15 +379,23 @@ addMaterial = (event) ->
         currency = $("select[name=moneda]").val()
         if $("[name=currency]").val() isnt currency
             # valid exists exchange rate for today
-            if $("[name=#{$("[name=currency]").val()}]").val() is null or $("[name=#{$("[name=currency]").val()}]").val() is undefined
-                $().toastmessage "showWarningToast", "El tipo de cambio no esta registrado."
-                return false
-            purchase = $("[name=#{$("[name=currency]").val()}]").val()
+            purchase = 0
+            if $("input[name=exchangep]").length
+                purchase = convertNumber $("input[name=exchangep]").val()
+            else
+                if $("[name=#{$("[name=currency]").val()}]").val() is null or $("[name=#{$("[name=currency]").val()}]").val() is undefined
+                    $().toastmessage "showWarningToast", "El tipo de cambio no esta registrado."
+                    return false
+                purchase = $("[name=#{$("[name=currency]").val()}]").val()
             data['precio'] = data['precio'] * parseFloat(purchase)
 
+        if $("input[name=gincludegroup]").length
+            if $("input[name=gincludegroup]").is(":checked")
+                data.details = JSON.stringify tmpObjectDetailsGroupMaterials.details
         $.post "", data, (response) ->
             if response.status
                 listMaterials()
+                tmpObjectDetailsGroupMaterials = new Object
             else
                 $().toastmessage "showErrorToast", "No found Transaction #{response.raise }"
         , "json"
@@ -453,7 +461,7 @@ delMaterials = (event)->
                     if response.status
                         $(".#{btn}").remove()
                         $(".table-details > tbody > tr").each (index, element) ->
-                            element.find "td"
+                            $(element).find "td"
                             .eq 0
                             .text index + 1
                         return
@@ -478,18 +486,23 @@ editMaterials = (event) ->
     data.edit = true
     if data.cantidad != "" and data.precio != ""
         currency = $("select[name=moneda-e]").val()
-        if $("[name=currency]").val() != currency
-            if $("[name=#{$("[name=currency]").val()}]").val() is null or $("[name=#{$("[name=currency]").val()}]").val() is undefined
-                $().toastmessage "showWarningToast", "El tipo de cambio no esta registrado."
-                return false
-            purchase = $("[name=#{$("[name=currency]").val()}]").val()
-            data.precio = (data.precio * purchase)
+        if $("[name=currency]").val() isnt currency
+            # valid exists exchange rate for today
+            purchase = 0
+            if $("input[name=exchangep]").length
+                purchase = convertNumber $("input[name=exchangep]").val()
+            else
+                if $("[name=#{$("[name=currency]").val()}]").val() is null or $("[name=#{$("[name=currency]").val()}]").val() is undefined
+                    $().toastmessage "showWarningToast", "El tipo de cambio no esta registrado."
+                    return false
+                purchase = $("[name=#{$("[name=currency]").val()}]").val()
+            data['precio'] = data['precio'] * parseFloat(purchase)
 
         $.post "", data, (response) ->
             if response.status
                 $materials = $(".#{btn.value} > td")
-                $materials.eq(5).text $("select[name=edit-brand]").text()
-                $materials.eq(6).text $("select[name=edit-model]").text()
+                $materials.eq(5).text $("select[name=edit-brand]").find("option:selected").text()
+                $materials.eq(6).text $("select[name=edit-model]").find("option:selected").text()
                 $materials.eq(7).text data.cantidad
                 $materials.eq(8).text data.precio
                 $(".medit").modal "toggle"
@@ -1251,19 +1264,27 @@ addMaterialUpdateMeter = ->
         currency = $("select[name=moneda]").val()
         if $("[name=currency]").val() isnt currency
             # valid exists exchange rate for today
-            if $("[name=#{$("[name=currency]").val()}]").val() is null or $("[name=#{$("[name=currency]").val()}]").val() is undefined
-                $().toastmessage "showWarningToast", "El tipo de cambio no esta registrado."
-                return false
-            purchase = $("[name=#{$("[name=currency]").val()}]").val()
-            data['price'] = data['price'] * parseFloat(purchase)
-
+            purchase = 0
+            if $("input[name=exchangep]").length
+                purchase = convertNumber $("input[name=exchangep]").val()
+            else
+                if $("[name=#{$("[name=currency]").val()}]").val() is null or $("[name=#{$("[name=currency]").val()}]").val() is undefined
+                    $().toastmessage "showWarningToast", "El tipo de cambio no esta registrado."
+                    return false
+                purchase = $("[name=#{$("[name=currency]").val()}]").val()
+            data.price = data.price * parseFloat(purchase)
+        if $("input[name=gincludegroup]").length
+            if $("input[name=gincludegroup]").is(":checked")
+                data.details = JSON.stringify tmpObjectDetailsGroupMaterials.details
+        console.log data
         $.post "", data, (response) ->
             if response.status
+                tmpObjectDetailsGroupMaterials = new Object()
                 startModidfy()
+                return
             else
                 $().toastmessage "showErrorToast", "No found Transaction #{response.raise }"
         , "json"
-        return
     else
         $().toastmessage "showWarningToast", "Existe campos vacio."
     return

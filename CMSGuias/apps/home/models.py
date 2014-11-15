@@ -275,7 +275,7 @@ class FormaPago(models.Model):
 class Moneda(models.Model):
     moneda_id = models.CharField(primary_key=True,max_length=4)
     moneda = models.CharField(max_length=60)
-    silbolo = models.CharField(max_length=3)
+    simbolo = models.CharField(max_length=5, default='')
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):

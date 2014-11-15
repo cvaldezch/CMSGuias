@@ -212,6 +212,14 @@
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group has-warning">
+                                        <label class="control-label">Incluir</label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" name="gincludegroup"> Grupo de Materiales
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group has-warning">
                                         <label class="control-label">Agregar</label>
                                         {% if project.status == 'PE' %}
                                             <button class="btn btn-block btn-warning text-black btn-add">
@@ -233,12 +241,17 @@
                                 <div class="col-md-12">
                                     <p>
                                         <small>
-                                            El precio del sistema esta expresado en <q class="currency-name">{{ system.moneda.moneda }}</q>
+                                            El precio del sistema esta expresado en <q class="currency-name">{{ system.moneda.moneda }}</q>.
                                         </small>
                                     </p>
                                     <p>
                                          <small>
-                                            El precio del proyecto esta expresado en <q class="currency-name">{{ project.currency.moneda }}</q>
+                                            El precio del proyecto esta expresado en <q class="currency-name">{{ project.currency.moneda }}</q>.
+                                        </small>
+                                    </p>
+                                    <p>
+                                        <small>
+                                            El tipo de cambio para el proyecto es <q>{{ project.exchange|safe }}</q>.
                                         </small>
                                     </p>
                                 </div>
@@ -1147,6 +1160,9 @@
 {% for x in exchange %}
   <input type="hidden" name="{{ x.moneda_id }}" value="{{ x.compra|safe }}">
 {% endfor %}
+{% if project.exchange %}
+    <input type="hidden" name="exchangep" value="{{ project.exchange|safe }}">
+{% endif %}
 <!-- block files -->
 <input type="file" name="plane" class="hide" accept="application/pdf">
 {% endblock content %}

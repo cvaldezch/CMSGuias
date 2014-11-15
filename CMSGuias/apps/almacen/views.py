@@ -75,6 +75,8 @@ def view_pedido(request):
                     det.materiales_id = x.materiales_id
                     det.cantidad = x.cantidad
                     det.cantshop = x.cantidad
+                    det.brand_id = x.brand_id
+                    det.model_id = x.model_id
                     det.save()
                 # saved niples of tmpniple
                 tmpn = models.tmpniple.objects.filter(empdni__exact=request.user.get_profile().empdni_id)

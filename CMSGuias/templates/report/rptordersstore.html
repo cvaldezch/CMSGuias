@@ -3,13 +3,13 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Orders stores</title>
-	<link rel="stylesheet" type="text/css" href="/media/css/reports/ordersstore.css">
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/reports/ordersstore.css">
 </head>
 <body>
 	<header>
-		<img id="logo" src="/media/images/icrlogo.png" alt="image">
+		<img id="logo" src="{{ MEDIA_URL }}images/icrlogo.png" alt="image">
 		<div id="dir" >
-			Jr. Gral. Jose de San Martin Mz. E Lote 6 Huachipa - Lurigancho Lima 15, Peru<br >
+			Jr. Gral. Jose de San Martin Mz. F Lote 8A Huachipa - Lurigancho Lima 15, Peru<br >
 			Central Telefonica: (511) 371-0443<br >
 			E-mail: logistica@icrperusa.com
 		</div>
@@ -34,7 +34,8 @@
 			<tr><td width="3cm"><strong>Fecha Registrado :</strong></td><td> {{order.registrado}}</td></tr>
 			<tr><td><strong>Fecha Traslado :</strong></td><td> {{order.traslado}}</td></tr>
 			<tr><td><strong>Estado :</strong></td><td> PENDIENTE</td></tr>
-			<tr><td><strong>Observación :</strong></td><td> {{ order.obser|safe }}</td></tr>
+			<tr><td><strong>Realizado :</strong></td><td>{{ order.empdni.firstname }} {{ order.empdni.lastname }}</td></tr>
+			<!-- <tr><td><strong>Observación :</strong></td><td> {{ order.obser|safe }}</td></tr> -->
 			</table>
 		</div>
 	</header>
@@ -43,29 +44,34 @@
 			<table>
 				<thead>
 					<tr>
-						<th>Item</th>
-						<th>Código</th>
+						<th width="1.5cm">Item</th>
+						<th width="2cm">Código</th>
 						<th>Descripción</th>
-						<th>Medida</th>
-						<th>Unidad</th>
-						<th>Cantidad</th>
+						<!-- <th>Medida</th> -->
+						<th width="1.5cm">Unidad</th>
+						<th width="1.5cm">Marca</th>
+						<th width="1.5cm">Modelo</th>
+						<th width="2cm">Cantidad</th>
 					</tr>
 				</thead>
 				<tbody>
 					{% for x in lista %}
 						<tr>
-							<td class="text-center item">{{forloop.counter}}</td>
-							<td class="text-center cod">{{x.materiales_id}}</td>
-							<td class="nom">{{x.materiales.matnom}}</td>
-							<td>{{x.materiales.matmed}}</td>
-							<td class="text-center">{{x.materiales.unidad_id}}</td>
-							<td class="text-center">{{x.cantidad}}</td>
+							<td class="text-center item">{{ forloop.counter|floatformat:"2" }}</td>
+							<td class="text-center cod">{{ x.materiales_id }}</td>
+							<td>{{ x.materiales.matnom }} -
+							<!-- </td>
+							<td> -->
+							{{ x.materiales.matmed }}</td>
+							<td class="text-center">{{ x.materiales.unidad.uninom }}</td>
+							<td class="text-center">{{ x.brand.brand }}</td>
+							<td class="text-center">{{ x.model.model }}</td>
+							<td class="text-center">{{ x.cantidad }}</td>
 						</tr>
 					{% endfor%}
 				</tbody>
 				<tfoot>
 					<tr>
-					<td></td>
 					<td></td>
 					<td></td>
 					<td></td>

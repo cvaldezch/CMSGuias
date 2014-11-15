@@ -30,7 +30,9 @@
 	}
 	@frame content_frame {
 		/*-pdf-frame-content: details;*/
-		top: 7cm; width: 18cm; left: 1.5cm; right: 1.5cm;
+		top: 7cm;
+		margin-left: 1cm;
+		margin-right: 1cm;
 	}
 	@frame footer_frame {
 		-pdf-frame-content: footer_content;
@@ -51,10 +53,10 @@ img{
 #nro-serie h1 {
 	font-size: 24px;
 }
-.details table > thead > tr { background-color: olive; border: 0.01 solid olive; padding-top: .15cm; padding-bottom: 0.1cm; }
-.details table > tbody > tr { border-left: .01cm solid olive; border-right: .01cm solid olive; padding-top: .05cm; padding-bottom: 0.01cm; }
-/*.details table > tfoot > tr { border-top: 0.01cm solid olive; }*/
-.details table > tbody > tr:last-child { border-bottom: 1px solid olive; }
+.details table > thead > tr { background-color: dodgerblue; border: 0.01 solid dodgerblue; padding-top: .15cm; padding-bottom: 0.1cm; }
+.details table > tbody > tr { border-left: .01cm solid dodgerblue; border-right: .01cm solid dodgerblue; padding-top: .05cm; padding-bottom: 0.01cm; }
+/*.details table > tfoot > tr { border-top: 0.01cm solid dodgerblue; }*/
+.details table > tbody > tr:last-child { border-bottom: 1px solid dodgerblue; }
 .nom {
 	width: 7cm;
 }

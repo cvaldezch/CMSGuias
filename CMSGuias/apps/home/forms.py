@@ -118,7 +118,7 @@ class GMaterialsForm(forms.ModelForm):
         widgets = {
             'tgroup': forms.Select(attrs = {'class': 'form-control'}),
             'description': forms.TextInput(attrs = {'class': 'form-control'}),
-            'materials_id': forms.Select(attrs = {'class': 'form-control'}),
+            'materials': forms.Select(attrs = {'class': 'form-control'}),
             'parent': forms.TextInput(attrs = {'class': 'form-control'}),
             'observation': forms.Textarea(attrs = {'class': 'form-control'}),
         }
