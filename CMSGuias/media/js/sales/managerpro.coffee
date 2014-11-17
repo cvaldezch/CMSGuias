@@ -154,7 +154,7 @@ assignedResponsible = ->
             if response.status
                 location.reload()
             else
-                $().toastmessage "", "Transaccion error: #{response.raise}"
+                $().toastmessage "showErrorToast", "Transaccion error: #{response.raise}"
         return
     return
 

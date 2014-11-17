@@ -9,6 +9,7 @@
 <script src="{{ MEDIA_URL }}js/tinymce.js"></script>
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>
 <script src="{{ MEDIA_URL }}js/sales/managerpro.js"></script>
+<script src="{{ MEDIA_URL }}js/mailer.js"></script>
 <script>
 equalheight = function(container){
     var currentTallest = 0,
@@ -172,19 +173,35 @@ $(window).resize(function(){
                             {% endif %}
                             {% if project.status != 'AC' %}
                             <div class="btn-group">
-                                <button class="btn btn-primary btn-xs btn-responsible">
-                                    <span class="glyphicon glyphicon-user"></span>
-                                    <span class="visible-lg visible-sm">Responsable</span>
+                                <button type="button" class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown">
+                                    <span class="fa fa-cubes"></span>
+                                    <span class="visible-lg visible-lg">Acciones</span>
                                 </button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li>
+                                        <button class="btn btn-link btn-xs text-black btn-responsible">
+                                            <span class="glyphicon glyphicon-user"></span>
+                                            <span class="glyphicon-class">Responsable</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="btn btn-link btn-xs text-black btn-files">
+                                            <span class="glyphicon glyphicon-compressed"></span>
+                                            <span class="glyphicon-class">Archivos</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="btn btn-link btn-xs text-black btn-emails">
+                                            <span class="glyphicon glyphicon-send"></span>
+                                            <span class="glyphicon-class">Correo Apertura</span>
+                                        </button>
+                                    </li>
+                                </ul>
                             </div>
-                            {% endif %}
-                            {% if project.status != 'AC' %}
+                            <!-- <div class="btn-group">
+                            </div>
                             <div class="btn-group">
-                                <button class="btn btn-primary btn-xs btn-files">
-                                    <span class="glyphicon glyphicon-compressed"></span>
-                                    <span class="visible-lg visible-sm">Archivos</span>
-                                </button>
-                            </div>
+                            </div> -->
                             {% endif %}
                             {% if project.status != 'AC' %}
                             <div class="btn-group">
