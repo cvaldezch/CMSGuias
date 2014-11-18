@@ -67,4 +67,7 @@ urlpatterns = patterns('CMSGuias.apps.wsjson.views',
     # convert number a literal
     url(r'^convert/number/to/literal/', GetNumberLiteral.as_view()),
     url(r'^get/group/materials/bedside/$', SearchGroupMaterials.as_view()),
+    # get all emails for accounts
+    url(r'^get/emails/$', GetAllAccounts.as_view()),
+    url(r'^emails/$', SystemEmails.as_view()),
 )

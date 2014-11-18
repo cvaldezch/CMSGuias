@@ -8,6 +8,10 @@ validateFormatDate = (data) ->
         pass = true
     return pass
 
+validateEmail = (email) ->
+    re = /\S+@\S+\.\S+/
+    return re.test email
+
 convertNumber = (val) ->
     if isNaN(val)
         num = val.replace ",", "."

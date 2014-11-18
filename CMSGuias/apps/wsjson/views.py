@@ -11,6 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
 from django.views.generic import ListView, DetailView, View
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Sum
 from django.utils import simplejson
@@ -847,3 +848,46 @@ class SearchGroupMaterials(JSONResponseMixin, View):
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
+
+class GetAllAccounts(JSONResponseMixin, View):
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'allmails' in request.POST:
+                    context['for']= [ x.email for x in User.objects.all()]
+                    context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
+
+class SystemEmails(JSONResponseMixin, View):
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if 'saveEmail' in request.POST:
+                obj = Emails()
+                obj.email = request.user.email
+                obj.empdni_id = request.user.get_profile().empdni_id
+                obj.fors = request.POST.get('forsb')
+                if 'ccb' in request.POST:
+                    obj.cc = request.POST.get('ccb')
+                if 'ccob' in request.POST:
+                    obj.cco = request.POST.get('ccob')
+                obj.issue = request.POST.get('issue')
+                obj.body = request.POST.get('body')
+                if 'pwdmailer' in request.POST:
+                    obj.account = True
+                else:
+                    obj.account = False
+                obj.save()
+                context['status'] = True
+        except ObjectDoesNotExist, e:
+            context['raise'] = e.__str__()
+            context['status'] = False
+        return self.render_to_json_response(context)

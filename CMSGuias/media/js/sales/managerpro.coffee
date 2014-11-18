@@ -114,6 +114,19 @@ $(document).ready ->
         font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",
         toolbar: "undo redo | styleselect | fontsizeselect |"
     $(".btn-publisher").on "click", publisherCommnet
+    $("button.btn-emails").on "click", showAlertStartProject
+    return
+
+showAlertStartProject = (event) ->
+    getAllCurrentAccounts()
+    globalMailerData.issue = "Apertura de Proyecto"
+    $pro = $("input[name=pro]")
+    globalMailerData.body = "
+    <p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\">Estimados,</span></p><p style=\"text-align: justify;\" data-mce-style=\"text-align: justify;\"><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\">para hacerles de su conocimiento que hoy #{new Date().toLocaleDateString() } se realiza la apertura del proyecto <strong>\"#{$pro.attr "data-name"}\"</strong>  con código <strong>\"#{$pro.val()}\"</strong> que se realizara en \"#{$pro.attr "data-address"}\" para el cliente <strong>\"#{$pro.attr "data-customers"}\"</strong>. El proyecto tendra como fecha de inicio #{$pro.attr "data-star"} y un fecha de termino aproximanda para el #{$pro.attr "data-end"}.</span></p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\"><strong>Operaciones</strong> : #{ $pro.attr "data-responsible" }</span></p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\"><br data-mce-bogus=\"1\"></span></p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\">Saludos.</span></p><p>___________________________________</p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\"><strong>ICRP PERU INSTACIONES S.A.C.</strong></span><br></p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\"><strong>Telf:</strong> 371-0443 / 358-1868</span></p><p><br data-mce-bogus=\"1\"></p>
+    "
+    setTimeout ->
+        showGlobalEnvelop()
+    , 800
     return
 
 approvedProject = ->

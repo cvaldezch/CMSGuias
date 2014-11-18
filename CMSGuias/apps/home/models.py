@@ -325,4 +325,17 @@ class Configuracion(models.Model):
     igv = models.IntegerField(default=10)
 
     def __unicode__(self):
-        return "%s %s"%( self.periodo, self.moneda)
+        return "%s %s"%(self.periodo, self.moneda)
+
+class Emails(models.Model):
+    empdni = models.ForeignKey(Employee, to_field='empdni_id')
+    email = models.CharField(max_length=200, null=True)
+    fors = models.TextField(null=False)
+    cc = models.TextField(null=True, blank=True)
+    cco = models.TextField(null=True, blank=True)
+    issue = models.CharField(max_length=250)
+    body = models.TextField(null=True, blank=True)
+    account = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return "%s %s"%(self.empdni, self.fors)
