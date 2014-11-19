@@ -172,12 +172,13 @@ sendGlobalMailer = function(event) {
   data.forsb = data.fors.toString();
   if ($("input[name=globalPwdMailer]").is(":visible")) {
     if ($.trim($("input[name=globalPwdMailer]").val()) !== "") {
+      data.name = $("input[name=user-email]").attr("data-name");
       data.email = $("input[name=user-email]").val();
       data.pwdmailer = $("input[name=globalPwdMailer]").val();
     }
   }
   $.ajax({
-    url: "http://190.41.246.91:3000",
+    url: "http://190.41.246.91:3000/mailer/",
     type: "GET",
     crossDomain: true,
     data: $.param(data),
