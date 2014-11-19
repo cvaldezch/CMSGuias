@@ -43,7 +43,14 @@ class HomeManager(ListView):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         try:
-            context = {}
+            context = dict()
+            com = Company.objects.get(pk='20555029277')
+            request.session['company'] = {
+                'ruc': com.ruc,
+                'name': com.companyname,
+                'dir': com.address,
+                'phone': com.phone
+            }
             self.template_name = RedirectModule(request.user.get_profile().empdni.charge.area)
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:

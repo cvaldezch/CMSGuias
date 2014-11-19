@@ -1,62 +1,72 @@
 <!doctype html>
 <html lang="es">
 <head>
-	<meta charset="UTF-8">
-	<title> {% block title %}CMS Guias {% endblock %}</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<!--<link rel="shortcut icon" href="/media/resource/ico/icrperu.ico" type="image/x-icon">-->
-	<script src="/media/js/html5.js"></script>
-	<!-- Part JQuery -->
-	{% block jquery %}
-	<link rel="stylesheet" href="/media/css/jquery-ui.css">
-	<script src="/media/js/jquery.js"></script>
-	<script src="/media/js/jquery-ui.js"></script>
-	{% endblock %}
-	<!-- Part toastMessage -->
-	{% block toastmessage %}
-	<link rel="stylesheet" href="/media/css/toastmessage-min.css">
-	<script src="/media/js/toastmessage-min.js"></script>
-	{% endblock %}
-	<!-- Part BootStrap -->
-	{% block bootstrap %}
-	<link rel="stylesheet" href="/media/bootstrap/css/bootstrap.css">
-	<link rel="stylesheet" href="/media/bootstrap/css/bootstrap-theme.css">
-	<script src="/media/bootstrap/js/bootstrap.js"></script>
-	{% endblock %}
-	{% block fontawesome %}
-		<link rel="stylesheet" href="{{ MEDIA_URL }}font-awesome-4/css/font-awesome.css">
-	{% endblock fontawesome %}
-	<!-- Part Styles -->
-	{% block style %}{% endblock %}
-	{% block validateForm %}
-		<script type="text/javascript" src="{{ MEDIA_URL }}js/validateFields.js"></script>
-	{% endblock validateForm %}
-	<!-- Part Scripts -->
-	{% block script %}{% endblock %}
-	<!-- Part Style-Basic -->
-	{% block stylebase %}
-	<link rel="stylesheet" href="/media/css/base.css">
-	{% endblock %}
-	<!--[if IE]><script type="text/javascript">
-		var e = ("abbr,article,spam,aside,audio,canvas,datalist,details,figure,
-		footer,header,hgroup,mark,menu,meter,nav,output,progress,
-		section,time,video").split(',');
-		for (var i=0; i<e.length; i++) {
-		document.createElement(e[i]);}</script><![endif]-->
+    <meta charset="UTF-8">
+    <title> {% block title %}CMS Guias {% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<link rel="shortcut icon" href="/media/resource/ico/icrperu.ico" type="image/x-icon">-->
+    <script src="/media/js/html5.js"></script>
+    <!-- Part JQuery -->
+    {% block jquery %}
+    <link rel="stylesheet" href="/media/css/jquery-ui.css">
+    <script src="/media/js/jquery.js"></script>
+    <script src="/media/js/jquery-ui.js"></script>
+    {% endblock %}
+    <!-- Part toastMessage -->
+    {% block toastmessage %}
+    <link rel="stylesheet" href="/media/css/toastmessage-min.css">
+    <script src="/media/js/toastmessage-min.js"></script>
+    {% endblock %}
+    <!-- Part BootStrap -->
+    {% block bootstrap %}
+    <link rel="stylesheet" href="/media/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="/media/bootstrap/css/bootstrap-theme.css">
+    <script src="/media/bootstrap/js/bootstrap.js"></script>
+    {% endblock %}
+    {% block fontawesome %}
+        <link rel="stylesheet" href="{{ MEDIA_URL }}font-awesome-4/css/font-awesome.css">
+    {% endblock fontawesome %}
+    <!-- Part Styles -->
+    {% block style %}{% endblock %}
+    {% block validateForm %}
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/validateFields.js"></script>
+    {% endblock validateForm %}
+    <!-- Part Scripts -->
+    {% block script %}{% endblock %}
+    <!-- Part Style-Basic -->
+    {% block stylebase %}
+    <link rel="stylesheet" href="/media/css/base.css">
+    {% endblock %}
+    <!--[if IE]><script type="text/javascript">
+        var e = ("abbr,article,spam,aside,audio,canvas,datalist,details,figure,
+        footer,header,hgroup,mark,menu,meter,nav,output,progress,
+        section,time,video").split(',');
+        for (var i=0; i<e.length; i++) {
+        document.createElement(e[i]);}</script><![endif]-->
 </head>
 <body>
-	<header>
-		{% block header %}
-		{% endblock %}
-		{% block menu %}
+    <header>
+        {% block header %}
+        {% endblock %}
+        {% block menu %}
 
-		{% endblock %}
-	</header>
-	<section>
-	{% block content %}
-	{% endblock %}
-	</section>
-	<footer>{% block footer %}{% endblock %}</footer>
+        {% endblock %}
+    </header>
+    <section>
+    {% block content %}
+    {% endblock %}
+    </section>
+    <footer>{% block footer %}{% endblock %}</footer>
+    <!-- analitics -->
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-39863675-4', 'auto');
+        ga('send', 'pageview');
+    </script>
 </body>
 </html>

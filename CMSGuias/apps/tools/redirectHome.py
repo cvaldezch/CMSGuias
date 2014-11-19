@@ -3,15 +3,15 @@
 
 def RedirectModule(charge='administrator'):
     template_name = ""
-    charge = unicode(charge)
-    if charge == u'ADMINISTRATOR':
+    charge = unicode(charge).upper()
+    if charge == u'ADMINISTRATOR'.upper():
         template_name = 'home/home.html'
-    elif charge == u'Almacén':
+    elif charge == u'Almacen'.upper():
         template_name = 'almacen/storage.html'
-    elif charge == u'Ventas':
-        template_name = 'home/home.html'
-    elif charge.lower() == 'operaciones':
-        template_name = 'home/home.html'
+    elif charge == u'Ventas'.upper():
+        template_name = 'sales/home.html'
+    elif charge == 'operaciones'.upper():
+        template_name = 'operations/home.html'
     else:
         template_name = 'warning.html'
 

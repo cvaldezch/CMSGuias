@@ -1,5 +1,5 @@
 $(document).ready ->
-    $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials, .ordersbedside, .panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter, .deductive-one, .panel-deductive-global, .panel-search-material-old, .panel-materials-old, .control-deductive-one, .control-deductive-cus").hide()
+    $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials, .ordersbedside, .panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter, .deductive-one, .panel-deductive-global, .panel-search-material-old, .panel-materials-old, .control-deductive-one, .control-deductive-cus, .panel-price-two").hide()
     $("input[name=traslado]").datepicker "dateFormat": "yy-mm-dd", changeMonth : true, changeYear : true, minDate : "0"
     $(".panel-add-mat, .view-full").hide()
     $(".btn-show-mat, .btn-show-materials-meter").on "click", openAddMaterial
@@ -126,6 +126,7 @@ $(document).ready ->
     $(document).on "click", ".btn-show-table-deductive-global", showTableDeductiveGlobal
     $(".btn-delete-materials-deductive-global").on "click", delAllMaterialDeductiveGlobal
     $(document).on "click", ".btn-delete-deductive-global-tr", delUnitDeductiveGlobal
+    calcAmountSector()
     tinymce.init
         selector: "textarea[name=obser]",
         theme: "modern",
@@ -1113,11 +1114,15 @@ showModify = ->
     startModidfy()
     $(".table-details, .table-niple, .btn-update-meter").fadeOut 200
     $(".panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter").fadeIn 680
+    $(".panel-price-two").fadeIn 600
+    $(".panel-price-one").fadeOut 200
     return
 
 backModify = ->
     $(".panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter").fadeOut 200
     $(".table-details, .table-niple, .btn-update-meter").fadeIn 680
+    $(".panel-price-two").fadeOut 200
+    $(".panel-price-one").fadeIn 600
     return
 
 startModidfy = ->
@@ -1181,6 +1186,7 @@ startModidfy = ->
                     if response.listModel[b].model_id is response.details[x].model_id
                         selectModel = selectModel.replace "{{!sel}}", "selected"
                     $sel.append Mustache.render selectModel, response.listModel[b]
+            calcDiffModify()
         else
             $().toastmessage "showErrorToast", "No se puede traer la modificación para este sector."
     , "json"
@@ -1219,6 +1225,7 @@ updateMaterialUpdateMeter = ->
         if response.status
             tot = (parseFloat(data.quantity) * parseFloat(data.price))
             $td.eq(9).text tot.toFixed(2)
+            calcDiffModify()
         else
             $().toastmessage "showErrorToast", "No se a podido modificar el material."
     , "json"
@@ -1836,4 +1843,35 @@ delAllMaterialDeductiveGlobal = (event) ->
                     $td.eq(8).find("input").val("")
                     return
                 return
+    return
+
+calcAmountSector = (event)->
+    amount = 0
+    if $("input#calcAmountSector").length
+        $("table.table-details > tbody > tr").each (index, element) ->
+            $td = $(element).find "td"
+            amount += convertNumber $td.eq(10).text()
+            return
+    else if $("input#calcAmountSectorFirst").length
+        $("table.table-details > tbody > tr").each (index, element) ->
+            $td = $(element).find "td"
+            amount += convertNumber $td.eq(8).text()
+            return
+    $("label.amountmeter").text amount.toFixed 2
+    estimated = convertNumber $("label.amountmeterestimated").text()
+    diff = (estimated - amount)
+    $("label.amountmeterdiff").text diff.toFixed 2
+    return
+
+calcDiffModify = (event) ->
+    amount = 0
+    $(".table.table-modify > tbody > tr").each (index, element) ->
+        $td = $(element).find("td")
+        amount += convertNumber $td.eq(8).find("input").val()
+        return
+    current = convertNumber $("label.amountmeter").text()
+    diff = (current - amount)
+    $("label.amountcurrent").text current
+    $("label.modifycurrent").text amount.toFixed 2
+    $("label.modifydiff").text diff.toFixed 2
     return

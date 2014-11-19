@@ -339,3 +339,18 @@ class Emails(models.Model):
 
     def __unicode__(self):
         return "%s %s"%(self.empdni, self.fors)
+
+class Company(models.Model):
+    def url(self,filename):
+        filename = filename.split(".")
+        ext = filename[len(filename) - 1]
+        ruta = "imnages/%s.%s"%(self.companyname.replace(' ','') ,ext)
+        return ruta
+    ruc = models.CharField(primary_key=True, max_length=11)
+    companyname = models.CharField(max_length=250)
+    address = models.CharField(max_length=250)
+    phone = models.CharField(max_length=60, null=True, default='000-000', blank=True)
+    fax = models.CharField(max_length=60, blank=True, null=True)
+
+    def __unicode__(self):
+        return '%s %s'%(self.ruc, self.companyname)
