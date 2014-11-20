@@ -9,7 +9,7 @@
 	<header>
 		<img id="logo" src="/media/images/icrlogo.png" alt="image">
 		<div id="dir" >
-			Jr. Gral. Jose de San Martin Mz. E Lote 6 Huachipa - Lurigancho Lima 15, Peru<br >
+			{{ request.session.company.address }}<br >
 			Central Telefonica: (511) 371-0443<br >
 			E-mail: logistica@icrperusa.com
 		</div>
@@ -17,9 +17,9 @@
 			<h1>Materiales</h1>
 		</div>-->
 		<div id="nro-serie">
-			<span id="ruc">R.U.C. N 20428776110</span><br><br>
+			<span id="ruc">R.U.C. Nº {{ request.session.company.ruc }} </span><br><br>
 			<span id="guide">GUIA REMISION REMITENTE</span><br><br>
-			<span id="nro">{{guide.guia_id}}</span>
+			<span id="nro">{{ guide.guia_id }}</span>
 		</div>
 		<table id="bedside">
 				<tr>
@@ -30,7 +30,9 @@
 								<td></td>
 							</tr>
 							<tr>
-								<td colspan="2" class="bedcontent">Jr. Gral. Jose de San Martin Mz. E Lote 6 Huachipa - Lurigancho Lima</td>
+								<td colspan="2" class="bedcontent">
+									{{ request.session.company.address }}
+								</td>
 							</tr>
 						</table>
 					</td>
@@ -41,7 +43,7 @@
 								<td></td>
 							</tr>
 							<tr>
-								<td colspan="2" class="bedcontent">{{guide.puntollegada}} {% if guide.puntollegada|length <= 47 %}<br>{% endif %}</td>
+								<td colspan="2" class="bedcontent">{{ guide.puntollegada }} {% if guide.puntollegada|length <= 47 %}<br>{% endif %}</td>
 							</tr>
 						</table>
 					</td>
@@ -140,7 +142,7 @@
 							<td class="nom">{{x.materiales.matnom}} {{x.materiales.matmed}} <br>
 								{% ifequal x.materiales_id|truncatechars:6 "115..." %}
 										{% for i in nipples %}
-											{% ifequal x.materiales_id i.materiales_id %} 
+											{% ifequal x.materiales_id i.materiales_id %}
 												{{i.cantguide}} Niple {% for k,v in tipo.items %}
 																	{% if k == i.tipo %}
 																		{{i.cantidad|pluralize}} {{v}}{{i.cantidad|pluralize}}
@@ -183,7 +185,7 @@
 						</td>
 					</tr>
 				</table>
-			</span>	
+			</span>
 		</div>
 </body>
 </html>

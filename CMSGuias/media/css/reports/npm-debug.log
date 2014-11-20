@@ -1,0 +1,64 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node',
+1 verbose cli   '/bin/npm',
+1 verbose cli   'install',
+1 verbose cli   '-g',
+1 verbose cli   'css2stylus' ]
+2 info using npm@1.4.28
+3 info using node@v0.10.33
+4 verbose cache add [ 'css2stylus', null ]
+5 verbose cache add name=undefined spec="css2stylus" args=["css2stylus",null]
+6 verbose parsed url { protocol: null,
+6 verbose parsed url   slashes: null,
+6 verbose parsed url   auth: null,
+6 verbose parsed url   host: null,
+6 verbose parsed url   port: null,
+6 verbose parsed url   hostname: null,
+6 verbose parsed url   hash: null,
+6 verbose parsed url   search: null,
+6 verbose parsed url   query: null,
+6 verbose parsed url   pathname: 'css2stylus',
+6 verbose parsed url   path: 'css2stylus',
+6 verbose parsed url   href: 'css2stylus' }
+7 silly lockFile e7437f6f-css2stylus css2stylus
+8 verbose lock css2stylus /root/.npm/e7437f6f-css2stylus.lock
+9 silly lockFile e7437f6f-css2stylus css2stylus
+10 silly lockFile e7437f6f-css2stylus css2stylus
+11 verbose addNamed [ 'css2stylus', '' ]
+12 verbose addNamed [ null, '*' ]
+13 silly lockFile b0374d1f-css2stylus css2stylus@
+14 verbose lock css2stylus@ /root/.npm/b0374d1f-css2stylus.lock
+15 silly addNameRange { name: 'css2stylus', range: '*', hasData: false }
+16 verbose request where is /css2stylus
+17 verbose request registry https://registry.npmjs.org/
+18 verbose request id d24a4c9cedb3f574
+19 verbose url raw /css2stylus
+20 verbose url resolving [ 'https://registry.npmjs.org/', './css2stylus' ]
+21 verbose url resolved https://registry.npmjs.org/css2stylus
+22 verbose request where is https://registry.npmjs.org/css2stylus
+23 info trying registry request attempt 1 at 10:07:13
+24 http GET https://registry.npmjs.org/css2stylus
+25 info retry will retry, error on last attempt: Error: getaddrinfo ENOTFOUND
+26 info trying registry request attempt 2 at 10:07:23
+27 http GET https://registry.npmjs.org/css2stylus
+28 info retry will retry, error on last attempt: Error: getaddrinfo ENOTFOUND
+29 info trying registry request attempt 3 at 10:08:23
+30 http GET https://registry.npmjs.org/css2stylus
+31 silly lockFile b0374d1f-css2stylus css2stylus@
+32 silly lockFile b0374d1f-css2stylus css2stylus@
+33 error network getaddrinfo ENOTFOUND
+33 error network This is most likely not a problem with npm itself
+33 error network and is related to network connectivity.
+33 error network In most cases you are behind a proxy or have bad network settings.
+33 error network
+33 error network If you are behind a proxy, please make sure that the
+33 error network 'proxy' config is set properly.  See: 'npm help config'
+34 error System Linux 3.15.6-200.fc20.x86_64
+35 error command "/usr/local/bin/node" "/bin/npm" "install" "-g" "css2stylus"
+36 error cwd /home/christian/development/python/django/cmsguiasVenv/CMSGuias/CMSGuias/media/css/reports
+37 error node -v v0.10.33
+38 error npm -v 1.4.28
+39 error syscall getaddrinfo
+40 error code ENOTFOUND
+41 error errno ENOTFOUND
+42 verbose exit [ 1, true ]

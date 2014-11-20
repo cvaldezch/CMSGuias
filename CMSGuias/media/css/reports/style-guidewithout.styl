@@ -1,0 +1,110 @@
+@import 'nib/vendor'
+
+vendor-prefixes = webkit moz o ms
+
+@page
+  size legal
+  margin 1cm
+
+  @frame header_frame
+    -pdf-frame-content nro
+    right 1cm
+    top 5.6cm
+    width 7cm
+
+  @frame header_frame
+    -pdf-frame-content delivery
+    left 2cm
+    top 6.8cm
+    width 7cm
+
+  @frame header_frame
+    -pdf-frame-content arrival
+    left 11.5cm
+    top 6.8cm
+    width 8cm
+
+  @frame header_frame
+    -pdf-frame-content reason
+    left 3cm
+    top 8.5cm
+    width 6cm
+
+  @frame header_frame
+    -pdf-frame-content ruc
+    left 5cm
+    top 9.6cm
+    width 6cm
+
+  @frame header_frame
+    -pdf-frame-content transfer
+    right 2cm
+    top 9.2cm
+    width 6cm
+
+  @frame header_frame
+    -pdf-frame-content transport-brand
+    top 11.2cm
+    left 6.5cm
+    width 6cm
+
+  @frame header_frame
+    -pdf-frame-content transport-inscription
+    left 6.5cm
+    top 11.8cm
+    width 4.5cm
+
+  @frame header_frame
+    -pdf-frame-content transport-license
+    left 6.5cm
+    top 12.2cm
+    width 4.5cm
+
+  @frame header_frame
+    -pdf-frame-content carrie-reason
+    left 14.5cm
+    top 11.2cm
+    width 4.5cm
+
+  @frame header_frame
+    -pdf-frame-content carrie-ruc
+    left 14.5cm
+    top 12.2cm
+    width 4.5cm
+
+  @frame content_frame
+    top 13cm
+    margin-left 1.8cm
+    margin-right 1cm
+
+  @frame footer_frame
+    -pdf-frame-content footer_content
+    top 32cm
+    margin 0 1cm 0 1cm
+
+.text-center
+  text-align center
+
+.text-normal
+  font-size 12px
+
+#delivery, #arrival
+  text-indent 3cm
+
+#nro
+  font-size 14px
+  font-weight bold
+
+.details
+  table
+    & > thead
+      & > tr
+        padding-top 0.15cm
+        padding-bottom 0.1cm
+    & > tbody
+      & > tr
+        padding-top 0.05cm
+        padding-bottom 0.01cm
+
+.text-up
+  vertical-align top

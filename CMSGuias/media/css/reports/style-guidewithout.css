@@ -1,74 +1,105 @@
 @page {
-	size: legal;
-	margin: 1cm;
-	/*@frame header_frame {
-		-pdf-frame-content: logo;
-		margin-top: 1cm; top: 0; left: 1cm;
-	}
-	@frame header_frame {
-		-pdf-frame-content: dir;
-		margin-left: 5.3cm; margin-top: 1.5cm; top: 0pt; width: 7cm;
-	}
-	@frame header_frame {
-		-pdf-frame-content: nro-serie;
-		height: 4cm; margin-top: 1cm; right: 1cm; top: 0; width: 8cm;
-	}*/
-	@frame header_frame {
-		-pdf-frame-content: nro;
-	  margin-top: 3.1cm; right: -1cm; width: 7cm;
-	}
-	/*@frame header_frame {
-		-pdf-frame-content: nro;
-		margin-top: 3.3cm; right: 1cm; width: 8cm;
-	}*/
-	@frame header_frame {
-		-pdf-frame-content: bedside;
-		margin-left: 1cm; margin-top: 4.5cm; margin-right: 1cm;
-	}
-	@frame content_frame {
-		/*-pdf-frame-content: details;*/
-		top: 10.9cm; margin-left: 1cm; margin-right: 1cm;
-	}
-	@frame footer_frame {
-		-pdf-frame-content: footer_content;
-		top: 32cm; margin: 0 1cm 0 1cm;
-	}
+  size: legal;
+  margin: 1cm;
+  @frame header_frame {
+    -pdf-frame-content: nro;
+    right: 1cm;
+    top: 5.6cm;
+    width: 7cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: delivery;
+    left: 2cm;
+    top: 6.8cm;
+    width: 7cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: arrival;
+    left: 11.5cm;
+    top: 6.8cm;
+    width: 8cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: reason;
+    left: 3cm;
+    top: 8.5cm;
+    width: 6cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: ruc;
+    left: 5cm;
+    top: 9.6cm;
+    width: 6cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: transfer;
+    right: 2cm;
+    top: 9.2cm;
+    width: 6cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: transport-brand;
+    top: 11.2cm;
+    left: 6.5cm;
+    width: 6cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: transport-inscription;
+    left: 6.5cm;
+    top: 11.8cm;
+    width: 4.5cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: transport-license;
+    left: 6.5cm;
+    top: 12.2cm;
+    width: 4.5cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: carrie-reason;
+    left: 14.5cm;
+    top: 11.2cm;
+    width: 4.5cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: carrie-ruc;
+    left: 14.5cm;
+    top: 12.2cm;
+    width: 4.5cm;
+  }
+  @frame content_frame {
+    top: 13cm;
+    margin-left: 1.8cm;
+    margin-right: 1cm;
+  }
+  @frame footer_frame {
+    -pdf-frame-content: footer_content;
+    top: 32cm;
+    margin: 0 1cm 0 1cm;
+  }
 }
-/*img{
-	zoom: 110%;
-}
-#dir{
-	text-align: left;
-}
-#nro-serie,
-*/
 .text-center {
-	text-align: center;
+  text-align: center;
 }
-/*#nro-serie {
-	border: 1px solid #000;
-	height: 4cm;
-	padding-top: 0.4cm;
-	padding-bottom: 0.4cm; 
+.text-normal {
+  font-size: 12px;
 }
-#nro-serie span {
-	font-size: 0.5cm;
-	font-weight: bold;
-}*/
+#delivery,
+#arrival {
+  text-indent: 3cm;
+}
 #nro {
-	/*background-color: #ddd;*/
-	font-size: 0.5cm;
-	font-weight: bold;
+  font-size: 14px;
+  font-weight: bold;
 }
-#bedside{
-	/*border: 1px solid #000;*/
+.details table > thead > tr {
+  padding-top: 0.15cm;
+  padding-bottom: 0.1cm;
 }
-/*#footer_content { border: 1px solid #000; }*/
-/*.text-partida { background-color: #eff5fb; border: 1px solid #000; font-size: 10px; font-weight: bold; padding: 3px 0 0 5px; }*/
-.bedcontent { padding: 0.1cm 0 0.1cm 0; text-align: center; font-size: 12px; }
-.pretitle { padding: 1px 0 0 3px; }
-.details table > thead > tr { padding-top: .15cm; padding-bottom: 0.1cm; }
-.details table > tbody > tr { padding-top: .05cm; padding-bottom: 0.01cm; }
-/*.details table > tfoot > tr { border-bottom: 0.01cm solid #0b3861; }*/
-.text-up { vertical-align: top; }
-.nom { padding-left: 5px; }
+.details table > tbody > tr {
+  padding-top: 0.05cm;
+  padding-bottom: 0.01cm;
+}
+.text-up {
+  vertical-align: top;
+}

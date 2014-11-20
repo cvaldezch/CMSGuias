@@ -48,7 +48,7 @@ class HomeManager(ListView):
             request.session['company'] = {
                 'ruc': com.ruc,
                 'name': com.companyname,
-                'dir': com.address,
+                'address': com.address,
                 'phone': com.phone
             }
             self.template_name = RedirectModule(request.user.get_profile().empdni.charge.area)
@@ -91,6 +91,7 @@ class LogoutView(View):
     def get(self, request, *args, **kwargs):
         try:
             logout(request)
+            del request.session
             return HttpResponseRedirect(reverse_lazy('vista_login'))
         except TemplateDoesNotExist, e:
             messages.error(request, 'No se a encontrado esta pagina!')

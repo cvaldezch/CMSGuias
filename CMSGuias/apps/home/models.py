@@ -187,6 +187,7 @@ class Conductore(models.Model):
     condni_id = models.CharField(primary_key=True,max_length=8)
     connom = models.CharField(max_length=200,null=False)
     conlic = models.CharField(max_length=12,null=False)
+    coninscription = models.CharField(max_length=12, null=True, blank=True)
     contel = models.CharField(max_length=11,null=True,default='',blank=True)
     flag = models.BooleanField(default=True,null=False)
 

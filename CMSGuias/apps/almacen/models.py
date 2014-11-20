@@ -104,6 +104,7 @@ class GuiaRemision(models.Model):
     condni = models.ForeignKey(Conductore, to_field='condni_id')
     nropla = models.ForeignKey(Transporte, to_field='nropla_id')
     status = models.CharField(max_length=2, default='46')
+    motive = models.CharField(max_length=2, default='VE', blank=True)
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):

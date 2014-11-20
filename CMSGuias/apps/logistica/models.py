@@ -176,3 +176,5 @@ class DetDevProveedor(models.Model):
 
     def __unicode__(self):
         return '%s %s %f'%(self.devolucionp, self.materiales, self.cantstatic)
+
+#class ServiceOrder(models.Model):
