@@ -185,7 +185,29 @@ sendGlobalMailer = function(event) {
     dataType: "jsonp",
     success: function(response) {
       if (response.status) {
-        alert(response.msg);
+        if (response.status) {
+          $("div.mailer-one").addClass("hide");
+          $("div.mailer-two").removeClass("hide");
+          $("[name=mailer-msg]").addClass("text-success");
+          $("[name=mailer-msg]").find("span").eq(0).addClass("glyphicon-ok");
+          $("[name=mailer-msg]").find("span").eq(1).text("Felicidades, se a enviado el correo.");
+          return setTimeout(function() {
+            $(".mailer-two").addClass("hide");
+            $(".mailer-one").removeClass("hide");
+            return $("#mailer").modal("hide");
+          }, 1600);
+        } else if (!response.status) {
+          $("div.mailer-two").removeClass("hide");
+          $("div.mailer-one").addClass("hide");
+          $("[name=mailer-msg]").addClass("text-danger");
+          $("[name=mailer-msg]").find("span").eq(0).addClass("glyphicon-remove");
+          $("[name=mailer-msg]").find("span").eq(1).text("Error al guardar el email").append("<small>Es posible que el correo se envie mas tarde.</small>");
+          return setTimeout(function() {
+            $(".mailer-two").addClass("hide");
+            $(".mailer-one").removeClass("hide");
+            return $("#mailer").modal("hide");
+          }, 1600);
+        }
       }
     }
   });
@@ -193,27 +215,7 @@ sendGlobalMailer = function(event) {
   data.saveEmail = true;
   $.post("/json/emails/", data, function(response) {
     if (response.status) {
-      $("div.mailer-one").addClass("hide");
-      $("div.mailer-two").removeClass("hide");
-      $("[name=mailer-msg]").addClass("text-success");
-      $("[name=mailer-msg]").find("span").eq(0).addClass("glyphicon-ok");
-      $("[name=mailer-msg]").find("span").eq(1).text("Felicidades, se a enviado el correo.");
-      return setTimeout(function() {
-        $(".mailer-two").addClass("hide");
-        $(".mailer-one").removeClass("hide");
-        return $("#mailer").modal("hide");
-      }, 1600);
-    } else {
-      $("div.mailer-two").removeClass("hide");
-      $("div.mailer-one").addClass("hide");
-      $("[name=mailer-msg]").addClass("text-danger");
-      $("[name=mailer-msg]").find("span").eq(0).addClass("glyphicon-remove");
-      $("[name=mailer-msg]").find("span").eq(1).text("Error al guardar el email").append("<small>Es posible que el correo se envie mas tarde.</small>");
-      return setTimeout(function() {
-        $(".mailer-two").addClass("hide");
-        $(".mailer-one").removeClass("hide");
-        return $("#mailer").modal("hide");
-      }, 1600);
+      return $().toastmessage("showNoticeToast", "Email save BBDD");
     }
   }, "json");
 };

@@ -90,7 +90,8 @@ def listDir(path):
     try:
         r = ['<ul class="jqueryFileTree" style="display: none;">']
         #d = urllib.unquote(path) #request.POST.get('dir','c:\\temp'
-        if not path.startswith('/home/'):
+        dirstart = str(settings.MEDIA_ROOT).split('/')[1]
+        if not path.startswith('/%s/'%dirstart):
             path = '%s%s'%(settings.MEDIA_ROOT, path)
         path = urllib.unquote(path)
         for f in os.listdir(path):
@@ -103,7 +104,8 @@ def listDir(path):
                 print media
                 r.append('<li class="file ext_%s"><a href="#" rel="/media/%s">%s</a></li>' % (e,media[1],f))
         r.append('</ul>')
-    except Exception,e:
-        r.append('Could not load directory')
+    except Exception, e:
+        r.append('Could not load directory.')
+
     r.append('</ul>')
     return r

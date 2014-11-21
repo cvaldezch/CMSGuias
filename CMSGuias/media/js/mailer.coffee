@@ -221,43 +221,43 @@ sendGlobalMailer = (event) ->
         dataType: "jsonp",
         success: (response) ->
             if response.status
-                alert response.msg
-                return
+                if response.status
+                    $("div.mailer-one").addClass "hide"
+                    $("div.mailer-two").removeClass "hide"
+                    $("[name=mailer-msg]").addClass "text-success"
+                    $("[name=mailer-msg]").find "span"
+                    .eq 0
+                    .addClass "glyphicon-ok"
+                    $("[name=mailer-msg]").find "span"
+                    .eq 1
+                    .text "Felicidades, se a enviado el correo."
+                    setTimeout ->
+                        $(".mailer-two").addClass "hide"
+                        $(".mailer-one").removeClass "hide"
+                        $("#mailer").modal "hide"
+                    , 1600
+                else if not response.status
+                    $("div.mailer-two").removeClass "hide"
+                    $("div.mailer-one").addClass "hide"
+                    $("[name=mailer-msg]").addClass "text-danger"
+                    $("[name=mailer-msg]").find "span"
+                    .eq 0
+                    .addClass "glyphicon-remove"
+                    $("[name=mailer-msg]").find "span"
+                    .eq 1
+                    .text "Error al guardar el email"
+                    .append "<small>Es posible que el correo se envie mas tarde.</small>"
+                    setTimeout ->
+                        $(".mailer-two").addClass "hide"
+                        $(".mailer-one").removeClass "hide"
+                        $("#mailer").modal "hide"
+                    , 1600
 
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
     data.saveEmail = true
     $.post "/json/emails/", data, (response) ->
         if response.status
-            $("div.mailer-one").addClass "hide"
-            $("div.mailer-two").removeClass "hide"
-            $("[name=mailer-msg]").addClass "text-success"
-            $("[name=mailer-msg]").find "span"
-            .eq 0
-            .addClass "glyphicon-ok"
-            $("[name=mailer-msg]").find "span"
-            .eq 1
-            .text "Felicidades, se a enviado el correo."
-            setTimeout ->
-                $(".mailer-two").addClass "hide"
-                $(".mailer-one").removeClass "hide"
-                $("#mailer").modal "hide"
-            , 1600
-        else
-            $("div.mailer-two").removeClass "hide"
-            $("div.mailer-one").addClass "hide"
-            $("[name=mailer-msg]").addClass "text-danger"
-            $("[name=mailer-msg]").find "span"
-            .eq 0
-            .addClass "glyphicon-remove"
-            $("[name=mailer-msg]").find "span"
-            .eq 1
-            .text "Error al guardar el email"
-            .append "<small>Es posible que el correo se envie mas tarde.</small>"
-            setTimeout ->
-                $(".mailer-two").addClass "hide"
-                $(".mailer-one").removeClass "hide"
-                $("#mailer").modal "hide"
-            , 1600
+            $().toastmessage "showNoticeToast", "Email save BBDD"
     , "json"
     return
 

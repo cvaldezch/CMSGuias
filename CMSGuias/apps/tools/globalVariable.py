@@ -29,9 +29,13 @@ status = {
 
 # types nipples
 tipo_nipples = {
-    'A' : 'Roscado',
-    'B' : 'Ranurado',
-    'C' : 'Rosca - Ranura'
+    'A': 'Roscado',
+    'B': 'Ranurado',
+    'C': 'Rosca - Ranura',
+    'D': 'Brida',
+    'E': 'Brida - Brida',
+    'F': 'Brida - Rosca',
+    'G': 'Brida - Ranura'
 }
 
 # name month

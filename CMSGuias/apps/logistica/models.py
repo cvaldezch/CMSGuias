@@ -1,6 +1,8 @@
 from django.db import models
 
-from CMSGuias.apps.home.models import Almacene, Documentos, FormaPago, Materiale, Moneda, Proveedor, Employee, Brand, Model
+#import CMSGuias
+from CMSGuias.apps.home.models import Almacene, Documentos, FormaPago, Materiale, Moneda, Proveedor, Employee, Brand, Model, Unidade
+from CMSGuias.apps.ventas.models import Proyecto, Subproyecto, Sectore
 from CMSGuias.apps.tools import globalVariable
 #from CMSGuias.apps.almacen.models import Suministro
 
@@ -177,4 +179,34 @@ class DetDevProveedor(models.Model):
     def __unicode__(self):
         return '%s %s %f'%(self.devolucionp, self.materiales, self.cantstatic)
 
-#class ServiceOrder(models.Model):
+class ServiceOrder(models.Model):
+    serviceorder_id = models.CharField(max_length=10, primary_key=True)
+    project = models.ForeignKey(Proyecto , to_field='proyecto_id')
+    subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
+    sector = models.ForeignKey(Sectore, to_field='sector_id', null=True, blank=True)
+    supplier = models.ForeignKey(Proveedor, to_field='proveedor_id')
+    register = models.DateTimeField(auto_now=True)
+    quotation = models.ForeignKey(Cotizacion, to_field='cotizacion_id', null=True, blank=True)
+    arrival = models.CharField(max_length=250)
+    document = models.ForeignKey(Documentos, to_field='documento_id')
+    method = models.ForeignKey(FormaPago, to_field='pagos_id')
+    start = models.DateField()
+    term = models.DateField()
+    dsct = models.FloatField(default=0, blank=True)
+    elaborated = models.ForeignKey(Employee, related_name='elaboratedAsEmployee')
+    authorized = models.ForeignKey(Employee, related_name='authorizedAsEmployee')
+    status = models.CharField(max_length=2, default='PE')
+    flag = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return '%s %s %s %s'%(self.serviceorder_id, self.project, self.supplier, self.document)
+
+class DetailsServiceOrder(models.Model):
+    serviceorder = models.ForeignKey(ServiceOrder, to_field='serviceorder_id')
+    description = models.TextField(null=False)
+    unit = models.ForeignKey(Unidade, to_field='unidad_id')
+    quantity = models.FloatField(default=0)
+    price = models.FloatField(default=0)
+
+    def __unicode__(self):
+        return '%s %s %f'%(self.serviceorder, self.description, self.quantity)

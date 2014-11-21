@@ -336,88 +336,105 @@
                                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
                                     <input type="hidden" id="calcAmountSectorFirst">
                                 {% endif %}
-                                <table class="table table-hover table condensed table-details">
+                                <table class="table table condensed">
                                     <thead>
                                         <tr class="brand-primary text-white">
-                                            <th></th>
-                                            <th>Código</th>
-                                            <th>Descripción</th>
-                                            <th>Medida</th>
-                                            <th>Unidad</th>
-                                            <th>Marca</th>
-                                            <th>Modelo</th>
-                                            <th>Cantidad</th>
+                                            <th class="col-1"></th>
+                                            <th class="col-3">Código</th>
+                                            <th class="col-5">Descripción</th>
+                                            <th class="col-5">Medida</th>
+                                            <th class="col-2">Unidad</th>
+                                            <th class="col-2">Marca</th>
+                                            <th class="col-2">Modelo</th>
+                                            <th class="col-2">Cantidad</th>
                                             {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
-                                                <th>Precio</th>
+                                                <th class="col-2">Precio</th>
                                             {% endif %}
                                             {% if meter %}
                                                 {% ifequal project.status 'AC' %}
                                                     {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
-                                                        <th>Stock</th>
+                                                        <th class="col-2">Stock</th>
                                                         {% endif %}
-                                                    <th>Observación</th>
+                                                    <th class="col-4">Observación</th>
                                                 {% endifequal %}
                                             {% endif %}
-                                                <th>Editar</th>
-                                                <th>Eliminar</th>
+                                                <th class="col-2">Editar</th>
+                                                <th class="col-2">Eliminar</th>
                                           </tr>
                                     </thead>
                                     <tbody>
-                                        {% for x in materials %}
-                                            <tr class="{{ x.materiales_id }}-{{ x.id }}">
-                                                <td>{{ forloop.counter }}</td>
-                                                {% if project.status == 'AC' and meter %}
-                                                <td>
-                                                    <input type="checkbox" name="mats" value="{{ x.materiales_id }}-{{ x.id }}">
-                                                </td>
-                                                {% endif %}
-                                                <td>{{ x.materiales_id }}</td>
-                                                <td>{{ x.materiales.matnom }}</td>
-                                                <td>{{ x.materiales.matmed }}</td>
-                                                <td>{{ x.materiales.unidad.uninom }}</td>
-                                                <td>{{ x.brand.brand }}</td>
-                                                <td>{{ x.model.model }}</td>
-                                                <td>{{ x.cantidad|safe }}</td>
-                                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
-                                                    <td>{{ x.precio|safe }}</td>
-                                                {% endif %}
-                                                {% if project.status == 'PE' or not meter %}
-                                                    <td>
-                                                        <button data-brand="{{ x.brand_id }}" data-model="{{ x.model_id }}" class="btn btn-xs btn-link text-green btn-show-edit" value="{{ x.materiales_id }}-{{ x.id }}">
-                                                            <span class="glyphicon glyphicon-pencil"></span>
-                                                        </button>
-                                                    </td>
-                                                    <td>
-                                                        <button class="btn btn-xs btn-link text-red btn-del-mat" value="{{ x.materiales_id }}-{{ x.id }}">
-                                                            <span class="glyphicon glyphicon-trash"></span>
-                                                        </button>
-                                                    </td>
-                                                {% endif %}
-                                            </tr>
-                                        {% endfor %}
+                                        <tr>
+                                            <td colspan="13" class="content-details">
+                                                <div class="table-responsive-height">
+                                                    <table class="table table-hover table condensed table-details">
+                                                        <tbody>
+                                                            {% for x in materials %}
+                                                                <tr class="{{ x.materiales_id }}-{{ x.id }}" data-toggle="tooltip" data-placement="top" title="{{ x.materiales.matnom }} {{ x.materiales.matmed }}">
+                                                                    <td class="col-1">{{ forloop.counter }}</td>
+                                                                    {% if project.status == 'AC' and meter %}
+                                                                    <td class="col-1">
+                                                                        <input type="checkbox" name="mats" value="{{ x.materiales_id }}-{{ x.id }}">
+                                                                    </td>
+                                                                    {% endif %}
+                                                                    <td class="col-3">{{ x.materiales_id }}</td>
+                                                                    <td class="col-5">{{ x.materiales.matnom }}</td>
+                                                                    <td class="col-5">{{ x.materiales.matmed }}</td>
+                                                                    <td class="col-2">{{ x.materiales.unidad.uninom }}</td>
+                                                                    <td class="col-2">{{ x.brand.brand }}</td>
+                                                                    <td class="col-2">{{ x.model.model }}</td>
+                                                                    <td class="col-2">{{ x.cantidad|safe }}</td>
+                                                                    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
+                                                                        <td class="col-2">{{ x.precio|safe }}</td>
+                                                                    {% endif %}
+                                                                    {% if project.status == 'PE' or not meter %}
+                                                                        <td class="col-2">
+                                                                            <button data-brand="{{ x.brand_id }}" data-model="{{ x.model_id }}" class="btn btn-xs btn-link text-green btn-show-edit" value="{{ x.materiales_id }}-{{ x.id }}">
+                                                                                <span class="glyphicon glyphicon-pencil"></span>
+                                                                            </button>
+                                                                        </td>
+                                                                        <td class="col-2">
+                                                                            <button class="btn btn-xs btn-link text-red btn-del-mat" value="{{ x.materiales_id }}-{{ x.id }}">
+                                                                                <span class="glyphicon glyphicon-trash"></span>
+                                                                            </button>
+                                                                        </td>
+                                                                    {% endif %}
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             {% endif %}
                             {% if meter %}
-                                <table class="table table-hover table-condensed table-details">
+                                <table class="table table-condensed">
                                     {% ifequal project.status 'AC' %}
                                         <caption>
                                             {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
                                                 <input type="hidden" id="calcAmountSector">
                                             {% endif %}
-                                            <div class="form-group pull-left">
-                                                    <strong>Seleccionar :</strong>
-                                                <label class="radio-inline">
-                                                    <input type="radio" value="1" name="choice"> Todo
-                                                </label>
-                                                <label class="radio-inline">
-                                                    <input type="radio" value="0" name="choice"> Ninguno.
-                                                </label>
-                                            </div>
-                                            <div class="form-group pull-right">
-                                                <button class="btn btn-xs btn-primary btn-show-orders">
-                                                    <span class="glyphicon glyphicon-saved"></span> Pedido Almacén
-                                                </button>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group pull-left">
+                                                        <button class="btn btn-xs btn-primary btn-show-orders">
+                                                            <span class="fa fa-cube"></span>
+                                                            <span>Hacer Pedido Almacén</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group pull-left">
+                                                            <strong>Seleccionar :</strong>
+                                                        <label class="radio-inline">
+                                                            <input type="radio" value="1" name="choice"> Todo
+                                                        </label>
+                                                        <label class="radio-inline">
+                                                            <input type="radio" value="0" name="choice"> Ninguno.
+                                                        </label>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </caption>
                                     {% endifequal %}
@@ -425,85 +442,95 @@
                                       <tr class="brand-primary text-white">
                                         {% if meter %}
                                             {% ifequal project.status 'AC' %}
-                                                <th></th>
+                                                <th class="col-1"></th>
                                             {% endifequal %}
                                         {% endif %}
-                                        <th></th>
-                                        <th>Código</th>
-                                        <th>Descripción</th>
-                                        <th>Medida</th>
-                                        <th>Unidad</th>
-                                        <th>Marca</th>
-                                        <th>Modelo</th>
-                                        <th>Cantidad</th>
-                                        <th>Cantidad Pedido</th>
+                                        <th class="col-1"></th>
+                                        <th class="col-3">Código</th>
+                                        <th class="col-5">Descripción</th>
+                                        <th class="col-5">Medida</th>
+                                        <th class="col-2">Unidad</th>
+                                        <th class="col-2">Marca</th>
+                                        <th class="col-2">Modelo</th>
+                                        <th class="col-2">Cantidad</th>
+                                        <th class="col-2">Cantidad Pedido</th>
                                         {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
-                                            <th>Precio</th>
+                                            <th class="col-2">Precio</th>
                                         {% endif %}
                                         {% if meter %}
                                             {% ifequal project.status 'AC' %}
                                                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
-                                                    <th>Stock</th>
+                                                    <th class="col-2">Stock</th>
                                                 {% endif %}
-                                                <th>Observación</th>
-                                                <th>Estado</th>
+                                                <th class="col-4">Observación</th>
+                                                <th class="col-2">Estado</th>
                                             {% endifequal %}
                                         {% endif %}
                                         {% if materials and not meter  %}
-                                            <th>Editar</th>
-                                            <th>Eliminar</th>
+                                            <th class="col-1">Editar</th>
+                                            <th class="col-1">Eliminar</th>
                                         {% endif %}
                                       </tr>
                                     </thead>
                                     <tbody>
-                                        {% for x in meter %}
-                                            {% if x.quantity <= 0 %}
-                                                <tr class="success {{ x.materiales_id }}">
-                                            {% else  %}
-                                                <tr class="info {{ x.materiales_id }}">
-                                            {% endif %}
-                                                <td>{{ forloop.counter }}</td>
-                                                <td>
-                                                    {% if x.quantity > 0 %}
-                                                        <input type="checkbox" name="mats" value="{{ x.materiales_id }}">
-                                                    {% else %}
-                                                        <!-- <input type="hidden" name="mats" value="{{ x.materiales_id }}" disabled> -->
-                                                    {% endif %}
-                                                </td>
-                                                <td>{{ x.materiales_id }}</td>
-                                                <td>{{ x.name }}</td>
-                                                <td>{{ x.measure }}</td>
-                                                <td>{{ x.unit }}</td>
-                                                <td>{{ x.brand }}</td>
-                                                <td>{{ x.model }}</td>
-                                                <td>{{ x.cantidad|safe }}</td>
-                                                <td>{{ x.quantity|safe }}</td>
-                                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
-                                                    <td>{{ x.price|safe }}</td>
-                                                    <td>{{ x.stock|safe }}</td>
-                                                {% endif %}
-                                                <td>
-                                                    {% if x.quantity <= 0 %}
-                                                        <input type="text" class="form-control input-sm comment-mat" data-mat="{{ x.materiales_id }}" value="{{ x.comment }}" style="width: 160px;" disabled>
-                                                    {% else %}
-                                                        <input type="text" class="form-control input-sm comment-mat" data-mat="{{ x.materiales_id }}" value="{{ x.comment }}" style="width: 160px;">
-                                                    {% endif %}
-                                                </td>
-                                                <td class="text-center">
-                                                    <span class="glyphicon
-                                                    {% if x.tag == "0" %}
-                                                        glyphicon-unchecked
-                                                    {% endif %}
-                                                    {% if x.tag == "1" %}
-                                                        glyphicon-minus
-                                                    {% endif %}
-                                                    {% if x.tag == "2" %}
-                                                        glyphicon-check
-                                                    {% endif %}
-                                                    "></span>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
+                                        <tr>
+                                            <td colspan="14" class="content-details">
+                                                <div class="table-responsive-height">
+                                                    <table class="table table-hover table-condensed table-details">
+                                                        <tbody>
+                                                            {% for x in meter %}
+                                                                {% if x.quantity <= 0 %}
+                                                                    <tr class="success {{ x.materiales_id }}" title="{{ x.name }} {{ x.measure }}"  data-toggle="tooltip" data-placement="top">
+                                                                {% else  %}
+                                                                    <tr class="info {{ x.materiales_id }}" title="{{ x.name }} {{ x.measure }}"  data-toggle="tooltip" data-placement="top">
+                                                                {% endif %}
+                                                                    <td class="col-1">{{ forloop.counter }}</td>
+                                                                    <td class="col-1">
+                                                                        {% if x.quantity > 0 %}
+                                                                            <input type="checkbox" name="mats" value="{{ x.materiales_id }}">
+                                                                        {% else %}
+                                                                            <!-- <input type="hidden" name="mats" value="{{ x.materiales_id }}" disabled> -->
+                                                                        {% endif %}
+                                                                    </td>
+                                                                    <td class="col-3">{{ x.materiales_id }}</td>
+                                                                    <td class="col-5">{{ x.name }}</td>
+                                                                    <td class="col-5">{{ x.measure }}</td>
+                                                                    <td class="col-2">{{ x.unit }}</td>
+                                                                    <td class="col-2">{{ x.brand }}</td>
+                                                                    <td class="col-2">{{ x.model }}</td>
+                                                                    <td class="col-2">{{ x.cantidad|safe }}</td>
+                                                                    <td class="col-2">{{ x.quantity|safe }}</td>
+                                                                    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
+                                                                        <td class="col-2">{{ x.price|safe }}</td>
+                                                                        <td class="col-2">{{ x.stock|safe }}</td>
+                                                                    {% endif %}
+                                                                    <td class="col-4">
+                                                                        {% if x.quantity <= 0 %}
+                                                                            <input type="text" class="form-control input-sm comment-mat" data-mat="{{ x.materiales_id }}" value="{{ x.comment }}" style="width: 160px;" disabled>
+                                                                        {% else %}
+                                                                            <input type="text" class="form-control input-sm comment-mat" data-mat="{{ x.materiales_id }}" value="{{ x.comment }}" style="width: 160px;">
+                                                                        {% endif %}
+                                                                    </td>
+                                                                    <td class="text-center col-2">
+                                                                        <span class="glyphicon
+                                                                        {% if x.tag == "0" %}
+                                                                            glyphicon-unchecked
+                                                                        {% endif %}
+                                                                        {% if x.tag == "1" %}
+                                                                            glyphicon-minus
+                                                                        {% endif %}
+                                                                        {% if x.tag == "2" %}
+                                                                            glyphicon-check
+                                                                        {% endif %}
+                                                                        "></span>
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             {% endif %}

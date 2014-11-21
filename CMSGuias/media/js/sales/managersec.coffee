@@ -1,4 +1,5 @@
 $(document).ready ->
+    $('[data-toggle="tooltip"]').tooltip()
     $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials, .ordersbedside, .panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter, .deductive-one, .panel-deductive-global, .panel-search-material-old, .panel-materials-old, .control-deductive-one, .control-deductive-cus, .panel-price-two").hide()
     $("input[name=traslado]").datepicker "dateFormat": "yy-mm-dd", changeMonth : true, changeYear : true, minDate : "0"
     $(".panel-add-mat, .view-full").hide()
@@ -1850,12 +1851,12 @@ calcAmountSector = (event)->
     if $("input#calcAmountSector").length
         $("table.table-details > tbody > tr").each (index, element) ->
             $td = $(element).find "td"
-            amount += convertNumber $td.eq(10).text()
+            amount += (convertNumber($td.eq(10).text()) * convertNumber($td.eq(8).text()) )
             return
     else if $("input#calcAmountSectorFirst").length
         $("table.table-details > tbody > tr").each (index, element) ->
             $td = $(element).find "td"
-            amount += convertNumber $td.eq(8).text()
+            amount += (convertNumber($td.eq(7).text()) * convertNumber($td.eq(8).text()) )
             return
     $("label.amountmeter").text amount.toFixed 2
     estimated = convertNumber $("label.amountmeterestimated").text()
@@ -1867,7 +1868,7 @@ calcDiffModify = (event) ->
     amount = 0
     $(".table.table-modify > tbody > tr").each (index, element) ->
         $td = $(element).find("td")
-        amount += convertNumber $td.eq(8).find("input").val()
+        amount += (convertNumber($td.eq(8).find("input").val()) * convertNumber($td.eq(7).find("input").val()))
         return
     current = convertNumber $("label.amountmeter").text()
     diff = (current - amount)

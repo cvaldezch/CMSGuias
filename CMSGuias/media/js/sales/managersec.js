@@ -2,6 +2,7 @@
 var addListCusSectors, addMaterial, addMaterialUpdateMeter, addoldMaterialRemoveDeductive, aggregateMaterialsOutMeter, aggregate_nipples, approvedAdditional, approvedModify, backModify, backOrders, calMeter, calcAmountSector, calcDiffModify, changeRadio, changeRdoNip, changeSelectDeductiveMeter, changeTypeDeductive, chkNippChange, clearFieldsDeductiveMeter, copyBack, createTableDeductive, deductiveOneCancel, delAllMaterialDeductiveGlobal, delMaterials, delPlane, delUnitDeductiveGlobal, deleteMaterialUpdateMeter, delete_all_temp_nipples, deleteallnipmat, dellAllMaterial, displayResultTable, editBrandandModel, editMaterials, generateDeductiveMeter, generateOrders, listMaterials, list_temp_nipples, loadMaterials, loadSecandSub, loadSector, nextOrders, openAddMaterial, openBrand, openModel, panelPlanes, pasteAllLeft, pasteAllRight, pasteMaterials, pasteOneLeft, pasteOneRight, saved_or_update_nipples, searchDescDeductiveGlobal, selectChoiseOrder, showHideTbody, showInitDeductive, showListNipp, showModify, showOrders, showPanelAddMateialsOldDeductiveGlobal, showTableDeductiveGlobal, show_edit_nipple, showaddtableoutdeductivemeter, startModidfy, updateCommentMat, updateMaterialUpdateMeter, uploadPlane, valMax, valQuantityPreOrders, validBlurNumber, validOrders, viewFull;
 
 $(document).ready(function() {
+  $('[data-toggle="tooltip"]').tooltip();
   $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials, .ordersbedside, .panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter, .deductive-one, .panel-deductive-global, .panel-search-material-old, .panel-materials-old, .control-deductive-one, .control-deductive-cus, .panel-price-two").hide();
   $("input[name=traslado]").datepicker({
     "dateFormat": "yy-mm-dd",
@@ -2092,13 +2093,13 @@ calcAmountSector = function(event) {
     $("table.table-details > tbody > tr").each(function(index, element) {
       var $td;
       $td = $(element).find("td");
-      amount += convertNumber($td.eq(10).text());
+      amount += convertNumber($td.eq(10).text()) * convertNumber($td.eq(8).text());
     });
   } else if ($("input#calcAmountSectorFirst").length) {
     $("table.table-details > tbody > tr").each(function(index, element) {
       var $td;
       $td = $(element).find("td");
-      amount += convertNumber($td.eq(8).text());
+      amount += convertNumber($td.eq(7).text()) * convertNumber($td.eq(8).text());
     });
   }
   $("label.amountmeter").text(amount.toFixed(2));
@@ -2113,7 +2114,7 @@ calcDiffModify = function(event) {
   $(".table.table-modify > tbody > tr").each(function(index, element) {
     var $td;
     $td = $(element).find("td");
-    amount += convertNumber($td.eq(8).find("input").val());
+    amount += convertNumber($td.eq(8).find("input").val()) * convertNumber($td.eq(7).find("input").val());
   });
   current = convertNumber($("label.amountmeter").text());
   diff = current - amount;
