@@ -14,7 +14,7 @@ class searchBrands:
     brand = ""
 
     def validFormat(self):
-        if self.brand.strip() == "":
+        if self.brand.strip() == '':
             return False
         else:
             self.brand = self.brand.strip()
@@ -39,14 +39,14 @@ class searchModels:
     model = ""
 
     def validFormat(self):
-        if self.model.strip() == "":
+        if self.model.strip() == '':
             return False
         else:
             self.model = self.model.strip()
             return True
 
     def autoDetected(self):
-        if self.model[:2] == "MO":
+        if self.model[:2] == 'MO':
             try:
                 #obj = model.objects.get(pk=self.model)
                 return dict((('pk',self.model),))

@@ -611,10 +611,16 @@ class SectorManage(JSONResponseMixin, View):
                             obj.materiales_id = x['idmat']
                             obj.cantidad = x['quantity']
                             obj.cantshop = x['quantity']
+                            br = search.searchBrands()
+                            br.brand = x['brand']
+                            obj.brand_id = br.autoDetected()['pk'].strip()
+                            mo = search.searchModels()
+                            mo.model = x['model']
+                            obj.model_id = mo.autoDetected()['pk'].strip()
                             obj.comment = x['comment']
                             obj.save()
                             # update quantity in Metproject
-                            pro = MetProject.objects.get(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') != '' else None, sector_id=request.POST.get('sector'), materiales_id=x['idmat'])
+                            pro = MetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(kwargs['sub']) else None, sector_id=kwargs['sec'], materiales_id=x['idmat'])
                             if pro.quantityorder == pro.cantidad:
                                 pro.quantityorder = (pro.cantidad - x['quantity'])
                             else:

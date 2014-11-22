@@ -69,7 +69,16 @@
 												</td>
 											</tr>
 											<tr class="bg-success">
-												<th></th><th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unid</th><th>Cantidad</th><th>Stock</th>
+												<th></th>
+												<th></th>
+												<th>Código</th>
+												<th>Descripción</th>
+												<th>Medida</th>
+												<th>Unid</th>
+												<th>Marca</th>
+												<th>Modelo</th>
+												<th>Cantidad</th>
+												<th>Stock</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -84,7 +93,17 @@
 										</caption>
 										<thead>
 											<tr class="bg-primary">
-												<th></th><th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unid</th><th>Cantidad</th><th>Origin</th><th>Codigo</th>
+												<th></th>
+												<th></th>
+												<th>Código</th>
+												<th>Descripción</th>
+												<th>Medida</th>
+												<th>Unid</th>
+												<th>Marca</th>
+												<th>Modelo</th>
+												<th>Cantidad</th>
+												<th>Origin</th>
+												<th>Codigo</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -96,6 +115,8 @@
 													<td>{{ x.materiales.matnom }}</td>
 													<td>{{ x.materiales.matmed }}</td>
 													<td>{{ x.materiales.unidad_id }}</td>
+													<td>{{ x.brand.brand }}</td>
+													<td>{{ x.model.model }}</td>
 													<td>{{ x.cantidad }}</td>
 													<td>{{ x.origin }}</td>
 													<td>{{ x.origin_id }}</td>

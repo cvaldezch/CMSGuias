@@ -22,14 +22,30 @@
 					<table class="table table-condensed">
 						<tbody>
 							{% for x in orders %}
-								<tr class="brand-warning"><td>{{ forloop.counter }}</td><th>Nro Pedido</th><td>{{ x.pedido_id }}</td><th>Proyecto</th><td>{{ x.proyecto.nompro }}</td><th>Subroyecto</th><td>{{ x.subproyecto.nomsub }}</td></tr>
-								<tr class="brand-warning"><td></td><th>Sector</th><td>{{ x.sector.nomsec }}</td><th>Traslado</th><td>{{ x.traslado }}</td><td></td><td></td></tr>
+								<tr class="brand-warning">
+									<td>{{ forloop.counter }}</td>
+									<th>Nro Pedido</th>
+									<td>{{ x.pedido_id }}</td>
+									<th>Proyecto</th>
+									<td>{{ x.proyecto.nompro }}</td>
+									<th>Subroyecto</th>
+									<td>{{ x.subproyecto.nomsub }}</td>
+								</tr>
+								<tr class="brand-warning">
+									<td></td>
+									<th>Sector</th>
+									<td>{{ x.sector.nomsec }}</td>
+									<th>Traslado</th>
+									<td>{{ x.traslado }}</td>
+									<td></td>
+									<td></td>
+								</tr>
 								<tr>
 									<td colspan="7">
 										<table class="table table-hover table-condensed">
 											<thead>
 												<tr class="warning">
-													<td colspan="8">
+													<td colspan="10">
 														Selecionar
 														<label class="radio-inline"><input type="radio" name="rdo{{ x.pedido_id }}" value="all"> Todo</label>
 														<label class="radio-inline"><input type="radio" name="rdo{{ x.pedido_id }}" value=""> Ninguno</label>
@@ -39,7 +55,16 @@
 													</td>
 												</tr>
 												<tr class="bg-warning">
-													<th></th><th></th><th>Codigo</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th><th>Stock</th>
+													<th></th>
+													<th></th>
+													<th>Codigo</th>
+													<th>Descripción</th>
+													<th>Medida</th>
+													<th>Unidad</th>
+													<th>Marca</th>
+													<th>Modelo</th>
+													<th>Cantidad</th>
+													<th>Stock</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -55,7 +80,7 @@
 															{% endif %}
 														">
 															<td>{{ forloop.counter }}</td>
-															<td><input type="checkbox" name="chk{{ x.pedido_id }}" value="{{ j.cantshop }}" title="{{ j.materiales_id }}"
+															<td><input type="checkbox" data-brand="{{ j.brand_id }}" data-model="{{ j.model_id }}" name="chk{{ x.pedido_id }}" value="{{ j.cantshop }}" data-mat="{{ j.materiales_id }}"
 																{% if j.spptag %}
 																	disabled="disabled" checked
 																{% endif %}
@@ -63,7 +88,9 @@
 															<td>{{ j.materiales_id }}</td>
 															<td>{{ j.materiales.matnom }}</td>
 															<td>{{ j.materiales.matmed }}</td>
-															<td>{{ j.materiales.unidad_id }}</td>
+															<td>{{ j.materiales.unidad.uninom }}</td>
+															<td>{{ j.brand.brand }}</td>
+															<td>{{ j.model.model }}</td>
 															<th>{{ j.cantshop|safe }}</th>
 															<th>{{ j.stock|safe }}</th>
 														</tr>

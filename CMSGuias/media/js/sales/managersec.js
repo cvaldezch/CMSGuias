@@ -811,7 +811,7 @@ delete_all_temp_nipples = function(idmat) {
 deleteallnipmat = function() {};
 
 showOrders = function() {
-  var $tb, arr, counter, data, template, x;
+  var $tb, arr, cnip, counter, data, template, x;
   counter = 0;
   data = new Object();
   arr = new Array();
@@ -819,31 +819,37 @@ showOrders = function() {
     var $td;
     if (this.checked) {
       counter += 1;
-      $td = $("." + this.value + " > td");
+      $td = $("tr." + this.value + " > td");
       return arr.push({
         "item": counter,
         "materials": $td.eq(2).text(),
-        'name': $td.eq(3).text(),
-        'measure': $td.eq(4).text(),
-        'unit': $td.eq(5).text(),
-        'brand': $td.eq(6).text(),
-        'model': $td.eq(7).text(),
-        'quantity': $td.eq(8).text()
+        "name": $td.eq(3).text(),
+        "measure": $td.eq(4).text(),
+        "unit": $td.eq(5).text(),
+        "brand": $td.eq(6).text(),
+        "model": $td.eq(7).text(),
+        "quantity": $td.eq(8).text(),
+        "comment": $td.find("input").eq(1).val()
       });
     }
   });
   data.list = arr;
   if (counter > 0) {
-    $tb = $(".torders > tbody.materials");
+    $tb = $("table.torders > tbody.materials");
     $tb.empty();
+    cnip = 0;
     for (x in data.list) {
       template = "<tr> <td>{{ item }}</td> <td>{{ materials }}</td> <td>{{ name }}</td> <td>{{ measure }}</td> <td>{{ unit }}</td> <td>{{ brand }}</td> <td>{{ model }}</td> <td>{{ quantity }}</td> <td> {{! input }} </td> </tr>";
       if ($.trim(data.list[x].materials.substring(0, 3)) === "115") {
-        template = template.replace("{{! input }}", "<div class=\"input-group\"> <input type=\"number\" class=\"form-control input-sm meter{{ materials }} quantityOrders\" data-mat=\"{{ materials }}\" readonly=\"readonly\"> <span class=\"input-group-btn\"> <button class=\"btn btn-default btn-sm btn-append-list-nipp\" value=\"{{ materials }}\" type=\"button\"> <span class=\"glyphicon glyphicon-list\"></span> </button> </span> </div>");
+        template = template.replace("{{! input }}", "<div class=\"input-group\"> <input type=\"number\" class=\"form-control input-sm meter{{ materials }} quantityOrders\" data-mat=\"{{ materials }}\" readonly=\"readonly\" data-brand=\"{{ brand }}\" data-model=\"{{ model }}\" data-comment=\"{{ comment }}\"> <span class=\"input-group-btn\"> <button class=\"btn btn-default btn-sm btn-append-list-nipp\" value=\"{{ materials }}\" type=\"button\"> <span class=\"glyphicon glyphicon-list\"></span> </button> </span> </div>");
+        cnip++;
       } else {
-        template = template.replace("{{! input }}", "<input type=\"number\" min=\"1\" max=\"{{ quantity }}\" value=\"{{ quantity }}\" data-mat=\"{{ materials }}\" class=\"form-control input-sm valquamax quantityOrders\">");
+        template = template.replace("{{! input }}", "<input type=\"number\" min=\"1\" max=\"{{ quantity }}\" value=\"{{ quantity }}\" data-mat=\"{{ materials }}\" data-brand=\"{{ brand }}\" data-model=\"{{ model }}\" data-comment=\"{{ comment }}\" class=\"form-control input-sm valquamax quantityOrders\">");
       }
       $tb.append(Mustache.render(template, data.list[x]));
+    }
+    if (cnip === 0) {
+      $("table.torders > tbody.nipples").empty();
     }
     $("#morders").modal("toggle");
   } else {
@@ -1052,7 +1058,9 @@ validOrders = function() {
         detail.push({
           "idmat": element.getAttribute("data-mat"),
           "quantity": parseFloat(element.value),
-          "comment": $("tr." + (element.getAttribute("data-mat"))).find("td").eq(11).find("input").val()
+          "brand": element.getAttribute("data-brand"),
+          "model": element.getAttribute("data-model"),
+          "comment": element.getAttribute("data-comment")
         });
         if (element.getAttribute("data-mat").substring(0, 3) === "115") {
           pipe.push(element.getAttribute("data-mat"));
@@ -1101,6 +1109,7 @@ validOrders = function() {
 generateOrders = function() {
   var btn, data, val;
   val = validOrders();
+  console.log(val);
   if (val.pass) {
     btn = this;
     data = new FormData();
@@ -1131,6 +1140,7 @@ generateOrders = function() {
         return $(btn).button("loading");
       },
       success: function(response) {
+        console.log(response);
         if (response.status) {
           $(btn).button('loading');
           $().toastmessage("showNoticeToast", "Correcto! se a generado el pedido a almacén nro " + response.nro);

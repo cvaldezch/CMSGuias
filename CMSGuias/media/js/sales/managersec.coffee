@@ -735,12 +735,22 @@ showOrders = ->
     $("input[name=mats]").each (index, element) ->
         if @checked
             counter += 1
-            $td = $(".#{@value} > td")
-            arr.push {"item": counter, "materials":$td.eq(2).text(), 'name': $td.eq(3).text(), 'measure':$td.eq(4).text(), 'unit':$td.eq(5).text(),'brand':$td.eq(6).text(), 'model':$td.eq(7).text(),'quantity':$td.eq(8).text()}
+            $td = $("tr.#{@value} > td")
+            arr.push
+                "item": counter,
+                "materials": $td.eq(2).text(),
+                "name": $td.eq(3).text(),
+                "measure": $td.eq(4).text(),
+                "unit": $td.eq(5).text(),
+                "brand": $td.eq(6).text(),
+                "model": $td.eq(7).text(),
+                "quantity": $td.eq(8).text(),
+                "comment": $td.find("input").eq(1).val()
     data.list = arr
     if counter > 0
-        $tb = $(".torders > tbody.materials")
+        $tb = $("table.torders > tbody.materials")
         $tb.empty()
+        cnip = 0
         for x of data.list
             template = "<tr>
                     <td>{{ item }}</td>
@@ -758,17 +768,22 @@ showOrders = ->
             if $.trim(data.list[x].materials.substring(0, 3)) == "115"
                 template = template.replace("{{! input }}", "
                         <div class=\"input-group\">
-                            <input type=\"number\" class=\"form-control input-sm meter{{ materials }} quantityOrders\" data-mat=\"{{ materials }}\" readonly=\"readonly\">
+                            <input type=\"number\" class=\"form-control input-sm meter{{ materials }} quantityOrders\" data-mat=\"{{ materials }}\" readonly=\"readonly\"
+                                data-brand=\"{{ brand }}\" data-model=\"{{ model }}\" data-comment=\"{{ comment }}\">
                             <span class=\"input-group-btn\">
                                 <button class=\"btn btn-default btn-sm btn-append-list-nipp\" value=\"{{ materials }}\" type=\"button\">
                                     <span class=\"glyphicon glyphicon-list\"></span>
                                 </button>
                             </span>
                         </div>")
+                cnip++
             else
                 template = template.replace("{{! input }}","
-                        <input type=\"number\" min=\"1\" max=\"{{ quantity }}\" value=\"{{ quantity }}\" data-mat=\"{{ materials }}\" class=\"form-control input-sm valquamax quantityOrders\">")
+                        <input type=\"number\" min=\"1\" max=\"{{ quantity }}\" value=\"{{ quantity }}\" data-mat=\"{{ materials }}\" data-brand=\"{{ brand }}\" data-model=\"{{ model }}\" data-comment=\"{{ comment }}\" class=\"form-control input-sm valquamax quantityOrders\">")
             $tb.append Mustache.render template, data.list[x]
+        if cnip == 0
+            $("table.torders > tbody.nipples").empty()
+
         $("#morders").modal "toggle"
     else
         $().toastmessage "showWarningToast", "Tienes que seleccionar por lo menos un material."
@@ -952,7 +967,13 @@ validOrders = ->
     if pass
         $(".quantityOrders").each (index, element) ->
             if element.value isnt "" or element.value isnt 0 or element.value isnt "0"
-                detail.push {"idmat": element.getAttribute("data-mat"), "quantity": parseFloat(element.value), "comment":$("tr.#{element.getAttribute("data-mat")}").find("td").eq(11).find("input").val()}
+                detail.push
+                    "idmat": element.getAttribute("data-mat")
+                    "quantity": parseFloat(element.value)
+                    "brand": element.getAttribute("data-brand")
+                    "model": element.getAttribute("data-model")
+                    "comment": element.getAttribute("data-comment")
+
                 if element.getAttribute("data-mat").substring(0,3) is "115"
                     pipe.push element.getAttribute("data-mat")
                     return
@@ -982,6 +1003,7 @@ validOrders = ->
 
 generateOrders = ->
     val = validOrders()
+    console.log val
     if val.pass
         btn = @
         data = new FormData()
@@ -1010,6 +1032,7 @@ generateOrders = ->
             beforeSend : ->
                 $(btn).button("loading");
             success : (response) ->
+                console.log response
                 if response.status
                     $(btn).button('loading');
                     $().toastmessage "showNoticeToast", "Correcto! se a generado el pedido a almacén nro #{response.nro}"

@@ -145,6 +145,7 @@ class Suministro(models.Model):
     ingreso = models.DateField()
     obser = models.TextField()
     status = models.CharField(max_length=2, default='PE')
+    orders = models.CharField(max_length=250, blank=True, default='')
     flag = models.BooleanField(default=True)
 
     class Meta:
@@ -160,6 +161,7 @@ class DetSuministro(models.Model):
     cantshop = models.FloatField(default=0,null=False)
     tag = models.CharField(max_length=1,default='0',null=False)
     origin = models.CharField(max_length=10,default='NN')
+    #orders = models.CharField(max_length=250, blank=True, default='')
     flag = models.BooleanField(default=True)
 
     class Meta:
@@ -172,8 +174,10 @@ class tmpsuministro(models.Model):
     empdni = models.CharField(max_length=8, null=False)
     materiales = models.ForeignKey(Materiale,to_field='materiales_id')
     cantidad = models.FloatField(null=False)
+    brand = models.ForeignKey(Brand, to_field='brand_id', default='BR000')
+    model = models.ForeignKey(Model, to_field='model_id', default='MO000')
     origin = models.CharField(max_length=2,default='NN', null=True)
-    origin_id = models.CharField(max_length=10,null=True,blank=True)
+    orders = models.ForeignKey(Pedido, to_field='pedido_id', null=True, blank=True)
 
     def __unicode__(self):
         return '%s %s %f'%(self.empdni,self.materiales,self.cantidad)

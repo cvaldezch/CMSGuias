@@ -304,6 +304,7 @@ def view_keep_sec_project(request,pid,sid):
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
         raise Http404('Method no proccess')
+
 @login_required(login_url='/SignUp/')
 def view_keep_add_sector(request,proid,sid):
     try:
@@ -329,6 +330,7 @@ def view_keep_add_sector(request,proid,sid):
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
         raise Http404('Method no proccess')
+
 @login_required(login_url='/SignUp')
 def view_keep_edit_sector(request,pid,sid,cid):
     try:
@@ -355,6 +357,7 @@ def view_keep_edit_sector(request,pid,sid,cid):
     except TemplateDoesNotExist, e:
         messages.error(request, "No se puede mostrar la pagina.")
         raise Http404("Method not proccess")
+
 # Subproyectos keep views
 @login_required(login_url='/SignUp/')
 def view_keep_sub_project(request,pid):
@@ -377,6 +380,7 @@ def view_keep_sub_project(request,pid):
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
         raise Http404('Method no proccess')
+
 @login_required(login_url='/SignUp/')
 def view_keep_add_subproyeto(request,pid):
     try:
@@ -398,6 +402,7 @@ def view_keep_add_subproyeto(request,pid):
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
         raise Http404('Method no proccess')
+
 @login_required(login_url='/SignUp')
 def view_keep_edit_subproyecto(request,pid,sid):
     try:
@@ -423,6 +428,7 @@ def view_keep_edit_subproyecto(request,pid,sid):
     except TemplateDoesNotExist, e:
         messages.error(request, "No se puede mostrar la pagina.")
         raise Http404("Method not proccess")
+
 # Almacenes
 @login_required(login_url='/SignUp/')
 def view_stores(request):
@@ -443,6 +449,7 @@ def view_stores(request):
     except TemplateDoesNotExist, e:
         messages("Template not found")
         raise Http404
+
 @login_required(login_url='/SignUp/')
 def view_stores_add(request):
     try:
@@ -472,6 +479,7 @@ def view_stores_add(request):
     except TemplateDoesNotExist, e:
         messages("Template not found")
         raise Http404
+
 @login_required(login_url='/SignUp/')
 def view_stores_edit(request,aid):
     try:
@@ -496,6 +504,7 @@ def view_stores_edit(request,aid):
     except TemplateDoesNotExist, e:
         messages("Template not found")
         raise Http404
+
 # Transportistas
 @login_required(login_url='/SignUp/')
 def view_carrier(request):
@@ -524,6 +533,7 @@ def view_carrier(request):
     except TemplateDoesNotExist, e:
         messages("Template not found")
         raise Http404
+
 @login_required(login_url="/SignUp/")
 def view_carrier_add(request):
     try:
@@ -545,6 +555,7 @@ def view_carrier_add(request):
     except TemplateDoesNotExist, e:
         messages("Template not found")
         raise Http404
+
 @login_required(login_url='/SignUp/')
 def view_carrier_edit(request,ruc):
     try:
@@ -567,6 +578,7 @@ def view_carrier_edit(request,ruc):
     except TemplateDoesNotExist, e:
         messages("Template not found")
         raise Http404
+
 # Transport
 @login_required(login_url='/SignUp/')
 def view_transport(request,ruc):
@@ -589,6 +601,7 @@ def view_transport(request,ruc):
     except TemplateDoesNotExist, e:
         messages("Template not found")
         raise Http404
+
 @login_required(login_url='/SignUp/')
 def view_transport_add(request,tid):
     try:
@@ -611,6 +624,7 @@ def view_transport_add(request,tid):
     except TemplateDoesNotExist, e:
         messages("Template not found")
         raise Http404
+
 @login_required(login_url="/SignUp/")
 def view_transport_edit(request,cid,tid):
     try:
@@ -629,6 +643,7 @@ def view_transport_edit(request,cid,tid):
     except TemplateDoesNotExist, e:
         messages("Template not found")
         raise Http404
+
 # Conductor
 @login_required(login_url='/SignUp/')
 def view_conductor(request,ruc):
@@ -651,6 +666,7 @@ def view_conductor(request,ruc):
     except TemplateDoesNotExist, e:
         messages("Template not found")
         raise Http404
+
 @login_required(login_url='/SignUp/')
 def view_conductor_add(request,tid):
     try:
@@ -673,6 +689,7 @@ def view_conductor_add(request,tid):
     except TemplateDoesNotExist, e:
         messages("Template not found")
         raise Http404
+
 @login_required(login_url="/SignUp/")
 def view_conductor_edit(request,cid,tid):
     try:
@@ -793,6 +810,7 @@ def view_attend_order(request,oid):
     except TemplateDoesNotExist, e:
         message("Error template not found")
         raise Http404
+
 """
     guide remision
 """
@@ -884,6 +902,7 @@ def view_generate_document_out(request,oid):
     except TemplateDoesNotExist, e:
         message("Error: Template not found")
         raise Http404
+
 # recover list guide referral for view and annular
 @login_required(login_url='/SignUp/')
 def view_list_guide_referral_success(request):
@@ -932,6 +951,7 @@ def view_list_guide_referral_success(request):
             return HttpResponse(simplejson.dumps(data), mimetype="application/json")
     except TemplateDoesNotExist, e:
         raise Http404
+
 # recover list guide referral for view and annular
 @login_required(login_url='/SignUp/')
 def view_list_guide_referral_canceled(request):
@@ -973,6 +993,7 @@ def view_list_guide_referral_canceled(request):
 ###########################
 
 class InventoryView(ListView):
+    @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
             if request.GET.get('tipo') == 'desc':
@@ -1032,8 +1053,9 @@ class InventoryView(ListView):
         context['inventory'] = materials
         return render_to_response('almacen/inventory.html', context, context_instance=RequestContext(request))
 
+    @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
-        data = {}
+        data = dict()
         try:
             tipo = request.POST.get('tipo')
             if tipo == 'save-tmp':
@@ -1062,15 +1084,28 @@ class InventoryView(ListView):
 class SupplyView(ListView):
     template_name = 'almacen/supply.html'
 
+    @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
             data = {}
             try:
                 arr = json.loads(request.GET.get('mats'))
                 queryset = models.tmpsuministro.objects.extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_tmpsuministro.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},).filter(empdni__exact=request.user.get_profile().empdni_id, materiales_id__in=arr)
-                queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id','stock')
+                queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id', 'brand__brand','model__model','stock')
                 queryset = queryset.annotate(cantidad=Sum('cantidad')).order_by('materiales__matnom')
-                data['list'] = [{'materiales_id': x['materiales_id'],'matnom': x['materiales__matnom'],'matmed':x['materiales__matmed'],'unidad':x['materiales__unidad_id'],'cantidad':x['cantidad'],'stock':x['stock']} for x in queryset]
+                data['list'] = [
+                    {
+                        'materiales_id': x['materiales_id'],
+                        'matnom': x['materiales__matnom'],
+                        'matmed': x['materiales__matmed'],
+                        'unidad': x['materiales__unidad_id'],
+                        'brand': x['brand__brand'],
+                        'model': x['model__model'],
+                        'cantidad': x['cantidad'],
+                        'stock': x['stock']
+                    }
+                    for x in queryset
+                ]
                 data['status'] = True
             except ObjectDoesNotExist, e:
                 data['status'] = False
@@ -1081,6 +1116,7 @@ class SupplyView(ListView):
         context['almacen'] = Almacene.objects.filter(flag=True)
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
+    @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             data = {}
@@ -1104,33 +1140,36 @@ class SupplyView(ListView):
                         data['status'] = False
                     data = simplejson.dumps(data)
                     return HttpResponse(data, mimetype="application/json")
-                # save bedside of supply
-                idsp = genkeys.GenerateKeySupply()
-                bed = models.Suministro()
-                bed.suministro_id = idsp
-                bed.almacen_id = request.POST.get('almacen')
-                bed.empdni = request.user.get_profile().empdni_id
-                bed.ingreso = request.POST.get('ingreso')
-                bed.obser = request.POST.get('obser')
-                bed.flag = True
-                bed.asunto = request.POST.get('asunto')
-                bed.status = 'PE'
-                bed.save()
-                # details supply
-                obj = models.tmpsuministro.objects.filter(empdni=request.user.get_profile().empdni_id)
-                for x in obj:
-                    det = models.DetSuministro()
-                    det.suministro_id = idsp
-                    det.materiales_id = x.materiales_id
-                    det.cantidad = x.cantidad
-                    det.cantshop = x.cantidad
-                    det.tag = '1'
-                    det.origin = x.origin_id
-                    det.save()
+                if 'generateSupply' in request.POST:
+                    # save bedside of supply
+                    idsp = genkeys.GenerateKeySupply()
+                    bed = models.Suministro()
+                    bed.suministro_id = idsp
+                    bed.almacen_id = request.POST.get('almacen')
+                    bed.empdni = request.user.get_profile().empdni_id
+                    bed.ingreso = request.POST.get('ingreso')
+                    bed.obser = request.POST.get('obser')
+                    bed.flag = True
+                    bed.asunto = request.POST.get('asunto')
+                    bed.status = 'PE'
+                    #bed.save()
+                    # details supply
+                    obj = models.tmpsuministro.objects.filter(empdni=request.user.get_profile().empdni_id)
+                    #proj = obj.distinct('orders__proyecto_id').order_by('orders__proyecto_id')
+                    print proj
+                    for x in obj:
+                        det = models.DetSuministro()
+                        det.suministro_id = idsp
+                        det.materiales_id = x.materiales_id
+                        det.cantidad = x.cantidad
+                        det.cantshop = x.cantidad
+                        det.tag = '1'
+                        det.origin = x.origin_id
+                        #det.save()
 
-                obj.delete()
-                data['status'] = True
-                data['nro'] = idsp
+                    #obj.delete()
+                    data['status'] = True
+                    data['nro'] = idsp
             except ObjectDoesNotExist, e:
                 raise e
                 data['status'] = False
@@ -1140,10 +1179,10 @@ class SupplyView(ListView):
 class ListOrdersSummary(TemplateView):
     template_name = 'almacen/listorderssupply.html'
     context_object_name = 'Orders'
-    def get_context_data(self, **kwargs):
-        context = super(ListOrdersSummary, self).get_context_data(**kwargs)
+    def get_context_data(self, request, *args, **kwargs):
+        context = dict() #super(ListOrdersSummary, self).get_context_data(**kwargs)
         context[self.context_object_name] = models.Pedido.objects.filter(Q(flag=True) & Q(status='AP') | Q(status='IN'))
-        return context
+        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
@@ -1168,15 +1207,17 @@ class ListOrdersSummary(TemplateView):
 class ListDetOrders(TemplateView):
     template_name = 'almacen/listdetailsOrders.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(ListDetOrders, self).get_context_data(**kwargs)
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
         context['orders'] = get_list_or_404(models.Pedido,Q(flag=True) & Q(status='AP') | Q(status='IN'))
         context['details'] = get_list_or_404(models.Detpedido.objects.extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},).order_by('materiales__matnom'), Q(flag=True) & Q(pedido__status='AP') | Q(pedido__status='IN'))
-        return context
+        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
+    @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
-            data = {}
+            data = dict()
             try:
                 mats = json.loads(request.POST.get('mats'))
                 for x in range(mats.__len__()):
@@ -1185,7 +1226,7 @@ class ListDetOrders(TemplateView):
                     obj.materiales_id = mats[x]['mid']
                     obj.cantidad = float(mats[x]['cant'].__str__())
                     obj.origin = request.POST.get('add-ori')
-                    obj.origin_id = mats[x]['oid']
+                    obj.orders_id = mats[x]['oid']
                     obj.save()
                     dor = models.Detpedido.objects.get(pedido_id=mats[x]['oid'], materiales_id=mats[x]['mid'])
                     dor.spptag = True
