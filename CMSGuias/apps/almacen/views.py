@@ -1087,7 +1087,7 @@ class SupplyView(ListView):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
-            data = {}
+            data = dict()
             try:
                 arr = json.loads(request.GET.get('mats'))
                 queryset = models.tmpsuministro.objects.extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_tmpsuministro.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},).filter(empdni__exact=request.user.get_profile().empdni_id, materiales_id__in=arr)
@@ -1152,11 +1152,13 @@ class SupplyView(ListView):
                     bed.flag = True
                     bed.asunto = request.POST.get('asunto')
                     bed.status = 'PE'
-                    #bed.save()
                     # details supply
                     obj = models.tmpsuministro.objects.filter(empdni=request.user.get_profile().empdni_id)
-                    #proj = obj.distinct('orders__proyecto_id').order_by('orders__proyecto_id')
-                    print proj
+                    proj = obj.values('orders__proyecto__proyecto_id')
+                    proj = proj.distinct('orders__proyecto__proyecto_id').order_by('orders__proyecto__proyecto_id')
+                    #print ','.join([x['orders__proyecto__proyecto_id'] for x in proj])
+                    bed.orders = ','.join([x['orders__proyecto__proyecto_id'] for x in proj])
+                    bed.save()
                     for x in obj:
                         det = models.DetSuministro()
                         det.suministro_id = idsp
@@ -1164,14 +1166,14 @@ class SupplyView(ListView):
                         det.cantidad = x.cantidad
                         det.cantshop = x.cantidad
                         det.tag = '1'
-                        det.origin = x.origin_id
-                        #det.save()
+                        det.origin = x.origin
+                        det.save()
 
-                    #obj.delete()
+                    obj.delete()
                     data['status'] = True
                     data['nro'] = idsp
             except ObjectDoesNotExist, e:
-                raise e
+                context['raise'] = e.__str__()
                 data['status'] = False
             data = simplejson.dumps(data)
             return HttpResponse(data, mimetype='application/json', content_type='application/json')

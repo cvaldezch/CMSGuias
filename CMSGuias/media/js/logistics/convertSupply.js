@@ -51,7 +51,14 @@ var savedDocument = function (event) {
 	$("input[name=chk]").each(function () {
 		if (this.checked) {
 			counter += 1;
-			arr.push({ mid: this.id, cant: this.value });
+			arr.push(
+				{
+					mid: this.id,
+					cant: this.value,
+					brand: this.getAttribute("data-brand"),
+					model: this.getAttribute("data-model")
+				}
+			);
 		};
 	});
 	if (counter > 0) {
@@ -82,7 +89,7 @@ var savedDocument = function (event) {
 			$().toastmessage("showToast", {
 				type: "confirm",
 				sticky: true,
-				text: "Desea Generar la cotización para ".concat($("[name=supplier_"+btn.value+"]").html()),
+				text: "Desea Generar la cotización para ".concat($("[name=supplier_"+btn.value+"]").find("option:selected").text()),
 				buttons: [{value:'Si'},{value:'No'}],
 				success: function (result) {
 					if (result == "Si") {
@@ -184,7 +191,19 @@ var getlistMateriales = function (id_su) {
 				if (response.status) {
 					var $tb = $(".table-details > tbody");
 					$tb.empty();
-					var template = "<tr><td>{{ counter }}</td><td><input type='checkbox' name='chk' id='{{ materiales_id }}' value='{{ cantidad }}'></td><td>{{ materiales_id }}</td><td>{{ materiales__matnom }}</td><td>{{ materiales__matmed }}</td><td>{{ materiales__unidades_id }}</td><td>{{ cantidad }}</td></tr>";
+					var template = "<tr>\
+									<td>{{ counter }}</td>\
+									<td>\
+										<input type=\"checkbox\" name=\"chk\" id=\"{{ materiales_id }}\" value=\"{{ cantidad }}\" data-brand=\"{{ brand }}\" data-model=\"{{ model }}\">\
+									</td>\
+									<td>{{ materiales_id }}</td>\
+									<td>{{ materiales__matnom }}</td>\
+									<td>{{ materiales__matmed }}</td>\
+									<td>{{ materiales__unit }}</td>\
+									<td>{{ brand }}</td>\
+									<td>{{ model }}</td>\
+									<td>{{ cantidad }}</td>\
+									</tr>";
 					for(var x in response.list){
 						response.list[x].counter = (parseInt(x) + 1);
 						$tb.append(Mustache.render(template, response.list[x]));

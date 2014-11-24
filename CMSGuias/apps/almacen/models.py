@@ -159,6 +159,8 @@ class DetSuministro(models.Model):
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     cantidad = models.FloatField(null=False)
     cantshop = models.FloatField(default=0,null=False)
+    brand = models.ForeignKey(Brand, to_field='brand_id', default='BR000', blank=True, null=True)
+    model = models.ForeignKey(Model, to_field='model_id', default='MO000', blank=True, null=True)
     tag = models.CharField(max_length=1,default='0',null=False)
     origin = models.CharField(max_length=10,default='NN')
     #orders = models.CharField(max_length=250, blank=True, default='')

@@ -125,7 +125,7 @@ class SupplytoDocumentIn(TemplateView):
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
-            if request.POST.get("type") == "finish":
+            if request.POST.get('type') == 'finish':
                 data = {}
                 try:
                     obj =  Suministro.objects.get(pk=request.POST.get('supply'))
@@ -138,10 +138,10 @@ class SupplytoDocumentIn(TemplateView):
                 return HttpResponse(simplejson.dumps(data), mimetype='application/json', content_type='application/json')
 
             response = HttpResponse()
-            data = {}
+            data = dict()
             try:
                 # get status type document
-                if request.POST.get('type') == "quote":
+                if request.POST.get('type') == 'quote':
                     # saved quotation
                     idquote = None
                     if request.POST.get('newid') == "1":
@@ -179,6 +179,8 @@ class SupplytoDocumentIn(TemplateView):
                         obj.proveedor_id = request.POST.get('supplier')
                         obj.materiales_id = mats[x]['mid']
                         obj.cantidad = mats[x]['cant']
+                        obj.marca = mats[x]['brand']
+                        obj.modelo = mats[x]['model']
                         obj.flag = True
                         obj.save()
 

@@ -127,7 +127,18 @@ compressList = (event) ->
       console.log response
       if response.status
         $tb = $(".data-condensed > tbody")
-        template = "<tr><td>{{ item }}</td><td><input type='checkbox' name='quote' value='{{ cantidad }}' title='{{ materiales_id }}' checked DISABLED /></td><td>{{ materiales_id }}</td><td>{{ matnom }}</td><td>{{ matmed }}</td><td>{{ unidad }}</td><td>{{ cantidad }}</td><td>{{ stock }}</td></tr>"
+        template = "<tr>
+                    <td>{{ item }}</td>
+                    <td><input type='checkbox' name='quote' value='{{ cantidad }}' title='{{ materiales_id }}' checked DISABLED /></td>
+                    <td>{{ materiales_id }}</td>
+                    <td>{{ matnom }}</td>
+                    <td>{{ matmed }}</td>
+                    <td>{{ unidad }}</td>
+                    <td>{{ brand }}</td>
+                    <td>{{ model }}</td>
+                    <td>{{ cantidad }}</td>
+                    <td>{{ stock }}</td>
+                    </tr>"
         $tb.empty()
         for x of response.list
           response.list[x].item = (parseInt(x) + 1)

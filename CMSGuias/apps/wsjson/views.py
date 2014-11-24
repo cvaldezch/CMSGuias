@@ -500,19 +500,33 @@ class get_OrdersDetails(ListView):
           return HttpResponse(simplejson.dumps(context),mimetype='application/json')
 
 class SupplyDetailView(DetailView):
+
+    @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
-        context = {}
+        context = dict()
         try:
             response = HttpResponse()
             response['content-type'] = 'application/json'
             response['mimetype'] = 'application/json'
             queryset = DetSuministro.objects.filter(suministro_id__exact=kwargs['sid'], flag=True)
-            queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id')
+            queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad__uninom', 'brand__brand','model__model')
             queryset = queryset.annotate(cantidad=Sum('cantshop')).order_by('materiales__matnom')
+            print queryset
+            context['list'] = [
+                {
+                    'materiales_id': x['materiales_id'],
+                    'materiales__matnom': x['materiales__matnom'],
+                    'materiales__matmed': x['materiales__matmed'],
+                    'materiales__unit': x['materiales__unidad__uninom'],
+                    'brand': x['brand__brand'],
+                    'model': x['model__model'],
+                    'cantidad': x['cantidad']
+                } for x in queryset
+            ]
             context['status'] = True
-            context['list'] = [{'materiales_id':x['materiales_id'],'materiales__matnom':x['materiales__matnom'],'materiales__matmed':x['materiales__matmed'],'materiales__unidad_id':x['materiales__unidad_id'],'cantidad':x['cantidad']} for x in queryset]
             response.write(simplejson.dumps(context))
-        except Exception, e:
+        except ObjectDoesNotExist, e:
+            context['raise'] = e.__str__()
             context['status'] = False
         return response
 

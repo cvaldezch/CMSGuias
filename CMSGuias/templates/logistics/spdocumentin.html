@@ -21,7 +21,14 @@
 						<table class="table table-condensed table-hover table-principal">
 							<thead>
 								<tr class="brand-success">
-									<th></th><th></th><th>Código</th><th>Almacén</th><th>Registrado</th><th>Ingreso Almacén</th><th>Asunto</th><th>status</th>
+									<th></th>
+									<th></th>
+									<th>Código</th>
+									<th>Almacén</th>
+									<th>Registrado</th>
+									<th>Ingreso Almacén</th>
+									<th>Asunto</th>
+									<th>status</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -38,7 +45,7 @@
 											<td>{{ x.asunto }}</td>
 											<td>
 											{% for k, v in status.items %}
-												{% ifequal k x.status  %} 
+												{% ifequal k x.status  %}
 													{{ v }}
 												{% endifequal %}
 											{% endfor %}
@@ -58,9 +65,9 @@
 									<td colspan="8" class="text-center">
 										<ul class="pagination">
 											{% if supply.has_preveous %}
-												<li><a href="?page=1">&laquo;</a></li>	
-												<li><a href="?page={{ supply.previous_page_number }}">&laquo;</a></li>	
-											{% endif %}								
+												<li><a href="?page=1">&laquo;</a></li>
+												<li><a href="?page={{ supply.previous_page_number }}">&laquo;</a></li>
+											{% endif %}
 											<li><a> Page {{ supply.number }} of {{ supply.paginator.num_pages }}</a></li>
 											{% if supply.has_next %}
 												<li><a href="?page={{ supply.next_page_number }}">&raquo;</a></li>
@@ -224,11 +231,19 @@
 										</caption>
 										<thead>
 											<tr>
-												<th></th><th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th>
+												<th></th>
+												<th></th>
+												<th>Código</th>
+												<th>Descripción</th>
+												<th>Medida</th>
+												<th>Unidad</th>
+												<th>Marca</th>
+												<th>Modelo</th>
+												<th>Cantidad</th>
 											</tr>
 										</thead>
 										<tbody>
-											
+
 										</tbody>
 									</table>
 								</div>

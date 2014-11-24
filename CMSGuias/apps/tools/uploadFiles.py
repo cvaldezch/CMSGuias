@@ -100,6 +100,7 @@ def listDir(path):
                 r.append('<li class="directory collapsed"><a href="#" rel="%s/">%s</a></li>' % (ff,f))
             else:
                 e = os.path.splitext(f)[1][1:] # get .ext and remove dot
+                e = e.lower()
                 media = ff.split('/media/')
                 print media
                 r.append('<li class="file ext_%s"><a href="#" rel="/media/%s">%s</a></li>' % (e,media[1],f))
