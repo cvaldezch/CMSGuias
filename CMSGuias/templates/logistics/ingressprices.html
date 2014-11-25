@@ -166,35 +166,35 @@ Quote Details
                                     <td>{{ x.materiales.unidad.uninom }}</td>
                                     <td>{{ x.cantidad|safe }}</td>
                                     <td>
-                                        <input type="number" name="prices" class="form-control input-sm" value="{{ x.precio|safe }}" min="0" max="9999999" data-mat="{{ x.materiales_id }}" {% if disabled %}
+                                        <input type="number" name="prices" class="form-control input-sm" value="{{ x.precio|safe }}" min="0" max="9999999" data-mat="{{ x.materiales_id }}" data-brand="{{ x.marca }}" data-pk="{{ x.id }}" data-model="{{ x.modelo }}" {% if disabled %}
                                             disabled="disabled"
-                                        {% endif %}">
+                                        {% endif %}>
                                     </td>
                                     <td>
-                                        <input type="number" name="desct" class="form-control input-sm text-right" min="0" max="100" value="{{ x.discount }}" data-mat="{{ x.materiales_id }}" {% if disabled %}
+                                        <input type="number" name="desct" class="form-control input-sm text-right" min="0" max="100" value="{{ x.discount }}" data-mat="{{ x.materiales_id }}" data-pk="{{ x.id }}" data-brand="{{ x.marca }}" data-model="{{ x.modelo }}" {% if disabled %}
                                             disabled="disabled"
                                         {% endif %}">
                                     </td>
                                     <td class="text-right">{{ x.amount|safe }}</td>
                                     <td>
-                                        <input type="text" data-mat="{{ x.materiales_id }}" value="{{ x.marca }}" name="brands" class="form-control input-sm" {% if disabled %}
+                                        <input type="text" data-mat="{{ x.materiales_id }}" data-pk="{{ x.id }}" value="{{ x.marca }}" name="brands" class="form-control input-sm" {% if disabled %}
                                             disabled="disabled"
-                                        {% endif %}">
+                                        {% endif %}>
                                     </td>
                                     <td>
-                                        <input type="text" data-mat="{{ x.materiales_id }}" name="models" value="{{ x.modelo }}" class="form-control input-sm" {% if disabled %}
+                                        <input type="text" data-mat="{{ x.materiales_id }}" data-pk="{{ x.id }}" name="models" value="{{ x.modelo }}" class="form-control input-sm" {% if disabled %}
                                             disabled="disabled"
-                                        {% endif %}">
+                                        {% endif %}>
                                     </td>
                                     <td>
-                                        <input type="text" data-mat="{{ x.materiales_id }}" placeholder="aaaa-mm-dd" maxlength="10" value="{{ x.entrega|date:"Y-m-d" }}" name="dates" class="form-control input-sm" {% if disabled %}disabled="disabled"
+                                        <input type="text" data-mat="{{ x.materiales_id }}" data-pk="{{ x.id }}" placeholder="aaaa-mm-dd" maxlength="10" value="{{ x.entrega|date:"Y-m-d" }}" name="dates" class="form-control input-sm" {% if disabled %}disabled="disabled"
 
-                                        {% endif %}">
+                                        {% endif %}>
                                     </td>
                                     <td class="text-center">
                                         <button class="btn btn-xs btn-link text-black btn-file" value="{{ x.materiales_id }}" {% if disabled %}
                                             disabled="disabled"
-                                        {% endif %}"><span class="glyphicon glyphicon-cloud-upload"></span></button>
+                                        {% endif %}><span class="glyphicon glyphicon-cloud-upload"></span></button>
                                     </td>
                                 </tr>
                             {% empty %}

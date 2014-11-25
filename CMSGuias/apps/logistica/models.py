@@ -117,7 +117,7 @@ class DetCotizacion(models.Model):
         ordering = ['materiales']
 
     def __unicode__(self):
-        return '%s %s %s %f %f'%(self.cotizacion, self.proveedor, self.materiales, self.cantidad, self.precio)
+        return '%s %s %s %f %f'%(self.cotizacion_id, self.proveedor_id, self.materiales, self.cantidad, self.precio)
 
     @property
     def amount(self):

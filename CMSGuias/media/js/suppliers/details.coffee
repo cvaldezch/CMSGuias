@@ -54,7 +54,10 @@ saveBlurDigit = (event) ->
         else if @name is "desct"
             data.blur = "desct"
         data.val = parseFloat @value
+        data.brand = @getAttribute "data-brand"
+        data.model = @getAttribute "data-model"
         data.materials = @getAttribute "data-mat"
+        data.pk = @getAttribute "data-pk"
         $.post "", data, (response) ->
             console.log response
             if response.status
@@ -174,3 +177,37 @@ saveBedside = (event) ->
     else
         $().toastmessage "showWarningToast", "Existe un campo vacio o con formato incorrecto, revise y vuelva a intentarlo."
     return
+
+getListDetails = (event) ->
+    data = new Object
+    data.list = true
+    $.post "", data, (response) ->
+        if response.status
+            template = "
+            <tr class=\"{{ x.materiales_id }}\">
+            <td class=\"text-center\">{{ forloop.counter }}</td>
+            <td>{{ x.materiales.matnom }} - {{ x.materiales.matmed }}</td>
+            <td>{{ x.materiales.unidad.uninom }}</td>
+            <td>{{ x.cantidad|safe }}</td>
+            <td>
+                <input type=\"number\" name=\"prices\" class=\"form-control input-sm\" value=\"{{ x.precio|safe }}\" min=\"0\" max=\"9999999\" data-mat=\"{{ x.materiales_id }}\" data-brand=\"{{ x.marca }}\" data-pk=\"{{ x.id }}\" data-model=\"{{ x.modelo }}\">
+            </td>
+            <td>
+                <input type=\"number\" name=\"desct\" class=\"form-control input-sm text-right\" min=\"0\" max=\"100\" value=\"{{ x.discount }}\" data-mat=\"{{ x.materiales_id }}\" data-pk=\"{{ x.id }}\" data-brand=\"{{ x.marca }}\" data-model=\"{{ x.modelo }}\">
+            </td>
+            <td class=\"text-right\">{{ x.amount|safe }}</td>
+            <td>
+                <input type=\"text\" data-mat=\"{{ x.materiales_id }}\" data-pk=\"{{ x.id }}\" value=\"{{ x.marca }}\" name=\"brands\" class=\"form-control input-sm\">
+            </td>
+            <td>
+                <input type=\"text\" data-mat=\"{{ x.materiales_id }}\" data-pk=\"{{ x.id }}\" name=\"models\" value=\"{{ x.modelo }}\" class=\"form-control input-sm\" >
+            </td>
+            <td>
+                <input type=\"text\" data-mat=\"{{ x.materiales_id }}\" data-pk=\"{{ x.id }}\" placeholder=\"aaaa-mm-dd\" maxlength=\"10\" value=\"{{ x.entrega|date:\"Y-m-d\" }}\" name=\"dates\" class=\"form-control input-sm\">
+            </td>
+            <td class=\"text-center\">
+                <button class=\"btn btn-xs btn-link text-black btn-file\" value=\"{{ x.materiales_id }}\"><span class=\"glyphicon glyphicon-cloud-upload\"></span></button>
+            </td>
+        </tr>
+        "
+    , "json"

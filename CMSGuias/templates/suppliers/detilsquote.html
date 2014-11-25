@@ -195,7 +195,7 @@ Quote Details
                                     <td>{{ x.materiales.unidad.uninom }}</td>
                                     <td>{{ x.cantidad|safe }}</td>
                                     <td>
-                                        <input type="number" name="prices" class="form-control input-sm" value="{{ x.precio|safe }}" min="0" max="9999999" data-mat="{{ x.materiales_id }}" {% if disabled %}
+                                        <input type="number" name="prices" data-brand="{{ x.marca }}" data-model="{{ x.modelo }}" class="form-control input-sm" value="{{ x.precio|safe }}" min="0" max="9999999" data-mat="{{ x.materiales_id }}" {% if disabled %}
                                             disabled="disabled"
                                         {% endif %}">
                                     </td>

@@ -979,6 +979,27 @@ class IngressPriceQuote(JSONResponseMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         context = dict()
+        if request.is_ajax():
+            try:
+                if 'list' in request.GET:
+                    context['details'] = [
+                        {
+                            'names': '%s - %s'%(x.materiales.matnom, x.materiales.matmed),
+                            'unit': x.materiales.unidad.uninom,
+                            'quantity': x.cantidad,
+                            'price': x.precio,
+                            'discount': x.discount,
+                            'brand': x.marca,
+                            'model': x.modelo,
+                            'delivery': globalVariable.format_date_str(x.entrega)
+                        }
+                        for x in DetCotizacion.objects.filter(cotizacion_id=kwargs['quote'], proveedor_id=kwargs['supplier']).order_by('materiales__matnom')
+                    ]
+                    context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
         try:
             if kwargs['quote'] and kwargs['supplier']:
                 if kwargs['quote'].__len__() == 10 and kwargs['supplier'].__len__() == 11:
@@ -1012,7 +1033,8 @@ class IngressPriceQuote(JSONResponseMixin, TemplateView):
             context = dict()
             try:
                 if 'blur' in request.POST:
-                    obj = DetCotizacion.objects.get(cotizacion_id=kwargs['quote'], proveedor_id=kwargs['supplier'], materiales_id=request.POST.get('materials'))
+                    obj = DetCotizacion.objects.get(Q(cotizacion_id=kwargs['quote']), Q(proveedor_id=kwargs['supplier']), Q(materiales_id=request.POST.get('materials')), Q(pk=request.POST.get('pk')),)
+
                     if request.POST.get('blur') == 'price':
                         obj.precio = request.POST.get('val')
                         obj.save()
