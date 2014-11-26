@@ -21,6 +21,7 @@ from xlrd import open_workbook, XL_CELL_EMPTY
 from CMSGuias.apps.almacen.models import Suministro
 from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda, Configuracion, LoginProveedor, Brand, Model
 from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra, tmpcotizacion, tmpcompra
+from CMSGuias.apps.ventas.models import Proyecto
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles, search
 from .forms import addTmpCotizacionForm, addTmpCompraForm, CompraForm, ProveedorForm
 
@@ -449,10 +450,11 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                     context['status'] = False
                 return self.render_to_json_response(context, **kwargs)
         context = super(ViewPurchaseSingle, self).get_context_data(**kwargs)
-        context['document'] = Documentos.objects.all()
-        context['pago'] = FormaPago.objects.all()
+        context['document'] = Documentos.objects.all().order_by('documento')
+        context['pago'] = FormaPago.objects.all().order_by('pagos')
         context['currency'] = Moneda.objects.all()
         context['supplier'] = Proveedor.objects.all()
+        context['projects'] = Proyecto.objects.filter(status='AC', flag=True).order_by('nompro')
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
     @method_decorator(login_required)
@@ -558,12 +560,14 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                 if 'savePurchase' in request.POST:
                     # Set all data the form
                     form = CompraForm(request.POST, request.FILES)
+                    print form
                     if form.is_valid():
                         id = genkeys.GenerateKeyPurchase()
                         add = form.save(commit=False)
                         add.compra_id = id
                         add.empdni_id = request.user.get_profile().empdni_id
                         add.status = 'PE'
+                        add.projects = request.POST.get('projects') if 'projects' in request.POST else ''
                         add.discount = float(request.POST.get('discount'))
                         add.save()
                         # save details os the order purchase
@@ -829,7 +833,8 @@ class CompareQuote(JSONResponseMixin, TemplateView):
             context['quote'] = Cotizacion.objects.get(Q(cotizacion_id=kwargs['quote']), ~Q(status='CO'))
             print context['quote']
             context['supplier'] = CotKeys.objects.filter(cotizacion_id=kwargs['quote'], flag=True)
-            mats = DetCotizacion.objects.filter(cotizacion_id=kwargs['quote']).order_by('materiales__materiales_id').distinct('materiales__materiales_id')
+            mats = DetCotizacion.objects.filter(cotizacion_id=kwargs['quote']).order_by('materiales__materiales_id')
+            #.distinct('materiales__materiales_id')
             context['client'] = CotCliente.objects.filter(cotizacion_id=kwargs['quote'])
             context['conf'] = Configuracion.objects.get(periodo=globalVariable.get_year)
             arm = list()
@@ -839,7 +844,7 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                 arsu = list()
                 for j in context['supplier']:
                     try:
-                        dsup = DetCotizacion.objects.get(cotizacion_id=kwargs['quote'], proveedor_id=j.proveedor_id, materiales_id=x.materiales_id)
+                        dsup = DetCotizacion.objects.get(cotizacion_id=kwargs['quote'], proveedor_id=j.proveedor_id, materiales_id=x.materiales_id, marca=x.marca, modelo=x.modelo)
                         discount = (float(dsup.discount) / 100)
                         price = (dsup.precio - (float(dsup.precio) * discount))
                         amount = (price * float(x.cantidad))
@@ -871,8 +876,8 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                 arm.append({'materials':x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'quantity':x.cantidad, 'priceold': search.getPricePurchaseInventory(x.materiales_id), 'others': arsu })
             context['details'] = arm
             context['currency'] = Moneda.objects.filter(flag=True)
-            context['document'] = Documentos.objects.filter(flag=True)
-            context['payment'] = FormaPago.objects.filter(flag=True)
+            context['document'] = Documentos.objects.filter(flag=True).order_by('documento')
+            context['payment'] = FormaPago.objects.filter(flag=True).order_by('pagos')
             context['purchase'] = Compra.objects.filter(cotizacion_id=kwargs['quote'],flag=True)
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except ObjectDoesNotExist, e:
@@ -893,6 +898,12 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                         add.cotizacion_id = kwargs['quote']
                         add.flag = True
                         add.empdni_id = request.user.get_profile().empdni_id
+                        try:
+                            obj = Cotizacion.objects.get(cotizacion_id=kwargs['quote'])
+                            if obj.suministro_id:
+                                add.projects = obj.suministro.orders
+                        except ObjectDoesNotExist:
+                            raise
                         add.save()
                         # save the details
                         details = json.loads(request.POST.get('details'))
@@ -984,14 +995,17 @@ class IngressPriceQuote(JSONResponseMixin, TemplateView):
                 if 'list' in request.GET:
                     context['details'] = [
                         {
+                            'pk': x.id,
+                            'materials': x.materiales_id,
                             'names': '%s - %s'%(x.materiales.matnom, x.materiales.matmed),
                             'unit': x.materiales.unidad.uninom,
                             'quantity': x.cantidad,
                             'price': x.precio,
                             'discount': x.discount,
+                            'amount': ((x.precio - ((x.precio * x.discount) / 100)) * x.cantidad),
                             'brand': x.marca,
                             'model': x.modelo,
-                            'delivery': globalVariable.format_date_str(x.entrega)
+                            'delivery': globalVariable.format_date_str(x.entrega) if x.entrega else None
                         }
                         for x in DetCotizacion.objects.filter(cotizacion_id=kwargs['quote'], proveedor_id=kwargs['supplier']).order_by('materiales__matnom')
                     ]
@@ -1033,7 +1047,7 @@ class IngressPriceQuote(JSONResponseMixin, TemplateView):
             context = dict()
             try:
                 if 'blur' in request.POST:
-                    obj = DetCotizacion.objects.get(Q(cotizacion_id=kwargs['quote']), Q(proveedor_id=kwargs['supplier']), Q(materiales_id=request.POST.get('materials')), Q(pk=request.POST.get('pk')),)
+                    obj = DetCotizacion.objects.get(Q(cotizacion_id=kwargs['quote']), Q(proveedor_id=kwargs['supplier']), Q(materiales_id=request.POST.get('materials')), Q(id=request.POST.get('pk')))
 
                     if request.POST.get('blur') == 'price':
                         obj.precio = request.POST.get('val')

@@ -69,6 +69,21 @@ months_name = {
     '12' : 'Diciembre'
 }
 
+# List of emails
+emails = [
+    'asistente1@icrperusa.com',
+    'logistica@icrperusa.com',
+    'luis.martinez@icrperusa.com',
+    'cvaldezchavez@gmail.com',
+    'icr.luisvalencia@gmail.com',
+    'almacen@icrperusa.com',
+    'armando.atencio@icrperusa.com',
+    'steven.paredes@icrperusa.com',
+    'danilo.martinez@icrperusa.com',
+    'sandra.atencio@icrperusa.com',
+    'ssoma1@icrperusa.com'
+]
+
 # date now format str
 def date_now(type='date',format="%Y-%m-%d"):
     date = datetime.datetime.today()

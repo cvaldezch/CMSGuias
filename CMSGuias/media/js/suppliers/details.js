@@ -3,10 +3,17 @@ var calcTotals, getListDetails, saveBedside, saveBlurDigit, saveBlurString, show
 
 $(document).ready(function() {
   $(".bedside-after, .panel-bedside").hide();
-  $("input[name=dates], input[name=traslado], input[name=validez]").datepicker({
+  $("input[name=dates],input[name=traslado], input[name=validez]").datepicker({
     "minDate": "0",
     "dateFormat": "yy-mm-dd",
     "showAnim": "slide"
+  });
+  $(document).on("focus", ".input-dates", function() {
+    $(this).datepicker({
+      "minDate": "0",
+      "dateFormat": "yy-mm-dd",
+      "showAnim": "slide"
+    });
   });
   $(document).on("blur", "input[name=prices], input[name=desct]", saveBlurDigit);
   $(document).on("blur", "input[name=brands], input[name=models]", saveBlurString);
@@ -57,6 +64,7 @@ saveBlurDigit = function(event) {
   var btn, data;
   validMinandMax(this);
   if (!isNaN(parseFloat(this.value))) {
+    console.log(this);
     btn = this;
     data = new Object();
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
@@ -71,22 +79,21 @@ saveBlurDigit = function(event) {
     data.materials = this.getAttribute("data-mat");
     data.pk = this.getAttribute("data-pk");
     $.post("", data, function(response) {
-      var $td, amount, discount, price, quantity;
-      console.log(response);
       if (response.status) {
-        $td = $("table > tbody > tr." + (btn.getAttribute("data-mat")) + " > td");
-        quantity = response.quantity;
-        if (data.blur === "desct") {
-          price = parseFloat($td.eq(4).find("input").val());
-          discount = parseFloat(data.val);
-        } else {
-          price = parseFloat(data.val);
-          discount = parseFloat($td.eq(5).find("input").val() === "" ? 0 : $td.eq(5).find("input").val());
-        }
-        discount = price - ((price * discount) / 100);
-        amount = quantity * discount;
-        $td.eq(6).text(amount.toFixed(2));
-        return calcTotals();
+        return getListDetails();
+
+        /*$td = $("table > tbody > tr.#{btn.getAttribute "data-mat"} > td")
+        quantity = response.quantity
+        if data.blur is "desct"
+            price = parseFloat $td.eq(4).find("input").val()
+            discount = parseFloat data.val
+        else
+            price = parseFloat data.val
+            discount = parseFloat if $td.eq(5).find("input").val() is "" then 0 else $td.eq(5).find("input").val()
+        discount = (price - ((price * discount) / 100))
+        amount = (quantity * discount)
+        $td.eq(6).text amount.toFixed(2)
+         */
       }
     });
     return;
@@ -115,6 +122,7 @@ saveBlurString = function(event) {
     data.val = this.value;
     data.blur = this.name;
     data.materials = this.getAttribute("data-mat");
+    data.pk = this.getAttribute("data-pk");
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
     $.post("", data);
   }
@@ -210,10 +218,17 @@ getListDetails = function(event) {
   var data;
   data = new Object;
   data.list = true;
-  return $.post("", data, function(response) {
-    var template;
+  $.getJSON("", data, function(response) {
+    var $tb, template, x;
     if (response.status) {
-      return template = "<tr class=\"{{ x.materiales_id }}\"> <td class=\"text-center\">{{ forloop.counter }}</td> <td>{{ x.materiales.matnom }} - {{ x.materiales.matmed }}</td> <td>{{ x.materiales.unidad.uninom }}</td> <td>{{ x.cantidad|safe }}</td> <td> <input type=\"number\" name=\"prices\" class=\"form-control input-sm\" value=\"{{ x.precio|safe }}\" min=\"0\" max=\"9999999\" data-mat=\"{{ x.materiales_id }}\" data-brand=\"{{ x.marca }}\" data-pk=\"{{ x.id }}\" data-model=\"{{ x.modelo }}\"> </td> <td> <input type=\"number\" name=\"desct\" class=\"form-control input-sm text-right\" min=\"0\" max=\"100\" value=\"{{ x.discount }}\" data-mat=\"{{ x.materiales_id }}\" data-pk=\"{{ x.id }}\" data-brand=\"{{ x.marca }}\" data-model=\"{{ x.modelo }}\"> </td> <td class=\"text-right\">{{ x.amount|safe }}</td> <td> <input type=\"text\" data-mat=\"{{ x.materiales_id }}\" data-pk=\"{{ x.id }}\" value=\"{{ x.marca }}\" name=\"brands\" class=\"form-control input-sm\"> </td> <td> <input type=\"text\" data-mat=\"{{ x.materiales_id }}\" data-pk=\"{{ x.id }}\" name=\"models\" value=\"{{ x.modelo }}\" class=\"form-control input-sm\" > </td> <td> <input type=\"text\" data-mat=\"{{ x.materiales_id }}\" data-pk=\"{{ x.id }}\" placeholder=\"aaaa-mm-dd\" maxlength=\"10\" value=\"{{ x.entrega|date:\"Y-m-d\" }}\" name=\"dates\" class=\"form-control input-sm\"> </td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-black btn-file\" value=\"{{ x.materiales_id }}\"><span class=\"glyphicon glyphicon-cloud-upload\"></span></button> </td> </tr>";
+      template = "<tr class=\"{{ materials }}\"> <td class=\"text-center\">{{ item }}</td> <td>{{ names }}</td> <td>{{ unit }}</td> <td>{{ quantity }}</td> <td> <input type=\"number\" name=\"prices\" class=\"form-control input-sm\" value=\"{{ price }}\" min=\"0\" max=\"9999999\" data-mat=\"{{ materials }}\" data-pk=\"{{ pk }}\"> </td> <td> <input type=\"number\" name=\"desct\" class=\"form-control input-sm text-right\" min=\"0\" max=\"100\" value=\"{{ discount }}\" data-mat=\"{{ materials }}\" data-pk=\"{{ pk }}\"> </td> <td class=\"text-right\">{{ amount }}</td> <td> <input type=\"text\" data-mat=\"{{ materials }}\" data-pk=\"{{ pk }}\" value=\"{{ brand }}\" name=\"brands\" class=\"form-control input-sm\"> </td> <td> <input type=\"text\" data-mat=\"{{ materials }}\" data-pk=\"{{ pk }}\" name=\"models\" value=\"{{ model }}\" class=\"form-control input-sm\" > </td> <td> <input type=\"text\" data-mat=\"{{ materials }}\" data-pk=\"{{ pk }}\" placeholder=\"aaaa-mm-dd\" maxlength=\"10\" value=\"{{ delivery }}\" name=\"dates\" class=\"form-control input-sm input-dates\"> </td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-black btn-file\" value=\"{{ materials }}\" data-pk=\"{{ pk }}\" ><span class=\"glyphicon glyphicon-cloud-upload\"></span></button> </td> </tr>";
+      $tb = $("table.table-details > tbody");
+      $tb.empty();
+      for (x in response.details) {
+        response.details[x].item = parseInt(x) + 1;
+        $tb.append(Mustache.render(template, response.details[x]));
+      }
+      return calcTotals();
     }
-  }, "json");
+  });
 };

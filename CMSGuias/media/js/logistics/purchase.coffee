@@ -25,6 +25,7 @@ $(document).ready ->
     $(".btn-purchase").on "click", saveOrderPurchase
     $("input[name=pdiscount]").on "keyup", calcTotal
     .on "keypress", numberOnly
+    $("[name=selproject]").chosen({width: "100%"})
     listTmpBuy()
     return
 
@@ -302,7 +303,8 @@ saveOrderPurchase = ->
     valid = false
     data = new Object()
     $("div.mpurchase > .modal-dialog > .modal-content > .modal-body > .row").find("select,input").each (index, elements) ->
-            if elements.type is "file"
+            if elements.type is "file" or elements.type is "select" or elements.type is "text"
+                data[elements.name] = elements.value
                 return true
             if elements.value isnt ""
                 valid = true
@@ -337,6 +339,7 @@ saveOrderPurchase = ->
                     prm.append "traslado", data.traslado
                     prm.append "contacto", data.contacto
                     prm.append "discount", discount
+                    prm.append "projects", $("select[name=selproject]").val().toString()
                     prm.append "savePurchase", true
                     prm.append "details", JSON.stringify arr
                     if $("input[name=deposito]").get(0).files.length

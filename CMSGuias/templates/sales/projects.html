@@ -15,6 +15,9 @@
     {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
         {% include "menus/operations.htm" %}
     {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'logistica' %}
+        {% include "menus/logistics.htm" %}
+    {% endif %}
 {% endblock menu %}
 {% block content %}
 <div class="container">

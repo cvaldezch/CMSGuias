@@ -248,7 +248,7 @@
                     <div class="col-md-5">
                         <div class="form-group">
                             <label class="control-label">Lugar de Entrega</label>
-                            <input type="text" class="form-control" name="delivery" value="Jr. Gral. Jose de San Martin Mz. F Lote 8A Huachipa - Lurigancho Lima, Peru">
+                            <input type="text" class="form-control" name="delivery" value="{{ request.session.company.address }}">
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -337,7 +337,7 @@
                     </button>
                 </p>
                 <p class="text-center">
-                    <button class="btn btn-default" data-dimiss="modal">
+                    <button class="btn btn-default" data-dismiss="modal">
                         <span class="glyphicon glyphicon-remove"></span>
                         Cancelar
                     </button>

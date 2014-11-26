@@ -12,6 +12,8 @@ def RedirectModule(charge='administrator'):
         template_name = 'sales/home.html'
     elif charge == 'operaciones'.upper():
         template_name = 'operations/home.html'
+    elif charge == 'logistica'.upper():
+        template_name = 'logistics/home.html'
     else:
         template_name = 'warning.html'
 

@@ -48,7 +48,15 @@ $(window).resize(function(){
 </script>
 {% endblock script %}
 {% block menu %}
-    {% include "menus/sale.htm" %}
+    {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administration' %}
+        {% include "menus/sale.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'logistica' %}
+        {% include "menus/logistics.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+        {% include "menus/operations.htm" %}
+    {% endif %}
 {% endblock menu %}
 {% block content %}
 <div class="container">
@@ -203,7 +211,7 @@ $(window).resize(function(){
                             <div class="btn-group">
                             </div> -->
                             {% endif %}
-                            {% if project.status == 'AC' %}
+                            {% if project.status == 'AC' and request.user.get_profile.empdni.charge.area|lower != 'logistica' %}
                                 <div class="btn-group" style="width:5px;">
                                 <button type="button" class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown">
                                     <span class="fa fa-cubes"></span>
@@ -331,7 +339,7 @@ $(window).resize(function(){
             </div>
             <div class="col-md-12">
                 <div class="row">
-                    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
+                    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
                     <div class="col-md-6">
                         <div class="panel panel-primary">
                             <div class="panel-footer">
@@ -355,16 +363,18 @@ $(window).resize(function(){
                     </div>
                 </div>
             </div>
-            {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
+            {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
                 <div class="col-md-12">
                     <div class="panel panel-info">
                         <div class="panel-heading">
                             <h4>
                                 Ordenes de Compra
+                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
                                 <button class="btn btn-lg btn-link text-primary btn-add-purchase-order">
                                     <span class="glyphicon glyphicon-plus-sign"></span>
                                 </button>
                                 <input type="hidden" name="editpurchse">
+                                {% endif %}
                             </h4>
                             <button class="btn btn-lg btn-link close btn-re-purchase-order pull-left">
                                 <span class="glyphicon glyphicon-refresh"></span>

@@ -138,6 +138,52 @@ $(document).ready ->
         font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",
         toolbar1: "styleselect | fontsizeselect | | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |"
         toolbar2: "undo redo | bold italic |"
+
+    tinymce.init
+        selector: "textarea#message",
+        theme: "modern",
+        menubar: false,
+        statusbar: false,
+        plugins: "link contextmenu",
+        font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",
+        toolbar: "undo redo | styleselect | fontsizeselect |"
+    $("input[name=mailer-enable]").checkboxpicker()
+    .on "change", loadsAccounts
+    $("button.btn-publisher").on "click", publisherCommnet
+    return
+
+loadsAccounts = (event) ->
+    if $("input[name=mailer-enable]").is(":checked")
+        getAllCurrentAccounts()
+        showGlobalEnvelop()
+        setTimeout ->
+            if globalMailerData.hasOwnProperty("fors")
+                $for = $("select[name=globalmfor]")
+                tmp = "<option value=\"{{ email }}\">{{ email }}</option>"
+                for x in globalMailerData.fors
+                    $for.append "<option value=\"#{x}\">#{x}</option>"
+                $("select[name=globalmfor]").trigger("chosen:updated")
+        , 200
+    return
+
+publisherCommnet = ->
+    data = new Object()
+    data.edit = $("input[name=edit-message]").val()
+    data.message = $.trim $("#message_ifr").contents().find("body").html()
+    data.status = $("select[name=message-status]").val()
+    if data.message is "<p><br data-mce-bogus=\"1\"></p>"
+        $().toastmessage "showWarningToast", "No se puede publicar el mensaje, campo vacio."
+        return false
+    if data.edit ==  ""
+        data.type = "add"
+    else
+        data.type = "edit"
+    data.proyecto = $("input[name=pro]").val()
+    data.subproyecto = $("input[name=sub]").val()
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    $.post "", data, (response) ->
+        if response.status
+            location.reload()
     return
 
 loadSecandSub = (event) ->
@@ -415,21 +461,21 @@ listMaterials = ->
     $.getJSON "", data, (response) ->
         if response.status
             template = "<tr class=\"{{ materials_id }}-{{ id }}\">
-                            <td>{{ item }}</td>
-                            <td>{{ materials_id }}</td>
-                            <td>{{ name }}</td>
-                            <td>{{ measure }}</td>
-                            <td>{{ unit }}</td>
-                            <td>{{ brand }}</td>
-                            <td>{{ model }}</td>
-                            <td>{{ quantity }}</td>
-                            <td>{{ price }}</td>
-                            <td>
+                            <td class=\"col-1\">{{ item }}</td>
+                            <td class=\"col-3\">{{ materials_id }}</td>
+                            <td class=\"col-6\">{{ name }}</td>
+                            <td class=\"col-5\">{{ measure }}</td>
+                            <td class=\"col-2\">{{ unit }}</td>
+                            <td class=\"col-2\">{{ brand }}</td>
+                            <td class=\"col-2\">{{ model }}</td>
+                            <td class=\"col-2\">{{ quantity }}</td>
+                            <td class=\"col-2\">{{ price }}</td>
+                            <td class=\"col-2\">
                                 <button class=\"btn btn-xs btn-link text-green btn-show-edit\" value=\"{{ materials_id }}-{{ id }}\">
                                     <span class=\"glyphicon glyphicon-pencil\"></span>
                                 </button>
                             </td>
-                            <td>
+                            <td class=\"col-2\">
                                 <button class=\"btn btn-xs btn-link text-red btn-del-mat\" value=\"{{ materials_id }}-{{ id }}\">
                                     <span class=\"glyphicon glyphicon-trash\"></span>
                                 </button>

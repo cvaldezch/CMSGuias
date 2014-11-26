@@ -7,8 +7,12 @@
 <!-- <script src="{{ MEDIA_URL }}js/scrollTo.js"></script> -->
 <script src="{{ MEDIA_URL }}js/getMaterials.js"></script>
 <script src="{{ MEDIA_URL }}js/tinymce.js"></script>
+<script src="{{ MEDIA_URL }}js/chosen.jquery.min.js "></script>
 <script src="{{ MEDIA_URL }}js/logistics/purchase.js"></script>
 {% endblock script %}
+{% block style %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}css/chosen.css">
+{% endblock style %}
 {% block menu %}
 	{% include "menus/logistics.htm" %}
 {% endblock menu %}
@@ -280,7 +284,12 @@
                         <table class="table table-condensed table-hover table-nothing">
                             <thead>
                                 <tr class="brand-danger">
-                                    <th>Item</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th><th>Precio</th>
+                                    <th>Item</th>
+                                    <th>Descripción</th>
+                                    <th>Medida</th>
+                                    <th>Unidad</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -316,7 +325,7 @@
                     <div class="col-md-6">
                         <div class="form-group has-warning">
                             <label class="control-label">Entrega</label>
-                            <input type="text" name="lugent" class="form-control imput-sm" value="Jr. Gral. Jose de San Martin Mz. E Lote 6 Huachipa - Lurigancho Lima 15, Peru">
+                            <input type="text" name="lugent" class="form-control imput-sm" value="{{ request.session.company.address }}">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -394,6 +403,16 @@
                         <div class="form-group has-warning">
                             <label class="control-label">Total</label>
                             <label class="form-control text-right input-sm" name="vtotal"></label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group has-warning">
+                            <label class="control-label">Seleccion de proyectos:</label>
+                            <select name="selproject" class=" form-control" multiple>
+                                {% for x in projects %}
+                                    <option value="{{ x.proyecto_id }}">{{ x.nompro }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-12">

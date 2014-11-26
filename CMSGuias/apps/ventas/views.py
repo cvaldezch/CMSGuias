@@ -62,6 +62,8 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                 context['list'] = Proyecto.objects.filter(Q(flag=True), ~Q(status='DA'))
             elif request.user.get_profile().empdni.charge.area.lower() == 'operaciones':
                 context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC'), empdni_id=request.user.get_profile().empdni_id)
+            elif request.user.get_profile().empdni.charge.area.lower() == 'logistica':
+                context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC'))
             context['country'] = Pais.objects.filter(flag=True)
             context['customers'] = Cliente.objects.filter(flag=True)
             context['currency'] = Moneda.objects.filter(flag=True)
@@ -479,6 +481,7 @@ class SectorManage(JSONResponseMixin, View):
             context['system'] = Configuracion.objects.get(periodo=globalVariable.get_year)
             context['currency'] = Moneda.objects.filter(flag=True).order_by('moneda')
             context['exchange'] = TipoCambio.objects.filter(fecha=globalVariable.date_now())
+            context['alerts'] = Alertasproyecto.objects.filter(Q(proyecto_id=kwargs['pro']), ~Q(subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None), Q(sector_id=kwargs['sec']), Q(flag=True)).order_by('-registrado')
             ### end block global
 
             ##
@@ -538,9 +541,9 @@ class SectorManage(JSONResponseMixin, View):
                             else:
                                 obj = Metradoventa.objects.filter(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') else None, sector_id=request.POST.get('sector'), materiales_id=request.POST.get('materiales'))
                                 if obj:
-                                    obj.cantidad = obj[0].cantidad + float(request.POST.get('cantidad'))
-                                    obj.precio = request.POST.get('precio')
-                                    obj.save()
+                                    obj[0].cantidad = obj[0].cantidad + float(request.POST.get('cantidad'))
+                                    obj[0].precio = request.POST.get('precio')
+                                    obj[0].save()
                                 else:
                                     form.save()
                                 if not 'edit' in request.POST and 'details' in request.POST:
@@ -548,7 +551,7 @@ class SectorManage(JSONResponseMixin, View):
                                     for x in json.loads(request.POST.get('details')):
                                         try:
                                             obj = Metradoventa.objects.get(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') else None, sector_id=request.POST.get('sector'), materiales_id=x['materials'])
-                                            obj.cantidad = obj.cantidad + (float(x.quantity) * float(request.POST.get('cantidad')))
+                                            obj.cantidad = obj.cantidad + (float(x['quantity']) * float(request.POST.get('cantidad')))
                                             obj.save()
                                         except ObjectDoesNotExist:
                                             obj = Metradoventa()

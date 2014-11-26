@@ -3,6 +3,7 @@
 Quote Details
 {% endblock title %}
 {% block script %}
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
 <script src="{{ MEDIA_URL }}js/tinymce.js"></script>
 <script src="{{ MEDIA_URL }}js/suppliers/details.js"></script>
 {% endblock script %}
@@ -138,9 +139,10 @@ Quote Details
                     <h5>Lista de materiales a cotizar.</h5>
                     <strong><small>Nota:</small></strong><br>
                     <small>Ingrese los precio sin incluir el <q>IGV</q>. El <q>IGV</q> y el <q>Total</q> seran calculados automaticamente.</small>
+                    <small>S/M o None = <q>Sin Marca y Sin Modelo</q></small>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-condensed table-hover">
+                    <table class="table table-condensed table-hover table-details">
                         <thead>
                             <tr class="brand-warning">
                                 <th class="text-center">Item</th>

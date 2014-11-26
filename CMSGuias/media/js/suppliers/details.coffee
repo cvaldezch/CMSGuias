@@ -1,6 +1,12 @@
 $(document).ready ->
     $(".bedside-after, .panel-bedside").hide()
-    $("input[name=dates], input[name=traslado], input[name=validez]").datepicker "minDate" : "0", "dateFormat" : "yy-mm-dd", "showAnim" : "slide"
+    $("input[name=dates],input[name=traslado], input[name=validez]").datepicker "minDate" : "0", "dateFormat" : "yy-mm-dd", "showAnim" : "slide"
+    $(document).on "focus", ".input-dates", ->
+        $(@).datepicker
+             "minDate" : "0"
+             "dateFormat" : "yy-mm-dd"
+             "showAnim" : "slide"
+        return
     $(document).on "blur", "input[name=prices], input[name=desct]", saveBlurDigit
     $(document).on "blur", "input[name=brands], input[name=models]", saveBlurString
     $(document).on "change", "input[name=dates]", saveBlurString
@@ -46,6 +52,7 @@ validMinandMax = (item) ->
 saveBlurDigit = (event) ->
     validMinandMax(@)
     if not isNaN parseFloat @value
+        console.log @
         btn = @
         data = new Object()
         data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
@@ -59,9 +66,10 @@ saveBlurDigit = (event) ->
         data.materials = @getAttribute "data-mat"
         data.pk = @getAttribute "data-pk"
         $.post "", data, (response) ->
-            console.log response
+            # console.log response
             if response.status
-                $td = $("table > tbody > tr.#{btn.getAttribute "data-mat"} > td")
+                getListDetails()
+                ###$td = $("table > tbody > tr.#{btn.getAttribute "data-mat"} > td")
                 quantity = response.quantity
                 if data.blur is "desct"
                     price = parseFloat $td.eq(4).find("input").val()
@@ -71,8 +79,7 @@ saveBlurDigit = (event) ->
                     discount = parseFloat if $td.eq(5).find("input").val() is "" then 0 else $td.eq(5).find("input").val()
                 discount = (price - ((price * discount) / 100))
                 amount = (quantity * discount)
-                $td.eq(6).text amount.toFixed(2)
-                calcTotals()
+                $td.eq(6).text amount.toFixed(2)###
         return
     return
 
@@ -96,6 +103,7 @@ saveBlurString = (event) ->
         data.val = @value
         data.blur = @name
         data.materials = @getAttribute "data-mat"
+        data.pk = @getAttribute "data-pk"
         data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
         $.post "", data
     return
@@ -181,33 +189,40 @@ saveBedside = (event) ->
 getListDetails = (event) ->
     data = new Object
     data.list = true
-    $.post "", data, (response) ->
+    $.getJSON "", data, (response) ->
         if response.status
             template = "
-            <tr class=\"{{ x.materiales_id }}\">
-            <td class=\"text-center\">{{ forloop.counter }}</td>
-            <td>{{ x.materiales.matnom }} - {{ x.materiales.matmed }}</td>
-            <td>{{ x.materiales.unidad.uninom }}</td>
-            <td>{{ x.cantidad|safe }}</td>
-            <td>
-                <input type=\"number\" name=\"prices\" class=\"form-control input-sm\" value=\"{{ x.precio|safe }}\" min=\"0\" max=\"9999999\" data-mat=\"{{ x.materiales_id }}\" data-brand=\"{{ x.marca }}\" data-pk=\"{{ x.id }}\" data-model=\"{{ x.modelo }}\">
-            </td>
-            <td>
-                <input type=\"number\" name=\"desct\" class=\"form-control input-sm text-right\" min=\"0\" max=\"100\" value=\"{{ x.discount }}\" data-mat=\"{{ x.materiales_id }}\" data-pk=\"{{ x.id }}\" data-brand=\"{{ x.marca }}\" data-model=\"{{ x.modelo }}\">
-            </td>
-            <td class=\"text-right\">{{ x.amount|safe }}</td>
-            <td>
-                <input type=\"text\" data-mat=\"{{ x.materiales_id }}\" data-pk=\"{{ x.id }}\" value=\"{{ x.marca }}\" name=\"brands\" class=\"form-control input-sm\">
-            </td>
-            <td>
-                <input type=\"text\" data-mat=\"{{ x.materiales_id }}\" data-pk=\"{{ x.id }}\" name=\"models\" value=\"{{ x.modelo }}\" class=\"form-control input-sm\" >
-            </td>
-            <td>
-                <input type=\"text\" data-mat=\"{{ x.materiales_id }}\" data-pk=\"{{ x.id }}\" placeholder=\"aaaa-mm-dd\" maxlength=\"10\" value=\"{{ x.entrega|date:\"Y-m-d\" }}\" name=\"dates\" class=\"form-control input-sm\">
-            </td>
-            <td class=\"text-center\">
-                <button class=\"btn btn-xs btn-link text-black btn-file\" value=\"{{ x.materiales_id }}\"><span class=\"glyphicon glyphicon-cloud-upload\"></span></button>
-            </td>
-        </tr>
-        "
-    , "json"
+            <tr class=\"{{ materials }}\">
+                <td class=\"text-center\">{{ item }}</td>
+                <td>{{ names }}</td>
+                <td>{{ unit }}</td>
+                <td>{{ quantity }}</td>
+                <td>
+                    <input type=\"number\" name=\"prices\" class=\"form-control input-sm\" value=\"{{ price }}\" min=\"0\" max=\"9999999\" data-mat=\"{{ materials }}\" data-pk=\"{{ pk }}\">
+                </td>
+                <td>
+                    <input type=\"number\" name=\"desct\" class=\"form-control input-sm text-right\" min=\"0\" max=\"100\" value=\"{{ discount }}\" data-mat=\"{{ materials }}\" data-pk=\"{{ pk }}\">
+                </td>
+                <td class=\"text-right\">{{ amount }}</td>
+                <td>
+                    <input type=\"text\" data-mat=\"{{ materials }}\" data-pk=\"{{ pk }}\" value=\"{{ brand }}\" name=\"brands\" class=\"form-control input-sm\">
+                </td>
+                <td>
+                    <input type=\"text\" data-mat=\"{{ materials }}\" data-pk=\"{{ pk }}\" name=\"models\" value=\"{{ model }}\" class=\"form-control input-sm\" >
+                </td>
+                <td>
+                    <input type=\"text\" data-mat=\"{{ materials }}\" data-pk=\"{{ pk }}\" placeholder=\"aaaa-mm-dd\" maxlength=\"10\" value=\"{{ delivery }}\" name=\"dates\" class=\"form-control input-sm input-dates\">
+                </td>
+                <td class=\"text-center\">
+                    <button class=\"btn btn-xs btn-link text-black btn-file\" value=\"{{ materials }}\" data-pk=\"{{ pk }}\" ><span class=\"glyphicon glyphicon-cloud-upload\"></span></button>
+                </td>
+            </tr>
+            "
+            $tb = $("table.table-details > tbody")
+            $tb.empty()
+            for x of response.details
+                response.details[x].item = (parseInt(x) + 1)
+                $tb.append Mustache.render template, response.details[x]
+
+            calcTotals()
+    return

@@ -2,6 +2,13 @@
 var getAllCurrentAccounts, globalMailerData, globalTmpMailer, initializeBodyMailer, mailerLoadsData, sendGlobalMailer, showGCopyMailer, showGPwdMailer, showGlobalEnvelop;
 
 initializeBodyMailer = function(event) {
+  $("select[name=globalmfor]").chosen({
+    width: "100%",
+    element: "select[name=globalmfor]"
+  });
+  $("select[name=globalmcc],select[name=globalmcco]").chosen({
+    width: "100%"
+  });
   tinymce.init({
     selector: "div[name=globalmbody]",
     height: 200,
@@ -23,6 +30,8 @@ showGlobalEnvelop = function(event) {
   if ($("#mailer").is(":hidden")) {
     $("#mailer").modal("show");
     mailerLoadsData();
+  } else {
+    $("#mailer").modal("hide");
   }
 };
 
@@ -68,7 +77,7 @@ mailerLoadsData = function() {
   }
 };
 
-globalTmpMailer = "<div class=\"modal fade\" id=\"mailer\"> <div class=\"modal-dialog\"> <div class=\"modal-content\"> <div class=\"modal-body mailer-one\"> <a data-dismiss=\"modal\" class=\"close\">&times;</a> <div class=\"row\"> <div class=\"col-md-12\"> <div class=\"form-group\"> <input type=\"text\" name=\"globalmfor\" class=\"form-control input-sm text-bold\" placeholder=\"Para\" /> <button class=\"btn btn-link close btn-global-copy-mailer\"> <span class=\"fa fa-chevron-down\"></span> </button> </div> </div> <div class=\"col-md-12\"> <div class=\"form-group panel-copy-mailer hide\"> <input type=\"text\" name=\"globalmcc\" class=\"form-control input-sm\" placeholder=\"Cc\" /> <input type=\"text\" name=\"globalmcco\" class=\"form-control input-sm\"  placeholder=\"Cco\"/> </div> </div> <div class=\"col-md-12\"> <div class=\"form-group\"> <input type=\"text\" name=\"globalmissue\" class=\"form-control input-sm text-bold\"  placeholder=\"Asunto\"/ > </div> </div> <div class=\"col-md-12\"> <div id=\"globalmbody\" name=\"globalmbody\"> Escribe algo ... </div> </div> <div class=\"col-md-12\"> <div class=\"row\"> <div class=\"col-md-2\"> <button class=\"btn btn-primary btn-global-send-envelop\"> <span class=\"fa fa-envelope\"></span> ENVIAR </button> </div> <div class=\"col-md-4 col-md-offset-6\"> <div class=\"input-group\"> <div class=\"input-group-btn\"> <button class=\"btn btn-sm btn-default btn-global-show-mailer-password\"> <span class=\"fa fa-chevron-circle-down\"></span> </button> </div> <div class=\"form-group has-primary\"> <input type=\"password\" class=\"form-control input-sm hide\" name=\"globalPwdMailer\"> </div> </div> </div> </div> </div> </div> </div> <div class=\"modal-body mailer-two hide\"> <h2 name=\"mailer-msg\" class=\"text-center\"> <span class=\"glyphicon\"></span> <br /> <span></span> </h2> </div> </div> </div> </div>";
+globalTmpMailer = "<div class=\"modal fade\" id=\"mailer\"> <div class=\"modal-dialog\"> <div class=\"modal-content\"> <div class=\"modal-body mailer-one\"> <a data-dismiss=\"modal\" class=\"close\">&times;</a> <div class=\"row\"> <div class=\"col-md-12\"> <div class=\"form-group\"> <select name=\"globalmfor\" class=\"chosen-select text-bold globalmfor\" placeholder=\"Para\" multiple> </select> <button class=\"btn btn-link close btn-global-copy-mailer\"> <span class=\"fa fa-chevron-down\"></span> </button> </div> </div> <div class=\"col-md-12\"> <div class=\"form-group panel-copy-mailer hide\"> <select name=\"globalmcc\" class=\"chosen-select globalmcc\" placeholder=\"Cc\" multiple> </select> <select name=\"globalmcco\" class=\"chosen-select globalmcco\"  placeholder=\"Cco\" multiple> </select> </div> </div> <div class=\"col-md-12\"> <div class=\"form-group\"> <input type=\"text\" name=\"globalmissue\" class=\"form-control input-sm text-bold\"  placeholder=\"Asunto\"/ > </div> </div> <div class=\"col-md-12\"> <div id=\"globalmbody\" name=\"globalmbody\"> Escribe algo ... </div> </div> <div class=\"col-md-12\"> <div class=\"row\"> <div class=\"col-md-2\"> <button class=\"btn btn-primary btn-global-send-envelop\"> <span class=\"fa fa-envelope\"></span> ENVIAR </button> </div> <div class=\"col-md-4 col-md-offset-6\"> <div class=\"input-group\"> <div class=\"input-group-btn\"> <button class=\"btn btn-sm btn-default btn-global-show-mailer-password\"> <span class=\"fa fa-chevron-circle-down\"></span> </button> </div> <div class=\"form-group has-primary\"> <input type=\"password\" class=\"form-control input-sm hide\" name=\"globalPwdMailer\"> </div> </div> </div> </div> </div> </div> </div> <div class=\"modal-body mailer-two hide\"> <h2 name=\"mailer-msg\" class=\"text-center\"> <span class=\"glyphicon\"></span> <br /> <span></span> </h2> </div> </div> </div> </div>";
 
 showGPwdMailer = function(event) {
   var $btn, $in;
