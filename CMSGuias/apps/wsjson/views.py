@@ -863,20 +863,18 @@ class SearchGroupMaterials(JSONResponseMixin, View):
                 context['status'] = False
             return self.render_to_json_response(context)
 
-class GetAllAccounts(JSONResponseMixin, View):
+# class GetAllAccounts(JSONResponseMixin, View):
 
-    @method_decorator(login_required)
-    def post(self, request, *args, **kwargs):
-        context = dict()
-        if request.is_ajax():
-            try:
-                if 'allmails' in request.POST:
-                    context['for']= [ x.email for x in User.objects.all()]
-                    context['status'] = True
-            except ObjectDoesNotExist, e:
-                context['raise'] = e.__str__()
-                context['status'] = False
-            return self.render_to_json_response(context)
+#     @method_decorator(login_required)
+#     def post(self, request, *args, **kwargs):
+#         context = dict()
+#         if request.is_ajax():
+#             try:
+
+#             except ObjectDoesNotExist, e:
+#                 context['raise'] = e.__str__()
+#                 context['status'] = False
+#             return self.render_to_json_response(context)
 
 class SystemEmails(JSONResponseMixin, View):
 
@@ -884,6 +882,9 @@ class SystemEmails(JSONResponseMixin, View):
     def post(self, request, *args, **kwargs):
         context = dict()
         try:
+            if 'allmails' in request.POST:
+                context['for'] = globalVariable.emails #[ x.email for x in User.objects.all()]
+                context['status'] = True
             if 'saveEmail' in request.POST:
                 obj = Emails()
                 obj.email = request.user.email

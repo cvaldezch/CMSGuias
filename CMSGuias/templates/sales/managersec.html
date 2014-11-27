@@ -854,7 +854,7 @@
         <article>
             <div class="row">
                 <div class="col-md-12">
-                    <button class="btn btn-link close">
+                    <button class="btn btn-link close btn-block-comment">
                     <span class="fa fa-angle-double-up"></span>
                 </button>
                 </div>
@@ -863,7 +863,7 @@
                         <div class="panel-heading">
                             <span class="h5">Comentarios</span>
                         </div>
-                        <div class="panel-body">
+                        <div class="panel-body  panel-comment-toogle">
                             {% for x in alerts %}
                                 <div class="alert alert-{{ x.status }} comment{{ x.id }}">
                                     <div>
@@ -894,7 +894,7 @@
                         <div class="panel-heading">
                             <span class="h5">Publicar Comenario</span>
                         </div>
-                        <div class="panel-body">
+                        <div class="panel-body panel-comment-toogle">
                             <textarea maxlength="250" name="message" id="message" rows="1" class="form-control"></textarea>
                             <div class="form-group">
                                 <select name="message-status" id="message-status" class="form-control">

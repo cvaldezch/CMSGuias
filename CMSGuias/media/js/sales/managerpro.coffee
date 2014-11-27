@@ -115,6 +115,27 @@ $(document).ready ->
         toolbar: "undo redo | styleselect | fontsizeselect |"
     $(".btn-publisher").on "click", publisherCommnet
     $("button.btn-emails").on "click", showAlertStartProject
+    $("input[name=mailer-enable]").checkboxpicker()
+    .on "change", loadsAccounts
+    return
+
+loadsAccounts = (event) ->
+    if $("input[name=mailer-enable]").is(":checked")
+        showGlobalEnvelop()
+        $("iframe#globalmbody_ifr").contents().find("body").html $("#message_ifr").contents().find("body").html()
+        if $("select[name=globalmfor]").find("option").length == 0
+            getAllCurrentAccounts()
+            setTimeout ->
+                if globalMailerData.hasOwnProperty("fors")
+                    items = ["for", "cc", "cco"]
+                    for c in items
+                        $item = $("select[name=globalm#{c}]")
+                        tmp = "<option value=\"{{ email }}\">{{ email }}</option>"
+                        for x in globalMailerData.fors
+                            $item.append "<option value=\"#{x}\">#{x}</option>"
+                        $item.trigger("chosen:updated")
+                    return
+            , 200
     return
 
 showAlertStartProject = (event) ->

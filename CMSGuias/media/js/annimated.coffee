@@ -1,3 +1,9 @@
+goTopPage = (event) ->
+    $('html, body').animate
+        scrollTop: 0
+        , 'slow'
+    return
+
 animateAdd = (event) ->
     $(@).hover  ->
         ###.removeClass "btn-success text-black"

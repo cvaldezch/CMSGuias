@@ -2,8 +2,12 @@ initializeBodyMailer = (event) ->
     $("select[name=globalmfor]").chosen
         width: "100%",
         element: "select[name=globalmfor]"
-    $("select[name=globalmcc],select[name=globalmcco]").chosen
+    $("select[name=globalmcc]").chosen
         width: "100%",
+        element: "select[name=globalmcc]"
+    $("select[name=globalmcco]").chosen
+        width: "100%",
+        element: "select[name=globalmcco]"
     tinymce.init
             selector: "div[name=globalmbody]",
             height: 200,
@@ -23,7 +27,29 @@ showGlobalEnvelop = (event) ->
         initializeBodyMailer()
     if $("#mailer").is(":hidden")
         $("#mailer").modal "show"
-        mailerLoadsData()
+        if globalMailerData.hasOwnProperty "issue"
+            $("input[name=globalmissue]").val globalMailerData.issue.toString()
+        else
+            $("input[name=globalmissue]").val ""
+
+        if globalMailerData.hasOwnProperty "body"
+            #$("input[name=globalmbody]").html globalMailerData.body
+            $("iframe#globalmbody_ifr").contents().find("body").html globalMailerData.body
+        else
+            $("iframe#globalmbody_ifr").contents().find("body").html ""
+        if $("select[name=globalmfor]").find("option").length == 0
+            getAllCurrentAccounts()
+            setTimeout ->
+                if globalMailerData.hasOwnProperty("fors")
+                    items = ["for", "cc", "cco"]
+                    for c in items
+                        $item = $("select[name=globalm#{c}]")
+                        tmp = "<option value=\"{{ email }}\">{{ email }}</option>"
+                        for x in globalMailerData.fors
+                            $item.append "<option value=\"#{x}\">#{x}</option>"
+                        $item.trigger("chosen:updated")
+                    return
+            , 200
     else
         $("#mailer").modal "hide"
     return
@@ -77,7 +103,7 @@ globalTmpMailer = "
                 <div class=\"row\">
                     <div class=\"col-md-12\">
                         <div class=\"form-group\">
-                            <select name=\"globalmfor\" class=\"chosen-select text-bold globalmfor\" placeholder=\"Para\" multiple>
+                            <select name=\"globalmfor\" class=\"chosen-select text-bold globalmfor\" data-placeholder=\"Para\" multiple>
 
                                 </select>
                             <button class=\"btn btn-link close btn-global-copy-mailer\">
@@ -87,9 +113,9 @@ globalTmpMailer = "
                     </div>
                     <div class=\"col-md-12\">
                         <div class=\"form-group panel-copy-mailer hide\">
-                            <select name=\"globalmcc\" class=\"chosen-select globalmcc\" placeholder=\"Cc\" multiple>
+                            <select name=\"globalmcc\" class=\"chosen-select globalmcc\" data-placeholder=\"Cc\" multiple>
                             </select>
-                            <select name=\"globalmcco\" class=\"chosen-select globalmcco\"  placeholder=\"Cco\" multiple>
+                            <select name=\"globalmcco\" class=\"chosen-select globalmcco\" data-placeholder=\"Cco\" multiple>
                             </select>
                         </div>
                     </div>
@@ -170,15 +196,15 @@ showGCopyMailer = (event) ->
 
 sendGlobalMailer = (event) ->
     data = new Object
-    if $.trim($("input[name=globalmfor]").val()) isnt ""
-        data.fors = $("input[name=globalmfor]").val()
-        .split ","
-    if $.trim($("input[name=globalmcc]").val()) isnt ""
-        data.cc = $("input[name=globalmcc]").val()
-        .split ","
-    if $.trim($("input[name=globalmcco]").val()) isnt ""
-        data.cco = $("input[name=globalmcco]").val()
-        .split ","
+    if $.trim($("select[name=globalmfor]").val()) isnt ""
+        data.fors = $("select[name=globalmfor]").val().toString()
+        #.split ","
+    if $.trim($("select[name=globalmcc]").val()) isnt ""
+        data.cc = $("select[name=globalmcc]").val().toString()
+        #.split ","
+    if $.trim($("select[name=globalmcco]").val()) isnt ""
+        data.cco = $("select[name=globalmcco]").val().toString()
+        #.split ","
     if $.trim($("input[name=globalmissue]").val()) isnt ""
         data.issue = $("input[name=globalmissue]").val()
     data.body = $("iframe#globalmbody_ifr").contents().find("body").html()
@@ -245,7 +271,7 @@ sendGlobalMailer = (event) ->
                     setTimeout ->
                         $(".mailer-two").addClass "hide"
                         $(".mailer-one").removeClass "hide"
-                        $("#mailer").modal "hide"
+                        location.reload()
                     , 1600
                 else if not response.status
                     $("div.mailer-two").removeClass "hide"
@@ -272,6 +298,27 @@ sendGlobalMailer = (event) ->
     , "json"
     return
 
+searchChosenKey = (event) ->
+    key = event.keycode or event.which
+    if key is 188 or key is 13
+        add = $.trim(@value).replace ",",""
+        if validateEmail add
+            $("select[name=#{@getAttribute "data-element"}]").find "option"
+            .each (index, elm) ->
+                if elm.text is add
+                    return false
+            option = "<option value=\"#{add}\">#{add}</option>"
+            $("select[name=#{@getAttribute "data-element"}]").append option
+            .trigger("chosen:updated")
+            @value = add
+            $(@)
+            .trigger jQuery.Event "keyup", which: 190
+            .trigger jQuery.Event "keyup", which: 13
+        else
+            @value = ""
+    return
+
 $(document).on "click", ".btn-global-show-mailer-password", showGPwdMailer
 $(document).on "click", ".btn-global-copy-mailer", showGCopyMailer
 $(document).on "click", ".btn-global-send-envelop",  sendGlobalMailer
+$(document).on "keyup", "input[name=seglobalmfor], input[name=seglobalmcc], input[name=seglobalmcco]", searchChosenKey

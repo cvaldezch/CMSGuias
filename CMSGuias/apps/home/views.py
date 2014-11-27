@@ -15,7 +15,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils import simplejson
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView, View
+from django.views.generic import ListView, TemplateView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from CMSGuias.apps.home.forms import signupForm, logininForm
@@ -646,3 +646,48 @@ class DetailsGMaterials(JSONResponseMixin, View):
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
+
+class MaterialsKeep(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'code' in request.GET:
+                    context['list'] = [
+                    {
+                        'materials': x.materiales_id,
+                        'name': x.matnom,
+                        'measure': x.matmed,
+                        'unit': x.unidad.uninom,
+                        'finished': x.matacb,
+                        'area': x.matare
+                    }
+                    for x in Materiale.objects.filter(pk__startswith=request.GET.get('code'))
+                    ]
+                    context['status'] = True
+                if 'desc' in request.GET:
+                    context['list'] = [
+                    {
+                        'materials': x.materiales_id,
+                        'name': x.matnom,
+                        'measure': x.matmed,
+                        'unit': x.unidad.uninom,
+                        'finished': x.matacb,
+                        'area': x.matare
+                    }
+                    for x in Materiale.objects.filter(matnom__icontains=request.GET.get('desc'))
+                    ]
+                    context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
+        else:
+            try:
+                context['materials'] = Materiale.objects.all().order_by('matnom')[:50]
+                context['unidad'] = Unidade.objects.all()
+                return render_to_response('home/crud/materials.html', context, context_instance=RequestContext(request))
+            except TemplateDoesNotExist, e:
+                raise Http404(e)

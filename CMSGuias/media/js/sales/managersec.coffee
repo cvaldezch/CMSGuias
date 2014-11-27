@@ -150,40 +150,68 @@ $(document).ready ->
     $("input[name=mailer-enable]").checkboxpicker()
     .on "change", loadsAccounts
     $("button.btn-publisher").on "click", publisherCommnet
+    $(".btn-message-edit").on "click", showEditComment
+    $("button.btn-block-comment").on "click", commentToogle
+    return
+
+
+commentToogle = (event) ->
+    $btn = $(@)
+    $("div.panel-comment-toogle").toggle "slow", ->
+        if @.style.display is "block"
+            $btn.find "span"
+            .removeClass "fa-angle-double-down"
+            .addClass "fa-angle-double-up"
+        else
+            $btn.find "span"
+            .removeClass "fa-angle-double-up"
+            .addClass "fa-angle-double-down"
     return
 
 loadsAccounts = (event) ->
     if $("input[name=mailer-enable]").is(":checked")
-        getAllCurrentAccounts()
         showGlobalEnvelop()
-        setTimeout ->
-            if globalMailerData.hasOwnProperty("fors")
-                $for = $("select[name=globalmfor]")
-                tmp = "<option value=\"{{ email }}\">{{ email }}</option>"
-                for x in globalMailerData.fors
-                    $for.append "<option value=\"#{x}\">#{x}</option>"
-                $("select[name=globalmfor]").trigger("chosen:updated")
-        , 200
+        $("iframe#globalmbody_ifr").contents().find("body").html $("#message_ifr").contents().find("body").html()
+        if $("select[name=globalmfor]").find("option").length == 0
+            getAllCurrentAccounts()
+            setTimeout ->
+                if globalMailerData.hasOwnProperty("fors")
+                    items = ["for", "cc", "cco"]
+                    for c in items
+                        $item = $("select[name=globalm#{c}]")
+                        tmp = "<option value=\"{{ email }}\">{{ email }}</option>"
+                        for x in globalMailerData.fors
+                            $item.append "<option value=\"#{x}\">#{x}</option>"
+                        $item.trigger("chosen:updated")
+                    return
+            , 200
     return
 
 publisherCommnet = ->
     data = new Object()
-    data.edit = $("input[name=edit-message]").val()
+    if $("input[name=edit-message]").val() isnt ""
+        data.edit = $("input[name=edit-message]").val()
     data.message = $.trim $("#message_ifr").contents().find("body").html()
     data.status = $("select[name=message-status]").val()
     if data.message is "<p><br data-mce-bogus=\"1\"></p>"
         $().toastmessage "showWarningToast", "No se puede publicar el mensaje, campo vacio."
         return false
-    if data.edit ==  ""
-        data.type = "add"
-    else
-        data.type = "edit"
+    data.alertmsg = true
     data.proyecto = $("input[name=pro]").val()
     data.subproyecto = $("input[name=sub]").val()
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
     $.post "", data, (response) ->
         if response.status
             location.reload()
+    , "json"
+    return
+
+showEditComment = ->
+    if @getAttribute("data-id") isnt ""
+        id = @getAttribute("data-id")
+        $("#message_ifr").contents().find("body").html $(".comment#{id}").find("div").eq(2).html()
+        $("select[message-status]").val @getAttribute("data-status")
+        $("input[name=edit-message]").val id
     return
 
 loadSecandSub = (event) ->

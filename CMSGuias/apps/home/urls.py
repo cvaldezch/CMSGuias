@@ -70,6 +70,10 @@ gmaterials_urls = patterns('',
     url(r'^delete/(?P<mgroup_id>\w+)/$', GMaterialsDelete.as_view(), name='gmaterials_del'),
     url(r'^details/(?P<mgroup>\w+)/$', DetailsGMaterials.as_view(), name='gmaterials_details'),
 )
+# Crud Materials
+materials_urls = patterns('',
+    url(r'^$', MaterialsKeep.as_view(), name='materials_view'),
+)
 # urls main
 urlpatterns = patterns('',
 	url(r'^SignUp/$', LoginView.as_view(), name='vista_login'),
@@ -84,4 +88,5 @@ urlpatterns = patterns('',
     url(r'^model/', include(model_urls)),
     url(r'^tgroup/', include(tgroup_urls)),
     url(r'^gmaterials/', include(gmaterials_urls)),
+    url(r'^materials/', include(materials_urls)),
 )

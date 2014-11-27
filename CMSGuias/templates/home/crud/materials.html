@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% block script %}
+    <!--<script src="http://cdnjs.cloudflare.com/ajax/libs/floatthead/1.2.8/jquery.floatThead.min.js"></script>-->
+    <script src="{{ MEDIA_URL }}js/mustache.js"></script>
+    <script src="{{ MEDIA_URL }}js/home/materials.js"></script>
+    <script src="{{ MEDIA_URL }}js/floatThead.js"></script>
+{% endblock script %}
+{% block title %}
+    Manager Materials
+{% endblock title %}
+{% block menu %}
+    {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
+        {% include "menus/sale.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'logistica' %}
+        {% include "menus/logistics.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+        {% include "menus/operations.htm" %}
+    {% endif %}
+{% endblock menu %}
+{% block content %}
+<div class="container-fluid">
+    <div class="well">
+        <header>
+            <h3>Materials</h3>
+            <aside class="bs-callout bs-callout-warning">
+                <strong>Busqueda de Materiales</strong>
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group has-warning">
+                            <label class="control-label">Código</label>
+                            <input type="text" maxlength="15" name="searchCode" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group has-warning">
+                            <label class="control-label">Descripción</label>
+                            <input type="text" name="searchDesc" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-show-new">
+                    <span class="fa fa-plus"></span>
+                    <span class="form-class">Nuevo Material</span>
+                </button>
+                <div class="panel panel-primary panel-new">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group has-primary">
+                                    <label class="control-label">Codigo</label>
+                                    <input type="text" maxlength="15" class="form-control input-sm" name="materials" placeholder="Codigo">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group has-primary">
+                                    <label class="control-label">Descripción</label>
+                                    <input type="text" class="form-control input-sm" name="matnom" placeholder="Descripción">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group has-primary">
+                                    <label class="control-label">Diametro</label>
+                                    <input type="text" class="form-control input-sm" name="matmed" placeholder="Diametro">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group has-primary">
+                                    <label class="control-label">Unidad</label>
+                                    <select type="text" class="form-control input-sm" name="unidad" placeholder="Unidad">
+                                        {% for x in unidad %}
+                                            <option value="{{ x.unidad_id }}">{{ x.uninom }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group has-primary">
+                                    <label class="control-label">Acabado</label>
+                                    <input type="text" class="form-control input-sm" name="matacb" placeholder="Acabado">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group has-primary">
+                                    <label class="control-label">Area</label>
+                                    <input type="text" class="form-control input-sm" name="matare" placeholder="Area">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </header>
+        <section>
+            <div class="panel panel-warning">
+                <div class="table-responsive">
+                    <table class="table table-condensed table-hover">
+                        <thead>
+                            <tr class="brand-warning">
+                                <th class="text-center">
+                                    <button class="btn btn-xs btn-link btn-top-page text-black text-bold">
+                                        <span class="fa fa-angle-double-up"></span>
+                                    </button>
+                                </th>
+                                <th class="text-center">Codigo</th>
+                                <th class="text-center">Descripción</th>
+                                <th class="text-center">Diametro</th>
+                                <th class="text-center">Unidad</th>
+                                <th class="text-center">Acabado</th>
+                                <th class="text-center">Area</th>
+                                <th class="text-center">Edit</th>
+                                <th class="text-center">Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for x in materials %}
+                                <tr>
+                                    <td class="text-center">{{ forloop.counter }}</td>
+                                    <td class="text-center">{{ x.materiales_id }}</td>
+                                    <td>{{ x.matnom }}</td>
+                                    <td>{{ x.matmed }}</td>
+                                    <td class="text-center">{{ x.unidad.uninom }}</td>
+                                    <td>{{ x.matacb }}</td>
+                                    <td>{{ x.matare }}</td>
+                                    <td class="text-center">
+                                        <button value="{{ x.materiales_id }}" class="btn btn-xs btn-link text-black" data-des="{{ x.matnom }}" data-met="{{ x.matmed }}" data-unit="{{ x.unidad_id }}" data-acb="{{ x.matacb }}" data-area="{{ x.matare }}" name="btnedit">
+                                            <span class="fa fa-edit"></span>
+                                        </button>
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-xs btn-link text-red" value="{{ x.materiales_id }}" name="btndel">
+                                            <span class="fa fa-trash-o"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<!-- block modal -->
+<div class="modal fade meditmat">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a class="close" data-dismiss="modal">&times;</a>
+                <h4 class="text-bold">Editar Material</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group has-warning">
+                    <div class="form-group">
+                        <label class="control-label">Descripcion</label>
+                        <input type="text" class="form-control input-sm" name="ematnom">
+                    </div>
+                </div>
+                <div class="form-group has-warning">
+                    <div class="form-group">
+                        <label class="control-label">Diametro</label>
+                        <input type="text" class="form-control input-sm" name="ematmed">
+                    </div>
+                </div>
+                <div class="form-group has-warning">
+                    <div class="form-group">
+                        <label class="control-label">Unidad</label>
+                        <input type="text" class="form-control input-sm" name="eunidad">
+                    </div>
+                </div>
+                <div class="form-group has-warning">
+                    <div class="form-group">
+                        <label class="control-label">Acabado</label>
+                        <input type="text" class="form-control input-sm" name="ematacb">
+                    </div>
+                </div>
+                <div class="form-group has-warning">
+                    <div class="form-group">
+                        <label class="control-label">Area</label>
+                        <input type="text" class="form-control input-sm" name="ematare">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-sm btn-default">
+                    <span class="fa fa-times"></span>
+                    Cancelar
+                </button>
+                <button class="btn btn-sm btn-warning text-black">
+                    <span class="fa fa-save"></span>
+                    Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% csrf_token %}
+{% endblock content %}

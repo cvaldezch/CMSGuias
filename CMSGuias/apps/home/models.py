@@ -71,9 +71,9 @@ class Materiale(models.Model):
     matnom = models.CharField(max_length=200,null=False)
     matmed = models.CharField(max_length=200,null=False)
     unidad = models.ForeignKey(Unidade, to_field='unidad_id')
-    matpre = models.FloatField(default=0,null=True)
-    matmar = models.CharField(max_length=40,null=True)
-    matmod = models.CharField(max_length=40,null=True)
+    # matpre = models.FloatField(default=0,null=True)
+    # matmar = models.CharField(max_length=40,null=True)
+    # matmod = models.CharField(max_length=40,null=True)
     matacb = models.CharField(max_length=255,null=True)
     matare = models.FloatField(null=True)
 

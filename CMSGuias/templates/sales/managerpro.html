@@ -3,49 +3,52 @@
     Manager Project
 {% endblock title %}
 {% block style %}
-<link rel="stylesheet" href="{{ MEDIA_URL }}css/sales/managerpro.css">
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/sales/managerpro.css">
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/chosen.css">
 {% endblock style %}
 {% block script %}
-<script src="{{ MEDIA_URL }}js/tinymce.js"></script>
-<script src="{{ MEDIA_URL }}js/mustache.js"></script>
-<script src="{{ MEDIA_URL }}js/sales/managerpro.js"></script>
-<script src="{{ MEDIA_URL }}js/mailer.js"></script>
-<script>
-equalheight = function(container){
-    var currentTallest = 0,
-    currentRowStart = 0,
-    rowDivs = new Array(),
-    $el,
-    topPosition = 0;
-    $(container).each(function() {
-        $el = $(this);
-        $($el).height('auto')
-        topPostion = $el.position().top;
+    <script src="{{ MEDIA_URL }}js/tinymce.js"></script>
+    <script src="{{ MEDIA_URL }}js/mustache.js"></script>
+    <script src="{{ MEDIA_URL }}js/sales/managerpro.js"></script>
+    <script src="{{ MEDIA_URL }}js/checkbox.min.js"></script>
+    <script src="{{ MEDIA_URL }}js/chosen.jquery.min.js"></script>
+    <script src="{{ MEDIA_URL }}js/mailer.js"></script>
+    <script>
+    equalheight = function(container){
+        var currentTallest = 0,
+        currentRowStart = 0,
+        rowDivs = new Array(),
+        $el,
+        topPosition = 0;
+        $(container).each(function() {
+            $el = $(this);
+            $($el).height('auto')
+            topPostion = $el.position().top;
 
-        if (currentRowStart != topPostion) {
+            if (currentRowStart != topPostion) {
+                for (currentDiv = 0 ; currentDiv < rowDivs.length ; currentDiv++) {
+                rowDivs[currentDiv].height(currentTallest);
+            }
+            rowDivs.length = 0; // empty the array
+            currentRowStart = topPostion;
+            currentTallest = $el.height();
+                rowDivs.push($el);
+            } else {
+                rowDivs.push($el);
+                currentTallest = (currentTallest < $el.height()) ? ($el.height()) : (currentTallest);
+            }
             for (currentDiv = 0 ; currentDiv < rowDivs.length ; currentDiv++) {
-            rowDivs[currentDiv].height(currentTallest);
-        }
-        rowDivs.length = 0; // empty the array
-        currentRowStart = topPostion;
-        currentTallest = $el.height();
-            rowDivs.push($el);
-        } else {
-            rowDivs.push($el);
-            currentTallest = (currentTallest < $el.height()) ? ($el.height()) : (currentTallest);
-        }
-        for (currentDiv = 0 ; currentDiv < rowDivs.length ; currentDiv++) {
-            rowDivs[currentDiv].height(currentTallest);
-        }
+                rowDivs[currentDiv].height(currentTallest);
+            }
+        });
+    }
+    $(window).load(function() {
+        equalheight('.all-sectors article');
     });
-}
-$(window).load(function() {
-    equalheight('.all-sectors article');
-});
-$(window).resize(function(){
-    equalheight('.all-sectors article');
-});
-</script>
+    $(window).resize(function(){
+        equalheight('.all-sectors article');
+    });
+    </script>
 {% endblock script %}
 {% block menu %}
     {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administration' %}
@@ -329,7 +332,11 @@ $(window).resize(function(){
                                     </select>
                                 </div>
                                 <input type="hidden" name="edit-message">
-                                <button class="btn btn-success bt-sm btn-publisher"><span class="glyphicon glyphicon-comment"></span> Publicar</button><span>
+                                <button class="btn btn-success bt-sm btn-publisher">
+                                    <span class="glyphicon glyphicon-comment"></span> Publicar
+                                </button>
+                                <input type="checkbox" name="mailer-enable" data-off-label="false" data-on-label="false" data-off-icon-class="fa fa-times" data-on-icon-class="fa fa-envelope-o" data-on-class="btn-primary" data-style="btn-group-sm pull-right">
+                                <span>
                                     <h6><small> Maximo de caracteres 250.</small></h6>
                                 </span>
                             </div>

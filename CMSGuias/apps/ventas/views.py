@@ -481,7 +481,7 @@ class SectorManage(JSONResponseMixin, View):
             context['system'] = Configuracion.objects.get(periodo=globalVariable.get_year)
             context['currency'] = Moneda.objects.filter(flag=True).order_by('moneda')
             context['exchange'] = TipoCambio.objects.filter(fecha=globalVariable.date_now())
-            context['alerts'] = Alertasproyecto.objects.filter(Q(proyecto_id=kwargs['pro']), ~Q(subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None), Q(sector_id=kwargs['sec']), Q(flag=True)).order_by('-registrado')
+            context['alerts'] = Alertasproyecto.objects.filter(Q(proyecto_id=kwargs['pro']), Q(subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None), Q(sector_id=kwargs['sec']), Q(flag=True)).order_by('-registrado')
             ### end block global
 
             ##
@@ -1170,6 +1170,21 @@ class SectorManage(JSONResponseMixin, View):
                         # s.tag = x['tag']
                         s.save()
                     context['status'] = True
+                if 'alertmsg' in request.POST:
+                    if 'edit' in request.POST:
+                        obj = Alertasproyecto.objects.get(pk=request.POST.get('edit'))
+                        form = AlertasproyectoForm(request.POST, instance=obj)
+                    else:
+                        form = AlertasproyectoForm(request.POST)
+                    if form.is_valid():
+                        add = form.save(commit=False)
+                        add.empdni_id = request.user.get_profile().empdni_id
+                        add.charge_id = request.user.get_profile().empdni.charge_id
+                        add.sector_id = kwargs['sec']
+                        add.save()
+                        context['status'] = True
+                    else:
+                        context['status'] = False
             except ObjectDoesNotExist, e:
                 print e
                 context['raise'] = e.__str__()
