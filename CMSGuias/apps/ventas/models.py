@@ -1,4 +1,6 @@
 from django.db import models
+from audit_log.models.fields import LastUserField
+from audit_log.models.managers import AuditLog
 
 from CMSGuias.apps.home.models import Pais, Departamento, Provincia, Distrito, Cliente, Materiale, Employee, Brand, Model, Cargo, Moneda, Documentos, FormaPago, Unidade
 from CMSGuias.apps.tools import globalVariable, search
@@ -23,7 +25,10 @@ class Proyecto(models.Model):
     approved = models.ForeignKey(Employee, related_name='approvedAsEmployee', null=True, blank=True)
     currency = models.ForeignKey(Moneda, to_field='moneda_id', null=True, blank=True)
     exchange = models.FloatField(null=True, blank=True)
+    typep = models.CharField(max_length=3, default='ACI')
     flag = models.BooleanField(default=True, null=False)
+
+    audit_log = AuditLog()
 
     class Meta:
         #abstract = True
@@ -43,6 +48,8 @@ class Subproyecto(models.Model):
     status = models.CharField(max_length=2,null=False,default='AC')
     additional = models.BooleanField(blank=True, default=False)
     flag = models.BooleanField(default=True)
+
+    audit_log = AuditLog()
 
     class Meta:
         ordering = ['nomsub']

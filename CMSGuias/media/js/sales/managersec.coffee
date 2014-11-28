@@ -152,8 +152,15 @@ $(document).ready ->
     $("button.btn-publisher").on "click", publisherCommnet
     $(".btn-message-edit").on "click", showEditComment
     $("button.btn-block-comment").on "click", commentToogle
+    $("button.btn-annimate-up").on "click", tableUp
+    $("table.table-float").floatThead
+        useAbsolutePositioning: false
+        scrollingTop: 50
     return
 
+tableUp = (event) ->
+    goToElement event, "table.table-details"
+    return
 
 commentToogle = (event) ->
     $btn = $(@)

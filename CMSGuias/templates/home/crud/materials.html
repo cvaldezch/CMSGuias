@@ -87,6 +87,14 @@
                                     <input type="text" class="form-control input-sm" name="matare" placeholder="Area">
                                 </div>
                             </div>
+                            <div class="col-md-2">
+                                <div class="form-group has-primary">
+                                    <label class="control-label">Guardar Cambios</label>
+                                    <button class="btn btn-primary btn-save-material form-control">
+                                        <span class="fa fa-save fa-lg"></span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -129,7 +137,7 @@
                                         </button>
                                     </td>
                                     <td class="text-center">
-                                        <button class="btn btn-xs btn-link text-red" value="{{ x.materiales_id }}" name="btndel">
+                                        <button class="btn btn-xs btn-link text-red" data-name="{{ x.matnom }}" data-measure="{{ x.matmed }}" value="{{ x.materiales_id }}" name="btndel">
                                             <span class="fa fa-trash-o"></span>
                                         </button>
                                     </td>
@@ -166,7 +174,11 @@
                 <div class="form-group has-warning">
                     <div class="form-group">
                         <label class="control-label">Unidad</label>
-                        <input type="text" class="form-control input-sm" name="eunidad">
+                        <select name="eunidad" class="form-control input-sm">
+                            {% for x in unidad %}
+                                <option value="{{ x.unidad_id }}">{{ x.uninom }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
                 <div class="form-group has-warning">
@@ -183,11 +195,11 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button data-dismiss="modal" class="btn btn-sm btn-default">
+                <button data-dismiss="modal" class="btn btn-sm btn-default pull-left">
                     <span class="fa fa-times"></span>
                     Cancelar
                 </button>
-                <button class="btn btn-sm btn-warning text-black">
+                <button class="btn btn-sm btn-warning text-black btn-save-edit">
                     <span class="fa fa-save"></span>
                     Guardar Cambios
                 </button>

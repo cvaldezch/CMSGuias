@@ -84,6 +84,13 @@ emails = [
     'ssoma1@icrperusa.com'
 ]
 
+# Type of project
+typeProject = {
+    'ACI': 'Agua Contra Incendio',
+    'MAN': 'Mantenimiento',
+    'AYD': 'Alarma y Detección'
+}
+
 # date now format str
 def date_now(type='date',format="%Y-%m-%d"):
     date = datetime.datetime.today()

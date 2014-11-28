@@ -6,6 +6,8 @@ import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from audit_log.models.fields import LastUserField
+from audit_log.models.managers import AuditLog
 
 # Create your models here.
 class Pais(models.Model):
@@ -77,6 +79,8 @@ class Materiale(models.Model):
     matacb = models.CharField(max_length=255,null=True)
     matare = models.FloatField(null=True)
 
+    audit_log = AuditLog()
+
     class Meta:
         ordering = ['matnom']
 
@@ -134,6 +138,8 @@ class Employee(models.Model):
     address = models.CharField(max_length=180)
     charge = models.ForeignKey(Cargo, to_field='cargo_id')
     flag = models.BooleanField(default=True)
+
+    audit_log = AuditLog()
 
     class Meta:
         ordering = ['lastname']
@@ -213,6 +219,8 @@ class Cliente(models.Model):
     direccion = models.CharField(max_length=200,null=False,)
     telefono = models.CharField(max_length=30,null=True, blank=True,default='000-000-000')
     flag = models.BooleanField(default=True)
+
+    audit_log = AuditLog()
 
     def __unicode__(self):
         return '%s %s'%(self.ruccliente_id,self.razonsocial)
@@ -355,3 +363,9 @@ class Company(models.Model):
 
     def __unicode__(self):
         return '%s %s'%(self.ruc, self.companyname)
+
+class KeyConfirm(models.Model):
+    empdni = models.ForeignKey(Employee, to_field='empdni_id')
+    email = models.CharField(max_length=80)
+    code = models.CharField(max_length=20)
+    key = models.CharField(max_length=6)

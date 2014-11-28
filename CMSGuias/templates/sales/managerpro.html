@@ -51,7 +51,7 @@
     </script>
 {% endblock script %}
 {% block menu %}
-    {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administration' %}
+    {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
         {% include "menus/sale.htm" %}
     {% endif %}
     {% if user.get_profile.empdni.charge.area|lower == 'logistica' %}
@@ -182,19 +182,22 @@
                                     </div>
                                 {% endif %}
                             {% endif %}
-                            {% if project.status != 'AC' %}
+
                             <div class="btn-group">
                                 <button type="button" class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown">
                                     <span class="fa fa-cubes"></span>
                                     <span class="visible-lg visible-lg">Acciones</span>
                                 </button>
                                 <ul class="dropdown-menu" role="menu">
+                                    {% if project.status == 'AC' and request.user.get_profile.empdni.charge.cargos|lower == 'jefe de operaciones' or  request.user.get_profile.empdni.charge.area|lower == 'administrator' %}
                                     <li>
                                         <button class="btn btn-link btn-xs text-black btn-responsible">
                                             <span class="glyphicon glyphicon-user"></span>
                                             <span class="glyphicon-class">Responsable</span>
                                         </button>
                                     </li>
+                                    {% endif %}
+                                    {% if project.status != 'AC' and request.user.get_profile.empdni.charge.area|lower == 'ventas' or  request.user.get_profile.empdni.charge.area|lower == 'administrator' %}
                                     <li>
                                         <button class="btn btn-link btn-xs text-black btn-files">
                                             <span class="glyphicon glyphicon-compressed"></span>
@@ -207,29 +210,9 @@
                                             <span class="glyphicon-class">Correo Apertura</span>
                                         </button>
                                     </li>
+                                    {% endif %}
                                 </ul>
                             </div>
-                            <!-- <div class="btn-group">
-                            </div>
-                            <div class="btn-group">
-                            </div> -->
-                            {% endif %}
-                            {% if project.status == 'AC' and request.user.get_profile.empdni.charge.area|lower != 'logistica' %}
-                                <div class="btn-group" style="width:5px;">
-                                <button type="button" class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown">
-                                    <span class="fa fa-cubes"></span>
-                                    <span class="visible-lg visible-lg">Acciones</span>
-                                </button>
-                                <ul class="dropdown-menu" role="menu">
-                                    <li>
-                                        <button class="btn btn-link btn-xs text-black btn-responsible">
-                                            <span class="glyphicon glyphicon-user"></span>
-                                            <span class="glyphicon-class">Responsable</span>
-                                        </button>
-                                    </li>
-                                </ul>
-                            </div>
-                            {% endif %}
                             {% if project.status != 'AC' %}
                             <div class="btn-group">
                                 <button data-toggle="modal" data-target="#mapprove" class="btn btn-danger btn-xs btn-approve">

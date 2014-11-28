@@ -5,6 +5,9 @@ $(document).ready ->
     $("input[name=searchDesc]").on "keyup", searchDesc
     $(document).on "click", "button[name=btnedit]", showEditMaterials
     $("button.btn-show-new").on "click", showNewMaterials
+    $("button.btn-save-material").on "click", saveMaterials
+    $("button.btn-save-edit").on "click", editMaterials
+    $(document).on "click", "button[name=btndel]", delMaterial
     $('table').floatThead
         useAbsolutePositioning: false
         scrollingTop: 50
@@ -12,7 +15,6 @@ $(document).ready ->
 
 searchCode = (event)->
     key = event.keyCode or event.which
-    console.log key
     if key is 13
         data = new Object
         data.searchCode = true
@@ -23,12 +25,14 @@ searchCode = (event)->
     return
 
 searchDesc = (event) ->
-    data = new Object
-    data.searchDesc = true
-    data.desc = $.trim @value
-    $.getJSON "", data, (response) ->
-        if response.status
-            addResultTable response
+    key = event.keyCode or event.which
+    if key is 13
+        data = new Object
+        data.searchDesc = true
+        data.desc = $.trim @value
+        $.getJSON "", data, (response) ->
+            if response.status
+                addResultTable response
     return
 
 addResultTable = (response) ->
@@ -45,8 +49,8 @@ addResultTable = (response) ->
                         <span class=\"fa fa-edit\"></span>
                     </button>
                 </td>
-                <td value=\"{{ materials }}\" class=\"text-center\">
-                    <button class=\"btn btn-xs btn-link text-red\" name=\"btndel\">
+                <td class=\"text-center\">
+                    <button class=\"btn btn-xs btn-link text-red\" name=\"btndel\" value=\"{{ materials }}\" data-name=\"{{ name }}\" data-measure=\"{{ measure }}\" >
                         <span class=\"fa fa-trash-o\"></span>
                     </button>
                 </td>
@@ -86,10 +90,111 @@ showNewMaterials = (event) ->
     return
 
 showEditMaterials = (event) ->
+    $("button.btn-save-edit").val @value
     $("input[name=ematnom]").val @getAttribute "data-des"
     $("input[name=ematmed]").val @getAttribute "data-met"
     $("input[name=eunidad]").val @getAttribute "data-unit"
     $("input[name=ematacb]").val @getAttribute "data-acb"
     $("input[name=ematare]").val @getAttribute "data-area"
     $(".meditmat").modal "show"
+    return
+
+saveMaterials = (event) ->
+    data = new Object
+    data.materiales_id = $("input[name=materials]").val()
+    data.matnom = $("input[name=matnom]").val()
+    data.matmed = $("input[name=matmed]").val()
+    data.unidad = $("select[name=unidad]").val()
+    data.matacb = $("input[name=matacb]").val()
+    data.matare = $("input[name=matare]").val()
+    if data.materiales_id is "" and data.materiales_id.length < 15
+        $().toastmessage "showWarningToast", "El Código de material no es correcto."
+        return false
+    if data.matnom is ""
+        $().toastmessage "showWarningToast", "Debe de ingresar una descripcion para el material."
+        return false
+    if data.matmed is ""
+        $().toastmessage "showWarningToast", "Debe de ingresar un diametro para el material."
+        return false
+    if data.unidad is ""
+        $().toastmessage "showWarningToast", "Debe de ingresar una unidad para el material."
+        return false
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    data.exists = true
+    $.post "", data, (exists) ->
+        if not exists.status
+            delete data.exists
+            data.saveMaterial = true
+            $.post "", data, (response) ->
+                if response.status
+                    $("input[name=searchCode]").val data.materiales_id
+                    .trigger jQuery.Event "keyup", which: 13
+                    $("button.btn-show-new").trigger "click"
+                    $("input[name=materials]").val ""
+                    $("input[name=matnom]").val ""
+                    $("input[name=matmed]").val ""
+                    $("input[name=matacb]").val ""
+                    $("input[name=matare]").val ""
+                    return
+            , "json"
+            return
+        else
+            $().toastmessage "showWarningToast", "El codigo de material que esta intentando ingresar ya existe!."
+    , "json"
+    return
+
+editMaterials = (event) ->
+    data = new Object
+    data.materiales_id = @value
+    data.matnom = $("input[name=ematnom]").val()
+    data.matmed = $("input[name=ematmed]").val()
+    data.unidad = $("select[name=eunidad]").val()
+    data.matacb = $("input[name=ematacb]").val()
+    data.matare = $("input[name=ematare]").val()
+    if data.materiales_id is "" and data.materiales_id.length < 15
+        $().toastmessage "showWarningToast", "El Código de material no es correcto."
+        return false
+    if data.matnom is ""
+        $().toastmessage "showWarningToast", "Debe de ingresar una descripcion para el material."
+        return false
+    if data.matmed is ""
+        $().toastmessage "showWarningToast", "Debe de ingresar un diametro para el material."
+        return false
+    if data.unidad is ""
+        $().toastmessage "showWarningToast", "Debe de ingresar una unidad para el material."
+        return false
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    data.saveMaterial = true
+    data.edit = true
+    $.post "", data, (response) ->
+        if response.status
+            $("input[name=searchCode]").val data.materiales_id
+            .trigger jQuery.Event "keyup", which: 13
+            $("input[name=ematnom]").val ""
+            $("input[name=ematmed]").val ""
+            $("input[name=ematacb]").val ""
+            $("input[name=ematare]").val ""
+            $(".meditmat").modal "hide"
+            return
+    , "json"
+    return
+
+delMaterial = (event) ->
+    btn = @
+    $().toastmessage "showToast",
+        text: "Realmente desea Eliminar el material: #{@getAttribute "data-name"} #{@getAttribute "data-measure"}"
+        sticky: true
+        type: "confirm"
+        buttons: [{value:'Si'},{value:'No'}]
+        success: (result) ->
+            if result is "Si"
+                data = new Object
+                data.materials = btn.value
+                data.delete = true
+                data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+                $.post "", data, (response) ->
+                    if response.status
+                        location.reload()
+                , "json"
+                return
     return

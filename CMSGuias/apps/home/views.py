@@ -691,3 +691,35 @@ class MaterialsKeep(JSONResponseMixin, TemplateView):
                 return render_to_response('home/crud/materials.html', context, context_instance=RequestContext(request))
             except TemplateDoesNotExist, e:
                 raise Http404(e)
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            context = dict()
+            try:
+                if 'exists' in request.POST:
+                    obj = Materiale.objects.get(pk=request.POST.get('materiales_id'))
+                    if obj:
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+                if 'saveMaterial' in request.POST:
+                    if 'edit' in request.POST:
+                        obj = Materiale.objects.get(pk=request.POST.get('materiales_id'))
+                        form = MaterialsForm(request.POST, instance=obj)
+                    else:
+                        form = MaterialsForm(request.POST)
+                    print form
+                    if form.is_valid():
+                        form.save()
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+                if 'delete' in request.POST:
+                    obj = Materiale.objects.get(pk=request.POST.get('materials'))
+                    obj.delete()
+                    context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)

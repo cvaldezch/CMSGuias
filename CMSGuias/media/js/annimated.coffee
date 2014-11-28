@@ -1,7 +1,14 @@
 goTopPage = (event) ->
-    $('html, body').animate
+    $("html, body").animate
         scrollTop: 0
-        , 'slow'
+        , "slow"
+    return
+
+goToElement = (event, element) ->
+    $("html, body").animate
+        scrollTop: $("#{element}").eq(0).position().top
+        , 800
+        , "swing"
     return
 
 animateAdd = (event) ->

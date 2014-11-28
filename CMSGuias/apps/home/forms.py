@@ -122,3 +122,8 @@ class GMaterialsForm(forms.ModelForm):
             'parent': forms.TextInput(attrs = {'class': 'form-control'}),
             'observation': forms.Textarea(attrs = {'class': 'form-control'}),
         }
+
+# materials
+class MaterialsForm(forms.ModelForm):
+    class Meta:
+        model = Materiale

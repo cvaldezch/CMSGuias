@@ -60,13 +60,16 @@ class ProjectsList(JSONResponseMixin, TemplateView):
         try:
             if request.user.get_profile().empdni.charge.area.lower() == 'ventas' or request.user.get_profile().empdni.charge.area.lower() == 'administrator':
                 context['list'] = Proyecto.objects.filter(Q(flag=True), ~Q(status='DA'))
+                context['country'] = Pais.objects.filter(flag=True)
+                context['customers'] = Cliente.objects.filter(flag=True)
+                context['currency'] = Moneda.objects.filter(flag=True)
+                context['typep'] = globalVariable.typeProject
             elif request.user.get_profile().empdni.charge.area.lower() == 'operaciones':
                 context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC'), empdni_id=request.user.get_profile().empdni_id)
             elif request.user.get_profile().empdni.charge.area.lower() == 'logistica':
                 context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC'))
-            context['country'] = Pais.objects.filter(flag=True)
-            context['customers'] = Cliente.objects.filter(flag=True)
-            context['currency'] = Moneda.objects.filter(flag=True)
+            if request.user.get_profile().empdni.charge.cargos.lower() == 'jefe de operaciones':
+                context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC'))
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, "Template Does Not Exist %s"%e)

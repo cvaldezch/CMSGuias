@@ -59,19 +59,19 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-8">
                             <div class="form-group has-primary">
                                 <label class="control-label">Nombre Proyecto</label>
                                 <input type="text" name="nompro" class="form-control input-sm">
                             </div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <div class="form-group has-primary">
                                 <label class="control-label">Inicio Proyecto</label>
                                 <input type="text" name="comienzo" class="form-control input-sm">
                             </div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <div class="form-group has-primary">
                                 <label class="control-label">Fin Proyecto</label>
                                 <input type="text" name="fin" class="form-control input-sm">
@@ -142,6 +142,16 @@
                                 {% for x in currency %}
                                     <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
                                 {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Tipo de Proyecto</label>
+                                <select name="typep" class="form-control input-sm">
+                                    {% for k, v in typep.iteritems %}
+                                        <option value="{{ k }}">{{ v }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
