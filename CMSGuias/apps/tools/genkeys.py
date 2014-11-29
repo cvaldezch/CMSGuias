@@ -259,3 +259,15 @@ def GenerateIdTypeGroupMaterials():
     except ObjectDoesNotExist, e:
         raise e
     return id
+
+# Generate Key COnfirm
+def GeneratekeysConfirm():
+    keys = ''
+    try:
+        chars = '1234567890'
+        for x in xrange(0, 6):
+            index = randint(0, (chars.__len__() - 1))
+            keys = '%s%s'%(keys, chars[index])
+    except Exception, e:
+        raise e
+    return '%s'%keys

@@ -3,7 +3,7 @@
 import json
 import hashlib
 
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Sum
 from django.core import serializers
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
@@ -18,10 +18,11 @@ from django.views.generic import TemplateView, View, ListView
 from django.views.generic.edit import CreateView
 from xlrd import open_workbook, XL_CELL_EMPTY
 
-from CMSGuias.apps.almacen.models import Suministro
+from CMSGuias.apps.almacen.models import Suministro, Inventario
 from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda, Configuracion, LoginProveedor, Brand, Model
 from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra, tmpcotizacion, tmpcompra
 from CMSGuias.apps.ventas.models import Proyecto
+from CMSGuias.apps.operations.models import MetProject
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles, search
 from .forms import addTmpCotizacionForm, addTmpCompraForm, CompraForm, ProveedorForm
 
@@ -1111,3 +1112,58 @@ class IngressPriceQuote(JSONResponseMixin, TemplateView):
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
+
+class ListCompressed(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            pass
+        else:
+            try:
+                queryset = MetProject.objects.extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE operations_metproject.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"}).extra(select = { 'precompra': "SELECT precompra FROM almacen_inventario WHERE operations_metproject.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"}).filter(proyecto_id=kwargs['pro'],
+                    subproyecto_id=None)
+                queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id', 'brand__brand','model__model','precio','stock', 'precompra')
+                queryset = queryset.annotate(cantidad=Sum('cantidad')).annotate(orders=Sum('quantityorder')).order_by('materiales__matnom')
+
+                #met = MetProject.objects.filter(
+                #    proyecto_id=kwargs['pro'],
+                #    subproyecto_id=None
+                #).distinct('materiales__materiales_id')
+                data = list()
+                for x in queryset:
+                    # stock = 0
+                    # pbuy = 0
+                    # result = Inventario.objects.filter(
+                    #     materiales_id=x['materiales_id'],
+                    #     periodo=globalVariable.get_year
+                    # )
+                    # if not result:
+                    #     stock = '-'
+                    #     pbuy = '-'
+                    # else:
+                    #     stock = result[0].stock
+                    #     pbuy = result[0].precompra
+                    data.append(
+                        {
+                            'materials': x['materiales_id'],
+                            'name': x['materiales__matnom'],
+                            'measure': x['materiales__matmed'],
+                            # 'unit': x.materiales.unidad.uninom,
+                            'brand': x['brand__brand'],
+                            'model': x['model__model'],
+                            'quantity': x['orders'],
+                            'cantidad': x['cantidad'],
+                            'psale': x['precio'],
+                            'ppurchase': x['precompra'],
+                            'remainder': (x['cantidad'] - x['orders']),
+                            'stock': x['stock'],
+                            # 'tag': x.tag
+                        }
+                    )
+                context['compress'] = data
+                print context
+                return render_to_response('logistics/compressedProject.html', context, context_instance=RequestContext(request))
+            except TemplateDoesNotExist, e:
+                raise Http404

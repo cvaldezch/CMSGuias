@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}
+    Compress List Materiels
+{% endblock title %}
+{% block menu %}
+    {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
+        {% include "menus/sale.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'logistica' %}
+        {% include "menus/logistics.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+        {% include "menus/operations.htm" %}
+    {% endif %}
+{% endblock menu %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="well">
+            <header>
+                <h3>
+                    Lista comprimida del proyecto
+                </h3>
+            </header>
+            <section>
+                <div class="table-responsible">
+                    <table class="table table-condensed table-hover table-float">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Codigo</th>
+                                <th>Descripcion</th>
+                                <th>Diametro</th>
+                                <th>Marca</th>
+                                <th>Modelo</th>
+                                <th>Unidad</th>
+                                <th>P.Venta</th>
+                                <th>P.Compra</th>
+                                <td>Cantidad</td>
+                                <td>Pedido</td>
+                                <th>Resto</th>
+                                <th>Stock</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for x in compress %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ x.materials }}</td>
+                                <td>{{ x.name }}</td>
+                                <td>{{ x.measure }}</td>
+                                <td>{{ x.brand }}</td>
+                                <td>{{ x.model }}</td>
+                                <td>{{ x.unit }}</td>
+                                <td>{{ x.psale|safe }}</td>
+                                <td>{{ x.ppurchase }}</td>
+                                <td>{{ x.cantidad }}</td>
+                                <td>{{ x.quantity }}</td>
+                                <td>{{ x.remainder }}</td>
+                                <td>{{ x.stock }}</td>
+                                <td></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+{% endblock content %}

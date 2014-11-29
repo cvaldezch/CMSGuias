@@ -176,7 +176,7 @@
                                         <!-- {#% if project.status == 'AC' %}
                                             hide
                                         {% endif %#}"> -->
-                                            <span class="glyphicon glyphicon-th-large"></span>
+                                            <span class="fa fa-code-fork"></span>
                                             <span class="visible-lg visible-md">Nuevo Subproyeto</span>
                                         </button>
                                     </div>
@@ -204,12 +204,23 @@
                                             <span class="glyphicon-class">Archivos</span>
                                         </button>
                                     </li>
+                                    {% if project.status != 'AC' %}
                                     <li>
                                         <button class="btn btn-link btn-xs text-black btn-emails">
                                             <span class="glyphicon glyphicon-send"></span>
                                             <span class="glyphicon-class">Correo Apertura</span>
                                         </button>
                                     </li>
+                                    {% endif %}
+                                    {% if project.status != 'AC' and request.user.get_profile.empdni.charge.area|lower == 'ventas' or  request.user.get_profile.empdni.charge.area|lower == 'logistica' or  request.user.get_profile.empdni.charge.area|lower == 'administrator' %}
+                                    <li>
+                                        <a href="{% url 'compressed_list' project.proyecto_id %}" class="btn btn-link btn-xs text-black btn-compress-list">
+                                            <span class="fa fa-list-alt"></span>
+                                            <span class="glyphicon glyphicon-compressed"></span>
+                                            <span class="glyphicon-class">Lista Materiales</span>
+                                        </a>
+                                    </li>
+                                    {% endif %}
                                     {% endif %}
                                 </ul>
                             </div>
@@ -574,19 +585,25 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label class="control-label">Administrador</label>
                     <select name="admin" id="admin" class="form-control input-sm">
-                        {% for x in admin %}
+                        {#% for x in admin %#}
                             <option value="{{ x.empdni_id }}">{{ x.name_complete }}</option>
-                        {% empty %}
+                        {#% empty %#}
                             <option value="">-- Nothing --</option>
-                        {% endfor %}
+                        {#% endfor %#}
                     </select>
+                </div> -->
+                <div class="form-group">
+                    <label class="control-label">Código de Confirmación</label>
+                    <input type="text" class="form-control input-sm" name="passwd" maxlength="6">
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Password Administrador</label>
-                    <input type="password" class="form-control input-sm" name="passwd">
+                    <button class="btn btn-xs btn-link text-black btn-gen-responsible">
+                        <span class="fa fa-key"></span>
+                        <span class="glyphicon-class">Generar Código</span>
+                    </button>
                 </div>
             </div>
             <div class="modal-footer">
@@ -642,7 +659,7 @@
                     Desea continuar con la aprobación del proyecto?
                 </p>
                 <p>
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label class="control-label">Administrador</label>
                         <select name="admin-approve" id="admin-approve" class="form-control input-sm">
                             {% for x in admin %}
@@ -651,10 +668,16 @@
                                 <option value="">-- Nothing --</option>
                             {% endfor %}
                         </select>
+                    </div> -->
+                    <div class="form-group">
+                        <label class="control-label">Código de Confirmación</label>
+                        <input type="text" class="form-control input-sm" name="passwd-approve" maxlength="6">
                     </div>
                     <div class="form-group">
-                        <label class="control-label">Password</label>
-                        <input type="password" class="form-control input-sm" name="passwd-approve">
+                        <button class="btn btn-xs btn-link text-black btn-gen-approved">
+                            <span class="fa fa-key"></span>
+                            <span class="glyphicon-class">Generar Código</span>
+                        </button>
                     </div>
                 </p>
                 <p>

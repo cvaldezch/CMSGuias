@@ -21,7 +21,7 @@ from django.core import serializers
 from CMSGuias.apps.almacen.models import *
 from CMSGuias.apps.home.models import *
 from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto, Metradoventa
-from CMSGuias.apps.tools import uploadFiles, globalVariable, search
+from CMSGuias.apps.tools import uploadFiles, globalVariable, search, genkeys
 
 
 class JSONResponseMixin(object):
@@ -901,6 +901,46 @@ class SystemEmails(JSONResponseMixin, View):
                 else:
                     obj.account = False
                 obj.save()
+                context['status'] = True
+        except ObjectDoesNotExist, e:
+            context['raise'] = e.__str__()
+            context['status'] = False
+        return self.render_to_json_response(context)
+
+class KeyConfirmMan(JSONResponseMixin, View):
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if 'genKeyConf' in request.POST:
+                try:
+                    if 'verify' in request.POST:
+                        key = genkeys.GeneratekeysConfirm()
+                        obj = KeyConfirm.objects.get(empdni_id=request.user.get_profile().empdni_id, code=request.POST.get('code') if request.POST.get('code') != '' else None)
+                        obj.key = key
+                        obj.save()
+                        context['key'] = key
+                    else:
+                        obj = KeyConfirm()
+                        key = genkeys.GeneratekeysConfirm()
+                        obj.empdni_id = request.user.get_profile().empdni_id
+                        obj.email = request.POST.get('email')
+                        obj.code = request.POST.get('code') if request.POST.get('code') != '' else ''
+                        obj.desc = request.POST.get('desc') if request.POST.get('desc') != '' else ''
+                        obj.key = key
+                        obj.save()
+                        context['key'] = key
+                except ObjectDoesNotExist:
+                    obj = KeyConfirm()
+                    key = genkeys.GeneratekeysConfirm()
+                    obj.empdni_id = request.user.get_profile().empdni_id
+                    obj.email = request.POST.get('email')
+                    obj.code = request.POST.get('code') if request.POST.get('code') != '' else ''
+                    obj.desc = request.POST.get('desc') if request.POST.get('desc') != '' else ''
+                    obj.key = key
+                    obj.save()
+                    context['key'] = key
                 context['status'] = True
         except ObjectDoesNotExist, e:
             context['raise'] = e.__str__()

@@ -369,3 +369,10 @@ class KeyConfirm(models.Model):
     email = models.CharField(max_length=80)
     code = models.CharField(max_length=20)
     key = models.CharField(max_length=6)
+    desc = models.CharField(max_length=40, default='', null=True)
+    flag = models.BooleanField(default=False)
+
+    audit_log = AuditLog()
+
+    def __unicode__(self):
+        return '%s %s %s'%(self.empdni, self.code, self.key)

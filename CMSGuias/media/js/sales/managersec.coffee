@@ -1245,8 +1245,8 @@ startModidfy = ->
                         <td>{{ name }}</td>
                         <td>{{ measure }}</td>
                         <td class=\"text-center\">{{ unit }}</td>
-                        <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"brand-{{ materials }}\"</select></td>
-                        <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"model-{{ materials }}\"</select></td>
+                        <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"brand-{{ materials }}-{{ brand_id }}\"</select></td>
+                        <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"model-{{ materials }}-{{ model_id }}\"</select></td>
                         <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm\" value=\"{{ quantity }}\" min=\"0\" id=\"quantity-{{ materiales }}\"></td>
                         <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm\" value=\"{{ price }}\" id=\"price-{{ materials }}\"></td>
                         <td>{{ amount }}</td>
@@ -1264,8 +1264,8 @@ startModidfy = ->
                         </tr>"
                 response.details[x].item = (parseInt(x) + 1)
                 att = ""
-                #console.error response.details[x].tag
-                console.info response.details[x].tag
+                # console.error response.details[x].tag
+                # console.info response.details[x].tag
                 if response.details[x].tag is "2"
                     att = "<span class=\"glyphicon glyphicon-check\"></span>"
                 else if response.details[x].tag is "0"
@@ -1274,7 +1274,7 @@ startModidfy = ->
                     att = "<span class=\"glyphicon glyphicon-minus\"></span>"
                 template = template.replace "{{!attend}}", att
                 $tb.append Mustache.render template, response.details[x]
-                $sel = $("#brand-#{response.details[x].materials}")
+                $sel = $("#brand-#{response.details[x].materials}-#{response.details[x].brand_id}")
                 $sel.empty()
                 for b of response.listBrand
                     selectBrand =  "<option value=\"{{ brand_id }}\" {{!sel}}>{{ brand }}</option>"
@@ -1284,7 +1284,7 @@ startModidfy = ->
                         selectBrand = selectBrand.replace "{{!sel}}", "selected"
                     $sel.append Mustache.render selectBrand, response.listBrand[b]
                 #console.warn "------------------------------------------------------"
-                $sel = $("#model-#{response.details[x].materials}")
+                $sel = $("#model-#{response.details[x].materials}-#{response.details[x].model_id}")
                 $sel.empty()
                 for b of response.listModel
                     selectModel =  "<option value=\"{{ model_id }}\" {{!sel}}>{{ model }}</option>"

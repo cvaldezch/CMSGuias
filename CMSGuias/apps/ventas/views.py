@@ -321,16 +321,16 @@ class ProjectManager(JSONResponseMixin, View):
                         context['status'] = False
                 if request.POST.get('type') == 'responsible':
                     try:
-                        user = userProfile.objects.get(empdni_id=request.POST.get('admin'))
+                        #search.validKey(request.POST.get('passwd'),kwargs['project'],'responsible',request.user.get_profile().empdni_id)
                         # authenticate password admin
-                        if user.user.check_password(request.POST.get('passwd')):
+                        if search.validKey(request.POST.get('passwd'),kwargs['project'],'responsible',request.user.get_profile().empdni_id):
                             #if user.user.is_superuser:
                             pro = Proyecto.objects.get(pk=kwargs['project'])
                             pro.empdni_id = request.POST.get('responsible')
                             pro.save()
                             context['status'] = True
                         else:
-                            context['raise'] = 'Password incorrect!'
+                            context['raise'] = 'Código incorrecto!'
                             context['status'] = False
                     except ObjectDoesNotExist, e:
                         context['raise'] = e.__str__()
@@ -338,9 +338,9 @@ class ProjectManager(JSONResponseMixin, View):
                 if request.POST.get('type') == 'approved':
                     # this function is for approve the project
                     try:
-                        user = userProfile.objects.get(empdni_id=request.POST.get('admin'))
+                        #user = userProfile.objects.get(empdni_id=request.POST.get('admin'))
                         # authenticate password admin
-                        if user.user.check_password(request.POST.get('passwd')):
+                        if search.validKey(request.POST.get('passwd'),kwargs['project'],'approved',request.user.get_profile().empdni_id):
                             #if user.user.is_superuser:
                             pro = Proyecto.objects.get(pk=kwargs['project'])
                             pro.approved_id = request.POST.get('admin')
@@ -704,26 +704,39 @@ class SectorManage(JSONResponseMixin, View):
                             list_.append({'materials' : x.materiales_id, 'name' : x.materiales.matnom, 'measure' : x.materiales.matmed, 'unit' : x.materiales.unidad.uninom, 'brand_id' :x.brand_id, 'model_id' : x.model_id, 'brand' :x.brand.brand, 'model' : x.model.model, 'quantity' : x.cantidad, 'price' :x.precio, 'amount' : '{0:.2f}'.format((x.cantidad * x.precio)), 'tag':x.tag})
                     else:
                         for x in update:
-                            list_.append({'materials' : x.materials_id, 'name' : x.materials.matnom, 'measure' : x.materials.matmed, 'unit' : x.materials.unidad.uninom, 'brand_id' :x.brand_id, 'model_id' : x.model_id, 'brand' :x.brand.brand, 'model' : x.model.model, 'quantity' : x.quantity, 'price' :x.price, 'amount' :'{0:.2f}'.format(x.amount), 'tag':x.tag})
+                            list_.append(
+                                {'materials' : x.materials_id,
+                                'name' : x.materials.matnom,
+                                'measure' : x.materials.matmed,
+                                'unit' : x.materials.unidad.uninom,
+                                'brand_id' :x.brand_id,
+                                'model_id' : x.model_id,
+                                'brand' :x.brand.brand,
+                                'model' : x.model.model,
+                                'quantity' : x.quantity,
+                                'price' :x.price,
+                                'amount' :'{0:.2f}'.format(x.amount),
+                                'tag':x.tag}
+                            )
                     context['details'] = list_
                     context['listBrand'] = [{'brand_id':x.brand_id,'brand':x.brand} for x in Brand.objects.filter(flag=True).order_by('brand')]
                     context['listModel'] = [{'model_id':x.model_id, 'model':x.model} for x in Model.objects.filter(flag=True).order_by('model')]
                     context['status'] = True
                 if 'updatematerialMeter' in request.POST:
-                    obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=request.POST.get('materials'), flag=True)
+                    obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=request.POST.get('materials'), brand_id=request.POST.get('brand'), model=request.POST.get('model'), flag=True)
                     obj.brand_id = request.POST.get('brand')
                     obj.model_id = request.POST.get('model')
                     if obj.tag != '0':
-                        if obj.quantity < request.POST.get('quantity'):
+                        if obj.quantity < float(request.POST.get('quantity')):
                             if obj.tag == '1':
-                                obj.quantityorders = (obj.quantityorders + (request.POST.get('quantity') - obj.quantity))
+                                obj.quantityorders = (obj.quantityorders + (float(request.POST.get('quantity')) - obj.quantity))
                                 obj.tag = '1'
                             elif obj.tag == '2':
-                                obj.quantityorders = (float(request.POST.get('quantity')) - obj.quantity)
+                                obj.quantityorders = (float(float(request.POST.get('quantity'))) - obj.quantity)
                                 obj.tag = '1'
-                        elif obj.quantity > request.POST.get('quantity'):
+                        elif obj.quantity > float(request.POST.get('quantity')):
                             if obj.tag == '1':
-                                o = (obj.quantityorders - (obj.quantity - request.POST.get('quantity')))
+                                o = (obj.quantityorders - (obj.quantity - float(request.POST.get('quantity'))))
                                 if o <= 0:
                                     obj.quantityorders = 0
                                     obj.tag = '2'
@@ -735,18 +748,18 @@ class SectorManage(JSONResponseMixin, View):
                                 obj.tag = '2'
                     else:
                         obj.tag = '0'
-                    obj.quantity = request.POST.get('quantity')
+                    obj.quantity = float(request.POST.get('quantity'))
                     obj.price = request.POST.get('price')
                     obj.save()
                     context['status'] = True
                 if 'deletematerialMeter' in request.POST:
-                    obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=request.POST.get('materials'), flag=True)
+                    obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=request.POST.get('materials'), brand_id=request.POST.get('brand'), model=request.POST.get('model'), flag=True)
                     obj.delete()
                     context['status'] = True
                 if 'addupdatemeter' in request.POST:
                     try:
-                        obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=request.POST.get('materials'), flag=True)
-                        quantity = (obj.quantity + request.POST.get('quantity'))
+                        obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=request.POST.get('materials'), brand_id=request.POST.get('brand'), model=request.POST.get('model'), flag=True)
+                        quantity = (obj.quantity + float(request.POST.get('quantity')))
                         if obj.tag != '0':
                             if obj.quantity < quantity:
                                 if obj.tag == '1':
@@ -781,7 +794,7 @@ class SectorManage(JSONResponseMixin, View):
                         obj.materials_id = request.POST.get('materials')
                         obj.brand_id = request.POST.get('brand')
                         obj.model_id = request.POST.get('model')
-                        obj.quantity = request.POST.get('quantity')
+                        obj.quantity = float(request.POST.get('quantity'))
                         obj.price = request.POST.get('price')
                         obj.comment = ''
                         obj.quantityorders = request.POST.get('quantity')

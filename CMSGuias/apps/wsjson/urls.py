@@ -70,4 +70,5 @@ urlpatterns = patterns('CMSGuias.apps.wsjson.views',
     # get all emails for accounts
     url(r'^get/emails/$', SystemEmails.as_view()),
     url(r'^emails/$', SystemEmails.as_view()),
+    url(r'^post/key/confirm/$', KeyConfirmMan.as_view()),
 )

@@ -117,6 +117,8 @@ $(document).ready ->
     $("button.btn-emails").on "click", showAlertStartProject
     $("input[name=mailer-enable]").checkboxpicker()
     .on "change", loadsAccounts
+    $("button.btn-gen-responsible").on "click", genKeyConfirmationResponsible
+    $("button.btn-gen-approved").on "click", genKeyConfirmationApproved
     return
 
 loadsAccounts = (event) ->
@@ -166,7 +168,7 @@ showAlertStartProject = (event) ->
 approvedProject = ->
     data = new Object()
     data.type = "approved"
-    data.admin = $("select[name=admin-approve]").val()
+    #data.admin = $("select[name=admin-approve]").val()
     data.passwd = $("input[name=passwd-approve]").val()
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
     $().toastmessage "showToast",
@@ -187,12 +189,12 @@ approvedProject = ->
 
 assignedResponsible = ->
     responsible  = $("select[name=responsible]").val()
-    admin = $("select[name=admin]").val()
+    #admin = $("select[name=admin]").val()
     passwd = $("input[name=passwd]").val()
-    if responsible? and admin? and passwd?
+    if responsible? and passwd?
         data = new Object()
         data.responsible = responsible
-        data.admin = admin
+        #data.admin = admin
         data.passwd = passwd
         data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
         data.type = 'responsible'
@@ -201,7 +203,7 @@ assignedResponsible = ->
             if response.status
                 location.reload()
             else
-                $().toastmessage "showErrorToast", "Transaccion error: #{response.raise}"
+                $().toastmessage "showErrorToast", "El código ingresado es incorrecto: #{response.raise}"
         return
     return
 
@@ -735,4 +737,64 @@ deleteOrderPurchase = (event) ->
                         return
                 , "json"
                 return
+    return
+
+genKeyConfirmationResponsible = (event) ->
+    data = new Object
+    $pro = $("input[name=pro]")
+    data.genKeyConf = true
+    data.email = $("input[name=user-email]").val()
+    data.code = $pro.val()
+    data.desc = 'responsible'
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    $.post "/json/post/key/confirm/", data, (response) ->
+        if response.status
+            data = new Object
+            data.forsb = $("input[name=user-email]").val()
+            data.issue = "Código de confirmación"
+            data.body = "<p><span style=\"color: rgb(33, 33, 33); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; line-height: 19.7999992370605px;\" data-mce-style=\"color: rgb(33, 33, 33); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; line-height: 19.7999992370605px;\">Tu código de confirmación para asignar al responsable es: #{response.key}. Ingresa este código en la casilla de verificacion para continuar.</span></p><p>Generado:&nbsp; #{$("input[name=user-email]").attr "data-name"}</p><p>Proyecto:&nbsp; <strong>\"#{$pro.attr "data-name"}\"</strong></p><p>Fecha y hora: #{new Date().toString()}</p><p><span data-mce-style=\"color: rgb(33, 33, 33); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; line-height: 19.7999992370605px;\" style=\"color: rgb(33, 33, 33); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; line-height: 19.7999992370605px;\">Si no has realizado esta operación o tienes cualquier duda respecto código, puedes comunicarte con nosotros 01 371-0443.</span></p>"
+            $.ajax
+                url: "http://190.41.246.91:3000/mailer/" #url: "http://127.0.0.1:3000/mailer/"
+                type: "GET"
+                crossDomain: true
+                data: $.param data
+                dataType: "jsonp",
+                success: (response) ->
+                    if response.status
+                        $().toastmessage "showNoticeToast", "Se a enviado el código de confirmación."
+                    else
+                        $().toastmessage "showErrorToast", "No se podido enviar el correo."
+        else
+            $().toastmessage "showErrorToast", "No se generado el token."
+    , "json"
+    return
+
+genKeyConfirmationApproved = (event) ->
+    data = new Object
+    $pro = $("input[name=pro]")
+    data.genKeyConf = true
+    data.code = $pro.val()
+    data.desc = "approved"
+    data.email = $("input[name=user-email]").val()
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    $.post "/json/post/key/confirm/", data, (response) ->
+        if response.status
+            data = new Object
+            data.forsb = $("input[name=user-email]").val()
+            data.issue = "Código de confirmación"
+            data.body = "<p><span style=\"color: rgb(33, 33, 33); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; line-height: 19.7999992370605px;\" data-mce-style=\"color: rgb(33, 33, 33); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; line-height: 19.7999992370605px;\">Tu código de confirmación para Aprobar el Proyecto es: #{response.key}. Ingresa este código en la casilla de verificacion para continuar.</span></p><p>Generado:&nbsp; #{$("input[name=user-email]").attr "data-name"}</p><p>Proyecto:&nbsp; <strong>\"#{$pro.attr "data-name"}\"</strong></p><p>Fecha y hora: #{new Date().toString()}</p><p><span data-mce-style=\"color: rgb(33, 33, 33); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; line-height: 19.7999992370605px;\" style=\"color: rgb(33, 33, 33); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; line-height: 19.7999992370605px;\">Si no has realizado esta operación o tienes cualquier duda respecto código, puedes comunicarte con nosotros 01 371-0443.</span></p>"
+            $.ajax
+                url: "http://190.41.246.91:3000/mailer/" #url: "http://127.0.0.1:3000/mailer/"
+                type: "GET"
+                crossDomain: true
+                data: $.param data
+                dataType: "jsonp",
+                success: (response) ->
+                    if response.status
+                        $().toastmessage "showNoticeToast", "Se a enviado el código de confirmación."
+                    else
+                        $().toastmessage "showErrorToast", "No se podido enviar el correo."
+        else
+            $().toastmessage "showErrorToast", "No se generado el token."
+    , "json"
     return

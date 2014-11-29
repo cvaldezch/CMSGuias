@@ -20,4 +20,5 @@ urlpatterns = patterns('',
     url(r'^compare/quote/(?P<quote>\w+)/', CompareQuote.as_view(), name='view_compare_quote'),
     url(r'^ingress/price/supplier/(?P<quote>\w{10})/(?P<supplier>\w{11})/', IngressPriceQuote.as_view(), name='view_ingress_price_supplier'),
     url(r'^crud/', include(urlcrud)),
+    url(r'^materials/(?P<pro>\w{7})/compressed/$', ListCompressed.as_view(), name='compressed_list'),
 )

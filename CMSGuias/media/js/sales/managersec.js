@@ -1393,10 +1393,9 @@ startModidfy = function() {
       $tb = $(".table-modify > tbody");
       $tb.empty();
       for (x in response.details) {
-        template = "<tr id=\"trm-{{ materials }}\"> <td class=\"text-center\">{{ item }}</td> <td class=\"text-center\">{{ materials }}</td> <td>{{ name }}</td> <td>{{ measure }}</td> <td class=\"text-center\">{{ unit }}</td> <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"brand-{{ materials }}\"</select></td> <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"model-{{ materials }}\"</select></td> <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm\" value=\"{{ quantity }}\" min=\"0\" id=\"quantity-{{ materiales }}\"></td> <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm\" value=\"{{ price }}\" id=\"price-{{ materials }}\"></td> <td>{{ amount }}</td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-green btn-update-update\" value=\"{{ materials }}\" data-tag=\"{{ tag }}\"> <span class=\"glyphicon glyphicon-edit\"></span> </button> </td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-red btn-delete-update\" value=\"{{ materials }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> <td class=\"text-center\">{{!attend}}</td> </tr>";
+        template = "<tr id=\"trm-{{ materials }}\"> <td class=\"text-center\">{{ item }}</td> <td class=\"text-center\">{{ materials }}</td> <td>{{ name }}</td> <td>{{ measure }}</td> <td class=\"text-center\">{{ unit }}</td> <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"brand-{{ materials }}-{{ brand_id }}\"</select></td> <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"model-{{ materials }}-{{ model_id }}\"</select></td> <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm\" value=\"{{ quantity }}\" min=\"0\" id=\"quantity-{{ materiales }}\"></td> <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm\" value=\"{{ price }}\" id=\"price-{{ materials }}\"></td> <td>{{ amount }}</td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-green btn-update-update\" value=\"{{ materials }}\" data-tag=\"{{ tag }}\"> <span class=\"glyphicon glyphicon-edit\"></span> </button> </td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-red btn-delete-update\" value=\"{{ materials }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> <td class=\"text-center\">{{!attend}}</td> </tr>";
         response.details[x].item = parseInt(x) + 1;
         att = "";
-        console.info(response.details[x].tag);
         if (response.details[x].tag === "2") {
           att = "<span class=\"glyphicon glyphicon-check\"></span>";
         } else if (response.details[x].tag === "0") {
@@ -1406,7 +1405,7 @@ startModidfy = function() {
         }
         template = template.replace("{{!attend}}", att);
         $tb.append(Mustache.render(template, response.details[x]));
-        $sel = $("#brand-" + response.details[x].materials);
+        $sel = $("#brand-" + response.details[x].materials + "-" + response.details[x].brand_id);
         $sel.empty();
         for (b in response.listBrand) {
           selectBrand = "<option value=\"{{ brand_id }}\" {{!sel}}>{{ brand }}</option>";
@@ -1415,7 +1414,7 @@ startModidfy = function() {
           }
           $sel.append(Mustache.render(selectBrand, response.listBrand[b]));
         }
-        $sel = $("#model-" + response.details[x].materials);
+        $sel = $("#model-" + response.details[x].materials + "-" + response.details[x].model_id);
         $sel.empty();
         for (b in response.listModel) {
           selectModel = "<option value=\"{{ model_id }}\" {{!sel}}>{{ model }}</option>";

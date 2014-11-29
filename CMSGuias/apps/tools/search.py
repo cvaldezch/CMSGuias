@@ -3,7 +3,7 @@
 
 from django.core.exceptions import ObjectDoesNotExist
 import CMSGuias
-from CMSGuias.apps.home.models import Brand, Model, Configuracion
+from CMSGuias.apps.home.models import Brand, Model, Configuracion, KeyConfirm
 #from CMSGuias.apps.ventas.models import 'Proyecto'
 from CMSGuias.apps.tools import globalVariable
 
@@ -89,3 +89,18 @@ def getPricePurchaseInventory(code=''):
     except ObjectDoesNotExist, e:
         price = 0
     return price
+
+# valid key
+def validKey(key='', code='',desc='',emp=''):
+    valid = False
+    try:
+        obj = KeyConfirm.objects.get(empdni_id=emp, code= code if code != '' else None, desc= desc if desc != '' else None, key=key, flag =False)
+        if obj:
+            obj.flag = True
+            obj.save()
+            valid = True
+        else:
+            valid = False
+    except ObjectDoesNotExist:
+        valid = False
+    return valid
