@@ -2,6 +2,10 @@
 {% block title %}
     Compress List Materiels
 {% endblock title %}
+{% block script %}
+    <script src="{{ MEDIA_URL }}js/floatThead.js"></script>
+    <script src="{{ MEDIA_URL }}js/logistics/compressedproject.js"></script>
+{% endblock script %}
 {% block menu %}
     {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
         {% include "menus/sale.htm" %}
@@ -18,14 +22,36 @@
         <div class="well">
             <header>
                 <h3>
-                    Lista comprimida del proyecto
+                    <span class="fa fa-list-alt"></span> Lista comprimida del proyecto
                 </h3>
             </header>
             <section>
+                <div class="form-gruop">
+                    <button class="btn btn-primary">
+                        <span class="fa fa-list-alt"></span>
+                        <span class="glyphicon-class">Cotizar</span>
+                    </button>
+                    <button class="btn btn-danger pull-right">
+                        <span class="fa fa-credit-card"></span>
+                        <span>Comprar</span>
+                    </button>
+                </div>
                 <div class="table-responsible">
                     <table class="table table-condensed table-hover table-float">
+                        <caption>
+                            <div class="form-group text-left">
+                                Seleccione:
+                                <label class="radio-inline">
+                                    <input type="radio" value="1" name="select"> Todo
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="0" name="select"> Ninguno.
+                                </label>
+                            </div>
+                        </caption>
                         <thead>
-                            <tr>
+                            <tr class="brand-primary text-white">
+                                <th></th>
                                 <th></th>
                                 <th>Codigo</th>
                                 <th>Descripcion</th>
@@ -46,6 +72,9 @@
                         {% for x in compress %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
+                                <td>
+                                    <input type="checkbox" name="materials" data-materials="{{ x.materials }}" data-brand="{{ x.brand_id }}" data-model="{{ x.model_id }}" value="{{ x.cantidad|safe }}" data-remainder="{{ x.remainder|safe }}">
+                                </td>
                                 <td>{{ x.materials }}</td>
                                 <td>{{ x.name }}</td>
                                 <td>{{ x.measure }}</td>

@@ -1124,7 +1124,7 @@ class ListCompressed(JSONResponseMixin, TemplateView):
             try:
                 queryset = MetProject.objects.extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE operations_metproject.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"}).extra(select = { 'precompra': "SELECT precompra FROM almacen_inventario WHERE operations_metproject.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"}).filter(proyecto_id=kwargs['pro'],
                     subproyecto_id=None)
-                queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id', 'brand__brand','model__model','precio','stock', 'precompra')
+                queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad__uninom', 'brand_id','model_id', 'brand__brand','model__model','precio','stock', 'precompra')
                 queryset = queryset.annotate(cantidad=Sum('cantidad')).annotate(orders=Sum('quantityorder')).order_by('materiales__matnom')
 
                 #met = MetProject.objects.filter(
@@ -1150,7 +1150,9 @@ class ListCompressed(JSONResponseMixin, TemplateView):
                             'materials': x['materiales_id'],
                             'name': x['materiales__matnom'],
                             'measure': x['materiales__matmed'],
-                            # 'unit': x.materiales.unidad.uninom,
+                            'unit': x['materiales__unidad__uninom'],
+                            'brand_id': x['brand_id'],
+                            'model_id': x['model_id'],
                             'brand': x['brand__brand'],
                             'model': x['model__model'],
                             'quantity': x['orders'],
@@ -1163,7 +1165,6 @@ class ListCompressed(JSONResponseMixin, TemplateView):
                         }
                     )
                 context['compress'] = data
-                print context
                 return render_to_response('logistics/compressedProject.html', context, context_instance=RequestContext(request))
             except TemplateDoesNotExist, e:
                 raise Http404

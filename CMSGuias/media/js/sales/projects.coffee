@@ -11,6 +11,9 @@ $(document).ready ->
         $(@).removeClass "glyphicon-folder-close"
         .addClass "glyphicon-folder-open"
         return
+    $("table").floatThead
+        useAbsolutePositioning: false
+        scrollingTop: 50
     .mouseout (event) ->
         event.preventDefault()
         $(@).removeClass "glyphicon-folder-open"

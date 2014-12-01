@@ -66,7 +66,7 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                 context['typep'] = globalVariable.typeProject
             elif request.user.get_profile().empdni.charge.area.lower() == 'operaciones':
                 context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC'), empdni_id=request.user.get_profile().empdni_id)
-            elif request.user.get_profile().empdni.charge.area.lower() == 'logistica':
+            elif request.user.get_profile().empdni.charge.area.lower() == 'logistica' or 'Almacen':
                 context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC'))
             if request.user.get_profile().empdni.charge.cargos.lower() == 'jefe de operaciones':
                 context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC'))

@@ -27,6 +27,9 @@
     {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
         {% include "menus/operations.htm" %}
     {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'almacen' %}
+        {% include "menus/storage_menu.htm" %}
+    {% endif %}
 {% endblock menu %}
 {% block content %}
 <div class="container-fluid">
@@ -103,6 +106,7 @@
                     <div class="panel panel-warning">
                         <div class="btn-group btn-group-justified">
                             {% if not meter %}
+                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
                                 <div class="btn-group">
                                     <button class="btn btn-warning btn-sm text-black btn-show-mat">
                                         <span class="glyphicon glyphicon-chevron-down"></span> Materiales
@@ -123,6 +127,7 @@
                                         <span class="glyphicon glyphicon-trash"></span> Eliminar Lista
                                     </button>
                                 </div>
+                                {% endif %}
                             {% endif %}
                         </div>
                         {% if meter %}
@@ -286,6 +291,7 @@
                         </div>
                     </div>
                     {% if project.status == 'AC' and not meter %}
+                        {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
                         <div class="btn-group">
                             <button class="btn btn-danger btn-create-deductivo">
                                 <span class="glyphicon glyphicon-list"></span>
@@ -296,6 +302,7 @@
                                 <span>Aprobar Sector</span>
                             </button>
                         </div>
+                        {% endif %}
                     {% endif %}
                     <div class="panel panel-primary">
                         <div class="panel-footer">
@@ -376,8 +383,10 @@
                                                     <th class="col-4">Observación</th>
                                                 {% endifequal %}
                                             {% endif %}
+                                            {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
                                                 <th class="col-2">Editar</th>
                                                 <th class="col-2">Eliminar</th>
+                                            {% endif %}
                                           </tr>
                                     </thead>
                                     <tbody>
@@ -400,6 +409,7 @@
                                                     <td>{{ x.precio|safe }}</td>
                                                 {% endif %}
                                                 {% if project.status == 'PE' or not meter %}
+                                                    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
                                                     <td>
                                                         <button data-brand="{{ x.brand_id }}" data-model="{{ x.model_id }}" class="btn btn-xs btn-link text-green btn-show-edit" value="{{ x.materiales_id }}-{{ x.id }}">
                                                             <span class="glyphicon glyphicon-pencil"></span>
@@ -410,6 +420,7 @@
                                                             <span class="glyphicon glyphicon-trash"></span>
                                                         </button>
                                                     </td>
+                                                    {% endif %}
                                                 {% endif %}
                                             </tr>
                                         {% endfor %}
@@ -425,7 +436,7 @@
                                             {% endif %}
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+                                                    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'operaciones'  or user.get_profile.empdni.charge.area|lower == 'almacen' %}
                                                     <div class="form-group pull-left">
                                                         <button class="btn btn-xs btn-primary btn-show-orders">
                                                             <span class="fa fa-cube"></span>
@@ -473,7 +484,7 @@
                                         {% endif %}
                                         {% if meter %}
                                             {% ifequal project.status 'AC' %}
-                                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
+                                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica'  or user.get_profile.empdni.charge.area|lower == 'operaciones' or user.get_profile.empdni.charge.area|lower == 'almacen' %}
                                                     <th class="col-2">Stock</th>
                                                 {% endif %}
                                                 <th class="col-4">Observación</th>
@@ -511,6 +522,8 @@
                                                 <td>{{ x.quantity|safe }}</td>
                                                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
                                                     <td>{{ x.price|safe }}</td>
+                                                {% endif %}
+                                                {% if user.get_profile.empdni.charge.area|lower == 'almacen' or user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
                                                     <td>{{ x.stock|safe }}</td>
                                                 {% endif %}
                                                 <td>
@@ -709,7 +722,7 @@
                                                     <div class="table-responsive">
                                                         <table class="table table-condensed table-hover table-bordered table-float">
                                                             <caption class="text-left">
-                                                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+                                                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'operaciones' or user.get_profile.empdni.charge.area|lower == 'almacen' %}
                                                                 <div class="row">
                                                                     <div class="col-md-4">
                                                                         <div class="btn-group">
