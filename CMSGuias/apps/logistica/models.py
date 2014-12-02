@@ -14,7 +14,7 @@ class Cotizacion(models.Model):
     almacen = models.ForeignKey(Almacene, to_field='almacen_id')
     registrado = models.DateTimeField(auto_now=True)
     traslado = models.DateField()
-    obser = models.TextField()
+    obser = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=2,default='PE')
     flag = models.BooleanField(default=True)
 
@@ -141,8 +141,10 @@ class CotKeys(models.Model):
 
 class tmpcotizacion(models.Model):
     empdni = models.CharField(max_length=8, null=False)
-    materiales = models.ForeignKey(Materiale,to_field='materiales_id')
+    materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     cantidad = models.FloatField(null=False)
+    brand = models.ForeignKey(Brand, to_field='brand_id', blank=True, default='BR000')
+    model = models.ForeignKey(Model, to_field='model_id', blank=True, default='MO000')
 
     class Meta:
         ordering = ['materiales']

@@ -27,11 +27,11 @@
             </header>
             <section>
                 <div class="form-gruop">
-                    <button class="btn btn-primary">
+                    <button class="btn btn-primary btn-quotation">
                         <span class="fa fa-list-alt"></span>
                         <span class="glyphicon-class">Cotizar</span>
                     </button>
-                    <button class="btn btn-danger pull-right">
+                    <button class="btn btn-danger pull-right btn-purchase">
                         <span class="fa fa-credit-card"></span>
                         <span>Comprar</span>
                     </button>
@@ -96,4 +96,5 @@
             </section>
         </div>
     </div>
+{% csrf_token %}
 {% endblock content %}

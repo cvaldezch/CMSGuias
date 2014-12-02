@@ -1,10 +1,10 @@
 $(document).ready ->
     # block search materials
     $(".panel-add,input[name=read],.step-second").hide()
-    $("input[name=description]").on "keyup", keyDescription
+    ###$("input[name=description]").on "keyup", keyDescription
     $("input[name=description]").on "keypress", keyUpDescription
     $("select[name=meter]").on "click", getSummaryMaterials
-    $("input[name=code]").on "keypress", keyCode
+    $("input[name=code]").on "keypress", keyCode###
     # endblock
     $("input[name=traslado]").datepicker minDate: "0", showAnim: "slide", dateFormat: "yy-mm-dd"
     $(".btn-show-materials").on "click", showMaterials
@@ -27,6 +27,9 @@ $(document).ready ->
     .on "keypress", numberOnly
     $("[name=selproject]").chosen({width: "100%"})
     listTmpBuy()
+    $("table.table-list").floatThead
+        useAbsolutePositioning: false
+        scrollingTop: 50
     return
 
 showMaterials = (event) ->
@@ -38,7 +41,7 @@ showMaterials = (event) ->
             $(item).find("span").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up")
     return
 
-keyDescription = (event) ->
+###keyDescription = (event) ->
     key = `window.Event ? event.keyCode : event.which`
     if key isnt 13 and key isnt 40 and key isnt 38 and key isnt 39 and key isnt 37
         getDescription @value.toLowerCase()
@@ -50,15 +53,15 @@ keyCode = (event) ->
     key = if window.Event then event.keyCode else event.which
     if key is 13
         searchMaterialCode @value
-    return
+    return###
 
-searchMaterial = (event) ->
+###searchMaterial = (event) ->
     desc = $("input[name=description]").val()
     code = $("input[name=code]").val()
     if code.length is 15
         searchMaterialCode code
     else
-        getDescription $.trim(desc).toLowerCase()
+        getDescription $.trim(desc).toLowerCase()###
 
 addTmpPurchase = (event) ->
     data = new Object()
@@ -101,7 +104,7 @@ listTmpBuy = (event) ->
                     <td>{{ matmeasure }}</td>
                     <td>{{ unit }}</td>
                     <td>{{ brand }}</td>
-                    <td>{{ brand }}</td>
+                    <td>{{ model }}</td>
                     <td>{{ quantity }}</td>
                     <td>{{ price }}</td>
                     <td>{{ discount }}%</td>

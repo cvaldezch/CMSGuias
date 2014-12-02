@@ -71,16 +71,17 @@ months_name = {
 
 # List of emails
 emails = [
-    'asistente1@icrperusa.com',
-    'logistica@icrperusa.com',
-    'luis.martinez@icrperusa.com',
-    'cvaldezchavez@gmail.com',
-    'icr.luisvalencia@gmail.com',
     'almacen@icrperusa.com',
     'armando.atencio@icrperusa.com',
-    'steven.paredes@icrperusa.com',
+    'asistente1@icrperusa.com',
+    'contabilidad@icrperusa.com'
+    'cvaldezchavez@gmail.com',
     'danilo.martinez@icrperusa.com',
+    'icr.luisvalencia@gmail.com',
+    'logistica@icrperusa.com',
+    'luis.martinez@icrperusa.com',
     'sandra.atencio@icrperusa.com',
+    'steven.paredes@icrperusa.com',
     'ssoma1@icrperusa.com'
 ]
 

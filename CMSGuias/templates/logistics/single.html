@@ -3,11 +3,13 @@
     Cotización Simple
 {% endblock title %}
 {% block script %}
-<script src="{{ MEDIA_URL }}js/mustache.js"></script>
-<!-- <script src="{{ MEDIA_URL }}js/scrollTo.js"></script> -->
-<script src="{{ MEDIA_URL }}js/getMaterials.js"></script>
-<script src="{{ MEDIA_URL }}js/logistics/single.js"></script>
-<script src="{{ MEDIA_URL }}js/tinymce.js"></script>
+    <script src="{{ MEDIA_URL }}js/mustache.js"></script>
+    <!-- <script src="{{ MEDIA_URL }}js/scrollTo.js"></script> -->
+    <script src="{{ MEDIA_URL }}js/getMaterials.js"></script>
+    <script src="{{ MEDIA_URL }}js/logistics/single.js"></script>
+    <script src="{{ MEDIA_URL }}js/tinymce.js"></script>
+    <script src="{{ MEDIA_URL }}js/floatThead.js"></script>
+    <script src="{{ MEDIA_URL }}js/checkbox.min.js"></script>
 {% endblock script %}
 {% block menu %}
     {% include "menus/logistics.htm" %}
@@ -47,7 +49,9 @@
         <article>
             <div class="panel panel-warning">
                 <div class="panel-heading">
-                    <button class="btn btn-xs btn-warning text-black btn-show-materials">Agregar materiales <span class="glyphicon glyphicon-chevron-down"></span></button>
+                    <button class="btn btn-xs btn-warning text-black btn-show-materials">Agregar materiales
+                        <span class="glyphicon glyphicon-chevron-down"></span>
+                    </button>
                 </div>
                 <div class="panel-body panel-add">
                     <div class="row">
@@ -70,19 +74,51 @@
                                 <select class="form-control" name="meter"></select>
                             </div>
                         </div>
-                        <div class="col-md-2">
-                            <div class="form-group has-warning">
-                                <label class="control-label">Metrado/Cantidad</label>
-                                <input type="number" class="form-control" name="cantidad" min="1" placeholder="0">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Metrado/Cantidad</label>
+                                        <input type="number" class="form-control" name="cantidad" min="1" placeholder="0">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Marca</label>
+                                        <div class="input-group">
+                                            <select name="brand" id="brand" class="form-control input-sm"></select>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-sm btn-default btn-new-brand">
+                                                    <span class="glyphicon glyphicon-plus"></span>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Modelo</label>
+                                        <div class="input-group">
+                                            <select name="model" id="model" class="form-control input-sm"></select>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default btn-sm btn-new-model">
+                                                    <span class="span glyphicon glyphicon-plus"></span>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-md-offset-6">
+                                    <div class="form-group has-warning">
+                                        <label class="control-label">Agregar</label>
+                                        <button class="btn btn-block btn-warning text-black btn-add">
+                                            <span class="glyphicon glyphicon-plus"></span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-1">
-                            <div class="form-group has-warning">
-                                <label class="control-label">Agregar</label>
-                                <button class="btn btn-block btn-warning text-black btn-add"><span class="glyphicon glyphicon-plus"></span></button>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-md-offset-3">
+                        <div class="col-md-6">
                             <div class="alert alert-warning alert-block">
                                 <strong>Resumén</strong>
                                 <table class="table-condensed tb-details">
@@ -94,20 +130,27 @@
                 </div>
             </div>
         </article>
-        <section>
-            <div class="panel panel-warning">
-                <div class="table-responsive">
-                    <table class="table table-condensed table-hover table-list">
-                        <thead>
-                            <tr class="brand-warning">
-                                <th>Item</th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th><th>Editar</th><th>Eliminar</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+        <div class="panel panel-warning">
+            <div class="table-responsive">
+                <table class="table table-condensed table-hover table-list">
+                    <thead>
+                        <tr class="brand-warning">
+                            <th></th>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th>Medida</th>
+                            <th>Unidad</th>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Cantidad</th>
+                            <th>Editar</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
-        </section>
+        </div>
     </div>
     <div class="well step-second">
         <h4>Cotizar a proveedores</h4>
@@ -175,9 +218,11 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label class="control-label">
-                                    <input type="checkbox" name="multiple" value="" disabled>
+                                    <!-- <input type="checkbox" name="multiple" value="" disabled> -->
                                     Misma cotización
                                 </label>
+                                <br>
+                                <input type="checkbox" name="multiple" data-off-label=" No" data-on-label=" Si" data-off-icon-class="glyphicon glyphicon-thumbs-down" data-on-icon-class="glyphicon glyphicon-thumbs-up">
                             </div>
                         </div>
                     </div>
@@ -187,7 +232,7 @@
         <aside>
             <div class="panel panel-success">
                 <div class="table-responsive">
-                    <table class="table table-hover table-condensed table-bordered table-quote">
+                    <table class="table table-hover table-condensed table-quote">
                         <caption class="text-left">
                             <div class="form-group">
                                 Seleccionar:
@@ -196,8 +241,16 @@
                             </div>
                         </caption>
                         <thead>
-                            <tr class="brand-success">
-                                <th>Item</th><th></th><th>Código</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th>
+                            <tr class="brand-primary text-white">
+                                <th></th>
+                                <th></th>
+                                <th>Código</th>
+                                <th>Descripción</th>
+                                <th>Medida</th>
+                                <th>Unidad</th>
+                                <th>Marca</th>
+                                <th>Modelo</th>
+                                <th>Cantidad</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -215,12 +268,22 @@
                 <h4>Editar cantidad de material.</h4>
                 <div class="form-group has-info">
                     <label class="control-label">Código Material</label>
-                    <input type="text" maxlength="15" name="ematid" class="form-control" readonly>
+                    <input type="text" maxlength="15" name="ematid" class="form-control input-sm" readonly>
                     <input type="hidden" name="eidtmp">
                 </div>
                 <div class="form-group has-info">
                     <label class="control-label">Cantidad</label>
-                    <input type="number" class="form-control" name="equantity">
+                    <input type="number" class="form-control input-sm" name="equantity">
+                </div>
+                <div class="form-group has-info">
+                    <label class="control-label">Marca</label>
+                    <select class="form-control input-sm" name="ebrand">
+                    </select>
+                </div>
+                <div class="form-group has-info">
+                    <label class="control-label">Modelo</label>
+                    <select class="form-control input-sm" name="emodel">
+                    </select>
                 </div>
             </div>
             <div class="modal-footer">
@@ -266,7 +329,13 @@
                         <table class="table table-condensed table-hover table-nothing">
                             <thead>
                                 <tr class="brand-danger">
-                                    <th>Item</th><th>Descripción</th><th>Medida</th><th>Unidad</th><th>Cantidad</th>
+                                    <th>Item</th>
+                                    <th>Descripción</th>
+                                    <th>Medida</th>
+                                    <th>Unidad</th>
+                                    <!-- <th>Marca</th>
+                                    <th>Modelo</th> -->
+                                    <th>Cantidad</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>

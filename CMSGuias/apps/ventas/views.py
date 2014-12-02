@@ -59,17 +59,17 @@ class ProjectsList(JSONResponseMixin, TemplateView):
         context = super(ProjectsList, self).get_context_data(**kwargs)
         try:
             if request.user.get_profile().empdni.charge.area.lower() == 'ventas' or request.user.get_profile().empdni.charge.area.lower() == 'administrator':
-                context['list'] = Proyecto.objects.filter(Q(flag=True), ~Q(status='DA'))
+                context['list'] = Proyecto.objects.filter(Q(flag=True), ~Q(status='DA')).order_by('-registrado')
                 context['country'] = Pais.objects.filter(flag=True)
                 context['customers'] = Cliente.objects.filter(flag=True)
                 context['currency'] = Moneda.objects.filter(flag=True)
                 context['typep'] = globalVariable.typeProject
             elif request.user.get_profile().empdni.charge.area.lower() == 'operaciones':
-                context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC'), empdni_id=request.user.get_profile().empdni_id)
+                context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC'), empdni_id=request.user.get_profile().empdni_id).order_by('-registrado')
             elif request.user.get_profile().empdni.charge.area.lower() == 'logistica' or 'Almacen':
-                context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC'))
+                context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC')).order_by('-registrado')
             if request.user.get_profile().empdni.charge.cargos.lower() == 'jefe de operaciones':
-                context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC'))
+                context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC')).order_by('-registrado')
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, "Template Does Not Exist %s"%e)

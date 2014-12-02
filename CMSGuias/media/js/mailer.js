@@ -143,13 +143,13 @@ sendGlobalMailer = function(event) {
   var data, pass, x, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
   data = new Object;
   if ($.trim($("select[name=globalmfor]").val()) !== "") {
-    data.fors = $("select[name=globalmfor]").val().toString();
+    data.fors = $("select[name=globalmfor]").val().toString().split(",");
   }
   if ($.trim($("select[name=globalmcc]").val()) !== "") {
-    data.cc = $("select[name=globalmcc]").val().toString();
+    data.cc = $("select[name=globalmcc]").val().toString().split(",");
   }
   if ($.trim($("select[name=globalmcco]").val()) !== "") {
-    data.cco = $("select[name=globalmcco]").val().toString();
+    data.cco = $("select[name=globalmcco]").val().toString().split(",");
   }
   if ($.trim($("input[name=globalmissue]").val()) !== "") {
     data.issue = $("input[name=globalmissue]").val();
@@ -191,7 +191,7 @@ sendGlobalMailer = function(event) {
         if ($.trim(data.cc[x]) !== "") {
           pass = validateEmail(data.cc[x]);
           if (!pass) {
-            console["return"](pass);
+            return pass;
           }
         }
       }

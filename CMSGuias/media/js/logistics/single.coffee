@@ -27,6 +27,11 @@ $(document).ready ->
     $(".btn-quotesupplier").on "click", saveQuote
     $(".btn-newquote").on "click", newQuote
     $(".btn-finish").on "click", finishTmp
+    $("table.table-list").floatThead
+        useAbsolutePositioning: false
+        scrollingTop: 50
+    listTmpQuote()
+    $("[name=multiple]").checkboxpicker()
     return
 
 showMaterials = (event) ->
@@ -36,9 +41,10 @@ showMaterials = (event) ->
             $(item).find("span").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down")
         else
             $(item).find("span").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up")
+        $("table.table-list").floatThead "reflow"
     return
 
-keyDescription = (event) ->
+###keyDescription = (event) ->
     key = `window.Event ? event.keyCode : event.which`
     if key isnt 13 and key isnt 40 and key isnt 38 and key isnt 39 and key isnt 37
         getDescription @value.toLowerCase()
@@ -58,7 +64,7 @@ searchMaterial = (event) ->
         searchMaterialCode code
     else
         getDescription $.trim(desc).toLowerCase()
-
+###
 addTmpQuote = (event) ->
     data = new Object()
     code = $(".id-mat").html()
@@ -67,6 +73,8 @@ addTmpQuote = (event) ->
         if quantity isnt ""
             data.materiales = code
             data.cantidad = quantity
+            data.brand = $("select#brand").val()
+            data.model = $("select#model").val()
             data.type = "add"
             data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
             $.post "", data, (response) ->
@@ -85,7 +93,26 @@ addTmpQuote = (event) ->
 listTmpQuote = (event) ->
     $.getJSON "", "type":"list", (response) ->
         if response.status
-            template = "<tr name=\"{{ id }}\"><td>{{ item }}</td><td>{{ materials_id }}</td><td>{{ matname }}</td><td>{{ matmeasure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td><button class=\"btn btn-xs btn-link\" name=\"btn-edit\" value=\"{{ quantity }}\" data-id=\"{{ id }}\" data-mat=\"{{ materials_id }}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td><td><button class=\"btn btn-xs btn-link text-red\" name=\"btn-del\" value=\"{{ id }}\" data-mat=\"{{ materials_id }}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td></tr>"
+            template = "<tr name=\"{{ id }}\">
+            <td>{{ item }}</td>
+            <td>{{ materials_id }}</td>
+            <td>{{ matname }}</td>
+            <td>{{ matmeasure }}</td>
+            <td>{{ unit }}</td>
+            <td>{{ brand }}</td>
+            <td>{{ model }}</td>
+            <td>{{ quantity }}</td>
+            <td>
+                <button class=\"btn btn-xs btn-link\" name=\"btn-edit\" value=\"{{ quantity }}\" data-id=\"{{ id }}\" data-mat=\"{{ materials_id }}\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\">
+                    <span class=\"glyphicon glyphicon-pencil\"></span>
+                </button>
+            </td>
+            <td>
+                <button class=\"btn btn-xs btn-link text-red\" name=\"btn-del\" value=\"{{ id }}\" data-mat=\"{{ materials_id }}\">
+                    <span class=\"glyphicon glyphicon-trash\"></span>
+                </button>
+            </td>
+            </tr>"
             $tb = $("table.table-list > tbody")
             $tb.empty()
             for x of response.list
@@ -98,10 +125,12 @@ listTmpQuote = (event) ->
 
 showEdit = (event) ->
     event.preventDefault()
-    $("input[name=ematid]").val $(@).attr "data-mat"
-    $("input[name=eidtmp]").val $(@).attr "data-id"
+    $("input[name=ematid]").val @getAttribute "data-mat"
+    $("input[name=eidtmp]").val @getAttribute "data-id"
     $("input[name=equantity]").val @value
-    $(".medit").modal "show"
+    setDataBrand "select[name=ebrand]", @getAttribute "data-brand"
+    setDataModel "select[name=emodel]", @getAttribute "data-model"
+    $("div.medit").modal "show"
     return
 
 editMaterial = (event) ->
@@ -114,16 +143,19 @@ editMaterial = (event) ->
         data.id = $id.val()
         data.materials_id = $mat.val()
         data.quantity = $quantity.val()
+        data.brand = $("select[name=ebrand]").val()
+        data.model = $("select[name=emodel]").val()
         data.type = "edit"
         data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
         $.post "", data, (response) ->
             if response.status
-                $edit = $("table.table-list > tbody > tr[name=#{$id.val()}] > td")
+                ###$edit = $("table.table-list > tbody > tr[name=#{$id.val()}] > td")
                 $edit.eq(5).html($quantity.val())
                 $edit.eq(6).find("button").val($quantity.val())
                 $("input[name=ematid]").val ""
                 $("input[name=eidtmp]").val ""
-                $("input[name=equantity]").val ""
+                $("input[name=equantity]").val ""###
+                listTmpQuote()
                 $(".medit").modal "hide"
                 return
             else
@@ -220,7 +252,19 @@ uploadReadFile = (event) ->
 stepSecond = ->
     $.getJSON "", "type":"list", (response) ->
         if response.status
-            template = "<tr name=\"{{ id }}\"><td>{{ item }}</td><td><input type=\"checkbox\" name=\"chk\" value=\"{{ id }}\"></td><td>{{ materials_id }}</td><td>{{ matname }}</td><td>{{ matmeasure }}</td><td>{{ unit }}</td><td>{{ quantity }}</td></tr>"
+            template = "<tr name=\"{{ id }}\">
+                <td>
+                    <input type=\"checkbox\" name=\"chk\" value=\"{{ id }}\" data-materials=\"{{ materials_id }}\" data-brand=\"{{ brand }}\" data-model=\"{{ model }}\" data-quantity=\"{{ quantity }}\">
+                </td>
+                <td>{{ item }}</td>
+                <td>{{ materials_id }}</td>
+                <td>{{ matname }}</td>
+                <td>{{ matmeasure }}</td>
+                <td>{{ unit }}</td>
+                <td>{{ brand }}</td>
+                <td>{{ model }}</td>
+                <td class=\"text-right\">{{ quantity }}</td>
+                </tr>"
             $tb = $("table.table-quote > tbody")
             $tb.empty()
             for x of response.list
@@ -305,8 +349,10 @@ saveQuote = (event) ->
         $("[name=chk]").each ->
             if @checked
                 mats.push
-                    "materials_id" : $(".table-quote > tbody > tr[name=#{@value}]").find("td").eq(2).html()
-                    "quantity" : $(".table-quote > tbody > tr[name=#{@value}]").find("td").eq(6).html()
+                    "materials_id": @getAttribute "data-materials"
+                    "brand": @getAttribute "data-brand"
+                    "model": @getAttribute "data-model"
+                    "quantity": @getAttribute "data-quantity"
                 return
         data.details = JSON.stringify mats
         if mats.length <= 0

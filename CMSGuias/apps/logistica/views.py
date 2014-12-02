@@ -265,7 +265,20 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
                 context = {}
                 try:
                     tmp = tmpcotizacion.objects.filter(empdni=request.user.get_profile().empdni_id)
-                    context['list'] = [{'id':x.id, 'materials_id':x.materiales_id, 'matname':x.materiales.matnom, 'matmeasure': x.materiales.matmed, 'unit':x.materiales.unidad_id, 'quantity':x.cantidad} for x in tmp]
+                    context['list'] = [
+                        {
+                            'id': x.id,
+                            'materials_id': x.materiales_id,
+                            'matname': x.materiales.matnom,
+                            'matmeasure': x.materiales.matmed,
+                            'brand_id': x.brand_id,
+                            'model_id': x.model_id,
+                            'brand': x.brand.brand,
+                            'model': x.model.model,
+                            'unit': x.materiales.unidad_id,
+                            'quantity': x.cantidad
+                        } for x in tmp
+                    ]
                     context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = e
@@ -393,6 +406,8 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
                         obj.proveedor_id = request.POST.get('proveedor')
                         obj.materiales_id = x['materials_id']
                         obj.cantidad = x['quantity']
+                        obj.marca = x['brand']
+                        obj.modelo = x['model']
                         obj.flag = True
                         obj.save()
 
@@ -1168,3 +1183,53 @@ class ListCompressed(JSONResponseMixin, TemplateView):
                 return render_to_response('logistics/compressedProject.html', context, context_instance=RequestContext(request))
             except TemplateDoesNotExist, e:
                 raise Http404
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'quote' in request.POST:
+                    for x in json.loads(request.POST.get('details')):
+                        try:
+                            obj = tmpcotizacion.objects.get(
+                                empdni=request.user.get_profile().empdni_id,
+                                materiales_id=x['materials'],
+                                brand_id=x['brand'],
+                                model_id=x['model']
+                            )
+                            obj.cantidad += x['quantity']
+                            obj.save()
+                        except ObjectDoesNotExist:
+                            obj = tmpcotizacion()
+                            obj.empdni = request.user.get_profile().empdni_id
+                            obj.materiales_id = x['materials']
+                            obj.cantidad = x['quantity']
+                            obj.brand_id = x['brand']
+                            obj.model_id = x['model']
+                            obj.save()
+                    context['status'] = True
+                if 'purchase' in request.POST:
+                    for x in json.loads(request.POST.get('details')):
+                        try:
+                            obj = tmpcompra.objects.get(
+                                empdni=request.user.get_profile().empdni_id,
+                                materiales_id=x['materials'],
+                                brand_id=x['brand'],
+                                model_id=x['model']
+                            )
+                            obj.cantidad += x['quantity']
+                            obj.save()
+                        except ObjectDoesNotExist:
+                            obj = tmpcompra()
+                            obj.empdni = request.user.get_profile().empdni_id
+                            obj.materiales_id = x['materials']
+                            obj.cantidad = x['quantity']
+                            obj.brand_id = x['brand']
+                            obj.model_id = x['model']
+                            obj.save()
+                    context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)

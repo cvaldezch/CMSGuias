@@ -280,11 +280,14 @@ searchModelOption = ->
     data = brand: brand
     $.getJSON "/json/model/list/option/", data, (response) ->
       if response.status
-        template = "<option value=\"{{ model_id }}\">{{ model }}</option>"
+        template = "<option value=\"{{ model_id }}\" {{!sel}}>{{ model }}</option>"
         $model = $("select[name=model]")
         $model.empty()
         for x of response.model
-          $model.append Mustache.render(template, response.model[x])
+            tmp = template
+            if brand is "BR000"
+                tmp = tmp.replace "{{!sel}}", "selected"
+            $model.append Mustache.render(tmp, response.model[x])
       else
         $().toastmessage "showWarningToast", "No se a podido obtener la lista de marcas."
       return
@@ -308,6 +311,34 @@ getDataModel = ->
       else
         return new Object
   return
+
+setDataBrand = (element, value)->
+    $.getJSON "/json/brand/list/option/", (response) ->
+        if response.status
+            template = "<option value=\"{{ brand_id }}\" {{!sel}}>{{ brand }}</option>"
+            $sel = $("#{element}")
+            $sel.empty()
+            for x of response.brand
+                tmp = template
+                if response.brand[x].brand_id is value
+                    tmp = tmp.replace "{{!sel}}", "selected"
+                $sel.append Mustache.render tmp, response.brand[x]
+            return
+    return
+
+setDataModel = (element, value)->
+    $.getJSON "/json/model/list/option/", (response) ->
+        if response.status
+            template = "<option value=\"{{ model_id }}\" {{!sel}}>{{ model }}</option>"
+            $sel = $("#{element}")
+            $sel.empty()
+            for x of response.model
+                tmp = template
+                if response.model[x].model_id is value
+                    tmp = tmp.replace "{{!sel}}", "selected"
+                $sel.append Mustache.render tmp, response.model[x]
+            return
+    return
 
 keyDescription = (event) ->
   key = undefined

@@ -197,13 +197,13 @@ showGCopyMailer = (event) ->
 sendGlobalMailer = (event) ->
     data = new Object
     if $.trim($("select[name=globalmfor]").val()) isnt ""
-        data.fors = $("select[name=globalmfor]").val().toString()
+        data.fors = $("select[name=globalmfor]").val().toString().split ","
         #.split ","
     if $.trim($("select[name=globalmcc]").val()) isnt ""
-        data.cc = $("select[name=globalmcc]").val().toString()
+        data.cc = $("select[name=globalmcc]").val().toString().split ","
         #.split ","
     if $.trim($("select[name=globalmcco]").val()) isnt ""
-        data.cco = $("select[name=globalmcco]").val().toString()
+        data.cco = $("select[name=globalmcco]").val().toString().split ","
         #.split ","
     if $.trim($("input[name=globalmissue]").val()) isnt ""
         data.issue = $("input[name=globalmissue]").val()
@@ -233,7 +233,6 @@ sendGlobalMailer = (event) ->
                 if $.trim(data.cc[x]) isnt ""
                     pass = validateEmail data.cc[x]
                     if not pass
-                        console.
                         return pass
     if data.hasOwnProperty("cco")
         if data.cco.length

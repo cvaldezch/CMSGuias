@@ -3,6 +3,8 @@ var changeSelect, createTmpPurchase, createTmpQuatation, getListCheck;
 
 $(document).ready(function() {
   $("input[name=select]").on("change", changeSelect);
+  $("button.btn-quotation").on("click", createTmpQuatation);
+  $("button.btn-purchase").on("click", createTmpPurchase);
   $("table.table-float").floatThead({
     useAbsolutePositioning: false,
     scrollingTop: 50
@@ -33,9 +35,7 @@ getListCheck = function(event) {
       });
     }
   });
-  if (data.length) {
-    return data;
-  }
+  return data;
 };
 
 createTmpQuatation = function(event) {
@@ -44,9 +44,38 @@ createTmpQuatation = function(event) {
   data.details = getListCheck();
   setTimeout(function() {
     if (data.details.length) {
-
+      $().toastmessage("showToast", {
+        text: "Desea generar el temporal para la cotización?",
+        type: "confirm",
+        sticky: true,
+        buttons: [
+          {
+            value: "Si"
+          }, {
+            value: "No"
+          }
+        ],
+        success: function(result) {
+          if (result === "Si") {
+            data.quote = true;
+            data.details = JSON.stringify(data.details);
+            data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
+            $.post("", data, function(response) {
+              if (response.status) {
+                $().toastmessage("showNoticeToast", "se a generado el tmp de cotización.");
+                setTimeout(function() {
+                  var href;
+                  href = "/logistics/quote/single/";
+                }, 2600);
+              } else {
+                $().toastmessage("showErrorToast", "No se podido crear temp para la cotización.");
+              }
+            });
+          }
+        }
+      });
     } else {
-      return $().toastmessage("showWarningToast", "No se han encontrado materiales para cotizar.");
+      $().toastmessage("showWarningToast", "No se han encontrado materiales para cotizar.");
     }
   }, 300);
 };
@@ -57,9 +86,38 @@ createTmpPurchase = function(event) {
   data.details = getListCheck();
   setTimeout(function() {
     if (data.details.length) {
-
+      $().toastmessage("showToast", {
+        text: "Desea generar el temporal para la orden de compra?",
+        type: "confirm",
+        sticky: true,
+        buttons: [
+          {
+            value: "Si"
+          }, {
+            value: "No"
+          }
+        ],
+        success: function(result) {
+          if (result === "Si") {
+            data.purchase = true;
+            data.details = JSON.stringify(data.details);
+            data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
+            $.post("", data, function(response) {
+              if (response.status) {
+                $().toastmessage("showNoticeToast", "se a generado el tmp de la orden de compra.");
+                setTimeout(function() {
+                  var href;
+                  href = "/logistics/purchase/single/";
+                }, 2600);
+              } else {
+                $().toastmessage("showErrorToast", "No se podido crear temp para la compra.");
+              }
+            });
+          }
+        }
+      });
     } else {
-      return $().toastmessage("showWarningToast", "No se han encontrado materiales para Comprar.");
+      $().toastmessage("showWarningToast", "No se han encontrado materiales para Comprar.");
     }
   }, 300);
 };
