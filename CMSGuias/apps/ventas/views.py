@@ -591,6 +591,13 @@ class SectorManage(JSONResponseMixin, View):
                     if form.is_valid():
                         form.save()
                         context['status'] = True
+                if 'delnip' in request.POST:
+                    obj = Nipple.objects.get(pk=request.POST.get('pk'))
+                    obj.delete()
+                    context['status'] = True
+                if 'delnipall' in request.POST:
+                    Nipple.objects.filter(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') != '' else None, sector_id=request.POST.get('sector'), materiales_id=request.POST.get('materiales')).delete()
+                    context['status'] = True
                 if 'upcomment' in request.POST:
                     obj = MetProject.objects.get(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') != '' else None, sector_id=request.POST.get('sec'), materiales_id=request.POST.get('mat'))
                     if obj:
@@ -896,7 +903,7 @@ class SectorManage(JSONResponseMixin, View):
                         h.model_id = x.model_id
                         h.price = x.precio
                         h.comment = x.comment
-                        h.quantityorders = x.quantityorder
+                        h.quantityorders = x.quantityorder if x.tag != '0' else x.cantidad
                         h.tag = x.tag
                         h.flag = x.flag
                         h.save()
@@ -918,7 +925,7 @@ class SectorManage(JSONResponseMixin, View):
                         s.precio = x['price']
                         s.flag = True
                         s.comment = x['comment']
-                        s.quantityorder = x['quantityorders']
+                        s.quantityorder = x['quantityorders'] if x['tag'] != '0' else x['quantity']
                         s.tag = x['tag']
                         if float(x['dev']) > 0:
                             d = RestoreStorage()
@@ -1202,7 +1209,6 @@ class SectorManage(JSONResponseMixin, View):
                     else:
                         context['status'] = False
             except ObjectDoesNotExist, e:
-                print e
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)

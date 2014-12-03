@@ -71,4 +71,6 @@ urlpatterns = patterns('CMSGuias.apps.wsjson.views',
     url(r'^get/emails/$', SystemEmails.as_view()),
     url(r'^emails/$', SystemEmails.as_view()),
     url(r'^post/key/confirm/$', KeyConfirmMan.as_view()),
+    # urls export data
+    url(r'^export/data/sector/(?P<pro>\w{7})/(?P<sec>\w+)/', ExportMetProject.as_view()),
 )

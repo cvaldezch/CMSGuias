@@ -84,6 +84,7 @@ $(document).ready ->
     # seconded part for order to store
     $("input[name=choice]").on "change", selectChoiseOrder
     $(document).on "click", ".btn-nip-edit", show_edit_nipple
+    $(document).on "click", ".btn-nip-del", nippleDelOne
     $(".btn-show-orders").on "click", showOrders
     $(document).on "click", ".btn-append-list-nipp", showListNipp
     $(document).on "click", ".showhidenipp", showHideTbody
@@ -790,11 +791,12 @@ delete_all_temp_nipples = (idmat)->
             success : (result) ->
                 if result is "Si"
                     data = new Object()
-                    data.addnip = true
+                    data.delnipall = true
                     data.proyecto = $("input[name=pro]").val()
                     data.subproyecto = $("input[name=sub]").val()
                     data.sector = $("input[name=sec]").val()
                     data.materiales = idmat
+                    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
                     $.post "", data, (response) ->
                         if response.status
                             list_temp_nipples idmat
@@ -805,8 +807,28 @@ delete_all_temp_nipples = (idmat)->
         $().toastmessage "showWarningToast", "Código de material incorrecto."
     return
 
-deleteallnipmat = ->
-
+nippleDelOne = ->
+    btn = @
+    if @value isnt ""
+        $().toastmessage "showToast",
+            text: "Desea eliminar el niple seleccionado?"
+            type: "confirm"
+            sticky: true
+            buttons: [{value:'Si'},{value:'No'}]
+            success: (result) ->
+                if result is 'Si'
+                    data = new Object
+                    data.pk = btn.value
+                    data.delnip = true
+                    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+                    $.post "", data, (response) ->
+                        if response.status
+                            list_temp_nipples btn.getAttribute "data-del-nip"
+                            return
+                        else
+                            $().toastmessage "showWarningToast", "No se a eliminado el niple."
+                            return
+                    return
     return
 
 showOrders = ->

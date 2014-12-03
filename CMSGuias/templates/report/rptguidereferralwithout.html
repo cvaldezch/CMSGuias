@@ -3,7 +3,8 @@
     <head>
         <meta charset="UTF-8">
         <title>Guide Referral</title>
-        <link rel="stylesheet" type="text/css" href="/media/css/reports/style-guidewithout.css">
+        <!-- <link rel="stylesheet" type="text/css" href="/media/css/reports/style-guidewithout.css"> -->
+        <link rel="stylesheet" type="text/css" href="/media/css/reports/style-guideout-icr.css">
     </head>
     <body>
         <header>
@@ -24,7 +25,9 @@
                 {{ guide.ruccliente_id }}
             </div>
             <div id="transfer" class="text-normal">
-                {{ guide.traslado }}
+                {{ guide.traslado|date:"d" }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                {{ guide.traslado|date:"F" }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                {{ guide.traslado|date:"y" }}
             </div>
             <div id="transport-brand" class="text-normal">
                 {{ guide.nropla.marca }} {{ guide.nropla_id }}
@@ -49,7 +52,7 @@
                         <tr>
                             <th width="1cm">&nbsp;</th>
                             <th width="2cm"></th>
-                            <th width="1.6cm"></th>
+                            <th width="1.9cm"></th>
                             <th></th>
                         </tr>
                     </thead>
@@ -58,8 +61,8 @@
                             <tr>
                                 <td class="text-center text-up">{{ forloop.counter }}</td>
                                 <td class="text-center text-up">{{ x.cantguide|safe }}</td>
-                                <td class="text-center text-up">{{ x.materiales.unidad_id }}</td>
-                                <td class="nom">{{ x.materiales.matnom }} {{ x.materiales.matmed }}
+                                <td class="text-center text-up">{{ x.materiales.unidad.uninom|upper }}</td>
+                                <td class="text-up">{{ x.materiales.matnom }} {{ x.materiales.matmed }}
                                     {% if nipples %}
                                         <br>
                                         {% ifequal x.materiales_id|truncatechars:6 "115..." %}

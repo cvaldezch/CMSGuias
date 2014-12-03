@@ -41,6 +41,12 @@
                 <a href="{% url 'managerpro_view' project.proyecto_id  %}" class="btn btn-xs btn-default">
                     <span class="glyphicon glyphicon-chevron-left"></span> Regresar
                 </a>
+                <div class="form-group pull-right">
+                    <a class="btn btn-xs btn-primary" href="/json/export/data/sector/{{ project.proyecto_id }}/{{ sector.sector_id }}/" target="_blank">
+                        <span class="fa fa-file-excel-o"></span>
+                        <span>Exportar</span>
+                    </a>
+                </div>
             </h3>
             <p>
                <strong>Proyecto:</strong> {{ project.nompro }}  <strong>Codigo:</strong> {{ project.proyecto_id }}
@@ -134,8 +140,8 @@
                             {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
                             <div class="btn-group">
                                 <button class="btn btn-default btn-update-meter-cancel">
-                                        <span class="glyphicon glyphicon-remove"></span>
-                                        Cancelar
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                    Cancelar
                                 </button>
                                 <button class="btn btn-danger text-black btn-update-meter">
                                     <span class="glyphicon glyphicon-link"></span>
@@ -726,7 +732,7 @@
                                                                 <div class="row">
                                                                     <div class="col-md-4">
                                                                         <div class="btn-group">
-                                                                            {% if x.quantity == x.cantidad %}
+                                                                            {% if x.quantity == x.cantidad %} <!-- x.quantity == x.cantidad  -->
                                                                                 <button class="btn btn-default btn-xs btn-add-nipple-{{ x.materiales_id }}" onClick="aggregate_nipples({{ x.materiales_id }});" type="Button" data-loading-text="Proccess...">
                                                                                     <span class="glyphicon glyphicon-plus-sign"></span> Agregar
                                                                                 </button>

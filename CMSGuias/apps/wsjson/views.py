@@ -1,5 +1,6 @@
 #-*- Encoding: utf-8 -*-
 #
+import csv
 import json
 import datetime
 import time, urllib2
@@ -21,6 +22,7 @@ from django.core import serializers
 from CMSGuias.apps.almacen.models import *
 from CMSGuias.apps.home.models import *
 from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto, Metradoventa
+from CMSGuias.apps.operations.models import MetProject
 from CMSGuias.apps.tools import uploadFiles, globalVariable, search, genkeys
 
 
@@ -946,3 +948,31 @@ class KeyConfirmMan(JSONResponseMixin, View):
             context['raise'] = e.__str__()
             context['status'] = False
         return self.render_to_json_response(context)
+
+#############################################################################
+##                                   Export Data
+#############################################################################
+class ExportMetProject(View):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        try:
+            head = Sectore.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=None, sector_id=kwargs['sec'])
+            queryset = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None, sector_id=kwargs['sec']).order_by('materiales__matnom')
+            if queryset:
+                response = HttpResponse(content_type='text/csv')
+                disposition = ''
+                response['Content-Disposition'] = 'attachment; filename="%s.csv"'%(head.nomsec)
+                writer = csv.writer(response)
+                writer.writerow(['Código','Descripción','Diametro','Unidad','Marca','Modelo','Cantidad'])
+                [writer.writerow([
+                    x.materiales_id,
+                    x.materiales.matnom.encode('utf-8'),
+                    x.materiales.matmed.encode('utf-8'),
+                    x.materiales.unidad.uninom,
+                    x.brand.brand,
+                    x.model.model,
+                    x.cantidad]) for x in queryset]
+                return response
+        except ObjectDoesNotExist, e:
+            raise Http404(e)

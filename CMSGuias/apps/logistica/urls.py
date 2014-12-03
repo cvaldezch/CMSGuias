@@ -21,4 +21,5 @@ urlpatterns = patterns('',
     url(r'^ingress/price/supplier/(?P<quote>\w{10})/(?P<supplier>\w{11})/', IngressPriceQuote.as_view(), name='view_ingress_price_supplier'),
     url(r'^crud/', include(urlcrud)),
     url(r'^materials/(?P<pro>\w{7})/compressed/$', ListCompressed.as_view(), name='compressed_list'),
+    url(r'^services/orders/$', ServiceOrders.as_view(), name='orders_service'),
 )

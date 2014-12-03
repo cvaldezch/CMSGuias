@@ -1233,3 +1233,21 @@ class ListCompressed(JSONResponseMixin, TemplateView):
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
+
+class ServiceOrders(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                pass
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
+        else:
+            try:
+                return render_to_response('logistics/serviceorder.html', context, context_instance=RequestContext(request))
+            except TemplateDoesNotExist, e:
+                raise Http404
