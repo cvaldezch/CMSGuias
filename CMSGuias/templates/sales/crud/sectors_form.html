@@ -1,4 +1,11 @@
 {% extends "base.html" %}
+{% block script %}
+    <script>
+        setTimeout(function() {
+            $("input[name=comienzo], input[name=fin]").datepicker({"changeYear": true,"changeMonth": true,"showAnim": "slide","dateFormat": "yy-mm-dd"});
+        }, 200);
+    </script>
+{% endblock script %}
 {% block content %}
 <div class="container">
     <div class="well">

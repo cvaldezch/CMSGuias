@@ -4858,6 +4858,8 @@ a.list-group-item-danger.active:focus {
 }
 .panel-title > a {
   color: inherit;
+  cursor: pointer;
+  text-decoration: none;
 }
 .panel-footer {
   padding: 10px 15px;
@@ -5101,8 +5103,8 @@ a.list-group-item-danger.active:focus {
   border-color: #ebccd1;
 }
 .panel-danger > .panel-heading {
-  color: #a94442;
-  background-color: #f2dede;
+  color: #fff;
+  background-color: #d9534f;
   border-color: #ebccd1;
 }
 .panel-danger > .panel-heading + .panel-collapse .panel-body {

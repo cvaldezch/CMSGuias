@@ -16,8 +16,12 @@ $(document).ready ->
         .addClass "glyphicon-folder-close"
         return
     $("table").floatThead
-        useAbsolutePositioning: false
+        useAbsolutePositioning: true
         scrollingTop: 50
+    $("h4 > a").click (event) ->
+        console.log @getAttribute "data-value"
+        $("table.table-#{@getAttribute "data-value"}").floatThead "reflow"
+        return
     tinymce.init
         selector: "textarea[name=obser]",
         theme: "modern",

@@ -59,11 +59,14 @@ class ProjectsList(JSONResponseMixin, TemplateView):
         context = super(ProjectsList, self).get_context_data(**kwargs)
         try:
             if request.user.get_profile().empdni.charge.area.lower() == 'ventas' or request.user.get_profile().empdni.charge.area.lower() == 'administrator':
-                context['list'] = Proyecto.objects.filter(Q(flag=True), ~Q(status='DA')).order_by('-registrado')
+                context['list'] = Proyecto.objects.filter(Q(flag=True), ~Q(status='DA')).order_by('-proyecto_id')
                 context['country'] = Pais.objects.filter(flag=True)
                 context['customers'] = Cliente.objects.filter(flag=True)
                 context['currency'] = Moneda.objects.filter(flag=True)
                 context['typep'] = globalVariable.typeProject
+                cust = Proyecto.objects.filter(flag=True)
+                cust = cust.order_by('ruccliente__razonsocial').distinct('ruccliente__razonsocial')
+                context['cust'] = cust
             elif request.user.get_profile().empdni.charge.area.lower() == 'operaciones':
                 context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC'), empdni_id=request.user.get_profile().empdni_id).order_by('-registrado')
             elif request.user.get_profile().empdni.charge.area.lower() == 'logistica' or 'Almacen':

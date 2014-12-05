@@ -210,7 +210,7 @@ class Transporte(models.Model):
         return "%s %s %s"%(self.traruc,self.nropla_id,self.marca)
 
 class Cliente(models.Model):
-    ruccliente_id = models.CharField(primary_key=True, max_length=11,null=False)
+    ruccliente_id = models.CharField(primary_key=True, max_length=11)
     razonsocial = models.CharField(max_length=200)
     pais = models.ForeignKey(Pais, to_field='pais_id')
     departamento = models.ForeignKey(Departamento, to_field='departamento_id')
@@ -219,6 +219,9 @@ class Cliente(models.Model):
     direccion = models.CharField(max_length=200,null=False,)
     telefono = models.CharField(max_length=30,null=True, blank=True,default='000-000-000')
     flag = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['razonsocial']
 
     audit_log = AuditLog()
 

@@ -16,8 +16,12 @@ $(document).ready(function() {
     $(this).removeClass("glyphicon-folder-open").addClass("glyphicon-folder-close");
   });
   $("table").floatThead({
-    useAbsolutePositioning: false,
+    useAbsolutePositioning: true,
     scrollingTop: 50
+  });
+  $("h4 > a").click(function(event) {
+    console.log(this.getAttribute("data-value"));
+    $("table.table-" + (this.getAttribute("data-value"))).floatThead("reflow");
   });
   tinymce.init({
     selector: "textarea[name=obser]",
