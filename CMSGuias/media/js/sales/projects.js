@@ -12,13 +12,12 @@ $(document).ready(function() {
   $(".btn-open > span").mouseenter(function(event) {
     event.preventDefault();
     $(this).removeClass("glyphicon-folder-close").addClass("glyphicon-folder-open");
+  }).mouseout(function(event) {
+    $(this).removeClass("glyphicon-folder-open").addClass("glyphicon-folder-close");
   });
   $("table").floatThead({
     useAbsolutePositioning: false,
     scrollingTop: 50
-  }).mouseout(function(event) {
-    event.preventDefault();
-    $(this).removeClass("glyphicon-folder-open").addClass("glyphicon-folder-close");
   });
   tinymce.init({
     selector: "textarea[name=obser]",
@@ -71,6 +70,7 @@ showaddProject = function(event) {
       $btn.find("span").eq(1).html(" Cancelar");
       $(".btn-save").show();
     }
+    return $("table").floatThead("reflow");
   });
 };
 

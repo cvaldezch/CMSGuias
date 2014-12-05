@@ -1,5 +1,5 @@
 @page {
-  size: legal;
+  size: legal portrait;
   margin: 1cm;
   @frame header_frame {
     -pdf-frame-content: nro;
@@ -77,14 +77,22 @@
     margin: 0 1cm 0 1cm;
   }
 }
+@font-face {
+  font-family: ubuntu;
+  src: url("/media/fonts/2086.ttf");
+}
+@font-face {
+  font-family: courier;
+  src: url("/media/fonts/courier.ttf");
+}
 * {
-  font-family: arial;
+  font-family: ubuntu;
 }
 .text-center {
   text-align: center;
 }
 .text-normal {
-  font-size: 12px;
+  font-size: 13px;
 }
 #delivery,
 #arrival {
@@ -103,6 +111,6 @@
   padding-bottom: 0.01cm;
 }
 .text-up {
+  font-size: 13px;
   vertical-align: top;
-  font-size: 12px;
 }

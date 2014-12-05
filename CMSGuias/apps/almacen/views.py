@@ -839,10 +839,10 @@ def view_generate_document_out(request,oid):
             if request.is_ajax():
                 form = forms.addGuideReferral(request.POST)
                 if form.is_valid():
-                    data = {}
+                    data = dict()
                     try:
                         add = form.save(commit=False)
-                        guidekeys = genkeys.GenerateSerieGuideRemision()
+                        guidekeys = request.POST.get('guia_id') #genkeys.GenerateSerieGuideRemision()
                         add.guia_id = guidekeys
                         add.status = 'GE'
                         add.flag = True

@@ -44,7 +44,7 @@ class HomeManager(ListView):
     def get(self, request, *args, **kwargs):
         try:
             context = dict()
-            com = Company.objects.get(pk='20555029277')
+            com = Company.objects.get(pk='20428776110')
             request.session['company'] = {
                 'ruc': com.ruc,
                 'name': com.companyname,

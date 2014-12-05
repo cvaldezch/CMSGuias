@@ -53,7 +53,7 @@ def rpt_orders_details(request,pid,sts):
             order = get_object_or_404(models.Pedido,pk=pid,status=sts)
             lista = get_list_or_404(models.Detpedido.objects.order_by('materiales__matnom'),pedido_id__exact=pid)
             nipples = models.Niple.objects.filter(pedido_id__exact=pid).order_by('materiales')
-            ctx = { 'pagesize':'A4','order': order, 'lista': lista, 'nipples': nipples,'tipo': globalVariable.tipo_nipples }
+            ctx = { 'pagesize': 'A4','order': order, 'lista': lista, 'nipples': nipples,'tipo': globalVariable.tipo_nipples }
             html = render_to_string('report/rptordersstore.html',ctx,context_instance=RequestContext(request))
             return generate_pdf(html)
     except TemplateDoesNotExist, e:
@@ -66,7 +66,7 @@ def rpt_guide_referral_format(request,gid,pg):
             det = models.DetGuiaRemision.objects.filter(guia_id__exact=gid, flag=True)
             nipples = models.NipleGuiaRemision.objects.filter(guia_id__exact= gid, flag=True)
             tipo = globalVariable.tipo_nipples #{ "A":"Roscado", "B": "Ranurado","C":"Roscado - Ranurado" }
-            ctx = { 'guide': guide, 'det': det, 'nipples': nipples, "tipo": tipo }
+            ctx = { 'pagesize': 'LEGAL', 'guide': guide, 'det': det, 'nipples': nipples, "tipo": tipo }
             page = 'rptguidereferral' if pg == 'format' else 'rptguidereferralwithout'
             html = render_to_string("report/"+page+".html",ctx,context_instance=RequestContext(request))
             return generate_pdf(html)

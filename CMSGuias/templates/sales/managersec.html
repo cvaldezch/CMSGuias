@@ -85,9 +85,13 @@
                                                 <p>{{ x.note }}</p>
                                             {% endif %}
                                             <p>
-                                                <button name="show-full" class="btn btn-xs btn-primary" role="button" value="{{ MEDIA_URL }}{{ x.files }}"><span class="glyphicon glyphicon-fullscreen"></span></button>
+                                                <button name="show-full" class="btn btn-xs btn-primary" role="button" value="{{ MEDIA_URL }}{{ x.files }}">
+                                                    <span class="glyphicon glyphicon-fullscreen"></span>
+                                                </button>
                                                 {% ifequal user.get_profile.empdni.charge.area|lower 'administrator' %}
-                                                    <button name="plane-del" class="btn btn-xs btn-danger pull-right" role="button" value="{{ x.files }}"><span class="glyphicon glyphicon-fire"></span></button>
+                                                    <button name="plane-del" class="btn btn-xs btn-danger pull-right" role="button" value="{{ x.files }}">
+                                                        <span class="glyphicon glyphicon-fire"></span>
+                                                    </button>
                                                 {% endifequal %}
                                             </p>
                                       </div>
@@ -732,11 +736,11 @@
                                                                 <div class="row">
                                                                     <div class="col-md-4">
                                                                         <div class="btn-group">
-                                                                            {% if x.quantity == x.cantidad %} <!-- x.quantity == x.cantidad  -->
+                                                                            {#% if x.quantity == x.cantidad %#} <!-- x.quantity == x.cantidad  -->
                                                                                 <button class="btn btn-default btn-xs btn-add-nipple-{{ x.materiales_id }}" onClick="aggregate_nipples({{ x.materiales_id }});" type="Button" data-loading-text="Proccess...">
                                                                                     <span class="glyphicon glyphicon-plus-sign"></span> Agregar
                                                                                 </button>
-                                                                            {% endif %}
+                                                                            {#% endif %#}
                                                                             <button class="btn btn-default btn-xs" onClick="list_temp_nipples({{ x.materiales_id }});" type="Button" data-loading-text="Proccess...">
                                                                                 <span class="glyphicon glyphicon-refresh"></span> Recargar
                                                                             </button>
@@ -813,7 +817,7 @@
                                     </button>
                                 </div>
                             </caption>
-                            <table class="table table-bordered table-condensed table-hover table-modify">
+                            <table class="table table-bordered table-condensed table-hover table-modify table-float">
                                 <thead>
                                     <tr class="brand-warning">
                                         <th class="text-center">Item</th>
@@ -1343,6 +1347,7 @@
 {% if project.exchange %}
     <input type="hidden" name="exchangep" value="{{ project.exchange|safe }}">
 {% endif %}
+<input type="hidden" name="user-email" value="{{ user.email }}" data-name="{{ user.get_profile.empdni.firstname }} {{ user.get_profile.empdni.lastname }}">
 <!-- block files -->
 <input type="file" name="plane" class="hide" accept="application/pdf">
 {% endblock content %}

@@ -61,8 +61,8 @@
                             <tr>
                                 <td class="text-center text-up">{{ forloop.counter }}</td>
                                 <td class="text-center text-up">{{ x.cantguide|safe }}</td>
-                                <td class="text-center text-up">{{ x.materiales.unidad.uninom|upper }}</td>
-                                <td class="text-up">{{ x.materiales.matnom }} {{ x.materiales.matmed }}
+                                <td class="text-center text-up">{{ x.materiales.unidad.uninom }}</td>
+                                <td class="text-up">{{ x.materiales.matnom|upper }} {{ x.materiales.matmed|upper }}
                                     {% if nipples %}
                                         <br>
                                         {% ifequal x.materiales_id|truncatechars:6 "115..." %}

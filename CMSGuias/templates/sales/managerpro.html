@@ -257,13 +257,12 @@
                                 {% for x in sectors %}
                                     {% ifequal x.subproyecto_id None  %}
                                         <article>
-                                            <button class="btn btn-xs text-black btn-link pull-left btn-edit-sector
-                                            {% if project.status == 'AC' %}
-                                                hide
-                                            {% endif %}"
-                                            value="{{ x.sector_id }}">
-                                                <span class="glyphicon glyphicon-pencil"></span>
-                                            </button>
+                                            {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or project.status != 'AC' %}
+                                                <button class="btn btn-xs text-black btn-link pull-left btn-edit-sector"
+                                                value="{{ x.sector_id }}">
+                                                    <span class="glyphicon glyphicon-pencil"></span>
+                                                </button>
+                                            {% endif %}
                                             <button class="btn btn-xs text-black btn-link pull-right
                                             {% if project.status == 'AC' %}
                                                 hide

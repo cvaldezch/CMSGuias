@@ -19,6 +19,7 @@ $(document).ready ->
     $(document).on "click", ".btn-show-subproject_id", loadSector
     $(document).on "click", ".btn-show-sector_id", loadMaterials
     $(".btn-save-edit").on "click", editMaterials
+    $(document).on "change", ".change-modify", calcDiffModify
     $(".btn-show-copy").on "click", ->
         $(".mcopy").modal "show"
         $.getJSON "/json/projects/lists/",
@@ -372,6 +373,7 @@ openAddMaterial = (event) ->
             $(".btn-show-mat").find("span").removeClass("glyphicon-chevron-up").addClass "glyphicon-chevron-down"
         else
             $(".btn-show-mat").find("span").removeClass("glyphicon-chevron-down").addClass "glyphicon-chevron-up"
+        $("table.table-modify").floatThead "reflow"
     return
 
 uploadPlane = (event) ->
@@ -732,10 +734,10 @@ saved_or_update_nipples = (idmat) ->
         data.subproyecto = $("input[name=sub]").val()
         data.sector = $("input[name=sec]").val()
         data.materiales = idmat
-        data.metrado = parseFloat parseInt $(".mt#{idmat}").val()
+        data.metrado = parseFloat $(".mt#{idmat}").val()
         data.tipo = $(".tn#{idmat}").val()
-        data.cantidad = parseFloat parseInt $(".nv#{idmat}").val()
-        data.cantshop = parseFloat parseInt $(".nv#{idmat}").val()
+        data.cantidad = parseFloat $(".nv#{idmat}").val()
+        data.cantshop = parseFloat $(".nv#{idmat}").val()
         data.comment = $($(".nc#{idmat}")).val()
         data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
         if $("input.update-id-#{idmat}").val() isnt ""
@@ -750,7 +752,6 @@ saved_or_update_nipples = (idmat) ->
                     $(".update-quantity-#{idmat}").val ""
                     $(".update-id-#{idmat}").val ""
                     list_temp_nipples idmat
-
             return
         else
             $().toastmessage "showWarningToast", "Cantidad es mayor a la establecida."
@@ -1243,6 +1244,7 @@ showModify = ->
     $(".panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter").fadeIn 680
     $(".panel-price-two").fadeIn 600
     $(".panel-price-one").fadeOut 200
+    #$("table.table-modify").floatThead "reflow"
     return
 
 backModify = ->
@@ -1260,6 +1262,7 @@ startModidfy = ->
         if response.status
             $tb = $(".table-modify > tbody")
             $tb.empty()
+            area = $("input[name=area]").val()
             for x of response.details
                 template = "<tr id=\"trm-{{ materials }}\">
                         <td class=\"text-center\">{{ item }}</td>
@@ -1269,8 +1272,8 @@ startModidfy = ->
                         <td class=\"text-center\">{{ unit }}</td>
                         <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"brand-{{ materials }}-{{ brand_id }}\"</select></td>
                         <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"model-{{ materials }}-{{ model_id }}\"</select></td>
-                        <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm\" value=\"{{ quantity }}\" min=\"0\" id=\"quantity-{{ materiales }}\"></td>
-                        <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm\" value=\"{{ price }}\" id=\"price-{{ materials }}\"></td>
+                        <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm change-modify\" value=\"{{ quantity }}\" min=\"0\" id=\"quantity-{{ materiales }}\"></td>
+                        <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm change-modify\" value=\"{{ price }}\" id=\"price-{{ materials }}\"></td>
                         <td>{{ amount }}</td>
                         <td class=\"text-center\">
                             <button class=\"btn btn-xs btn-link text-green btn-update-update\" value=\"{{ materials }}\" data-tag=\"{{ tag }}\">
@@ -1278,12 +1281,13 @@ startModidfy = ->
                             </button>
                         </td>
                         <td class=\"text-center\">
-                            <button class=\"btn btn-xs btn-link text-red btn-delete-update\" value=\"{{ materials }}\">
+                            <button class=\"btn btn-xs btn-link text-red btn-delete-update\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\" value=\"{{ materials }}\">
                                 <span class=\"glyphicon glyphicon-trash\"></span>
                             </button>
                         </td>
                         <td class=\"text-center\">{{!attend}}</td>
                         </tr>"
+
                 response.details[x].item = (parseInt(x) + 1)
                 att = ""
                 # console.error response.details[x].tag
@@ -1359,6 +1363,7 @@ updateMaterialUpdateMeter = ->
     return
 
 deleteMaterialUpdateMeter = ->
+    btn = @
     material = @value
     $().toastmessage "showToast",
         text : "Realmente desea eliminar el material #{@value}?"
@@ -1370,6 +1375,8 @@ deleteMaterialUpdateMeter = ->
                 data = new Object()
                 data.materials = material
                 data.deletematerialMeter = true
+                data.brand = btn.getAttribute "data-brand"
+                data.model = btn.getAttribute "data-model"
                 data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
                 console.log data
                 $.post "", data, (response) ->
@@ -1410,9 +1417,14 @@ addMaterialUpdateMeter = ->
         if $("input[name=gincludegroup]").length
             if $("input[name=gincludegroup]").is(":checked")
                 data.details = JSON.stringify tmpObjectDetailsGroupMaterials.details
-        console.log data
+        # console.log data
         $.post "", data, (response) ->
             if response.status
+                $("input[name=cantidad], input[name=description]").val("")
+                $("select[name=meter]").empty()
+                $("input[name=precio]").val("")
+                $("table.tb-details > tbody").empty()
+                $(".btn-show-materials-meter").click()
                 tmpObjectDetailsGroupMaterials = new Object()
                 startModidfy()
                 return
@@ -1428,10 +1440,27 @@ createTableDeductive = (event) ->
     tblb = new Array()
     $("table.table-details > tbody > tr").each (index, element) ->
         $td = $(element).find("td")
-        tbla.push {"materials":$td.eq(2).text(), "name": $td.eq(3).text(), "measure": $td.eq(4).text(), "unit": $td.eq(5).text(), "brand": $td.eq(6).text(), "model": $td.eq(7).text(), "quantity" : $td.eq(8).text(), "price":$td.eq(10).text()}
+        tbla.push {
+            "materials": $td.eq(2).text(),
+            "name": $td.eq(3).text(),
+            "measure": $td.eq(4).text(),
+            "unit": $td.eq(5).text(),
+            "brand": $td.eq(6).text(),
+            "model": $td.eq(7).text(),
+            "quantity" : $td.eq(8).text(),
+            "price":$td.eq(10).text()
+        }
     $("table.table-modify > tbody > tr").each (index, element) ->
         $td = $(element).find("td")
-        tblb.push {"materials":$td.eq(1).text(), "name": $td.eq(2).text(), "measure": $td.eq(3).text(), "unit": $td.eq(4).text(), "brand": $td.eq(5).find("select").val(), "model": $td.eq(6).find("select").val(), "quantity" : $td.eq(7).find("input").val(), "price":$td.eq(8).find("input").val()}
+        tblb.push {
+            "materials":$td.eq(1).text(),
+            "name": $td.eq(2).text(),
+            "measure": $td.eq(3).text(),
+            "unit": $td.eq(4).text(),
+            "brand": $td.eq(5).find("select").val(),
+            "model": $td.eq(6).find("select").val(),
+            "quantity": $td.eq(7).find("input").val(),
+            "price": $td.eq(8).find("input").val()}
     #console.log JSON.stringify tbla
     table = new Array()
     console.warn tblb.length
@@ -1617,7 +1646,18 @@ approvedModify = (event) ->
         else
             tag = "1"
         comment = $td.eq(12).find("input").val()
-        tbla.push {"materials": $td.eq(2).text(), "name": $td.eq(3).text(), "measure": $td.eq(4).text(), "unit": $td.eq(5).text(), "brand": $td.eq(6).text(), "model": $td.eq(7).text(), "quantity": $td.eq(8).text(), "quantityorders": $td.eq(9).text(), "price": $td.eq(10).text(), "tag":tag, "comment": comment}
+        tbla.push {
+            "materials": $td.eq(2).text(),
+            "name": $td.eq(3).text(),
+            "measure": $td.eq(4).text(),
+            "unit": $td.eq(5).text(),
+            "brand": $td.eq(6).text(),
+            "model": $td.eq(7).text(),
+            "quantity": $td.eq(8).text(),
+            "quantityorders": $td.eq(9).text(),
+            "price": $td.eq(10).text(),
+            "tag":tag,
+            "comment": comment}
         return
 
     $("table.table-modify > tbody > tr").each (index, element) ->
@@ -1628,7 +1668,16 @@ approvedModify = (event) ->
             tag = "2"
         else
             tag = "0"
-        tblb.push {"materials": $td.eq(1).text(), "name": $td.eq(2).text(), "measure": $td.eq(3).text(), "unit": $td.eq(4).text(), "brand": $td.eq(5).find("select").val(), "model": $td.eq(6).find("select").val(), "quantity": $td.eq(7).find("input").val(), "price": $td.eq(8).find("input").val(), "tag": tag}
+        tblb.push {
+            "materials": $td.eq(1).text(),
+            "name": $td.eq(2).text(),
+            "measure": $td.eq(3).text(),
+            "unit": $td.eq(4).text(),
+            "brand": $td.eq(5).find("select").val(),
+            "model": $td.eq(6).find("select").val(),
+            "quantity": $td.eq(7).find("input").val(),
+            "price": $td.eq(8).find("input").val(),
+            "tag": tag}
         return
 
     console.table tbla
@@ -1675,8 +1724,10 @@ approvedModify = (event) ->
                 console.info "modify < original"
                 if qmodify > 0 and quantityorders is 0
                     tblb[x].tag = "2"
+                    tblb[x].dev = 0
                 else if quantityorders > 0 and qmodify is (quantityorders - (qoriginal - qmodify))
                     tblb[x].tag = "0"
+                    tblb[x].dev = 0
                 else if quantityorders > 0 and qmodify > (quantityorders - (qoriginal - qmodify))
                     tblb[x].tag = "1"
                 if tblb[x].tag is "2" or tblb[x].tag is "1"

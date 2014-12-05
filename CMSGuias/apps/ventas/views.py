@@ -220,7 +220,7 @@ class ProjectManager(JSONResponseMixin, View):
                                             'order': str(x.order),
                                             'id': x.id
                                             }
-                                            for x in PurchaseOrder.objects.filter(flag=True).order_by('register')
+                                            for x in PurchaseOrder.objects.filter(flag=True, project_id=kwargs['project']).order_by('register')
                                             ]
                         context['status'] = True
                     if 'editPurchase' in request.GET:
@@ -708,27 +708,45 @@ class SectorManage(JSONResponseMixin, View):
                             obj.quantityorders = x.quantityorder
                             obj.tag = x.tag
                             obj.save()
-                            list_.append({'materials' : x.materiales_id, 'name' : x.materiales.matnom, 'measure' : x.materiales.matmed, 'unit' : x.materiales.unidad.uninom, 'brand_id' :x.brand_id, 'model_id' : x.model_id, 'brand' :x.brand.brand, 'model' : x.model.model, 'quantity' : x.cantidad, 'price' :x.precio, 'amount' : '{0:.2f}'.format((x.cantidad * x.precio)), 'tag':x.tag})
+                            list_.append(
+                                {
+                                    'materials': x.materiales_id,
+                                    'name': x.materiales.matnom,
+                                    'measure': x.materiales.matmed,
+                                    'unit': x.materiales.unidad.uninom,
+                                    'brand_id': x.brand_id,
+                                    'model_id': x.model_id,
+                                    'brand': x.brand.brand,
+                                    'model': x.model.model,
+                                    'quantity': x.cantidad,
+                                    'price': x.precio,
+                                    'amount': '{0:.2f}'.format((x.cantidad * x.precio)),
+                                    'tag':x.tag
+                                }
+                            )
                     else:
                         for x in update:
                             list_.append(
-                                {'materials' : x.materials_id,
-                                'name' : x.materials.matnom,
-                                'measure' : x.materials.matmed,
-                                'unit' : x.materials.unidad.uninom,
-                                'brand_id' :x.brand_id,
-                                'model_id' : x.model_id,
-                                'brand' :x.brand.brand,
-                                'model' : x.model.model,
-                                'quantity' : x.quantity,
-                                'price' :x.price,
-                                'amount' :'{0:.2f}'.format(x.amount),
-                                'tag':x.tag}
+                                {
+                                    'materials': x.materials_id,
+                                    'name': unicode(x.materials.matnom),
+                                    'measure': unicode(x.materials.matmed),
+                                    'unit': x.materials.unidad.uninom,
+                                    'brand_id': x.brand_id,
+                                    'model_id': x.model_id,
+                                    'brand': x.brand.brand,
+                                    'model': x.model.model,
+                                    'quantity': x.quantity,
+                                    'price': x.price,
+                                    'amount': '{0:.2f}'.format(x.amount),
+                                    'tag': x.tag
+                                }
                             )
                     context['details'] = list_
                     context['listBrand'] = [{'brand_id':x.brand_id,'brand':x.brand} for x in Brand.objects.filter(flag=True).order_by('brand')]
                     context['listModel'] = [{'model_id':x.model_id, 'model':x.model} for x in Model.objects.filter(flag=True).order_by('model')]
                     context['status'] = True
+                    print context
                 if 'updatematerialMeter' in request.POST:
                     obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=request.POST.get('materials'), brand_id=request.POST.get('brand'), model=request.POST.get('model'), flag=True)
                     obj.brand_id = request.POST.get('brand')
@@ -760,7 +778,15 @@ class SectorManage(JSONResponseMixin, View):
                     obj.save()
                     context['status'] = True
                 if 'deletematerialMeter' in request.POST:
-                    obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=request.POST.get('materials'), brand_id=request.POST.get('brand'), model=request.POST.get('model'), flag=True)
+                    obj = UpdateMetProject.objects.get(
+                        proyecto_id=kwargs['pro'],
+                        subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None,
+                        sector_id=kwargs['sec'],
+                        materials_id=request.POST.get('materials'),
+                        brand_id=request.POST.get('brand'),
+                        model_id=request.POST.get('model'),
+                        flag=True
+                    )
                     obj.delete()
                     context['status'] = True
                 if 'addupdatemeter' in request.POST:

@@ -7,6 +7,7 @@
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>
 <script src="{{ MEDIA_URL }}js/getCountry.js"></script>
 <script src="{{ MEDIA_URL }}js/sales/projects.js"></script>
+<script src="{{ MEDIA_URL }}js/floatThead.js"></script>
 {% endblock script %}
 {% block menu %}
     {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
@@ -203,7 +204,10 @@
                                 <tr class="tr-{{ x.proyecto_id }} danger">
                                 {% endifequal %}
                                     <td>{{ forloop.counter }}</td>
-                                    <td><a href="{% url 'managerpro_view' x.proyecto_id %}" class="btn btn-link btn-xs btn-open text-black"><span class="glyphicon glyphicon-folder-close"></span></a></td>
+                                    <td>
+                                        <a href="{% url 'managerpro_view' x.proyecto_id %}" class="btn btn-link btn-xs btn-open text-black"><span class="glyphicon glyphicon-folder-close"></span>
+                                        </a>
+                                    </td>
                                     <td>{{ x.proyecto_id }}</td>
                                     <td>{{ x.nompro }}</td>
                                     <td>{{ x.direccion }}</td>

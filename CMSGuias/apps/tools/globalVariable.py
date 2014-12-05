@@ -74,7 +74,7 @@ emails = [
     'almacen@icrperusa.com',
     'armando.atencio@icrperusa.com',
     'asistente1@icrperusa.com',
-    'contabilidad@icrperusa.com'
+    'contabilidad@icrperusa.com',
     'cvaldezchavez@gmail.com',
     'danilo.martinez@icrperusa.com',
     'icr.luisvalencia@gmail.com',

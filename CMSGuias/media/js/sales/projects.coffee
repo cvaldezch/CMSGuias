@@ -11,14 +11,13 @@ $(document).ready ->
         $(@).removeClass "glyphicon-folder-close"
         .addClass "glyphicon-folder-open"
         return
-    $("table").floatThead
-        useAbsolutePositioning: false
-        scrollingTop: 50
     .mouseout (event) ->
-        event.preventDefault()
         $(@).removeClass "glyphicon-folder-open"
         .addClass "glyphicon-folder-close"
         return
+    $("table").floatThead
+        useAbsolutePositioning: false
+        scrollingTop: 50
     tinymce.init
         selector: "textarea[name=obser]",
         theme: "modern",
@@ -66,13 +65,12 @@ showaddProject = (event) ->
             .addClass "glyphicon-plus"
             $btn.find("span").eq(1).html(" Nuevo Proyecto")
             $(".btn-save").hide()
-            return
         else
             $btn.find("span").eq(0).removeClass "glyphicon-plus"
             .addClass "glyphicon-remove"
             $btn.find("span").eq(1).html(" Cancelar")
             $(".btn-save").show()
-            return
+        $("table").floatThead "reflow"
     return
 
 # Show upkeep country, departament, province, district, customers

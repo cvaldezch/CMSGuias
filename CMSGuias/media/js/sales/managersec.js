@@ -26,6 +26,7 @@ $(document).ready(function() {
   $(document).on("click", ".btn-show-subproject_id", loadSector);
   $(document).on("click", ".btn-show-sector_id", loadMaterials);
   $(".btn-save-edit").on("click", editMaterials);
+  $(document).on("change", ".change-modify", calcDiffModify);
   $(".btn-show-copy").on("click", function() {
     $(".mcopy").modal("show");
     $.getJSON("/json/projects/lists/", {
@@ -416,10 +417,11 @@ openAddMaterial = function(event) {
   event.preventDefault();
   $(".panel-add-mat").toggle(function() {
     if ($(this).is(":hidden")) {
-      return $(".btn-show-mat").find("span").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+      $(".btn-show-mat").find("span").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
     } else {
-      return $(".btn-show-mat").find("span").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+      $(".btn-show-mat").find("span").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
     }
+    return $("table.table-modify").floatThead("reflow");
   });
 };
 
@@ -812,10 +814,10 @@ saved_or_update_nipples = function(idmat) {
     data.subproyecto = $("input[name=sub]").val();
     data.sector = $("input[name=sec]").val();
     data.materiales = idmat;
-    data.metrado = parseFloat(parseInt($(".mt" + idmat).val()));
+    data.metrado = parseFloat($(".mt" + idmat).val());
     data.tipo = $(".tn" + idmat).val();
-    data.cantidad = parseFloat(parseInt($(".nv" + idmat).val()));
-    data.cantshop = parseFloat(parseInt($(".nv" + idmat).val()));
+    data.cantidad = parseFloat($(".nv" + idmat).val());
+    data.cantshop = parseFloat($(".nv" + idmat).val());
     data.comment = $($(".nc" + idmat)).val();
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
     if ($("input.update-id-" + idmat).val() !== "") {
@@ -1423,12 +1425,13 @@ startModidfy = function() {
   data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
   data.modifystart = true;
   $.post("", data, function(response) {
-    var $sel, $tb, att, b, selectBrand, selectModel, template, x;
+    var $sel, $tb, area, att, b, selectBrand, selectModel, template, x;
     if (response.status) {
       $tb = $(".table-modify > tbody");
       $tb.empty();
+      area = $("input[name=area]").val();
       for (x in response.details) {
-        template = "<tr id=\"trm-{{ materials }}\"> <td class=\"text-center\">{{ item }}</td> <td class=\"text-center\">{{ materials }}</td> <td>{{ name }}</td> <td>{{ measure }}</td> <td class=\"text-center\">{{ unit }}</td> <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"brand-{{ materials }}-{{ brand_id }}\"</select></td> <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"model-{{ materials }}-{{ model_id }}\"</select></td> <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm\" value=\"{{ quantity }}\" min=\"0\" id=\"quantity-{{ materiales }}\"></td> <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm\" value=\"{{ price }}\" id=\"price-{{ materials }}\"></td> <td>{{ amount }}</td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-green btn-update-update\" value=\"{{ materials }}\" data-tag=\"{{ tag }}\"> <span class=\"glyphicon glyphicon-edit\"></span> </button> </td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-red btn-delete-update\" value=\"{{ materials }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> <td class=\"text-center\">{{!attend}}</td> </tr>";
+        template = "<tr id=\"trm-{{ materials }}\"> <td class=\"text-center\">{{ item }}</td> <td class=\"text-center\">{{ materials }}</td> <td>{{ name }}</td> <td>{{ measure }}</td> <td class=\"text-center\">{{ unit }}</td> <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"brand-{{ materials }}-{{ brand_id }}\"</select></td> <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"model-{{ materials }}-{{ model_id }}\"</select></td> <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm change-modify\" value=\"{{ quantity }}\" min=\"0\" id=\"quantity-{{ materiales }}\"></td> <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm change-modify\" value=\"{{ price }}\" id=\"price-{{ materials }}\"></td> <td>{{ amount }}</td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-green btn-update-update\" value=\"{{ materials }}\" data-tag=\"{{ tag }}\"> <span class=\"glyphicon glyphicon-edit\"></span> </button> </td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-red btn-delete-update\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\" value=\"{{ materials }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> <td class=\"text-center\">{{!attend}}</td> </tr>";
         response.details[x].item = parseInt(x) + 1;
         att = "";
         if (response.details[x].tag === "2") {
@@ -1513,7 +1516,8 @@ updateMaterialUpdateMeter = function() {
 };
 
 deleteMaterialUpdateMeter = function() {
-  var material;
+  var btn, material;
+  btn = this;
   material = this.value;
   $().toastmessage("showToast", {
     text: "Realmente desea eliminar el material " + this.value + "?",
@@ -1532,6 +1536,8 @@ deleteMaterialUpdateMeter = function() {
         data = new Object();
         data.materials = material;
         data.deletematerialMeter = true;
+        data.brand = btn.getAttribute("data-brand");
+        data.model = btn.getAttribute("data-model");
         data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
         console.log(data);
         return $.post("", data, function(response) {
@@ -1578,10 +1584,14 @@ addMaterialUpdateMeter = function() {
         data.details = JSON.stringify(tmpObjectDetailsGroupMaterials.details);
       }
     }
-    console.log(data);
     $.post("", data, function(response) {
       var tmpObjectDetailsGroupMaterials;
       if (response.status) {
+        $("input[name=cantidad], input[name=description]").val("");
+        $("select[name=meter]").empty();
+        $("input[name=precio]").val("");
+        $("table.tb-details > tbody").empty();
+        $(".btn-show-materials-meter").click();
         tmpObjectDetailsGroupMaterials = new Object();
         startModidfy();
       } else {
@@ -1908,8 +1918,10 @@ approvedModify = function(event) {
         console.info("modify < original");
         if (qmodify > 0 && quantityorders === 0) {
           tblb[x].tag = "2";
+          tblb[x].dev = 0;
         } else if (quantityorders > 0 && qmodify === (quantityorders - (qoriginal - qmodify))) {
           tblb[x].tag = "0";
+          tblb[x].dev = 0;
         } else if (quantityorders > 0 && qmodify > (quantityorders - (qoriginal - qmodify))) {
           tblb[x].tag = "1";
         }
