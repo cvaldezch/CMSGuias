@@ -6,6 +6,9 @@ $(document).ready ->
     validregisterOld()
     return
   ), 600
+  $("table.table-float").floatThead
+      useAbsolutePositioning: false
+      scrollingTop: 50
   return
 
 

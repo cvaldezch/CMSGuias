@@ -8,6 +8,10 @@ $(document).ready(function() {
   setTimeout((function() {
     validregisterOld();
   }), 600);
+  $("table.table-float").floatThead({
+    useAbsolutePositioning: false,
+    scrollingTop: 50
+  });
 });
 
 resgisterMaterial = function(event) {

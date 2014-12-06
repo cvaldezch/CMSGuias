@@ -1181,8 +1181,10 @@ class SupplyView(ListView):
 class ListOrdersSummary(TemplateView):
     template_name = 'almacen/listorderssupply.html'
     context_object_name = 'Orders'
-    def get_context_data(self, request, *args, **kwargs):
-        context = dict() #super(ListOrdersSummary, self).get_context_data(**kwargs)
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
         context[self.context_object_name] = models.Pedido.objects.filter(Q(flag=True) & Q(status='AP') | Q(status='IN'))
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
@@ -1212,8 +1214,8 @@ class ListDetOrders(TemplateView):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
-        context['orders'] = get_list_or_404(models.Pedido,Q(flag=True) & Q(status='AP') | Q(status='IN'))
-        context['details'] = get_list_or_404(models.Detpedido.objects.extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},).order_by('materiales__matnom'), Q(flag=True) & Q(pedido__status='AP') | Q(pedido__status='IN'))
+        context['orders'] = models.Pedido.objects.filter(Q(flag=True) & Q(status='AP') | Q(status='IN'))
+        context['details'] = models.Detpedido.objects.filter(Q(pedido__status='AP') | Q(pedido__status='IN')).extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"}).order_by('materiales__matnom')
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
     @method_decorator(login_required)
