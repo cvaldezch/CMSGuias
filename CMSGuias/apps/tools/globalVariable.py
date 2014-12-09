@@ -18,13 +18,14 @@ from CMSGuias.apps.tools import number_to_char
     Status Models
 """
 status = {
-    'PE' : "PENDIENTE", # Pendiente
+    'AC' : "ACTIVO", # Activo
     'AN' : "ANULADO", # Anular
+    'AP' : "APROBADO", # Approved
+    'CO' : "COMPLETO", # Completo
     'DL' : "ELIMINADO", # Delete
     'IN' : "INCOMPLETO", # Incompleto
-    'CO' : "COMPLETO", # Completo
-    'AC' : "ACTIVO", # Activo
-    'NN' : "Nothing" # Nothing
+    'NN' : "Nothing", # Nothing
+    'PE' : "PENDIENTE", # Pendiente
 }
 
 # types nipples

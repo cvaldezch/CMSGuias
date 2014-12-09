@@ -19,6 +19,7 @@ from django.views.generic import TemplateView
 from CMSGuias.apps.almacen import models
 from CMSGuias.apps.tools import globalVariable, search, number_to_char
 from CMSGuias.apps.logistica.models import Cotizacion, CotCliente, DetCotizacion, Compra, DetCompra
+from CMSGuias.apps.ventas.models import Proyecto
 from CMSGuias.apps.home.models import Configuracion
 
 
@@ -86,11 +87,12 @@ class RptSupply(TemplateView):
             queryset = queryset.annotate(cantidad=Sum('cantshop')).order_by('materiales__matnom')
             context['bedside'] = bedside
             context['details'] = queryset
+            context['project'] = Proyecto.objects.filter(proyecto_id__in=bedside.orders.split(','))
             context['status'] = globalVariable.status
             html = render_to_string(self.template_name, context, context_instance=RequestContext(request))
             return generate_pdf(html)
-        except TemplateDoesNotExist:
-            raise Http404
+        except TemplateDoesNotExist, e:
+            raise Http404(e)
 
 # Report Quote
 class RptQuote(TemplateView):

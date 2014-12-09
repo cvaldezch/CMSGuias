@@ -1,284 +1,340 @@
 {% extends "base.html" %}
 {% block title %}
-	Document Out
+    Document Out
 {% endblock title %}
 {% block script %}
-	<script src="{{ MEDIA_URL }}js/mustache.js"></script>
-	<script src="{{ MEDIA_URL }}js/logistics/convertSupply.js"></script>
+    <script src="{{ MEDIA_URL }}js/mustache.js"></script>
+    <script src="{{ MEDIA_URL }}js/floatThead.js"></script>
+    <script src="{{ MEDIA_URL }}js/logistics/convertSupply.js"></script>
 {% endblock script %}
 {% block menu %}
-	{% include "menus/logistics.htm" %}
+    {% include "menus/logistics.htm" %}
 {% endblock menu %}
 {% block content %}
-	<div class="container">
-		<div class="well">
-			<header>
-				<h3>Generar Solicitud de Cotización o Orden de Compra</h3>
-			</header>
-			<div class="row">
-				<div class="col-md-12">
-					<div class="table-responsive">
-						<table class="table table-condensed table-hover table-principal">
-							<thead>
-								<tr class="brand-success">
-									<th></th>
-									<th></th>
-									<th>Código</th>
-									<th>Almacén</th>
-									<th>Registrado</th>
-									<th>Ingreso Almacén</th>
-									<th>Asunto</th>
-									<th>status</th>
-								</tr>
-							</thead>
-							<tbody>
-								{% for x in supply %}
-									<tr class="success">
-									<td>{{ forloop.counter }}</td>
-										<td>
-												<a class="btn-proccess text-center text-black" placeholder="{{ x.ingreso|date:'Y-m-d' }}" data="{{ x.almacen_id }}" name="{{ x.suministro_id }}"><span class="glyphicon glyphicon-check"></span></a>
-											</td>
-											<td>{{ x.suministro_id }}</td>
-											<td>{{ x.almacen.nombre }}</td>
-											<td>{{ x.registrado|date:"d M Y H:m" }}</td>
-											<td>{{ x.ingreso }}</td>
-											<td>{{ x.asunto }}</td>
-											<td>
-											{% for k, v in status.items %}
-												{% ifequal k x.status  %}
-													{{ v }}
-												{% endifequal %}
-											{% endfor %}
-											</td>
-									</tr>
-								{% empty %}
-									<div class="alert alert-warning alert-block">
-										<strong>Notice</strong>
-										<p>
-											No hay suministros registrados para mostrar, al parecer no tienes trabajo por aquí.
-										</p>
-									</div>
-								{% endfor %}
-							</tbody>
-							<tfoot>
-								<tr>
-									<td colspan="8" class="text-center">
-										<ul class="pagination">
-											{% if supply.has_preveous %}
-												<li><a href="?page=1">&laquo;</a></li>
-												<li><a href="?page={{ supply.previous_page_number }}">&laquo;</a></li>
-											{% endif %}
-											<li><a> Page {{ supply.number }} of {{ supply.paginator.num_pages }}</a></li>
-											{% if supply.has_next %}
-												<li><a href="?page={{ supply.next_page_number }}">&raquo;</a></li>
-												<li><a href="?page={{ supply.paginator.num_pages }}">&raquo;</a></li>
-											{% endif %}
-										</ul>
-									</td>
-								</tr>
-							</tfoot>
-						</table>
-						<!-- block convert -->
-						<div class="col-md-12">
-							<div class="panel panel-default panel-info panel-quote">
-								<div class="panel-heading">
-									<h4>Solicitud de Cotización</h4>
-								</div>
-								<div class="panel-body">
-									<div class="row">
-										<div class="col-md-12">
-											<div class="btn-group">
-												<button class="btn btn-info btn-sm btn-new text-black" value="quote"><span class="glyphicon glyphicon-file"></span> Nuevo</button>
-												<button class="btn btn-sm btn-info btn-clean text-black" value="quote" disabled><span class="glyphicon glyphicon-trash"></span> Limpiar</button>
-												<button class="btn btn-sm btn-info btn-save text-black" value="quote" disabled><span class="glyphicon glyphicon-floppy-save"></span> Cotizar Proveedor</button>
-												<button class="btn btn-danger btn-sm text-black btn-finish"><span class="glyphicon glyphicon-ok"></span>  Ya, termine!</button>
-											</div>
-										</div>
-										<div class="col-md-4">
-											<div class="form-group">
-												<label for="supplier_quote" class="control-label">Proveedor</label>
-												<select name="supplier_quote" id="supplier_quote" class="form-control input-sm" disabled>
-													<option value="">-- Selected Supplier --</option>
-													{% for s in supplier %}
-														<option value="{{ s.proveedor_id }}">{{ s.razonsocial }}</option>
-														{% empty %}
-														<option value="new">-- Agregar Proveedor --</option>
-													{% endfor %}
-												</select>
-											</div>
-										</div>
-										<div class="col-md-3">
-											<div class="form-group">
-												<label for="storege_quote" class="control-label">Almacén</label>
-												<select name="storage_quote" id="storage_quote" class="form-control input-sm" disabled>
-													{% for a in storage %}
-													 <option value="{{ a.almacen_id }}">{{ a.nombre }}</option>
-														{% empty %}
-														<option value="new">-- Agregar Almacén --</option>
-													{% endfor %}
-												</select>
-											</div>
-										</div>
-										<div class="col-md-2">
-											<div class="form-group">
-												<label for="traslado_quote" class="control-label">Fecha Traslado</label>
-												<input type="text" class="form-control input-sm" name="traslado_quote" disabled>
-											</div>
-										</div>
-										<div class="col-md-3">
-											<div class="form-group">
-												<label for="obser_quote" class="control-label">Observaciones</label>
-												<textarea name="obser_quote" id="obser_quote" class="form-control input-sm" rows="1" disabled></textarea>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="panel panel-default panel-success panel-buy">
-								<div class="panel-heading">
-									<h4>Orden de Compra</h4>
-								</div>
-								<div class="panel-body">
-									<div class="row">
-										<div class="col-md-12">
-											<div class="btn-group">
-												<button class="btn btn-success btn-sm btn-new text-black" value="buy"><span class="glyphicon glyphicon-file"></span> Nuevo</button>
-												<button class="btn btn-sm btn-success btn-clean text-black" value="buy" disabled><span class="glyphicon glyphicon-trash"></span> Limpiar</button>
-												<button class="btn btn-sm btn-success btn-save text-black" value="quote" disabled><span class="glyphicon glyphicon-floppy-save"></span> Comprar Proveedor</button>
-												<button class="btn btn-danger btn-sm text-black btn-finish"><span class="glyphicon glyphicon-ok"></span>  Ya, termine!</button>
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group">
-												<label for="" class="control-label">Proveedor</label>
-												<select name="supplier_buy" id="supplier_buy" class="form-control input-sm" disabled>
-													<option value="">-- Selected Supplier --</option>
-													{% for s in supplier %}
-														<option value="{{ s.proveedor_id }}">{{ s.razonsocial }}</option>
-														{% empty %}
-															<option value="new">-- Agregar Proveedor --</option>
-													{% endfor %}
-												</select>
-											</div>
-										</div>
-										<div class="col-md-3">
-											<div class="form-group">
-												<label for="" class="control-label">Documento</label>
-												<select name="documents_buy" id="documents_buy" class="form-control input-sm" disabled>
-													{% for d in documents %}
-														<option value="{{ d.documentos_id }}">{{ d.documento }}</option>
-														{% empty %}
-														<option value="new">-- Agregar Documentos --</option>
-													{% endfor %}
-												</select>
-											</div>
-										</div>
-										<div class="col-md-3">
-											<div class="form-group">
-												<label for="" class="control-label">Pagos</label>
-												<select name="payment_buy" id="payment_buy" class="form-control input-sm" disabled>
-													{% for p in payment %}
-														<option value="{{ p.pagos_id }}">{{ p.pagos }}</option>
-														{% empty %}
-														<option value="new">-- Agregar Pagos --</option>
-													{% endfor %}
-												</select>
-											</div>
-										</div>
-										<div class="col-md-2">
-											<div class="form-group">
-												<label for="" class="control-label">Modena</label>
-												<select name="currency_buy" id="currency_buy" class="form-control input-sm" disabled>
-													{% for d in currency %}
-														{% if d.moneda|cut:" " == "DORALESAMERICANOS"  %}
-															<option value="{{ d.moneda_id }}" selected>{{ d.moneda }}</option>
-														{% else %}
-															<option value="{{ d.moneda_id }}" disabled>{{ d.moneda }}</option>
-														{% endif %}
-														{% empty %}
-														<option value="new">-- Agregar moneda --</option>
-													{% endfor %}
-												</select>
-											</div>
-										</div>
-										<div class="col-md-2">
-											<div class="form-group">
-												<label for="" class="control-label">Fecha de Traslado</label>
-												<input type="text" class="form-control input-sm" name="transfer_buy" disabled>
-											</div>
-										</div>
-										<div class="col-md-4">
-											<div class="form-group">
-												<label for="" class="control-label">Contacto</label>
-												<input type="text" class="form-control input-sm" name="contact_buy" disabled>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-12">
-							<div class="panel panel-primary">
-								<div class="panel-body">
-									<table class="table table-condensed table-hover table-bordered table-details">
-										<caption>
-											<h4>Detalle de Suministro</h4>
-											<div class="form-group pull-left">
-												Seleccionar
-												<label class="radio-inline"><input type="radio" name="select" value="1"> Todo</label>
-												<label class="radio-inline"><input type="radio" name="select" value="0"> Ninguno.</label>
-											</div>
-										</caption>
-										<thead>
-											<tr>
-												<th></th>
-												<th></th>
-												<th>Código</th>
-												<th>Descripción</th>
-												<th>Medida</th>
-												<th>Unidad</th>
-												<th>Marca</th>
-												<th>Modelo</th>
-												<th>Cantidad</th>
-											</tr>
-										</thead>
-										<tbody>
-
-										</tbody>
-									</table>
-								</div>
-							</div>
-						</div>
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="container">
+        <div class="well">
+            <header>
+                <h3>Generar Solicitud de Cotización o Orden de Compra</h3>
+            </header>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-hover table-principal">
+                            <thead>
+                                <tr class="brand-success">
+                                    <th></th>
+                                    <th></th>
+                                    <th>Código</th>
+                                    <th>Almacén</th>
+                                    <th>Registrado</th>
+                                    <th>Ingreso Almacén</th>
+                                    <th>Asunto</th>
+                                    <th>status</th>
+                                    <th>Proyectos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for x in supply %}
+                                    <tr class="success">
+                                    <td>{{ forloop.counter }}</td>
+                                        <td>
+                                                <a class="btn-proccess text-center text-black" placeholder="{{ x.ingreso|date:'Y-m-d' }}" data="{{ x.almacen_id }}" name="{{ x.suministro_id }}"><span class="glyphicon glyphicon-check"></span></a>
+                                            </td>
+                                            <td>{{ x.suministro_id }}</td>
+                                            <td>{{ x.almacen.nombre }}</td>
+                                            <td>{{ x.registrado|date:"d M Y H:m" }}</td>
+                                            <td>{{ x.ingreso }}</td>
+                                            <td>{{ x.asunto }}</td>
+                                            <td>
+                                            {% for k, v in status.items %}
+                                                {% if k == x.status  %}
+                                                    {{ v }}
+                                                {% endif %}
+                                            {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for s, v in projects %}
+                                                    {% for p in projects.s %}
+                                                        {{p}}
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            </td>
+                                    </tr>
+                                {% empty %}
+                                    <div class="alert alert-warning alert-block">
+                                        <strong>Notice</strong>
+                                        <p>
+                                            No hay suministros registrados para mostrar, al parecer no tienes trabajo por aquí.
+                                        </p>
+                                    </div>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="8" class="text-center">
+                                        <ul class="pagination">
+                                            {% if supply.has_preveous %}
+                                                <li><a href="?page=1">&laquo;</a></li>
+                                                <li><a href="?page={{ supply.previous_page_number }}">&laquo;</a></li>
+                                            {% endif %}
+                                            <li><a> Page {{ supply.number }} of {{ supply.paginator.num_pages }}</a></li>
+                                            {% if supply.has_next %}
+                                                <li><a href="?page={{ supply.next_page_number }}">&raquo;</a></li>
+                                                <li><a href="?page={{ supply.paginator.num_pages }}">&raquo;</a></li>
+                                            {% endif %}
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <!-- block convert -->
+                        <div class="col-md-12">
+                            <div class="panel panel-default panel-info panel-quote">
+                                <div class="panel-heading">
+                                    <h4>
+                                        Solicitud de Cotización
+                                    </h4>
+                                    <p>
+                                        <button class="btn btn-default btn-sm btn-back">
+                                            <span class="fa fa-chevron-circle-left"></span> Regresar
+                                        </button>
+                                    </p>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="btn-group">
+                                                <button class="btn btn-info btn-sm btn-new text-black" value="quote"><span class="glyphicon glyphicon-file"></span> Nuevo</button>
+                                                <button class="btn btn-sm btn-info btn-clean text-black" value="quote" disabled><span class="glyphicon glyphicon-trash"></span> Limpiar</button>
+                                                <button class="btn btn-sm btn-info btn-save text-black" value="quote" disabled><span class="glyphicon glyphicon-floppy-save"></span> Cotizar Proveedor</button>
+                                                <button class="btn btn-danger btn-sm text-black btn-finish"><span class="glyphicon glyphicon-ok"></span>  Ya, termine!</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="supplier_quote" class="control-label">Proveedor</label>
+                                                <select name="supplier_quote" id="supplier_quote" class="form-control input-sm" disabled>
+                                                    <option value="">-- Selected Supplier --</option>
+                                                    {% for s in supplier %}
+                                                        <option value="{{ s.proveedor_id }}">{{ s.razonsocial }}</option>
+                                                        {% empty %}
+                                                        <option value="new">-- Agregar Proveedor --</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="storege_quote" class="control-label">Almacén</label>
+                                                <select name="storage_quote" id="storage_quote" class="form-control input-sm" disabled>
+                                                    {% for a in storage %}
+                                                     <option value="{{ a.almacen_id }}">{{ a.nombre }}</option>
+                                                        {% empty %}
+                                                        <option value="new">-- Agregar Almacén --</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="traslado_quote" class="control-label">Fecha Traslado</label>
+                                                <input type="text" class="form-control input-sm" name="traslado_quote" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="obser_quote" class="control-label">Observaciones</label>
+                                                <textarea name="obser_quote" id="obser_quote" class="form-control input-sm" rows="1" disabled></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default panel-success panel-buy">
+                                <div class="panel-heading">
+                                    <h4>
+                                        Orden de Compra
+                                    </h4>
+                                    <p>
+                                        <button class="btn btn-default btn-sm btn-back">
+                                            <span class="fa fa-chevron-circle-left"></span> Regresar
+                                        </button>
+                                    </p>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="btn-group">
+                                                <button class="btn btn-success btn-sm btn-new text-black" value="buy">
+                                                    <span class="glyphicon glyphicon-file"></span> Nuevo
+                                                </button>
+                                                <button class="btn btn-sm btn-success btn-clean text-black" value="buy" disabled>
+                                                    <span class="glyphicon glyphicon-trash"></span> Limpiar
+                                                </button>
+                                                <button class="btn btn-sm btn-success text-black btn-purchase" value="buy" disabled>
+                                                    <span class="glyphicon glyphicon-floppy-save"></span> Comprar Proveedor
+                                                </button>
+                                                <button class="btn btn-danger btn-sm text-black btn-finish">
+                                                    <span class="glyphicon glyphicon-ok"></span>  Ya, termine!
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="" class="control-label">Proveedor</label>
+                                                <select name="supplier_buy" id="supplier_buy" class="form-control input-sm" disabled>
+                                                    <option value="">-- Selected Supplier --</option>
+                                                    {% for s in supplier %}
+                                                        <option value="{{ s.proveedor_id }}">{{ s.razonsocial }}</option>
+                                                        {% empty %}
+                                                            <option value="new">-- Agregar Proveedor --</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="" class="control-label">Documento</label>
+                                                <select name="documents_buy" id="documents_buy" class="form-control input-sm" disabled>
+                                                    {% for d in documents %}
+                                                        <option value="{{ d.documentos_id }}">{{ d.documento }}</option>
+                                                        {% empty %}
+                                                        <option value="new">-- Agregar Documentos --</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="" class="control-label">Pagos</label>
+                                                <select name="payment_buy" id="payment_buy" class="form-control input-sm" disabled>
+                                                    {% for p in payment %}
+                                                        <option value="{{ p.pagos_id }}">{{ p.pagos }}</option>
+                                                        {% empty %}
+                                                        <option value="new">-- Agregar Pagos --</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="" class="control-label">Modena</label>
+                                                <select name="currency_buy" id="currency_buy" class="form-control input-sm" disabled>
+                                                    {% for d in currency %}
+                                                        {% if d.moneda|cut:" " == "DORALESAMERICANOS"  %}
+                                                            <option value="{{ d.moneda_id }}" selected>{{ d.moneda }}</option>
+                                                        {% else %}
+                                                            <option value="{{ d.moneda_id }}" disabled>{{ d.moneda }}</option>
+                                                        {% endif %}
+                                                        {% empty %}
+                                                        <option value="new">-- Agregar moneda --</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label for="" class="control-label">Lugar de Entrega</label>
+                                                <input type="text" class="form-control input-sm" name="delivery" value="{{ request.session.company.address }}" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="" class="control-label">Fecha de Traslado</label>
+                                                <input type="text" class="form-control input-sm" name="transfer_buy" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="" class="control-label">Descuento</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control input-sm" name="discount" disabled>
+                                                    <span class="input-group-addon">
+                                                        %
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="" class="control-label">Deposito</label>
+                                                <input type="file" class="form-control input-sm" name="deposit" accept="application/pdf" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="" class="control-label">Contacto</label>
+                                                <input type="text" class="form-control input-sm" name="contact_buy" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="panel panel-primary panel-details">
+                                <div class="panel-body">
+                                    <table class="table table-condensed table-hover table-bordered table-details table-float">
+                                        <caption>
+                                            <h4>
+                                                Detalle de Suministro
+                                            </h4>
+                                            <p class="project text-left"></p>
+                                            <div class="form-group pull-left">
+                                                Seleccionar
+                                                <label class="radio-inline"><input type="radio" name="select" value="1"> Todo</label>
+                                                <label class="radio-inline"><input type="radio" name="select" value="0"> Ninguno.</label>
+                                            </div>
+                                        </caption>
+                                        <thead>
+                                            <tr class="brand-warning">
+                                                <th></th>
+                                                <th></th>
+                                                <th>Código</th>
+                                                <th>Descripción</th>
+                                                <th>Medida</th>
+                                                <th>Unidad</th>
+                                                <th>Marca</th>
+                                                <th>Modelo</th>
+                                                <th>Cantidad</th>
+                                                <th class="col-price">Precio</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
 <!-- block variables -->
 <input type="hidden" name="supply">
 <input type="hidden" name="nro-quote">
 <input type="hidden" name="nro-buy">
 {% csrf_token %}
 <!-- end block-->
-	<!-- block modal -->
-	<div class="modal fade mquestion">
-		<div class="modal-dialog modal-sm">
-			<div class="modal-content">
-				<div class="modal-header">
-					<a href="#" class="close" data-dismiss="modal">&times;</a>
-					<h4>Que deseas hacer con el suministro <span class="consu"></span>,
-					 <small>una <q>solicitud de cotización</q> o una <q>orden de compra?</q></small>
-					</h4>
-				</div>
-				<div class="modal-body">
-					<div class="form-group">
-						<button title="quote" class="btn btn-block btn-info text-black conquote"><span class="glyphicon glyphicon-list-alt"></span> Solicitud Cotización</button>
-						<button title="purchase" class="btn btn-block btn-success text-black conbuy"><span class="glyphicon glyphicon-list-alt"></span> Orden de Compra</button>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Salir</button>
-				</div>
-			</div>
-		</div>
-	</div>
+    <!-- block modal -->
+    <div class="modal fade mquestion">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a href="#" class="close" data-dismiss="modal">&times;</a>
+                    <h4>Que deseas hacer con el suministro <span class="consu"></span>,
+                     <small>una <q>solicitud de cotización</q> o una <q>orden de compra?</q></small>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <button title="quote" class="btn btn-block btn-info text-black conquote"><span class="glyphicon glyphicon-list-alt"></span> Solicitud Cotización</button>
+                        <button title="purchase" class="btn btn-block btn-success text-black conbuy"><span class="glyphicon glyphicon-list-alt"></span> Orden de Compra</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Salir</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}

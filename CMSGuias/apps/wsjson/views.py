@@ -511,9 +511,8 @@ class SupplyDetailView(DetailView):
             response['content-type'] = 'application/json'
             response['mimetype'] = 'application/json'
             queryset = DetSuministro.objects.filter(suministro_id__exact=kwargs['sid'], flag=True)
-            queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad__uninom', 'brand__brand','model__model')
+            queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad__uninom', 'brand__brand','model__model','brand_id','model_id')
             queryset = queryset.annotate(cantidad=Sum('cantshop')).order_by('materiales__matnom')
-            print queryset
             context['list'] = [
                 {
                     'materiales_id': x['materiales_id'],
@@ -522,9 +521,13 @@ class SupplyDetailView(DetailView):
                     'materiales__unit': x['materiales__unidad__uninom'],
                     'brand': x['brand__brand'],
                     'model': x['model__model'],
+                    'brand_id': x['brand_id'],
+                    'model_id': x['model_id'],
                     'cantidad': x['cantidad']
                 } for x in queryset
             ]
+            bedside = Suministro.objects.get(pk=kwargs['sid'])
+            context['project'] = [{'nompro': x.nompro} for x in Proyecto.objects.filter(proyecto_id__in=bedside.orders.split(','))]
             context['status'] = True
             response.write(simplejson.dumps(context))
         except ObjectDoesNotExist, e:

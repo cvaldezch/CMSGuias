@@ -5,134 +5,195 @@
 <script src="{{ MEDIA_URL }}js/almacen/detailsorders.js"></script>
 {% endblock %}
 {% block menu %}
-	{% include "menus/storage_menu.htm" %}
+    {% include "menus/storage_menu.htm" %}
 {% endblock menu %}
 {% block content %}
 <div class="container">
-	<div class="well">
-		<header>
-			<h3>
-				<span class="glyphicon glyphicon-list-alt"></span>
-				Detalle de Pedidos
-				<small>Seleccione los materiales para registrar en una <q>Orden de Suministro</q>.</small>
-			</h3>
-		</header>
-		<section>
-			<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-				{% for x in orders %}
-				  <div class="panel panel-default">
-				    <div class="panel-heading" role="tab" id="headingOne">
-				      <h4 class="panel-title">
-				        <a data-toggle="collapse" data-parent="#accordion" href="#{{ x.pedido_id }}" aria-expanded="true" aria-controls="{{ x.pedido_id }}">
-				          Nro Pedido: {{ x.pedido_id }} Proyecto: {{ x.proyecto.nompro }} Sector: {{ x.sector.nomsec }} Traslado: {{ x.traslado }}
-				        </a>
-				      </h4>
-				    </div>
-				    <div id="{{ x.pedido_id }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-				      <div class="panel-body">
-				        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-				      </div>
-				    </div>
-				  </div>
-				{% endfor %}
-			</div>
-		</section>
-		<div class="row">
-			<div class="col-md-12">
-				<div class="panel panel-warning">
-					<div class="panel-heading">
+    <div class="well">
+        <header>
+            <h3>
+                <span class="glyphicon glyphicon-list-alt"></span>
+                Detalle de Pedidos
+                <small>Seleccione los materiales para registrar en una <q>Orden de Suministro</q>.</small>
+            </h3>
+        </header>
+        <section>
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                {% for x in orders %}
+                  <div class="panel panel-warning">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#{{ x.pedido_id }}" aria-expanded="true" aria-controls="{{ x.pedido_id }}">
+                          Nro Pedido: {{ x.pedido_id }} Proyecto: {{ x.proyecto.nompro }} Sector: {{ x.sector.nomsec }} Traslado: {{ x.traslado }}
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="{{ x.pedido_id }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                      <!-- <div class="panel-body"> -->
+                        <div class="table-responsible">
+                            <table class="table table-hover table-condensed table-bordered table-float">
+                                <caption class="text-left">
+                                    Selecionar
+                                    <label class="radio-inline">
+                                        <input type="radio" name="rdo{{ x.pedido_id }}" value="all"> Todo
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="rdo{{ x.pedido_id }}" value=""> Ninguno
+                                    </label>
+                                    <div class="btn-group pull-right">
+                                        <button class="btn btn-xs btn-warning text-black" name="btn{{ x.pedido_id }}" disabled>
+                                            <span class="glyphicon glyphicon-shopping-cart"></span> Suminsitrar
+                                        </button>
+                                    </div>
+                                </caption>
+                                <thead>
+                                    <tr class="warning">
+                                        <th></th>
+                                        <th></th>
+                                        <th>Codigo</th>
+                                        <th>Descripción</th>
+                                        <th>Medida</th>
+                                        <th>Unidad</th>
+                                        <th>Marca</th>
+                                        <th>Modelo</th>
+                                        <th>Cantidad</th>
+                                        <th>Stock</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for j in details %}
+                                    {#% ifequal x.pedido_id j.pedido_id  %#}
+                                        <tr class="
+                                            {% if j.stock <= 0 and not j.spptag %}
+                                                danger
+                                            {% elif j.stock > 0 and j.stock <= j.cantshop and not j.spptag %}
+                                                warning
+                                            {% elif j.stock > j.cantshop  and not j.spptag %}
+                                                success
+                                            {% endif %}
+                                        ">
+                                            <td>{{ forloop.counter }}</td>
+                                            <td><input type="checkbox" data-brand="{{ j.brand_id }}" data-model="{{ j.model_id }}" name="chk{{ x.pedido_id }}" value="{{ j.cantshop }}" data-mat="{{ j.materiales_id }}"
+                                                {% if j.spptag %}
+                                                    disabled="disabled" checked
+                                                {% endif %}
+                                            ></td>
+                                            <td>{{ j.materiales_id }}</td>
+                                            <td>{{ j.materiales.matnom }}</td>
+                                            <td>{{ j.materiales.matmed }}</td>
+                                            <td>{{ j.materiales.unidad.uninom }}</td>
+                                            <td>{{ j.brand.brand }}</td>
+                                            <td>{{ j.model.model }}</td>
+                                            <th>{{ j.cantshop|safe }}</th>
+                                            <th>{{ j.stock|safe }}</th>
+                                        </tr>
+                                    {#% endifequal %#}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                      <!-- </div> -->
+                    </div>
+                  </div>
+                {% endfor %}
+            </div>
+        </section>
+        <!-- <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-warning">
+                    <div class="panel-heading">
 
-					</div>
-				</div>
-				<div class="table-responsive">
-					<table class="table table-condensed table-bordered">
-						<tbody>
-							{% for x in orders %}
-								<tr class="brand-warning">
-									<td>{{ forloop.counter }}</td>
-									<th>Nro Pedido</th>
-									<td>{{ x.pedido_id }}</td>
-									<th>Proyecto</th>
-									<td>{{ x.proyecto.nompro }}</td>
-									<th>Subroyecto</th>
-									<td>{{ x.subproyecto.nomsub }}</td>
-								</tr>
-								<tr class="brand-warning">
-									<td></td>
-									<th>Sector</th>
-									<td>{{ x.sector.nomsec }}</td>
-									<th>Traslado</th>
-									<td>{{ x.traslado }}</td>
-									<td></td>
-									<td></td>
-								</tr>
-								<tr>
-									<td colspan="7">
-										<table class="table table-hover table-condensed table-bordered table-float">
-											<thead>
-												<tr class="warning">
-													<td colspan="10">
-														Selecionar
-														<label class="radio-inline"><input type="radio" name="rdo{{ x.pedido_id }}" value="all"> Todo</label>
-														<label class="radio-inline"><input type="radio" name="rdo{{ x.pedido_id }}" value=""> Ninguno</label>
-														<div class="btn-group pull-right">
-															<button class="btn btn-xs btn-warning text-black" name="btn{{ x.pedido_id }}" disabled><span class="glyphicon glyphicon-shopping-cart"></span> Suminsitrar</button>
-														</div>
-													</td>
-												</tr>
-												<tr class="warning">
-													<th></th>
-													<th></th>
-													<th>Codigo</th>
-													<th>Descripción</th>
-													<th>Medida</th>
-													<th>Unidad</th>
-													<th>Marca</th>
-													<th>Modelo</th>
-													<th>Cantidad</th>
-													<th>Stock</th>
-												</tr>
-											</thead>
-											<tbody>
-												{% for j in details %}
-													{#% ifequal x.pedido_id j.pedido_id  %#}
-														<tr class="
-															{% if j.stock <= 0 and not j.spptag %}
-																danger
-															{% elif j.stock > 0 and j.stock <= j.cantshop and not j.spptag %}
-																warning
-															{% elif j.stock > j.cantshop  and not j.spptag %}
-																success
-															{% endif %}
-														">
-															<td>{{ forloop.counter }}</td>
-															<td><input type="checkbox" data-brand="{{ j.brand_id }}" data-model="{{ j.model_id }}" name="chk{{ x.pedido_id }}" value="{{ j.cantshop }}" data-mat="{{ j.materiales_id }}"
-																{% if j.spptag %}
-																	disabled="disabled" checked
-																{% endif %}
-															></td>
-															<td>{{ j.materiales_id }}</td>
-															<td>{{ j.materiales.matnom }}</td>
-															<td>{{ j.materiales.matmed }}</td>
-															<td>{{ j.materiales.unidad.uninom }}</td>
-															<td>{{ j.brand.brand }}</td>
-															<td>{{ j.model.model }}</td>
-															<th>{{ j.cantshop|safe }}</th>
-															<th>{{ j.stock|safe }}</th>
-														</tr>
-													{#% endifequal %#}
-												{% endfor %}
-											</tbody>
-										</table>
-									</td>
-								</tr>
-							{% endfor %}
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-	</div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-condensed table-bordered">
+                        <tbody>
+                            {% for x in orders %}
+                                <tr class="brand-warning">
+                                    <td>{{ forloop.counter }}</td>
+                                    <th>Nro Pedido</th>
+                                    <td>{{ x.pedido_id }}</td>
+                                    <th>Proyecto</th>
+                                    <td>{{ x.proyecto.nompro }}</td>
+                                    <th>Subroyecto</th>
+                                    <td>{{ x.subproyecto.nomsub }}</td>
+                                </tr>
+                                <tr class="brand-warning">
+                                    <td></td>
+                                    <th>Sector</th>
+                                    <td>{{ x.sector.nomsec }}</td>
+                                    <th>Traslado</th>
+                                    <td>{{ x.traslado }}</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="7">
+                                        <table class="table table-hover table-condensed table-bordered table-float">
+                                            <thead>
+                                                <tr class="warning">
+                                                    <td colspan="10">
+                                                        Selecionar
+                                                        <label class="radio-inline"><input type="radio" name="rdo{{ x.pedido_id }}" value="all"> Todo</label>
+                                                        <label class="radio-inline"><input type="radio" name="rdo{{ x.pedido_id }}" value=""> Ninguno</label>
+                                                        <div class="btn-group pull-right">
+                                                            <button class="btn btn-xs btn-warning text-black" name="btn{{ x.pedido_id }}" disabled><span class="glyphicon glyphicon-shopping-cart"></span> Suminsitrar</button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr class="warning">
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th>Codigo</th>
+                                                    <th>Descripción</th>
+                                                    <th>Medida</th>
+                                                    <th>Unidad</th>
+                                                    <th>Marca</th>
+                                                    <th>Modelo</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Stock</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for j in details %}
+                                                    {#% ifequal x.pedido_id j.pedido_id  %#}
+                                                        <tr class="
+                                                            {% if j.stock <= 0 and not j.spptag %}
+                                                                danger
+                                                            {% elif j.stock > 0 and j.stock <= j.cantshop and not j.spptag %}
+                                                                warning
+                                                            {% elif j.stock > j.cantshop  and not j.spptag %}
+                                                                success
+                                                            {% endif %}
+                                                        ">
+                                                            <td>{{ forloop.counter }}</td>
+                                                            <td><input type="checkbox" data-brand="{{ j.brand_id }}" data-model="{{ j.model_id }}" name="chk{{ x.pedido_id }}" value="{{ j.cantshop }}" data-mat="{{ j.materiales_id }}"
+                                                                {% if j.spptag %}
+                                                                    disabled="disabled" checked
+                                                                {% endif %}
+                                                            ></td>
+                                                            <td>{{ j.materiales_id }}</td>
+                                                            <td>{{ j.materiales.matnom }}</td>
+                                                            <td>{{ j.materiales.matmed }}</td>
+                                                            <td>{{ j.materiales.unidad.uninom }}</td>
+                                                            <td>{{ j.brand.brand }}</td>
+                                                            <td>{{ j.model.model }}</td>
+                                                            <th>{{ j.cantshop|safe }}</th>
+                                                            <th>{{ j.stock|safe }}</th>
+                                                        </tr>
+                                                    {#% endifequal %#}
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div> -->
+    </div>
 </div>
 {% endblock %}
 {% block footer %}

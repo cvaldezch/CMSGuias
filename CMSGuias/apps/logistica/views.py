@@ -119,9 +119,21 @@ class SupplytoDocumentIn(TemplateView):
         context['status'] = globalVariable.status
         context['supplier'] = Proveedor.objects.filter(flag=True)
         context['storage'] = Almacene.objects.filter(flag=True)
-        context['documents'] = Documentos.objects.filter(flag=True)
-        context['payment'] = FormaPago.objects.filter(flag=True)
+        context['documents'] = Documentos.objects.filter(flag=True).order_by('documento')
+        context['payment'] = FormaPago.objects.filter(flag=True).order_by('pagos')
         context['currency'] = Moneda.objects.filter(flag=True)
+        context['projects'] = [
+            {
+                s.suministro_id: [
+                    {
+                        'nompro': x.nompro
+                    }
+                    for x in Proyecto.objects.filter(proyecto_id__in=s.orders.split(','))
+                ]
+            }
+            for s in supply
+        ]
+        print context['projects']
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
     @method_decorator(login_required)
@@ -188,10 +200,33 @@ class SupplytoDocumentIn(TemplateView):
 
                     data["id"] = idquote
                     data['status'] = True
-                elif request.POST.get('type') == "buy":
-                    data['status'] = True
+                if 'purchase' in request.POST:
+                    form = CompraForm(request.POST, request.FILES)
+                    if form.is_valid():
+                        add = form.save(commit=False)
+                        purchase = genkeys.GenerateKeyPurchase()
+                        add.compra_id = purchase
+                        add.empdni_id = request.user.get_profile().empdni_id
+                        add.save()
+
+                        # Save details
+                        materials = json.loads(request.POST.get('mats'))
+                        for x in materials:
+                            obj = DetCompra()
+                            obj.compra_id = purchase
+                            obj.materiales_id = x['materials']
+                            obj.brand_id = x['brand']
+                            obj.model_id = x['model']
+                            obj.cantidad = x['quantity']
+                            obj.precio = x['price']
+                            obj.discount = 0
+                            obj.cantstatic = x['quantity']
+                            obj.save()
+                        data['purchase'] = purchase
+                        data['status'] = True
+                    else:
+                        data['status'] = False
             except ObjectDoesNotExist, e:
-                print e
                 data['status'] = False
             response.write(simplejson.dumps(data))
             response['content_type'] = "application/json"
