@@ -4,10 +4,11 @@
 {% endblock title %}
 {% block script %}
     <script src="{{ MEDIA_URL }}js/floatThead.js"></script>
+    <script src="{{ MEDIA_URL }}js/logistics/serviceorder.js"></script>
 {% endblock script %}
-{% block menus %}
+{% block menu %}
     {% include "menus/logistics.htm" %}
-{% endblock menus %}
+{% endblock menu %}
 {% block content %}
     <div class="container">
         <div class="well">
@@ -15,7 +16,180 @@
                 <h3>
                     Orden de Servicio
                 </h3>
+                <nav>
+                    <button class="btn btn-sm btn-warning text-black btn-new">
+                        <span class="fa fa-file"></span>
+                        <span>Nuevo</span>
+                    </button>
+                    <button class="btn btn-sm btn-danger btn-erase-fields">
+                        <span class="fa fa-eraser"></span>
+                        <span>Limpiar Todo</span>
+                    </button>
+                    <button class="btn btn-sm btn-primary btn-generate">
+                        <span class="fa fa-eraser"></span>
+                        <span>Generar Orden</span>
+                    </button>
+                    <button class="btn btn-sm btn-primary btn-list" disabled>
+                        <span class="fa fa-list"></span>
+                        <span>Lista de Ordenes</span>
+                    </button>
+                </nav>
             </header>
+            <section>
+                <div class="panel panel-primary panel-new">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Proyecto</label>
+                                    <select name="project" id="" class="form-control input-sm">
+                                        {% for x in project %}
+                                            <option value="{{ x.proyecto_id }}">{{ x.nompro }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Subproyecto</label>
+                                    <select name="subproject" id="" class="form-control input-sm"></select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Proveedor</label>
+                                    <select name="supplier" id="" class="form-control input-sm">
+                                        {% for x in supplier %}
+                                            <option value="{{ x.proveedor_id }}">{{ x.razonsocial }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Cotización</label>
+                                    <input type="text" maxlength="10" placeholder="000-000000" class="form-control input-sm">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Lugar de Ejecución</label>
+                                    <input type="text" name="arrival" placeholder="Ejecución" class="form-control input-sm">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Documento</label>
+                                    <select name="document" id="" class="form-control input-sm">
+                                        {% for x in document %}
+                                            <option value="{{ x.documento_id }}">{{ x.documento }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Forma de Pago</label>
+                                    <select name="method" id="" class="form-control input-sm">
+                                        {% for x in method %}
+                                            <option value="{{ x.pagos_id }}">{{ x.pagos }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Fecha Inicio</label>
+                                    <input type="text" name="start" class="form-control input-sm" placeholder="aaaa-mm-dd">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Fecha Fin</label>
+                                    <input type="text" name="execution" class="form-control input-sm" placeholder="aaaa-mm-dd">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Descuento</label>
+                                    <div class="input-group">
+                                        <input type="number" max="100" min="0" step="0.10" name="dsct" class="form-control input-sm text-right" placeholder="0">
+                                        <span class="input-group-addon" value="0">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Autorizado</label>
+                                    <select name="authorizaed" class="form-control input-sm">
+                                        {% for x in authorized %}
+                                            <option value="{{ x.empdni_id }}">{{ x.name_complete }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-condensed table-float table-hover table-bordered">
+                                        <thead>
+                                            <tr class="brand-warning">
+                                                <th class="col-1 text-center"></th>
+                                                <th class="col-1 text-center">Item</th>
+                                                <th class="text-center">Descripción</th>
+                                                <th class="col-2 text-center">Cantidad</th>
+                                                <th class="col-2 text-center">Unidad</th>
+                                                <th class="col-3 text-center">Precio</th>
+                                                <th class="col-3 text-center">Importe</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="5" rowspan="4"></td>
+                                                <th>Subtotal</th>
+                                                <td class="text-right"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>DSCTO <span class="vdsct"></span>%</th>
+                                                <td class="text-right"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>IGV <span class="vigv"></span>%</th>
+                                                <td class="text-right"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>TOTAL</th>
+                                                <th class="text-right"></th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-primary panel-list">
+                    <div class="table-responsible">
+                        <table class="table table-hover table-condensed">
+                            <thead>
+                                <tr class="brand-primary text-white">
+                                   <th></th>
+                                   <th>Código</th>
+                                   <th>Proveedor</th>
+                                   <th>Proyecto</th>
+                                   <th>Registrado</th>
+                                   <th>Documento</th>
+                                   <th>Metodo</th>
+                                   <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 {% endblock content %}

@@ -149,7 +149,7 @@ class Employee(models.Model):
 
     @property
     def name_complete(self):
-        return '%s, %s'%(self.firstname, self.lastname)
+        return '%s, %s'%(self.lastname, self.firstname)
 
     @property
     def name_charge(self):
@@ -318,6 +318,9 @@ class Proveedor(models.Model):
     last_login = models.DateTimeField(auto_now=True, null=True)
     email = models.CharField(max_length=60, default='ejemplo@dominio.com')
     flag = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['razonsocial']
 
     def __unicode__(self):
       return '%s %s %s'%(self.proveedor_id, self.razonsocial, self.direccion)

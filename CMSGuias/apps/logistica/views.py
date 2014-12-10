@@ -19,9 +19,9 @@ from django.views.generic.edit import CreateView
 from xlrd import open_workbook, XL_CELL_EMPTY
 
 from CMSGuias.apps.almacen.models import Suministro, Inventario
-from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda, Configuracion, LoginProveedor, Brand, Model
+from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda, Configuracion, LoginProveedor, Brand, Model, Employee
 from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra, tmpcotizacion, tmpcompra
-from CMSGuias.apps.ventas.models import Proyecto
+from CMSGuias.apps.ventas.models import Proyecto, Subproyecto
 from CMSGuias.apps.operations.models import MetProject
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles, search
 from .forms import addTmpCotizacionForm, addTmpCompraForm, CompraForm, ProveedorForm
@@ -1276,13 +1276,28 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
         context = dict()
         if request.is_ajax():
             try:
-                pass
+                if 'changeProject' in request.GET:
+                    address = Proyecto.objects.get(pk=request.GET.get('pro'))
+                    sub = Subproyecto.objects.filter(proyecto_id=request.GET.get('pro'))
+                    context['address'] = address.direccion
+                    context['subprojects'] = [
+                        {
+                            'id': x.subproyecto_id,
+                            'subproject': x.subproyecto
+                        } for x in sub
+                    ]
+                    context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
         else:
             try:
+                context['project'] = Proyecto.objects.filter(flag=True, status='AC')
+                context['supplier'] = Proveedor.objects.filter(flag=True)
+                context['document'] = Documentos.objects.filter(flag=True)
+                context['method'] = FormaPago.objects.filter(flag=True)
+                context['authorized'] = Employee.objects.filter(flag=True)
                 return render_to_response('logistics/serviceorder.html', context, context_instance=RequestContext(request))
             except TemplateDoesNotExist, e:
-                raise Http404
+                raise Http404(e)
