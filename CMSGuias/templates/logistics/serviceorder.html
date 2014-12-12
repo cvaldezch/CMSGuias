@@ -3,6 +3,7 @@
     Service Order
 {% endblock title %}
 {% block script %}
+    <script src="{{ MEDIA_URL }}js/mustache.js"></script>
     <script src="{{ MEDIA_URL }}js/floatThead.js"></script>
     <script src="{{ MEDIA_URL }}js/logistics/serviceorder.js"></script>
 {% endblock script %}
@@ -21,17 +22,19 @@
                         <span class="fa fa-file"></span>
                         <span>Nuevo</span>
                     </button>
-                    <button class="btn btn-sm btn-danger btn-erase-fields">
+                    <!-- <button class="btn btn-sm btn-danger btn-erase-fields">
                         <span class="fa fa-eraser"></span>
                         <span>Limpiar Todo</span>
-                    </button>
-                    <button class="btn btn-sm btn-primary btn-generate">
-                        <span class="fa fa-eraser"></span>
-                        <span>Generar Orden</span>
-                    </button>
-                    <button class="btn btn-sm btn-primary btn-list" disabled>
+                    </button> -->
+                    <button class="btn btn-sm btn-primary btn-list">
                         <span class="fa fa-list"></span>
                         <span>Lista de Ordenes</span>
+                    </button>
+                    <button class="btn btn-sm btn-primary btn-generate">
+                        <span class="fa fa-save"></span>
+                        <span class="fa fa-long-arrow-right"></span>
+                        <span class="fa fa-file-text"></span>
+                        <span>Generar Orden</span>
                     </button>
                 </nav>
             </header>
@@ -113,8 +116,8 @@
                                 <div class="form-group has-warning">
                                     <label class="control-label">Descuento</label>
                                     <div class="input-group">
-                                        <input type="number" max="100" min="0" step="0.10" name="dsct" class="form-control input-sm text-right" placeholder="0">
-                                        <span class="input-group-addon" value="0">%</span>
+                                        <input type="number" max="100" min="0" step="0.10" name="dsct" class="form-control input-sm text-right numberValid" pattern="^\d*([\.]\d{0,2}|\d)$" placeholder="0.00" title="El formato para el descuento es *.00 solo se acepta dos decimales" value="0">
+                                        <span class="input-group-addon" >%</span>
                                     </div>
                                 </div>
                             </div>
@@ -132,7 +135,36 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="table-responsive">
-                                    <table class="table table-condensed table-float table-hover table-bordered">
+                                    <table class="table table-condensed table-float table-hover table-bordered table-float table-details">
+                                        <caption>
+                                            <div class="text-left">
+                                                <button class="btn btn-warning btn-sm text-black" data-toggle="modal" data-target="#mdetails">
+                                                    <span class="fa fa-plus-circle"></span>
+                                                    <span>Agregar Detalle</span>
+                                                </button>
+                                                <button class="btn btn-default btn-sm btn-refresh">
+                                                    <span class="fa fa-refresh"></span>
+                                                    <span>Recargar</span>
+                                                </button>
+                                                <button class="btn btn-danger btn-sm btn-del">
+                                                    <span class="fa fa-check-square"></span>
+                                                    <span class="fa fa-long-arrow-right"></span>
+                                                    <span class="fa fa-trash"></span>
+                                                    <span>Eliminar</span>
+                                                </button>
+                                            </div>
+                                            <div class="text-right">
+                                                Seleccionar:
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="sel" value="1">
+                                                    Todo
+                                                </label>
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="sel" value="0">
+                                                    Ninguno.
+                                                </label>
+                                            </div>
+                                        </caption>
                                         <thead>
                                             <tr class="brand-warning">
                                                 <th class="col-1 text-center"></th>
@@ -142,6 +174,7 @@
                                                 <th class="col-2 text-center">Unidad</th>
                                                 <th class="col-3 text-center">Precio</th>
                                                 <th class="col-3 text-center">Importe</th>
+                                                <th></th>
                                             </tr>
                                         </thead>
                                         <tbody></tbody>
@@ -149,19 +182,19 @@
                                             <tr>
                                                 <td colspan="5" rowspan="4"></td>
                                                 <th>Subtotal</th>
-                                                <td class="text-right"></td>
+                                                <td class="text-right ramount"></td>
                                             </tr>
                                             <tr>
-                                                <th>DSCTO <span class="vdsct"></span>%</th>
-                                                <td class="text-right"></td>
+                                                <th>DSCTO <span class="vdsct">0</span>%</th>
+                                                <td class="text-right rdsct"></td>
                                             </tr>
                                             <tr>
-                                                <th>IGV <span class="vigv"></span>%</th>
-                                                <td class="text-right"></td>
+                                                <th>IGV <span class="vigv">{{ vigv }}</span>%</th>
+                                                <td class="text-right rigv"></td>
                                             </tr>
                                             <tr>
                                                 <th>TOTAL</th>
-                                                <th class="text-right"></th>
+                                                <th class="text-right rtotal"></th>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -192,4 +225,62 @@
             </section>
         </div>
     </div>
+<!-- modals -->
+<div class="modal fade in" id="mdetails">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a class="close" data-dismiss="modal">&times;</a>
+                <h4 class="text-warning">
+                    Partida de Orden
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group has-warning">
+                            <label class="control-label">Descripción</label>
+                            <input type="text" name="desc" class="form-control input-small">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group has-warning">
+                            <label class="control-label">Unidad</label>
+                            <select name="unit" class="form-control">
+                                {% for x in unit %}
+                                    <option value="{{ x.unidad_id }}">{{ x.uninom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group has-warning">
+                            <label class="control-label">Cantidad</label>
+                            <input type="number" name="quantity" class="form-control input-sm numberValid">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group has-warning">
+                            <label class="control-label">Precio</label>
+                            <input type="number" name="price" class="form-control input-sm numberValid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm btn-default" data-dismiss="modal">
+                    <span class="fa fa-times"></span>
+                    Cancelar
+                </button>
+                <button class="btn btn-sm btn-warning text-black btn-add-item" data-dismiss="modal">
+                    <span class="fa fa-save"></span>
+                    Agregar
+                </button>
+                <input type="hidden" name="edit-item">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- variable -->
+{% csrf_token %}
 {% endblock content %}

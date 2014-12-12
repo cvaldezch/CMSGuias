@@ -1,5 +1,5 @@
 $(document).ready ->
-    $(".btn-erase-fields,.btn-generate").hide()
+    $(".btn-erase-fields,.btn-generate,.panel-new,.btn-list").hide()
     $("input[name=start],input[name=execution]").datepicker
         changeMonth: true
         changeYear: true
@@ -8,6 +8,25 @@ $(document).ready ->
         showAnim: "slide"
         showButtonPanel: true
     $("select[name=project]").on "click", selectProject
+    $("button.btn-add-item").on "click", addItem
+    $("button.btn-refresh").on "click", getListTmp
+    $("input[name=dsct]").on "change keyup", changeDsct
+    $("input[name=sel]").on "change", changeRadio
+    $("button.btn-del").on "click", selectDel
+    $(document).on "click", "button.btn-edit", loadEdit
+    $("button.btn-new").on "click", showNew
+    $("button.btn-list").on "click", showList
+    return
+
+showNew = (event) ->
+    $("div.panel-list, button.btn-new").fadeOut 150
+    $("div.panel-new, button.btn-list, button.btn-generate").fadeIn 1200
+    getListTmp()
+    return
+
+showList = (event) ->
+    $("div.panel-new, button.btn-list, button.btn-generate").fadeOut 150
+    $("div.panel-list, button.btn-new").fadeIn 1200
     return
 
 selectProject = (event) ->
@@ -29,4 +48,140 @@ selectProject = (event) ->
             else
                 $().toastmessage "showErrorToast", "No se a encontrado Proyectos. #{response.raise}"
                 return
+    return
+
+addItem = (event) ->
+    data = new Object
+    $("div.modal-body").find("input, select").each (index, element) ->
+        if element.value is ""
+            $().toastmessage "showWarningToast", "Campo vacio. #{element.name}"
+            return false
+        else
+            data[element.name] = element.value
+            return
+
+    if Object.keys(data).length
+        data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+        data.additem = true
+        if $("input[name=edit-item]").val()
+            data.pk = parseInt $("input[name=edit-item]").val()
+        $.post "", data, (response) ->
+            if response.status
+                listDetails response
+                $("input[name=edit-item]").val ""
+                return
+            else
+                $().toastmessage "showErrorToast", "No se a podido agregar el Item"
+                return
+        return
+
+listDetails = (response) ->
+    if Object.keys(response).length
+        temp = "<tr>
+                <td>
+                    <input type=\"checkbox\" name=\"items\" value=\"{{ item }}\">
+                </td>
+                <td>{{ item }}</td>
+                <td>{{ description }}</td>
+                <td>{{ quantity }}</td>
+                <td>{{ unit }}</td>
+                <td>{{ price }}</td>
+                <td class=\"text-right\">{{ amount }}</td>
+                <td class=\"text-center\">
+                    <button class=\"btn btn-xs text-green btn-link btn-edit\" data-item=\"{{ item }}\" data-desc=\"{{ description }}\" data-quantity=\"{{ quantity }}\" data-unit=\"{{ unit }}\" data-price=\"{{ price }}\">
+                        <span class=\"fa fa-edit\"></span>
+                    </button>
+                </td>
+            </tr>"
+        $tb = $("table.table-details > tbody")
+        $tb.empty()
+        for x of response.list
+            #response.list[x].item = parseInt(x) + 1
+            $tb.append Mustache.render temp, response.list[x]
+        calcamount()
+    return
+
+getListTmp = (event) ->
+    $("button > span.fa-refresh").addClass "fa-spin"
+    data = new Object
+    data.list = true
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    $.post "", data, (response) ->
+        if response.status
+            #setTimeout ->
+            listDetails response
+            $("button > span.fa-refresh").removeClass "fa-spin"
+            #, 1500
+            return
+        else
+            $().toastmessage "showErrorToast", "No se a realizado la lista."
+            return
+    return
+
+calcamount = (event) ->
+    amount = 0
+    $("table.table-details > tbody > tr").each (index, element) ->
+        $td = $(element).find "td"
+        amount += parseFloat $td.eq(6).text()
+        return
+    igv = (parseFloat($(".vigv").text()) / 100)
+    dsct = (parseFloat($(".vdsct").text() or 0) / 100)
+    $(".rdsct").text (amount * dsct).toFixed 2
+    $(".ramount").text amount.toFixed 2
+    amount = (amount - (amount * dsct))
+    igv = (amount * igv)
+    $(".rigv").text igv.toFixed 2
+    $(".rtotal").text (amount + igv).toFixed 2
+    return
+
+changeDsct = (event) ->
+    $(".vdsct").text @value
+    calcamount()
+    return
+
+changeRadio = (event) ->
+    $(@).each (index, element) ->
+        if element.checked
+            $("input[name=items]").each (index, chk) ->
+                chk.checked = Boolean parseInt element.value
+                return
+            return
+    return
+
+selectDel = (event) ->
+    del = new Array
+    $("input[name=items]").each (index, chk) ->
+        if chk.checked
+            del.push chk.value
+            return
+    if del.length
+        $().toastmessage "showToast",
+            text: "Realmente desea eliminar los items seleccionados?"
+            type: "confirm"
+            sticky: true
+            buttons: [{value: "Si"},{value:"No"}]
+            success: (result) ->
+                if result is "Si"
+                    data = new Object
+                    data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+                    data.items = JSON.stringify del
+                    data.del = true
+                    $.post "", data, (response) ->
+                        if response.status
+                            listDetails response
+                        else
+                            $().toastmessage "showErrorToast", "No se eliminado los Items. #{response.raise}"
+        return
+    else
+        $().toastmessage "showWarningToast", "Debe de seleccionar por lo menos un item."
+        return
+    return
+
+loadEdit = (event) ->
+    $("input[name=edit-item]").val @getAttribute "data-item"
+    $("input[name=desc]").val @getAttribute "data-desc"
+    $("select[name=unit]").val @getAttribute "data-unit"
+    $("input[name=quantity]").val @getAttribute "data-quantity"
+    $("input[name=price]").val @getAttribute "data-price"
+    $("div#mdetails").modal "show"
     return

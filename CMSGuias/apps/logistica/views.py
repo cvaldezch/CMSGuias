@@ -19,7 +19,7 @@ from django.views.generic.edit import CreateView
 from xlrd import open_workbook, XL_CELL_EMPTY
 
 from CMSGuias.apps.almacen.models import Suministro, Inventario
-from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda, Configuracion, LoginProveedor, Brand, Model, Employee
+from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda, Configuracion, LoginProveedor, Brand, Model, Employee, Unidade
 from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra, tmpcotizacion, tmpcompra
 from CMSGuias.apps.ventas.models import Proyecto, Subproyecto
 from CMSGuias.apps.operations.models import MetProject
@@ -1295,9 +1295,75 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
             try:
                 context['project'] = Proyecto.objects.filter(flag=True, status='AC')
                 context['supplier'] = Proveedor.objects.filter(flag=True)
-                context['document'] = Documentos.objects.filter(flag=True)
-                context['method'] = FormaPago.objects.filter(flag=True)
+                context['document'] = Documentos.objects.filter(flag=True).order_by('documento')
+                context['method'] = FormaPago.objects.filter(flag=True).order_by('pagos')
                 context['authorized'] = Employee.objects.filter(flag=True)
+                context['unit'] = Unidade.objects.filter(flag=True)
+                context['vigv'] = search.getIGVCurrent()
                 return render_to_response('logistics/serviceorder.html', context, context_instance=RequestContext(request))
             except TemplateDoesNotExist, e:
                 raise Http404(e)
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'additem' in request.POST:
+                    if not 'serorddet' in request.session:
+                        request.session['serorddet'] = list()
+
+                    tmp = request.session['serorddet']
+                    if 'pk' in request.POST:
+                        for x in tmp:
+                            if x['item'] == int(request.POST.get('pk')):
+                                x['description'] = request.POST.get('desc')
+                                x['unit'] = request.POST.get('unit')
+                                x['quantity'] = request.POST.get('quantity')
+                                x['price'] = request.POST.get('price')
+                                x['amount'] = (float(request.POST.get('quantity')) * float(request.POST.get('price')))
+                                break
+                    else:
+                        tmp.append(
+                            {
+                                'item': len(request.session.get('serorddet')) + 1,
+                                'description': request.POST.get('desc'),
+                                'unit': request.POST.get('unit'),
+                                'quantity': request.POST.get('quantity'),
+                                'price': request.POST.get('price'),
+                                'amount': (float(request.POST.get('quantity')) * float(request.POST.get('price')))
+                            }
+                        )
+                    request.session['serorddet'] = tmp
+                    context['list'] = request.session.get('serorddet')
+                    context['status'] = True
+                if 'list' in request.POST:
+                    #print request.session['serorddet']
+                    context['list'] = request.session.get('serorddet')
+                    context['status'] = True
+                if 'edit' in request.POST:
+                    for x in request.session.get('serorddet'):
+                        if x['item'] == request.POST.get('pk'):
+                            x['description'] = request.POST.get('desc')
+                            x['unit'] = request.POST.get('unit')
+                            x['quantity'] = request.POST.get('quantity')
+                            x['price'] = request.POST.get('quantity')
+                            x['amount'] = (float(request.POST.get('quantity')) * float(request.POST.get('price')))
+                if 'del' in request.POST:
+                    item = 1
+                    tmp = request.session['serorddet']
+                    for d in json.loads(request.POST.get('items')):
+                        for x in request.session['serorddet']:
+                            if x['item'] == int(d):
+                                print 'remove ', x, ' content ', d
+                                tmp.remove(x)
+                    request.session['serorddet'] = tmp
+                    for x in request.session['serorddet']:
+                        x['item'] = item
+                        item+= 1
+                    context['list'] = request.session['serorddet']
+                    context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = e.__str__()
+                context['status'] = False
+            return self.render_to_json_response(context)
