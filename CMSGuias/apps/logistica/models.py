@@ -182,10 +182,12 @@ class DetDevProveedor(models.Model):
         return '%s %s %f'%(self.devolucionp, self.materiales, self.cantstatic)
 
 class ServiceOrder(models.Model):
+    def url(self, filename):
+        return "storage/services/%s/%s-%s.pdf"%(globalVariable.get_year ,self.serviceorder_id, self.supplier_id)
     serviceorder_id = models.CharField(max_length=10, primary_key=True)
     project = models.ForeignKey(Proyecto , to_field='proyecto_id')
-    subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
-    sector = models.ForeignKey(Sectore, to_field='sector_id', null=True, blank=True)
+    subprojecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
+    # sector = models.ForeignKey(Sectore, to_field='sector_id', null=True, blank=True)
     supplier = models.ForeignKey(Proveedor, to_field='proveedor_id')
     register = models.DateTimeField(auto_now=True)
     quotation = models.ForeignKey(Cotizacion, to_field='cotizacion_id', null=True, blank=True)
@@ -195,6 +197,7 @@ class ServiceOrder(models.Model):
     start = models.DateField()
     term = models.DateField()
     dsct = models.FloatField(default=0, blank=True)
+    deposit = models.FileField(upload_to=url, null=True, blank=True)
     elaborated = models.ForeignKey(Employee, related_name='elaboratedAsEmployee')
     authorized = models.ForeignKey(Employee, related_name='authorizedAsEmployee')
     status = models.CharField(max_length=2, default='PE')
@@ -208,7 +211,7 @@ class DetailsServiceOrder(models.Model):
     description = models.TextField(null=False)
     unit = models.ForeignKey(Unidade, to_field='unidad_id')
     quantity = models.FloatField(default=0)
-    price = models.FloatField(default=0)
+    price = models.DecimalField(max_digits=9, decimal_places=3, default=0)
 
     def __unicode__(self):
         return '%s %s %f'%(self.serviceorder, self.description, self.quantity)

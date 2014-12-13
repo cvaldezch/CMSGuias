@@ -7,15 +7,15 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Max
 
 from CMSGuias.apps.almacen.models import Pedido, GuiaRemision, Suministro, NoteIngress
-from CMSGuias.apps.logistica.models import Cotizacion, Compra
+from CMSGuias.apps.logistica.models import Cotizacion, Compra, ServiceOrder
 from CMSGuias.apps.ventas.models import Proyecto
 from CMSGuias.apps.home.models import Brand, Model, GroupMaterials, TypeGroup
 from CMSGuias.apps.operations.models import Deductive
 
 
 ### format date str
-__date_str = "%Y-%m-%d"
-__year_str = "%y" # 'AA'
+__date_str = '%Y-%m-%d'
+__year_str = '%y' # 'AA'
 ###
 
 
@@ -271,3 +271,23 @@ def GeneratekeysConfirm():
     except Exception, e:
         raise e
     return '%s'%keys
+
+def GenerateIdServiceOrder():
+    id = None
+    try:
+        code = ServiceOrder.objects.aggregate(max=Max('serviceorder_id'))
+        id = code['max']
+        yn = int(datetime.datetime.today().strftime(__year_str))
+        if id is not None:
+            yy = int(id[2:4])
+            counter = int(id[4:10])
+            if yn > yy:
+                counter = 1
+            else:
+                counter += 1
+        else:
+            counter = 1
+        id = '%s%s%s'%('SO',yn.__str__(), '{:0>6d}'.format(counter))
+    except ObjectDoesNotExist, e:
+        raise e
+    return id

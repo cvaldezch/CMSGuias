@@ -30,7 +30,7 @@
                         <span class="fa fa-list"></span>
                         <span>Lista de Ordenes</span>
                     </button>
-                    <button class="btn btn-sm btn-primary btn-generate">
+                    <button class="btn btn-sm btn-warning text-black btn-generate">
                         <span class="fa fa-save"></span>
                         <span class="fa fa-long-arrow-right"></span>
                         <span class="fa fa-file-text"></span>
@@ -71,7 +71,7 @@
                             <div class="col-md-2">
                                 <div class="form-group has-warning">
                                     <label class="control-label">Cotización</label>
-                                    <input type="text" maxlength="10" placeholder="000-000000" class="form-control input-sm">
+                                    <input type="text" name="quotation" maxlength="10" placeholder="000-000000" class="form-control input-sm">
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -124,11 +124,17 @@
                             <div class="col-md-3">
                                 <div class="form-group has-warning">
                                     <label class="control-label">Autorizado</label>
-                                    <select name="authorizaed" class="form-control input-sm">
+                                    <select name="authorized" class="form-control input-sm">
                                         {% for x in authorized %}
                                             <option value="{{ x.empdni_id }}">{{ x.name_complete }}</option>
                                         {% endfor %}
                                     </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Deposito</label>
+                                    <input type="file" name="deposit" class="form-control" accept="application/pdf">
                                 </div>
                             </div>
                         </div>
@@ -218,7 +224,26 @@
                                    <th>Estado</th>
                                 </tr>
                             </thead>
-                            <tbody></tbody>
+                            <tbody>
+                                {% for x in service %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ x.serviceorder_id }}</td>
+                                        <td>{{ x.supplier.razonsocial }}</td>
+                                        <td>{{ x.project.nompro }}</td>
+                                        <td>{{ x.registrado }}</td>
+                                        <td>{{ x.document.documento }}</td>
+                                        <td>{{ x.method.pagos }}</td>
+                                        <td>{{ x.status }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="8">
+                                            No se han encontrado datos.
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
                         </table>
                     </div>
                 </div>

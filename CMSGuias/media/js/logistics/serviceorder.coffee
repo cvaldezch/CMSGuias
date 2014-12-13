@@ -16,6 +16,7 @@ $(document).ready ->
     $(document).on "click", "button.btn-edit", loadEdit
     $("button.btn-new").on "click", showNew
     $("button.btn-list").on "click", showList
+    $("button.btn-generate").on "click", saveServiceOrder
     return
 
 showNew = (event) ->
@@ -184,4 +185,56 @@ loadEdit = (event) ->
     $("input[name=quantity]").val @getAttribute "data-quantity"
     $("input[name=price]").val @getAttribute "data-price"
     $("div#mdetails").modal "show"
+    return
+
+saveServiceOrder = (event) ->
+    data = new Object
+    data.project = $("select[name=project]").val()
+    data.subproject = $("select[name=subproject]").val()
+    data.supplier = $("select[name=supplier]").val()
+    data.quotation = $("input[name=quotation]").val() or ''
+    data.arrival = $("input[name=arrival]").val()
+    data.document = $("select[name=document]").val()
+    data.method = $("select[name=method]").val()
+    data.start = $("input[name=start]").val()
+    data.term = $("input[name=execution]").val()
+    data.dsct = $("input[name=dsct]").val()
+    data.authorized = $("select[name=authorized]").val()
+    for x in Object.keys(data)
+        if data[x] is "" and x isnt "quotation"
+            valid = false
+            break
+        else
+            valid = true
+    if valid
+        data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+        data.generateService = true
+        prm = new FormData()
+        for x of data
+            prm.append x, data[x]
+            #console.log "#{x} , #{data[x]}"
+        if $("input[name=deposit]").get(0).files.length
+            prm.append "deposit", $("input[name=deposit]").get(0).files[0]
+
+        $.ajax
+            url: ""
+            data: prm
+            type: "POST"
+            dataType: "json"
+            cache: false
+            processData: false
+            contentType: false
+            success: (response) ->
+                if response.status
+                    $().toastmessage "showSuccessToast", "Se a generado Orden de Servicio: #{response.service}"
+                    setTimeout ->
+                        location.reload()
+                        return
+                    , 2600
+                    return
+                else
+                    $().toastmessage "showErrorToast", "No se a generado Orden de Servicio. #{response.status}"
+                    return
+    else
+        $().toastmessage "showWarningToast", "Se a encontrado un campo vacio."
     return

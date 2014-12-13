@@ -20,11 +20,11 @@ from xlrd import open_workbook, XL_CELL_EMPTY
 
 from CMSGuias.apps.almacen.models import Suministro, Inventario
 from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda, Configuracion, LoginProveedor, Brand, Model, Employee, Unidade
-from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra, tmpcotizacion, tmpcompra
+from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra, tmpcotizacion, tmpcompra, ServiceOrder, DetailsServiceOrder
 from CMSGuias.apps.ventas.models import Proyecto, Subproyecto
 from CMSGuias.apps.operations.models import MetProject
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles, search
-from .forms import addTmpCotizacionForm, addTmpCompraForm, CompraForm, ProveedorForm
+from .forms import addTmpCotizacionForm, addTmpCompraForm, CompraForm, ProveedorForm, ServiceOrderForm
 
 
 ### Class Bases Views generic
@@ -1300,6 +1300,7 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
                 context['authorized'] = Employee.objects.filter(flag=True)
                 context['unit'] = Unidade.objects.filter(flag=True)
                 context['vigv'] = search.getIGVCurrent()
+                context['service'] = ServiceOrder.objects.filter(flag=True).order_by('-serviceorder_id')
                 return render_to_response('logistics/serviceorder.html', context, context_instance=RequestContext(request))
             except TemplateDoesNotExist, e:
                 raise Http404(e)
@@ -1312,7 +1313,6 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
                 if 'additem' in request.POST:
                     if not 'serorddet' in request.session:
                         request.session['serorddet'] = list()
-
                     tmp = request.session['serorddet']
                     if 'pk' in request.POST:
                         for x in tmp:
@@ -1363,6 +1363,28 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
                         item+= 1
                     context['list'] = request.session['serorddet']
                     context['status'] = True
+                if 'generateService' in request.POST:
+                    form = ServiceOrderForm(request.POST, request.FILES)
+                    if form.is_valid():
+                        add = form.save(commit=False)
+                        service = genkeys.GenerateIdServiceOrder()
+                        add.serviceorder_id = service
+                        add.elaborated_id = request.user.get_profile().empdni_id
+                        add.save()
+                        # save details
+                        for x in request.session['serorddet']:
+                            obj = DetailsServiceOrder()
+                            obj.serviceorder_id = service
+                            obj.description = x['description']
+                            obj.unit_id = x['unit']
+                            obj.quantity = x['quantity']
+                            obj.price = x['price']
+                            obj.save()
+                        del request.session['serorddet']
+                        context['service'] = service
+                        context['status'] = True
+                    else:
+                        context['status'] = False
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

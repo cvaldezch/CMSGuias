@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django  import forms
-from .models import tmpcotizacion, tmpcompra, Compra
+from .models import tmpcotizacion, tmpcompra, Compra, ServiceOrder
 from CMSGuias.apps.home.models import Proveedor
 
 # tmpcotizacion
@@ -25,3 +25,8 @@ class ProveedorForm(forms.ModelForm):
     class Meta:
         model = Proveedor
         exclude = {'flag',}
+
+class ServiceOrderForm(forms.ModelForm):
+    class Meta:
+        model = ServiceOrder
+        exclude = {'serviceorder_id','elaborated','flag', 'status'}
