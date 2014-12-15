@@ -196,6 +196,7 @@ saveServiceOrder = (event) ->
     data.arrival = $("input[name=arrival]").val()
     data.document = $("select[name=document]").val()
     data.method = $("select[name=method]").val()
+    data.currency = $("select[name=currency]").val()
     data.start = $("input[name=start]").val()
     data.term = $("input[name=execution]").val()
     data.dsct = $("input[name=dsct]").val()

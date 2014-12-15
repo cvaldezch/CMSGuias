@@ -7,24 +7,27 @@ import ho.pisa as pisa
 import cStringIO as StringIO
 import cgi
 
-from django.shortcuts import get_object_or_404, get_list_or_404
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Sum, Q
+from django.http import HttpResponse, Http404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from django.template import RequestContext, TemplateDoesNotExist
 from django.template.loader import render_to_string
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, Http404
-from django.db.models import Count, Sum
 from django.views.generic import TemplateView
+from django.utils.decorators import method_decorator
 
 from CMSGuias.apps.almacen import models
 from CMSGuias.apps.tools import globalVariable, search, number_to_char
-from CMSGuias.apps.logistica.models import Cotizacion, CotCliente, DetCotizacion, Compra, DetCompra
+from CMSGuias.apps.logistica.models import Cotizacion, CotCliente, DetCotizacion, Compra, DetCompra, ServiceOrder, DetailsServiceOrder
 from CMSGuias.apps.ventas.models import Proyecto
 from CMSGuias.apps.home.models import Configuracion
 
 
 def fetch_resources(uri, rel):
-    path = os.path.join(settings.MEDIA_ROOT, uri.replace(settings.MEDIA_URL, ""))
+    path = os.path.join(
+        settings.MEDIA_ROOT, uri.replace(settings.MEDIA_URL,'')
+    )
     return path
 
 def generate_pdf(html):
@@ -78,6 +81,7 @@ def rpt_guide_referral_format(request,gid,pg):
 class RptSupply(TemplateView):
     template_name = 'report/rptordersupply.html'
 
+    @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         try:
             context = super(RptSupply, self).get_context_data(**kwargs)
@@ -134,11 +138,10 @@ class RptPurchase(TemplateView):
 
             igv = search.getIGVCurrent(context['bedside'].registrado.strftime('%Y'))
             context['subtotal'] = subt
-            print context['bedside'].discount, 'DISCOUNT'
+            # print context['bedside'].discount, 'DISCOUNT'
             discount = ((subt * context['bedside'].discount) / 100)
-            print discount
+            # print discount
             ns = (subt - discount)
-            print ns
             context['discount'] = discount
             context['igvval'] = ((igv * ns) / 100)
             context['igv'] = igv
@@ -155,6 +158,7 @@ class RptPurchase(TemplateView):
 class RptNoteIngress(TemplateView):
     template_name = "report/rptnoteingress.html"
 
+    @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
@@ -165,3 +169,30 @@ class RptNoteIngress(TemplateView):
             return generate_pdf(html)
         except TemplateDoesNotExist, e:
             raise Http404
+
+# Report Service Orders
+class RptServiceOrder(TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            context['bedside'] = get_object_or_404(ServiceOrder, Q(serviceorder_id=kwargs['pk']), Q(status='PE'), Q(flag=True))
+            context['details'] = DetailsServiceOrder.objects.filter(serviceorder_id=kwargs['pk'])
+            details = context['details']
+            amount = 0
+            for x in details:
+                amount += float(x.amount)
+            context['amount'] = '%.2f'%amount
+            amount = (amount - (amount * (context['bedside'].dsct / 100)))
+            context['dsct'] = '%.3f'%(amount * (context['bedside'].dsct / 100))
+            context['igv'] = search.getIGVCurrent(context['bedside'].register.strftime('%Y'))
+            context['qigv'] = '%.3f'%(amount * (float(context['igv']) / 100))
+            context['total'] = '%.2f'%(amount + float(context['qigv']))
+            context['literal'] = number_to_char.numero_a_letras(float(context['total']))
+            context['status'] = globalVariable.status
+            context['pagesize'] = 'A4'
+            html = render_to_string('report/rptserviceorders.html', context, context_instance=RequestContext(request))
+            return generate_pdf(html)
+        except TemplateDoesNotExist, e:
+            raise Http404(e)

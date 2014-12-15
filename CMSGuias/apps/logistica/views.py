@@ -1301,6 +1301,7 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
                 context['unit'] = Unidade.objects.filter(flag=True)
                 context['vigv'] = search.getIGVCurrent()
                 context['service'] = ServiceOrder.objects.filter(flag=True).order_by('-serviceorder_id')
+                context['currency'] = Moneda.objects.filter(flag=True)
                 return render_to_response('logistics/serviceorder.html', context, context_instance=RequestContext(request))
             except TemplateDoesNotExist, e:
                 raise Http404(e)

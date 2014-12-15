@@ -1,5 +1,4 @@
 $(document).ready ->
-
     $("input,select").attr "class", "form-control input-sm"
     $("select[name=pais]").on "change", getDepartamentOption
     $("select[name=departamento]").on "change", getProvinceOption

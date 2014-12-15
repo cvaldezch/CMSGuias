@@ -197,6 +197,7 @@ class ServiceOrder(models.Model):
     start = models.DateField()
     term = models.DateField()
     dsct = models.FloatField(default=0, blank=True)
+    currency = models.ForeignKey(Moneda, to_field='moneda_id')
     deposit = models.FileField(upload_to=url, null=True, blank=True)
     elaborated = models.ForeignKey(Employee, related_name='elaboratedAsEmployee')
     authorized = models.ForeignKey(Employee, related_name='authorizedAsEmployee')
@@ -212,6 +213,10 @@ class DetailsServiceOrder(models.Model):
     unit = models.ForeignKey(Unidade, to_field='unidad_id')
     quantity = models.FloatField(default=0)
     price = models.DecimalField(max_digits=9, decimal_places=3, default=0)
+
+    @property
+    def amount(self):
+        return '%.3f'%(self.quantity * float(self.price))
 
     def __unicode__(self):
         return '%s %s %f'%(self.serviceorder, self.description, self.quantity)

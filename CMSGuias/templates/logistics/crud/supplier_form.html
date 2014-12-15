@@ -8,7 +8,18 @@ Supplier
 <script src="{{ MEDIA_URL }}js/logistics/crud/supplier.js"></script>
 {% endblock script %}
 {% block menu %}
-    {# {% include "menus/logistics.htm" %} #}
+    {% if user.get_profile.empdni.charge.area|lower == 'ventas' %}
+        {% include "menus/sale.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+        {% include "menus/operations.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
+        {% include "menus/logistics.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'almacen' %}
+        {% include "menus/storage_menu.htm" %}
+    {% endif %}
 {% endblock menu %}
 {% block content %}
 <div class="container">
@@ -22,13 +33,9 @@ Supplier
                     <strong>Se guardo correctamente.</strong>
                 </div>
             {% else%}
-                <!-- <button class="btn btn-warning text-black btn-search"><span class="glyphicon glyphicon-search"></span></button>
-                <div class="form-group">
-                    <label class="control-label">Imagen de busqueda</label>
-                    <img src="http://www.sunat.gob.pe/cl-ti-itmrconsruc/captcha?accion=image" alt="">
-                    <iframe src="http://www.sunat.gob.pe/cl-ti-itmrconsruc/captcha?accion=image" frameborder="0"></iframe>
-                    <input type="text" maxlength="4" name="capcha" class="form-control">
-                </div> -->
+                <button class="btn btn-warning text-black btn-search">
+                    <span class="glyphicon glyphicon-search"></span>
+                </button>
                 <form action="" method="POST">
                     {% csrf_token %}
                     {{ form.as_p }}

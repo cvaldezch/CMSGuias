@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Report Service Orders</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/reports/serviceorders.css">
+</head>
+<body>
+    <header>
+        <img id="logo" src="/media/images/icrlogo.png" alt="image">
+        <div id="address">
+            <p>
+                {{ request.session.company.address }}<br>
+                Central Telefonica: (511) {{ request.session.company.phone }} <br>
+                E-mail: logistica@icrperusa.com
+            </p>
+        </div>
+        <div id="nro-content">
+            <p>
+                ORDEN DE SERVICIO
+            <br>
+            <span id="nro">
+                {{ bedside.serviceorder_id }}
+            </span>
+            </p>
+        </div>
+        <div id="supplier">
+            <span class="text-header">
+                PRESTADOR DE SERVICIO:
+            </span>
+            <span>{{ bedside.supplier_id }} {{ bedside.supplier.razonsocial }}</span>
+            <br>
+            <span class="text-header">
+                DIRECCION:
+            </span>
+            <span>
+                {{ bedside.supplier.direccion }}
+            </span>
+            <br>
+            <span class="text-header">
+                TELEFONO:
+            </span>
+            <span>
+                {{ bedside.supplier.telefono }}
+            </span>
+        </div>
+        <div id="orders">
+            <span class="text-header">
+                REGISTRADO:
+            </span>
+            <span>
+                {{ bedside.register }}
+            </span>
+            <br>
+            <span class="text-header">
+                COTIZACIÓN:
+            </span>
+            <span>
+                {{ bedside.quotation }}
+            </span>
+            <br>
+            <span class="text-header">
+                ESTADO:
+            </span>
+            <span>
+                {% for k, v in status.items %}
+                    {% if k == bedside.status %}
+                        {{ v }}
+                    {% endif %}
+                {% endfor %}
+            </span>
+        </div>
+        <div id="method">
+            <span class="text-header">
+                DOCUMENTO:
+            </span>
+            <span>
+                {{ bedside.document.documento }}
+            </span>
+        </div>
+        <div id="facture">
+            <span class="text-header">
+                FORMA DE PAGO:
+            </span>
+            <span>
+                {{ bedside.method.pagos }}
+            </span>
+        </div>
+        <div id="currency">
+            <span class="text-header">
+                MONEDA:
+            </span>
+            <span>
+                {{ bedside.currency.moneda }}
+            </span>
+        </div>
+        <div id="execution">
+            <span class="text-header">
+                PLAZO DE EJECUCIÓN:
+            </span><br>
+            <span>
+                <strong>INICIO:</strong> {{ bedside.start }}
+            </span>
+            <span>
+                <strong>FIN:</strong> {{ bedside.term }}
+            </span>
+        </div>
+        <div id="arrival">
+            <span class="text-header">
+                LUGAR DE EJECUCIÓN DE LOS TRABAJOS:
+            </span>
+            <br>
+            <span>{{ bedside.arrival }}</span>
+        </div>
+        <div id="data">
+            <span class="text-header text-center">
+                DATOS DE FACTURACIÓN
+            </span>
+            <br>
+            <span>
+                <strong>
+                    {{ request.session.company.name }} <br>
+                    RUC {{ request.session.company.ruc }}
+                </strong>
+                <br>
+                {{ request.session.company.address }}
+                <br>
+                <small>
+                    * Adjuntar copia de esta orden a la factura original
+                    * Confirmar dentro de 48 horas la no atencion de esta orden
+                </small>
+            </span>
+        </div>
+        <div id="authorized">
+            <span class="text-header">
+                AUTORIZÓ
+            </span>
+            <br>
+            <span class="text-header">
+                Nombre y Cargo:
+            </span>
+            <span>
+                {{ bedside.authorized.name_complete }}
+                <small>
+                    {{ bedside.authorized.charge.cargos }}
+                </small>
+            </span>
+            <br>
+            <span class="text-header">
+                Telefono:
+            </span>
+            <span>
+                {{ bedside.authorized.phone }}
+            </span>
+            <br>
+            <br>
+            <br>
+        </div>
+    </header>
+    <section>
+        <table class="details">
+            <thead>
+                <tr>
+                    <th width="1cm"></th>
+                    <th>DESCRIPCIÓN</th>
+                    <th width="2cm">UND</th>
+                    <th width="2cm">CANTIDAD</th>
+                    <th width="2cm">PRECIO</th>
+                    <th width="2.5cm">IMPORTE</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for x in details %}
+                    <tr>
+                        <td class="text-center">{{ forloop.counter }}</td>
+                        <td>{{ x.description }}</td>
+                        <td class="text-center">{{ x.unit.uninom }}</td>
+                        <td class="text-center">{{ x.quantity }}</td>
+                        <td class="text-right">{{ x.price }}</td>
+                        <td class="text-right">{{ x.amount }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" rowspan="4">
+                        <strong>
+                            SON: {{ literal }} /100 {{ bedside.currency.moneda }}
+                        </strong>
+                    </td>
+                    <th>SUBTOTAL</th>
+                    <th class="text-right">{{ amount }}</th>
+                </tr>
+                <tr>
+                    <th>DSCT {{ bedside.dsct }}%</th>
+                    <td class="text-right">{{ dsct }}</td>
+                </tr>
+                <tr>
+                    <th>IGV {{ igv }}%</th>
+                    <td class="text-right">{{ qigv }}</td>
+                </tr>
+                <tr>
+                    <th>TOTAL</th>
+                    <th class="text-right">{{ total }}</th>
+                </tr>
+            </tfoot>
+        </table>
+    </section>
+</body>
+</html>

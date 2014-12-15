@@ -123,7 +123,17 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group has-warning">
-                                    <label class="control-label">Autorizado</label>
+                                    <label class="control-label">Moneda</label>
+                                    <select name="currency" class="form-control input-sm">
+                                        {% for x in currency %}
+                                            <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Autoriza</label>
                                     <select name="authorized" class="form-control input-sm">
                                         {% for x in authorized %}
                                             <option value="{{ x.empdni_id }}">{{ x.name_complete }}</option>
@@ -222,6 +232,8 @@
                                    <th>Documento</th>
                                    <th>Metodo</th>
                                    <th>Estado</th>
+                                   <th>Deposito</th>
+                                   <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -231,10 +243,22 @@
                                         <td>{{ x.serviceorder_id }}</td>
                                         <td>{{ x.supplier.razonsocial }}</td>
                                         <td>{{ x.project.nompro }}</td>
-                                        <td>{{ x.registrado }}</td>
+                                        <td>{{ x.register|date:"d M Y H:m" }}</td>
                                         <td>{{ x.document.documento }}</td>
                                         <td>{{ x.method.pagos }}</td>
                                         <td>{{ x.status }}</td>
+                                        <td>
+                                            {% if x.deposit %}
+                                                <a href="#" class="btn-link text-red">
+                                                    <span class="fa fa-file"></span>
+                                                </a>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'rpt_serviceorder' x.serviceorder_id %}" target="_blank" class="btn-link text-black">
+                                                <span class="fa fa-file-text"></span>
+                                            </a>
+                                        </td>
                                     </tr>
                                 {% empty %}
                                     <tr>

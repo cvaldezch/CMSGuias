@@ -613,32 +613,33 @@ class RestfulDataRuc(JSONResponseMixin, View):
         if request.is_ajax():
             context = dict()
             try:
-                #url = 'http://www.sunat.gob.pe/w/wapS01Alias?ruc=%s'%(request.POST.get('ruc'))
+                url = 'http://www.sunat.gob.pe/w/wapS01Alias?ruc=%s'%(request.POST.get('ruc'))
                 ruc = request.POST.get('ruc')
-                capcha = request.POST.get('capcha')
-                url = 'http://www.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias?accion=consPorRuc&nroRuc=%s&tQuery=on&search1=%s&tipdoc=1&codigo=MHNH'%(ruc,ruc)
+                #capcha = request.POST.get('capcha')
+                #url = 'http://www.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias?accion=consPorRuc&nroRuc=%s&tQuery=on&search1=%s&tipdoc=1&codigo=MHNH'%(ruc,ruc)
                 data = parseSunat(url)
+                print data
                 if data != 'Nothing':
                     soup = BeautifulSoup(data)
-                    # for x in soup.find_all('small'):
-                    #     tag = BeautifulSoup(x.__str__())
-                    #     #print tag
-                    #     conditional = tag.body.small.contents[0].string
-                    #     if conditional.endswith('Ruc. '):
-                    #         res = tag.body.small.contents[1]
-                    #         res = res.split('-',1)
-                    #         context['ruc'] = res[0].strip()
-                    #         context['reason'] = res[1].strip()
-                    #     if conditional.startswith('Direcci'):
-                    #         context['address'] = tag.body.small.contents[2].string
-                    #     if conditional.startswith('Tipo.'):
-                    #         context['type'] = tag.body.small.contents[2]
-                    #     if conditional.startswith('Tel'):
-                    #         context['phone'] = tag.body.small.contents[2]
-                    #     if conditional.startswith('DNI'):
-                    #         context['dni'] = tag.body.small.contents[1].string[3:]
-                    #     context['status'] = True
-                    print soup
+                    for x in soup.find_all('small'):
+                        tag = BeautifulSoup(x.__str__())
+                        #print tag
+                        conditional = tag.body.small.contents[0].string
+                        if conditional.endswith('Ruc. '):
+                            res = tag.body.small.contents[1]
+                            res = res.split('-',1)
+                            context['ruc'] = res[0].strip()
+                            context['reason'] = res[1].strip()
+                        if conditional.startswith('Direcci'):
+                            context['address'] = tag.body.small.contents[2].string
+                        if conditional.startswith('Tipo.'):
+                            context['type'] = tag.body.small.contents[2]
+                        if conditional.startswith('Tel'):
+                            context['phone'] = tag.body.small.contents[2]
+                        if conditional.startswith('DNI'):
+                            context['dni'] = tag.body.small.contents[1].string[3:]
+                        context['status'] = True
+                    #print soup
                     context['status'] = True
                 else:
                     context['status'] = False
@@ -648,10 +649,13 @@ class RestfulDataRuc(JSONResponseMixin, View):
 
 def parseSunat(url):
     try:
+        proxy = urllib2.ProxyHandler({'http': '172.16.0.1:8080'})
+        opener = urllib2.build_opener(proxy)
+        urllib2.install_opener(opener)
         req = urllib2.Request(url)
         return urllib2.urlopen(req).read()
     except Exception:
-        return "Nothing"
+        return 'Nothing'
 
 # stage2dev
 # Country

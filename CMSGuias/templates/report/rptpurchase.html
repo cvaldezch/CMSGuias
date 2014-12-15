@@ -17,7 +17,9 @@
             <h1>Materiales</h1>
         </div> -->
         <div id="nro-serie">
-            <h1>Nro Orden de Compra</h1>
+            <h1>
+                ORDEN DE COMPRA
+            </h1>
             <h1 id="nro">{{ bedside.compra_id }}</h1>
         </div>
         <div id="bedside-col1">
@@ -113,19 +115,26 @@
                     </tr>
                     <tr class="border">
                         <td>
-                            MESA DE PARTES EN EL HORARIO DE LUNES A VIERNES DE 8:00 AM A 5:30 PM Y SABADOS DE 8:00 A 1:00PM
                             <p>
+                            MESA DE PARTES EN EL HORARIO DE LUNES A VIERNES DE 8:00 AM A 5:30 PM Y SABADOS DE 8:00 A 1:00PM
+                            <br>
                                <strong>
-                                   ICR PERU INSTALACIONES S.A.C. <br>
-                                   RUC 20555029277
+                                   {{ request.session.company.name }} <br>
+                                   RUC {{ request.session.company.ruc }}
                                    <br>
                                </strong>
-                               Jr. Gral. Jose de San Martin Mz. F Lote 8A Huachipa - Lurigancho Lima 15, Peru.
+                               {{ request.session.company.address }}
+                                <br>
+                                <small>
+                                    * Adjuntar copia de esta orden a la factura original
+                                    * Confirmar dentro de 48 horas la no atencion de esta orden
+                                </small>
                            </p>
                         </td>
                     </tr>
                 </tbody>
             </table>
+
         </div>
     </footer>
 </body>

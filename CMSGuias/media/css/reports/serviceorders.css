@@ -1,0 +1,150 @@
+@page {
+  margin: 1cm;
+  @frame header_frame {
+    -pdf-frame-content: logo;
+    margin-top: 1cm;
+    top: 0;
+    left: 1cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: address;
+    left: 5cm;
+    top: 1.5cm;
+    width: 4cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: nro-content;
+    right: 1cm;
+    top: 2cm;
+    width: 6cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: supplier;
+    left: 1cm;
+    top: 4cm;
+    width: 8.9cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: orders;
+    right: 1cm;
+    top: 4cm;
+    width: 8.9cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: method;
+    left: 1cm;
+    top: 5.8cm;
+    width: 7cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: facture;
+    left: 1cm;
+    top: 6.7cm;
+    width: 7cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: currency;
+    left: 1cm;
+    top: 7.6cm;
+    width: 7cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: execution;
+    right: 1cm;
+    top: 5.8cm;
+    width: 10.8cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: arrival;
+    right: 1cm;
+    top: 7.1cm;
+    width: 10.8cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: data;
+    left: 1cm;
+    top: 8.4cm;
+    width: 10cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: authorized;
+    right: 1cm;
+    top: 8.4cm;
+    width: 7.8cm;
+  }
+  @frame content_frame {
+    top: 11cm;
+    left: 1cm;
+    right: 1cm;
+  }
+  @frame footer_frame {
+    -pdf-frame-content: footer_content;
+    top: 32cm;
+    margin: 0 1cm 0 1cm;
+  }
+}
+.text-center {
+  text-align: center;
+}
+.text-normal {
+  font-size: 12px;
+}
+#delivery {
+  text-indent: 3cm;
+}
+#nro-content {
+  border: 1px solid #000;
+  text-align: center;
+  padding: 10px 0 0 0;
+}
+#nro-content > p {
+  font-weight: bold;
+  font-size: 16px;
+}
+#supplier,
+#orders,
+#method,
+#facture,
+#execution,
+#arrival,
+#currency,
+#data,
+#authorized {
+  border: 1px solid #000;
+  padding: 5px;
+}
+.text-header {
+  font-weight: bold;
+}
+.text-right {
+  text-align: right;
+  padding-right: 2px;
+}
+table.details > thead > tr {
+  background-color: #ffe4b5;
+  border: 1px solid #ffdead;
+  padding-top: 0.15cm;
+  padding-bottom: 0.1cm;
+}
+table.details > tbody > tr,
+table.details tfoot > tr {
+  border-left: 1px solid #ffdead;
+  border-right: 1px solid #ffdead;
+  padding-top: 0.05cm;
+  padding-bottom: 0.01cm;
+}
+table.details > tbody > tr:last-child,
+table.details tfoot > tr:last-child {
+  border-bottom: 1px solid #ffdead;
+}
+table.details > tbody > tr > td:last-child,
+table.details tfoot > tr > td:last-child {
+  padding-right: 2px;
+}
+table.details > tfoot > tr {
+  border: 1px solid #ffdead;
+  padding-top: 2px;
+}
+.text-up {
+  vertical-align: top;
+}
