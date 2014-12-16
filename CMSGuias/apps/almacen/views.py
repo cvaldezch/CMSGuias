@@ -1214,8 +1214,12 @@ class ListDetOrders(TemplateView):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
-        context['orders'] = models.Pedido.objects.filter(Q(flag=True) & Q(status='AP') | Q(status='IN'))
-        context['details'] = models.Detpedido.objects.filter(Q(pedido__status='AP') | Q(pedido__status='IN')).extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"}).order_by('materiales__matnom')
+        context['orders'] = models.Pedido.objects.filter(Q(flag=True) & Q(status='AP') | Q(status='IN')).order_by('-pedido_id')
+        orders = [
+            x.pedido_id
+            for x in context['orders']
+        ]
+        context['details'] = models.Detpedido.objects.filter(pedido_id__in=orders).extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"}).order_by('materiales__matnom')
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
     @method_decorator(login_required)

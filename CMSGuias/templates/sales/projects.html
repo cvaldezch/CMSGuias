@@ -40,7 +40,6 @@
                     <span class="glyphicon glyphicon-floppy-disk"></span> Guardar Cambios
                 </button>
             </div>
-        {% endif %}
             <div class="panel panel-primary panel-pro">
                 <div class="panel-body">
                     <div class="row">
@@ -174,10 +173,11 @@
                     </div>
                 </div>
             </div>
+        {% endif %}
         </aside>
         <article>
-            {% if request.user.get_profile.empdni.charge.area|lower == '' %}
-                <div class="panel panel-danger">
+            {#% if request.user.get_profile.empdni.charge.area|lower == '' %#}
+                <!-- <div class="panel panel-danger">
                     <div class="table-responsive">
                         <table class="table table-hover table-condensed">
                             <thead>
@@ -235,10 +235,9 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-            {% endif %}
+                </div> -->
+            {#% endif %#}
         </article>
-        {#% if request.user.get_profile.empdni.charge.area|lower == 'administrator' %#}
             <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
             {% for c in cust %}
                 <div class="panel panel-danger">
@@ -313,7 +312,6 @@
                 </div>
             {% endfor %}
             </div>
-        {#% endif %#}
     </div>
 </div>
 {% endblock content %}

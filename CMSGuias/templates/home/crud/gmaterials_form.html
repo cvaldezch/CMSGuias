@@ -11,7 +11,27 @@
             <h1>Grupo de Materiales</h1>
             <form method="post" role="form">
                 {% csrf_token %}
-                {{ form.as_p }}
+
+                {#{ form.as_p }#}
+                <div class="panel panel-success">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Tipo de Grupo</label>
+                                    <select name="tgruop" class="form-control "></select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Tipo de Grupo</label>
+                                    <input type="text" name="description" class="form-control input-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <a href="{% url 'gmaterials_list' %}" class="btn btn-primary">
                     <span class="glyphicon glyphicon-chevron-left"></span>
                     Regresar

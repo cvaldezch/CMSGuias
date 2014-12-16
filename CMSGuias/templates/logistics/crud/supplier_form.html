@@ -33,12 +33,92 @@ Supplier
                     <strong>Se guardo correctamente.</strong>
                 </div>
             {% else%}
-                <button class="btn btn-warning text-black btn-search">
-                    <span class="glyphicon glyphicon-search"></span>
-                </button>
                 <form action="" method="POST">
                     {% csrf_token %}
-                    {{ form.as_p }}
+                    <div class="panel panel-warning">
+                        <div class="panel-footer">
+                            <button type="button" class="btn btn-warning text-black btn-search" title="Este es proceso puede tardar unos minutos.">
+                                <span class="glyphicon glyphicon-search"></span>
+                                Buscar Proveedor
+                            </button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="control-label">Ruc Proveedor</label>
+                                        <input type="text" class="form-cobtrol" maxlength="20" name="proveedor_id">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="control-label">Razón Social</label>
+                                        <input type="text" class="form-cobtrol" maxlength="200" name="razonsocial">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="control-label">Dirección</label>
+                                        <input type="text" class="form-cobtrol" maxlength="200" name="direccion">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="control-label">Pais</label>
+                                        {{ form.pais }}
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="control-label">Departamento</label>
+                                        <select name="departamento" class="form-control"></select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="control-label">Provincia</label>
+                                        <select name="provincia" class="form-control"></select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="control-label">Distrito</label>
+                                        <select name="distrito" class="form-control"></select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="control-label">Telefono</label>
+                                        <input type="text" name="telefono" maxlength="30" placeholder="000-000" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="control-label">Tipo</label>
+                                        <input type="text" name="tipo" placeholder="NATURAL" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="control-label">Origen</label>
+                                        <input type="text" name="origen" placeholder="NACIONAL" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="control-label">Email</label>
+                                        <input type="text" placeholder="ejemplo@dominio.com" name="email" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="control-label">Contacto</label>
+                                        <input type="text" placeholder="Nombre de Contacto" name="contact" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <button type="reset" class="btn btn-default"><span class="glyphicon glyphicon-remove-circle"></span> Limpiar</button>
                         <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Cambios</button>

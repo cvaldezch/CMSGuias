@@ -2,6 +2,11 @@
 {% block title %}
     Customers
 {% endblock title %}
+{% block script %}
+    <script src="{{ MEDIA_URL }}js/mustache.js"></script>
+    <script src="{{ MEDIA_URL }}js/getCountry.js"></script>
+    <script src="{{ MEDIA_URL }}js/sales/crud/customers.js"></script>
+{% endblock script %}
 {% block menu %}
     {% include "menus/sale.htm" %}
 {% endblock menu %}
@@ -11,7 +16,67 @@
             <h1>Cliente</h1>
             <form method="post" role="form">
                 {% csrf_token %}
-                {{ form.as_p }}
+                <div class="panel panel-warning">
+                    <div class="panel-footer"></div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">Ruc Cliente</label>
+                                    <input type="text" name="ruccliente_id" class="form-control input-sm" maxlength="11">
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label class="control-label">Razón Social</label>
+                                    <input type="text" name="razonsocial" class="form-control input-sm">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">Pais</label>
+                                    {{ form.pais }}
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">Departamento</label>
+                                    <select name="departamento" class="form-control input-sm"></select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">Provincia</label>
+                                    <select name="provincia" class="form-control input-sm"></select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">Distrito</label>
+                                    <select name="distrito" class="form-control input-sm"></select>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label class="control-label">Dirección</label>
+                                    <input type="text" name="direccion" class="form-control input-sm">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">Telefono</label>
+                                    <input type="text" name="telefono" class="form-control input-sm">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Contacto</label>
+                                    <input type="text" name="contact" class="form-control input-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- <div class="row">
                     <div class="col-md-2">
                         <label class="control-label">Ruc Cliente</label>

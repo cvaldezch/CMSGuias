@@ -5,7 +5,7 @@ $(document).ready ->
     $("select[name=provincia]").on "change", getDistrictOption
     $("button.btn-search").on "click", getDataRUC
     setTimeout ->
-        $("input[name=proveedor_id]").keyup (event) ->
+        $("input[name=ruccliente_id]").on "keyup change", (event) ->
             if @value.length is 11
                 getDataRUC()
                 return
@@ -18,7 +18,7 @@ $(document).ready ->
     return
 
 getDataRUC = ->
-    ruc = $("input[name=proveedor_id]").val()
+    ruc = $("input[name=ruccliente_id]").val()
     if ruc.length is 11
         data = new Object()
         data.ruc = ruc
@@ -28,7 +28,7 @@ getDataRUC = ->
             console.log response
             if response.status
                 $("input[name=razonsocial]").val response.reason
-                $("input[name=direccion]").val response.address
+                $("[name=direccion]").val response.address
                 $("input[name=telefono]").val response.phone
             else
                 $().toastmessage "showWarningToast", "No se a encontrado el Proveedor."

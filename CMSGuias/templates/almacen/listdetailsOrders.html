@@ -14,7 +14,10 @@
             <h3>
                 <span class="glyphicon glyphicon-list-alt"></span>
                 Detalle de Pedidos
-                <small>Seleccione los materiales para registrar en una <q>Orden de Suministro</q>.</small>
+                <br>
+                <small>
+                    Seleccione los materiales para registrar en una <q>Orden de Suministro</q>.
+                </small>
             </h3>
         </header>
         <section>
@@ -62,7 +65,7 @@
                                 </thead>
                                 <tbody>
                                 {% for j in details %}
-                                    {#% ifequal x.pedido_id j.pedido_id  %#}
+                                    {% ifequal x.pedido_id j.pedido_id  %}
                                         <tr class="
                                             {% if j.stock <= 0 and not j.spptag %}
                                                 danger
@@ -72,12 +75,14 @@
                                                 success
                                             {% endif %}
                                         ">
-                                            <td>{{ forloop.counter }}</td>
-                                            <td><input type="checkbox" data-brand="{{ j.brand_id }}" data-model="{{ j.model_id }}" name="chk{{ x.pedido_id }}" value="{{ j.cantshop }}" data-mat="{{ j.materiales_id }}"
+                                            <td>{{ forloop.parentloop.counter }} - {{ forloop.counter }}</td>
+                                            <td>
+                                                <input type="checkbox" data-brand="{{ j.brand_id }}" data-model="{{ j.model_id }}" name="chk{{ x.pedido_id }}" value="{{ j.cantshop }}" data-mat="{{ j.materiales_id }}"
                                                 {% if j.spptag %}
                                                     disabled="disabled" checked
                                                 {% endif %}
-                                            ></td>
+                                            >
+                                            </td>
                                             <td>{{ j.materiales_id }}</td>
                                             <td>{{ j.materiales.matnom }}</td>
                                             <td>{{ j.materiales.matmed }}</td>
@@ -87,7 +92,7 @@
                                             <th>{{ j.cantshop|safe }}</th>
                                             <th>{{ j.stock|safe }}</th>
                                         </tr>
-                                    {#% endifequal %#}
+                                    {% endifequal %}
                                 {% endfor %}
                                 </tbody>
                             </table>

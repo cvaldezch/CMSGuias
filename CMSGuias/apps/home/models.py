@@ -218,6 +218,7 @@ class Cliente(models.Model):
     distrito = models.ForeignKey(Distrito, to_field='distrito_id')
     direccion = models.CharField(max_length=200,null=False,)
     telefono = models.CharField(max_length=30,null=True, blank=True,default='000-000-000')
+    contact = models.CharField(max_length=200, default='', blank=True)
     flag = models.BooleanField(default=True)
 
     class Meta:
@@ -317,6 +318,7 @@ class Proveedor(models.Model):
     origen = models.CharField(max_length=10)
     last_login = models.DateTimeField(auto_now=True, null=True)
     email = models.CharField(max_length=60, default='ejemplo@dominio.com')
+    contact = models.CharField(max_length=200, default='', blank=True)
     flag = models.BooleanField(default=True)
 
     class Meta:

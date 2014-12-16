@@ -8,7 +8,7 @@ $(document).ready(function() {
   $("select[name=provincia]").on("change", getDistrictOption);
   $("button.btn-search").on("click", getDataRUC);
   setTimeout(function() {
-    return $("input[name=proveedor_id]").keyup(function(event) {
+    return $("input[name=ruccliente_id]").on("keyup change", function(event) {
       if (this.value.length === 11) {
         getDataRUC();
       }
@@ -23,7 +23,7 @@ $(document).ready(function() {
 
 getDataRUC = function() {
   var data, ruc;
-  ruc = $("input[name=proveedor_id]").val();
+  ruc = $("input[name=ruccliente_id]").val();
   if (ruc.length === 11) {
     data = new Object();
     data.ruc = ruc;
@@ -32,7 +32,7 @@ getDataRUC = function() {
       console.log(response);
       if (response.status) {
         $("input[name=razonsocial]").val(response.reason);
-        $("input[name=direccion]").val(response.address);
+        $("[name=direccion]").val(response.address);
         return $("input[name=telefono]").val(response.phone);
       } else {
         return $().toastmessage("showWarningToast", "No se a encontrado el Proveedor.");
