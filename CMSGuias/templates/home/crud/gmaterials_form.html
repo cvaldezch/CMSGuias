@@ -22,16 +22,42 @@
                                     <select name="tgruop" class="form-control "></select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-7">
                                 <div class="form-group">
-                                    <label class="control-label">Tipo de Grupo</label>
+                                    <label class="control-label">Descripción</label>
                                     <input type="text" name="description" class="form-control input-sm">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">Codigo</label>
+                                    <input type="text" name="code" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Descripción / Nombre de material</label>
+                                    <input type="text" class="form-control input-sm" name="description">
+                                    <ul id="matname-global" class="matname-global"></ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group has-warning">
+                                    <label class="control-label">Medida</label>
+                                    <select class="form-control input-sm" name="meter"></select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-warning alert-block">
+                                    <strong>Resumén</strong>
+                                    <table class="table-condensed tb-details">
+                                        <tbody></tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
                 <a href="{% url 'gmaterials_list' %}" class="btn btn-primary">
                     <span class="glyphicon glyphicon-chevron-left"></span>
                     Regresar

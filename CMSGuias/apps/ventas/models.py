@@ -73,6 +73,8 @@ class Sectore(models.Model):
     status = models.CharField(max_length=2,null=False,default='AC')
     flag = models.BooleanField(default=True, null=False)
 
+    audit_log = AuditLog()
+
     class Meta:
         ordering = ['sector_id']
 
@@ -109,6 +111,8 @@ class Metradoventa(models.Model):
     cantidad = models.FloatField()
     precio = models.FloatField()
     flag = models.BooleanField(default=True)
+
+    audit_log = AuditLog()
 
     class Meta:
         ordering = ['proyecto']
@@ -189,6 +193,8 @@ class UpdateMetProject(models.Model):
     tag = models.CharField(max_length=1, default='0')
     flag = models.BooleanField(default=True)
 
+    audit_log = AuditLog()
+
     @property
     def amount(self):
         return (self.quantity * self.price)
@@ -218,6 +224,8 @@ class PurchaseOrder(models.Model):
     order = models.FileField(upload_to=url,null=True, blank=True, max_length=200)
     flag = models.BooleanField(default=True)
 
+    audit_log = AuditLog()
+
     class Meta:
         ordering = ['project']
 
@@ -232,6 +240,8 @@ class DetailsPurchaseOrder(models.Model):
     delivery = models.DateField()
     quantity = models.FloatField()
     price = models.FloatField()
+
+    audit_log = AuditLog()
 
     class Meta:
         ordering = ['nropurchase']

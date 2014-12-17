@@ -98,9 +98,9 @@ class TypeGroup(models.Model):
 class GroupMaterials(models.Model):
     mgroup_id = models.CharField(max_length=10, primary_key=True)
     tgroup = models.ForeignKey(TypeGroup, to_field='tgroup_id', default='TG00000')
-    description = models.CharField(max_length=200, blank=True)
+    name = models.CharField(max_length=200, blank=True)
     materials = models.ForeignKey(Materiale, to_field='materiales_id')
-    parent = models.CharField(max_length=13, null=True, blank=True)
+    #parent = models.CharField(max_length=13, null=True, blank=True)
     observation = models.CharField(max_length=250)
     flag = models.BooleanField(default=True)
 
