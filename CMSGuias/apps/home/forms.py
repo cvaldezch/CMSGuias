@@ -116,7 +116,7 @@ class GMaterialsForm(forms.ModelForm):
         model = GroupMaterials
         exclude = {'mgroup_id', 'flag',}
         widgets = {
-            'tgroup': forms.Select(attrs = {'class': 'form-control'}),
+            'tgroup': forms.Select(attrs = {'class': 'form-control chosen-select'}),
             'description': forms.TextInput(attrs = {'class': 'form-control'}),
             'materials': forms.Select(attrs = {'class': 'form-control'}),
             'parent': forms.TextInput(attrs = {'class': 'form-control'}),

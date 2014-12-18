@@ -105,7 +105,7 @@ class GroupMaterials(models.Model):
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return '%s %s %s'%(self.mgroup_id, self.materials_id, self.parent)
+        return '%s %s'%(self.mgroup_id, self.materials_id)
 
 class DetailsGroup(models.Model):
     mgroup = models.ForeignKey(GroupMaterials, to_field='mgroup_id')
