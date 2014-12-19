@@ -465,10 +465,27 @@ class SectorManage(JSONResponseMixin, View):
                     if 'type' in request.GET:
                         if request.GET.get('type') == 'list':
                             obj = Metradoventa.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), flag=True).order_by('materiales__matnom')
-                            context['list'] = [{'id':x.id,'materials_id': x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'brand' : x.brand.brand, 'model' : x.model.model , 'quantity':x.cantidad, 'price':x.precio} for x in obj]
+                            context['list'] = [
+                                {
+                                    'id':x.id,
+                                    'materials_id': x.materiales_id,
+                                    'name': x.materiales.matnom,
+                                    'measure':x.materiales.matmed,
+                                    'unit': x.materiales.unidad.uninom,
+                                    'brand' : x.brand.brand,
+                                    'model' : x.model.model,
+                                    'quantity':x.cantidad,
+                                    'price':x.precio
+                                } for x in obj
+                            ]
                             context['status'] = True
                     if 'list-nip' in request.GET:
-                        obj = Nipple.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), materiales_id=request.GET.get('mat'), flag=True).order_by('metrado')
+                        obj = Nipple.objects.filter(
+                            proyecto_id=request.GET.get('pro'),
+                            subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None,
+                            sector_id=request.GET.get('sec'),
+                            materiales_id=request.GET.get('mat'),
+                            flag=True).order_by('metrado')
                         mat = MetProject.objects.get(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), materiales_id=request.GET.get('mat'))
                         if mat.quantityorder > 0:
                             attend = 'show'
@@ -477,15 +494,15 @@ class SectorManage(JSONResponseMixin, View):
                         context['list'] = [
                             {
                                 'id':x.id,
-                                'quantity':x.cantshop,
-                                'diameter':x.materiales.matmed,
-                                'measure':x.metrado,
-                                'unit':'cm',
+                                'quantity': x.cantshop,
+                                'diameter': x.materiales.matmed,
+                                'measure': x.metrado,
+                                'unit': 'cm',
                                 'name': 'Niple%s %s, %s'%('s' if x.cantshop > 1 else '',globalVariable.tipo_nipples[x.tipo], x.tipo),
-                                'comment':x.comment,
-                                'materials':x.materiales_id,
+                                'comment': x.comment,
+                                'materials': x.materiales_id,
                                 'view': attend,
-                                'tag':x.tag
+                                'tag': x.tag
                             } for x in obj
                         ] #if x.cantshop > 0]
                         ingress = 0

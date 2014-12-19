@@ -87,7 +87,7 @@ class RptSupply(TemplateView):
             context = super(RptSupply, self).get_context_data(**kwargs)
             bedside = get_object_or_404(models.Suministro, pk=kwargs['sid'], flag=True)
             queryset = models.DetSuministro.objects.filter(suministro_id__exact=kwargs['sid'], flag=True)
-            queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id')
+            queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id','brand__brand')
             queryset = queryset.annotate(cantidad=Sum('cantshop')).order_by('materiales__matnom')
             context['bedside'] = bedside
             context['details'] = queryset

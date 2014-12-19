@@ -20,7 +20,15 @@
                     <table class="table table-hover table-bordered table-condensed">
                         <thead>
                             <tr class="brand-primary">
-                                <th>Item</th><th>Código</th><th>Descripción</th><th>Tipo Grupo</th><th>Materials</th><th>Grupo Material</th><th>Observación</th><th>Details</th><th></th><th></th>
+                                <th>Item</th>
+                                <th>Código</th>
+                                <th>Descripción</th>
+                                <th>Tipo Grupo</th>
+                                <th>Materials</th>
+                                <th>Observación</th>
+                                <th>Details</th>
+                                <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -28,10 +36,9 @@
                             <tr>
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ x.mgroup_id }}</td>
-                                <td>{{ x.description }}</td>
+                                <td>{{ x.name }}</td>
                                 <td>{{ x.tgroup }}</td>
                                 <td>{{ x.materials_id }}</td>
-                                <td>{{ x.parent }}</td>
                                 <td>{{ x.observation }}</td>
                                 <td class="text-center">
                                     <a href="{% url 'gmaterials_details' x.mgroup_id %}">

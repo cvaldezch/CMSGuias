@@ -3,16 +3,16 @@
     Manager Sector
 {% endblock title %}
 {% block script %}
-<script src="{{ MEDIA_URL }}js/mustache.js"></script>
-<script src="{{ MEDIA_URL }}js/scrollTo.js"></script>
-<script src="{{ MEDIA_URL }}js/getMaterials.js"></script>
-<script src="{{ MEDIA_URL }}js/sales/managersec.js"></script>
-<script src="{{ MEDIA_URL }}js/tinymce.js"></script>
-<script src="{{ MEDIA_URL }}js/checkbox.min.js"></script>
-<script src="{{ MEDIA_URL }}js/mailer.js"></script>
-<script src="{{ MEDIA_URL }}js/chosen.jquery.min.js"></script>
-<script src="{{ MEDIA_URL }}js/floatThead.js"></script>
-<script src="{{ MEDIA_URL }}js/annimated.js"></script>
+    <script src="{{ MEDIA_URL }}js/mustache.js"></script>
+    <script src="{{ MEDIA_URL }}js/scrollTo.js"></script>
+    <script src="{{ MEDIA_URL }}js/getMaterials.js"></script>
+    <script src="{{ MEDIA_URL }}js/sales/managersec.js"></script>
+    <script src="{{ MEDIA_URL }}js/tinymce.js"></script>
+    <script src="{{ MEDIA_URL }}js/checkbox.min.js"></script>
+    <script src="{{ MEDIA_URL }}js/mailer.js"></script>
+    <script src="{{ MEDIA_URL }}js/chosen.jquery.min.js"></script>
+    <script src="{{ MEDIA_URL }}js/floatThead.js"></script>
+    <script src="{{ MEDIA_URL }}js/annimated.js"></script>
 {% endblock script %}
 {% block style %}
 <link rel="stylesheet" href="{{ MEDIA_URL }}css/chosen.css">
@@ -713,10 +713,13 @@
                                     {% ifequal x.materiales_id|truncatechars:6 "115..." %}
                                     <tr>
                                         <td colspan="2">
-                                            <div class="panel panel-warning">
+
+                                            <div class="panel-group">
                                                 <div class="panel-heading">
                                                     <h4 class="panel-title">
-                                                        <a data-toggle="collapse" class="collapsed" data-parent="#niples" onClick="list_temp_nipples({{ x.materiales_id }});" href="#des{{ x.materiales_id }}">{{ x.name }} - {{ x.measure }}</a>
+                                                        <a data-toggle="collapse" class="collapsed" data-parent="#niples" onClick="list_temp_nipples({{ x.materiales_id }});" href="#des{{ x.materiales_id }}">
+                                                            {{ x.name }} - {{ x.measure }}
+                                                        </a>
                                                         <span class="pull-right badge badge-warning">Quedan
                                                             <span class="res{{ x.materiales_id }}"></span> cm
                                                         </span>
@@ -730,7 +733,7 @@
                                                 <div id="des{{ x.materiales_id }}" class="panel-collapse collapse">
                                                     <!-- <div class="panel-body c{{ x.materiales_id }}"> -->
                                                     <div class="table-responsive">
-                                                        <table class="table table-condensed table-hover table-bordered table-float">
+                                                        <table class="table table-condensed table-hover table-float">
                                                             <caption class="text-left">
                                                                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'operaciones' or user.get_profile.empdni.charge.area|lower == 'almacen' %}
                                                                 <div class="row">
@@ -782,15 +785,17 @@
                                                                 {% endif %}
                                                             </caption>
                                                             <thead>
-                                                                <th>Cantidad</th>
-                                                                <th>Descripción</th>
-                                                                <th>Diametro</th>
-                                                                <th></th>
-                                                                <th>Medida</th>
-                                                                <th>Unidad</th>
-                                                                <th>Observación</th>
-                                                                <th>Editar</th>
-                                                                <th>Eliminar</th>
+                                                                <tr class="brand-warning">
+                                                                    <th>Cantidad</th>
+                                                                    <th>Descripción</th>
+                                                                    <th>Diametro</th>
+                                                                    <th></th>
+                                                                    <th>Medida</th>
+                                                                    <th>Unidad</th>
+                                                                    <th>Observación</th>
+                                                                    <th>Editar</th>
+                                                                    <th>Eliminar</th>
+                                                                </tr>
                                                             </thead>
                                                             <tbody class="tb{{ materiales_id }}"></tbody>
                                                         </table>

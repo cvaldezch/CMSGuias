@@ -1,13 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Delivery Order</title>
-    <link rel="stylesheet" type="text/css" href="/media/css/reports/ordersstore.css">
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/reports/ordersstore.css">
 </head>
 <body>
-    <header>
-        <img id="logo" src="/media/images/icrlogo.png" alt="image">
+    <header id="header">
+        <img id="logo" src="{{ MEDIA_URL }}images/icrlogo.png" alt="image">
         <div id="dir" >
             {{ request.session.company.address }}<br >
             Central Telefonica: (511) {{ request.session.company.phone }}<br >
@@ -44,43 +44,88 @@
             </table>
         </div>
     </header>
-    <section>
-        <div class="details">
-            <table>
-                <thead>
+    <div class="details" id="details">
+        <table repeat="1">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Código</th>
+                    <th width="11cm">Descripción </th>
+                    <!-- <th>Medida</th> -->
+                    <th>Unidad</th>
+                    <th>Marca</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for x in details %}
                     <tr>
-                        <th>Item</th>
-                        <th>Código</th>
-                        <th width="11cm">Descripción <!-- </th>
-                        <th> -->Medida</th>
-                        <th>Unidad</th>
-                        <th>Cantidad</th>
+                        <td class="text-center item">{{forloop.counter}}</td>
+                        <td class="text-center cod">{{x.materiales_id}}</td>
+                        <td>{{x.materiales__matnom}} - <!-- </td>
+                        <td> -->{{x.materiales__matmed}}</td>
+                        <td class="text-center">{{x.materiales__unidad_id}}</td>
+                        <td class="text-center">{{ x.brand__brand }}</td>
+                        <td class="text-center">{{x.cantidad}}</td>
                     </tr>
-                </thead>
-                <tbody>
-                    {% for x in details %}
-                        <tr>
-                            <td class="text-center item">{{forloop.counter}}</td>
-                            <td class="text-center cod">{{x.materiales_id}}</td>
-                            <td>{{x.materiales__matnom}}<!-- </td>
-                            <td> -->{{x.materiales__matmed}}</td>
-                            <td class="text-center">{{x.materiales__unidad_id}}</td>
-                            <td class="text-center">{{x.cantidad}}</td>
-                        </tr>
-                    {% endfor%}
-                </tbody>
-                <tfoot>
-                    <tr>
+                {% endfor%}
+            </tbody>
+            <tfoot>
+                <tr>
                     <td></td>
                     <td></td>
                     <!-- <td></td> -->
                     <td></td>
                     <td></td>
                     <td></td>
-                    </tr>
-                </tfoot>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+        <p class="separator">&nbsp;<p>
+        <p class="separator">&nbsp;<p>
+            <p class="separator">&nbsp;<p>
+                <p class="separator">&nbsp;<p>
+        <!-- <table class="confirmtable" repeat="1">
+            <tr>
+                <th class="idflnum">IDFL#<br />CIQ/CH#</th>
+                <th class="type">Type</th>
+                <th class="rush">RUSH</th>
+                <th class="complete">Estimated Completion</th>
+                <th class="represent">Sample Representing</th>
+                <th class="label">Label</th>
+            </tr>
+        {% for c in details %}
+            {% ifequal forloop.counter0 5 %}
             </table>
+            <div><pdf:nextpage /></div>
+            <table class="confirmtable" repeat="1">
+            <tr>
+            <th class="idflnum">IDFL#<br />CIQ/CH#</th>
+            <th class="type">Type</th>
+            <th class="rush">RUSH</th>
+            <th class="complete">Estimated Completion</th>
+            <th class="represent">Sample Representing</th>
+            <th class="label">Label</th>
+            </tr>
+            {% endifequal %}
+            <tr>
+                <td class="text-center item">{{forloop.counter}}</td>
+                <td class="text-center cod">{{x.materiales_id}}</td>
+                <td>{{x.materiales__matnom}}</td>
+                <td>{{x.materiales__matmed}}</td>
+                <td class="text-center">{{x.materiales__unidad_id}}</td>
+                <td class="text-center">{{x.cantidad}}</td>
+            </tr>
+            {% endfor %}
+        </table> -->
+    </div>
+    <footer>
+        <!-- Content for Static Frame 'footer_frame' -->
+        <div id="footer_content">
+            (c) - page <pdf:pagenumber>
+            of <pdf:pagecount>
         </div>
-    </section>
+    </footer>
 </body>
 </html>

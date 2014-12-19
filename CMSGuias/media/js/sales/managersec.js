@@ -790,6 +790,7 @@ list_temp_nipples = function(idmat) {
       }
       $(".in" + idmat).text(response.ingress);
       $(".res" + idmat).text(($(".totr" + idmat).val() * 100) - response.ingress);
+      $("table.table-float").floatThead("reflow");
     }
   });
 };
