@@ -52,13 +52,42 @@ def view_test_pdf(request):
 """
 ### Reports
 def rpt_orders_details(request,pid,sts):
+    context = dict()
     try:
         if request.method == 'GET':
             order = get_object_or_404(models.Pedido,pk=pid,status=sts)
-            lista = get_list_or_404(models.Detpedido.objects.order_by('materiales__matnom'),pedido_id__exact=pid)
+            lista = models.Detpedido.objects.filter(pedido_id__exact=pid).order_by('materiales__matnom')
+            print lista.count()
             nipples = models.Niple.objects.filter(pedido_id__exact=pid).order_by('materiales')
-            ctx = { 'pagesize': 'A4','order': order, 'lista': lista, 'nipples': nipples,'tipo': globalVariable.tipo_nipples }
-            html = render_to_string('report/rptordersstore.html',ctx,context_instance=RequestContext(request))
+            context['order'] = order
+            if lista.count() > 30:
+                sheet = int('%.0f'%(float(lista.count()) / 30))
+            else:
+                sheet = 1
+            counter = 0
+            section = list()
+            for c in range(sheet):
+                dataset = lista[counter:counter+30]
+                tmp = list()
+                for x in dataset:
+                    tmp.append(
+                        {
+                            'item': counter + 1,
+                            'materials': x.materiales_id,
+                            'name': '%s - %s'%(x.materiales.matnom, x.materiales.matmed),
+                            'unit': x.materiales.unidad.uninom,
+                            'brand': x.brand.brand,
+                            'model': x.model.model,
+                            'quantity': x.cantidad
+                        }
+                    )
+                    counter += 1
+                section.append(tmp)
+            context['lista'] = section
+            context['nipples'] = nipples
+            context['tipo'] = globalVariable.tipo_nipples
+
+            html = render_to_string('report/rptordersstore.html',context,context_instance=RequestContext(request))
             return generate_pdf(html)
     except TemplateDoesNotExist, e:
         raise Http404
@@ -87,10 +116,58 @@ class RptSupply(TemplateView):
             context = super(RptSupply, self).get_context_data(**kwargs)
             bedside = get_object_or_404(models.Suministro, pk=kwargs['sid'], flag=True)
             queryset = models.DetSuministro.objects.filter(suministro_id__exact=kwargs['sid'], flag=True)
-            queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id','brand__brand')
+            queryset = queryset.values(
+                'materiales_id',
+                'materiales__matnom',
+                'materiales__matmed',
+                'materiales__unidad__uninom',
+                'brand__brand'
+            )
             queryset = queryset.annotate(cantidad=Sum('cantshop')).order_by('materiales__matnom')
             context['bedside'] = bedside
             context['details'] = queryset
+            if queryset.count() > 30:
+                context['sheets'] = int('%.0f'%(float(queryset.count())/30))
+            else:
+                context['sheets'] = 1
+            section = list()
+            # print queryset.count()
+            # print context['sheets']
+            counter = 0
+            for g in range(context['sheets']):
+                # print g, 'g counter'
+                dataset = queryset[counter:counter + 30]
+                tm = list()
+                for x in dataset:
+                    tm.append(
+                        {
+                            'item': counter + 1,
+                            'materials': x['materiales_id'],
+                            'name': '%s - %s'%(x['materiales__matnom'], x['materiales__matmed']),
+                            'unit': x['materiales__unidad__uninom'],
+                            'brand': x['brand__brand'],
+                            'quantity': x['cantidad']
+                        }
+                    )
+                    counter += 1
+
+                section.append(tm)
+                # section.append(
+                #     [
+                #         {
+                #             'item': g,
+                #             'materials': x['materiales_id'],
+                #             'name': '%s - %s'%(x['materiales__matnom'], x['materiales__matmed']),
+                #             'unit': x['materiales__unidad__uninom'],
+                #             'brand': x['brand__brand'],
+                #             'quantity': x['cantidad']
+                #         }
+                #         for x in dataset
+                #     ]
+                # )
+            # print section
+            # print len(section)
+            context['section'] = section
             context['project'] = Proyecto.objects.filter(proyecto_id__in=bedside.orders.split(','))
             context['status'] = globalVariable.status
             html = render_to_string(self.template_name, context, context_instance=RequestContext(request))

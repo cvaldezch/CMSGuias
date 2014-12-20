@@ -41,7 +41,8 @@
 	</header>
 	<section>
 		<div class="details">
-			<table>
+			{% for c in lista %}
+			<table repeat="1">
 				<thead>
 					<tr>
 						<th width="1.5cm">Item</th>
@@ -55,18 +56,25 @@
 					</tr>
 				</thead>
 				<tbody>
-					{% for x in lista %}
+					{% for x in c %}
 						<tr>
-							<td class="text-center item">{{ forloop.counter|floatformat:"2" }}</td>
+							<td class="text-center item">{{ x.item|floatformat:"2" }}</td>
+							<td class="text-center cod">{{ x.materials }}</td>
+							<td>{{ x.name }}</td>
+							<td class="text-center">{{ x.unit }}</td>
+							<td class="text-center">{{ x.brand }}</td>
+							<td class="text-center">{{ x.model }}</td>
+							<td class="text-center">{{ x.quantity }}</td>
+							<!-- <td class="text-center item">{{ forloop.counter|floatformat:"2" }}</td>
 							<td class="text-center cod">{{ x.materiales_id }}</td>
 							<td>{{ x.materiales.matnom }} -
-							<!-- </td>
-							<td> -->
+							</td>
+							<td>
 							{{ x.materiales.matmed }}</td>
 							<td class="text-center">{{ x.materiales.unidad.uninom }}</td>
 							<td class="text-center">{{ x.brand.brand }}</td>
 							<td class="text-center">{{ x.model.model }}</td>
-							<td class="text-center">{{ x.cantidad }}</td>
+							<td class="text-center">{{ x.cantidad }}</td> -->
 						</tr>
 					{% endfor%}
 				</tbody>
@@ -80,6 +88,10 @@
 					</tr>
 				</tfoot>
 			</table>
+			{% if not forloop.last %}
+				<div><pdf:nextpage /></div>
+			{% endif %}
+			{% endfor %}
 		</div>
 	</section>
 

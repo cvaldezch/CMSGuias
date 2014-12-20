@@ -1,9 +1,5 @@
 @page {
 	margin: 1cm;
- 	margin-top: 6.5cm;
-	margin-bottom: 4cm;
-	size: a4;
-
 	@frame header_frame {
 		-pdf-frame-content: logo;
 		margin-top: 1cm; top: 0; left: 1cm;
@@ -30,38 +26,25 @@
 	}
 	@frame header_frame {
 		-pdf-frame-content: bedside-col2;
-		right: 1cm;margin-top: 4.3cm; width: 9cm;
+		right: 1cm; margin-top: 4.3cm; width: 9cm;
 	}
-
-	@frame content_frame {          /* Content Frame */
-        left: 1cm;
-        /* width: 512pt; */
-        /* height: 10cm;*/
-        /* margin-bottom: 4cm; */
-        top: 170pt;
-    }
-
-	@frame footer_frame { /* Another static Frame */
-        -pdf-frame-content: footer_content;
-        left: 50pt; width: 512pt; top: 772pt; height: 20pt;
-    }
+	@frame content_frame {
+		/*-pdf-frame-content: details;*/
+		top: 7cm;
+		margin-left: 1cm;
+		margin-right: 1cm;
+	}
+	@frame footer_frame {
+		-pdf-frame-content: footer_content;
+		left: 50pt; width: 512pt; top: 772pt; height: 20pt;
+	}
 }
-
-
 @page nipples {
 	margin: 1cm;
 }
 img{
 	zoom: 80%;
 }
-#details > table{
-    -pdf-keep-with-next: true;
-    /* -pdf-keep-in-frame-mode: none; */
-}
-
-/* p { margin: 0; -pdf-keep-with-next: true; }
-p.separator { -pdf-keep-with-next: true; font-size: 6pt; }
- */
 #dir,
 #nro-serie,
 .text-center {
@@ -70,9 +53,6 @@ p.separator { -pdf-keep-with-next: true; font-size: 6pt; }
 #nro-serie h1 {
 	font-size: 24px;
 }
-/* div.details > table {
-	-pdf-keep-in-frame-mode: none;
-} */
 .details table > thead > tr { background-color: dodgerblue; border: 0.01 solid dodgerblue; padding-top: .15cm; padding-bottom: 0.1cm; }
 .details table > tbody > tr { border-left: .01cm solid dodgerblue; border-right: .01cm solid dodgerblue; padding-top: .05cm; padding-bottom: 0.01cm; }
 /*.details table > tfoot > tr { border-top: 0.01cm solid dodgerblue; }*/

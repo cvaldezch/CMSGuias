@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Delivery Order</title>
-    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/reports/ordersstore.css">
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/reports/supplyorders.css">
 </head>
 <body>
     <header id="header">
@@ -45,6 +45,7 @@
         </div>
     </header>
     <div class="details" id="details">
+        {% for x in section %}
         <table repeat="1">
             <thead>
                 <tr>
@@ -58,15 +59,14 @@
                 </tr>
             </thead>
             <tbody>
-                {% for x in details %}
+                {% for c in x %}
                     <tr>
-                        <td class="text-center item">{{forloop.counter}}</td>
-                        <td class="text-center cod">{{x.materiales_id}}</td>
-                        <td>{{x.materiales__matnom}} - <!-- </td>
-                        <td> -->{{x.materiales__matmed}}</td>
-                        <td class="text-center">{{x.materiales__unidad_id}}</td>
-                        <td class="text-center">{{ x.brand__brand }}</td>
-                        <td class="text-center">{{x.cantidad}}</td>
+                        <td class="text-center item">{{ c.item }}</td>
+                        <td class="text-center cod">{{ c.materials }}</td>
+                        <td>{{ c.name }}</td>
+                        <td class="text-center">{{ c.unit }}</td>
+                        <td class="text-center">{{ c.brand }}</td>
+                        <td class="text-center">{{ c.quantity }}</td>
                     </tr>
                 {% endfor%}
             </tbody>
@@ -82,10 +82,14 @@
                 </tr>
             </tfoot>
         </table>
-        <p class="separator">&nbsp;<p>
+            {% if not forloop.last %}
+                <div><pdf:nextpage /></div>
+            {% endif %}
+        {% endfor %}
+        <!-- <p class="separator">&nbsp;<p>
         <p class="separator">&nbsp;<p>
             <p class="separator">&nbsp;<p>
-                <p class="separator">&nbsp;<p>
+                <p class="separator">&nbsp;<p> -->
         <!-- <table class="confirmtable" repeat="1">
             <tr>
                 <th class="idflnum">IDFL#<br />CIQ/CH#</th>
@@ -120,12 +124,9 @@
             {% endfor %}
         </table> -->
     </div>
-    <footer>
-        <!-- Content for Static Frame 'footer_frame' -->
-        <div id="footer_content">
-            (c) - page <pdf:pagenumber>
-            of <pdf:pagecount>
-        </div>
-    </footer>
+    <!-- Content for Static Frame 'footer_frame' -->
+    <div id="footer_content">
+        Page <pdf:pagenumber> of <pdf:pagecount>
+    </div>
 </body>
 </html>
