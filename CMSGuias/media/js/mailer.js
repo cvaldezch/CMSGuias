@@ -258,6 +258,9 @@ sendGlobalMailer = function(event) {
   data.saveEmail = true;
   $.post("/json/emails/", data, function(response) {
     if (response.status) {
+      if ($("[name=mailer-enable]").length) {
+        $("[name=mailer-enable]").get(0).checked = false;
+      }
       return $().toastmessage("showNoticeToast", "Email save BBDD");
     }
   }, "json");

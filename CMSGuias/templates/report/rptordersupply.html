@@ -22,10 +22,10 @@
         </div>
         <div id="bedside-col1">
             <table>
-                <tr><td><strong>Almacén :</strong></td><td> {{bedside.almacen.nombre}}</td></tr>
-                <tr><td><strong>Asunto :</strong></td><td> {{bedside.asunto}}</td></tr>
-                <tr><td width="3cm"><strong>Fecha Registrado :</strong></td><td> {{bedside.registrado}}</td></tr>
-                <tr><td><strong>Fecha Ingreso :</strong></td><td> {{bedside.ingreso}}</td></tr>
+                <tr><td><strong>Almacén :</strong></td><td> {{ bedside.almacen.nombre }}</td></tr>
+                <tr><td><strong>Asunto :</strong></td><td> {{ bedside.asunto }}</td></tr>
+                <tr><td width="3cm"><strong>Fecha Registrado :</strong></td><td> {{ bedside.registrado }}</td></tr>
+                <tr><td><strong>Fecha Ingreso :</strong></td><td> {{ bedside.ingreso }}</td></tr>
                 <tr><td><strong>Proyectos:</strong></td><td>
                 {% for x in project %}
                     {{ x.nompro }} <br>
@@ -40,7 +40,7 @@
                         {{ v }}
                     {% endifequal %}
                 {% endfor %}</td></tr>
-                <tr><td><strong>Observación :</strong></td><td> {{bedside.obser}}</td></tr>
+                <tr><td><strong>Observación :</strong></td><td> {{ bedside.obser }}</td></tr>
             </table>
         </div>
     </header>

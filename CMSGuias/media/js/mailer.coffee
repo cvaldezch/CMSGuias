@@ -293,6 +293,8 @@ sendGlobalMailer = (event) ->
     data.saveEmail = true
     $.post "/json/emails/", data, (response) ->
         if response.status
+            if $("[name=mailer-enable]").length
+                $("[name=mailer-enable]").get(0).checked = false
             $().toastmessage "showNoticeToast", "Email save BBDD"
     , "json"
     return

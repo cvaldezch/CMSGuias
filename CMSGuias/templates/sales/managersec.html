@@ -141,35 +141,39 @@
                             {% endif %}
                         </div>
                         {% if meter %}
-                            {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
                             <div class="btn-group">
-                                <button class="btn btn-default btn-update-meter-cancel">
-                                    <span class="glyphicon glyphicon-remove"></span>
-                                    Cancelar
-                                </button>
-                                <button class="btn btn-danger text-black btn-update-meter">
-                                    <span class="glyphicon glyphicon-link"></span>
-                                    Modificar Sector {{ user.get_profile.empdni.charge.area|lower }}
-                                </button>
-                                <button class="btn btn-danger text-black btn-show-materials-meter">
-                                    <span class="glyphicon glyphicon-list"></span>
-                                    Materiales
-                                </button>
-                                <button class="btn btn-danger text-black btn-deductivo-meter">
-                                    <span class="glyphicon glyphicon-indent-left"></span>
-                                    <span class="glyphicon glyphicon-indent-right"></span>
-                                    Deductivo
-                                </button>
-                                <button class="btn btn-danger text-black btn-upload-plane-meter">
-                                    <span class="glyphicon glyphicon-file"></span>
-                                    Cargar Plano Modicado
-                                </button>
-                                <button class="btn btn-danger text-black btn-save-modify-meter">
-                                    <span class="glyphicon glyphicon-saved"></span>
-                                    Aprobar Modificación
-                                </button>
+                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+                                    <button class="btn btn-default btn-update-meter-cancel">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                        Cancelar
+                                    </button>
+                                    <button class="btn btn-danger text-black btn-update-meter">
+                                        <span class="glyphicon glyphicon-link"></span>
+                                        Modificar Sector
+                                    </button>
+                                    <button class="btn btn-danger text-black btn-show-materials-meter">
+                                        <span class="glyphicon glyphicon-list"></span>
+                                        Materiales
+                                    </button>
+                                    <button class="btn btn-danger text-black btn-upload-plane-meter">
+                                        <span class="glyphicon glyphicon-file"></span>
+                                        Cargar Plano Modicado
+                                    </button>
+                                {% endif %}
+                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
+                                    <button class="btn btn-danger text-black btn-deductivo-meter">
+                                        <span class="glyphicon glyphicon-indent-left"></span>
+                                        <span class="glyphicon glyphicon-indent-right"></span>
+                                        Deductivo
+                                    </button>
+                                {% endif %}
+                                {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+                                    <button class="btn btn-danger text-black btn-save-modify-meter">
+                                        <span class="glyphicon glyphicon-saved"></span>
+                                        Aprobar Modificación
+                                    </button>
+                                {% endif %}
                             </div>
-                            {% endif %}
                         {% endif %}
                     </div>
                     <div class="alert alert-warning alert-block panel-add-mat">
@@ -1353,6 +1357,7 @@
     <input type="hidden" name="exchangep" value="{{ project.exchange|safe }}">
 {% endif %}
 <input type="hidden" name="user-email" value="{{ user.email }}" data-name="{{ user.get_profile.empdni.firstname }} {{ user.get_profile.empdni.lastname }}">
+<input type="hidden" name="area" value="{{ user.get_profile.empdni.charge.area|lower }}">
 <!-- block files -->
 <input type="file" name="plane" class="hide" accept="application/pdf">
 {% endblock content %}

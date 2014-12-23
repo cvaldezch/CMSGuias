@@ -1265,7 +1265,8 @@ startModidfy = ->
             $tb.empty()
             area = $("input[name=area]").val()
             for x of response.details
-                template = "<tr id=\"trm-{{ materials }}\">
+                template = "
+                        <tr id=\"trm-{{ materials }}\" class=\"{{!class}}\">
                         <td class=\"text-center\">{{ item }}</td>
                         <td class=\"text-center\">{{ materials }}</td>
                         <td>{{ name }}</td>
@@ -1299,8 +1300,13 @@ startModidfy = ->
                     att = "<span class=\"glyphicon glyphicon-unchecked\"></span>"
                 else if response.details[x].tag is "1"
                     att = "<span class=\"glyphicon glyphicon-minus\"></span>"
-                template = template.replace "{{!attend}}", att
-                $tb.append Mustache.render template, response.details[x]
+                tmp = template
+                tmp = tmp.replace "{{!attend}}", att
+                statusprice = ""
+                if response.details[x].price <= 0 or response.details[x].quantity <= 0
+                    statusprice = "danger"
+                tmp = tmp.replace "{{!class}}", statusprice
+                $tb.append Mustache.render tmp, response.details[x]
                 $sel = $("#brand-#{response.details[x].materials}-#{response.details[x].brand_id}")
                 $sel.empty()
                 for b of response.listBrand
