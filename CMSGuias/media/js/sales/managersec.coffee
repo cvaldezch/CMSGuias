@@ -1272,10 +1272,18 @@ startModidfy = ->
                         <td>{{ name }}</td>
                         <td>{{ measure }}</td>
                         <td class=\"text-center\">{{ unit }}</td>
-                        <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"brand-{{ materials }}-{{ brand_id }}\"</select></td>
-                        <td><select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"model-{{ materials }}-{{ model_id }}\"</select></td>
-                        <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm change-modify\" value=\"{{ quantity }}\" min=\"0\" id=\"quantity-{{ materiales }}\"></td>
-                        <td><input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm change-modify\" value=\"{{ price }}\" id=\"price-{{ materials }}\"></td>
+                        <td>
+                            <select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"brand-{{ materials }}-{{ brand_id }}\"></select>
+                        </td>
+                        <td>
+                            <select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"model-{{ materials }}-{{ model_id }}\"></select>
+                        </td>
+                        <td>
+                            <input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm change-modify\" value=\"{{ quantity }}\" min=\"0\" id=\"quantity-{{ materiales }}\">
+                        </td>
+                        <td>
+                            <input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm change-modify\" value=\"{{ price }}\" id=\"price-{{ materials }}\">
+                        </td>
                         <td>{{ amount }}</td>
                         <td class=\"text-center\">
                             <button class=\"btn btn-xs btn-link text-green btn-update-update\" value=\"{{ materials }}\" data-tag=\"{{ tag }}\">

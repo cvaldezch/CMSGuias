@@ -192,6 +192,15 @@
                                         <span class="visible-lg visible-lg">Acciones</span>
                                     </button>
                                     <ul class="dropdown-menu" role="menu">
+                                        <!-- load file materials -->
+                                        {% if request.user.get_profile.empdni.charge.area|lower == 'ventas' or request.user.get_profile.empdni.charge.area|lower == 'administrator' %}
+                                            <li>
+                                                <a href="{% url 'compressed_list' project.proyecto_id %}" class="btn btn-link btn-xs text-black btn-compress-list">
+                                                    <span class="fa fa-file-excel-o"></span>
+                                                    <span class="glyphicon-class">Cargar Presupuesto</span>
+                                                </a>
+                                            </li>
+                                        {% endif %}
                                         {% if project.status == 'AC' %}
                                             {% if request.user.get_profile.empdni.charge.area|lower == 'ventas' or  request.user.get_profile.empdni.charge.area|lower == 'logistica' or  request.user.get_profile.empdni.charge.area|lower == 'administrator' %}
                                                 <li>

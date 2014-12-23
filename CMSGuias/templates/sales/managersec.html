@@ -167,7 +167,7 @@
                                         Deductivo
                                     </button>
                                 {% endif %}
-                                {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+                                {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
                                     <button class="btn btn-danger text-black btn-save-modify-meter">
                                         <span class="glyphicon glyphicon-saved"></span>
                                         Aprobar Modificación
@@ -257,7 +257,9 @@
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group has-warning">
-                                        <label class="control-label">Agregar</label>
+                                        <label class="control-label">
+                                            Agregar
+                                        </label>
                                         {% if project.status == 'PE' %}
                                             <button class="btn btn-block btn-warning text-black btn-add">
                                                 <span class="glyphicon glyphicon-plus"></span>
@@ -498,11 +500,13 @@
                                         {% endif %}
                                         {% if meter %}
                                             {% ifequal project.status 'AC' %}
-                                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica'  or user.get_profile.empdni.charge.area|lower == 'operaciones' or user.get_profile.empdni.charge.area|lower == 'almacen' %}
+                                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' or user.get_profile.empdni.charge.area|lower == 'almacen' %} <!--  or user.get_profile.empdni.charge.area|lower == 'operaciones' -->
                                                     <th class="col-2">Stock</th>
                                                 {% endif %}
                                                 <th class="col-4">Observación</th>
-                                                <th class="col-2">Estado</th>
+                                                {% if user.get_profile.empdni.charge.area|lower == 'operaciones' or user.get_profile.empdni.charge.area|lower == 'almacen' %}
+                                                    <th class="col-2">Estado</th>
+                                                {% endif %}
                                             {% endifequal %}
                                         {% endif %}
                                         {% if materials and not meter  %}
@@ -547,6 +551,7 @@
                                                         <input type="text" class="form-control input-sm comment-mat" data-mat="{{ x.materiales_id }}" value="{{ x.comment }}" style="width: 160px;">
                                                     {% endif %}
                                                 </td>
+                                                {% if user.get_profile.empdni.charge.area|lower == 'operaciones' or user.get_profile.empdni.charge.area|lower == 'almacen' %}
                                                 <td class="text-center col-2">
                                                     <span class="glyphicon
                                                     {% if x.tag == "0" %}
@@ -560,6 +565,7 @@
                                                     {% endif %}
                                                     "></span>
                                                 </td>
+                                                {% endif %}
                                             </tr>
                                         {% endfor %}
                                     </tbody>
