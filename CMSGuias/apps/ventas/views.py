@@ -283,7 +283,7 @@ class ProjectManager(JSONResponseMixin, View):
             context = dict()
             try:
                 if request.POST.get('type') == 'files':
-                    year = globalVariable.get_year
+                    year = Proyecto.objects.get(pk=kwargs['project']).registrado.strftime('%Y') #globalVariable.get_year
                     try:
                         # charge file to server
                         if request.POST.get('sub') == '':
@@ -447,6 +447,17 @@ class ProjectManager(JSONResponseMixin, View):
                     # Delete Bedside
                     PurchaseOrder.objects.get(pk=request.POST.get('pk')).delete()
                     context['status'] = True
+                if 'loadPrices' in request.POST:
+                    year = Proyecto.objects.get(pk=kwargs['project']).registrado.strftime('%Y')
+                    filename = '/storage/projects/%s/%s/'%(year, kwargs['project'])
+                    fileopera = uploadFiles.upload(
+                        filename,
+                        request.FILES['prices'],
+                        {
+                            'name': 'prices'
+                        }
+                    )
+                    context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
@@ -467,7 +478,7 @@ class SectorManage(JSONResponseMixin, View):
                             obj = Metradoventa.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), flag=True).order_by('materiales__matnom')
                             context['list'] = [
                                 {
-                                    'id':x.id,
+                                    'id': x.id,
                                     'materials_id': x.materiales_id,
                                     'name': x.materiales.matnom,
                                     'measure':x.materiales.matmed,

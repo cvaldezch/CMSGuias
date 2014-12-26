@@ -119,6 +119,7 @@ $(document).ready ->
     .on "change", loadsAccounts
     $("button.btn-gen-responsible").on "click", genKeyConfirmationResponsible
     $("button.btn-gen-approved").on "click", genKeyConfirmationApproved
+    $("button.btn-show-loadprices").on "click", showLoadPrices
     return
 
 loadsAccounts = (event) ->
@@ -797,4 +798,30 @@ genKeyConfirmationApproved = (event) ->
         else
             $().toastmessage "showErrorToast", "No se generado el token."
     , "json"
+    return
+
+showLoadPrices = (event) ->
+    $("input[name=fileprices]").click()
+    return
+
+uploadLoadPrices = (event) ->
+    file = $("input[name=fileprices]").get(0)
+    if file.files.length
+        form = new FormData()
+        form.append "prices", file.files[0]
+        form.append "loadPrices", true
+        $.ajax
+            url: ""
+            data: form
+            dataType: "json"
+            cache: false
+            contentType: false
+            processData: false
+            success: (response) ->
+                if response.status
+                    $().toastmessage "showNoticeToast", "Se a cargado el archivo correctamente."
+                else
+                    $().toastmessage "showWarningToast", "No se a podido subir el archivo"
+    else
+        $().toastmessage "showWarningToast", "Debe de seleccionar por lo menos un archivo."
     return

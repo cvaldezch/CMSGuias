@@ -25,7 +25,7 @@ def upload(absolutePath,archive,options={}):
           name = archive.name
         filename = '%s%s'%(path, name)
         # recover full address of filename
-        dirfilename = open(filename, "wb+")
+        dirfilename = open(filename, 'wb+')
         # walk all file and save im new address
         for bit in archive.chunks():
             dirfilename.write(bit)
@@ -35,7 +35,7 @@ def upload(absolutePath,archive,options={}):
         os.chmod(filename, 0777)
         return filename
     except Exception, e:
-        print e
+        return False
 
 def removeTmp(absolutePath):
     try:

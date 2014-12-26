@@ -195,10 +195,10 @@
                                         <!-- load file materials -->
                                         {% if request.user.get_profile.empdni.charge.area|lower == 'ventas' or request.user.get_profile.empdni.charge.area|lower == 'administrator' %}
                                             <li>
-                                                <a href="{% url 'compressed_list' project.proyecto_id %}" class="btn btn-link btn-xs text-black btn-compress-list">
+                                                <button type="Button" class="btn btn-link btn-xs text-black btn-prices-list" data-toggle="modal" data-target="#mlprices">
                                                     <span class="fa fa-file-excel-o"></span>
-                                                    <span class="glyphicon-class">Cargar Presupuesto</span>
-                                                </a>
+                                                    <span class="glyphicon-class">Cargar Precios</span>
+                                                </button>
                                             </li>
                                         {% endif %}
                                         {% if project.status == 'AC' %}
@@ -702,6 +702,39 @@
         </div>
     </div>
 </div>
+<!-- modal load prices -->
+<div class="modal fade" id="mlprices">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4 class="modal-title">Cargar Hoja de Cantidad y Precios</h4>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-inverse alert-inverse-border text-center">
+                    <!-- <a href=""> -->
+                        <button class="btn btn-sm upload-green text-white btn-show-loadprices">
+                            <strong class="">SELECCIONAR</strong>
+                        </button>
+                        <span class="fa fa-paperclip fa-lg"></span>
+                    <!-- </a> -->
+                </div>
+                <input type="file" name="fileprices" class="hide" accept="application/excel">
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-default btn-sm pull-left">
+                    <span class="fa fa-times"></span>
+                    Cancelar
+                </button>
+                <button class="btn btn-primary btn-sm" name="upload-prices" type="Button">
+                    <span class="fa fa-upload"></span>
+                    Cargar Archivo
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- end block -->
 {% csrf_token %}
 <input type="hidden" name="dni" value="{{ user.get_profile.empdni_id }}">
