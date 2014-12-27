@@ -17,6 +17,7 @@ from django.utils.decorators import method_decorator
 from django.template import RequestContext, TemplateDoesNotExist
 from django.views.generic import ListView, TemplateView, View
 from django.views.generic.edit import UpdateView, CreateView
+from openpyxl import load_workbook
 
 from CMSGuias.apps.home.models import *
 from CMSGuias.apps.operations.models import MetProject, Nipple, Deductive, DeductiveInputs, DeductiveOutputs
@@ -449,14 +450,23 @@ class ProjectManager(JSONResponseMixin, View):
                     context['status'] = True
                 if 'loadPrices' in request.POST:
                     year = Proyecto.objects.get(pk=kwargs['project']).registrado.strftime('%Y')
-                    filename = '/storage/projects/%s/%s/'%(year, kwargs['project'])
-                    fileopera = uploadFiles.upload(
-                        filename,
+                    prename = '/storage/projects/%s/%s/'%(year, kwargs['project'])
+                    filename = uploadFiles.upload(
+                        prename,
                         request.FILES['prices'],
                         {
                             'name': 'prices'
                         }
                     )
+                    #
+                    print filename
+                    workbook = load_workbook(filename=filename, use_iterators=True)
+                    sheet = workbook.get_sheet_by_name('PRECIOS')
+                    sess = 'PRICES%s'%(kwargs['project'])
+                    if not sess in request.session:
+                        for row in sheet.iter_rows():
+                            if unicode(row[3].value) == 's':
+                                pass
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()

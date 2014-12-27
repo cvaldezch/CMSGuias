@@ -113,6 +113,7 @@ $(document).ready(function() {
   $("button.btn-gen-responsible").on("click", genKeyConfirmationResponsible);
   $("button.btn-gen-approved").on("click", genKeyConfirmationApproved);
   $("button.btn-show-loadprices").on("click", showLoadPrices);
+  $("button[name=upload-prices]").on("click", uploadLoadPrices);
 });
 
 loadsAccounts = function(event) {
@@ -821,16 +822,19 @@ uploadLoadPrices = function(event) {
     form = new FormData();
     form.append("prices", file.files[0]);
     form.append("loadPrices", true);
+    form.append("csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val());
     $.ajax({
       url: "",
       data: form,
+      type: "POST",
       dataType: "json",
       cache: false,
       contentType: false,
       processData: false,
       success: function(response) {
         if (response.status) {
-          return $().toastmessage("showNoticeToast", "Se a cargado el archivo correctamente.");
+          $().toastmessage("showNoticeToast", "Se a cargado el archivo correctamente.");
+          return $("#mlprices").modal("hide");
         } else {
           return $().toastmessage("showWarningToast", "No se a podido subir el archivo");
         }

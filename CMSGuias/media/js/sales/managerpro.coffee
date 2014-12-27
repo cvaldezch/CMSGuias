@@ -120,6 +120,7 @@ $(document).ready ->
     $("button.btn-gen-responsible").on "click", genKeyConfirmationResponsible
     $("button.btn-gen-approved").on "click", genKeyConfirmationApproved
     $("button.btn-show-loadprices").on "click", showLoadPrices
+    $("button[name=upload-prices]").on "click", uploadLoadPrices
     return
 
 loadsAccounts = (event) ->
@@ -810,9 +811,11 @@ uploadLoadPrices = (event) ->
         form = new FormData()
         form.append "prices", file.files[0]
         form.append "loadPrices", true
+        form.append "csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val()
         $.ajax
             url: ""
             data: form
+            type: "POST"
             dataType: "json"
             cache: false
             contentType: false
@@ -820,6 +823,7 @@ uploadLoadPrices = (event) ->
             success: (response) ->
                 if response.status
                     $().toastmessage "showNoticeToast", "Se a cargado el archivo correctamente."
+                    $("#mlprices").modal "hide"
                 else
                     $().toastmessage "showWarningToast", "No se a podido subir el archivo"
     else
