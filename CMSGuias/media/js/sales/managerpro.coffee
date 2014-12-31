@@ -825,7 +825,7 @@ uploadLoadPrices = (event) ->
                     $().toastmessage "showNoticeToast", "Se a cargado el archivo correctamente."
                     $("#mlprices").modal "hide"
                 else
-                    $().toastmessage "showWarningToast", "No se a podido subir el archivo"
+                    $().toastmessage "showWarningToast", "No se a podido subir el archivo. #{response.raise}"
     else
         $().toastmessage "showWarningToast", "Debe de seleccionar por lo menos un archivo."
     return

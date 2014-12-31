@@ -836,7 +836,7 @@ uploadLoadPrices = function(event) {
           $().toastmessage("showNoticeToast", "Se a cargado el archivo correctamente.");
           return $("#mlprices").modal("hide");
         } else {
-          return $().toastmessage("showWarningToast", "No se a podido subir el archivo");
+          return $().toastmessage("showWarningToast", "No se a podido subir el archivo. " + response.raise);
         }
       }
     });

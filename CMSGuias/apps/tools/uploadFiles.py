@@ -3,6 +3,7 @@ from django.conf import settings
 import datetime
 import os
 import urllib
+from openpyxl import load_workbook
 
 
 def upload(absolutePath,archive,options={}):
@@ -110,3 +111,33 @@ def listDir(path):
 
     r.append('</ul>')
     return r
+
+def readQuotation(filename):
+    workbook = load_workbook(filename=filename, read_only=False, use_iterators=True)
+    sheet = workbook.get_sheet_by_name('PRECIOS')
+    head = list()
+    for row in sheet.iter_rows():
+        # print row[3].value, row[3]
+        if len(unicode(row[3].value)) == 15:
+            arr = list()
+            body = dict()
+            # print row[6].formula, 'price ', row[7].value
+            # avg quantity
+            sumquantity = 0
+            # for x in range(1,11):
+            #     sheetq = workbook.get_sheet_by_name(x.__str__())
+            #     for fila in sheetq.iter_rows():
+            #         cell = fila[0].value
+            #         if len(unicode(cell)) == 15 and unicode(cell) == unicode(row[3].value):
+            #             print type(fila[6].value), fila[6].value
+            #             sumquantity += fila[6].value if unicode(fila[6].value) != 'None' and unicode(fila[6].value).isdigit() else 0
+            arr.append(
+                {
+                    'quantity': sumquantity,
+                    'price': row[7].value
+                }
+            )
+            body[str(row[3].value)] = arr
+            head.append(body)
+
+    return head

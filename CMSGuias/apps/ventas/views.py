@@ -17,7 +17,6 @@ from django.utils.decorators import method_decorator
 from django.template import RequestContext, TemplateDoesNotExist
 from django.views.generic import ListView, TemplateView, View
 from django.views.generic.edit import UpdateView, CreateView
-from openpyxl import load_workbook
 
 from CMSGuias.apps.home.models import *
 from CMSGuias.apps.operations.models import MetProject, Nipple, Deductive, DeductiveInputs, DeductiveOutputs
@@ -308,7 +307,7 @@ class ProjectManager(JSONResponseMixin, View):
                             uploadFiles.removeTmp(fileopera)
                         context['status'] = True
                     except ObjectDoesNotExist, e:
-                        print e
+                        # print e
                         context['raise'] = e.__str__()
                         context['status'] = False
                 if request.POST.get('type') == 'add':
@@ -458,15 +457,14 @@ class ProjectManager(JSONResponseMixin, View):
                             'name': 'prices'
                         }
                     )
-                    #
-                    print filename
-                    workbook = load_workbook(filename=filename, use_iterators=True)
-                    sheet = workbook.get_sheet_by_name('PRECIOS')
+                    #print filename
                     sess = 'PRICES%s'%(kwargs['project'])
+                    if sess in request.session:
+                        del request.session[sess]
                     if not sess in request.session:
-                        for row in sheet.iter_rows():
-                            if unicode(row[3].value) == 's':
-                                pass
+                        request.session[sess] = list()
+                        request.session[sess] = uploadFiles.readQuotation(filename)
+                        #print request.session[sess]
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()

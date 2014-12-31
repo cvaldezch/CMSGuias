@@ -960,7 +960,7 @@ showOrders = function() {
         "unit": $td.eq(5).text(),
         "brand": $td.eq(6).text(),
         "model": $td.eq(7).text(),
-        "quantity": $td.eq(8).text(),
+        "quantity": $td.eq(9).text(),
         "comment": $td.find("input").eq(1).val()
       });
     }
