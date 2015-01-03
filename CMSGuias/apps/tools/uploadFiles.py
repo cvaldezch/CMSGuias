@@ -117,6 +117,8 @@ def readQuotation(filename):
     sheet = workbook.get_sheet_by_name('PRECIOS')
     head = list()
     for row in sheet.iter_rows():
+        if counter == 5:
+            sale = row[8].value
         # print row[3].value, row[3]
         if len(unicode(row[3].value)) == 15:
             arr = list()
@@ -131,10 +133,14 @@ def readQuotation(filename):
             #         if len(unicode(cell)) == 15 and unicode(cell) == unicode(row[3].value):
             #             print type(fila[6].value), fila[6].value
             #             sumquantity += fila[6].value if unicode(fila[6].value) != 'None' and unicode(fila[6].value).isdigit() else 0
+            price = row[7].value
+            if price:
+                price = 0
             arr.append(
                 {
-                    'quantity': sumquantity,
-                    'price': row[7].value
+                    #'quantity': sumquantity,
+                    'price': price,
+                    'sale': (price * sale)
                 }
             )
             body[str(row[3].value)] = arr

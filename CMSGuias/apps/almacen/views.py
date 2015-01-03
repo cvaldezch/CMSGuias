@@ -992,7 +992,8 @@ def view_list_guide_referral_canceled(request):
 # Views natives of stores #
 ###########################
 
-class InventoryView(ListView):
+class InventoryView(ListView, JSONResponseMixin):
+
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
@@ -1070,16 +1071,23 @@ class InventoryView(ListView):
                 obj.spptag = True
                 obj.save()
                 data['status'] = True
-            elif tipo == 'all':
+            if tipo == 'all':
                 sts = models.Inventario.register_all_list_materilas(request.POST.get('alid'), request.POST.get('quantity'))
                 data['status'] = sts
-            elif tipo == 'per':
-                sts = models.Inventario.register_period_past(request.POST.get('alcp'),request.POST.get('pewh'),request.POST.get('alwh'))
+            if tipo == 'per':
+                print 'ingress step'
+                sts = models.Inventario.register_period_past(
+                    request.POST.get('alcp'),
+                    request.POST.get('pewh'),
+                    request.POST.get('alwh')
+                )
+                print sts
                 data['status'] = sts
-        except ObjectDoesNotExist:
+        except ObjectDoesNotExist, e:
+            data['raise'] = e.__str__()
             data['status'] = False
-        data = simplejson.dumps(data)
-        return HttpResponse(data, mimetype='application/json')
+        # data = simplejson.dumps(data)
+        return self.render_to_json_response(data)
 
 class SupplyView(ListView):
     template_name = 'almacen/supply.html'

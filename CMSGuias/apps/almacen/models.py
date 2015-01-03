@@ -205,32 +205,35 @@ class Inventario(models.Model):
     @staticmethod
     @transaction.commit_on_success
     def register_all_list_materilas(alid,quantity):
-      try:
-          cn = connection.cursor() # Open connection to DDBB
-          cn.callproc('SP_almacen_RegisterListMaterials',[alid,quantity,]) # Execute Store Procedure
-          result = cn.fetchone() # recover result
-          cn.close() # close connection
-          return result[0]
-      except Exception, e:
-          print e
-          transaction.rollback()
-          return False
+        try:
+            cn = connection.cursor() # Open connection to DDBB
+            cn.callproc('SP_almacen_RegisterListMaterials',[alid,quantity,]) # Execute Store Procedure
+            result = cn.fetchone() # recover result
+            cn.close() # close connection
+            return result[0]
+        except Exception, e:
+            print e
+            transaction.rollback()
+            return False
 
     @staticmethod
     @transaction.commit_on_success
-    def register_period_past(alid,period,almacen):
-      try:
-          cn = connection.cursor() # Open connection to DDBB
-          cn.callproc('sp_almacen_registerperiod',[alid,period,almacen,]) # Execute Store Procedure
-          result = cn.fetchone() # recover result
-          cn.close() # close connection
-          return result[0]
-      except Exception, e:
-          transaction.rollback()
-          return False
+    def register_period_past(alid, period, almacen):
+        try:
+            print 'print call proc'
+            cn = connection.cursor() # Open connection to DDBB
+            cn.callproc('sp_almacen_registerperiod',[alid, period, almacen,]) # Execute Store Procedure
+            result = cn.fetchone() # recover result
+            print result
+            cn.close() # close connection
+            return result[0]
+        except Exception, e:
+            print e
+            transaction.rollback()
+            return False
 
     def __unicode__(self):
-        return '%s %s %f'%(self.materiales,self.compra,self.stock)
+        return '%s %s %f'%(self.materiales, self.compra, self.stock)
 
 class InventoryBrand(models.Model):
     storage = models.ForeignKey(Almacene, to_field='almacen_id')
