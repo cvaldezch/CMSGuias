@@ -115,10 +115,40 @@ def listDir(path):
 def readQuotation(filename):
     workbook = load_workbook(filename=filename, read_only=False, use_iterators=True)
     sheet = workbook.get_sheet_by_name('PRECIOS')
+    # quantity for sector or sheet
+    book = workbook.get_sheet_names()
+
+    for n in book:
+        if n == 'PRECIOS':
+            continue
+        page = workbook.get_sheet_by_name(n)
+        for cell in page.iter_rows():
+            if str(cell[0].value) != 'ACTIVE':
+                break
+            else:
+                if len(unicode(row[3].value)) == 15:
+                    arr = list()
+                    body = dict()
+                    quantity = 0
+                    if cell[6].value or cell[6].value is None:
+                        quantity = 0
+                    else:
+                        quantity = float(cell[6].value)
+                    arr.append(
+                        {
+                            'quantity': quantity
+                        }
+                    )
+                    body[str(row[3].value)] = arr
+
+    # get prices for materials
+    counter = 0
     head = list()
     for row in sheet.iter_rows():
         if counter == 5:
-            sale = row[8].value
+            # print row[8].value
+            sale = float(row[8].value)
+        counter += 1
         # print row[3].value, row[3]
         if len(unicode(row[3].value)) == 15:
             arr = list()
@@ -134,12 +164,13 @@ def readQuotation(filename):
             #             print type(fila[6].value), fila[6].value
             #             sumquantity += fila[6].value if unicode(fila[6].value) != 'None' and unicode(fila[6].value).isdigit() else 0
             price = row[7].value
-            if price:
+            if price or price is None:
                 price = 0
+            #print 'price ', price, 'sale', sale
             arr.append(
                 {
-                    #'quantity': sumquantity,
-                    'price': price,
+                    'quantity': 0,
+                    'purchase': price,
                     'sale': (price * sale)
                 }
             )

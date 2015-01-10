@@ -91,8 +91,19 @@ def get_resumen_details_materiales(request):
                 #data = {'list': []}
                 summ = Materiale.objects.filter(matnom__icontains=request.GET.get('matnom'), matmed__icontains=request.GET.get('matmed'))
                 for x in summ:
-                   if x.matmed == request.GET.get('matmed'):
-                      context['list'] = [{'materialesid': x.materiales_id, 'matnom': x.matnom, 'matmed': x.matmed, 'unidad': x.unidad.uninom}]
+                    if x.matmed == request.GET.get('matmed'):
+                        purchase = 0 ; sale = 0 ; quantity = 0
+                        name = 'PRICES%s'%(request.GET.get('pro'))
+                        if name in request.session:
+                            pass
+                        context['list'] = [
+                            {
+                                'materialesid': x.materiales_id,
+                                'matnom': x.matnom,
+                                'matmed': x.matmed,
+                                'unidad': x.unidad.uninom
+                            }
+                        ]
                 #res = Materiale.objects.values('materiales_id','matnom','matmed','unidad').filter(matnom__icontains=request.GET['matnom'],matmed__icontains=request.GET['matmed'])[:1]
                 #data['list'].append({ "materialesid": res[0]['materiales_id'], "matnom": res[0]['matnom'], "matmed": res[0]['matmed'], "unidad": res[0]['unidad'] })
                 context['status'] = True

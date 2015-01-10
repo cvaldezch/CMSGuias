@@ -526,6 +526,7 @@ addMaterial = function(event) {
   data.materiales = $(".id-mat").text();
   data.cantidad = $("input[name=cantidad]").val();
   data.precio = $("input[name=precio]").val();
+  data.sale = $("input[name=sale]").val();
   data.brand = $("select[name=brand]").val();
   data.model = $("select[name=model]").val();
   if (data.materiales !== "" && data.cantidad !== "" && data.precio !== "") {
@@ -542,6 +543,7 @@ addMaterial = function(event) {
         purchase = $("[name=" + ($("[name=currency]").val()) + "]").val();
       }
       data['precio'] = data['precio'] * parseFloat(purchase);
+      data['sale'] = data['sale'] * parseFloat(purchase);
     }
     if ($("input[name=gincludegroup]").length) {
       if ($("input[name=gincludegroup]").is(":checked")) {

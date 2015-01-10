@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#
 from django.db import models
 from audit_log.models.fields import LastUserField
 from audit_log.models.managers import AuditLog
@@ -110,7 +112,7 @@ class Metradoventa(models.Model):
     model = models.ForeignKey(Model, to_field='model_id', default='MO000')
     cantidad = models.FloatField()
     precio = models.FloatField()
-    sales = models.DecimalField(max_digits=9, decimal_places=2, default=0)
+    sales = models.DecimalField(max_digits=9, decimal_places=3, default=0)
     flag = models.BooleanField(default=True)
 
     audit_log = AuditLog()
@@ -149,7 +151,7 @@ class HistoryMetProject(models.Model):
     model = models.ForeignKey(Model, to_field='model_id', default='MO000')
     quantity = models.FloatField()
     price = models.FloatField()
-    sales = models.DecimalField(max_digits=9, decimal_places=2, default=0)
+    #sales = models.DecimalField(max_digits=9, decimal_places=3, default=0)
     comment = models.CharField(max_length=250,default='',null=True, blank=True)
     quantityorders = models.FloatField(default=0)
     tag = models.CharField(max_length=1, default='0')
@@ -172,7 +174,7 @@ class RestoreStorage(models.Model):
     model = models.ForeignKey(Model, to_field='model_id', default='MO000')
     quantity = models.FloatField()
     price = models.FloatField()
-    sales = models.DecimalField(max_digits=9, decimal_places=2, default=0)
+    #sales = models.DecimalField(max_digits=9, decimal_places=3, default=0)
     tag = models.CharField(max_length=1, default='0')
     flag = models.BooleanField(default=True)
 

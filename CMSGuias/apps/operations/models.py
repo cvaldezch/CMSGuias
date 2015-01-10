@@ -16,7 +16,7 @@ class MetProject(models.Model):
     model = models.ForeignKey(Model, to_field='model_id', default='MO000')
     cantidad = models.FloatField()
     precio = models.FloatField()
-    sales = models.DecimalField(max_digits=9, decimal_places=2, default=0)
+    sales = models.DecimalField(max_digits=9, decimal_places=3, default=0)
     comment = models.CharField(max_length=250, default='', null=True, blank=True)
     quantityorder = models.FloatField(default=0)
     tag = models.CharField(max_length=1, default='0')
