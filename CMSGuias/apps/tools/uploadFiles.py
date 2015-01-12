@@ -122,10 +122,13 @@ def readQuotation(filename):
         if n == 'PRECIOS':
             continue
         page = workbook.get_sheet_by_name(n)
+        sector = 0
         for cell in page.iter_rows():
-            if str(cell[0].value) != 'ACTIVE':
+            if str(cell[0].value) != 'ACTIVE' and sector == 0:
                 break
             else:
+                if sector == 1:
+                    name_sector = str(cell[0].value).split(',')
                 if len(unicode(row[3].value)) == 15:
                     arr = list()
                     body = dict()
@@ -134,12 +137,16 @@ def readQuotation(filename):
                         quantity = 0
                     else:
                         quantity = float(cell[6].value)
+                        # price =  float(cell[7].value)
+                        # sale= float(cell[8].value)  * float(cell[3].value)
                     arr.append(
                         {
+                            'materials':
                             'quantity': quantity
                         }
                     )
-                    body[str(row[3].value)] = arr
+                    body[name_sector] = arr
+                sector += 1
 
     # get prices for materials
     counter = 0

@@ -104,8 +104,8 @@ def get_resumen_details_materiales(request):
                                 'unidad': x.unidad.uninom
                             }
                         ]
-                #res = Materiale.objects.values('materiales_id','matnom','matmed','unidad').filter(matnom__icontains=request.GET['matnom'],matmed__icontains=request.GET['matmed'])[:1]
-                #data['list'].append({ "materialesid": res[0]['materiales_id'], "matnom": res[0]['matnom'], "matmed": res[0]['matmed'], "unidad": res[0]['unidad'] })
+                # res = Materiale.objects.values('materiales_id','matnom','matmed','unidad').filter(matnom__icontains=request.GET['matnom'],matmed__icontains=request.GET['matmed'])[:1]
+                # data['list'].append({ "materialesid": res[0]['materiales_id'], "matnom": res[0]['matnom'], "matmed": res[0]['matmed'], "unidad": res[0]['unidad'] })
                 context['status'] = True
             except ObjectDoesNotExist:
                 context['raise'] = e.__str__()
