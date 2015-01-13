@@ -114,21 +114,44 @@ def listDir(path):
 
 def readQuotation(filename):
     workbook = load_workbook(filename=filename, read_only=False, use_iterators=True)
+    # first recover the prices for each item
+    head = list()
+    counter = 0
+    prices = dict()
+    # get sheet price
     sheet = workbook.get_sheet_by_name('PRECIOS')
+    for row in sheet.iter_rows():
+        if counter == 1620:
+            break
+        if len(unicode(row[3].value)) == 15:
+            price = row[7].value
+            if price or price is None:
+                price = 0
+            else:
+                price = float(price)
+            sale = row[8].value
+            if sale or sale is None:
+                sale = 0
+            else:
+                sale = float(sale)
+            prices[str(row[3].value)] = {'purchase': price, 'sale': sale}
+        counter += 1
+
     # quantity for sector or sheet
     book = workbook.get_sheet_names()
-
     for n in book:
         if n == 'PRECIOS':
             continue
         page = workbook.get_sheet_by_name(n)
-        sector = 0
+        counter = 0
         for cell in page.iter_rows():
-            if str(cell[0].value) != 'ACTIVE' and sector == 0:
+            if str(cell[0].value) != 'ACTIVE' and counter == 0:
                 break
             else:
-                if sector == 1:
+                if counter == 1:
                     name_sector = str(cell[0].value).split(',')
+                    for s in name_sector:
+                        sectors[s] = list()
                 if len(unicode(row[3].value)) == 15:
                     arr = list()
                     body = dict()
@@ -137,51 +160,17 @@ def readQuotation(filename):
                         quantity = 0
                     else:
                         quantity = float(cell[6].value)
-                        # price =  float(cell[7].value)
-                        # sale= float(cell[8].value)  * float(cell[3].value)
-                    arr.append(
-                        {
-                            'materials':
-                            'quantity': quantity
-                        }
-                    )
-                    body[name_sector] = arr
-                sector += 1
-
-    # get prices for materials
-    counter = 0
-    head = list()
-    for row in sheet.iter_rows():
-        if counter == 5:
-            # print row[8].value
-            sale = float(row[8].value)
-        counter += 1
-        # print row[3].value, row[3]
-        if len(unicode(row[3].value)) == 15:
-            arr = list()
-            body = dict()
-            # print row[6].formula, 'price ', row[7].value
-            # avg quantity
-            sumquantity = 0
-            # for x in range(1,11):
-            #     sheetq = workbook.get_sheet_by_name(x.__str__())
-            #     for fila in sheetq.iter_rows():
-            #         cell = fila[0].value
-            #         if len(unicode(cell)) == 15 and unicode(cell) == unicode(row[3].value):
-            #             print type(fila[6].value), fila[6].value
-            #             sumquantity += fila[6].value if unicode(fila[6].value) != 'None' and unicode(fila[6].value).isdigit() else 0
-            price = row[7].value
-            if price or price is None:
-                price = 0
-            #print 'price ', price, 'sale', sale
-            arr.append(
-                {
-                    'quantity': 0,
-                    'purchase': price,
-                    'sale': (price * sale)
-                }
-            )
-            body[str(row[3].value)] = arr
-            head.append(body)
-
+                    for s in name_sector:
+                        purchase = 0
+                        sale = 0
+                        if str(row[3].value) in prices:
+                            purchase = prices[str(row[3].value)]['purchase']
+                            sale = prices[str(row[3].value)]['sale']
+                        sectors[s].append(
+                            'materials': str(row[3].value),
+                            'quantity': quantity,
+                            'purchase': purchase,
+                            'sale': sale
+                        )
+                counter += 1
     return head
