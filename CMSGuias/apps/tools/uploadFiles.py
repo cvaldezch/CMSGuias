@@ -125,19 +125,21 @@ def readQuotation(filename):
             break
         if len(unicode(row[3].value)) == 15:
             price = row[7].value
-            if price or price is None:
-                price = 0
-            else:
+            if str(price).isdigit():
                 price = float(price)
-            sale = row[8].value
-            if sale or sale is None:
-                sale = 0
             else:
+                price = 0
+            sale = row[8].value
+            if str(sale).isdigit():
                 sale = float(sale)
+            else:
+                sale = 0
             prices[str(row[3].value)] = {'purchase': price, 'sale': sale}
         counter += 1
 
+    print prices
     # quantity for sector or sheet
+    sectors = dict()
     book = workbook.get_sheet_names()
     for n in book:
         if n == 'PRECIOS':
@@ -145,32 +147,102 @@ def readQuotation(filename):
         page = workbook.get_sheet_by_name(n)
         counter = 0
         for cell in page.iter_rows():
-            if str(cell[0].value) != 'ACTIVE' and counter == 0:
+            if str(cell[0].value).upper().strip() != 'ACTIVE' and counter == 0:
                 break
             else:
                 if counter == 1:
                     name_sector = str(cell[0].value).split(',')
                     for s in name_sector:
                         sectors[s] = list()
-                if len(unicode(row[3].value)) == 15:
-                    arr = list()
-                    body = dict()
+                # print cell[6].value
+                if len(str(cell[0].value).strip()) == 15:
+                    if not str(cell[6].value).isdigit():
+                        continue
                     quantity = 0
-                    if cell[6].value or cell[6].value is None:
-                        quantity = 0
-                    else:
+                    if cell[6].value:
                         quantity = float(cell[6].value)
                     for s in name_sector:
                         purchase = 0
                         sale = 0
-                        if str(row[3].value) in prices:
-                            purchase = prices[str(row[3].value)]['purchase']
-                            sale = prices[str(row[3].value)]['sale']
+                        if str(cell[0].value) in prices:
+                            purchase = prices[str(cell[0].value)]['purchase']
+                            sale = prices[str(cell[0].value)]['sale']
                         sectors[s].append(
-                            'materials': str(row[3].value),
-                            'quantity': quantity,
-                            'purchase': purchase,
-                            'sale': sale
+                            {
+                                'materials': str(cell[0].value),
+                                'quantity': quantity,
+                                'purchase': purchase,
+                                'sale': sale
+                            }
                         )
+                    print counter
                 counter += 1
+        if sectors:
+            head.append(sectors)
+            sectors = dict()
     return head
+
+
+# [
+#     {
+#         'PR15001VEN01': [
+#             {
+#                 'purchase': 0,
+#                 'materials': '220018030014001',
+#                 'sale': 0,
+#                 'quantity': 2.0
+#             },
+#             {
+#                 'purchase': 0, 'materials': '220018030014007','sale': 0,'quantity': 5.0
+#             },
+#             {
+#                 'purchase': 0.0,
+#                 'materials': '349051440150004',
+#                 'sale': 0,
+#                 'quantity': 3.0
+#             },
+#             {
+#                 'purchase': 0,
+#                 'materials': '349051440150011',
+#                 'sale': 0,
+#                 'quantity': 1.0
+#             },
+#             {
+#                 'purchase': 0,
+#                 'materials': '349013580150008',
+#                 'sale': 0,
+#                 'quantity': 4.0
+#             },
+#             {
+#                 'purchase': 0,
+#                 'materials': '337071600013001',
+#                 'sale': 0,
+#                 'quantity': 0
+#             },
+#             {
+#                 'purchase': 0.0,
+#                 'materials': '332540020013003',
+#                 'sale': 0,
+#                 'quantity': 12.0
+#             },
+#             {
+#                 'purchase': 0,
+#                 'materials': '332540020013005',
+#                 'sale': 0,
+#                 'quantity': 2.0
+#             },
+#             {
+#                 'purchase': 0,
+#                 'materials': '332071070013001',
+#                 'sale': 0,
+#                 'quantity': 3.0
+#             },
+#             {
+#                 'purchase': 0.0,
+#                 'materials': '332111070013001',
+#                 'sale': 0,
+#                 'quantity': 2.0
+#             }
+#         ]
+#     }
+# ]
