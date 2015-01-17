@@ -124,20 +124,21 @@ def readQuotation(filename):
         if counter == 1620:
             break
         if len(unicode(row[3].value)) == 15:
-            price = row[7].value
-            if str(price).isdigit():
-                price = float(price)
-            else:
-                price = 0
-            sale = row[8].value
-            if str(sale).isdigit():
-                sale = float(sale)
-            else:
-                sale = 0
-            prices[str(row[3].value)] = {'purchase': price, 'sale': sale}
+            price = 0
+            if str(row[7].value).replace('.','',1).isdigit():
+                price = float(row[7].value)
+            print 'purchase ', price
+            sale = 0
+            print 'sale ', sale
+            if str(row[8].value).replace('.','',1).isdigit():
+                sale = float(row[8].value)
+            prices[str(row[3].value).strip()] = {
+                                                    'purchase': price,
+                                                    'sale': sale
+                                                }
         counter += 1
 
-    print prices
+    # print prices
     # quantity for sector or sheet
     sectors = dict()
     book = workbook.get_sheet_names()
@@ -164,9 +165,10 @@ def readQuotation(filename):
                     for s in name_sector:
                         purchase = 0
                         sale = 0
+                        print prices['220018030014001']
                         if str(cell[0].value) in prices:
-                            purchase = prices[str(cell[0].value)]['purchase']
-                            sale = prices[str(cell[0].value)]['sale']
+                            purchase = prices[str(cell[0].value).strip()]['purchase']
+                            sale = prices[str(cell[0].value).strip()]['sale']
                         sectors[s].append(
                             {
                                 'materials': str(cell[0].value),
@@ -175,74 +177,8 @@ def readQuotation(filename):
                                 'sale': sale
                             }
                         )
-                    print counter
                 counter += 1
         if sectors:
             head.append(sectors)
             sectors = dict()
     return head
-
-
-# [
-#     {
-#         'PR15001VEN01': [
-#             {
-#                 'purchase': 0,
-#                 'materials': '220018030014001',
-#                 'sale': 0,
-#                 'quantity': 2.0
-#             },
-#             {
-#                 'purchase': 0, 'materials': '220018030014007','sale': 0,'quantity': 5.0
-#             },
-#             {
-#                 'purchase': 0.0,
-#                 'materials': '349051440150004',
-#                 'sale': 0,
-#                 'quantity': 3.0
-#             },
-#             {
-#                 'purchase': 0,
-#                 'materials': '349051440150011',
-#                 'sale': 0,
-#                 'quantity': 1.0
-#             },
-#             {
-#                 'purchase': 0,
-#                 'materials': '349013580150008',
-#                 'sale': 0,
-#                 'quantity': 4.0
-#             },
-#             {
-#                 'purchase': 0,
-#                 'materials': '337071600013001',
-#                 'sale': 0,
-#                 'quantity': 0
-#             },
-#             {
-#                 'purchase': 0.0,
-#                 'materials': '332540020013003',
-#                 'sale': 0,
-#                 'quantity': 12.0
-#             },
-#             {
-#                 'purchase': 0,
-#                 'materials': '332540020013005',
-#                 'sale': 0,
-#                 'quantity': 2.0
-#             },
-#             {
-#                 'purchase': 0,
-#                 'materials': '332071070013001',
-#                 'sale': 0,
-#                 'quantity': 3.0
-#             },
-#             {
-#                 'purchase': 0.0,
-#                 'materials': '332111070013001',
-#                 'sale': 0,
-#                 'quantity': 2.0
-#             }
-#         ]
-#     }
-# ]
