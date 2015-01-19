@@ -61,11 +61,14 @@ getMeters = ->
 getSummaryMaterials = ->
   $nom = $("[name=description]")
   $med = $("[name=meter]")
+  $pro = $("input[name=pro]")
+  $sec = $("input[name=sec]")
   if $nom.val().trim() isnt "" and $med.val() isnt ""
     data =
       matnom: $nom.val()
       matmed: $med.val()
-
+      pro: $pro.val()
+      sec: $sec.val()
     $.getJSON "/json/get/resumen/details/materiales/", data, (response) ->
       #console.log(response);
       template = "<tr><th>Codigo :</th><td class='id-mat'>{{materialesid}}</td></tr><tr><th>Descripción :</th><td>{{matnom}}</td></tr><tr><th>Medida :</th><td>{{matmed}}</td></tr><tr><th>Unidad :</th><td>{{unidad}}</td></tr>"
@@ -111,6 +114,8 @@ searchMaterialCode = (code) ->
   if pass
     data = new Object()
     data["code"] = code
+    data.pro = $("input[name=pro]").val()
+    data.sec = $("input[name=sec]").val()
     $.getJSON "/json/get/materials/code/", data, (response) ->
       mats = response
       if response.status

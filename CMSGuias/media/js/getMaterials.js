@@ -74,13 +74,17 @@ getMeters = function() {
 };
 
 getSummaryMaterials = function() {
-  var $med, $nom, data;
+  var $med, $nom, $pro, $sec, data;
   $nom = $("[name=description]");
   $med = $("[name=meter]");
+  $pro = $("input[name=pro]");
+  $sec = $("input[name=sec]");
   if ($nom.val().trim() !== "" && $med.val() !== "") {
     data = {
       matnom: $nom.val(),
-      matmed: $med.val()
+      matmed: $med.val(),
+      pro: $pro.val(),
+      sec: $sec.val()
     };
     $.getJSON("/json/get/resumen/details/materiales/", data, function(response) {
       var $tb, template, x;
@@ -143,6 +147,8 @@ searchMaterialCode = function(code) {
   if (pass) {
     data = new Object();
     data["code"] = code;
+    data.pro = $("input[name=pro]").val();
+    data.sec = $("input[name=sec]").val();
     $.getJSON("/json/get/materials/code/", data, function(response) {
       var $met, $tb, mats, template;
       mats = response;

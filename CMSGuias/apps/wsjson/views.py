@@ -93,17 +93,31 @@ def get_resumen_details_materiales(request):
                 for x in summ:
                     if x.matmed == request.GET.get('matmed'):
                         purchase = 0 ; sale = 0 ; quantity = 0
-                        name = 'PRICES%s'%(request.GET.get('pro'))
-                        if name in request.session:
-                            pass
-                        context['list'] = [
-                            {
-                                'materialesid': x.materiales_id,
-                                'matnom': x.matnom,
-                                'matmed': x.matmed,
-                                'unidad': x.unidad.uninom
-                            }
-                        ]
+                        if 'pro' in request.GET:
+                            name = 'PRICES%s'%(request.GET.get('pro'))
+                            if name in request.session:
+                                sectors = request.session[name]
+                                for s in sectors:
+                                    if request.GET.get('sec') in s:
+                                        #print s[request.GET.get('sec')]
+                                        for p in s[request.GET.get('sec')]:
+                                            #print p
+                                            if x.materiales_id == p['materials']:
+                                                purchase = p['purchase']
+                                                sale = p['sale']
+                                                quantity = p['quantity']
+                            context['list'] = [
+                                {
+                                    'materialesid': x.materiales_id,
+                                    'matnom': x.matnom,
+                                    'matmed': x.matmed,
+                                    'unidad': x.unidad.uninom,
+                                    'purchase': purchase,
+                                    'sale': sale,
+                                    'quantity': quantity
+                                }
+                            ]
+                            break
                 # res = Materiale.objects.values('materiales_id','matnom','matmed','unidad').filter(matnom__icontains=request.GET['matnom'],matmed__icontains=request.GET['matmed'])[:1]
                 # data['list'].append({ "materialesid": res[0]['materiales_id'], "matnom": res[0]['matnom'], "matmed": res[0]['matmed'], "unidad": res[0]['unidad'] })
                 context['status'] = True
@@ -140,7 +154,29 @@ class GetDetailsMaterialesByCode(DetailView):
         if request.is_ajax():
             try:
                 mat = Materiale.objects.values('materiales_id','matnom','matmed','unidad').get(pk=request.GET.get('code'))
-                context['list'] = {'materialesid': mat['materiales_id'], 'matnom': mat['matnom'], 'matmed': mat['matmed'], 'unidad': mat['unidad']}
+                purchase = 0 ; sale = 0 ; quantity = 0
+                if 'pro' in request.GET:
+                    name = 'PRICES%s'%(request.GET.get('pro'))
+                    if name in request.session:
+                        sectors = request.session[name]
+                        for s in sectors:
+                            if request.GET.get('sec') in s:
+                                #print s[request.GET.get('sec')]
+                                for p in s[request.GET.get('sec')]:
+                                    #print p
+                                    if mat['materiales_id'] == p['materials']:
+                                        purchase = p['purchase']
+                                        sale = p['sale']
+                                        quantity = p['quantity']
+                context['list'] = {
+                    'materialesid': mat['materiales_id'],
+                    'matnom': mat['matnom'],
+                    'matmed': mat['matmed'],
+                    'unidad': mat['unidad'],
+                    'purchase': purchase,
+                    'sale': sale,
+                    'quantity': quantity
+                }
                 context['status'] = True
             except ObjectDoesNotExist, e:
                 context['status'] = False

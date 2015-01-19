@@ -459,6 +459,7 @@ class ProjectManager(JSONResponseMixin, View):
                     )
                     #print filename
                     sess = 'PRICES%s'%(kwargs['project'])
+                    del request.session[sess]
                     if sess in request.session:
                         del request.session[sess]
                     if not sess in request.session:
