@@ -43,7 +43,7 @@ class JSONResponseMixin(object):
 
 # view home logistics
 class LogisticsHome(TemplateView):
-    template_name = "logistics/home.html"
+    template_name = 'logistics/home.html'
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -51,12 +51,12 @@ class LogisticsHome(TemplateView):
 
 # Class view Supply
 class SupplyPending(TemplateView):
-    template_name = "logistics/supplypending.html"
+    template_name = 'logistics/supplypending.html'
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = super(SupplyPending, self).get_context_data(**kwargs)
-        if request.GET.get("rdo") is not None:
+        if request.GET.get('rdo') is not None:
             if request.GET.get('rdo') == 'code':
                 model = Suministro.objects.filter(pk=request.GET.get('id-su'),flag=True, status='PE')
             elif request.GET.get('rdo') == 'date':
@@ -87,20 +87,20 @@ class SupplyPending(TemplateView):
         if request.is_ajax():
             try:
                 obj = Suministro.objects.get(flag=True, status='PE', pk=request.POST.get('id-su'))
-                obj.status = 'AP' if request.POST.get('status') == "approve" else 'AN'
+                obj.status = 'AP' if request.POST.get('status') == 'approve' else 'AN'
                 obj.save() # update status supply
                 context['status'] = True
             except ObjectDoesNotExist:
-                messages.error(request, "Se ha encontrado error al cambiar el status de supply", messages.ERROR);
+                messages.error(request, 'Se ha encontrado error al cambiar el status de supply', messages.ERROR);
                 raise Http404
                 context['status'] = False
             context['type'] = request.POST.get('status')
             context = simplejson.dumps(context)
-            return HttpResponse(context, mimetype="application/json", content_type="application/json")
+            return HttpResponse(context, mimetype='application/json', content_type='application/json')
 
 # Class view Convert Supply to quote or Purchase
 class SupplytoDocumentIn(TemplateView):
-    template_name = "logistics/spdocumentin.html"
+    template_name = 'logistics/spdocumentin.html'
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
@@ -133,7 +133,7 @@ class SupplytoDocumentIn(TemplateView):
             }
             for s in supply
         ]
-        print context['projects']
+        # print context['projects']
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
     @method_decorator(login_required)
@@ -158,7 +158,7 @@ class SupplytoDocumentIn(TemplateView):
                 if request.POST.get('type') == 'quote':
                     # saved quotation
                     idquote = None
-                    if request.POST.get('newid') == "1":
+                    if request.POST.get('newid') == '1':
                         # recover data for header quote and save
                         idquote = genkeys.GenerateKeyQuotation()
                         obj = Cotizacion()
@@ -171,7 +171,7 @@ class SupplytoDocumentIn(TemplateView):
                         obj.status = 'PE'
                         obj.flag = True
                         obj.save()
-                    elif request.POST.get('newid') == "0":
+                    elif request.POST.get('newid') == '0':
                         idquote = request.POST.get('id')
 
                     # save quote to client
@@ -181,7 +181,7 @@ class SupplytoDocumentIn(TemplateView):
                         obj.cotizacion_id = idquote
                         obj.proveedor_id = request.POST.get('supplier')
                         obj.keygen = genkeys.GeneratekeysQuoteClient()
-                        obj.status = "PE"
+                        obj.status = 'PE'
                         obj.flag = True
                         obj.save()
 
@@ -198,7 +198,7 @@ class SupplytoDocumentIn(TemplateView):
                         obj.flag = True
                         obj.save()
 
-                    data["id"] = idquote
+                    data['id'] = idquote
                     data['status'] = True
                 if 'purchase' in request.POST:
                     form = CompraForm(request.POST, request.FILES)
@@ -229,12 +229,12 @@ class SupplytoDocumentIn(TemplateView):
             except ObjectDoesNotExist, e:
                 data['status'] = False
             response.write(simplejson.dumps(data))
-            response['content_type'] = "application/json"
-            response['mimetype'] = "application/json"
+            response['content_type'] = 'application/json'
+            response['mimetype'] = 'application/json'
             return response
 
 class ViewListQuotation(TemplateView):
-    template_name = "logistics/listquotation.html"
+    template_name = 'logistics/listquotation.html'
 
     def get(self, request, *args, **kwargs):
         context = super(ViewListQuotation, self).get_context_data(**kwargs)
@@ -290,7 +290,7 @@ class ViewListQuotation(TemplateView):
             return HttpResponse(simplejson.dumps(context), mimetype='application/json')
 
 class ViewQuoteSingle(JSONResponseMixin, TemplateView):
-    template_name = "logistics/single.html"
+    template_name = 'logistics/single.html'
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
@@ -454,7 +454,7 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
                 return self.render_to_json_response(context, **kwargs)
 
 class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
-    template_name = "logistics/purchase.html"
+    template_name = 'logistics/purchase.html'
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
@@ -1002,14 +1002,14 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                         # change status of models CotCliente
                         try:
                             cust = CotCliente.objects.get(cotizacion_id=kwargs['quote'], proveedor_id=request.POST.get('proveedor'))
-                            cust.status = "CO"
+                            cust.status = 'CO'
                             cust.save()
                         except ObjectDoesNotExist, e:
                             context['client'] = 'No change model CotClient'
                         # Change status of models CotKeys
                         try:
                             keys = CotKeys.objects.get(cotizacion_id=kwargs['quote'], proveedor_id=request.POST.get('proveedor'))
-                            keys.status = "CO"
+                            keys.status = 'CO'
                             keys.save()
                         except ObjectDoesNotExist, e:
                             context['keys'] = 'No change model CotKeys'

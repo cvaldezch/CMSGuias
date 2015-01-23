@@ -36,29 +36,31 @@
                             <tbody>
                                 {% for x in supply %}
                                     <tr class="success">
-                                    <td>{{ forloop.counter }}</td>
+                                        <td>{{ forloop.counter }}</td>
                                         <td>
-                                                <a class="btn-proccess text-center text-black" placeholder="{{ x.ingreso|date:'Y-m-d' }}" data="{{ x.almacen_id }}" name="{{ x.suministro_id }}"><span class="glyphicon glyphicon-check"></span></a>
-                                            </td>
-                                            <td>{{ x.suministro_id }}</td>
-                                            <td>{{ x.almacen.nombre }}</td>
-                                            <td>{{ x.registrado|date:"d M Y H:m" }}</td>
-                                            <td>{{ x.ingreso }}</td>
-                                            <td>{{ x.asunto }}</td>
-                                            <td>
-                                            {% for k, v in status.items %}
-                                                {% if k == x.status  %}
-                                                    {{ v }}
-                                                {% endif %}
-                                            {% endfor %}
-                                            </td>
-                                            <td>
-                                                {% for s, v in projects %}
-                                                    {% for p in projects.s %}
-                                                        {{p}}
-                                                    {% endfor %}
+                                            <a class="btn-proccess text-center text-black" placeholder="{{ x.ingreso|date:'Y-m-d' }}" data="{{ x.almacen_id }}" name="{{ x.suministro_id }}">
+                                                <span class="glyphicon glyphicon-check"></span>
+                                            </a>
+                                        </td>
+                                        <td>{{ x.suministro_id }}</td>
+                                        <td>{{ x.almacen.nombre }}</td>
+                                        <td>{{ x.registrado|date:"d M Y H:m" }}</td>
+                                        <td>{{ x.ingreso }}</td>
+                                        <td>{{ x.asunto }}</td>
+                                        <td>
+                                        {% for k, v in status.items %}
+                                            {% if k == x.status  %}
+                                                {{ v }}
+                                            {% endif %}
+                                        {% endfor %}
+                                        </td>
+                                        <td>
+                                            {% for s, v in projects %}
+                                                {% for p in projects.s %}
+                                                    {{ p }}
                                                 {% endfor %}
-                                            </td>
+                                            {% endfor %}
+                                        </td>
                                     </tr>
                                 {% empty %}
                                     <div class="alert alert-warning alert-block">
@@ -74,13 +76,23 @@
                                     <td colspan="8" class="text-center">
                                         <ul class="pagination">
                                             {% if supply.has_preveous %}
-                                                <li><a href="?page=1">&laquo;</a></li>
-                                                <li><a href="?page={{ supply.previous_page_number }}">&laquo;</a></li>
+                                                <li>
+                                                    <a href="?page=1">&laquo;</a>
+                                                </li>
+                                                <li>
+                                                    <a href="?page={{ supply.previous_page_number }}">&laquo;</a>
+                                                </li>
                                             {% endif %}
-                                            <li><a> Page {{ supply.number }} of {{ supply.paginator.num_pages }}</a></li>
+                                            <li>
+                                                <a> Page {{ supply.number }} of {{ supply.paginator.num_pages }}</a>
+                                            </li>
                                             {% if supply.has_next %}
-                                                <li><a href="?page={{ supply.next_page_number }}">&raquo;</a></li>
-                                                <li><a href="?page={{ supply.paginator.num_pages }}">&raquo;</a></li>
+                                                <li>
+                                                    <a href="?page={{ supply.next_page_number }}">&raquo;</a>
+                                                </li>
+                                                <li>
+                                                    <a href="?page={{ supply.paginator.num_pages }}">&raquo;</a>
+                                                </li>
                                             {% endif %}
                                         </ul>
                                     </td>
@@ -104,10 +116,18 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="btn-group">
-                                                <button class="btn btn-info btn-sm btn-new text-black" value="quote"><span class="glyphicon glyphicon-file"></span> Nuevo</button>
-                                                <button class="btn btn-sm btn-info btn-clean text-black" value="quote" disabled><span class="glyphicon glyphicon-trash"></span> Limpiar</button>
-                                                <button class="btn btn-sm btn-info btn-save text-black" value="quote" disabled><span class="glyphicon glyphicon-floppy-save"></span> Cotizar Proveedor</button>
-                                                <button class="btn btn-danger btn-sm text-black btn-finish"><span class="glyphicon glyphicon-ok"></span>  Ya, termine!</button>
+                                                <button class="btn btn-info btn-sm btn-new text-black" value="quote">
+                                                    <span class="glyphicon glyphicon-file"></span> Nuevo
+                                                </button>
+                                                <button class="btn btn-sm btn-info btn-clean text-black" value="quote" disabled>
+                                                    <span class="glyphicon glyphicon-trash"></span> Limpiar
+                                                </button>
+                                                <button class="btn btn-sm btn-info btn-save text-black" value="quote" disabled>
+                                                    <span class="glyphicon glyphicon-floppy-save"></span> Cotizar Proveedor
+                                                </button>
+                                                <button class="btn btn-danger btn-sm text-black btn-finish">
+                                                    <span class="glyphicon glyphicon-ok"></span>  Ya, termine!
+                                                </button>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -197,7 +217,7 @@
                                                 <label for="" class="control-label">Documento</label>
                                                 <select name="documents_buy" id="documents_buy" class="form-control input-sm" disabled>
                                                     {% for d in documents %}
-                                                        <option value="{{ d.documentos_id }}">{{ d.documento }}</option>
+                                                        <option value="{{ d.documento_id }}">{{ d.documento }}</option>
                                                         {% empty %}
                                                         <option value="new">-- Agregar Documentos --</option>
                                                     {% endfor %}

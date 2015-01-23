@@ -1003,6 +1003,20 @@ class KeyConfirmMan(JSONResponseMixin, View):
             context['status'] = False
         return self.render_to_json_response(context)
 
+class ProjectYear(JSONResponseMixin, View):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            year = Proyecto.objects.get(pk=request.GET.get('pro')).registrado.strftime('%Y')
+            context['year'] = year
+            context['status'] = True
+        except ObjectDoesNotExist, e:
+            context['raise'] = str(e)
+            context['status'] = False
+        return self.render_to_json_response(context)
+
 #############################################################################
 ##                                   Export Data
 #############################################################################

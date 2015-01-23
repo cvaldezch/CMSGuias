@@ -17,6 +17,7 @@ from django.utils.decorators import method_decorator
 from django.template import RequestContext, TemplateDoesNotExist
 from django.views.generic import ListView, TemplateView, View
 from django.views.generic.edit import UpdateView, CreateView
+from decimal import Decimal
 
 from CMSGuias.apps.home.models import *
 from CMSGuias.apps.operations.models import MetProject, Nipple, Deductive, DeductiveInputs, DeductiveOutputs
@@ -592,11 +593,13 @@ class SectorManage(JSONResponseMixin, View):
                         uploadFiles.removeTmp('%s/%s'%(globalVariable.relative_path, request.POST.get('files')))
                         context['status'] = True
                     if request.POST.get('type') == 'add':
+                        print type(request.POST.get('sales'))
                         if 'edit' in request.POST:
                             obj = Metradoventa.objects.get(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') else None, sector_id=request.POST.get('sector'), materiales_id=request.POST.get('materiales'))
                             form = MetradoventaForm(request.POST, instance=obj)
                         else:
                             form = MetradoventaForm(request.POST)
+                        #print form
                         if form.is_valid():
                             if 'edit' in request.POST:
                                 form.save()
@@ -610,9 +613,12 @@ class SectorManage(JSONResponseMixin, View):
                                 if obj:
                                     obj[0].cantidad = obj[0].cantidad + float(request.POST.get('cantidad'))
                                     obj[0].precio = request.POST.get('precio')
+                                    obj[0].sales = float(request.POST.get('sales'))
                                     obj[0].save()
                                 else:
-                                    form.save()
+                                    add = form.save(commit = False)
+                                    add.sales = float(request.POST.get('sales'))
+                                    add.save()
                                 if not 'edit' in request.POST and 'details' in request.POST:
                                     # save Details Material Group
                                     for x in json.loads(request.POST.get('details')):
@@ -1303,6 +1309,7 @@ class SectorManage(JSONResponseMixin, View):
                     else:
                         context['status'] = False
             except ObjectDoesNotExist, e:
+                print e
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)

@@ -53,7 +53,7 @@ class SectorFilesForm(forms.ModelForm):
 class MetradoventaForm(forms.ModelForm):
     class Meta:
         model = Metradoventa
-        exclude = {'flag',}
+        exclude = {'flag','sales'}
 
 class AlertasproyectoForm(forms.ModelForm):
     class Meta:

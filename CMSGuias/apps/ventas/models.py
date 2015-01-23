@@ -81,7 +81,7 @@ class Sectore(models.Model):
         ordering = ['sector_id']
 
     def __unicode__(self):
-        return '%s - %s %s'%(self.proyecto,self.subproyecto,self.sector_id)
+        return '%s'%(self.sector_id)
 
 class SectorFiles(models.Model):
     def url(self, filename):
@@ -121,7 +121,7 @@ class Metradoventa(models.Model):
         ordering = ['proyecto']
 
     def __unicode__(self):
-        return '%s %s %s %f %f'%(self.proyecto, self.sector, self.materiales, self.cantidad, self.precio)
+        return '%s %f %f'%(self.materiales, self.cantidad, self.precio)
 
 class Alertasproyecto(models.Model):
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')

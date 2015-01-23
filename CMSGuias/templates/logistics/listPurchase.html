@@ -73,7 +73,16 @@
                     <div class="table-responsive">
                         <table class="table table-hover table-condensed">
                             <thead>
-                                <th></th><th>Nro Orden Compra</th><th>Documento</th><th>Traslado</th><th>Moneda</th><th>Deposito</th><th>Ver</th><th>Acción</th>
+                                <tr>
+                                    <th></th>
+                                    <th>Nro Orden Compra</th>
+                                    <th>Documento</th>
+                                    <th>Traslado</th>
+                                    <th>Moneda</th>
+                                    <th>Deposito</th>
+                                    <th>Ver</th>
+                                    <th>Acción</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 {% for x in purchase %}
@@ -83,8 +92,16 @@
                                         <td>{{ x.documento.documento }}</td>
                                         <td>{{ x.traslado }}</td>
                                         <td>{{ x.moneda.moneda }}</td>
-                                        <td><a class="text-black" target="_blank" href="{{ MEDIA_URL }}{{ x.deposito }}"><span class="glyphicon glyphicon-file"></span></a></td>
-                                        <td><a class="text-black" target="_blank" href="{% url 'rpt_purchase' x.compra_id %}"><span class="glyphicon glyphicon-list"></span></a></td>
+                                        <td>
+                                            <a class="text-black" target="_blank" href="{{ MEDIA_URL }}{{ x.deposito }}">
+                                                <span class="glyphicon glyphicon-file"></span>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a class="text-black" target="_blank" href="{% url 'rpt_purchase' x.compra_id %}">
+                                                <span class="glyphicon glyphicon-list"></span>
+                                            </a>
+                                        </td>
                                         <td>
                                             {% if x.status == 'PE' %}
                                                 <button class="btn btn-xs btn-link text-black btn-actions" value="{{ x.compra_id }}">

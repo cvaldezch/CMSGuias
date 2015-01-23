@@ -78,6 +78,9 @@ getSummaryMaterials = ->
         $tb.append Mustache.render(template, response.list[x])
       searchBrandOption()
       autoSearchMaterialGroup(response.list[0].materialesid)
+      $("input[name=cantidad]").val response.list[0].quantity
+      $("input[name=precio]").val response.list[0].purchase
+      $("input[name=sale]").val response.list[0].sale
       return
   return
 
@@ -132,6 +135,9 @@ searchMaterialCode = (code) ->
         $tb.empty()
         $tb.append Mustache.render(template, response.list)
         searchBrandOption()
+        $("input[name=cantidad]").val response.list.quantity
+        $("input[name=precio]").val response.list.purchase
+        $("input[name=sale]").val response.list.sale
       else
         $().toastmessage "showWarningToast", "The material not found."
       return

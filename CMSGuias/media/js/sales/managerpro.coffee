@@ -290,6 +290,8 @@ toggleComment = ->
 
 treeAdminaandOpera = ->
     year = new Date().getFullYear()
+    # get year of project
+
     if $("input[name=sub]").val() == ""
         admin = "/storage/projects/#{year}/#{ $("input[name=pro]").val() }/administrative/"
         opera = "/storage/projects/#{year}/#{ $("input[name=pro]").val() }/operation/"

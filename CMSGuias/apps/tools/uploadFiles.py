@@ -165,7 +165,7 @@ def readQuotation(filename):
                     for s in name_sector:
                         purchase = 0
                         sale = 0
-                        print prices['220018030014001']
+                        #print prices['220018030014001']
                         if str(cell[0].value) in prices:
                             purchase = prices[str(cell[0].value).strip()]['purchase']
                             sale = prices[str(cell[0].value).strip()]['sale']

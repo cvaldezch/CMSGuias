@@ -453,14 +453,14 @@ addMaterial = (event) ->
     data.proyecto = $("input[name=pro]").val()
     data.subproyecto = $("input[name=sub]").val()
     data.sector = $("input[name=sec]").val()
-    data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
     data.type = "add"
     data.materiales = $(".id-mat").text()
     data.cantidad = $("input[name=cantidad]").val()
     data.precio = $("input[name=precio]").val()
-    data.sale = $("input[name=sale]").val()
+    data.sales = $("input[name=sales]").val()
     data.brand = $("select[name=brand]").val()
     data.model = $("select[name=model]").val()
+    data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
     if data.materiales != "" and data.cantidad != "" and data.precio != ""
         # if $(".currency-name").text() is "NUEVO SOLES"
         currency = $("select[name=moneda]").val()
@@ -475,10 +475,11 @@ addMaterial = (event) ->
                     return false
                 purchase = $("[name=#{$("[name=currency]").val()}]").val()
             data['precio'] = data['precio'] * parseFloat(purchase)
-            data['sale'] = data['sale'] * parseFloat(purchase)
+            data['sales'] = data['sales'] * parseFloat(purchase)
         if $("input[name=gincludegroup]").length
             if $("input[name=gincludegroup]").is(":checked")
                 data.details = JSON.stringify tmpObjectDetailsGroupMaterials.details
+        data.sales = parseFloat data.sales
         $.post "", data, (response) ->
             if response.status
                 listMaterials()
