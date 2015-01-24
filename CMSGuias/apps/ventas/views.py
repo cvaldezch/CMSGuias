@@ -466,7 +466,7 @@ class ProjectManager(JSONResponseMixin, View):
                     if not sess in request.session:
                         request.session[sess] = list()
                         request.session[sess] = uploadFiles.readQuotation(filename)
-                        print request.session[sess]
+                        # print request.session[sess]
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()

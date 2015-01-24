@@ -117,26 +117,31 @@
                         <div class="btn-group btn-group-justified">
                             {% if not meter %}
                                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
-                                <div class="btn-group">
-                                    <button class="btn btn-warning btn-sm text-black btn-show-mat">
-                                        <span class="glyphicon glyphicon-chevron-down"></span> Materiales
-                                    </button>
-                                </div>
-                                <!-- <div class="btn-group">
-                                    <button class="btn btn-warning btn-sm text-black btn-show-file">
-                                        <span class="glyphicon glyphicon-cloud-upload"></span> Subir Archivo
-                                    </button>
-                                </div> -->
-                                <div class="btn-group">
-                                    <button class="btn btn-warning btn-sm text-black btn-show-copy">
-                                        <span class="glyphicon glyphicon-list"></span> Copiar Lista
-                                    </button>
-                                </div>
-                                <div class="btn-group">
-                                    <button class="btn btn-warning btn-sm text-black btn-show-del">
-                                        <span class="glyphicon glyphicon-trash"></span> Eliminar Lista
-                                    </button>
-                                </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-warning btn-sm text-black btn-show-mat">
+                                            <span class="glyphicon glyphicon-chevron-down"></span> Materiales
+                                        </button>
+                                    </div>
+                                    <!-- <div class="btn-group">
+                                        <button class="btn btn-warning btn-sm text-black btn-show-file">
+                                            <span class="glyphicon glyphicon-cloud-upload"></span> Subir Archivo
+                                        </button>
+                                    </div> -->
+                                    <div class="btn-group">
+                                        <button class="btn btn-warning btn-sm text-black btn-show-copy">
+                                            <span class="glyphicon glyphicon-list"></span> Copiar Lista
+                                        </button>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-warning btn-sm text-black btn-show-del">
+                                            <span class="glyphicon glyphicon-trash"></span> Eliminar Lista
+                                        </button>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-warning btn-sm text-black btn-reader-prices">
+                                            <span class="fa fa-file-excel-o"></span> Leer Archivo de Precios
+                                        </button>
+                                    </div>
                                 {% endif %}
                             {% endif %}
                         </div>

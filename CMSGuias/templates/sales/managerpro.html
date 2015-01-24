@@ -227,7 +227,7 @@
                                                     <span class="glyphicon-class">Archivos</span>
                                                 </button>
                                             </li>
-                                        {% if project.status != 'AC' or request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'ventas' %}
+                                        {% if project.status != 'AC' or request.user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
                                             <li>
                                                 <button class="btn btn-link btn-xs text-black btn-emails">
                                                     <span class="glyphicon glyphicon-send"></span>

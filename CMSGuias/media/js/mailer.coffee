@@ -46,7 +46,7 @@ showGlobalEnvelop = (event) ->
                         $item = $("select[name=globalm#{c}]")
                         tmp = "<option value=\"{{ email }}\">{{ email }}</option>"
                         for x in globalMailerData.fors
-                            $item.append "<option value=\"#{x}\">#{x}</option>"
+                            $item.append "<option value=\"#{x}\" selected>#{x}</option>"
                         $item.trigger("chosen:updated")
                     return
             , 200
