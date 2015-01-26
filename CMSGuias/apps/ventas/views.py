@@ -3,6 +3,7 @@
 
 import json
 import datetime
+import os
 
 from django.db.models import Q, Count, Sum
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -566,7 +567,22 @@ class SectorManage(JSONResponseMixin, View):
                         stock = '-'
                     else:
                         stock = stock[0].stock
-                    data.append({'materiales_id':x.materiales_id, 'name':x.materiales.matnom,'measure':x.materiales.matmed,'unit':x.materiales.unidad.uninom,'brand':x.brand.brand, 'model':x.model.model,'quantity':x.quantityorder, 'cantidad':x.cantidad , 'price':x.precio, 'stock': stock, 'comment':x.comment, 'tag': x.tag})
+                    data.append(
+                        {
+                            'materiales_id': x.materiales_id,
+                            'name': x.materiales.matnom,
+                            'measure': x.materiales.matmed,
+                            'unit': x.materiales.unidad.uninom,
+                            'brand': x.brand.brand,
+                            'model': x.model.model,
+                            'quantity': x.quantityorder,
+                            'cantidad': x.cantidad,
+                            'price': x.precio,
+                            'stock': stock,
+                            'comment': x.comment,
+                            'tag': x.tag
+                        }
+                    )
                 context['meter'] = data
                 context['niple'] = globalVariable.tipo_nipples
                 context['store'] = Almacene.objects.filter(flag=True).order_by('nombre')
@@ -593,7 +609,7 @@ class SectorManage(JSONResponseMixin, View):
                         uploadFiles.removeTmp('%s/%s'%(globalVariable.relative_path, request.POST.get('files')))
                         context['status'] = True
                     if request.POST.get('type') == 'add':
-                        print type(request.POST.get('sales'))
+                        #print type(request.POST.get('sales'))
                         if 'edit' in request.POST:
                             obj = Metradoventa.objects.get(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') else None, sector_id=request.POST.get('sector'), materiales_id=request.POST.get('materiales'))
                             form = MetradoventaForm(request.POST, instance=obj)
@@ -820,7 +836,7 @@ class SectorManage(JSONResponseMixin, View):
                     context['listBrand'] = [{'brand_id':x.brand_id,'brand':x.brand} for x in Brand.objects.filter(flag=True).order_by('brand')]
                     context['listModel'] = [{'model_id':x.model_id, 'model':x.model} for x in Model.objects.filter(flag=True).order_by('model')]
                     context['status'] = True
-                    print context
+                    #print context
                 if 'updatematerialMeter' in request.POST:
                     obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=request.POST.get('materials'), brand_id=request.POST.get('brand'), model=request.POST.get('model'), flag=True)
                     obj.brand_id = request.POST.get('brand')
@@ -1181,10 +1197,10 @@ class SectorManage(JSONResponseMixin, View):
                                 else:
                                     outs.delete()
                         elif request.POST.get('rtype') == 'CUS':
-                            print outputs
+                            #print outputs
                             for x in outputs:
                                 for o in json.loads(request.POST.get('relations')):
-                                    print o, x['materials']
+                                    #print o, x['materials']
                                     outs = MetProject.objects.get(proyecto_id=kwargs['pro'],sector_id=o, materiales_id=x['materials'])
                                     if (outs.cantidad - x['quantity']) > 0:
                                         d = RestoreStorage()
@@ -1240,9 +1256,9 @@ class SectorManage(JSONResponseMixin, View):
                             # s.tag = x['tag']
                             s.save()
                     if request.POST.get('rtype') == 'CUS':
-                        print json.loads(request.POST.get('relations'))
+                        #print json.loads(request.POST.get('relations'))
                         for sn in json.loads(request.POST.get('relations')):
-                            print s, 'CUS '
+                            #print s, 'CUS '
                             for x in inputs:
                                 s = MetProject()
                                 s.proyecto_id = kwargs['pro']
@@ -1308,8 +1324,21 @@ class SectorManage(JSONResponseMixin, View):
                         context['status'] = True
                     else:
                         context['status'] = False
+                if 'readerPrices' in request.POST:
+                    period = search.searchPeriodProject(code=kwargs['pro'])
+                    filename = '%s/storage/projects/%s/%s/prices.xlsx'%(globalVariable.relative_path, period, kwargs['pro'])
+                    print filename
+                    if os.path.exists(filename):
+                        sess = 'PRICES%s'%(kwargs['pro'])
+                        if sess in request.session:
+                            del request.session[sess]
+                        if not sess in request.session:
+                            request.session[sess] = list()
+                            request.session[sess] = uploadFiles.readQuotation(filename)
+                        context['status'] = True
+                    else:
+                        context['status'] = False
             except ObjectDoesNotExist, e:
-                print e
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)

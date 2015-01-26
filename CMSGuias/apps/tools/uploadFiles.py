@@ -127,9 +127,9 @@ def readQuotation(filename):
             price = 0
             if str(row[7].value).replace('.','',1).isdigit():
                 price = float(row[7].value)
-            print 'purchase ', price
+            # print 'purchase ', price
             sale = 0
-            print 'sale ', sale
+            # print 'sale ', sale
             if str(row[8].value).replace('.','',1).isdigit():
                 sale = float(row[8].value)
             prices[str(row[3].value).strip()] = {

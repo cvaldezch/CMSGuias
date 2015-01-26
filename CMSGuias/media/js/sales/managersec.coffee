@@ -155,6 +155,7 @@ $(document).ready ->
     $(".btn-message-edit").on "click", showEditComment
     $("button.btn-block-comment").on "click", commentToogle
     $("button.btn-annimate-up").on "click", tableUp
+    $("button.btn-reader-prices").on "click", readerPrices
     $("table.table-float").floatThead
         useAbsolutePositioning: false
         scrollingTop: 50
@@ -2069,4 +2070,19 @@ calcDiffModify = (event) ->
     $("label.amountcurrent").text current
     $("label.modifycurrent").text amount.toFixed 2
     $("label.modifydiff").text diff.toFixed 2
+    return
+
+readerPrices = (event) ->
+    data = new Object()
+    data.readerPrices = true
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    console.log data
+    $.post "", data, (response) ->
+        if response.status
+            $().toastmessage "showNoticeToast", "Se a leido correctamente el archivo."
+            return
+        else
+            $().toastmessage "showErrorToast", "Error de lectura. #{response.raise}."
+            return
+    , "json"
     return
