@@ -578,6 +578,7 @@ class SectorManage(JSONResponseMixin, View):
                             'quantity': x.quantityorder,
                             'cantidad': x.cantidad,
                             'price': x.precio,
+                            'sales': x.sales,
                             'stock': stock,
                             'comment': x.comment,
                             'tag': x.tag
@@ -634,6 +635,7 @@ class SectorManage(JSONResponseMixin, View):
                                 else:
                                     add = form.save(commit = False)
                                     add.sales = float(request.POST.get('sales'))
+                                    print request.POST.get('sales')
                                     add.save()
                                 if not 'edit' in request.POST and 'details' in request.POST:
                                     # save Details Material Group
@@ -655,6 +657,7 @@ class SectorManage(JSONResponseMixin, View):
                                             obj.materiales_id = x['materials']
                                             obj.cantidad = (float(x['quantity']) * float(request.POST.get('cantidad')))
                                             obj.precio = 0
+                                            obj.sales = 0
                                             obj.brand_id = 'BR000'
                                             obj.model_id = 'MO000'
                                             obj.flag = True

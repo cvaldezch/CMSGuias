@@ -64,7 +64,6 @@ generateSupply = (event) ->
   # validate materials checked
   $("input[name=quote]").each ->
     if @checked
-
       #arr.push({"mid": this.title, "cant": this.value });
       pass = true
     else
@@ -89,17 +88,16 @@ generateSupply = (event) ->
     #data['asunto'] = $("input[name=asunto]").val();
     data["csrfmiddlewaretoken"] = $("input[name=csrfmiddlewaretoken]").val()
     data.generateSupply = true
-    console.log data
+    # console.log data
     $.post "", data, (response) ->
-      console.log response
+      #console.log response
       if response.status
         $().toastmessage "showNoticeToast", "Suministro Generado: <br /> Nro " + response["nro"]
         setTimeout (->
           location.reload()
           return
         ), 2800
-      return
-
+    , "json"
   else
     $().toastmessage "showWarningToast", "Se a encontrado un campo vacio."
   return

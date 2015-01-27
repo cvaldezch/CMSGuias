@@ -219,7 +219,7 @@
                                 <div class="col-md-4">
                                     <div class="form-group has-warning">
                                         <label class="control-label">Precio Venta</label>
-                                        <input type="number" class="form-control input-sm" name="sale" min="1" placeholder="0">
+                                        <input type="number" class="form-control input-sm" name="sales" min="1" placeholder="0">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -228,7 +228,7 @@
                                         <div class="input-group">
                                             <select name="brand" id="brand" class="form-control input-sm"></select>
                                             <span class="input-group-btn">
-                                                <button class="btn btn-sm btn-default btn-new-brand"><span class="glyphicon glyphicon-plus"></span></button>
+                                                <button class="btn btn-sm btn-new-brand"><span class="glyphicon glyphicon-plus"></span></button>
                                             </span>
                                         </div>
                                     </div>
@@ -239,7 +239,7 @@
                                         <div class="input-group">
                                             <select name="model" id="model" class="form-control input-sm"></select>
                                             <span class="input-group-btn">
-                                                <button class="btn btn-default btn-sm btn-new-model"><span class="span glyphicon glyphicon-plus"></span></button>
+                                                <button class="btn btn-sm btn-new-model"><span class="span glyphicon glyphicon-plus"></span></button>
                                             </span>
                                         </div>
                                     </div>
@@ -378,7 +378,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-4 col-md-offset-8">
-                                        <label class="control-label">Precio expresado en: <q>{{ project.currency.moneda }}</q></label>
+                                        <label class="control-label">Precio expresado en: <q>NUEVO SOLES{#{ project.currency.moneda }#}</q></label>
                                     </div>
                                 </div>
                             {% endif %}
@@ -400,7 +400,8 @@
                                             <th>Modelo</th>
                                             <th class="col-2">Cantidad</th>
                                             {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
-                                                <th class="col-2">Precio</th>
+                                                <th class="col-2">Compra</th>
+                                                <th class="col-2">Venta</th>
                                             {% endif %}
                                             {% if meter %}
                                                 {% ifequal project.status 'AC' %}
@@ -434,15 +435,16 @@
                                                 <td>{{ x.cantidad|safe }}</td>
                                                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica'  %}
                                                     <td>{{ x.precio|safe }}</td>
+                                                    <td>{{ x.sales|safe }}</td>
                                                 {% endif %}
                                                 {% if project.status == 'PE' or not meter %}
                                                     {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
-                                                    <td>
+                                                    <td class="text-center">
                                                         <button data-brand="{{ x.brand_id }}" data-model="{{ x.model_id }}" class="btn btn-xs btn-link text-green btn-show-edit" value="{{ x.materiales_id }}-{{ x.id }}">
                                                             <span class="glyphicon glyphicon-pencil"></span>
                                                         </button>
                                                     </td>
-                                                    <td class="col-2">
+                                                    <td class="text-center">
                                                         <button class="btn btn-xs btn-link text-red btn-del-mat" value="{{ x.materiales_id }}-{{ x.id }}">
                                                             <span class="glyphicon glyphicon-trash"></span>
                                                         </button>
@@ -1037,7 +1039,7 @@
     </div>
 </div>
 <div class="modal fade medit" data-backdrop="static">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <a data-dismiss="modal" class="close">&times;</a>
@@ -1047,34 +1049,52 @@
                 </h4>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label class="control-label">Cantidad</label>
-                    <input type="number" step="0.01" min="1" class="form-control input-sm" name="edit-quantity">
-                    <input type="hidden" name="edit-materials">
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Precio</label>
-                    <input type="number" min="1" step="0.01" class="form-control input-sm" name="edit-price">
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Marca</label>
-                    <select name="edit-brand" id="edit-brand" class="form-control input-sm"></select>
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Modelo</label>
-                    <select name="edit-model" id="edit-model" class="form-control"></select>
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Moneda</label>
-                    <select name="moneda-e" id="moneda-e" class="form-control input-sm">
-                        {% for x in currency %}
-                            {% ifequal x.moneda_id system.moneda_id %}
-                              <option value="{{ x.moneda_id }}" selected readonly>{{ x.moneda }}</option>
-                            {% else %}
-                              <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
-                            {% endifequal %}
-                        {% endfor %}
-                    </select>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Cantidad</label>
+                            <input type="number" step="0.01" min="1" class="form-control input-sm" name="edit-quantity">
+                            <input type="hidden" name="edit-materials">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Compra</label>
+                            <input type="number" min="1" step="0.01" class="form-control input-sm" name="edit-price">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Venta</label>
+                            <input type="number" min="1" step="0.01" class="form-control input-sm" name="edit-sales">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Marca</label>
+                            <select name="edit-brand" id="edit-brand" class="form-control input-sm"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Modelo</label>
+                            <select name="edit-model" id="edit-model" class="form-control"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Moneda</label>
+                            <select name="moneda-e" id="moneda-e" class="form-control input-sm">
+                                {% for x in currency %}
+                                    {% ifequal x.moneda_id system.moneda_id %}
+                                      <option value="{{ x.moneda_id }}" selected readonly>{{ x.moneda }}</option>
+                                    {% else %}
+                                      <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
+                                    {% endifequal %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">

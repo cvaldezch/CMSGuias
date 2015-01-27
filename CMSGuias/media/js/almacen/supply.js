@@ -81,16 +81,14 @@ generateSupply = function(event) {
     data["obser"] = $("[name=obser]").val();
     data["csrfmiddlewaretoken"] = $("input[name=csrfmiddlewaretoken]").val();
     data.generateSupply = true;
-    console.log(data);
     $.post("", data, function(response) {
-      console.log(response);
       if (response.status) {
         $().toastmessage("showNoticeToast", "Suministro Generado: <br /> Nro " + response["nro"]);
-        setTimeout((function() {
+        return setTimeout((function() {
           location.reload();
         }), 2800);
       }
-    });
+    }, "json");
   } else {
     $().toastmessage("showWarningToast", "Se a encontrado un campo vacio.");
   }

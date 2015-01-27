@@ -88,7 +88,7 @@ getSummaryMaterials = function() {
     };
     $.getJSON("/json/get/resumen/details/materiales/", data, function(response) {
       var $tb, template, x;
-      template = "<tr><th>Codigo :</th><td class='id-mat'>{{materialesid}}</td></tr><tr><th>Descripción :</th><td>{{matnom}}</td></tr><tr><th>Medida :</th><td>{{matmed}}</td></tr><tr><th>Unidad :</th><td>{{unidad}}</td></tr>";
+      template = "<tr> <th>Codigo :</th><td class='id-mat'>{{materialesid}}</td> </tr> <tr> <th>Descripción :</th><td>{{matnom}}</td> </tr> <tr> <th>Medida :</th><td>{{matmed}}</td> </tr> <tr> <th>Unidad :</th><td>{{unidad}}</td> </tr>";
       $tb = $(".tb-details > tbody");
       $tb.empty();
       for (x in response.list) {
@@ -98,7 +98,7 @@ getSummaryMaterials = function() {
       autoSearchMaterialGroup(response.list[0].materialesid);
       $("input[name=cantidad]").val(response.list[0].quantity);
       $("input[name=precio]").val(response.list[0].purchase);
-      $("input[name=sale]").val(response.list[0].sale);
+      $("input[name=sales]").val(response.list[0].sale);
     });
   }
 };

@@ -40,11 +40,11 @@ class JSONResponseMixin(object):
     def convert_context_to_json(self, context):
         return simplejson.dumps(context, encoding='utf-8')
 
-FORMAT_DATE_STR = "%Y-%m-%d"
+FORMAT_DATE_STR = '%Y-%m-%d'
 
 
 class StorageHome(View):
-    template_name = "almacen/storage.html"
+    template_name = 'almacen/storage.html'
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
@@ -101,7 +101,7 @@ def view_pedido(request):
                 data['status']= True
             else:
                 data['status']= False
-            return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+            return HttpResponse(simplejson.dumps(data), mimetype='application/json')
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
         raise Http404('Method no proccess')
@@ -111,10 +111,10 @@ def view_keep_customers(request):
     try:
         if request.method == 'GET':
             lista = Cliente.objects.values('ruccliente_id','razonsocial','direccion','telefono').filter(flag=True).order_by('razonsocial')
-            ctx = { "lista": lista }
-            return render_to_response("almacen/customers.html",ctx,context_instance=RequestContext(request))
+            ctx = { 'lista': lista }
+            return render_to_response('almacen/customers.html',ctx,context_instance=RequestContext(request))
         elif request.method == 'POST':
-            if "ruc" in request.POST:
+            if 'ruc' in request.POST:
                 data = {}
                 try:
                     obj = Cliente.objects.get(pk=request.POST.get('ruc'))
@@ -124,7 +124,7 @@ def view_keep_customers(request):
                 except ObjectDoesNotExist, e:
                     data['status'] = False
                 return HttpResponse(simplejson.dumps(data),
-                                    mimetype="application/json")
+                                    mimetype='application/json')
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
         raise Http404('Method no proccess')
@@ -132,7 +132,7 @@ def view_keep_customers(request):
 @login_required(login_url='/SignUp/')
 def view_keep_add_customers(request):
     try:
-        info = "Iniciando"
+        info = 'Iniciando'
         if request.method == 'POST':
             if Cliente.objects.filter(pk=request.POST.get('ruccliente_id')).count() > 0:
                 add = Cliente.objects.get(pk=request.POST.get('ruccliente_id'))
@@ -152,11 +152,11 @@ def view_keep_add_customers(request):
                     add.flag = True
                     add.save()
             #form.save_m2m() # esto es para guardar las relaciones ManyToMany
-            return HttpResponseRedirect("/almacen/keep/customers/")
+            return HttpResponseRedirect('/almacen/keep/customers/')
         if request.method == 'GET':
             form = forms.addCustomersForm()
-        ctx = { "form": form, "info": info }
-        return render_to_response("almacen/addcustomers.html",ctx,context_instance=RequestContext(request))
+        ctx = { 'form': form, 'info': info }
+        return render_to_response('almacen/addcustomers.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
         raise Http404('Method no proccess')
@@ -173,9 +173,9 @@ def view_keep_edit_customers(request,ruc):
                 edit = form.save(commit=False)
                 edit.flag = True
                 edit.save()
-                return HttpResponseRedirect("/almacen/keep/customers/")
-        ctx = { "form": form }
-        return render_to_response("almacen/editcustomers.html",ctx,context_instance=RequestContext(request))
+                return HttpResponseRedirect('/almacen/keep/customers/')
+        ctx = { 'form': form }
+        return render_to_response('almacen/editcustomers.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
         raise Http404('Method no proccess')
@@ -185,11 +185,11 @@ def view_keep_edit_customers(request,ruc):
 def view_keep_project(request):
     try:
         if request.method == 'GET':
-            lista = Proyecto.objects.filter(flag=True).order_by("nompro")
-            return render_to_response('almacen/project.html',{"lista":lista, "tsid": u''},context_instance=RequestContext(request))
+            lista = Proyecto.objects.filter(flag=True).order_by('nompro')
+            return render_to_response('almacen/project.html',{'lista':lista, 'tsid': u''},context_instance=RequestContext(request))
         elif request.method == 'POST':
             if request.is_ajax():
-                if "proid" in request.POST:
+                if 'proid' in request.POST:
                     data = {}
                     try:
                         # sectores
@@ -211,7 +211,7 @@ def view_keep_project(request):
                     except ObjectDoesNotExist, e:
                         data['status'] = False
                         data['raise'] = e.__str__()
-                    return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+                    return HttpResponse(simplejson.dumps(data), mimetype='application/json')
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
         raise Http404('Method no proccess')
@@ -241,26 +241,26 @@ def view_keep_add_project(request):
                         # for table project have generate id
                         cod = Proyecto.objects.all().aggregate(Max('proyecto_id'))
                         if cod['proyecto_id__max'] is not None:
-                            aa = cod["proyecto_id__max"][2:4]
-                            an = datetime.datetime.today().strftime("%y")
-                            cou = cod["proyecto_id__max"][4:7]
+                            aa = cod['proyecto_id__max'][2:4]
+                            an = datetime.datetime.today().strftime('%y')
+                            cou = cod['proyecto_id__max'][4:7]
                             if int(an) > int(aa):
                                 aa = an
                                 cou = 1
                             else:
                                 cou = ( int(cou) + 1 )
                         else:
-                            aa = datetime.datetime.today().strftime("%y")
+                            aa = datetime.datetime.today().strftime('%y')
                             cou = 1
-                        cod = "%s%s%s"%("PR",str(aa),"{:0>3d}".format(cou))
+                        cod = '%s%s%s'%('PR',str(aa),'{:0>3d}'.format(cou))
                         add.proyecto_id = cod.strip()
                         add.flag = True
                         add.save()
-            return HttpResponseRedirect("/almacen/keep/project/")
+            return HttpResponseRedirect('/almacen/keep/project/')
         if request.method == 'GET':
             form = forms.addProjectForm()
-        ctx = { "form": form}
-        return render_to_response("almacen/addproject.html",ctx,context_instance=RequestContext(request))
+        ctx = { 'form': form}
+        return render_to_response('almacen/addproject.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
         raise Http404('Method no proccess')
@@ -278,9 +278,9 @@ def view_keep_edit_project(request,proid):
                 edit.flag = True
                 #edit.proyecto_id = request.POST.get('proyecto_id')
                 edit.save()
-                return HttpResponseRedirect("/almacen/keep/project/")
-        ctx = { "form": form, "idpro": proid }
-        return render_to_response("almacen/editproject.html",ctx,context_instance=RequestContext(request))
+                return HttpResponseRedirect('/almacen/keep/project/')
+        ctx = { 'form': form, 'idpro': proid }
+        return render_to_response('almacen/editproject.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
         raise Http404('Method no proccess')
@@ -289,13 +289,13 @@ def view_keep_edit_project(request,proid):
 def view_keep_sec_project(request,pid,sid):
     try:
         if request.method == 'GET':
-            lista = Sectore.objects.filter(flag=True,proyecto__flag=True,proyecto_id__exact=pid,subproyecto_id=None if sid.strip() == "" else sid).order_by("sector_id")
-            return render_to_response('almacen/sectores.html',{"lista":lista,"pid":pid,"sid":sid}, context_instance=RequestContext(request))
+            lista = Sectore.objects.filter(flag=True,proyecto__flag=True,proyecto_id__exact=pid,subproyecto_id=None if sid.strip() == '' else sid).order_by('sector_id')
+            return render_to_response('almacen/sectores.html',{'lista':lista,'pid':pid,'sid':sid}, context_instance=RequestContext(request))
         elif request.method == 'POST':
-            if "sec" in request.POST:
+            if 'sec' in request.POST:
                 data = {}
                 try:
-                    obj = Sectore.objects.get(proyecto_id=pid,subproyecto_id=None if sid.strip() == "" else sid,sector_id=request.POST.get('sec'))
+                    obj = Sectore.objects.get(proyecto_id=pid,subproyecto_id=None if sid.strip() == '' else sid, sector_id=request.POST.get('sec'))
                     obj.delete()
                     data['status'] = True
                 except ObjectDoesNotExist, e:
@@ -316,17 +316,17 @@ def view_keep_add_sector(request,proid,sid):
                 add.subproyecto_id = request.POST.get('subproyecto_id')
                 add.flag = True
                 add.save()
-                url = "/almacen/keep/sectores/%s/%s/"%(proid,sid)
+                url = '/almacen/keep/sectores/%s/%s/'%(proid,sid)
                 return HttpResponseRedirect(url)
             else:
                 form = forms.addSectoresForm(request.POST)
-                msg = "No se a podido realizar la transacción."
-                ctx = { "form": form, "pid": proid, "sid": sid, "msg": msg }
-                return render_to_response("almacen/addsector.html",ctx,context_instance=RequestContext(request))
+                msg = 'No se a podido realizar la transacción.'
+                ctx = { 'form': form, 'pid': proid, 'sid': sid, 'msg': msg }
+                return render_to_response('almacen/addsector.html',ctx,context_instance=RequestContext(request))
         if request.method == 'GET':
             form = forms.addSectoresForm()
-            ctx = { "form": form, "pid": proid, "sid": sid }
-            return render_to_response("almacen/addsector.html",ctx,context_instance=RequestContext(request))
+            ctx = { 'form': form, 'pid': proid, 'sid': sid }
+            return render_to_response('almacen/addsector.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
         raise Http404('Method no proccess')
@@ -334,12 +334,12 @@ def view_keep_add_sector(request,proid,sid):
 @login_required(login_url='/SignUp')
 def view_keep_edit_sector(request,pid,sid,cid):
     try:
-        sec = Sectore.objects.get(proyecto_id=pid,subproyecto_id=None if sid == "" else sid, sector_id=cid)
-        if request.method == "GET":
+        sec = Sectore.objects.get(proyecto_id=pid,subproyecto_id=None if sid == '' else sid, sector_id=cid)
+        if request.method == 'GET':
             form = forms.addSectoresForm(instance=sec)
-            ctx = { "form": form, "pid": pid, "sid": sid, "cid": cid }
-            return render_to_response("almacen/editsector.html",ctx,context_instance=RequestContext(request))
-        elif request.method == "POST":
+            ctx = { 'form': form, 'pid': pid, 'sid': sid, 'cid': cid }
+            return render_to_response('almacen/editsector.html',ctx,context_instance=RequestContext(request))
+        elif request.method == 'POST':
             form = forms.addSectoresForm(request.POST,instance=sec)
             if form.is_valid():
                 edit = form.save(commit=False)
@@ -347,26 +347,26 @@ def view_keep_edit_sector(request,pid,sid,cid):
                 edit.subproyecto_id = request.POST.get('subproyecto_id')
                 edit.flag = True
                 edit.save()
-                url = "/almacen/keep/sectores/%s/%s/"%(pid,sid)
+                url = '/almacen/keep/sectores/%s/%s/'%(pid,sid)
                 return HttpResponseRedirect(url)
             else:
                 form = forms.addSectoresForm(request.POST)
-                msg = "No se a podido realizar la transacción."
-                ctx = { "form": form, "pid": proid, "sid": sid, "msg": msg }
-                return render_to_response("almacen/addsector.html",ctx,context_instance=RequestContext(request))
+                msg = 'No se a podido realizar la transacción.'
+                ctx = { 'form': form, 'pid': proid, 'sid': sid, 'msg': msg }
+                return render_to_response('almacen/addsector.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
-        messages.error(request, "No se puede mostrar la pagina.")
-        raise Http404("Method not proccess")
+        messages.error(request, 'No se puede mostrar la pagina.')
+        raise Http404('Method not proccess')
 
 # Subproyectos keep views
 @login_required(login_url='/SignUp/')
 def view_keep_sub_project(request,pid):
     try:
         if request.method == 'GET':
-            lista = Subproyecto.objects.filter(flag=True,proyecto__flag=True,proyecto_id__exact=pid).order_by("subproyecto_id")
-            return render_to_response('almacen/subproject.html',{"lista":lista,"pid":pid,"sid":""},context_instance=RequestContext(request))
+            lista = Subproyecto.objects.filter(flag=True,proyecto__flag=True,proyecto_id__exact=pid).order_by('subproyecto_id')
+            return render_to_response('almacen/subproject.html',{'lista':lista,'pid':pid,'sid':''},context_instance=RequestContext(request))
         elif request.method == 'POST':
-            if "sid" in request.POST:
+            if 'sid' in request.POST:
                 data = {}
                 try:
                     obj = Sectore.objects.filter(proyecto_id=pid,subproyecto_id=request.POST.get('sid'))
@@ -376,7 +376,7 @@ def view_keep_sub_project(request,pid):
                     data['status'] = True
                 except ObjectDoesNotExist, e:
                     data['status'] = False
-                return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+                return HttpResponse(simplejson.dumps(data), mimetype='application/json')
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
         raise Http404('Method no proccess')
@@ -386,8 +386,8 @@ def view_keep_add_subproyeto(request,pid):
     try:
         if request.method == 'GET':
             form = forms.addSubprojectForm()
-            ctx = {"form":form,"pid":pid}
-            return render_to_response("almacen/addsubproyecto.html",ctx,context_instance=RequestContext(request))
+            ctx = {'form':form,'pid':pid}
+            return render_to_response('almacen/addsubproyecto.html',ctx,context_instance=RequestContext(request))
         elif request.method == 'POST':
             form = forms.addSubprojectForm(request.POST)
             if form.is_valid():
@@ -395,7 +395,7 @@ def view_keep_add_subproyeto(request,pid):
                 add.proyecto_id = request.POST.get('proyecto_id')
                 add.flag = True
                 add.save()
-                url = "/almacen/keep/subproyectos/%s/"%(pid)
+                url = '/almacen/keep/subproyectos/%s/'%(pid)
                 return HttpResponseRedirect(url)
             else:
                 print 'Form no valid'
@@ -407,27 +407,27 @@ def view_keep_add_subproyeto(request,pid):
 def view_keep_edit_subproyecto(request,pid,sid):
     try:
         sub = Subproyecto.objects.get(flag=True,proyecto__flag=True,proyecto_id__exact=pid,subproyecto_id=sid)
-        if request.method == "GET":
+        if request.method == 'GET':
             form = forms.addSubprojectForm(instance=sub)
-            ctx = { "form": form, "pid": pid }
-            return render_to_response("almacen/editsubproyecto.html",ctx,context_instance=RequestContext(request))
-        elif request.method == "POST":
+            ctx = { 'form': form, 'pid': pid }
+            return render_to_response('almacen/editsubproyecto.html',ctx,context_instance=RequestContext(request))
+        elif request.method == 'POST':
             form = forms.addSubprojectForm(request.POST,instance=sub)
             if form.is_valid():
                 edit = form.save(commit=False)
                 edit.proyecto_id = request.POST.get('proyecto_id')
                 edit.flag = True
                 edit.save()
-                url = "/almacen/keep/subproyectos/%s/"%(pid)
+                url = '/almacen/keep/subproyectos/%s/'%(pid)
                 return HttpResponseRedirect(url)
             else:
                 form = forms.addSubprojectForm(request.POST)
-                msg = "No se a podido realizar la transacción."
-                ctx = { "form": form, "pid": pid,"msg": msg }
-                return render_to_response("almacen/addsector.html",ctx,context_instance=RequestContext(request))
+                msg = 'No se a podido realizar la transacción.'
+                ctx = { 'form': form, 'pid': pid,'msg': msg }
+                return render_to_response('almacen/addsector.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
-        messages.error(request, "No se puede mostrar la pagina.")
-        raise Http404("Method not proccess")
+        messages.error(request, 'No se puede mostrar la pagina.')
+        raise Http404('Method not proccess')
 
 # Almacenes
 @login_required(login_url='/SignUp/')
@@ -435,8 +435,8 @@ def view_stores(request):
     try:
         if request.method == 'GET':
             lista = Almacene.objects.filter(flag=True).order_by('nombre')
-            ctx = { "lista": lista }
-            return render_to_response("upkeep/almacenes.html",ctx,context_instance=RequestContext(request))
+            ctx = { 'lista': lista }
+            return render_to_response('upkeep/almacenes.html',ctx,context_instance=RequestContext(request))
         elif request.method == 'POST':
             data = {}
             try:
@@ -445,9 +445,9 @@ def view_stores(request):
                 data['status'] = True
             except ObjectDoesNotExist, e:
                 data['status'] = False
-            return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+            return HttpResponse(simplejson.dumps(data), mimetype='application/json')
     except TemplateDoesNotExist, e:
-        messages("Template not found")
+        messages('Template not found')
         raise Http404
 
 @login_required(login_url='/SignUp/')
@@ -455,8 +455,8 @@ def view_stores_add(request):
     try:
         if request.method == 'GET':
             form = forms.addAlmacenesForm()
-            ctx = { "form": form }
-            return render_to_response("upkeep/addalmacen.html",ctx,context_instance=RequestContext(request))
+            ctx = { 'form': form }
+            return render_to_response('upkeep/addalmacen.html',ctx,context_instance=RequestContext(request))
         elif request.method == 'POST':
             form = forms.addAlmacenesForm(request.POST)
             if form.is_valid():
@@ -468,16 +468,16 @@ def view_stores_add(request):
                     cont = int(cont) + 1
                 else:
                     cont = 1
-                add.almacen_id = "AL%s"%("{:0>2d}".format(cont))
+                add.almacen_id = 'AL%s'%('{:0>2d}'.format(cont))
                 add.flag = True
                 add.save()
-                return HttpResponseRedirect("/almacen/upkeep/stores/")
+                return HttpResponseRedirect('/almacen/upkeep/stores/')
             else:
                 form = forms.addAlmacenesForm(request.POST)
-                ctx = { "form": form, "msg": "Transaction unrealized." }
-                return render_to_response("upkeep/addalmacen.html",ctx,context_instance=RequestContext(request))
+                ctx = { 'form': form, 'msg': 'Transaction unrealized.' }
+                return render_to_response('upkeep/addalmacen.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
-        messages("Template not found")
+        messages('Template not found')
         raise Http404
 
 @login_required(login_url='/SignUp/')
@@ -486,23 +486,23 @@ def view_stores_edit(request,aid):
         al = Almacene.objects.get(pk=aid)
         if request.method == 'GET':
             form = forms.addAlmacenesForm(instance=al)
-            ctx = { "form": form, "aid": aid }
-            return render_to_response("upkeep/editalmacen.html",ctx,context_instance=RequestContext(request))
+            ctx = { 'form': form, 'aid': aid }
+            return render_to_response('upkeep/editalmacen.html',ctx,context_instance=RequestContext(request))
         elif request.method == 'POST':
             form = forms.addAlmacenesForm(request.POST, instance=al)
             if form.is_valid():
                 edit = form.save(commit=False)
                 edit.flag = True
                 edit.save()
-                url = "/almacen/upkeep/stores/"
+                url = '/almacen/upkeep/stores/'
                 return HttpResponseRedirect(url)
             else:
                 form = forms.addSubprojectForm(request.POST)
-                msg = "No se a podido realizar la transacción."
-                ctx = { "form": form, "almacen_id": almacen_id,"msg": msg }
-                return render_to_response("almacen/addsector.html",ctx,context_instance=RequestContext(request))
+                msg = 'No se a podido realizar la transacción.'
+                ctx = { 'form': form, 'almacen_id': almacen_id,'msg': msg }
+                return render_to_response('almacen/addsector.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
-        messages("Template not found")
+        messages('Template not found')
         raise Http404
 
 # Transportistas
@@ -511,11 +511,11 @@ def view_carrier(request):
     try:
         if request.method == 'GET':
             lista = Transportista.objects.filter(flag=True).order_by('tranom')
-            ctx = { "lista": lista }
-            return render_to_response("upkeep/transportista.html",ctx,context_instance=RequestContext(request))
+            ctx = { 'lista': lista }
+            return render_to_response('upkeep/transportista.html',ctx,context_instance=RequestContext(request))
         elif request.method == 'POST':
             data = {}
-            if "ruc" in request.POST:
+            if 'ruc' in request.POST:
                 try:
                     # delete conductors
                     obj = Conductore.objects.filter(traruc_id__exact=request.POST.get('ruc'))
@@ -531,16 +531,16 @@ def view_carrier(request):
                     data['status'] = False
                 return HttpResponse(simplejson.dumps(data),mimetype='application/json')
     except TemplateDoesNotExist, e:
-        messages("Template not found")
+        messages('Template not found')
         raise Http404
 
-@login_required(login_url="/SignUp/")
+@login_required(login_url='/SignUp/')
 def view_carrier_add(request):
     try:
         if request.method == 'GET':
             form = forms.addCarrierForm()
-            ctx = { "form": form }
-            return render_to_response("upkeep/addcarrier.html",ctx,context_instance=RequestContext(request))
+            ctx = { 'form': form }
+            return render_to_response('upkeep/addcarrier.html',ctx,context_instance=RequestContext(request))
         elif request.method == 'POST':
             form = forms.addCarrierForm(request.POST)
             if form.is_valid():
@@ -550,10 +550,10 @@ def view_carrier_add(request):
                 return HttpResponseRedirect('/almacen/upkeep/carrier/')
             else:
                 form = forms.addCarrierForm(request.POST)
-                ctx = { "form": form }
-                return render_to_response("upkeep/addcarrier.html",ctx,context_instance=RequestContext(request))
+                ctx = { 'form': form }
+                return render_to_response('upkeep/addcarrier.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
-        messages("Template not found")
+        messages('Template not found')
         raise Http404
 
 @login_required(login_url='/SignUp/')
@@ -562,7 +562,7 @@ def view_carrier_edit(request,ruc):
         t = Transportista.objects.get(pk=ruc)
         if request.method == 'GET':
             form = forms.addCarrierForm(instance=t)
-            return render_to_response("upkeep/editcarrier.html",{"form":form,"ruc":ruc},context_instance=RequestContext(request))
+            return render_to_response('upkeep/editcarrier.html',{'form':form,'ruc':ruc},context_instance=RequestContext(request))
         elif request.method == 'POST':
             form = forms.addCarrierForm(request.POST,instance=t)
             if form.is_valid():
@@ -572,11 +572,11 @@ def view_carrier_edit(request,ruc):
                 return HttpResponseRedirect('/almacen/upkeep/carrier/')
             else:
                 form = forms.addSubprojectForm(request.POST)
-                msg = "No se a podido realizar la transacción."
-                ctx = { "form": form, "almacen_id": almacen_id,"msg": msg }
-                return render_to_response("almacen/addsector.html",ctx,context_instance=RequestContext(request))
+                msg = 'No se a podido realizar la transacción.'
+                ctx = { 'form': form, 'almacen_id': almacen_id,'msg': msg }
+                return render_to_response('almacen/addsector.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
-        messages("Template not found")
+        messages('Template not found')
         raise Http404
 
 # Transport
@@ -586,10 +586,10 @@ def view_transport(request,ruc):
         if request.method == 'GET':
             lista = Transporte.objects.filter(flag=True,traruc_id=ruc)
             # print lista
-            ctx = { "lista": lista, "ruc":ruc, "nom": lista[0].traruc.tranom if len(lista) > 0 else "" }
-            return render_to_response("upkeep/transport.html",ctx,context_instance=RequestContext(request))
+            ctx = { 'lista': lista, 'ruc':ruc, 'nom': lista[0].traruc.tranom if len(lista) > 0 else '' }
+            return render_to_response('upkeep/transport.html',ctx,context_instance=RequestContext(request))
         elif request.method == 'POST':
-            if "nropla" in request.POST:
+            if 'nropla' in request.POST:
                 data = {}
                 try:
                     obj = Transporte.objects.get(traruc_id=ruc,condni_id=request.POST.get('nropla'))
@@ -599,7 +599,7 @@ def view_transport(request,ruc):
                     data['status'] = False
                 return HttpResponse(simplejson.dumps(data),mimetype='application/json')
     except TemplateDoesNotExist, e:
-        messages("Template not found")
+        messages('Template not found')
         raise Http404
 
 @login_required(login_url='/SignUp/')
@@ -607,8 +607,8 @@ def view_transport_add(request,tid):
     try:
         if request.method == 'GET':
             form = forms.addTransportForm()
-            ctx = { "form": form, "tid": tid }
-            return render_to_response("upkeep/addtransport.html",ctx,context_instance=RequestContext(request))
+            ctx = { 'form': form, 'tid': tid }
+            return render_to_response('upkeep/addtransport.html',ctx,context_instance=RequestContext(request))
         elif request.method == 'POST':
             form = forms.addTransportForm(request.POST)
             if form.is_valid():
@@ -619,29 +619,29 @@ def view_transport_add(request,tid):
                 return HttpResponseRedirect('/almacen/upkeep/transport/%s'%tid)
             else:
                 form = forms.addTransportForm(request.POST)
-                ctx = { "form": form, "tid": tid }
-                return render_to_response("upkeep/addtransport.html",ctx,context_instance=RequestContext(request))
+                ctx = { 'form': form, 'tid': tid }
+                return render_to_response('upkeep/addtransport.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
-        messages("Template not found")
+        messages('Template not found')
         raise Http404
 
-@login_required(login_url="/SignUp/")
+@login_required(login_url='/SignUp/')
 def view_transport_edit(request,cid,tid):
     try:
         t = Transporte.objects.get(traruc_id=cid,nropla_id=tid)
         if request.method == 'GET':
             form = forms.addTransportForm(instance=t)
-            return render_to_response("upkeep/edittransport.html",{"form": form, "cid":cid, "tid": tid}, context_instance=RequestContext(request))
+            return render_to_response('upkeep/edittransport.html',{'form': form, 'cid':cid, 'tid': tid}, context_instance=RequestContext(request))
         if request.method == 'POST':
             form = forms.addTransportForm(request.POST, instance=t)
             if form.is_valid():
                 edit = form.save(commit=True)
-                return HttpResponseRedirect("/almacen/upkeep/transport/%s/"%cid)
+                return HttpResponseRedirect('/almacen/upkeep/transport/%s/'%cid)
             else:
                 form = forms.addTransportForm(request.POST)
-                return render_to_response("upkeep/edittransport.html",{"form": form, "cid":cid, "tid": tid}, context_instance=RequestContext(request))
+                return render_to_response('upkeep/edittransport.html',{'form': form, 'cid':cid, 'tid': tid}, context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
-        messages("Template not found")
+        messages('Template not found')
         raise Http404
 
 # Conductor
@@ -651,10 +651,10 @@ def view_conductor(request,ruc):
         if request.method == 'GET':
             lista = Conductore.objects.filter(flag=True,traruc_id=ruc)
             # print lista
-            ctx = { "lista": lista, "ruc":ruc, "nom": lista[0].traruc.tranom if len(lista) > 0 else "" }
-            return render_to_response("upkeep/conductor.html",ctx,context_instance=RequestContext(request))
+            ctx = { 'lista': lista, 'ruc':ruc, 'nom': lista[0].traruc.tranom if len(lista) > 0 else '' }
+            return render_to_response('upkeep/conductor.html',ctx,context_instance=RequestContext(request))
         elif request.method == 'POST':
-            if "condni" in request.POST:
+            if 'condni' in request.POST:
                 data = {}
                 try:
                     obj = Conductore.objects.get(traruc_id=ruc,condni_id=request.POST.get('condni'))
@@ -664,7 +664,7 @@ def view_conductor(request,ruc):
                     data['status'] = False
                 return HttpResponse(simplejson.dumps(data),mimetype='application/json')
     except TemplateDoesNotExist, e:
-        messages("Template not found")
+        messages('Template not found')
         raise Http404
 
 @login_required(login_url='/SignUp/')
@@ -672,8 +672,8 @@ def view_conductor_add(request,tid):
     try:
         if request.method == 'GET':
             form = forms.addConductorForm()
-            ctx = { "form": form, "tid": tid }
-            return render_to_response("upkeep/addconductor.html",ctx,context_instance=RequestContext(request))
+            ctx = { 'form': form, 'tid': tid }
+            return render_to_response('upkeep/addconductor.html',ctx,context_instance=RequestContext(request))
         elif request.method == 'POST':
             form = forms.addConductorForm(request.POST)
             if form.is_valid():
@@ -684,29 +684,29 @@ def view_conductor_add(request,tid):
                 return HttpResponseRedirect('/almacen/upkeep/conductor/%s'%tid)
             else:
                 form = forms.addConductorForm(request.POST)
-                ctx = { "form": form, "tid": tid }
-                return render_to_response("upkeep/addconductor.html",ctx,context_instance=RequestContext(request))
+                ctx = { 'form': form, 'tid': tid }
+                return render_to_response('upkeep/addconductor.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
-        messages("Template not found")
+        messages('Template not found')
         raise Http404
 
-@login_required(login_url="/SignUp/")
+@login_required(login_url='/SignUp/')
 def view_conductor_edit(request,cid,tid):
     try:
         t = Conductore.objects.get(traruc_id=cid,condni_id=tid)
         if request.method == 'GET':
             form = forms.addConductorForm(instance=t)
-            return render_to_response("upkeep/editconductor.html",{"form": form, "cid":cid, "tid": tid}, context_instance=RequestContext(request))
+            return render_to_response('upkeep/editconductor.html',{'form': form, 'cid':cid, 'tid': tid}, context_instance=RequestContext(request))
         if request.method == 'POST':
             form = forms.addConductorForm(request.POST, instance=t)
             if form.is_valid():
                 edit = form.save(commit=True)
-                return HttpResponseRedirect("/almacen/upkeep/conductor/%s/"%cid)
+                return HttpResponseRedirect('/almacen/upkeep/conductor/%s/'%cid)
             else:
                 form = forms.addConductorForm(request.POST)
-                return render_to_response("upkeep/editconductor.html",{"form": form, "cid":cid, "tid": tid}, context_instance=RequestContext(request))
+                return render_to_response('upkeep/editconductor.html',{'form': form, 'cid':cid, 'tid': tid}, context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
-        messages("Template not found")
+        messages('Template not found')
         raise Http404
 
 """
@@ -721,8 +721,8 @@ def view_orders_pending(request):
             ctx= { 'lista': lst }
             return render_to_response('almacen/slopeorders.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
-        messages("Error template not found")
-        raise Http404("Process Error")
+        messages('Error template not found')
+        raise Http404('Process Error')
 
 # list ortders attend request Orders
 @login_required(login_url='/SignUp/')
@@ -733,8 +733,8 @@ def view_orders_list_approved(request):
             ctx= { 'lista': lst }
             return render_to_response('almacen/listorderattend.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
-        messages("Error template not found")
-        raise Http404("Process Error")
+        messages('Error template not found')
+        raise Http404('Process Error')
 # meet Orders
 @login_required(login_url='/SignUp/')
 def view_attend_order(request,oid):
@@ -752,7 +752,7 @@ def view_attend_order(request,oid):
             # nipples= get_list_or_404(models.Niple.objects.order_by('metrado'),pedido_id__exact=oid,flag=True)
             nipples = models.Niple.objects.filter(pedido_id__exact=oid, flag=True).order_by('metrado')
             usr= userProfile.objects.get(empdni__exact=obj.empdni)
-            tipo= {"A":"Roscado","B":"Ranurado","C":"Rosca-Ranura"}
+            tipo= {'A':'Roscado','B':'Ranurado','C':'Rosca-Ranura'}
             ctx= { 'orders': obj, 'det': det, 'nipples': nipples, 'usr': usr,'tipo':tipo,'radio':radio }
             return render_to_response('almacen/attendorder.html',ctx,context_instance=RequestContext(request))
         elif request.method == 'POST':
@@ -775,10 +775,10 @@ def view_attend_order(request,oid):
                     ctn+= cs
                     obj= models.Detpedido.objects.get(pedido_id__exact=request.POST.get('oid'),materiales_id__exact=mat[c]['matid'])
                     # aqui hacer otro if
-                    obj.cantshop=  (float(mat[c]['quantity']) - float(mat[c]['quantityshop'])) if (cs / 100 ) == float(mat[c]['quantity']) else (cs/100) if mat[c]['matid'][0:3] == "115" else (float(mat[c]['quantity']) - float(mat[c]['quantityshop']))
-                    #print (cs / 100 ) if mat[c]['matid'][0:3] == "115" else (float(mat[c]['quantity']) - float(mat[c]['quantityshop']))
+                    obj.cantshop=  (float(mat[c]['quantity']) - float(mat[c]['quantityshop'])) if (cs / 100 ) == float(mat[c]['quantity']) else (cs/100) if mat[c]['matid'][0:3] == '115' else (float(mat[c]['quantity']) - float(mat[c]['quantityshop']))
+                    #print (cs / 100 ) if mat[c]['matid'][0:3] == '115' else (float(mat[c]['quantity']) - float(mat[c]['quantityshop']))
                     obj.cantguide= float(mat[c]['quantityshop'])
-                    obj.tag= "1"
+                    obj.tag= '1'
                     obj.save()
                     cnm+= 1
                 # we walk the list nipples and update tag of tables nipples
@@ -806,9 +806,9 @@ def view_attend_order(request,oid):
                 data['status']= True
             except ObjectDoesNotExist, e:
                 data['status']= False
-            return HttpResponse(simplejson.dumps(data), mimetype="application/json" )
+            return HttpResponse(simplejson.dumps(data), mimetype='application/json' )
     except TemplateDoesNotExist, e:
-        message("Error template not found")
+        message('Error template not found')
         raise Http404
 
 """
@@ -822,7 +822,7 @@ def view_generate_guide_orders(request):
             #lst= get_list_or_404(models.Pedido.objects.exclude(Q(status='PE')|Q(status='AN')).order_by('-pedido_id'), flag=True )
             lst= models.Detpedido.objects.filter(tag='1').order_by('-pedido').distinct('pedido')
             ctx= { 'orders': lst }
-            return render_to_response("almacen/generateGuide.html",ctx,context_instance=RequestContext(request))
+            return render_to_response('almacen/generateGuide.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
         message('Error Template not found')
         raise Http404
@@ -834,7 +834,7 @@ def view_generate_document_out(request,oid):
             orders= get_object_or_404(models.Pedido,flag=True,pedido_id__exact=oid)
             trans= get_list_or_404(Transportista.objects.values('traruc_id','tranom'),flag=True)
             ctx= { 'oid': oid, 'trans': trans, 'orders': orders }
-            return render_to_response("almacen/documentout.html",ctx,context_instance=RequestContext(request))
+            return render_to_response('almacen/documentout.html',ctx,context_instance=RequestContext(request))
         elif request.method == 'POST':
             if request.is_ajax():
                 form = forms.addGuideReferral(request.POST)
@@ -900,7 +900,7 @@ def view_generate_document_out(request,oid):
                         data['status']= False
                     return HttpResponse(simplejson.dumps(data), mimetype='application/json')
     except TemplateDoesNotExist, e:
-        message("Error: Template not found")
+        message('Error: Template not found')
         raise Http404
 
 # recover list guide referral for view and annular
@@ -914,9 +914,9 @@ def view_list_guide_referral_success(request):
                 try:
                     if request.GET.get('tra') == 'series':
                         lst= models.GuiaRemision.objects.get(pk=request.GET.get('series'),status='GE',flag=True)
-                        ls= [{"item":1,"guia_id":lst.guia_id,"nompro":lst.pedido.proyecto.nompro,"traslado":lst.traslado.strftime(FORMAT_DATE_STR),"connom":lst.condni.connom}]
+                        ls= [{'item':1,'guia_id':lst.guia_id,'nompro':lst.pedido.proyecto.nompro,'traslado':lst.traslado.strftime(FORMAT_DATE_STR),'connom':lst.condni.connom}]
                         data['status']= True
-                    elif request.GET.get('tra') == "dates":
+                    elif request.GET.get('tra') == 'dates':
                         if request.GET.get('fecf') == '' and request.GET.get('feci') != '':
                             star= datetime.datetime.strptime(request.GET.get('feci'), FORMAT_DATE_STR ).date()
                             lst= models.GuiaRemision.objects.filter(traslado=star,status='GE',flag=True)
@@ -926,16 +926,16 @@ def view_list_guide_referral_success(request):
                             lst= models.GuiaRemision.objects.filter(traslado__range=[star,end],status='GE',flag=True)
                         i= 1
                         for x in lst:
-                            ls.append({"item":i,"guia_id":x.guia_id,"nompro":x.pedido.proyecto.nompro,"traslado":x.traslado.strftime(FORMAT_DATE_STR),"connom":x.condni.connom})
+                            ls.append({'item':i,'guia_id':x.guia_id,'nompro':x.pedido.proyecto.nompro,'traslado':x.traslado.strftime(FORMAT_DATE_STR),'connom':x.condni.connom})
                             i+= 1
                         data['status']= True
                 except ObjectDoesNotExist, e:
                     data['status']= False
                 data['list']= ls
-                return HttpResponse(simplejson.dumps(data),mimetype="application/json")
+                return HttpResponse(simplejson.dumps(data),mimetype='application/json')
             lst= models.GuiaRemision.objects.filter(status='GE',flag=True).order_by('-guia_id')[:10]
             ctx= {'guide':lst}
-            return render_to_response("almacen/listguide.html",ctx,context_instance=RequestContext(request))
+            return render_to_response('almacen/listguide.html',ctx,context_instance=RequestContext(request))
         if request.method == 'POST':
             data= {}
             try:
@@ -948,7 +948,7 @@ def view_list_guide_referral_success(request):
                 data['status']= True
             except ObjectDoesNotExist, e:
                 data['status']= False
-            return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+            return HttpResponse(simplejson.dumps(data), mimetype='application/json')
     except TemplateDoesNotExist, e:
         raise Http404
 
@@ -963,9 +963,9 @@ def view_list_guide_referral_canceled(request):
                 try:
                     if request.GET.get('tra') == 'series':
                         lst= models.GuiaRemision.objects.get(pk=request.GET.get('series'),status='AN',flag=False)
-                        ls= [{"item":1,"guia_id":lst.guia_id,"nompro":lst.pedido.proyecto.nompro,"traslado":lst.traslado.strftime(FORMAT_DATE_STR),"connom":lst.condni.connom}]
+                        ls= [{'item':1,'guia_id':lst.guia_id,'nompro':lst.pedido.proyecto.nompro,'traslado':lst.traslado.strftime(FORMAT_DATE_STR),'connom':lst.condni.connom}]
                         data['status']= True
-                    elif request.GET.get('tra') == "dates":
+                    elif request.GET.get('tra') == 'dates':
                         if request.GET.get('fecf') == '' and request.GET.get('feci') != '':
                             star= datetime.datetime.strptime(request.GET.get('feci'), FORMAT_DATE_STR ).date()
                             lst= models.GuiaRemision.objects.filter(traslado=star,status='AN',flag=False)
@@ -975,16 +975,16 @@ def view_list_guide_referral_canceled(request):
                             lst= models.GuiaRemision.objects.filter(traslado__range=[star,end],status='AN',flag=False)
                         i= 1
                         for x in lst:
-                            ls.append({"item":i,"guia_id":x.guia_id,"nompro":x.pedido.proyecto.nompro,"traslado":x.traslado.strftime(FORMAT_DATE_STR),"connom":x.condni.connom})
+                            ls.append({'item':i,'guia_id':x.guia_id,'nompro':x.pedido.proyecto.nompro,'traslado':x.traslado.strftime(FORMAT_DATE_STR),'connom':x.condni.connom})
                             i+= 1
                         data['status']= True
                 except ObjectDoesNotExist, e:
                     data['status']= False
                 data['list']= ls
-                return HttpResponse(simplejson.dumps(data),mimetype="application/json")
+                return HttpResponse(simplejson.dumps(data),mimetype='application/json')
             lst= models.GuiaRemision.objects.filter(status='AN',flag=False).order_by('-guia_id')[:10]
             ctx= {'guide':lst}
-            return render_to_response("almacen/listguidecanceled.html",ctx,context_instance=RequestContext(request))
+            return render_to_response('almacen/listguidecanceled.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
         raise Http404
 
@@ -1129,7 +1129,7 @@ class SupplyView(ListView):
         if request.is_ajax():
             data = {}
             try:
-                if request.POST.get('tipo') == "deltmp":
+                if request.POST.get('tipo') == 'deltmp':
                     obj = models.tmpsuministro.objects.filter(empdni__exact=request.user.get_profile().empdni_id)
                     if obj:
                         for x in obj:
@@ -1147,7 +1147,7 @@ class SupplyView(ListView):
                     else:
                         data['status'] = False
                     data = simplejson.dumps(data)
-                    return HttpResponse(data, mimetype="application/json")
+                    return HttpResponse(data, mimetype='application/json')
                 if 'generateSupply' in request.POST:
                     # save bedside of supply
                     idsp = genkeys.GenerateKeySupply()

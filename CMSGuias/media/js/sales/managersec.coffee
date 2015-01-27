@@ -157,7 +157,7 @@ $(document).ready ->
     $("button.btn-annimate-up").on "click", tableUp
     $("button.btn-reader-prices").on "click", readerPrices
     $("table.table-float").floatThead
-        useAbsolutePositioning: false
+        useAbsolutePositioning: true
         scrollingTop: 50
     return
 
