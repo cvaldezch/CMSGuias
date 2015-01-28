@@ -46,7 +46,7 @@ class JSONResponseMixin(object):
 
 # View home Sales
 class SalesHome(TemplateView):
-    template_name = "sales/home.html"
+    template_name = 'sales/home.html'
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -54,7 +54,7 @@ class SalesHome(TemplateView):
 
 # View list project
 class ProjectsList(JSONResponseMixin, TemplateView):
-    template_name = "sales/projects.html"
+    template_name = 'sales/projects.html'
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
@@ -154,7 +154,7 @@ class SectorsView(JSONResponseMixin, View):
                 # print form, form.is_valid()
                 if form.is_valid():
                     add = form.save(commit=False)
-                    id = "%s%s"%(add.proyecto_id, add.sector_id)
+                    id = '%s%s'%(add.proyecto_id, add.sector_id)
                     # print id, len(id)
                     add.sector_id = id
                     add.save()
@@ -363,7 +363,7 @@ class ProjectManager(JSONResponseMixin, View):
                             sec = Sectore.objects.filter(proyecto_id=kwargs['project'])
                             if sec:
                                 sec.update(status='AC')
-                            # paste all list of materials to "MetProject"
+                            # paste all list of materials to 'MetProject'
                             for x in Metradoventa.objects.filter(proyecto_id=kwargs['project']):
                                 obj = MetProject()
                                 obj.proyecto_id = x.proyecto_id
@@ -492,13 +492,15 @@ class SectorManage(JSONResponseMixin, View):
                                     'id': x.id,
                                     'materials_id': x.materiales_id,
                                     'name': x.materiales.matnom,
-                                    'measure':x.materiales.matmed,
+                                    'measure': x.materiales.matmed,
                                     'unit': x.materiales.unidad.uninom,
-                                    'brand' : x.brand.brand,
-                                    'model' : x.model.model,
+                                    'brand': x.brand.brand,
+                                    'model': x.model.model,
                                     'quantity':x.cantidad,
-                                    'price':x.precio
-                                } for x in obj
+                                    'price': x.precio,
+                                    'sales': float(x.sales)
+                                }
+                                for x in obj
                             ]
                             context['status'] = True
                     if 'list-nip' in request.GET:
@@ -619,7 +621,9 @@ class SectorManage(JSONResponseMixin, View):
                         #print form
                         if form.is_valid():
                             if 'edit' in request.POST:
-                                form.save()
+                                edit = form.save(commit = False)
+                                edit.sales = float(request.POST.get('sales'))
+                                edit.save()
                             else:
                                 obj = Metradoventa.objects.filter(
                                     proyecto_id=kwargs['pro'],
@@ -635,7 +639,7 @@ class SectorManage(JSONResponseMixin, View):
                                 else:
                                     add = form.save(commit = False)
                                     add.sales = float(request.POST.get('sales'))
-                                    print request.POST.get('sales')
+                                    # print request.POST.get('sales')
                                     add.save()
                                 if not 'edit' in request.POST and 'details' in request.POST:
                                     # save Details Material Group
@@ -1070,7 +1074,7 @@ class SectorManage(JSONResponseMixin, View):
                     if request.POST.get('typedeductive') == 'ONE':
                         obj = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None,sector_id=request.POST.get('sector') ,materiales__matnom__icontains=request.POST.get('text'))
                     elif request.POST.get('typedeductive') == 'CUS':
-                        sec = request.POST.get('cus').split(",")
+                        sec = request.POST.get('cus').split(',')
                         obj = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None,sector_id__in=sec,materiales__matnom__icontains=request.POST.get('text'))
                     elif request.POST.get('typedeductive') == 'ALL':
                         obj = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None,materiales__matnom__icontains=request.POST.get('text'))

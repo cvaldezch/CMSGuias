@@ -51,12 +51,13 @@ $(document).ready(function() {
   $(document).on("click", ".btn-show-edit", function() {
     var $materials;
     $(".btn-save-edit").val(this.value);
-    $materials = $("." + this.value + " > td");
+    $materials = $("tr." + this.value + " > td");
     editBrandandModel($materials.eq(5).text(), $materials.eq(6).text());
     $(".text-edit").text("" + ($materials.eq(2).text()) + " " + ($materials.eq(3).text()));
     $("input[name=edit-materials]").val($materials.eq(1).text());
-    $("input[name=edit-quantity]").val($materials.eq(7).text());
-    $("input[name=edit-price]").val($materials.eq(8).text());
+    $("input[name=edit-quantity]").val(this.getAttribute("data-quantity"));
+    $("input[name=edit-price]").val(this.getAttribute("data-purchase"));
+    $("input[name=edit-sales]").val(this.getAttribute("data-sales"));
     return $(".medit").modal("toggle");
   });
   $("select[name=edit-brand]").on("change", function(event) {
@@ -577,7 +578,7 @@ listMaterials = function() {
   $.getJSON("", data, function(response) {
     var $tb, template, x, _results;
     if (response.status) {
-      template = "<tr class=\"{{ materials_id }}-{{ id }}\"> <td class=\"col-1\">{{ item }}</td> <td class=\"col-3\">{{ materials_id }}</td> <td class=\"col-6\">{{ name }}</td> <td class=\"col-5\">{{ measure }}</td> <td class=\"col-2\">{{ unit }}</td> <td class=\"col-2\">{{ brand }}</td> <td class=\"col-2\">{{ model }}</td> <td class=\"col-2\">{{ quantity }}</td> <td class=\"col-2\">{{ price }}</td> <td class=\"col-2\"> <button class=\"btn btn-xs btn-link text-green btn-show-edit\" value=\"{{ materials_id }}-{{ id }}\"> <span class=\"glyphicon glyphicon-pencil\"></span> </button> </td> <td class=\"col-2\"> <button class=\"btn btn-xs btn-link text-red btn-del-mat\" value=\"{{ materials_id }}-{{ id }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> </tr>";
+      template = "<tr class=\"{{ materials_id }}-{{ id }}\"> <td class=\"col-1\">{{ item }}</td> <td class=\"col-3\">{{ materials_id }}</td> <td class=\"col-6\">{{ name }}</td> <td class=\"col-5\">{{ measure }}</td> <td class=\"col-2\">{{ unit }}</td> <td class=\"col-2\">{{ brand }}</td> <td class=\"col-2\">{{ model }}</td> <td class=\"col-2\">{{ quantity }}</td> <td class=\"col-2\">{{ price }}</td> <td class=\"col-2\">{{ sales }}</td> <td class=\"col-2\"> <button class=\"btn btn-xs btn-link text-green btn-show-edit\" value=\"{{ materials_id }}-{{ id }}\" data-quantity=\"{{ quantity }}\" data-purchase=\"{{ price }}\" data-sales=\"{{ sales }}\"> <span class=\"glyphicon glyphicon-pencil\"></span> </button> </td> <td class=\"col-2\"> <button class=\"btn btn-xs btn-link text-red btn-del-mat\" value=\"{{ materials_id }}-{{ id }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> </tr>";
       $tb = $(".table-details > tbody");
       $tb.empty();
       _results = [];
@@ -640,6 +641,7 @@ editMaterials = function(event) {
   data.materiales = $("input[name=edit-materials]").val();
   data.cantidad = $("input[name=edit-quantity]").val();
   data.precio = $("input[name=edit-price]").val();
+  data.sales = $("input[name=edit-sales]").val();
   data.brand = $("select[name=edit-brand]").val();
   data.model = $("select[name=edit-model]").val();
   data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
@@ -659,6 +661,7 @@ editMaterials = function(event) {
         purchase = $("[name=" + ($("[name=currency]").val()) + "]").val();
       }
       data['precio'] = data['precio'] * parseFloat(purchase);
+      data.sales = data.sales * parseFloat(purchase);
     }
     $.post("", data, function(response) {
       var $materials;
@@ -668,6 +671,7 @@ editMaterials = function(event) {
         $materials.eq(6).text($("select[name=edit-model]").find("option:selected").text());
         $materials.eq(7).text(data.cantidad);
         $materials.eq(8).text(data.precio);
+        $materials.eq(9).text(data.sales);
         return $(".medit").modal("toggle");
       } else {
         return $().toastmessage("showWarningToast", "No se edito el material.");

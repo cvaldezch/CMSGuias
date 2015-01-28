@@ -440,7 +440,7 @@
                                                 {% if project.status == 'PE' or not meter %}
                                                     {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
                                                     <td class="text-center">
-                                                        <button data-brand="{{ x.brand_id }}" data-model="{{ x.model_id }}" class="btn btn-xs btn-link text-green btn-show-edit" value="{{ x.materiales_id }}-{{ x.id }}">
+                                                        <button data-brand="{{ x.brand_id }}" data-model="{{ x.model_id }}" class="btn btn-xs btn-link text-green btn-show-edit" value="{{ x.materiales_id }}-{{ x.id }}" data-quantity="{{ x.cantidad|safe }}" data-purchase="{{ x.precio|safe }}" data-sales="{{ x.sales|safe }}">
                                                             <span class="glyphicon glyphicon-pencil"></span>
                                                         </button>
                                                     </td>
@@ -1060,13 +1060,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label">Compra</label>
-                            <input type="number" min="1" step="0.01" class="form-control input-sm" name="edit-price">
+                            <input type="number" min="1" step="0.001" class="form-control input-sm" name="edit-price">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label">Venta</label>
-                            <input type="number" min="1" step="0.01" class="form-control input-sm" name="edit-sales">
+                            <input type="number" min="1" step="0.001" class="form-control input-sm" name="edit-sales">
                         </div>
                     </div>
                     <div class="col-md-6">

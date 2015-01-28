@@ -43,12 +43,13 @@ $(document).ready ->
     $("input[name=rcp]").on "change", changeRadio
     $(document).on "click", ".btn-show-edit", ->
         $(".btn-save-edit").val @value
-        $materials = $(".#{@value} > td")
+        $materials = $("tr.#{@value} > td")
         editBrandandModel $materials.eq(5).text(), $materials.eq(6).text()
         $(".text-edit").text "#{$materials.eq(2).text()} #{$materials.eq(3).text()}"
         $("input[name=edit-materials]").val $materials.eq(1).text()
-        $("input[name=edit-quantity]").val $materials.eq(7).text()
-        $("input[name=edit-price]").val $materials.eq(8).text()
+        $("input[name=edit-quantity]").val @getAttribute "data-quantity" #$materials.eq(7).text()
+        $("input[name=edit-price]").val @getAttribute "data-purchase" # $materials.eq(8).text()
+        $("input[name=edit-sales]").val @getAttribute "data-sales"
         $(".medit").modal "toggle"
     $("select[name=edit-brand]").on "change", (event) ->
         $.getJSON "/json/model/list/option/",
@@ -511,8 +512,9 @@ listMaterials = ->
                             <td class=\"col-2\">{{ model }}</td>
                             <td class=\"col-2\">{{ quantity }}</td>
                             <td class=\"col-2\">{{ price }}</td>
+                            <td class=\"col-2\">{{ sales }}</td>
                             <td class=\"col-2\">
-                                <button class=\"btn btn-xs btn-link text-green btn-show-edit\" value=\"{{ materials_id }}-{{ id }}\">
+                                <button class=\"btn btn-xs btn-link text-green btn-show-edit\" value=\"{{ materials_id }}-{{ id }}\" data-quantity=\"{{ quantity }}\" data-purchase=\"{{ price }}\" data-sales=\"{{ sales }}\">
                                     <span class=\"glyphicon glyphicon-pencil\"></span>
                                 </button>
                             </td>
@@ -568,6 +570,7 @@ editMaterials = (event) ->
     data.materiales = $("input[name=edit-materials]").val()
     data.cantidad = $("input[name=edit-quantity]").val()
     data.precio = $("input[name=edit-price]").val()
+    data.sales = $("input[name=edit-sales]").val()
     data.brand = $("select[name=edit-brand]").val()
     data.model = $("select[name=edit-model]").val()
     data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
@@ -586,6 +589,7 @@ editMaterials = (event) ->
                     return false
                 purchase = $("[name=#{$("[name=currency]").val()}]").val()
             data['precio'] = data['precio'] * parseFloat(purchase)
+            data.sales = data.sales * parseFloat(purchase)
 
         $.post "", data, (response) ->
             if response.status
@@ -594,6 +598,7 @@ editMaterials = (event) ->
                 $materials.eq(6).text $("select[name=edit-model]").find("option:selected").text()
                 $materials.eq(7).text data.cantidad
                 $materials.eq(8).text data.precio
+                $materials.eq(9).text data.sales
                 $(".medit").modal "toggle"
             else
                 $().toastmessage "showWarningToast", "No se edito el material."
