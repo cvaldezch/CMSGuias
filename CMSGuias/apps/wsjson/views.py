@@ -774,7 +774,35 @@ class ViewCopyMaterialesProjectsSale(JSONResponseMixin, DetailView):
                 if 'sector' in request.GET:
                     context['sector'] = [{'sector_id':x.sector_id, 'name':x.nomsec, 'plane':x.planoid, 'project_id':x.proyecto_id, 'subproject_id':x.subproyecto_id} for x in Sectore.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None)]
                 if 'materials' in request.GET:
-                    context['materials'] = [{'id':x.id,'materials_id': x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'brand' : x.brand.brand, 'model' : x.model.model , 'quantity':x.cantidad, 'price':x.precio} for x in Metradoventa.objects.filter(proyecto_id=request.GET['pro'], subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec')).order_by('materiales__matnom')]
+                    context['materials'] = [
+                        {
+                            'id': x.id,
+                            'materials_id': x.materiales_id,
+                            'name': x.materiales.matnom,
+                            'measure': x.materiales.matmed,
+                            'unit': x.materiales.unidad.uninom,
+                            'brand': x.brand.brand,
+                            'model': x.model.model,
+                            'quantity': x.cantidad,
+                            'price': x.precio
+                        }
+                        for x in MetProject.objects.filter(proyecto_id=request.GET['pro'], subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec')).order_by('materiales__matnom')
+                    ]
+                    if context['materials']:
+                        context['materials'] = [
+                            {
+                                'id': x.id,
+                                'materials_id': x.materiales_id,
+                                'name': x.materiales.matnom,
+                                'measure': x.materiales.matmed,
+                                'unit': x.materiales.unidad.uninom,
+                                'brand': x.brand.brand,
+                                'model': x.model.model,
+                                'quantity': x.cantidad,
+                                'price': x.precio
+                            }
+                            for x in Metradoventa.objects.filter(proyecto_id=request.GET['pro'], subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec')).order_by('materiales__matnom')
+                        ]
                 context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
@@ -787,8 +815,14 @@ class ViewCopyMaterialesProjectsSale(JSONResponseMixin, DetailView):
             try:
                 if 'paste' in request.POST:
                     mats = request.POST.getlist('materials[]')
-                    for x in Metradoventa.objects.filter(proyecto_id=request.POST.get('cpro'), subproyecto_id=request.POST.get('csub') if request.POST.get('csub') != '' else None, sector_id=request.POST.get('csec'), materiales_id__in=mats):
-
+                    mven = Metradoventa.objects.filter(proyecto_id=request.POST.get('cpro'), subproyecto_id=request.POST.get('csub') if request.POST.get('csub') != '' else None, sector_id=request.POST.get('csec'), materiales_id__in=mats)
+                    mmet = MetProject.objects.filter(proyecto_id=request.POST.get('cpro'), subproyecto_id=request.POST.get('csub') if request.POST.get('csub') != '' else None, sector_id=request.POST.get('csec'), materiales_id__in=mats)
+                    copyList = None
+                    if mmet.count() > mven.count():
+                        copyList = mmet
+                    else:
+                        copyList = mven
+                    for x in copyList:
                         obj = Metradoventa.objects.filter(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') != '' else None, sector_id=request.POST.get('sec'), materiales_id=x.materiales_id)
 
                         if obj:

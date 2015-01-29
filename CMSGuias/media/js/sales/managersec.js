@@ -2267,10 +2267,11 @@ calcAmountSector = function(event) {
       amount += convertNumber($td.eq(7).text()) * convertNumber($td.eq(8).text());
     });
   }
-  $("label.amountmeter").text(amount.toFixed(2));
-  estimated = convertNumber($("label.amountmeterestimated").text());
+  $(".amountmeter").text(amount.toFixed(2));
+  estimated = convertNumber($(".amountmeterestimated").text());
   diff = estimated - amount;
-  $("label.amountmeterdiff").text(diff.toFixed(2));
+  $(".amountmeterdiff").text(diff.toFixed(2));
+  console.log("put");
 };
 
 calcDiffModify = function(event) {

@@ -131,6 +131,7 @@ $(document).ready ->
     $(".btn-delete-materials-deductive-global").on "click", delAllMaterialDeductiveGlobal
     $(document).on "click", ".btn-delete-deductive-global-tr", delUnitDeductiveGlobal
     calcAmountSector()
+    # calcDiffModify()
     tinymce.init
         selector: "textarea[name=obser]",
         theme: "modern",
@@ -681,7 +682,6 @@ selectChoiseOrder = (event) ->
             $("input[name=mats]").each (index, element) ->
                 @checked = Boolean parseInt chk.value
                 return
-
     return
 
 list_temp_nipples = (idmat)->
@@ -2056,12 +2056,13 @@ calcAmountSector = (event)->
     else if $("input#calcAmountSectorFirst").length
         $("table.table-details > tbody > tr").each (index, element) ->
             $td = $(element).find "td"
-            amount += (convertNumber($td.eq(7).text()) * convertNumber($td.eq(8).text()) )
+            amount += (convertNumber($td.eq(7).text()) * convertNumber($td.eq(8).text()))
             return
-    $("label.amountmeter").text amount.toFixed 2
-    estimated = convertNumber $("label.amountmeterestimated").text()
+    $(".amountmeter").text amount.toFixed 2
+    estimated = convertNumber $(".amountmeterestimated").text()
     diff = (estimated - amount)
-    $("label.amountmeterdiff").text diff.toFixed 2
+    $(".amountmeterdiff").text diff.toFixed 2
+    console.log "put"
     return
 
 calcDiffModify = (event) ->

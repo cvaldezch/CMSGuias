@@ -332,57 +332,88 @@
                         {% endif %}
                     {% endif %}
                     <div class="panel panel-primary">
-                        <div class="panel-footer">
-                            {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
-                                <div class="row panel-price-one">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="control-label">Importe Estimado</label>
-                                            <label class="form-control text-right amountmeterestimated">{% if not sector.amount %} 0 {% else %} {{ sector.amount }} {% endif %}
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="control-label">Importe Sector Actual</label>
-                                            <label class="form-control text-right amountmeter"></label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="control-label">Diferencia Aprox.</label>
-                                            <label class="form-control text-right amountmeterdiff"></label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 col-md-offset-8">
-                                        <label class="control-label">Precio expresado en: <q>{{ project.currency.moneda }}</q></label>
-                                    </div>
+                        {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
+                            <div class="panel-footer">
+                               <!--  <div class="row panel-price-one">
+                                   <div class="col-md-4">
+                                       <div class="form-group">
+                                           <label class="control-label">Importe Estimado</label>
+                                           <label class="form-control text-right amountmeterestimated">{% if not sector.amount %} 0 {% else %} {{ sector.amount }} {% endif %}
+                                           </label>
+                                       </div>
+                                   </div>
+                                   <div class="col-md-4">
+                                       <div class="form-group">
+                                           <label class="control-label">Importe Sector Actual</label>
+                                           <label class="form-control text-right amountmeter"></label>
+                                       </div>
+                                   </div>
+                                   <div class="col-md-4">
+                                       <div class="form-group">
+                                           <label class="control-label">Diferencia Aprox.</label>
+                                           <label class="form-control text-right amountmeterdiff"></label>
+                                       </div>
+                                   </div>
+                                   <div class="col-md-4 col-md-offset-8">
+                                       <label class="control-label">Precio expresado en: <q>{{ project.currency.moneda }}</q></label>
+                                   </div>
+                               </div>
+                               <div class="row panel-price-two">
+                                   <div class="col-md-4">
+                                       <div class="form-group">
+                                           <label class="control-label">Importe Actual</label>
+                                           <label class="form-control text-right amountcurrent"></label>
+                                       </div>
+                                   </div>
+                                   <div class="col-md-4">
+                                       <div class="form-group">
+                                           <label class="control-label">Importe Modificación</label>
+                                           <label class="form-control text-right modifycurrent"></label>
+                                       </div>
+                                   </div>
+                                   <div class="col-md-4">
+                                       <div class="form-group">
+                                           <label class="control-label">Diferencia</label>
+                                           <label class="form-control text-right modifydiff"></label>
+                                       </div>
+                                   </div>
+                                   <div class="col-md-4 col-md-offset-8">
+                                       <label class="control-label">Precio expresado en: <q>NUEVO SOLES{#{ project.currency.moneda }#}</q></label>
+                                   </div>
+                               </div> -->
+                                <div class="table-responsive">
+                                    <table class="table table-condensed">
+                                        <tbody>
+                                            <tr>
+                                                <td rowspan="1" width="200px"></td>
+                                                <th>Aprox.</th>
+                                                <th>Importe Calculado</th>
+                                                <th>Diferencia</th>
+                                                <th>%</th>
+                                            </tr>
+                                            <tr>
+                                                <th>PRECIO DE COMPRA</th>
+                                                <td class="amountmeterestimated">
+                                                    {% if not sector.amount %} 0 {% else %} {{ sector.amount|safe }} {% endif %}
+                                                </td>
+                                                <td class="amountmeter"></td>
+                                                <td class="amountmeterdiff"></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <th>PRECIO DE VENTAS</th>
+                                                <td>
+                                                    {% if not sector.amount %} 0 {% else %} {{ sector.amount|safe }} {% endif %}
+                                                </td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <div class="row panel-price-two">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="control-label">Importe Actual</label>
-                                            <label class="form-control text-right amountcurrent"></label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="control-label">Importe Modificación</label>
-                                            <label class="form-control text-right modifycurrent"></label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="control-label">Diferencia</label>
-                                            <label class="form-control text-right modifydiff"></label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 col-md-offset-8">
-                                        <label class="control-label">Precio expresado en: <q>NUEVO SOLES{#{ project.currency.moneda }#}</q></label>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        </div>
+                            </div>
+                        {% endif %}
                         <div class="table-responsive">
                             {% if not meter %}
                                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
