@@ -16,6 +16,7 @@
 {% endblock script %}
 {% block style %}
 <link rel="stylesheet" href="{{ MEDIA_URL }}css/chosen.css">
+<link rel="stylesheet" href="{{ MEDIA_URL }}css/sales/managersec.css">
 {% endblock style %}
 {% block menu %}
     {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
@@ -386,10 +387,17 @@
                                         <tbody>
                                             <tr>
                                                 <td rowspan="1" width="200px"></td>
-                                                <th>Aprox.</th>
+                                                <th>Importe Aprox.</th>
                                                 <th>Importe Calculado</th>
                                                 <th>Diferencia</th>
-                                                <th>%</th>
+                                                <th colspan="2" class="text-center">
+                                                    <span class="glyphicon glyphicon-thumbs-up"></span>
+                                                    %
+                                                </th>
+                                                <th class="text-center">
+                                                    <span class="glyphicon glyphicon-thumbs-down"></span>
+                                                    %
+                                                </th>
                                             </tr>
                                             <tr>
                                                 <th>PRECIO DE COMPRA</th>
@@ -398,16 +406,20 @@
                                                 </td>
                                                 <td class="amountmeter"></td>
                                                 <td class="amountmeterdiff"></td>
-                                                <td></td>
+                                                <td class="text-center percentpurchase"></td>
+                                                <td class="text-center percentpurchaseres"></td>
+                                                <td class="text-center percentpurchasediff"></td>
                                             </tr>
                                             <tr>
                                                 <th>PRECIO DE VENTAS</th>
                                                 <td>
                                                     {% if not sector.amount %} 0 {% else %} {{ sector.amount|safe }} {% endif %}
                                                 </td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
+                                                <td class="amountsales"></td>
+                                                <td class="amountsalesdiff"></td>
+                                                <td class="text-center percentsales"></td>
+                                                <td class="text-center percentsalesres"></td>
+                                                <td class="text-center percentsalesdiff"></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -540,7 +552,8 @@
                                         <th class="col-2">Cantidad</th>
                                         <th class="col-2">Cantidad Pedido</th>
                                         {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
-                                            <th class="col-2">Precio</th>
+                                            <th class="col-2">Compra</th>
+                                            <th class="col-2">Venta</th>
                                         {% endif %}
                                         {% if meter %}
                                             {% ifequal project.status 'AC' %}
@@ -584,6 +597,7 @@
                                                 <td>{{ x.quantity|safe }}</td>
                                                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
                                                     <td>{{ x.price|safe }}</td>
+                                                    <td>{{ x.sales|safe }}</td>
                                                 {% endif %}
                                                 {% if user.get_profile.empdni.charge.area|lower == 'almacen' or user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
                                                     <td>{{ x.stock|safe }}</td>

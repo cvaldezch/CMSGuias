@@ -78,7 +78,12 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                 context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC')).order_by('-proyecto_id')
             if request.user.get_profile().empdni.charge.cargos.lower() == 'jefe de operaciones':
                 context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC')).order_by('-proyecto_id')
+
             cust = Proyecto.objects.filter(flag=True)
+            if request.user.get_profile().empdni.charge.area.lower() == 'operaciones':
+                cust = cust.filter(empdni_id=request.user.get_profile().empdni_id, status='AC')
+            elif request.user.get_profile().empdni.charge.area.lower() == 'logistica' or 'Almacen':
+                cust = cust.filter(status='AC')
             cust = cust.order_by('ruccliente__razonsocial').distinct('ruccliente__razonsocial')
             context['cust'] = cust
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
@@ -372,6 +377,7 @@ class ProjectManager(JSONResponseMixin, View):
                                 obj.materiales_id = x.materiales_id
                                 obj.cantidad = x.cantidad
                                 obj.precio = x.precio
+                                obj.sales = x.sales
                                 obj.brand_id = x.brand_id
                                 obj.model_id = x.model_id
                                 obj.quantityorder = x.cantidad

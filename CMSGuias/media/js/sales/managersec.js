@@ -672,11 +672,13 @@ editMaterials = function(event) {
         $materials.eq(7).text(data.cantidad);
         $materials.eq(8).text(data.precio);
         $materials.eq(9).text(data.sales);
-        return $(".medit").modal("toggle");
+        $materials.eq(10).find("button").attr("data-quantity", data.cantidad).attr("data-purchase", data.precio).attr("data-sales", data.sales);
+        $(".medit").modal("toggle");
+        return calcAmountSector();
       } else {
         return $().toastmessage("showWarningToast", "No se edito el material.");
       }
-    });
+    }, "json");
   } else {
     $().toastmessage("showWarningToast", "Existen campos vacios o menores a uno.");
   }
@@ -2252,26 +2254,53 @@ delAllMaterialDeductiveGlobal = function(event) {
 };
 
 calcAmountSector = function(event) {
-  var amount, diff, estimated;
+  var amount, diff, estimated, percentb, percentpurchasebad, percents, percentsalesbad, purchasediff, sales, salesdiff;
   amount = 0;
+  sales = 0;
   if ($("input#calcAmountSector").length) {
     $("table.table-details > tbody > tr").each(function(index, element) {
       var $td;
       $td = $(element).find("td");
       amount += convertNumber($td.eq(10).text()) * convertNumber($td.eq(8).text());
+      sales += convertNumber($td.eq(10).text()) * convertNumber($td.eq(8).text());
     });
   } else if ($("input#calcAmountSectorFirst").length) {
     $("table.table-details > tbody > tr").each(function(index, element) {
       var $td;
       $td = $(element).find("td");
       amount += convertNumber($td.eq(7).text()) * convertNumber($td.eq(8).text());
+      sales += convertNumber($td.eq(7).text()) * convertNumber($td.eq(9).text());
     });
   }
   $(".amountmeter").text(amount.toFixed(2));
+  $(".amountsales").text(sales.toFixed(2));
   estimated = convertNumber($(".amountmeterestimated").text());
   diff = estimated - amount;
   $(".amountmeterdiff").text(diff.toFixed(2));
-  console.log("put");
+  percentb = (amount * 100) / estimated;
+  $(".percentpurchase").text(percentb.toFixed(2));
+  purchasediff = 100 - percentb;
+  $(".percentpurchaseres").text(purchasediff.toFixed(2));
+  percentpurchasebad = 0;
+  if (percentb > 100) {
+    percentpurchasebad = percentb - 100;
+    $(".percentpurchasediff").text(percentpurchasebad.toFixed(2)).addClass("danger");
+  } else {
+    $(".percentpurchasediff").text(percentpurchasebad.toFixed(2)).removeClass("danger");
+  }
+  salesdiff = estimated - sales;
+  $(".amountsalesdiff").text(salesdiff.toFixed(2));
+  percents = (sales * 100) / estimated;
+  $(".percentsales").text(percents.toFixed(2));
+  salesdiff = 100 - percents;
+  $(".percentsalesres").text(salesdiff.toFixed(2));
+  percentsalesbad = 0;
+  if (percents > 100) {
+    percentsalesbad = percents - 100;
+    $(".percentsalesdiff").text(percentsalesbad.toFixed(2)).addClass("warning");
+  } else {
+    $(".percentsalesdiff").text(percentsalesbad.toFixed(2)).removeClass("warning");
+  }
 };
 
 calcDiffModify = function(event) {

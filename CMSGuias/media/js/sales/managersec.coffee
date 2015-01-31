@@ -600,9 +600,15 @@ editMaterials = (event) ->
                 $materials.eq(7).text data.cantidad
                 $materials.eq(8).text data.precio
                 $materials.eq(9).text data.sales
+                $materials.eq(10).find "button"
+                .attr "data-quantity", data.cantidad
+                .attr "data-purchase", data.precio
+                .attr "data-sales", data.sales
                 $(".medit").modal "toggle"
+                calcAmountSector()
             else
                 $().toastmessage "showWarningToast", "No se edito el material."
+        , "json"
     else
         $().toastmessage "showWarningToast", "Existen campos vacios o menores a uno."
     return
@@ -2046,23 +2052,54 @@ delAllMaterialDeductiveGlobal = (event) ->
                 return
     return
 
-calcAmountSector = (event)->
+calcAmountSector = (event) ->
     amount = 0
+    sales = 0
     if $("input#calcAmountSector").length
         $("table.table-details > tbody > tr").each (index, element) ->
             $td = $(element).find "td"
-            amount += (convertNumber($td.eq(10).text()) * convertNumber($td.eq(8).text()) )
+            amount += (convertNumber($td.eq(10).text()) * convertNumber($td.eq(8).text()))
+            sales += (convertNumber($td.eq(10).text()) * convertNumber($td.eq(8).text()))
             return
     else if $("input#calcAmountSectorFirst").length
         $("table.table-details > tbody > tr").each (index, element) ->
             $td = $(element).find "td"
             amount += (convertNumber($td.eq(7).text()) * convertNumber($td.eq(8).text()))
+            sales += (convertNumber($td.eq(7).text()) * convertNumber($td.eq(9).text()))
             return
     $(".amountmeter").text amount.toFixed 2
+    $(".amountsales").text sales.toFixed 2
     estimated = convertNumber $(".amountmeterestimated").text()
     diff = (estimated - amount)
     $(".amountmeterdiff").text diff.toFixed 2
-    console.log "put"
+    # Calc percent purchase
+    percentb = ((amount * 100) / estimated)
+    $(".percentpurchase").text percentb.toFixed 2
+    purchasediff = (100 - percentb)
+    $(".percentpurchaseres").text purchasediff.toFixed 2
+    percentpurchasebad = 0
+    if percentb > 100
+        percentpurchasebad = percentb - 100
+        $(".percentpurchasediff").text percentpurchasebad.toFixed 2
+        .addClass "danger"
+    else
+        $(".percentpurchasediff").text percentpurchasebad.toFixed 2
+        .removeClass "danger"
+    # Calc percent sales
+    salesdiff = (estimated - sales)
+    $(".amountsalesdiff").text salesdiff.toFixed 2
+    percents = ((sales * 100) / estimated)
+    $(".percentsales").text percents.toFixed 2
+    salesdiff = (100 - percents)
+    $(".percentsalesres").text salesdiff.toFixed 2
+    percentsalesbad = 0
+    if percents > 100
+        percentsalesbad = (percents - 100)
+        $(".percentsalesdiff").text percentsalesbad.toFixed 2
+        .addClass "warning"
+    else
+        $(".percentsalesdiff").text percentsalesbad.toFixed 2
+        .removeClass "warning"
     return
 
 calcDiffModify = (event) ->
