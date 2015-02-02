@@ -70,6 +70,8 @@
             <h3>
                 Administrador de Proyecto {{ project.nompro }}
                 <br>
+                <small>Cliente: {{ project.ruccliente_id }} - {{ project.ruccliente.razonsocial }}</small>
+                <br>
                 <a href="{% url 'view_projects' %}" class="btn btn-default btn-xs">
                     <span class="glyphicon glyphicon-chevron-left"></span> Regresar
                 </a>

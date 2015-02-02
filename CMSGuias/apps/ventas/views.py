@@ -794,7 +794,12 @@ class SectorManage(JSONResponseMixin, View):
                         obj.save()
                     context['status'] = True
                 if 'modifystart' in request.POST:
-                    update = UpdateMetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], flag=True).order_by('materials__matnom')
+                    update = UpdateMetProject.objects.filter(
+                            proyecto_id=kwargs['pro'],
+                            subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None,
+                            sector_id=kwargs['sec'],
+                            flag=True
+                        ).order_by('materials__matnom')
                     list_ = list()
                     if not update:
                         for x in MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom'):
@@ -807,6 +812,7 @@ class SectorManage(JSONResponseMixin, View):
                             obj.model_id = x.model_id
                             obj.quantity = x.cantidad
                             obj.price = x.precio
+                            obj.sales = x.sales
                             obj.comment = x.comment
                             obj.quantityorders = x.quantityorder
                             obj.tag = x.tag
@@ -822,9 +828,11 @@ class SectorManage(JSONResponseMixin, View):
                                     'brand': x.brand.brand,
                                     'model': x.model.model,
                                     'quantity': x.cantidad,
+                                    'orders': x.quantityorder,
                                     'price': x.precio,
-                                    'amount': '{0:.2f}'.format((x.cantidad * x.precio)),
-                                    'tag':x.tag
+                                    'sales': float(x.sales),
+                                    'amount': '{0:.3f}'.format((x.cantidad * x.precio)),
+                                    'tag': x.tag
                                 }
                             )
                     else:
@@ -840,44 +848,90 @@ class SectorManage(JSONResponseMixin, View):
                                     'brand': x.brand.brand,
                                     'model': x.model.model,
                                     'quantity': x.quantity,
+                                    'orders': x.quantityorders,
                                     'price': x.price,
-                                    'amount': '{0:.2f}'.format(x.amount),
+                                    'sales': float(x.sales),
+                                    'amount': '{0:.3f}'.format(x.amount),
                                     'tag': x.tag
                                 }
                             )
                     context['details'] = list_
-                    context['listBrand'] = [{'brand_id':x.brand_id,'brand':x.brand} for x in Brand.objects.filter(flag=True).order_by('brand')]
-                    context['listModel'] = [{'model_id':x.model_id, 'model':x.model} for x in Model.objects.filter(flag=True).order_by('model')]
+                    context['listBrand'] = [
+                        {
+                            'brand_id': x.brand_id,
+                            'brand': x.brand
+                        }
+                        for x in Brand.objects.filter(flag=True).order_by('brand')
+                    ]
+                    context['listModel'] = [
+                        {
+                            'model_id': x.model_id,
+                            'model': x.model
+                        }
+                        for x in Model.objects.filter(flag=True).order_by('model')
+                    ]
                     context['status'] = True
                     #print context
                 if 'updatematerialMeter' in request.POST:
-                    obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=request.POST.get('materials'), brand_id=request.POST.get('brand'), model=request.POST.get('model'), flag=True)
+                    obj = UpdateMetProject.objects.get(
+                            proyecto_id=kwargs['pro'],
+                            subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None,
+                            sector_id=kwargs['sec'],
+                            materials_id=request.POST.get('materials'),
+                            brand_id=request.POST.get('brand'),
+                            model=request.POST.get('model'),
+                            flag=True
+                        )
                     obj.brand_id = request.POST.get('brand')
                     obj.model_id = request.POST.get('model')
-                    if obj.tag != '0':
-                        if obj.quantity < float(request.POST.get('quantity')):
-                            if obj.tag == '1':
-                                obj.quantityorders = (obj.quantityorders + (float(request.POST.get('quantity')) - obj.quantity))
-                                obj.tag = '1'
-                            elif obj.tag == '2':
-                                obj.quantityorders = (float(float(request.POST.get('quantity'))) - obj.quantity)
-                                obj.tag = '1'
-                        elif obj.quantity > float(request.POST.get('quantity')):
-                            if obj.tag == '1':
-                                o = (obj.quantityorders - (obj.quantity - float(request.POST.get('quantity'))))
-                                if o <= 0:
-                                    obj.quantityorders = 0
-                                    obj.tag = '2'
-                                else:
-                                    obj.quantityorders = o
-                                    obj.tag = '1'
-                            elif obj.tag == '2':
-                                obj.quantityorders = 0
-                                obj.tag = '2'
+
+                    qunatity = float(request.POST.get('quantity'))
+                    orders = obj.quantityorders
+                    if quantity > 0 and quantity > obj.quantity: # tag 0 or 1
+                        if orders == 0:
+                            obj.quantityorders = (quantity - obj.quantity)
+                            obj.tag = '1'
+                        if orders == obj.quantity:
+                            obj.quantityorders = quantity
+                            obj.tag = '0'
+                    if quantity > 0 and quantity < obj.quantity: # 1 or 2
+                        if orders == 0:
+                            obj.tag = '2'
+                        if orders > 0 and orders < quantity:
+                            obj.tag = '1'
+                        if orders > 0 and orders > quantity:
+                            orde = obj.quantity - orders
+                            obj.quantityorders = ((orders - quantity) + orde)
+                            obj.tag = '1'
                     else:
                         obj.tag = '0'
-                    obj.quantity = float(request.POST.get('quantity'))
-                    obj.price = request.POST.get('price')
+                    # if obj.tag != '0':
+                    #     if obj.quantity < float(request.POST.get('quantity')):
+                    #         if obj.tag == '1':
+                    #             obj.quantityorders = (obj.quantityorders + (float(request.POST.get('quantity')) - obj.quantity))
+                    #             obj.tag = '1'
+                    #         elif obj.tag == '2':
+                    #             obj.quantityorders = (float(float(request.POST.get('quantity'))) - obj.quantity)
+                    #             obj.tag = '1'
+                    #     elif obj.quantity > float(request.POST.get('quantity')):
+                    #         if obj.tag == '1':
+                    #             o = (obj.quantityorders - (obj.quantity - float(request.POST.get('quantity'))))
+                    #             if o <= 0:
+                    #                 obj.quantityorders = 0
+                    #                 obj.tag = '2'
+                    #             else:
+                    #                 obj.quantityorders = o
+                    #                 obj.tag = '1'
+                    #         elif obj.tag == '2':
+                    #             obj.quantityorders = 0
+                    #             obj.tag = '2'
+                    # else:
+                    #     obj.tag = '0'
+
+                    obj.quantity = quantity
+                    if request.user.get_profile().empdni.charge.area.lower() != 'operaciones':
+                        obj.price = float(request.POST.get('price'))
+                        obj.sales = float(request.POST.get('sales'))
                     obj.save()
                     context['status'] = True
                 if 'deletematerialMeter' in request.POST:
@@ -894,34 +948,43 @@ class SectorManage(JSONResponseMixin, View):
                     context['status'] = True
                 if 'addupdatemeter' in request.POST:
                     try:
-                        obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=request.POST.get('materials'), brand_id=request.POST.get('brand'), model=request.POST.get('model'), flag=True)
+                        obj = UpdateMetProject.objects.get(
+                                proyecto_id=kwargs['pro'],
+                                subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None,
+                                sector_id=kwargs['sec'],
+                                materials_id=request.POST.get('materials'),
+                                brand_id=request.POST.get('brand'),
+                                model=request.POST.get('model'),
+                                flag=True
+                            )
                         quantity = (obj.quantity + float(request.POST.get('quantity')))
-                        if obj.tag != '0':
-                            if obj.quantity < quantity:
-                                if obj.tag == '1':
-                                    obj.quantityorders = (obj.quantityorders + (quantity - obj.quantity))
-                                    obj.tag = '1'
-                                elif obj.tag == '2':
-                                    obj.quantityorders = (quantity - obj.quantity)
-                                    obj.tag = '1'
-                            elif obj.quantity > quantity:
-                                if obj.tag == '1':
-                                    o = (obj.quantityorders - (obj.quantity - quantity))
-                                    if o <= 0:
-                                        obj.quantityorders = 0
-                                        obj.tag = '2'
-                                    else:
-                                        obj.quantityorders = o
-                                        obj.tag = '1'
-                                elif obj.tag == '2':
-                                    obj.quantityorders = 0
-                                    obj.tag = '2'
-                        else:
-                            obj.tag = '0'
-                        obj.quantity = quantity
-                        obj.save()
+                        # if obj.tag != '0':
+                        #     if obj.quantity < quantity:
+                        #         if obj.tag == '1':
+                        #             obj.quantityorders = (obj.quantityorders + (quantity - obj.quantity))
+                        #             obj.tag = '1'
+                        #         elif obj.tag == '2':
+                        #             obj.quantityorders = (quantity - obj.quantity)
+                        #             obj.tag = '1'
+                        #     elif obj.quantity > quantity:
+                        #         if obj.tag == '1':
+                        #             o = (obj.quantityorders - (obj.quantity - quantity))
+                        #             if o <= 0:
+                        #                 obj.quantityorders = 0
+                        #                 obj.tag = '2'
+                        #             else:
+                        #                 obj.quantityorders = o
+                        #                 obj.tag = '1'
+                        #         elif obj.tag == '2':
+                        #             obj.quantityorders = 0
+                        #             obj.tag = '2'
+                        # else:
+                        #     obj.tag = '0'
+                        # obj.quantity = quantity
+                        # obj.save()
+                        context['raise'] = 'El Material ya se encuentra ingresado editelo.'
 
-                        context['status'] = True
+                        context['status'] = False
                     except ObjectDoesNotExist, e:
                         obj = UpdateMetProject()
                         obj.proyecto_id = kwargs['pro']
@@ -931,12 +994,18 @@ class SectorManage(JSONResponseMixin, View):
                         obj.brand_id = request.POST.get('brand')
                         obj.model_id = request.POST.get('model')
                         obj.quantity = float(request.POST.get('quantity'))
-                        obj.price = request.POST.get('price')
+                        if request.user.get_profile().empdni.charge.area.lower() != 'operaciones':
+                            obj.price = float(request.POST.get('price'))
+                            obj.sales = float(request.POST.get('sales'))
+                        else:
+                            obj.price = 0
+                            obj.sales = 0
                         obj.comment = ''
                         obj.quantityorders = request.POST.get('quantity')
                         obj.tag = '0'
                         obj.flag = True
                         obj.save()
+                        context['status'] = True
 
                     # save details materail group
                     if 'details' in request.POST:
@@ -965,13 +1034,18 @@ class SectorManage(JSONResponseMixin, View):
                                 obj.brand_id = 'BR000'
                                 obj.model_id = 'MO000'
                                 obj.quantity = (float(x['quantity']) * float(request.POST.get('quantity')))
-                                obj.price = 0
+                                if request.user.get_profile().empdni.charge.area.lower() != 'operaciones':
+                                    obj.price = float(request.POST.get('price'))
+                                    obj.sales = float(request.POST.get('sales'))
+                                else:
+                                    obj.price = 0
+                                    obj.sales = 0
                                 obj.comment = ''
                                 obj.quantityorders = x['quantity']
                                 obj.tag = '0'
                                 obj.flag = True
                                 obj.save()
-                    context['status'] = True
+                        context['status'] = True
                 if 'generateDeductiveOne' in request.POST:
                     key = genkeys.GenerateIdDeductive()
                     # Generate bedside deductive

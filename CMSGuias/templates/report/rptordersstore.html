@@ -35,7 +35,7 @@
 			<tr><td><strong>Fecha Traslado :</strong></td><td> {{order.traslado}}</td></tr>
 			<tr><td><strong>Estado :</strong></td><td> PENDIENTE</td></tr>
 			<tr><td><strong>Realizado :</strong></td><td>{{ order.empdni.firstname }} {{ order.empdni.lastname }}</td></tr>
-			<!-- <tr><td><strong>Observación :</strong></td><td> {{ order.obser|safe }}</td></tr> -->
+			<tr><td><strong>Observación :</strong></td><td> {{ order.obser|removetags:"p" }}</td></tr>
 			</table>
 		</div>
 	</header>

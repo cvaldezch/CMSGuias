@@ -174,7 +174,7 @@ class RestoreStorage(models.Model):
     model = models.ForeignKey(Model, to_field='model_id', default='MO000')
     quantity = models.FloatField()
     price = models.FloatField()
-    #sales = models.DecimalField(max_digits=9, decimal_places=3, default=0)
+    sales = models.DecimalField(max_digits=9, decimal_places=3, default=0, null=True, blank=True)
     tag = models.CharField(max_length=1, default='0')
     flag = models.BooleanField(default=True)
 
@@ -193,6 +193,7 @@ class UpdateMetProject(models.Model):
     model = models.ForeignKey(Model, to_field='model_id', default='MO000')
     quantity = models.FloatField()
     price = models.FloatField()
+    sales = models.DecimalField(max_digits=9, decimal_places=3, default=0, blank=True)
     comment = models.CharField(max_length=250, default='',null=True, blank=True)
     quantityorders = models.FloatField(default=0, blank=True)
     tag = models.CharField(max_length=1, default='0')

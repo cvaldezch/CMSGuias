@@ -214,13 +214,21 @@
                                 <div class="col-md-4">
                                     <div class="form-group has-warning">
                                         <label class="control-label">Precio Compra</label>
-                                        <input type="number" class="form-control input-sm" name="precio" min="1" placeholder="0">
+                                        <input type="number" class="form-control input-sm" name="precio" min="1" placeholder="0"
+                                        {% if request.user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+                                            readonly
+                                        {% endif %}
+                                        >
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group has-warning">
                                         <label class="control-label">Precio Venta</label>
-                                        <input type="number" class="form-control input-sm" name="sales" min="1" placeholder="0">
+                                        <input type="number" class="form-control input-sm" name="sales" min="1" placeholder="0"
+                                        {% if request.user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+                                            readonly
+                                        {% endif %}
+                                        >
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -549,8 +557,8 @@
                                         <th>Unidad</th>
                                         <th>Marca</th>
                                         <th>Modelo</th>
-                                        <th class="col-2">Cantidad</th>
-                                        <th class="col-2">Cantidad Pedido</th>
+                                        <th class="col-2">Cant. Vendido</th>
+                                        <th class="col-2">Cant. por Pedir</th>
                                         {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
                                             <th class="col-2">Compra</th>
                                             <th class="col-2">Venta</th>
@@ -561,9 +569,9 @@
                                                     <th class="col-2">Stock</th>
                                                 {% endif %}
                                                 <th class="col-4">Observación</th>
-                                                {% if user.get_profile.empdni.charge.area|lower == 'operaciones' or user.get_profile.empdni.charge.area|lower == 'almacen' %}
+                                                {#% if user.get_profile.empdni.charge.area|lower == 'operaciones' or user.get_profile.empdni.charge.area|lower == 'almacen' %#}
                                                     <th class="col-2">Estado</th>
-                                                {% endif %}
+                                                {#% endif %#}
                                             {% endifequal %}
                                         {% endif %}
                                         {% if materials and not meter  %}
@@ -609,7 +617,7 @@
                                                         <input type="text" class="form-control input-sm comment-mat" data-mat="{{ x.materiales_id }}" value="{{ x.comment }}" style="width: 160px;">
                                                     {% endif %}
                                                 </td>
-                                                {% if user.get_profile.empdni.charge.area|lower == 'operaciones' or user.get_profile.empdni.charge.area|lower == 'almacen' %}
+                                                {#% if user.get_profile.empdni.charge.area|lower == 'operaciones' or user.get_profile.empdni.charge.area|lower == 'almacen' %#}
                                                 <td class="text-center col-2">
                                                     <span class="glyphicon
                                                     {% if x.tag == "0" %}
@@ -623,7 +631,7 @@
                                                     {% endif %}
                                                     "></span>
                                                 </td>
-                                                {% endif %}
+                                                {#% endif %#}
                                             </tr>
                                         {% endfor %}
                                     </tbody>
@@ -891,21 +899,31 @@
                                 </div>
                             </caption>
                             <table class="table table-bordered table-condensed table-hover table-modify table-float">
+                                <caption>
+                                    <div class="alert alert-block alert-warning text-left">
+                                        <strong>Ten en cuenta!</strong>
+                                        <p>Que en el campo <strong><q>Cantidad</q></strong> debes de colocar el metrado total del material para este sector.</p>
+                                    </div>
+                                </caption>
                                 <thead>
                                     <tr class="brand-warning">
                                         <th class="text-center">Item</th>
                                         <th class="text-center">Código</th>
                                         <th class="text-center">Descripción</th>
-                                        <th class="text-center">Medida</th>
+                                        <!-- <th class="text-center">Medida</th> -->
                                         <th class="text-center">Unidad</th>
                                         <th class="text-center">Marca</th>
                                         <th class="text-center">Modelo</th>
+                                        <th class="text-center">Cant. Pendientes</th>
                                         <th class="text-center">Cantidad</th>
-                                        <th class="text-center">Precio</th>
-                                        <th class="text-center">Importe</th>
+                                        {% if request.user.get_profile.empdni.charge.area|lower != 'operaciones' %}
+                                            <th class="text-center">P. Compra</th>
+                                            <th class="text-center">P. Venta</th>
+                                            <th class="text-center">Importe</th>
+                                        {% endif %}
                                         <th class="text-center">Editar</th>
                                         <th class="text-center">Eliminar</th>
-                                        <th class="text-center">Attendido</th>
+                                        <th class="text-center">Atendido</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
