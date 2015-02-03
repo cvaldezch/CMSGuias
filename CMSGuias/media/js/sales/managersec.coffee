@@ -1299,7 +1299,7 @@ startModidfy = ->
                         </td>
                         {{!prices}}
                         <td class=\"text-center\">
-                            <button class=\"btn btn-xs btn-link text-green btn-update-update\" value=\"{{ materials }}\" data-tag=\"{{ tag }}\">
+                            <button class=\"btn btn-xs btn-link text-green btn-update-update\" value=\"{{ materials }}\" data-tag=\"{{ tag }}\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\">
                                 <span class=\"glyphicon glyphicon-edit\"></span>
                             </button>
                         </td>
@@ -1383,9 +1383,11 @@ updateMaterialUpdateMeter = ->
     $td = $("table.table-modify > tbody > tr#trm-#{material} > td")
     data = new Object()
     data.materials = material
-    data.brand = $td.eq(5).find("select").val()
-    data.model = $td.eq(6).find("select").val()
-    data.quantity = $td.eq(8).find("input").val().replace ",", "."
+    data.brand = $td.eq(4).find("select").val()
+    data.model = $td.eq(5).find("select").val()
+    data.brands = @getAttribute "data-brand"
+    data.models = @getAttribute "data-model"
+    data.quantity = $td.eq(7).find("input").val().replace ",", "."
     if $("input[name=area]").val() == "operaciones"
         data.price = 0
         data.sales = 0
@@ -1397,11 +1399,16 @@ updateMaterialUpdateMeter = ->
     console.log data
     $.post "", data, (response) ->
         if response.status
-            tot = (parseFloat(data.quantity) * parseFloat(data.price))
-            $td.eq(10).text tot.toFixed(2)
-            calcDiffModify()
+            if $("input[name=area]").val() != "operaciones"
+                ###tot = (parseFloat(data.quantity) * parseFloat(data.price))
+                $td.eq(10).text tot.toFixed(2)
+                calcDiffModify()###
+                startModidfy()
+            $().toastmessage "showSuccessToast", "Material ingresado correctamente."
+            return
         else
             $().toastmessage "showErrorToast", "No se a podido modificar el material."
+            return
     , "json"
     return
 

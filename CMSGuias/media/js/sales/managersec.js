@@ -1443,7 +1443,7 @@ startModidfy = function() {
       $tb.empty();
       area = $("input[name=area]").val();
       for (x in response.details) {
-        designtable = "<tr id=\"trm-{{ materials }}\" class=\"{{!class}}\"> <td class=\"text-center\">{{ item }}</td> <td class=\"text-center\">{{ materials }}</td> <td>{{ name }} - {{ measure }}</td> <td class=\"text-center\">{{ unit }}</td> <td> <select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"brand-{{ materials }}-{{ brand_id }}\"></select> </td> <td> <select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"model-{{ materials }}-{{ model_id }}\"></select> </td> <td class=\"text-center\"> {{ orders }} </td> <td> <input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm change-modify\" value=\"{{ quantity }}\" min=\"0\" id=\"quantity-{{ materiales }}\"> </td> {{!prices}} <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-green btn-update-update\" value=\"{{ materials }}\" data-tag=\"{{ tag }}\"> <span class=\"glyphicon glyphicon-edit\"></span> </button> </td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-red btn-delete-update\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\" value=\"{{ materials }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> <td class=\"text-center\">{{!attend}}</td> </tr>";
+        designtable = "<tr id=\"trm-{{ materials }}\" class=\"{{!class}}\"> <td class=\"text-center\">{{ item }}</td> <td class=\"text-center\">{{ materials }}</td> <td>{{ name }} - {{ measure }}</td> <td class=\"text-center\">{{ unit }}</td> <td> <select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"brand-{{ materials }}-{{ brand_id }}\"></select> </td> <td> <select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"model-{{ materials }}-{{ model_id }}\"></select> </td> <td class=\"text-center\"> {{ orders }} </td> <td> <input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm change-modify\" value=\"{{ quantity }}\" min=\"0\" id=\"quantity-{{ materiales }}\"> </td> {{!prices}} <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-green btn-update-update\" value=\"{{ materials }}\" data-tag=\"{{ tag }}\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\"> <span class=\"glyphicon glyphicon-edit\"></span> </button> </td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-red btn-delete-update\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\" value=\"{{ materials }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> <td class=\"text-center\">{{!attend}}</td> </tr>";
         template = designtable;
         if ($("input[name=area]").val() !== "operaciones") {
           template = template.replace("{{!prices}}", "<td> <input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm change-modify\" value=\"{{ price }}\" id=\"price-{{ materials }}\"> </td> <td> <input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm change-modify\" value=\"{{ sales }}\" id=\"sales-{{ materials }}\"> </td> <td>{{ amount }}</td>");
@@ -1518,9 +1518,11 @@ updateMaterialUpdateMeter = function() {
   $td = $("table.table-modify > tbody > tr#trm-" + material + " > td");
   data = new Object();
   data.materials = material;
-  data.brand = $td.eq(5).find("select").val();
-  data.model = $td.eq(6).find("select").val();
-  data.quantity = $td.eq(8).find("input").val().replace(",", ".");
+  data.brand = $td.eq(4).find("select").val();
+  data.model = $td.eq(5).find("select").val();
+  data.brands = this.getAttribute("data-brand");
+  data.models = this.getAttribute("data-model");
+  data.quantity = $td.eq(7).find("input").val().replace(",", ".");
   if ($("input[name=area]").val() === "operaciones") {
     data.price = 0;
     data.sales = 0;
@@ -1532,13 +1534,18 @@ updateMaterialUpdateMeter = function() {
   data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
   console.log(data);
   $.post("", data, function(response) {
-    var tot;
     if (response.status) {
-      tot = parseFloat(data.quantity) * parseFloat(data.price);
-      $td.eq(10).text(tot.toFixed(2));
-      return calcDiffModify();
+      if ($("input[name=area]").val() !== "operaciones") {
+
+        /*tot = (parseFloat(data.quantity) * parseFloat(data.price))
+        $td.eq(10).text tot.toFixed(2)
+        calcDiffModify()
+         */
+        startModidfy();
+      }
+      $().toastmessage("showSuccessToast", "Material ingresado correctamente.");
     } else {
-      return $().toastmessage("showErrorToast", "No se a podido modificar el material.");
+      $().toastmessage("showErrorToast", "No se a podido modificar el material.");
     }
   }, "json");
 };

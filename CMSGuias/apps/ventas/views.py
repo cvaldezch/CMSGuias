@@ -878,31 +878,49 @@ class SectorManage(JSONResponseMixin, View):
                             subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None,
                             sector_id=kwargs['sec'],
                             materials_id=request.POST.get('materials'),
-                            brand_id=request.POST.get('brand'),
-                            model=request.POST.get('model'),
+                            brand_id=request.POST.get('brands'),
+                            model_id=request.POST.get('models'),
+                            flag=True
+                        )
+                    meter = MetProject.objects.get(
+                            proyecto_id=kwargs['pro'],
+                            subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None,
+                            sector_id=kwargs['sec'],
+                            materials_id=request.POST.get('materials'),
+                            brand_id=request.POST.get('brands'),
+                            model_id=request.POST.get('models'),
                             flag=True
                         )
                     obj.brand_id = request.POST.get('brand')
                     obj.model_id = request.POST.get('model')
 
-                    qunatity = float(request.POST.get('quantity'))
+                    quantity = float(request.POST.get('quantity'))
                     orders = obj.quantityorders
                     if quantity > 0 and quantity > obj.quantity: # tag 0 or 1
                         if orders == 0:
                             obj.quantityorders = (quantity - obj.quantity)
                             obj.tag = '1'
-                        if orders == obj.quantity:
+                            print 'nc mayor tag 1'
+                        elif orders == obj.quantity:
                             obj.quantityorders = quantity
                             obj.tag = '0'
-                    if quantity > 0 and quantity < obj.quantity: # 1 or 2
+                            print 'orders = ca tag 0'
+                    elif quantity > 0 and quantity < obj.quantity: # 1 or 2
                         if orders == 0:
                             obj.tag = '2'
+                            print 'tag 2'
                         if orders > 0 and orders < quantity:
-                            obj.tag = '1'
+                            obj.quantityorders = ((obj.quantity - quantity) - obj.quantityorders)
+                            print 'nc < orders tag 1'
+                            if obj.quantityorders > 0:
+                                obj.tag = '1'
+                            else:
+                                obj.tag = '2'
                         if orders > 0 and orders > quantity:
                             orde = obj.quantity - orders
                             obj.quantityorders = ((orders - quantity) + orde)
                             obj.tag = '1'
+                            print 'orders > nc tag = 1'
                     else:
                         obj.tag = '0'
                     # if obj.tag != '0':
