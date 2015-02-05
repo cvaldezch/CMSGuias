@@ -2,10 +2,10 @@ $(document).ready ->
   $(document).on "change", "input[type=radio]", selectedChk
   $(document).on "change", "input[type=checkbox]", changeChk
   $(document).on "click", "button", resgisterMaterial
-  setTimeout (->
+  setTimeout ->
     validregisterOld()
     return
-  ), 600
+  , 600
   $("table.table-float").floatThead
       useAbsolutePositioning: false
       scrollingTop: 50
@@ -18,10 +18,9 @@ resgisterMaterial = (event) ->
   name = @name.substr(3)
   counter = 0
   arr = new Array()
-
   # valid checkbox selected
-  $("[name=chk" + name + "]").each ->
-    if @checked and not $(this).is(":disabled")
+  $("[name=chk#{name}]").each ->
+    if @checked and not $(this).is ":disabled"
       counter += 1
       arr.push
         oid: name
@@ -29,22 +28,21 @@ resgisterMaterial = (event) ->
         brand: @getAttribute "data-brand"
         model: @getAttribute "data-model"
         cant: parseFloat(@value)
-
     return
-
   if counter > 0
     data = new Object()
-    data["csrfmiddlewaretoken"] = $("input[name=csrfmiddlewaretoken]").val()
-    data["mats"] = JSON.stringify(arr)
-    data["add-ori"] = "PE"
-    $.post "", data, ((response) ->
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    data.mats = JSON.stringify(arr)
+    data.add-ori = "PE"
+    $.post "", data, (response) ->
       if response.status
         for i of arr
-          $("[name=chk" + arr[i].oid + "]").attr "disabled", "disabled"
+          $("[name=chk#{arr[i].oid}]").attr "disabled", "disabled"
       return
-    ), "json"
+    , "json"
   else
     $().toastmessage "showWarningToast", "No se han seleccionado materiales."
+    return
   return
 
 changeChk = (event) ->

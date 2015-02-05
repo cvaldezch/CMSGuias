@@ -131,6 +131,7 @@ $(document).ready ->
     $(".btn-delete-materials-deductive-global").on "click", delAllMaterialDeductiveGlobal
     $(document).on "click", ".btn-delete-deductive-global-tr", delUnitDeductiveGlobal
     calcAmountSector()
+    $("button.btn-del-all-modify").on "click", deleteAllUpdateMeter
     # calcDiffModify()
     tinymce.init
         selector: "textarea[name=obser]",
@@ -142,7 +143,6 @@ $(document).ready ->
         font_size_style_values : "10px,12px,13px,14px,16px,18px,20px",
         toolbar1: "styleselect | fontsizeselect | | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |"
         toolbar2: "undo redo | bold italic |"
-
     tinymce.init
         selector: "textarea#message",
         theme: "modern",
@@ -1399,11 +1399,11 @@ updateMaterialUpdateMeter = ->
     console.log data
     $.post "", data, (response) ->
         if response.status
-            if $("input[name=area]").val() != "operaciones"
-                ###tot = (parseFloat(data.quantity) * parseFloat(data.price))
-                $td.eq(10).text tot.toFixed(2)
-                calcDiffModify()###
-                startModidfy()
+            startModidfy()
+            # if $("input[name=area]").val() != "operaciones"
+            #    ###tot = (parseFloat(data.quantity) * parseFloat(data.price))
+            #    $td.eq(10).text tot.toFixed(2)
+            #    calcDiffModify()###
             $().toastmessage "showSuccessToast", "Material ingresado correctamente."
             return
         else
@@ -1434,6 +1434,28 @@ deleteMaterialUpdateMeter = ->
                         startModidfy()
                     else
                         $().toastmessage "showErrorToast", "No se a podido eliminar el material."
+                , "json"
+    return
+
+deleteAllUpdateMeter = (event) ->
+    $().toastmessage "showToast",
+        text: "Desea eliminar toda la lista de materiales?"
+        type: "confirm"
+        sticky: true
+        buttons: [{value:"Si"}, {value:"No"}]
+        success: (result) ->
+            if result is "Si"
+                data = new Object
+                data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+                data.deleteallupdatemeter = true
+                $.post "", data, (response) ->
+                    if response.status
+                        $().toastmessage "showSuccessToast", "Se a eliminado todo la lista de modificación."
+                        $("table.table-modify > tbody").empty()
+                        calcDiffModify()
+                    else
+                        $().toastmessage "showErrorToast", "No se a podido eliminar toda la lista de materiales"
+                        return
                 , "json"
     return
 

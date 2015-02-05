@@ -5,9 +5,9 @@ $(document).ready(function() {
   $(document).on("change", "input[type=radio]", selectedChk);
   $(document).on("change", "input[type=checkbox]", changeChk);
   $(document).on("click", "button", resgisterMaterial);
-  setTimeout((function() {
+  setTimeout(function() {
     validregisterOld();
-  }), 600);
+  }, 600);
   $("table.table-float").floatThead({
     useAbsolutePositioning: false,
     scrollingTop: 50
@@ -15,7 +15,7 @@ $(document).ready(function() {
 });
 
 resgisterMaterial = function(event) {
-  var arr, counter, data, name;
+  var arr, counter, data, name, ori;
   event.preventDefault();
   name = this.name.substr(3);
   counter = 0;
@@ -34,19 +34,20 @@ resgisterMaterial = function(event) {
   });
   if (counter > 0) {
     data = new Object();
-    data["csrfmiddlewaretoken"] = $("input[name=csrfmiddlewaretoken]").val();
-    data["mats"] = JSON.stringify(arr);
-    data["add-ori"] = "PE";
-    $.post("", data, (function(response) {
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
+    data.mats = JSON.stringify(arr);
+    data.add - (ori = "PE");
+    $.post("", data, function(response) {
       var i;
       if (response.status) {
         for (i in arr) {
           $("[name=chk" + arr[i].oid + "]").attr("disabled", "disabled");
         }
       }
-    }), "json");
+    }, "json");
   } else {
     $().toastmessage("showWarningToast", "No se han seleccionado materiales.");
+    return;
   }
 };
 
