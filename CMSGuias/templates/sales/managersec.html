@@ -898,6 +898,12 @@
                                     </button>
                                 </div>
                                 <div class="pull-right">
+                                    {% if request.user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+                                        <button class="btn btn-sm btn-default btn-alert-modified">
+                                            <span class="fa fa-comment"></span>
+                                            Avisar, Termine de Modificar
+                                        </button>
+                                    {% endif %}
                                     <button class="btn btn-danger btn-sm btn-del-all-modify">
                                         <span class="fa fa-trash-o"></span>
                                         Eliminar Todo

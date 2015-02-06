@@ -916,12 +916,12 @@ class SectorManage(JSONResponseMixin, View):
                             obj.tag = '0'
                     elif quantity < obj.quantity:
                         if pending == 0:
-                            tag = '2'
+                            obj.tag = '2'
                             obj.quantityorders = pending
                         if pending >= quantity:
                             obj.quantityorders = quantity
                             obj.tag = '0'
-                        if pending < quantity:
+                        if pending > 0 and pending <= quantity:
                             obj.quantityorders = (pending - (obj.quantity - quantity))
                             if (pending - (obj.quantity - quantity)) == 0:
                                 obj.tag = '2'

@@ -77,7 +77,7 @@
                                         ">
                                             <td>{{ forloop.parentloop.counter }} - {{ forloop.counter }}</td>
                                             <td>
-                                                <input type="checkbox" data-brand="{{ j.brand_id }}" data-model="{{ j.model_id }}" name="chk{{ x.pedido_id }}" value="{{ j.cantshop|safe }}" data-mat="{{ j.materiales_id }}" data-project="{{ x.proyecto_id }}"
+                                                <input type="checkbox" data-brand="{{ j.brand_id }}" data-model="{{ j.model_id }}" name="chk{{ x.pedido_id }}" data-orders="{{ x.pedido_id }}" value="{{ j.cantshop|safe }}" data-mat="{{ j.materiales_id }}" data-project="{{ x.proyecto_id }}"
                                                 {% if j.spptag %}
                                                     disabled="disabled" checked
                                                 {% endif %}

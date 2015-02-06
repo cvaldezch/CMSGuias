@@ -19,12 +19,12 @@ $(document).ready(function() {
     showAdnim: "blind",
     dateFormat: "yy-mm-dd"
   });
-  $(".btn-generate").on("click", generateSupply);
+  $("button.btn-generate").on("click", generateSupply);
   $("input[value=true]").change().attr("disabled", true);
   $("input[name=chk]").attr("disabled", true);
-  setTimeout((function() {
+  setTimeout(function() {
     $(".btn-compress").click();
-  }), 600);
+  }, 600);
 });
 
 deleteTmp = function(event) {

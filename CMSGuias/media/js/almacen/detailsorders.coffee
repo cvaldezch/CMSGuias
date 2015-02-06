@@ -23,7 +23,7 @@ resgisterMaterial = (event) ->
     if @checked and not $(this).is ":disabled"
       counter += 1
       arr.push
-        oid: name
+        oid: @getAttribute "data-orders"
         mid: @getAttribute "data-mat"
         brand: @getAttribute "data-brand"
         model: @getAttribute "data-model"
@@ -33,7 +33,7 @@ resgisterMaterial = (event) ->
     data = new Object()
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
     data.mats = JSON.stringify(arr)
-    data.add-ori = "PE"
+    data.addori = "PE"
     $.post "", data, (response) ->
       if response.status
         for i of arr
@@ -94,5 +94,4 @@ validregisterOld = ->
       $("[name=btn" + name + "]").attr "disabled", "disabled"
     $("[name=rdo" + name + "]").attr "disabled", false  if chk > 1 and chk < $chkt.length
     return
-
   return

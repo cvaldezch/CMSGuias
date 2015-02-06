@@ -1171,8 +1171,8 @@ class SupplyView(ListView):
                         det = models.DetSuministro()
                         det.suministro_id = idsp
                         det.materiales_id = x.materiales_id
-                        det.cantidad = x.cantidad
-                        det.cantshop = x.cantidad
+                        det.cantidad = float(x.cantidad)
+                        det.cantshop = float(x.cantidad)
                         det.tag = '1'
                         det.origin = x.origin
                         det.save()
@@ -1216,7 +1216,7 @@ class ListOrdersSummary(TemplateView):
                 data['status'] = False
             return HttpResponse(simplejson.dumps(data), mimetype='application/json')
 
-class ListDetOrders(TemplateView):
+class ListDetOrders(JSONResponseMixin, TemplateView):
     template_name = 'almacen/listdetailsOrders.html'
 
     @method_decorator(login_required)
@@ -1241,7 +1241,7 @@ class ListDetOrders(TemplateView):
                     obj.empdni = request.user.get_profile().empdni_id
                     obj.materiales_id = mats[x]['mid']
                     obj.cantidad = float(mats[x]['cant'].__str__())
-                    obj.origin = request.POST.get('add-ori')
+                    obj.origin = request.POST.get('addori')
                     obj.orders_id = mats[x]['oid']
                     obj.save()
                     dor = models.Detpedido.objects.get(pedido_id=mats[x]['oid'], materiales_id=mats[x]['mid'])
@@ -1249,10 +1249,10 @@ class ListDetOrders(TemplateView):
                     dor.save()
                 data['status'] = True
             except ObjectDoesNotExist, e:
-                raise e
+                data['raise'] = e.__str__()
                 data['status'] = False
-            data = simplejson.dumps(data)
-            return HttpResponse(data, mimetype='application/json', content_type='application/json')
+#            data = simplejson.dumps(data)
+            return self.render_to_json_response(data)
 
 # Input order purchase
 class InputOrderPurchase(JSONResponseMixin, TemplateView):

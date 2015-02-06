@@ -5,28 +5,25 @@ $(document).ready ->
   $(".btn-gen").on "click", showGen
   $(".btn-compress").on "click", compressList
   $(".btn-back").on "click", backlist
-  $(".obser").focusin((event) ->
+  $(".obser").focusin (event) ->
     @rows = 3
     return
-  ).focusout (event) ->
+  .focusout (event) ->
     @rows = 1
     return
-
   $("input[name=ingreso]").datepicker
     minDate: "0"
     maxDate: "+6M"
     showAdnim: "blind"
     dateFormat: "yy-mm-dd"
-
-  $(".btn-generate").on "click", generateSupply
+  $("button.btn-generate").on "click", generateSupply
   $("input[value=true]").change().attr "disabled", true
   $("input[name=chk]").attr "disabled", true
-  setTimeout (->
+  setTimeout ->
     $(".btn-compress").click()
     return
-  ), 600
+  , 600
   return
-
 
 # functions
 deleteTmp = (event) ->
@@ -77,7 +74,6 @@ generateSupply = (event) ->
       else
         pass = false
       return
-
   else
     $().toastmessage "showWarningToast", "No se han seleccionado materiales para suministrar."
   if pass

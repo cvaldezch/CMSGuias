@@ -15,7 +15,7 @@ $(document).ready(function() {
 });
 
 resgisterMaterial = function(event) {
-  var arr, counter, data, name, ori;
+  var arr, counter, data, name;
   event.preventDefault();
   name = this.name.substr(3);
   counter = 0;
@@ -24,7 +24,7 @@ resgisterMaterial = function(event) {
     if (this.checked && !$(this).is(":disabled")) {
       counter += 1;
       arr.push({
-        oid: name,
+        oid: this.getAttribute("data-orders"),
         mid: this.getAttribute("data-mat"),
         brand: this.getAttribute("data-brand"),
         model: this.getAttribute("data-model"),
@@ -36,7 +36,7 @@ resgisterMaterial = function(event) {
     data = new Object();
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
     data.mats = JSON.stringify(arr);
-    data.add - (ori = "PE");
+    data.addori = "PE";
     $.post("", data, function(response) {
       var i;
       if (response.status) {
