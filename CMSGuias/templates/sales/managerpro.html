@@ -157,7 +157,10 @@
                                     <strong> Codigo :</strong> {{ project.proyecto_id}}
                                 </p>
                                 <p>
-                                    <strong>Dirección: </strong> {{ project.direccion }}
+                                    <strong>Dirección: </strong> {{ project.direccion }} - {{ project.distrito.distnom }}  - {{ project.provincia.pronom }} - {{ project.departamento.depnom }} - {{ project.pais.paisnom }}
+                                </p>
+                                <p>
+                                    <strong>Contacto:</strong> {{ project.contact }}
                                 </p>
                                 {% if project.empdni_id %}
                                     <p>

@@ -28,6 +28,7 @@ class Proyecto(models.Model):
     currency = models.ForeignKey(Moneda, to_field='moneda_id', null=True, blank=True)
     exchange = models.FloatField(null=True, blank=True)
     typep = models.CharField(max_length=3, default='ACI')
+    contact = models.CharField(max_length=254, null=True, blank=True, default='')
     flag = models.BooleanField(default=True, null=False)
 
     audit_log = AuditLog()

@@ -168,7 +168,7 @@ openWindow = function(url) {
 deleteProject = function() {
   var value;
   value = this.value;
-  return $().toastmessage("showToast", {
+  $().toastmessage("showToast", {
     text: "Eliminar Proyecto, recuerde que al eliminar a " + this.title + " sera permanentemente.<br>Desea Eliminar el Proyecto?",
     sticky: true,
     type: "confirm",
@@ -187,12 +187,12 @@ deleteProject = function() {
           "proid": value,
           "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val()
         };
-        return $.post("/almacen/keep/project/", data, function(response) {
+        $.post("/almacen/keep/project/", data, function(response) {
           if (response.status) {
             if ($("table tbody > tr").length > 1) {
-              return $(".tr-" + value).remove();
+              $(".tr-" + value).remove();
             } else {
-              return location.reload();
+              location.reload();
             }
           }
         }, "json");

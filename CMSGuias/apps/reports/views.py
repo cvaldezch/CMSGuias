@@ -56,12 +56,14 @@ def rpt_orders_details(request,pid,sts):
     try:
         if request.method == 'GET':
             order = get_object_or_404(models.Pedido,pk=pid,status=sts)
-            lista = models.Detpedido.objects.filter(pedido_id__exact=pid).order_by('materiales__matnom')
-            print lista.count()
+            lista = models.Detpedido.objects.filter(pedido_id=pid).order_by('materiales__matnom')
             nipples = models.Niple.objects.filter(pedido_id__exact=pid).order_by('materiales')
             context['order'] = order
-            if lista.count() > 30:
-                sheet = int('%.0f'%(float(lista.count()) / 30))
+            lcount = float(lista.count())
+            if lcount > 30:
+                sheet = int(float('%.0f'%(lcount)) / 30)
+                if float(float('%.2f'%(float(lcount)) / 30)) > sheet:
+                    sheet += 1
             else:
                 sheet = 1
             counter = 0
@@ -86,7 +88,6 @@ def rpt_orders_details(request,pid,sts):
             context['lista'] = section
             context['nipples'] = nipples
             context['tipo'] = globalVariable.tipo_nipples
-
             html = render_to_string('report/rptordersstore.html',context,context_instance=RequestContext(request))
             return generate_pdf(html)
     except TemplateDoesNotExist, e:

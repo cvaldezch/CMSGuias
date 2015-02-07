@@ -187,7 +187,8 @@ def view_keep_project(request):
         if request.method == 'GET':
             lista = Proyecto.objects.filter(flag=True).order_by('nompro')
             return render_to_response('almacen/project.html',{'lista':lista, 'tsid': u''},context_instance=RequestContext(request))
-        elif request.method == 'POST':
+
+        if request.method == 'POST':
             if request.is_ajax():
                 if 'proid' in request.POST:
                     data = {}
@@ -195,16 +196,18 @@ def view_keep_project(request):
                         # sectores
                         obj = Sectore.objects.filter(proyecto_id=request.POST.get('proid'))
                         if obj:
-                            obj.status = 'DA'
-                            obj.flag = False
-                            obj.save()
+                            for x in obj:
+                                x.status = 'DL'
+                                x.flag = False
+                                x.save()
                         obj = Subproyecto.objects.filter(proyecto_id=request.POST.get('proid'))
                         if obj:
-                            obj.status = 'DA'
-                            obj.flag = False
-                            obj.save()
+                            for x in obj:
+                                obj.status = 'DL'
+                                obj.flag = False
+                                obj.save()
                         obj = Proyecto.objects.get(pk=request.POST.get('proid'))
-                        obj.status = 'DA'
+                        obj.status = 'DL'
                         obj.flag = False
                         obj.save()
                         data['status'] = True
@@ -215,12 +218,14 @@ def view_keep_project(request):
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
         raise Http404('Method no proccess')
+
 @login_required(login_url='/SignUp/')
 def view_keep_add_project(request):
     try:
         if request.method == 'POST':
-            if Proyecto.objects.filter(pk=request.POST.get('proyecto_id')).count() > 0:
-                add = Proyecto.objects.get(pk=request.POST.get('proyecto_id'))
+            project = Proyecto.objects.filter(pk=request.POST.get('proyecto_id'))
+            if project.count() > 0:
+                add = project
                 add.ruccliente_id = request.POST.get('ruccliente')
                 add.nompro = request.POST.get('nompro')
                 add.comienzo = datetime.datetime.strptime( request.POST.get('comienzo'), FORMAT_DATE_STR ).date() if request.POST.get('comienzo') is not None else datetime.datetime.today().date()
@@ -232,30 +237,31 @@ def view_keep_add_project(request):
                 add.direccion = request.POST.get('direccion')
                 add.obser = request.POST.get('obser')
                 add.status = request.POST.get('status')
+                add.contact = request.POST.get('contact')
                 add.flag = True
                 add.save()
             else:
                 form = forms.addProjectForm(request.POST)
                 if form.is_valid():
-                        add = form.save(commit=False)
-                        # for table project have generate id
-                        cod = Proyecto.objects.all().aggregate(Max('proyecto_id'))
-                        if cod['proyecto_id__max'] is not None:
-                            aa = cod['proyecto_id__max'][2:4]
-                            an = datetime.datetime.today().strftime('%y')
-                            cou = cod['proyecto_id__max'][4:7]
-                            if int(an) > int(aa):
-                                aa = an
-                                cou = 1
-                            else:
-                                cou = ( int(cou) + 1 )
-                        else:
-                            aa = datetime.datetime.today().strftime('%y')
+                    add = form.save(commit=False)
+                    # for table project have generate id
+                    cod = Proyecto.objects.all().aggregate(Max('proyecto_id'))
+                    if cod['proyecto_id__max'] is not None:
+                        aa = cod['proyecto_id__max'][2:4]
+                        an = datetime.datetime.today().strftime('%y')
+                        cou = cod['proyecto_id__max'][4:7]
+                        if int(an) > int(aa):
+                            aa = an
                             cou = 1
-                        cod = '%s%s%s'%('PR',str(aa),'{:0>3d}'.format(cou))
-                        add.proyecto_id = cod.strip()
-                        add.flag = True
-                        add.save()
+                        else:
+                            cou = ( int(cou) + 1 )
+                    else:
+                        aa = datetime.datetime.today().strftime('%y')
+                        cou = 1
+                    cod = '%s%s%s'%('PR',str(aa),'{:0>3d}'.format(cou))
+                    add.proyecto_id = cod.strip()
+                    add.flag = True
+                    add.save()
             return HttpResponseRedirect('/almacen/keep/project/')
         if request.method == 'GET':
             form = forms.addProjectForm()
@@ -264,6 +270,7 @@ def view_keep_add_project(request):
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
         raise Http404('Method no proccess')
+
 @login_required(login_url='/SignUp/')
 def view_keep_edit_project(request,proid):
     try:
@@ -284,6 +291,7 @@ def view_keep_edit_project(request,proid):
     except TemplateDoesNotExist, e:
         messages.error(request, 'Esta pagina solo acepta peticiones Encriptadas!')
         raise Http404('Method no proccess')
+
 # Sectors keep views
 @login_required(login_url='/SignUp/')
 def view_keep_sec_project(request,pid,sid):

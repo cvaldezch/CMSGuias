@@ -890,6 +890,22 @@
                     {% endif %}
                     <div class="panel panel-success panel-modify">
                         <div class="table-responsive">
+                            <table class="table table-condensed">
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <th>Importe Ventas</th>
+                                        <th>Importe Modificado</th>
+                                        <th>Diferencia</th>
+                                    </tr>
+                                    <tr>
+
+                                    </tr>
+                                    <tr></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-responsive">
                             <caption>
                                 <div class="forn-group pull-left">
                                     <button class="btn btn-default btn-sm btn-reload-modify">
@@ -1456,9 +1472,11 @@
 </div>
 <!-- Data Project -->
 {% csrf_token %}
-<input type="hidden" name="pro" value="{{ project.proyecto_id }}">
+<input type="hidden" name="pro" value="{{ project.proyecto_id }}" data-name="{{ project.nompro }}">
 <input type="hidden" name="sub" value="{{ subproject.subproyecto_id }}">
-<input type="hidden" name="sec" value="{{ sector.sector_id }}">
+<input type="hidden" name="sec" value="{{ sector.sector_id }}" data-name="{{ sector.nomsec }}">
+
+<input type="hidden" name="companyname" value="{{ request.session.company.name }}" data-phone="{{ request.session.company.phone }}">
 <!-- id currency -->
 <input type="hidden" name="currency" value="{{ system.moneda_id }}">
 <!-- exchange rate -->

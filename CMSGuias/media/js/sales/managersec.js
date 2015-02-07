@@ -2379,7 +2379,7 @@ readerPrices = function(event) {
 
 alertModified = function(event) {
   $().toastmessage("showToast", {
-    text: "Deseas enviar la alerta para el area de ventas revise las modificaciones realizadas",
+    text: "Deseas enviar la alerta para que el area de ventas revise las modificaciones realizadas?",
     type: "confirm",
     sticky: true,
     buttons: [
@@ -2390,13 +2390,14 @@ alertModified = function(event) {
       }
     ],
     success: function(result) {
-      var context;
+      var $pro, $sec, $user, context;
       if (result === "Si") {
-        context = Object;
-        context.body = "<p>Hola Luis Martinez, este&nbsp; mensaje es para avisarte que he terminado de modificar la lista de materiales del sector <strong>SEC</strong> del proyecto <strong>PROAA</strong>.</p><p>Espero tu pronta respuesta y aprobación de las modificaciones.</p><p>Atte&nbsp; Name<br></p><p><strong>companyname</strong><br data-mce-bogus=\"1\"></p><p>Hora local <br data-mce-bogus=\"1\"></p>";
-        return $.ajax({
-          data: context
-        });
+        $pro = $("input[name=pro]");
+        $sec = $("input[name=sec]");
+        $user = $("");
+        context = new Object;
+        context.body = "<p>Hola Luis Martinez, este&nbsp; mensaje es para avisarte que he terminado de modificar la lista de materiales del sector <strong>" + ($sec.val()) + " - " + ($sec.attr("data-name")) + "</strong> del proyecto <strong>" + ($pro.val()) + " - " + ($pro.attr("data-name")) + "</strong>.</p><p>Espero tu pronta respuesta y aprobación de las modificaciones.</p><p>Atte&nbsp; Name<br></p><p><strong>companyname</strong><br data-mce-bogus=\"1\"></p><p>Hora local <br data-mce-bogus=\"1\"></p>";
+        return console.log(context);
       }
     }
   });

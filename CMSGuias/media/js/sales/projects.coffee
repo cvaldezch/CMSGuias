@@ -166,6 +166,10 @@ deleteProject = ->
                     if response.status
                         if $("table tbody > tr").length > 1
                             $(".tr-"+value).remove()
+                            return
                         else
                             location.reload()
+                            return
                 ,"json"
+                return
+    return
