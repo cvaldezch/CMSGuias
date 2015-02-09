@@ -1355,7 +1355,8 @@ startModidfy = ->
                     if response.listModel[b].model_id is response.details[x].model_id
                         selectModel = selectModel.replace "{{!sel}}", "selected"
                     $sel.append Mustache.render selectModel, response.listModel[b]
-            calcDiffModify()
+            # calcDiffModify()
+            calcAmountModifySector()
         else
             $().toastmessage "showErrorToast", "No se puede traer la modificación para este sector."
     , "json"
@@ -2189,4 +2190,29 @@ alertModified = (event) ->
                 <p>Hola Luis Martinez, este&nbsp; mensaje es para avisarte que he terminado de modificar la lista de materiales del sector <strong>#{$sec.val()} - #{$sec.attr "data-name"}</strong> del proyecto <strong>#{$pro.val()} - #{$pro.attr "data-name"}</strong>.</p><p>Espero tu pronta respuesta y aprobación de las modificaciones.</p><p>Atte&nbsp; Name<br></p><p><strong>companyname</strong><br data-mce-bogus=\"1\"></p><p>Hora local <br data-mce-bogus=\"1\"></p>
                 "
                 console.log context
+    return
+
+calcAmountModifySector = (event) ->
+    apurchase = 0
+    asales = 0
+    purchaseamount = parseFloat $(".amountmeter").text()
+    purchaseamountdiff = parseFloat $(".amountmeterdiff").text()
+    salesamount = parseFloat $(".amountsales").text()
+    salesamountdiff = parseFloat $(".amountsalesdiff").text()
+    $(".amopurchasecalc").text purchaseamount
+    $(".amopurchasediff").text purchaseamountdiff
+    $(".amsalescalc").text salesamount
+    $(".amsalesdiff").text salesamountdiff
+    $("table.table-modify > tbody > tr").each (index, element) ->
+        $td = $(element).find "td"
+        quantity = parseFloat $td.eq(7).find("input").val()
+        purchase = parseFloat $td.eq(8).find("input").val()
+        sales = parseFloat $td.eq(9).find("input").val()
+        apurchase += (quantity * purchase)
+        asales += (quantity * sales)
+        return
+    $(".amodifynowpurchase").text apurchase.toFixed 2
+    $(".amsalesmodifynow").text asales.toFixed 2
+    #if purchaseamount > amodifynowpurchase
+    $(".adiffpurchase").text purchaseamount - amodifynowpurchase
     return

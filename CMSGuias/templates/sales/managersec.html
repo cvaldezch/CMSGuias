@@ -889,22 +889,60 @@
                     </div>
                     {% endif %}
                     <div class="panel panel-success panel-modify">
-                        <div class="table-responsive">
-                            <table class="table table-condensed">
-                                <tbody>
-                                    <tr>
-                                        <td></td>
-                                        <th>Importe Ventas</th>
-                                        <th>Importe Modificado</th>
-                                        <th>Diferencia</th>
-                                    </tr>
-                                    <tr>
-
-                                    </tr>
-                                    <tr></tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        {% if request.user.get_profile.empdni.charge.area|lower == 'ventas' or request.user.get_profile.empdni.charge.area|lower == 'administrator' %}
+                            <div class="panel panel-warning">
+                                <div class="table-responsive">
+                                    <div class="panel panel-warning">
+                                        <table class="table table-condensed">
+                                            <tbody>
+                                                <tr>
+                                                    <td></td>
+                                                    <th class="text-center">IMPORTE INGRESADO</th>
+                                                    <th class="text-center" colspan="2">IMPORTE VENTA</th>
+                                                    <th class="text-center">IMPORTE MODIFICADO</th>
+                                                    <th class="text-center" colspan="2">DIFERENCIA</th>
+                                                </tr>
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <th class="text-center">Importe</th>
+                                                    <th class="text-center">Calculado</th>
+                                                    <td></td>
+                                                    <th class="text-center">importe</th>
+                                                    <th class="text-center">Diferencia</th>
+                                                </tr>
+                                                <tr>
+                                                    <th>
+                                                        PRECIO COMPRA
+                                                    </th>
+                                                    <td class="text-center">
+                                                        {% if not sector.amount %} 0 {% else %} {{ sector.amount|safe }} {% endif %}
+                                                    </td>
+                                                    <td class="text-center amopurchasecalc"></td>
+                                                    <td class="text-center amopurchasediff"></td>
+                                                    <td class="text-center amodifynowpurchase"></td>
+                                                    <td class="text-center adiffpurchase"></td>
+                                                    <td class="text-center aimppurchase"></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>
+                                                        PRECIO VENTA
+                                                    </th>
+                                                    <td class="text-center">
+                                                        {% if not sector.amount %} 0 {% else %} {{ sector.amount|safe }} {% endif %}
+                                                    </td>
+                                                    <td class="text-center amsalescalc"></td>
+                                                    <td class="text-center amsalesdiff"></td>
+                                                    <td class="text-center amsalesmodifynow"></td>
+                                                    <td class="text-center amsalesdifftot"></td>
+                                                    <td class="text-center amountsalestot"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
                         <div class="table-responsive">
                             <caption>
                                 <div class="forn-group pull-left">
