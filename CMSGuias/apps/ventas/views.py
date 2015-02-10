@@ -886,6 +886,7 @@ class SectorManage(JSONResponseMixin, View):
                     obj.brand_id = request.POST.get('brand')
                     obj.model_id = request.POST.get('model')
                     pending = 0
+                    metrado = 0
                     try:
                         meter = MetProject.objects.get(
                             proyecto_id=kwargs['pro'],
@@ -897,7 +898,7 @@ class SectorManage(JSONResponseMixin, View):
                         )
 
                         pending = float(meter.quantityorder)
-
+                        metrado = obj.cantidad
                     except ObjectDoesNotExist:
                         pending = 0
 
@@ -928,7 +929,7 @@ class SectorManage(JSONResponseMixin, View):
                             else:
                                 obj.tag = '1'
                     else:
-                        if pending == 0 and quantity == meter.cantidad:
+                        if pending == 0 and quantity == metrado:
                             obj.tag = '2'
                         else:
                             obj.tag = '0'

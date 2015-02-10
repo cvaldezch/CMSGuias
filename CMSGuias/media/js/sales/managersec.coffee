@@ -158,6 +158,11 @@ $(document).ready ->
     $("button.btn-block-comment").on "click", commentToogle
     $("button.btn-annimate-up").on "click", tableUp
     $("button.btn-reader-prices").on "click", readerPrices
+    $(".btn-emails").click (event) ->
+        $("select[name=globalmfor] > option").each ->
+            @setAttribute "selected", "selected"
+            return
+        return
     $("table.table-float").floatThead
         useAbsolutePositioning: true
         scrollingTop: 50
@@ -2214,5 +2219,8 @@ calcAmountModifySector = (event) ->
     $(".amodifynowpurchase").text apurchase.toFixed 2
     $(".amsalesmodifynow").text asales.toFixed 2
     #if purchaseamount > amodifynowpurchase
-    $(".adiffpurchase").text purchaseamount - amodifynowpurchase
+    $(".adiffpurchase").text (purchaseamount - apurchase).toFixed 3
+    $(".aimppurchase").text (parseFloat($(".amountmeterestimated").text()) - apurchase).toFixed 2
+    $(".amsalesdifftot").text (salesamount - asales).toFixed 3
+    $(".amountsalestot").text (parseFloat($(".amountmeterestimated").text()) - asales).toFixed 2
     return

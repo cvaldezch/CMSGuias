@@ -57,7 +57,7 @@ showGlobalEnvelop = function(event) {
             _ref = globalMailerData.fors;
             for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
               x = _ref[_j];
-              $item.append("<option value=\"" + x + "\" selected>" + x + "</option>");
+              $item.append("<option value=\"" + x + "\">" + x + "</option>");
             }
             $item.trigger("chosen:updated");
           }

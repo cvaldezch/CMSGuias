@@ -176,6 +176,11 @@ $(document).ready(function() {
   $("button.btn-block-comment").on("click", commentToogle);
   $("button.btn-annimate-up").on("click", tableUp);
   $("button.btn-reader-prices").on("click", readerPrices);
+  $(".btn-emails").click(function(event) {
+    $("select[name=globalmfor] > option").each(function() {
+      this.setAttribute("selected", "selected");
+    });
+  });
   $("table.table-float").floatThead({
     useAbsolutePositioning: true,
     scrollingTop: 50
@@ -2426,5 +2431,8 @@ calcAmountModifySector = function(event) {
   });
   $(".amodifynowpurchase").text(apurchase.toFixed(2));
   $(".amsalesmodifynow").text(asales.toFixed(2));
-  $(".adiffpurchase").text(purchaseamount - amodifynowpurchase);
+  $(".adiffpurchase").text((purchaseamount - apurchase).toFixed(3));
+  $(".aimppurchase").text((parseFloat($(".amountmeterestimated").text()) - apurchase).toFixed(2));
+  $(".amsalesdifftot").text((salesamount - asales).toFixed(3));
+  $(".amountsalestot").text((parseFloat($(".amountmeterestimated").text()) - asales).toFixed(2));
 };

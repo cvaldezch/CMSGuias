@@ -59,6 +59,54 @@
             {% endif %}
         </header>
         <section>
+            {% if project.status == 'AC' %}
+                <div class="panel panel-success">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Porcentaje Pedido</label>
+                                    <br><br>
+                                    <div class="progress">
+                                        <div class="progress-bar
+                                        {% if sector.itemsPercent == '100.0' %}
+                                            progress-bar-success
+                                        {% endif %}
+                                        " role="progressbar" aria-valuenow="{{ sector.itemsPercent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ sector.itemsPercent }}%">
+                                        {{ sector.itemsPercent }}% Complete
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Estadisticas</label>
+                                    <div class="table-responsive">
+                                        <table class="table table-condensed">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center">Atendidos</th>
+                                                    <th class="text-center">Parcial Atendidos</th>
+                                                    <th class="text-center">Pendientes</th>
+                                                    <th class="text-center">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-center">{{ sector.stadistics.attend }}</td>
+                                                    <td class="text-center">{{ sector.stadistics.semi }}</td>
+                                                    <td class="text-center">{{ sector.stadistics.pending }}</td>
+                                                    <td class="text-center">{{ sector.stadistics.total }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
             <div class="panel panel-primary panel-planes">
                 <div class="panel-footer">
                     <h4>Plano(s) del Sector</h4>
@@ -905,11 +953,11 @@
                                                 <tr>
                                                     <td></td>
                                                     <td></td>
-                                                    <th class="text-center">Importe</th>
-                                                    <th class="text-center">Calculado</th>
+                                                    <th class="text-center">CALCULADO</th>
+                                                    <th class="text-center">DIFERENCIA</th>
                                                     <td></td>
-                                                    <th class="text-center">importe</th>
-                                                    <th class="text-center">Diferencia</th>
+                                                    <th class="text-center">CALC. DIF.</th>
+                                                    <th class="text-center">TOTAL</th>
                                                 </tr>
                                                 <tr>
                                                     <th>

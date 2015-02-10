@@ -6,7 +6,9 @@ from audit_log.models.managers import AuditLog
 
 from CMSGuias.apps.home.models import Pais, Departamento, Provincia, Distrito, Cliente, Materiale, Employee, Brand, Model, Cargo, Moneda, Documentos, FormaPago, Unidade
 from CMSGuias.apps.tools import globalVariable, search
+from CMSGuias.apps import operations
 
+import datetime
 
 class Proyecto(models.Model):
     STATUS_PROJECT = (('PE','PEDIENTE'),('AC', 'ACTIVO'),('CO', 'COMPLETO'),)
@@ -20,7 +22,7 @@ class Proyecto(models.Model):
     departamento = models.ForeignKey(Departamento, to_field='departamento_id')
     provincia = models.ForeignKey(Provincia, to_field='provincia_id')
     distrito = models.ForeignKey(Distrito, to_field='distrito_id')
-    direccion = models.CharField(max_length=200,null=False)
+    direccion = models.CharField(max_length=200, null=False)
     obser = models.TextField(null=True,blank=True)
     status = models.CharField(max_length=2,null=False,default='00')
     empdni = models.ForeignKey(Employee, related_name='proyectoAsEmployee', null=True, blank=True)
@@ -36,6 +38,22 @@ class Proyecto(models.Model):
     class Meta:
         #abstract = True
         ordering = ['nompro']
+
+    @property
+    def itemsPercent(self):
+        obj = operations.models.MetProject.objects.filter(proyecto_id=self.proyecto_id)
+        items = obj.count()
+        attend = obj.filter(tag='2').count()
+        percent = ((attend * 100) / items)
+        return '%.1f'%percent
+
+    @property
+    def is_out_date(self):
+        print datetime.datetime.today().date()
+        if datetime.datetime.today().date() > self.fin:
+            print 'is great'
+            return True
+        return False
 
     def __unicode__(self):
         return '%s %s - %s'%(self.proyecto_id,self.nompro,self.ruccliente_id)
@@ -83,6 +101,24 @@ class Sectore(models.Model):
 
     def __unicode__(self):
         return '%s'%(self.sector_id)
+
+    @property
+    def itemsPercent(self):
+        obj = operations.models.MetProject.objects.filter(proyecto_id=self.proyecto_id, sector_id=self.sector_id)
+        items = obj.count()
+        attend = obj.filter(tag='2').count()
+        percent = ((attend * 100) / items)
+        return '%.1f'%percent
+
+    @property
+    def stadistics(self):
+        context = dict()
+        obj = operations.models.MetProject.objects.filter(proyecto_id=self.proyecto_id, sector_id=self.sector_id)
+        context['total'] = obj.count()
+        context['attend'] = obj.filter(tag='2').count()
+        context['semi'] = obj.filter(tag='1').count()
+        context['pending'] = obj.filter(tag='0').count()
+        return context
 
 class SectorFiles(models.Model):
     def url(self, filename):
