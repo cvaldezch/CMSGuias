@@ -47,16 +47,24 @@ showGlobalEnvelop = function(event) {
     if ($("select[name=globalmfor]").find("option").length === 0) {
       getAllCurrentAccounts();
       setTimeout(function() {
-        var $item, c, items, tmp, x, _i, _j, _len, _len1, _ref;
+        var $item, c, items, tmp, x, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
         if (globalMailerData.hasOwnProperty("fors")) {
-          items = ["for", "cc", "cco"];
-          for (_i = 0, _len = items.length; _i < _len; _i++) {
-            c = items[_i];
+          $item = $("select[name=globalmfor]");
+          tmp = "<option value=\"{{ email }}\">{{ email }}</option>";
+          _ref = globalMailerData.fors;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            x = _ref[_i];
+            $item.append("<option value=\"" + x + "\" selected>" + x + "</option>");
+          }
+          $item.trigger("chosen:updated");
+          items = ["cc", "cco"];
+          for (_j = 0, _len1 = items.length; _j < _len1; _j++) {
+            c = items[_j];
             $item = $("select[name=globalm" + c + "]");
             tmp = "<option value=\"{{ email }}\">{{ email }}</option>";
-            _ref = globalMailerData.fors;
-            for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-              x = _ref[_j];
+            _ref1 = globalMailerData.fors;
+            for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+              x = _ref1[_k];
               $item.append("<option value=\"" + x + "\">" + x + "</option>");
             }
             $item.trigger("chosen:updated");

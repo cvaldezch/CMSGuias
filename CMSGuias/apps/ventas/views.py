@@ -1492,6 +1492,28 @@ class SectorManage(JSONResponseMixin, View):
                         context['status'] = True
                     else:
                         context['status'] = False
+                if 'diffmodifysec' in request.POST:
+                    lp = [x.materiales_id for x in MetProject.objects.filter(proyecto_id=kwargs['pro'])]
+                    lded = UpdateMetProject.objects.filter(proyecto_id=kwargs['pro']).exclude(materials_id__in=lp)
+                    if lded.count():
+                        context['deductive'] = [
+                            {
+                                'materials': x.materials_id,
+                                'name': x.materials.matnom,
+                                'meter': x.materials.matmed,
+                                'unit': x.materials.unidad.uninom,
+                                'brand': x.brand.brand,
+                                'model': x.model.model,
+                                'quantity': x.quantity,
+                                'purchase': x.price,
+                                'sales': float(x.sales),
+                                'amount': (x.quantity * x.price)
+                            }
+                            for x in lded
+                        ]
+                        context['status'] = True
+                    else:
+                        context['status'] = False
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

@@ -147,9 +147,23 @@ showAlertStartProject = function(event) {
   var $pro, reason;
   $pro = $("input[name=pro]");
   reason = $("input[name=companyname]").val();
-  globalMailerData.fors = "asistente1@icrperusa.com, logistica@icrperusa.com, luis.martinez@icrperusa.com, cvaldezchavez@gmail.com, icr.luisvalencia@gmail.com, almacen@icrperusa.com, armando.atencio@icrperusa.com, steven.paredes@icrperusa.com, danilo.martinez@icrperusa.com, sandra.atencio@icrperusa.com, ssoma1@icrperusa.com";
-  globalMailerData.issue = "Apertura de Proyecto " + ($pro.attr("data-name")) + " - " + ($pro.attr("data-customers"));
-  globalMailerData.body = "<p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\">Estimados,</span></p><p style=\"text-align: justify;\" data-mce-style=\"text-align: justify;\"><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\">Para hacerles de su conocimiento que hoy " + (new Date().toLocaleDateString()) + " se realiza la apertura del proyecto <strong>\"" + ($pro.attr("data-name")) + "\"</strong>  con código <strong>\"" + ($pro.val()) + "\"</strong> que se realizara en \"" + ($pro.attr("data-address")) + "\" para el cliente <strong>\"" + ($pro.attr("data-customers")) + "\"</strong>. El proyecto tendrá como fecha de inicio " + ($pro.attr("data-star")) + " y un fecha de termino aproximada para el " + ($pro.attr("data-end")) + ".</span></p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\"><strong>Ing. Steven Paredes</strong> asignar supervisor.</span></p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\"><strong>Ejecutado por</strong> : " + reason + "</span></p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\"><br data-mce-bogus=\"1\"></span></p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\">Saludos.</span></p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\"><strong>Luis Martinez</strong></span><br /><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\"><strong>" + ($("input[name=companyname]").val()) + "</strong></span><br></p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\"><strong>Telf:</strong> " + ($("input[name=companyname]").attr("data-phone")) + "</span></p><p><br data-mce-bogus=\"1\"></p>";
+  setTimeout(function() {
+
+    /*globalMailerData.fors = "asistente1@icrperusa.com,
+                        logistica@icrperusa.com,
+                        luis.martinez@icrperusa.com,
+                        cvaldezchavez@gmail.com,
+                        icr.luisvalencia@gmail.com,
+                        almacen@icrperusa.com,
+                        armando.atencio@icrperusa.com,
+                        steven.paredes@icrperusa.com,
+                        danilo.martinez@icrperusa.com,
+                        sandra.atencio@icrperusa.com,
+                        ssoma1@icrperusa.com"
+     */
+    globalMailerData.issue = "Apertura de Proyecto " + ($pro.attr("data-name")) + " - " + ($pro.attr("data-customers"));
+    return globalMailerData.body = "<p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\">Estimados,</span></p><p style=\"text-align: justify;\" data-mce-style=\"text-align: justify;\"><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\">Para hacerles de su conocimiento que hoy " + (new Date().toLocaleDateString()) + " se realiza la apertura del proyecto <strong>\"" + ($pro.attr("data-name")) + "\"</strong>  con código <strong>\"" + ($pro.val()) + "\"</strong> que se realizara en \"" + ($pro.attr("data-address")) + "\" para el cliente <strong>\"" + ($pro.attr("data-customers")) + "\"</strong>. El proyecto tendrá como fecha de inicio " + ($pro.attr("data-star")) + " y un fecha de termino aproximada para el " + ($pro.attr("data-end")) + ".</span></p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\">" + ($(".contact-project").html().trim()) + "</span></p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\"><strong>Ing. Steven Paredes</strong> asignar supervisor.</span></p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\"><strong>Ejecutado por</strong> : " + reason + "</span></p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\"><br data-mce-bogus=\"1\"></span></p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\">Saludos.</span></p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\"><strong>Luis Martinez</strong></span><br /><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\"><strong>" + ($("input[name=companyname]").val()) + "</strong></span><br></p><p><span style=\"font-size: 10pt;\" data-mce-style=\"font-size: 10pt;\"><strong>Telf:</strong> " + ($("input[name=companyname]").attr("data-phone")) + "</span></p><p><br data-mce-bogus=\"1\"></p>";
+  }, 100);
   setTimeout(function() {
     $("input[name=user-email]").val("luis.martinez@icrperusa.com").attr("data-name", "Luis Martinez");
     return showGlobalEnvelop();

@@ -41,7 +41,12 @@ showGlobalEnvelop = (event) ->
             getAllCurrentAccounts()
             setTimeout ->
                 if globalMailerData.hasOwnProperty("fors")
-                    items = ["for", "cc", "cco"]
+                    $item = $("select[name=globalmfor]")
+                    tmp = "<option value=\"{{ email }}\">{{ email }}</option>"
+                    for x in globalMailerData.fors
+                        $item.append "<option value=\"#{x}\" selected>#{x}</option>"
+                    $item.trigger("chosen:updated")
+                    items = ["cc", "cco"]
                     for c in items
                         $item = $("select[name=globalm#{c}]")
                         tmp = "<option value=\"{{ email }}\">{{ email }}</option>"

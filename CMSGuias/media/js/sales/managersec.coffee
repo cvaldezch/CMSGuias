@@ -158,11 +158,6 @@ $(document).ready ->
     $("button.btn-block-comment").on "click", commentToogle
     $("button.btn-annimate-up").on "click", tableUp
     $("button.btn-reader-prices").on "click", readerPrices
-    $(".btn-emails").click (event) ->
-        $("select[name=globalmfor] > option").each ->
-            @setAttribute "selected", "selected"
-            return
-        return
     $("table.table-float").floatThead
         useAbsolutePositioning: true
         scrollingTop: 50
@@ -191,9 +186,9 @@ loadsAccounts = (event) ->
         $("iframe#globalmbody_ifr").contents().find("body").html $("#message_ifr").contents().find("body").html()
         if $("select[name=globalmfor]").find("option").length == 0
             getAllCurrentAccounts()
-            setTimeout ->
+            ###setTimeout ->
                 if globalMailerData.hasOwnProperty("fors")
-                    items = ["for", "cc", "cco"]
+                    items = ["for","cc", "cco"]
                     for c in items
                         $item = $("select[name=globalm#{c}]")
                         tmp = "<option value=\"{{ email }}\">{{ email }}</option>"
@@ -201,7 +196,7 @@ loadsAccounts = (event) ->
                             $item.append "<option value=\"#{x}\">#{x}</option>"
                         $item.trigger("chosen:updated")
                     return
-            , 200
+            , 200###
     return
 
 publisherCommnet = ->
@@ -1514,6 +1509,37 @@ addMaterialUpdateMeter = ->
     return
 
 createTableDeductive = (event) ->
+    data = new Object
+    data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+    data.diffmodifysec = true
+    $.post "", data, (response) ->
+        if response.status
+            $table = $("table.table-deductive-only > tbody")
+            $table.empty()
+            template = "
+                <tr>
+                    <td>{{ item }}</td>
+                    <td>{{ materials }}</td>
+                    <td>{{ name }} - {{ meter }}</td>
+                    <td>{{ unit }}</td>
+                    <td>{{ brand }}</td>
+                    <td>{{ model }}</td>
+                    <td>{{ quantity }}</td>
+                    <td>{{ purchase }}</td>
+                    <td>{{ sales }}</td>
+                    <td>{{ amount }}</td>
+                </tr>
+            "
+            for x of response.deductive
+                response.deductive[x].item = parseInt(x) + 1
+                $table.append Mustache.render template, response.deductive[x]
+            return
+        else
+            $().toastmessage "showErrorToast", "Se a producido un Error, #{response.raise}"
+            return
+    , "json"
+    return
+###= (event) ->
     tbla = new Array()
     tblb = new Array()
     $("table.table-details > tbody > tr").each (index, element) ->
@@ -1629,7 +1655,7 @@ createTableDeductive = (event) ->
             $tb.append Mustache.render template, tbla[x]
     else
         $().toastmessage "showWarningToast", "No se han encontrado diferencias entre las modificaciones"
-    return
+    return###
 
 deductiveOneCancel = (event) ->
     $("table.table-modify > tbody > tr > td").find("input, select, buttons").attr "disabled", false

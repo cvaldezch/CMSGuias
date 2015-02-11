@@ -176,11 +176,6 @@ $(document).ready(function() {
   $("button.btn-block-comment").on("click", commentToogle);
   $("button.btn-annimate-up").on("click", tableUp);
   $("button.btn-reader-prices").on("click", readerPrices);
-  $(".btn-emails").click(function(event) {
-    $("select[name=globalmfor] > option").each(function() {
-      this.setAttribute("selected", "selected");
-    });
-  });
   $("table.table-float").floatThead({
     useAbsolutePositioning: true,
     scrollingTop: 50
@@ -209,23 +204,19 @@ loadsAccounts = function(event) {
     $("iframe#globalmbody_ifr").contents().find("body").html($("#message_ifr").contents().find("body").html());
     if ($("select[name=globalmfor]").find("option").length === 0) {
       getAllCurrentAccounts();
-      setTimeout(function() {
-        var $item, c, items, tmp, x, _i, _j, _len, _len1, _ref;
-        if (globalMailerData.hasOwnProperty("fors")) {
-          items = ["for", "cc", "cco"];
-          for (_i = 0, _len = items.length; _i < _len; _i++) {
-            c = items[_i];
-            $item = $("select[name=globalm" + c + "]");
-            tmp = "<option value=\"{{ email }}\">{{ email }}</option>";
-            _ref = globalMailerData.fors;
-            for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-              x = _ref[_j];
-              $item.append("<option value=\"" + x + "\">" + x + "</option>");
-            }
-            $item.trigger("chosen:updated");
-          }
-        }
-      }, 200);
+
+      /*setTimeout ->
+          if globalMailerData.hasOwnProperty("fors")
+              items = ["for","cc", "cco"]
+              for c in items
+                  $item = $("select[name=globalm#{c}]")
+                  tmp = "<option value=\"{{ email }}\">{{ email }}</option>"
+                  for x in globalMailerData.fors
+                      $item.append "<option value=\"#{x}\">#{x}</option>"
+                  $item.trigger("chosen:updated")
+              return
+      , 200
+       */
     }
   }
 };
@@ -1670,119 +1661,145 @@ addMaterialUpdateMeter = function() {
 };
 
 createTableDeductive = function(event) {
-  var $tb, amount, i, j, price, quanmof, quanori, quantity, table, tbla, tblb, template, tre, x;
-  tbla = new Array();
-  tblb = new Array();
-  $("table.table-details > tbody > tr").each(function(index, element) {
-    var $td;
-    $td = $(element).find("td");
-    return tbla.push({
-      "materials": $td.eq(2).text(),
-      "name": $td.eq(3).text(),
-      "measure": $td.eq(4).text(),
-      "unit": $td.eq(5).text(),
-      "brand": $td.eq(6).text(),
-      "model": $td.eq(7).text(),
-      "quantity": $td.eq(8).text(),
-      "price": $td.eq(10).text()
-    });
-  });
-  $("table.table-modify > tbody > tr").each(function(index, element) {
-    var $td;
-    $td = $(element).find("td");
-    return tblb.push({
-      "materials": $td.eq(1).text(),
-      "name": $td.eq(2).text(),
-      "measure": $td.eq(3).text(),
-      "unit": $td.eq(4).text(),
-      "brand": $td.eq(5).find("select").val(),
-      "model": $td.eq(6).find("select").val(),
-      "quantity": $td.eq(7).find("input").val(),
-      "price": $td.eq(8).find("input").val()
-    });
-  });
-  table = new Array();
-  console.warn(tblb.length);
-  for (i in tblb) {
-    tre = 0;
-    for (j in tbla) {
-      if (tblb[i].materials === tbla[j].materials) {
-        quanori = parseFloat(tblb[i].quantity);
-        quanmof = parseFloat(tbla[j].quantity);
-        if (quanori !== quanmof) {
-          quantity = 0;
-          price = 0;
-          if (quanori > quanmof) {
-            quantity = parseFloat(tblb[i].quantity) - parseFloat(tbla[i].quantity);
-            console.log("quantity original");
-          } else if (quanmof > quanori) {
-            quantity = parseFloat(tbla[i].quantity) - parseFloat(tblb[i].quantity);
-            console.warn("quantity modifid");
-          } else {
-            console.error("quantity default");
-            continue;
-          }
-          console.warn(quantity);
-          if (quantity > 0) {
-            console.info("append table materials exists");
-            amount = parseFloat(tbla[j].quantity) * parseFloat(tbla[j].price);
-            table.push({
-              "materials": tbla[j].materials,
-              "name": tbla[j].name,
-              "measure": tbla[j].measure,
-              "unit": tbla[j].unit,
-              "brand": tbla[j].brand,
-              "model": tbla[j].model,
-              "quantity": quantity,
-              "price": tbla[j].price,
-              "amount": amount.toFixed(2)
-            });
-          }
-        }
-      } else {
-        tre++;
+  var data;
+  data = new Object;
+  data.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
+  data.diffmodifysec = true;
+  $.post("", data, function(response) {
+    var $table, template, x;
+    if (response.status) {
+      $table = $("table.table-deductive-only > tbody");
+      $table.empty();
+      template = "<tr> <td>{{ item }}</td> <td>{{ materials }}</td> <td>{{ name }} - {{ meter }}</td> <td>{{ unit }}</td> <td>{{ brand }}</td> <td>{{ model }}</td> <td>{{ quantity }}</td> <td>{{ purchase }}</td> <td>{{ sales }}</td> <td>{{ amount }}</td> </tr>";
+      for (x in response.deductive) {
+        response.deductive[x].item = parseInt(x) + 1;
+        $table.append(Mustache.render(template, response.deductive[x]));
       }
+    } else {
+      $().toastmessage("showErrorToast", "Se a producido un Error, " + response.raise);
     }
-    if ((tbla.length - 1) !== tre) {
-      amount = parseFloat(tblb[i].quantity) * parseFloat(tblb[i].price);
-      table.push({
-        "materials": tblb[i].materials,
-        "name": tblb[i].name,
-        "measure": tblb[i].measure,
-        "unit": tblb[i].unit,
-        "brand": tblb[i].brand,
-        "model": tblb[i].model,
-        "quantity": parseFloat(tblb[i].quantity),
-        "price": tblb[i].price,
-        "amount": amount.toFixed(2)
-      });
-    }
-  }
-  if (table.length) {
-    template = "<tr> <td>{{ item }}</td> <td>{{ materials }}</td> <td>{{ name }}</td> <td>{{ measure }}</td> <td>{{ unit }}</td> <td>{{ brand }}</td> <td>{{ model }}</td> <td>{{ quantity }}</td> <td>{{ price }}</td> <td>{{ amount }}</td> <td> <div class=\"input-group\" style=\"width: 160px;\"> <input type=\"text\" class=\"form-control input-sm\" id=\"dedmeterquanout{{ materials }}\" readonly> <span class=\"input-group-btn\"> <button class=\"btn btn btn-default btn-sm btn-deductive-meter-select\" value=\"{{ materials }}\"> <span class=\"glyphicon glyphicon-edit\"></span> </button> </span> </div> </td> </tr>";
-    $tb = $("table.table-deductive > tbody");
-    $tb.empty();
-    for (x in table) {
-      table[x].item = parseInt(x) + 1;
-      $tb.append(Mustache.render(template, table[x]));
-    }
-    $("table.table-modify > tbody > tr > td").find("input, select, button").attr("disabled", true);
-    $(".btn-show-materials-meter, .btn-upload-plane-meter").attr("disabled", true);
-    $(".deductive-one").fadeIn(800);
-    $(".deductive-one").ScrollTo({
-      duration: 800
-    });
-    $tb = $("table.table-select-deductive-meter > tbody");
-    $tb.empty();
-    template = "<tr> <td>{{ item }}</td> <td>{{ materials }}</td> <td>{{ name }}</td> <td>{{ measure }}</td> <td>{{ unit }}</td> <td>{{ brand }}</td> <td>{{ model }}</td> <td><input type=\"number\" min=\"0\" id=\"dedmeterquan{{ materials }}\" class=\"form-control input-sm\" style=\"width: 120px;\" max=\"{{ quantity }}\" value=\"{{ quantity }}\"></td> <td class=\"text-center\"> <input type=\"checkbox\" name=\"chkdeductivemeter\" data-mat=\"{{ materials }}\" data-brnad=\"{{ brand }}\" data-model=\"{{ model }}\"> </td> </tr>";
-    for (x in tbla) {
-      tbla[x].item = parseInt(x) + 1;
-      $tb.append(Mustache.render(template, tbla[x]));
-    }
-  } else {
-    $().toastmessage("showWarningToast", "No se han encontrado diferencias entre las modificaciones");
-  }
+  }, "json");
 };
+
+
+/*= (event) ->
+    tbla = new Array()
+    tblb = new Array()
+    $("table.table-details > tbody > tr").each (index, element) ->
+        $td = $(element).find("td")
+        tbla.push {
+            "materials": $td.eq(2).text(),
+            "name": $td.eq(3).text(),
+            "measure": $td.eq(4).text(),
+            "unit": $td.eq(5).text(),
+            "brand": $td.eq(6).text(),
+            "model": $td.eq(7).text(),
+            "quantity" : $td.eq(8).text(),
+            "price":$td.eq(10).text()
+        }
+    $("table.table-modify > tbody > tr").each (index, element) ->
+        $td = $(element).find("td")
+        tblb.push {
+            "materials":$td.eq(1).text(),
+            "name": $td.eq(2).text(),
+            "measure": $td.eq(3).text(),
+            "unit": $td.eq(4).text(),
+            "brand": $td.eq(5).find("select").val(),
+            "model": $td.eq(6).find("select").val(),
+            "quantity": $td.eq(7).find("input").val(),
+            "price": $td.eq(8).find("input").val()}
+     *console.log JSON.stringify tbla
+    table = new Array()
+    console.warn tblb.length
+    for i of tblb
+        tre = 0
+        for j of tbla
+            if tblb[i].materials is tbla[j].materials
+                quanori = parseFloat tblb[i].quantity
+                quanmof = parseFloat tbla[j].quantity
+                if quanori isnt quanmof
+                    quantity = 0
+                    price = 0
+                    if quanori > quanmof
+                        quantity = (parseFloat(tblb[i].quantity) - parseFloat(tbla[i].quantity))
+                        console.log "quantity original"
+                    else if quanmof > quanori
+                        quantity = (parseFloat(tbla[i].quantity) - parseFloat(tblb[i].quantity))
+                        console.warn "quantity modifid"
+                    else
+                        console.error "quantity default"
+                         *quantity = parseFloat(tblb[i].quantity)
+                        continue
+
+                    console.warn quantity
+                    if quantity > 0
+                        console.info "append table materials exists"
+                        amount = (parseFloat(tbla[j].quantity) * parseFloat(tbla[j].price))
+                        table.push {"materials": tbla[j].materials, "name":tbla[j].name, "measure":tbla[j].measure, "unit": tbla[j].unit, "brand": tbla[j].brand, "model": tbla[j].model, "quantity" : quantity, "price": tbla[j].price, "amount": amount.toFixed(2)}
+            else
+                tre++
+
+        if (tbla.length - 1) isnt tre
+            amount = (parseFloat(tblb[i].quantity) * parseFloat(tblb[i].price))
+            table.push {"materials": tblb[i].materials, "name":tblb[i].name, "measure":tblb[i].measure, "unit": tblb[i].unit, "brand": tblb[i].brand, "model": tblb[i].model, "quantity" : parseFloat(tblb[i].quantity), "price": tblb[i].price, "amount": amount.toFixed(2)}
+
+    if table.length
+        template = "<tr>
+                        <td>{{ item }}</td>
+                        <td>{{ materials }}</td>
+                        <td>{{ name }}</td>
+                        <td>{{ measure }}</td>
+                        <td>{{ unit }}</td>
+                        <td>{{ brand }}</td>
+                        <td>{{ model }}</td>
+                        <td>{{ quantity }}</td>
+                        <td>{{ price }}</td>
+                        <td>{{ amount }}</td>
+                        <td>
+                            <div class=\"input-group\" style=\"width: 160px;\">
+                                <input type=\"text\" class=\"form-control input-sm\" id=\"dedmeterquanout{{ materials }}\" readonly>
+                                <span class=\"input-group-btn\">
+                                    <button class=\"btn btn btn-default btn-sm btn-deductive-meter-select\" value=\"{{ materials }}\">
+                                    <span class=\"glyphicon glyphicon-edit\"></span>
+                                </button>
+                                </span>
+                            </div>
+                        </td>
+                    </tr>"
+        $tb = $("table.table-deductive > tbody")
+        $tb.empty()
+        for x of table
+            table[x].item = (parseInt(x) + 1)
+            $tb.append Mustache.render template, table[x]
+
+        $("table.table-modify > tbody > tr > td").find("input, select, button").attr "disabled", true
+        $(".btn-show-materials-meter, .btn-upload-plane-meter").attr "disabled", true
+        $(".deductive-one").fadeIn 800
+        $(".deductive-one").ScrollTo duration : 800
+
+         * create table select quantity deductive
+        $tb = $("table.table-select-deductive-meter > tbody")
+        $tb.empty()
+        template = "<tr>
+                        <td>{{ item }}</td>
+                        <td>{{ materials }}</td>
+                        <td>{{ name }}</td>
+                        <td>{{ measure }}</td>
+                        <td>{{ unit }}</td>
+                        <td>{{ brand }}</td>
+                        <td>{{ model }}</td>
+                        <td><input type=\"number\" min=\"0\" id=\"dedmeterquan{{ materials }}\" class=\"form-control input-sm\" style=\"width: 120px;\" max=\"{{ quantity }}\" value=\"{{ quantity }}\"></td>
+                        <td class=\"text-center\">
+                            <input type=\"checkbox\" name=\"chkdeductivemeter\" data-mat=\"{{ materials }}\" data-brnad=\"{{ brand }}\" data-model=\"{{ model }}\">
+                        </td>
+                    </tr>"
+        for x of tbla
+            tbla[x].item = (parseInt(x) + 1)
+            $tb.append Mustache.render template, tbla[x]
+    else
+        $().toastmessage "showWarningToast", "No se han encontrado diferencias entre las modificaciones"
+    return
+ */
 
 deductiveOneCancel = function(event) {
   $("table.table-modify > tbody > tr > td").find("input, select, buttons").attr("disabled", false);
