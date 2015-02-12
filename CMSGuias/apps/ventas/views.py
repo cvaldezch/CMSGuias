@@ -898,7 +898,7 @@ class SectorManage(JSONResponseMixin, View):
                         )
 
                         pending = float(meter.quantityorder)
-                        metrado = obj.cantidad
+                        metrado = meter.cantidad
                     except ObjectDoesNotExist:
                         pending = 0
 
@@ -1155,12 +1155,13 @@ class SectorManage(JSONResponseMixin, View):
                     context['status'] = True
                 if 'approvedModifyFinal' in request.POST:
                     # request parameters #  first save history sector
-                    meter = json.loads(request.POST.get('meter'))
-                    history = json.loads(request.POST.get('history'))
+                    # meter = json.loads(request.POST.get('meter'))
+                    # history = json.loads(request.POST.get('history'))
                     # delete details sector of the meter
 
                     sec = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])
                     token = globalVariable.get_Token()
+                    meter = sec
                     for x in sec:
                         h = HistoryMetProject()
                         h.token = token
@@ -1172,6 +1173,7 @@ class SectorManage(JSONResponseMixin, View):
                         h.brand_id = x.brand_id
                         h.model_id = x.model_id
                         h.price = x.precio
+                        h.sales = x.sales
                         h.comment = x.comment
                         h.quantityorders = x.quantityorder if x.tag != '0' else x.cantidad
                         h.tag = x.tag
@@ -1183,34 +1185,37 @@ class SectorManage(JSONResponseMixin, View):
                         #         n.save()
                         x.delete()
                     # save new details sector of the meter
-                    for x in meter:
+                    update = UpdateMetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])
+                    for x in update:
                         s = MetProject()
                         s.proyecto_id = kwargs['pro']
                         s.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
                         s.sector_id = kwargs['sec']
-                        s.materiales_id = x['materials']
-                        s.brand_id = x['brand']
-                        s.model_id = x['model']
-                        s.cantidad = x['quantity']
-                        s.precio = x['price']
+                        s.materiales_id = x.materials_id
+                        s.brand_id = x.brand_id
+                        s.model_id = x.model_id
+                        s.cantidad = x.quantity
+                        s.precio = x.price
+                        s.sales = x.sales
                         s.flag = True
-                        s.comment = x['comment']
-                        s.quantityorder = x['quantityorders'] if x['tag'] != '0' else x['quantity']
-                        s.tag = x['tag']
-                        if float(x['dev']) > 0:
-                            d = RestoreStorage()
-                            d.token = token
-                            d.proyecto_id = kwargs['pro']
-                            d.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
-                            d.sector_id = kwargs['sec']
-                            d.materials_id = x['materials']
-                            d.brand_id = x['brand']
-                            d.model_id = x['model']
-                            d.quantity = float(x['dev'])
-                            d.price = x['price']
-                            d.save()
+                        s.comment = x.comment
+                        s.quantityorder = x.quantityorders
+                        s.tag = x.tag
+                        dev = meter.filter(materiales_id=x.materials_id)
+                        if dev.count():
+                            if x.quantity > dev[0].cantidad:
+                                d = RestoreStorage()
+                                d.token = token
+                                d.proyecto_id = kwargs['pro']
+                                d.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
+                                d.sector_id = kwargs['sec']
+                                d.materials_id = x.materials_id
+                                d.brand_id = x.brand_id
+                                d.model_id = x.model_id
+                                d.quantity = float(x.quantity - dev[0].cantidad)
+                                d.price = x.price
+                                d.save()
                         s.save()
-
                     up = UpdateMetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])
                     for x in up:
                         x.delete()
@@ -1493,8 +1498,8 @@ class SectorManage(JSONResponseMixin, View):
                     else:
                         context['status'] = False
                 if 'diffmodifysec' in request.POST:
-                    lp = [x.materiales_id for x in MetProject.objects.filter(proyecto_id=kwargs['pro'])]
-                    lded = UpdateMetProject.objects.filter(proyecto_id=kwargs['pro']).exclude(materials_id__in=lp)
+                    lp = [x.materiales_id for x in MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])]
+                    lded = UpdateMetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).exclude(materials_id__in=lp)
                     if lded.count():
                         context['deductive'] = [
                             {
@@ -1511,6 +1516,24 @@ class SectorManage(JSONResponseMixin, View):
                             }
                             for x in lded
                         ]
+                        mm = [x.materials_id for x in UpdateMetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])]
+                        ldel = MetProject.objects.filter(proyecto_id=kwargs['pro']).exclude(materiales_id__in=mm)
+                        if ldel.count():
+                            context['mdelete'] = [
+                                {
+                                    'materials': x.materiales_id,
+                                    'name': x.materialss.matnom,
+                                    'meter': x.materialss.matmed,
+                                    'unit': x.materialss.unidad.uninom,
+                                    'brand': x.brand.brand,
+                                    'model': x.model.model,
+                                    'quantity': x.cantidad,
+                                    'purchase': x.precio,
+                                    'sales': float(x.sales),
+                                    'amount': (x.cantidad * x.precio)
+                                }
+                                for x in ldel
+                            ]
                         context['status'] = True
                     else:
                         context['status'] = False

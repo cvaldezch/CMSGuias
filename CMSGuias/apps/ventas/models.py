@@ -43,8 +43,11 @@ class Proyecto(models.Model):
     def itemsPercent(self):
         obj = operations.models.MetProject.objects.filter(proyecto_id=self.proyecto_id)
         items = obj.count()
-        attend = obj.filter(tag='2').count()
-        percent = ((attend * 100) / items)
+        if items:
+            attend = obj.filter(tag='2').count()
+            percent = ((attend * 100) / items)
+        else:
+            percent = 0
         return '%.1f'%percent
 
     @property
@@ -188,7 +191,7 @@ class HistoryMetProject(models.Model):
     model = models.ForeignKey(Model, to_field='model_id', default='MO000')
     quantity = models.FloatField()
     price = models.FloatField()
-    #sales = models.DecimalField(max_digits=9, decimal_places=3, default=0)
+    sales = models.DecimalField(max_digits=9, decimal_places=3, default=0)
     comment = models.CharField(max_length=250,default='',null=True, blank=True)
     quantityorders = models.FloatField(default=0)
     tag = models.CharField(max_length=1, default='0')

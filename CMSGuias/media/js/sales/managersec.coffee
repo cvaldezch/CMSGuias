@@ -131,6 +131,7 @@ $(document).ready ->
     $(".btn-delete-materials-deductive-global").on "click", delAllMaterialDeductiveGlobal
     $(document).on "click", ".btn-delete-deductive-global-tr", delUnitDeductiveGlobal
     calcAmountSector()
+    $("button.btn-alert-modified").on "click", sendAlertModified
     $("button.btn-del-all-modify").on "click", deleteAllUpdateMeter
     # calcDiffModify()
     tinymce.init
@@ -1533,6 +1534,11 @@ createTableDeductive = (event) ->
             for x of response.deductive
                 response.deductive[x].item = parseInt(x) + 1
                 $table.append Mustache.render template, response.deductive[x]
+            $table = $("table.table-deductive-out > tbody")
+            $table.empty()
+            for x of response.mdelete
+                response.deductive[x].item = parseInt(x) + 1
+                $table.append Mustache.render template, response.deductive[x]
             return
         else
             $().toastmessage "showErrorToast", "Se a producido un Error, #{response.raise}"
@@ -1737,7 +1743,7 @@ generateDeductiveMeter = (event) ->
     return
 
 approvedModify = (event) ->
-    tbla = new Array()
+    ###tbla = new Array()
     tblb = new Array()
     $("table.table-details > tbody > tr").each (index, element) ->
         $td = $(element).find("td")
@@ -1848,15 +1854,15 @@ approvedModify = (event) ->
                 console.info "modify equal original"
                 console.error tblb[x].tag
 
-    console.table tblb
+    console.table tblb###
     data = new Object
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken").val()
     data.approvedModifyFinal = true
-    data.meter = JSON.stringify tblb
-    data.history = JSON.stringify tbla
+    # data.meter = JSON.stringify tblb
+    # data.history = JSON.stringify tbla
 
     $().toastmessage "showToast",
-        text: "Seguro(a) que desea aprobar"
+        text: "Seguro(a) que desea aprobar las modificaciones de los materiales?"
         sticky: true
         type: "confirm"
         buttons: [{value: "Si"}, {value: "No"}]
@@ -2205,7 +2211,7 @@ readerPrices = (event) ->
     , "json"
     return
 
-alertModified = (event) ->
+sendAlertModified = (event) ->
     $().toastmessage "showToast",
         text: "Deseas enviar la alerta para que el area de ventas revise las modificaciones realizadas?"
         type: "confirm"
@@ -2215,12 +2221,26 @@ alertModified = (event) ->
             if result is "Si"
                 $pro = $("input[name=pro]")
                 $sec = $("input[name=sec]")
-                $user = $("")
+                $user = $("input[name=user-email]")
+                $company = $("input[name=companyname]")
                 context = new Object
+                context.fors = new Array "luis.martinez@icrperusa.com"
+                context.forsb = $user.val()
+                context.issue = "Modificación de Sector #{$sec.val()} - #{$sec.attr "data-name"} del Proyecto #{$pro.val()} - #{$pro.attr "data-name"}"
                 context.body = "
-                <p>Hola Luis Martinez, este&nbsp; mensaje es para avisarte que he terminado de modificar la lista de materiales del sector <strong>#{$sec.val()} - #{$sec.attr "data-name"}</strong> del proyecto <strong>#{$pro.val()} - #{$pro.attr "data-name"}</strong>.</p><p>Espero tu pronta respuesta y aprobación de las modificaciones.</p><p>Atte&nbsp; Name<br></p><p><strong>companyname</strong><br data-mce-bogus=\"1\"></p><p>Hora local <br data-mce-bogus=\"1\"></p>
+                <p>Hola Luis Martinez, este&nbsp; mensaje es para avisarte que he terminado de modificar la lista de materiales del sector <strong>#{$sec.val()} - #{$sec.attr "data-name"}</strong> del proyecto <strong>#{$pro.val()} - #{$pro.attr "data-name"}</strong>.</p><p>Espero tu pronta respuesta y aprobación de las modificaciones.</p><p>Atte&nbsp; #{$user.attr "data-name"}<br></p><p><strong>#{$company.val()}</strong><br data-mce-bogus=\"1\"></p><p>Hora local #{new Date()}<br data-mce-bogus=\"1\"></p>
                 "
-                console.log context
+                $.ajax
+                    url: "http://190.41.246.91:3000/mailer/" #url: "http://127.0.0.1:3000/mailer/"
+                    type: "GET"
+                    crossDomain: true
+                    data: $.param context
+                    dataType: "jsonp",
+                    success: (response) ->
+                        if response.status
+                            $().toastmessage "showSuccessToast", "Tu mensaje fue enviado."
+                        else
+                            $().toastmessage "showErrorToast", "No se a Podido enviar la alerta."
     return
 
 calcAmountModifySector = (event) ->

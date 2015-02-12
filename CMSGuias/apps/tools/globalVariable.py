@@ -165,7 +165,7 @@ relative_path = settings.MEDIA_ROOT
 def get_Token():
     token = ''
     try:
-        chars = settings.SECRET_KEY
+        chars = '1C3A5E7B9H2D46FI80GJZXYPRTKL'
         for x in xrange(1,6):
             index = randint(0, (chars.__len__() - 1))
             token = '%s%s'%(token, chars[index])
