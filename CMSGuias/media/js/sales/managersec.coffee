@@ -162,6 +162,8 @@ $(document).ready ->
     $("table.table-float").floatThead
         useAbsolutePositioning: true
         scrollingTop: 50
+    .mouseenter ->
+        $(@).floatThead "reflow"
     return
 
 tableUp = (event) ->
@@ -693,11 +695,11 @@ selectChoiseOrder = (event) ->
 
 list_temp_nipples = (idmat)->
     data =
-        "list-nip" : true
-        "pro" : $("input[name=pro]").val()
-        "sub" : $("input[name=sub]").val()
-        "sec" : $("input[name=sec]").val()
-        "mat" : idmat
+        "list-nip": true
+        "pro": $("input[name=pro]").val()
+        "sub": $("input[name=sub]").val()
+        "sec": $("input[name=sec]").val()
+        "mat": idmat
     $.getJSON "", data, (response) ->
         if response.status
             template = "<tr class=\"trnip{{ id }}\">
@@ -719,11 +721,34 @@ list_temp_nipples = (idmat)->
                                 </button>
                             </td>
                         </tr>"
-            $tb = $("#des#{idmat} > div > table > tbody")
+            #$tb = $("#des#{idmat} > div > table > tbody")
+            $tb = $("table > tbody.tdn#{idmat}")
             $tb.empty()
             for x of response.list
                 response.list[x].item = (parseInt(x) + 1)
-                $tb.append Mustache.render template, response.list[x]
+                template = "<tr class=\"trnip#{ response.list[x].id }\">
+                            <td>#{ response.list[x].quantity }</td>
+                            <td>#{ response.list[x].name }</td>
+                            <td>#{ response.list[x].diameter }</td>
+                            <td>x</td>
+                            <td>#{ response.list[x].measure }</td>
+                            <td>#{ response.list[x].unit }</td>
+                            <td>#{ response.list[x].comment }</td>
+                            <td>
+                                <button class=\"btn btn-xs btn-link text-green btn-nip-edit #{ response.list[x].view }\" data-edit-nip=\"#{ response.list[x].materials }\" value=\"#{ response.list[x].id }\" data-tag=\"#{ response.list[x].tag }\">
+                                    <span class=\"glyphicon glyphicon-pencil\"></span>
+                                </button>
+                            </td>
+                            <td>
+                                <button class=\"btn btn-xs btn-link btn-nip-del text-red #{ response.list[x].view }\" data-del-nip=\"#{ response.list[x].materials }\" value=\"#{ response.list[x].id }\">
+                                    <span class=\"glyphicon glyphicon-trash\"></span>
+                                </button>
+                            </td>
+                        </tr>"
+                $tb.append template
+                console.log $tb
+                #$tb.append Mustache.render template, response.list[x]
+                console.table response.list[x]
 
             $(".in#{idmat}").text (response.ingress)
             $(".res#{idmat}").text ($(".totr#{idmat}").val() * 100) - response.ingress
@@ -916,13 +941,23 @@ showListNipp = ->
     counter = 0
     # console.log $("table.torders > tbody.nipples > tr.prenip#{idmat}").length
     if $("table.torders > tbody.nipples > tr.prenip#{idmat}").length is 0
-        $tr = $("div#des#{@value} > div > table > tbody.tb > tr")
+        $tr = $("table > tbody.tdn#{idmat} > tr")
         if $tr.length is 0
             list_temp_nipples @value
-        $tr.each ()->
+        $tr.each ->
             $td = $(@).find("td")
             counter += 1
-            arr.push {"item":counter, "quantity":$td.eq(0).text(), "name": $td.eq(1).text(), "diameter":$td.eq(2).text(),"measure":$td.eq(4).text(), "unit":"cm", "comment":$td.eq(6).text(),"id":$td.eq(7).find("button").val(), "tag":$td.eq(7).find("button").attr("data-tag")}
+            arr.push {
+                "item": counter,
+                "quantity": $td.eq(0).text(),
+                "name": $td.eq(1).text(),
+                "diameter": $td.eq(2).text(),
+                "measure": $td.eq(4).text(),
+                "unit": "cm",
+                "comment": $td.eq(6).text(),
+                "id": $td.eq(7).find("button").val(),
+                "tag": $td.eq(7).find("button").attr("data-tag")
+            }
             return
     else
         console.log "row exists"
@@ -1283,8 +1318,8 @@ startModidfy = ->
                 designtable = "
                         <tr id=\"trm-{{ materials }}\" class=\"{{!class}}\">
                         <td class=\"text-center\">{{ item }}</td>
-                        <td class=\"text-center\">{{ materials }}</td>
-                        <td>{{ name }} - {{ measure }}</td>
+                        <td class=\"text-center col-2\"><small>{{ materials }}</small></td>
+                        <td class=\"col-5\">{{ name }} - {{ measure }}</td>
                         <td class=\"text-center\">{{ unit }}</td>
                         <td>
                             <select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"brand-{{ materials }}-{{ brand_id }}\"></select>
@@ -1299,17 +1334,17 @@ startModidfy = ->
                             <input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm change-modify\" value=\"{{ quantity }}\" min=\"0\" id=\"quantity-{{ materiales }}\">
                         </td>
                         {{!prices}}
-                        <td class=\"text-center\">
+                        <td class=\"text-center col-1\">
                             <button class=\"btn btn-xs btn-link text-green btn-update-update\" value=\"{{ materials }}\" data-tag=\"{{ tag }}\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\">
                                 <span class=\"glyphicon glyphicon-edit\"></span>
                             </button>
                         </td>
-                        <td class=\"text-center\">
+                        <td class=\"text-center col-1\">
                             <button class=\"btn btn-xs btn-link text-red btn-delete-update\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\" value=\"{{ materials }}\">
                                 <span class=\"glyphicon glyphicon-trash\"></span>
                             </button>
                         </td>
-                        <td class=\"text-center\">{{!attend}}</td>
+                        <td class=\"text-center col-1\">{{!attend}}</td>
                         </tr>"
 
                 template = designtable
@@ -1473,9 +1508,11 @@ addMaterialUpdateMeter = ->
     data.quantity = parseFloat(data.quantity.replace(",","."))
     data.price = $("input[name=precio]").val()
     data.price = parseFloat(data.price.replace(",","."))
+    data.sales = $("input[name=sales]").val()
+    data.sales = parseFloat(data.sales.replace(",","."))
     data.brand = $("select[name=brand]").val()
     data.model = $("select[name=model]").val()
-    if data.materials != "" and data.quantity != "" and data.price != ""
+    if data.materials != "" and data.quantity != "" and data.price != "" and data.sales != ""
         currency = $("select[name=moneda]").val()
         if $("[name=currency]").val() isnt currency
             # valid exists exchange rate for today
@@ -1488,6 +1525,7 @@ addMaterialUpdateMeter = ->
                     return false
                 purchase = $("[name=#{$("[name=currency]").val()}]").val()
             data.price = data.price * parseFloat(purchase)
+            data.sales = data.sales * parseFloat(purchase)
         if $("input[name=gincludegroup]").length
             if $("input[name=gincludegroup]").is(":checked")
                 data.details = JSON.stringify tmpObjectDetailsGroupMaterials.details
@@ -2140,7 +2178,7 @@ calcAmountSector = (event) ->
         $("table.table-details > tbody > tr").each (index, element) ->
             $td = $(element).find "td"
             amount += (convertNumber($td.eq(10).text()) * convertNumber($td.eq(8).text()))
-            sales += (convertNumber($td.eq(10).text()) * convertNumber($td.eq(8).text()))
+            sales += (convertNumber($td.eq(11).text()) * convertNumber($td.eq(8).text()))
             return
     else if $("input#calcAmountSectorFirst").length
         $("table.table-details > tbody > tr").each (index, element) ->

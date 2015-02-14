@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}
+    Note Ingress
+{% endblock title %}
+{% block script %}
+    <script src="{{ MEDIA_URL }}js/mustache.js"></script>
+    <script src="{{ MEDIA_URL }}js/floatThead.js"></script>
+    <script src="{{ MEDIA_URL }}js/almacen/noteingress.js"></script>
+{% endblock script %}
+{% block header %}
+    {% include "menus/storage_menu.htm" %}
+{% endblock header %}
+{% block content %}
+    <div class="container">
+        <div class="panel panel-sucess">
+            <div class="panel-body">
+                <header>
+                    <h3>
+                        Nota de Ingreso
+                    </h3>
+                </header>
+                <section>
+                    <div class="bs-callout bs-callout-warning">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    Buscar por:
+                                    <label class="radio-inline">
+                                        <input type="radio" name="opsearch" value="nro" checked>
+                                        Código
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="opsearch" value="status">
+                                        Estado
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="opsearch" value="date">
+                                        Fechas
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">Nro Nota Ingreso</label>
+                                    <input type="text" placeholder="NIAA000000" class="form-control input-sm" name="number">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">Estado</label>
+                                    <select name="status" class="form-control input-sm">
+                                        <option value="">-- Seleccione --</option>
+                                        <option value="CO">COMPLETO</option>
+                                        <option value="PE">PENDIENTE</option>
+                                        <option value="AN">ANULADO</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">FECHA INICIO</label>
+                                    <input type="text" maxlength="10" placeholder="dd-mm-aaaa" class="form-control input-sm" name="sdate">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">FECHA FIN</label>
+                                    <input type="text" maxlength="10" placeholder="dd-mm-aaaa" class="form-control input-sm" name="edate">
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <label class="control-label">BUSCAR</label>
+                                <button class="btn btn-warning btn-sm text-black">
+                                    <span class="fa fa-search"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div class="tabel-responsive">
+                    <table class="table table-condensed table-float table-bordered table-noteingress">
+                        <thead>
+                            <tr class="brand-warning">
+                                <th class="text-center">ITEM</th>
+                                <th class="text-center">CODIGO</th>
+                                <th class="text-center">NRO COMPRA</th>
+                                <th class="text-center">NRO FACTURA</th>
+                                <th class="text-center">INGRESO</th>
+                                <th class="text-center">ESTADO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for x in note %}
+                                <tr>
+                                    <td class="text-center">{{ forloop.counter }}</td>
+                                    <td>{{ x.ingress_id }}</td>
+                                    <td>{{ x.purchase_id }}</td>
+                                    <td>{{ x.invoice }}</td>
+                                    <td>{{ x.register|date:"d-m-Y" }}</td>
+                                    <td>{{ x.status }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6">Nothing data</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -837,7 +837,6 @@
                                     {% ifequal x.materiales_id|truncatechars:6 "115..." %}
                                     <tr>
                                         <td colspan="2">
-
                                             <div class="panel-group">
                                                 <div class="panel-heading">
                                                     <h4 class="panel-title">
@@ -921,7 +920,7 @@
                                                                     <th>Eliminar</th>
                                                                 </tr>
                                                             </thead>
-                                                            <tbody class="tb{{ materiales_id }}"></tbody>
+                                                            <tbody class="tdn{{ x.materiales_id }}"></tbody>
                                                         </table>
                                                     </div>
                                                     <!-- </div> -->
@@ -1023,7 +1022,7 @@
                                     <tr class="brand-warning">
                                         <th class="text-center">Item</th>
                                         <th class="text-center">Código</th>
-                                        <th class="text-center">Descripción</th>
+                                        <th class="text-center col-5">Descripción</th>
                                         <!-- <th class="text-center">Medida</th> -->
                                         <th class="text-center">Unidad</th>
                                         <th class="text-center">Marca</th>

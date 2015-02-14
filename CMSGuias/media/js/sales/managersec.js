@@ -180,6 +180,8 @@ $(document).ready(function() {
   $("table.table-float").floatThead({
     useAbsolutePositioning: true,
     scrollingTop: 50
+  }).mouseenter(function() {
+    return $(this).floatThead("reflow");
   });
 });
 
@@ -790,11 +792,14 @@ list_temp_nipples = function(idmat) {
     var $tb, template, x;
     if (response.status) {
       template = "<tr class=\"trnip{{ id }}\"> <td>{{ quantity }}</td> <td>{{ name }}</td> <td>{{ diameter }}</td> <td>x</td> <td>{{ measure }}</td> <td>{{ unit }}</td> <td>{{ comment }}</td> <td> <button class=\"btn btn-xs btn-link text-green btn-nip-edit {{ view }}\" data-edit-nip=\"{{ materials }}\" value=\"{{ id }}\" data-tag=\"{{ tag }}\"> <span class=\"glyphicon glyphicon-pencil\"></span> </button> </td> <td> <button class=\"btn btn-xs btn-link btn-nip-del text-red {{ view }}\" data-del-nip=\"{{ materials }}\" value=\"{{ id }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> </tr>";
-      $tb = $("#des" + idmat + " > div > table > tbody");
+      $tb = $("table > tbody.tdn" + idmat);
       $tb.empty();
       for (x in response.list) {
         response.list[x].item = parseInt(x) + 1;
-        $tb.append(Mustache.render(template, response.list[x]));
+        template = "<tr class=\"trnip" + response.list[x].id + "\"> <td>" + response.list[x].quantity + "</td> <td>" + response.list[x].name + "</td> <td>" + response.list[x].diameter + "</td> <td>x</td> <td>" + response.list[x].measure + "</td> <td>" + response.list[x].unit + "</td> <td>" + response.list[x].comment + "</td> <td> <button class=\"btn btn-xs btn-link text-green btn-nip-edit " + response.list[x].view + "\" data-edit-nip=\"" + response.list[x].materials + "\" value=\"" + response.list[x].id + "\" data-tag=\"" + response.list[x].tag + "\"> <span class=\"glyphicon glyphicon-pencil\"></span> </button> </td> <td> <button class=\"btn btn-xs btn-link btn-nip-del text-red " + response.list[x].view + "\" data-del-nip=\"" + response.list[x].materials + "\" value=\"" + response.list[x].id + "\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> </tr>";
+        $tb.append(template);
+        console.log($tb);
+        console.table(response.list[x]);
       }
       $(".in" + idmat).text(response.ingress);
       $(".res" + idmat).text(($(".totr" + idmat).val() * 100) - response.ingress);
@@ -1004,7 +1009,7 @@ showListNipp = function() {
   arr = new Array();
   counter = 0;
   if ($("table.torders > tbody.nipples > tr.prenip" + idmat).length === 0) {
-    $tr = $("div#des" + this.value + " > div > table > tbody.tb > tr");
+    $tr = $("table > tbody.tdn" + idmat + " > tr");
     if ($tr.length === 0) {
       list_temp_nipples(this.value);
     }
@@ -1441,7 +1446,7 @@ startModidfy = function() {
       $tb.empty();
       area = $("input[name=area]").val();
       for (x in response.details) {
-        designtable = "<tr id=\"trm-{{ materials }}\" class=\"{{!class}}\"> <td class=\"text-center\">{{ item }}</td> <td class=\"text-center\">{{ materials }}</td> <td>{{ name }} - {{ measure }}</td> <td class=\"text-center\">{{ unit }}</td> <td> <select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"brand-{{ materials }}-{{ brand_id }}\"></select> </td> <td> <select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"model-{{ materials }}-{{ model_id }}\"></select> </td> <td class=\"text-center\"> {{ orders }} </td> <td> <input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm change-modify\" value=\"{{ quantity }}\" min=\"0\" id=\"quantity-{{ materiales }}\"> </td> {{!prices}} <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-green btn-update-update\" value=\"{{ materials }}\" data-tag=\"{{ tag }}\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\"> <span class=\"glyphicon glyphicon-edit\"></span> </button> </td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-red btn-delete-update\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\" value=\"{{ materials }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> <td class=\"text-center\">{{!attend}}</td> </tr>";
+        designtable = "<tr id=\"trm-{{ materials }}\" class=\"{{!class}}\"> <td class=\"text-center\">{{ item }}</td> <td class=\"text-center col-2\"><small>{{ materials }}</small></td> <td class=\"col-5\">{{ name }} - {{ measure }}</td> <td class=\"text-center\">{{ unit }}</td> <td> <select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"brand-{{ materials }}-{{ brand_id }}\"></select> </td> <td> <select style=\"width: 80px;\" class=\"form-control input-sm\" id=\"model-{{ materials }}-{{ model_id }}\"></select> </td> <td class=\"text-center\"> {{ orders }} </td> <td> <input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm change-modify\" value=\"{{ quantity }}\" min=\"0\" id=\"quantity-{{ materiales }}\"> </td> {{!prices}} <td class=\"text-center col-1\"> <button class=\"btn btn-xs btn-link text-green btn-update-update\" value=\"{{ materials }}\" data-tag=\"{{ tag }}\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\"> <span class=\"glyphicon glyphicon-edit\"></span> </button> </td> <td class=\"text-center col-1\"> <button class=\"btn btn-xs btn-link text-red btn-delete-update\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\" value=\"{{ materials }}\"> <span class=\"glyphicon glyphicon-trash\"></span> </button> </td> <td class=\"text-center col-1\">{{!attend}}</td> </tr>";
         template = designtable;
         if ($("input[name=area]").val() !== "operaciones") {
           template = template.replace("{{!prices}}", "<td> <input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm change-modify\" value=\"{{ price }}\" id=\"price-{{ materials }}\"> </td> <td> <input style=\"width: 80px;\" type=\"number\" class=\"form-control input-sm change-modify\" value=\"{{ sales }}\" id=\"sales-{{ materials }}\"> </td> <td>{{ amount }}</td>");
@@ -1620,9 +1625,11 @@ addMaterialUpdateMeter = function() {
   data.quantity = parseFloat(data.quantity.replace(",", "."));
   data.price = $("input[name=precio]").val();
   data.price = parseFloat(data.price.replace(",", "."));
+  data.sales = $("input[name=sales]").val();
+  data.sales = parseFloat(data.sales.replace(",", "."));
   data.brand = $("select[name=brand]").val();
   data.model = $("select[name=model]").val();
-  if (data.materials !== "" && data.quantity !== "" && data.price !== "") {
+  if (data.materials !== "" && data.quantity !== "" && data.price !== "" && data.sales !== "") {
     currency = $("select[name=moneda]").val();
     if ($("[name=currency]").val() !== currency) {
       purchase = 0;
@@ -1636,6 +1643,7 @@ addMaterialUpdateMeter = function() {
         purchase = $("[name=" + ($("[name=currency]").val()) + "]").val();
       }
       data.price = data.price * parseFloat(purchase);
+      data.sales = data.sales * parseFloat(purchase);
     }
     if ($("input[name=gincludegroup]").length) {
       if ($("input[name=gincludegroup]").is(":checked")) {
@@ -2324,7 +2332,7 @@ calcAmountSector = function(event) {
       var $td;
       $td = $(element).find("td");
       amount += convertNumber($td.eq(10).text()) * convertNumber($td.eq(8).text());
-      sales += convertNumber($td.eq(10).text()) * convertNumber($td.eq(8).text());
+      sales += convertNumber($td.eq(11).text()) * convertNumber($td.eq(8).text());
     });
   } else if ($("input#calcAmountSectorFirst").length) {
     $("table.table-details > tbody > tr").each(function(index, element) {

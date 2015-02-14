@@ -1437,3 +1437,29 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
+
+class NoteIngressView(JSONResponseMixin, TemplateView):
+    template_name = 'almacen/listnoteingress.html'
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        try:
+            context = dict()
+            if request.is_ajax():
+                try:
+                    if 'search' in request.GET:
+                        if 'nro' in request.GET.get('nro'):
+                            pass
+                        if 'status' in request.GET.get('status'):
+                            pass
+                        if 'sdate' in request.GET.get('sadte'):
+                            pass
+                    context['status'] = True
+                except Exception, e:
+                    context['raise'] = str(e)
+                    context['status'] = False
+                return self.render_to_json_response(context)
+            context['note'] = models.NoteIngress.objects.filter(status='CO').order_by('-register')[:10]
+            return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        except TemplateDoesNotExist, e:
+            raise Http404()
