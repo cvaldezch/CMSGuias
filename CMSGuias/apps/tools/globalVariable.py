@@ -94,10 +94,10 @@ typeProject = {
 }
 
 # date now format str
-def date_now(type='date',format="%Y-%m-%d"):
+def date_now(type='date',format='%Y-%m-%d'):
     date = datetime.datetime.today()
     if type == 'str':
-        return "%s"%(date.strftime(format))
+        return '%s'%(date.strftime(format))
     elif type == 'date':
         return date.date()
     elif type == 'time':
@@ -107,7 +107,7 @@ def date_now(type='date',format="%Y-%m-%d"):
 
 # Convert Date str to Date and date to str
 def format_date_str(_date=None, format='%Y-%m-%d',options={}):
-    date_str = ""
+    date_str = ''
     try:
         if _date is not None:
             if format.startswith('%d'):
@@ -117,14 +117,13 @@ def format_date_str(_date=None, format='%Y-%m-%d',options={}):
             else:
                 date_str = _date.strftime(format)
         else:
-            date_str = "date invalid!"
+            date_str = 'date invalid!'
     except Exception, e:
-        messages.add_message("%s"%e)
-        raise Http404
+        messages.add_message('%s'%str(e))
     return date_str
 
 def format_time_str(_date=None, format='%H:%M:%S', options={}):
-    time_str = ""
+    time_str = ''
     try:
         if _date is not None:
             if options.__len__() > 0:
@@ -135,23 +134,24 @@ def format_time_str(_date=None, format='%H:%M:%S', options={}):
             else:
                 time_str = _date.strftime(format)
         else:
-            time_str = "date invalid!"
+            time_str = 'date invalid!'
     except Exception, e:
-        messages.add_message("%s"%e)
+        messages.add_message('%s'%e)
         raise Http404
     return time_str
 
-def format_str_date(_str=None, format="%Y-%m-%d"):
-    str_date = ""
+def format_str_date(_str=None, format='%Y-%m-%d'):
+    str_date = ''
     try:
         if _str is not None:
             str_date = datetime.datetime.strptime(_str, format).date()
         else:
-            str_date = "str invalid!"
+            str_date = 'str invalid!'
     except Exception, e:
         print 'Error'
-        messages.add_message(e)
-        raise Http404('Method Error')
+        str_date = 'date invalid!'
+        #messages.add_message(e)
+        #raise Http404('Method Error')
     return str_date
 # Block Dates and Times
 # get year current str

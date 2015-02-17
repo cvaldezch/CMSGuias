@@ -1448,14 +1448,52 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
             if request.is_ajax():
                 try:
                     if 'search' in request.GET:
-                        if 'nro' in request.GET.get('nro'):
-                            pass
-                        if 'status' in request.GET.get('status'):
-                            pass
-                        if 'sdate' in request.GET.get('sadte'):
-                            pass
-                    context['status'] = True
-                except Exception, e:
+                        if 'nro' in request.GET:
+                            obj = models.NoteIngress.objects.filter(pk=request.GET.get('nro'), status='CO')
+                        if 'status' in request.GET:
+                            obj = models.NoteIngress.objects.filter(status=request.GET.get('status'))
+                        if 'sdate' in request.GET:
+                            if 'edate' in request.GET:
+                                obj = models.NoteIngress.objects.filter(register__range=(globalVariable.format_str_date(request.GET.get('sdate'),'%d-%m-%Y'), globalVariable.format_str_date(request.GET.get('edate'),'%d-%m-%Y')))
+                            else:
+                                print globalVariable.format_str_date(request.GET.get('sdate'),'%d-%m-%Y')
+                                obj = models.NoteIngress.objects.filter(register__startswith=globalVariable.format_str_date(request.GET.get('sdate'),'%d-%m-%Y'))
+                        if obj:
+                            context['list'] = [
+                                {
+                                    'ingress': x.ingress_id,
+                                    'purchase': x.purchase_id,
+                                    'invoice': x.invoice,
+                                    'register': x.register.strftime('%d-%m-%Y'),
+                                    'status': x.status
+                                } for x in obj
+                            ]
+                            context['status'] = True
+                        else:
+                            context['status'] = False
+                    if 'details' in request.GET:
+                        bedside = models.NoteIngress.objects.get(pk=request.GET['ingress'])
+                        context['ingress'] = bedside.ingress_id
+                        context['storage'] = bedside.storage.nombre
+                        context['purchase'] = bedside.purchase_id
+                        context['guide'] = bedside.guide
+                        context['invoice'] = bedside.invoice
+                        context['motive'] = bedside.motive
+                        context['observation'] = bedside.observation
+                        context['details'] = [
+                            {
+                                'materials': x.materials_id,
+                                'name': x.materials.matnom,
+                                'meter': x.materials.matmed,
+                                'unit': x.materials.unidad.uninom,
+                                'brand': x.brand.brand,
+                                'model': x.model.model,
+                                'quantity': x.quantity
+                            }
+                            for x in models.DetIngress.objects.filter(ingress_id=request.GET.get('ingress'))
+                        ]
+                        context['status'] = True
+                except ObjectDoesNotExist, e:
                     context['raise'] = str(e)
                     context['status'] = False
                 return self.render_to_json_response(context)

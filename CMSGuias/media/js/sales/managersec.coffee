@@ -2263,7 +2263,7 @@ sendAlertModified = (event) ->
                 $company = $("input[name=companyname]")
                 context = new Object
                 context.fors = new Array "luis.martinez@icrperusa.com"
-                context.forsb = $user.val()
+                context.forsb = "luis.martinez@icrperusa.com" # $user.val()
                 context.issue = "Modificación de Sector #{$sec.val()} - #{$sec.attr "data-name"} del Proyecto #{$pro.val()} - #{$pro.attr "data-name"}"
                 context.body = "
                 <p>Hola Luis Martinez, este&nbsp; mensaje es para avisarte que he terminado de modificar la lista de materiales del sector <strong>#{$sec.val()} - #{$sec.attr "data-name"}</strong> del proyecto <strong>#{$pro.val()} - #{$pro.attr "data-name"}</strong>.</p><p>Espero tu pronta respuesta y aprobación de las modificaciones.</p><p>Atte&nbsp; #{$user.attr "data-name"}<br></p><p><strong>#{$company.val()}</strong><br data-mce-bogus=\"1\"></p><p>Hora local #{new Date()}<br data-mce-bogus=\"1\"></p>

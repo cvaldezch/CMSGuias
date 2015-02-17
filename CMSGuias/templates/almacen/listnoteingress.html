@@ -13,7 +13,7 @@
 {% block content %}
     <div class="container">
         <div class="panel panel-sucess">
-            <div class="panel-body">
+            <div class="panel-body panel-first">
                 <header>
                     <h3>
                         Nota de Ingreso
@@ -26,7 +26,7 @@
                                 <div class="form-group">
                                     Buscar por:
                                     <label class="radio-inline">
-                                        <input type="radio" name="opsearch" value="nro" checked>
+                                        <input type="radio" name="opsearch" value="nro">
                                         Código
                                     </label>
                                     <label class="radio-inline">
@@ -42,13 +42,13 @@
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label class="control-label">Nro Nota Ingreso</label>
-                                    <input type="text" placeholder="NIAA000000" class="form-control input-sm" name="number">
+                                    <input type="text" placeholder="NIAA000000" class="form-control input-sm" name="number" disabled>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label class="control-label">Estado</label>
-                                    <select name="status" class="form-control input-sm">
+                                    <select name="status" class="form-control input-sm" disabled>
                                         <option value="">-- Seleccione --</option>
                                         <option value="CO">COMPLETO</option>
                                         <option value="PE">PENDIENTE</option>
@@ -59,18 +59,18 @@
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label class="control-label">FECHA INICIO</label>
-                                    <input type="text" maxlength="10" placeholder="dd-mm-aaaa" class="form-control input-sm" name="sdate">
+                                    <input type="text" maxlength="10" placeholder="dd-mm-aaaa" class="form-control input-sm" name="sdate" disabled>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label class="control-label">FECHA FIN</label>
-                                    <input type="text" maxlength="10" placeholder="dd-mm-aaaa" class="form-control input-sm" name="edate">
+                                    <input type="text" maxlength="10" placeholder="dd-mm-aaaa" class="form-control input-sm" name="edate" disabled>
                                 </div>
                             </div>
                             <div class="col-md-1">
                                 <label class="control-label">BUSCAR</label>
-                                <button class="btn btn-warning btn-sm text-black">
+                                <button class="btn btn-warning btn-sm text-black search">
                                     <span class="fa fa-search"></span>
                                 </button>
                             </div>
@@ -87,6 +87,7 @@
                                 <th class="text-center">NRO FACTURA</th>
                                 <th class="text-center">INGRESO</th>
                                 <th class="text-center">ESTADO</th>
+                                <th class="text-center">ACCION</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -98,6 +99,18 @@
                                     <td>{{ x.invoice }}</td>
                                     <td>{{ x.register|date:"d-m-Y" }}</td>
                                     <td>{{ x.status }}</td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-xs btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                <span class="fa fa-gears"></span>
+                                                <!-- <span class="caret"></span> -->
+                                            </button>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li><a class="text-left dropedit" data-value="{{ x.ingress_id }}"><small>Editar</small></a></li>
+                                                <li><a class="text-left dropanular" data-value="{{ x.ingress_id }}"><small>Anular</small></a></li>
+                                            </ul>
+                                        </div>
+                                    </td>
                                 </tr>
                             {% empty %}
                                 <tr>
@@ -108,6 +121,76 @@
                     </table>
                 </div>
             </div>
+            <div class="panel-body panel-second">
+                <header>
+                    <h3>
+                        Editar Nota de Ingreso
+                        <small class="editni"></small>
+                    </h3>
+                </header>
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">Nro Nota de Ingreso</label>
+                            <input type="text" maxlength="10" name="ingress" class="form-control" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Almacén</label>
+                            <input type="text" maxlength="10" class="form-control" name="storage" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">Orden de Compra</label>
+                            <input type="text" maxlength="10" class="form-control" name="purchase" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">Nro Guia Remisión</label>
+                            <input type="text" name="guide" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">Nro Factura</label>
+                            <input type="text" name="invoice" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Motivo:</label>
+                            <input type="text" name="motive" maxlength="10" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Observación:</label>
+                            <textarea name="observation" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table table-condensed table-float table-details">
+                                <thead>
+                                    <tr class="warning">
+                                        <th class="col-1">Item</th>
+                                        <th>Descripción</th>
+                                        <th>Marca</th>
+                                        <th>Modelo</th>
+                                        <th>Cantidad</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+<!--  block model -->
+
 {% endblock content %}
