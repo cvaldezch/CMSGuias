@@ -128,69 +128,83 @@
                         <small class="editni"></small>
                     </h3>
                 </header>
-                <div class="row">
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label class="control-label">Nro Nota de Ingreso</label>
-                            <input type="text" maxlength="10" name="ingress" class="form-control" readonly>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="control-label">Almacén</label>
-                            <input type="text" maxlength="10" class="form-control" name="storage" readonly>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label class="control-label">Orden de Compra</label>
-                            <input type="text" maxlength="10" class="form-control" name="purchase" readonly>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label class="control-label">Nro Guia Remisión</label>
-                            <input type="text" name="guide" class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label class="control-label">Nro Factura</label>
-                            <input type="text" name="invoice" class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label">Motivo:</label>
-                            <input type="text" name="motive" maxlength="10" class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label">Observación:</label>
-                            <textarea name="observation" class="form-control"></textarea>
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="table-responsive">
-                            <table class="table table-condensed table-float table-details">
-                                <thead>
-                                    <tr class="warning">
-                                        <th class="col-1">Item</th>
-                                        <th>Descripción</th>
-                                        <th>Marca</th>
-                                        <th>Modelo</th>
-                                        <th>Cantidad</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
+                <nav class="">
+                    <button class="btn btn-sm btn-default backtofirst">
+                        <span class="fa fa-chevron-circle-left"></span>
+                        Regresar
+                    </button>
+                        <button class="btn btn-sm btn-success editingress pull-right">
+                            <span class="fa fa-edit"></span>
+                            Editar Cambios
+                        </button>
+                </nav>
+                <div class="panel panel-warning">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">Nro Nota de Ingreso</label>
+                                    <input type="text" maxlength="10" name="ingress" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Almacén</label>
+                                    <input type="text" maxlength="10" class="form-control" name="storage" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">Orden de Compra</label>
+                                    <input type="text" maxlength="10" class="form-control" name="purchase" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">Nro Guia Remisión</label>
+                                    <input type="text" name="guide" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="control-label">Nro Factura</label>
+                                    <input type="text" name="invoice" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Motivo:</label>
+                                    <input type="text" name="motive" maxlength="10" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Observación:</label>
+                                    <textarea name="observation" class="form-control"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-condensed table-float table-details">
+                                        <thead>
+                                            <tr class="warning">
+                                                <th class="col-1">Item</th>
+                                                <th>Descripción</th>
+                                                <th>Marca</th>
+                                                <th>Modelo</th>
+                                                <th>Cantidad</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-<!--  block model -->
-
+<!--  block data -->
+{% csrf_token %}
 {% endblock content %}

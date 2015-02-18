@@ -1501,3 +1501,21 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404()
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'editingress' in request.POST:
+                    obj = models.NoteIngress.objects.get(pk=request.POST.get('ingress'))
+                    obj.guide = request.POST.get('guide')
+                    obj.invoice = request.POST.get('invoice')
+                    obj.motive = request.POST.get('motive')
+                    obj.observation = request.POST.get('observation')
+                    obj.save()
+                    context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = str(e)
+                context['status'] = True
+            return self.render_to_json_response(context)
