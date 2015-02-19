@@ -79,6 +79,7 @@
                                     <th>Documento</th>
                                     <th>Traslado</th>
                                     <th>Moneda</th>
+                                    <th>Estado</th>
                                     <th>Deposito</th>
                                     <th>Ver</th>
                                     <th>Acción</th>
@@ -92,6 +93,20 @@
                                         <td>{{ x.documento.documento }}</td>
                                         <td>{{ x.traslado }}</td>
                                         <td>{{ x.moneda.moneda }}</td>
+                                        <td>
+                                            {% if x.status == 'CO' %}
+                                                Reecibido-Completo
+                                            {% endif %}
+                                            {% if x.status == 'IN' %}
+                                                Reecibido-Incompleto
+                                            {% endif %}
+                                            {% if x.status == 'PE' %}
+                                                Pendiente
+                                            {% endif %}
+                                            {% if x.status == 'AN' %}
+                                                Anulado
+                                            {% endif %}
+                                        </td>
                                         <td>
                                             <a class="text-black" target="_blank" href="{{ MEDIA_URL }}{{ x.deposito }}">
                                                 <span class="glyphicon glyphicon-file"></span>

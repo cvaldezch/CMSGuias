@@ -1515,6 +1515,33 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
                     obj.observation = request.POST.get('observation')
                     obj.save()
                     context['status'] = True
+                if 'annularNI' in request.POST:
+                    ingress = models.NoteIngress.objects.get(pk=request.POST.get('ingress'))
+                    details = models.DetIngress.objects.filter(ingress_id=request.POST.get('ingress'))
+                    for x in details:
+                        inv = models.Inventario.objects.get(materiales_id=x.materials_id, periodo=ingress.register.strftime('%Y'))
+                        stock = (inv.stock - x.quantity)
+                        if stock >= 0:
+                            inv.stock = stock
+                        else:
+                            inv.stock = 0
+                        try:
+                            brand = models.InventoryBrand.objects.get(materials_id=x.materials_id, period=ingress.register.strftime('%Y'), brand_id=x.brand_id, model_id=x.model_id)
+                            stock = (brand.stock - x.quantity)
+                            if stock >= 0:
+                                brand.stock = stock
+                            else:
+                                brand.stock = 0
+                            brand.save()
+                        except ObjectDoesNotExist:
+                            pass
+                        inv.save()
+                    ingress.status = 'AN'
+                    ingress.save()
+                    purchase = Compra.objects.get(compra_id=ingress.purchase_id)
+                    purchase.status = 'AN'
+                    purchase.save()
+                    context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = str(e)
                 context['status'] = True

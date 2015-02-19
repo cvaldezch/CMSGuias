@@ -195,6 +195,17 @@
                             {% endif %}
                         </div>
                         {% if meter %}
+                            <div class="text-right">
+                                <button type="button" class="btn btn-success btn-show-guide">
+                                    <span class="fa fa-tasks"></span>
+                                    Lista de Guias Salidas
+                                </button>
+                                <button type="button" class="btn btn-success btn-show-orders">
+                                    <span class="fa fa-list-alt"></span>
+                                    Lista de Guias Salidas
+                                </button>
+                            </div>
+                            <br>
                             <div class="btn-group">
                                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'operaciones' %}
                                     <button class="btn btn-default btn-update-meter-cancel">

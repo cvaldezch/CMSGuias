@@ -22,7 +22,7 @@ from decimal import Decimal
 
 from CMSGuias.apps.home.models import *
 from CMSGuias.apps.operations.models import MetProject, Nipple, Deductive, DeductiveInputs, DeductiveOutputs
-from CMSGuias.apps.almacen.models import Inventario, tmpniple, Pedido, Detpedido, Niple
+from CMSGuias.apps.almacen.models import Inventario, tmpniple, Pedido, Detpedido, Niple, GuiaRemision, DetGuiaRemision, NipleGuiaRemision
 from .models import *
 from .forms import *
 from CMSGuias.apps.almacen.forms import addOrdersForm
@@ -1541,3 +1541,51 @@ class SectorManage(JSONResponseMixin, View):
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
+
+class ListGuideByProject(JSONResponseMixin, TemplateView):
+
+    template_name = 'sales/listguide.html'
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if kwargs['sec'] is unicode(None):
+                guide =GuiaRemision.objects.filter(pedido__proyecto_id=kwargs['pro']).order_by('registrado')
+            else:
+                guide =GuiaRemision.objects.filter(pedido__proyecto_id=kwargs['pro'], pedido__sector_id=kwargs['sec']).order_by('registrado')
+            print guide
+            if guide:
+                context['guides'] = [
+                    {
+                      'guide': c.guia_id,
+                      'register': c.registrado,
+                      'traslate': c.traslado,
+                      'customer': c.ruccliente_id,
+                      'companyname': c.ruccliente.razonsocial,
+                      'currency': c.pedido.proyecto.currency.moneda,
+                      'details': [
+                        {
+                            'materials': x.materiales_id,
+                            'name': x.materiales.matnom,
+                            'meter': x.materiales.matmed,
+                            'unit': x.materiales.unidad.uninom,
+                            'quantity': x.cantguide,
+                            'nipple': [
+                                {
+                                    'type': n.tipo,
+                                    'meter': n.metrado,
+                                    'quantity': n.cantguide
+                                }
+                                for n in NipleGuiaRemision.objects.filter(guia_id=c.guia_id, materiales_id=x.materiales_id)
+                            ] if x.materiales_id[0:3] == '115' else []
+                        }
+                        for x in DetGuiaRemision.objects.filter(guia_id=c.guia_id)
+                      ]
+                    }
+                    for c in guide
+                ]
+            print context
+            return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        except Exception, e:
+            raise Http404(e)

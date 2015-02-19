@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}
+    List Guide
+{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <div class="well">
+            <h3>
+                Lista de Guias de Remision
+                <br>
+                {#{ dates }#}
+            </h3>
+            <h4>Proyecto: {#{ pro.nompro }#}</h4>
+            {% if sec %}
+                <h5>Sectores: {#{ sec }#}</h5>
+            {% endif %}
+            <div class="panel panel-default">
+                <div class="table-responsive">
+                    <table class="table table-condensed table-hover">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Registrado</th>
+                                <th>Traslado</th>
+                                <th>Cliente</th>
+                                <th>Moneda</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in guides %}
+                                <tr class="info">
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ c.regsiter }}</td>
+                                    <td>{{ c.traslate }}</td>
+                                    <td>{{ c.companyname }}</td>
+                                    <td>{{ c.currency }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th class="col-2">Código</th>
+                                                    <th>Descripción</th>
+                                                    <th>Unidad</th>
+                                                    <th>Cantidad</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for x in c.details  %}
+                                                    <tr>
+                                                        <td>{{ x.materials }}</td>
+                                                        <td>
+                                                            {{ x.name }} - {{ x.meter }}
+                                                            {% if x.nipple %}
+                                                                {% for n in x.nipple  %}
+                                                                {% if forloop.counter0|divisibleby:2 %}
+                                                                    <br>
+                                                                {% endif %}
+                                                                    {{ n.quantity }} {{ n.type }} {{ x.meter }} x {{ n.meter }}
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>{{ x.unit }}</td>
+                                                        <td>{{ x.quantity }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

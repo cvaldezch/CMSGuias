@@ -77,6 +77,7 @@ getSearch = ->
                                         <td>{{ document }}</td>
                                         <td>{{ transfer }}</td>
                                         <td>{{ currency }}</td>
+                                        <td>{{!replace}}</td>
                                         <td><a class=\"text-black\" target=\"_blank\" href=\"/media/{{ deposito }}\"><span class=\"glyphicon glyphicon-file\"></span></a></td>
                                         <td><button value=\"{{ purchase }}\" class=\"btn btn-xs btn-link text-black btn-purchase\"><span class=\"glyphicon glyphicon-list\"></span></a>
                                         </td>
@@ -93,6 +94,14 @@ getSearch = ->
                                             </button>"
                             else
                                 tmp = template
+                            if response.list[x].status == 'CO'
+                                tmp = tmp.replace "{{!replace}}", "Recibido-Completo"
+                            else if response.list[x].status == 'IN'
+                                tmp = tmp.replace "{{!replace}}", "Recibido-Incompleto"
+                            else if response.list[x].status == 'PE'
+                                tmp = tmp.replace "{{!replace}}", "Pendiente"
+                            else if response.list[x].status == 'AN'
+                                tmp = tmp.replace "{{!replace}}", "Anulado"
                             response.list[x].item = (parseInt(x) + 1)
                             $tb.append Mustache.render tmp, response.list[x]
                         return

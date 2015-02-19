@@ -611,7 +611,7 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                 if 'savePurchase' in request.POST:
                     # Set all data the form
                     form = CompraForm(request.POST, request.FILES)
-                    print form
+                    #print form
                     if form.is_valid():
                         id = genkeys.GenerateKeyPurchase()
                         add = form.save(commit=False)
@@ -682,7 +682,16 @@ class ListPurchase(JSONResponseMixin, TemplateView):
                             obj = Compra.objects.filter(flag=True, registrado__startswith=globalVariable.format_str_date(request.GET.get('start')))
                         elif 'start' in request.GET and 'end' in request.GET:
                             obj = Compra.objects.filter(flag=True, registrado__range=(globalVariable.format_str_date(request.GET.get('start')), globalVariable.format_str_date(request.GET.get('end'))))
-                        context['list'] = [{'purchase':x.compra_id, 'document':x.documento.documento, 'transfer': globalVariable.format_date_str(x.traslado),'currency':x.moneda.moneda, 'deposito':str(x.deposito), 'status':x.status} for x in obj]
+                        context['list'] = [
+                            {
+                                'purchase': x.compra_id,
+                                'document': x.documento.documento,
+                                'transfer': globalVariable.format_date_str(x.traslado),
+                                'currency': x.moneda.moneda,
+                                'deposito':str(x.deposito),
+                                'status':x.status
+                            } for x in obj
+                        ]
                     if 'getpurchase' in request.GET:
                         p = Compra.objects.get(pk=request.GET.get('purchase'))
                         context['supplier'] = p.proveedor_id

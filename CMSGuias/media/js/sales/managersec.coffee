@@ -159,6 +159,7 @@ $(document).ready ->
     $("button.btn-block-comment").on "click", commentToogle
     $("button.btn-annimate-up").on "click", tableUp
     $("button.btn-reader-prices").on "click", readerPrices
+    $("button.btn-show-guide").on "click", showGuideByProyect
     $("table.table-float").floatThead
         useAbsolutePositioning: true
         scrollingTop: 50
@@ -2308,3 +2309,14 @@ calcAmountModifySector = (event) ->
     $(".amsalesdifftot").text (salesamount - asales).toFixed 3
     $(".amountsalestot").text (parseFloat($(".amountmeterestimated").text()) - asales).toFixed 2
     return
+
+showGuideByProyect = (event) ->
+    pro = $("input[name=pro]").val()
+    sub = $("input[name=sub]").val()
+    sec = $("input[name=sec]").val()
+    if sub is ""
+        sub = "None"
+    if sec is ""
+        sec = "None"
+    href = "/sales/projects/guide/list/#{pro}/#{sub}/#{sec}"
+    location.href = href

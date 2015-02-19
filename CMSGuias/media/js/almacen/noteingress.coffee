@@ -6,7 +6,7 @@ $(document).ready ->
     $("input[name=opsearch]").on "change", changeSearch
     $("button.backtofirst").on "click", backtofirst
     $(document).on "click", ".dropedit", getEditDetails
-    $(document).on "click", ".dropanular", getEditDetails
+    $(document).on "click", ".dropanular", anullarIngress
     return
 
 changeSearch = (event) ->
@@ -57,7 +57,13 @@ search = (event) ->
                         <td class=\"text-center\">{{ register }}</td>
                         <td class=\"text-center\">{{ status }}</td>
                         <td class=\"text-center\">
-                            <div class=\"btn-group\">
+                            {{!replace}}
+                        </td>"
+                $table = $("table.table-noteingress > tbody")
+                $table.empty()
+                for x of response.list
+                    if response.list[x].status isnt "AN"
+                        temp = template.replace "{{!replace}}", "<div class=\"btn-group\">
                                 <button type=\"button\" class=\"btn btn-xs btn-success dropdown-toggle\" data-toggle=\"dropdown\" aria-expanded=\"false\">
                                     <span class=\"fa fa-gears\"></span>
                                 </button>
@@ -65,13 +71,11 @@ search = (event) ->
                                     <li><a class=\"text-left dropedit\" data-value=\"{{ ingress }}\"><small>Editar</small></a></li>
                                     <li><a class=\"text-left dropanular\" data-value=\"{{ ingress }}\"><small>Anular</small></a></li>
                                 </ul>
-                            </div>
-                        </td>"
-                $table = $("table.table-noteingress > tbody")
-                $table.empty()
-                for x of response.list
+                            </div>"
+                    else
+                        temp = template.replace "{{!replace}}", ""
                     response.list[x].item = parseInt(x) + 1
-                    $table.append Mustache.render template, response.list[x]
+                    $table.append Mustache.render temp, response.list[x]
                 return
             else
                 $().toastmessage "showErrorToast", "No se a podido obtener datos. #{response.raise}"
@@ -150,18 +154,22 @@ anullarIngress = (event) ->
     value = @getAttribute "data-value"
     $().toastmessage "showToast",
         text: "Realmente desea anular la Nota de Ingreso?"
-        type: "comfirn"
+        type: "confirm"
         sticky: true
-        buttons [{value:"Si"},{value:"No"}]
+        buttons: [{value:"Si"},{value:"No"}]
         success: (result) ->
             if result is "Si"
                 context = new Object
                 context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
                 if value.length is 10
                     context.ingress = value
+                    context.annularNI = true
                     $.post "", context, (response) ->
                         if response.status
-                            location.reload()
+                            $().toastmessage "showSuccessToast", "Se anulado correctamente."
+                            setTimeout ->
+                                location.reload()
+                            , 2600
                             return
                         else
                             $().toastmessage "showErrorToast", "No se a podido Anular la Nota de Ingreso"

@@ -230,7 +230,9 @@
                                     {% endif %}
                                         <td>{{ forloop.counter }}</td>
                                         <td>
-                                            <a href="{% url 'managerpro_view' x.proyecto_id %}" class="btn btn-link btn-xs btn-open text-black"><span class="glyphicon glyphicon-folder-close"></span>
+                                            <a href="{% url 'managerpro_view' x.proyecto_id %}" class="btn btn-link btn-xs btn-open text-black">
+                                                <span class="fa fa-fire-extinguisher"></span>
+                                                <span class="glyphicon glyphicon-fire"></span>
                                             </a>
                                         </td>
                                         <td>{{ x.proyecto_id }}</td>
@@ -328,7 +330,9 @@
                                                 {% endif %}
                                                     <td>{{ forloop.counter }}</td>
                                                     <td>
-                                                        <a href="{% url 'managerpro_view' x.proyecto_id %}" class="btn btn-link btn-xs btn-open text-black"><span class="glyphicon glyphicon-folder-close"></span>
+                                                        <a href="{% url 'managerpro_view' x.proyecto_id %}" class="btn btn-link btn-xs btn-open text-black">
+                                                            <span class="fa fa-fire-extinguisher"></span>
+                                                            <span class="glyphicon glyphicon-fire"></span>
                                                         </a>
                                                     </td>
                                                     <td>{{ x.proyecto_id }}</td>

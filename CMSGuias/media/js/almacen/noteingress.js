@@ -12,7 +12,7 @@ $(document).ready(function() {
   $("input[name=opsearch]").on("change", changeSearch);
   $("button.backtofirst").on("click", backtofirst);
   $(document).on("click", ".dropedit", getEditDetails);
-  $(document).on("click", ".dropanular", getEditDetails);
+  $(document).on("click", ".dropanular", anullarIngress);
 });
 
 changeSearch = function(event) {
@@ -59,14 +59,19 @@ search = function(event) {
   if (Object.getOwnPropertyNames(context).length) {
     context.search = true;
     $.getJSON("", context, function(response) {
-      var $table, template, x;
+      var $table, temp, template, x;
       if (response.status) {
-        template = "<td class=\"text-center\">{{ item }}</td> <td class=\"text-center\">{{ ingress }}</td> <td class=\"text-center\">{{ purchase }}</td> <td class=\"text-center\">{{ invoice }}</td> <td class=\"text-center\">{{ register }}</td> <td class=\"text-center\">{{ status }}</td> <td class=\"text-center\"> <div class=\"btn-group\"> <button type=\"button\" class=\"btn btn-xs btn-success dropdown-toggle\" data-toggle=\"dropdown\" aria-expanded=\"false\"> <span class=\"fa fa-gears\"></span> </button> <ul class=\"dropdown-menu\" role=\"menu\"> <li><a class=\"text-left dropedit\" data-value=\"{{ ingress }}\"><small>Editar</small></a></li> <li><a class=\"text-left dropanular\" data-value=\"{{ ingress }}\"><small>Anular</small></a></li> </ul> </div> </td>";
+        template = "<td class=\"text-center\">{{ item }}</td> <td class=\"text-center\">{{ ingress }}</td> <td class=\"text-center\">{{ purchase }}</td> <td class=\"text-center\">{{ invoice }}</td> <td class=\"text-center\">{{ register }}</td> <td class=\"text-center\">{{ status }}</td> <td class=\"text-center\"> {{!replace}} </td>";
         $table = $("table.table-noteingress > tbody");
         $table.empty();
         for (x in response.list) {
+          if (response.list[x].status !== "AN") {
+            temp = template.replace("{{!replace}}", "<div class=\"btn-group\"> <button type=\"button\" class=\"btn btn-xs btn-success dropdown-toggle\" data-toggle=\"dropdown\" aria-expanded=\"false\"> <span class=\"fa fa-gears\"></span> </button> <ul class=\"dropdown-menu\" role=\"menu\"> <li><a class=\"text-left dropedit\" data-value=\"{{ ingress }}\"><small>Editar</small></a></li> <li><a class=\"text-left dropanular\" data-value=\"{{ ingress }}\"><small>Anular</small></a></li> </ul> </div>");
+          } else {
+            temp = template.replace("{{!replace}}", "");
+          }
           response.list[x].item = parseInt(x) + 1;
-          $table.append(Mustache.render(template, response.list[x]));
+          $table.append(Mustache.render(temp, response.list[x]));
         }
       } else {
         $().toastmessage("showErrorToast", "No se a podido obtener datos. " + response.raise);
@@ -150,15 +155,15 @@ anullarIngress = function(event) {
   value = this.getAttribute("data-value");
   $().toastmessage("showToast", {
     text: "Realmente desea anular la Nota de Ingreso?",
-    type: "comfirn",
-    sticky: true
-  }, buttons([
-    {
-      value: "Si"
-    }, {
-      value: "No"
-    }
-  ]), {
+    type: "confirm",
+    sticky: true,
+    buttons: [
+      {
+        value: "Si"
+      }, {
+        value: "No"
+      }
+    ],
     success: function(result) {
       var context;
       if (result === "Si") {
@@ -166,9 +171,13 @@ anullarIngress = function(event) {
         context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
         if (value.length === 10) {
           context.ingress = value;
+          context.annularNI = true;
           $.post("", context, function(response) {
             if (response.status) {
-              location.reload();
+              $().toastmessage("showSuccessToast", "Se anulado correctamente.");
+              setTimeout(function() {
+                return location.reload();
+              }, 2600);
             } else {
               $().toastmessage("showErrorToast", "No se a podido Anular la Nota de Ingreso");
             }
