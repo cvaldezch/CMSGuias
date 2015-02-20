@@ -121,6 +121,7 @@ $(document).ready ->
     $("button.btn-gen-approved").on "click", genKeyConfirmationApproved
     $("button.btn-show-loadprices").on "click", showLoadPrices
     $("button[name=upload-prices]").on "click", uploadLoadPrices
+    $("button.btn-show-guides").on "click", showGuideByProject
     return
 
 loadsAccounts = (event) ->
@@ -835,4 +836,13 @@ uploadLoadPrices = (event) ->
                     $().toastmessage "showWarningToast", "No se a podido subir el archivo. #{response.raise}"
     else
         $().toastmessage "showWarningToast", "Debe de seleccionar por lo menos un archivo."
+    return
+
+showGuideByProject = (event) ->
+    pro = $("input[name=pro]").val()
+    sub = $("input[name=sub]").val()
+    if sub is ""
+        sub = "None"
+    href = "/sales/projects/guide/list/#{pro}/#{sub}/None/"
+    location.href = href
     return

@@ -1550,11 +1550,11 @@ class ListGuideByProject(JSONResponseMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
-            if kwargs['sec'] is unicode(None):
+            if kwargs['sec'] == unicode(None):
                 guide =GuiaRemision.objects.filter(pedido__proyecto_id=kwargs['pro']).order_by('registrado')
             else:
                 guide =GuiaRemision.objects.filter(pedido__proyecto_id=kwargs['pro'], pedido__sector_id=kwargs['sec']).order_by('registrado')
-            print guide
+                context['sec'] = Sectore.objects.get(sector_id=kwargs['sec'])
             if guide:
                 context['guides'] = [
                     {
@@ -1573,7 +1573,7 @@ class ListGuideByProject(JSONResponseMixin, TemplateView):
                             'quantity': x.cantguide,
                             'nipple': [
                                 {
-                                    'type': n.tipo,
+                                    'type': [ globalVariable.tipo_nipples[k] for k in globalVariable.tipo_nipples if n.tipo == k],
                                     'meter': n.metrado,
                                     'quantity': n.cantguide
                                 }
@@ -1585,7 +1585,8 @@ class ListGuideByProject(JSONResponseMixin, TemplateView):
                     }
                     for c in guide
                 ]
-            print context
+                context['pro'] = Proyecto.objects.get(pk=kwargs['pro'])
+                context['dates'] = [guide[0].registrado, guide.latest('registrado').registrado]
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except Exception, e:
             raise Http404(e)

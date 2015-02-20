@@ -2,18 +2,31 @@
 {% block title %}
     List Guide
 {% endblock title %}
-
+{% block menu %}
+    {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
+        {% include "menus/sale.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'logistica' %}
+        {% include "menus/logistics.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+        {% include "menus/operations.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'almacen' %}
+        {% include "menus/storage_menu.htm" %}
+    {% endif %}
+{% endblock menu %}
 {% block content %}
     <div class="container">
         <div class="well">
             <h3>
                 Lista de Guias de Remision
                 <br>
-                {#{ dates }#}
+                <small>DEL {{ dates.0|date:"d-m-Y" }} AL {{ dates.1|date:"d-m-Y" }}</small>
             </h3>
-            <h4>Proyecto: {#{ pro.nompro }#}</h4>
+            <h4>Proyecto: {{ pro.proyecto_id }} {{ pro.nompro }} - {{ pro.ruccliente.razonsocial }}</h4>
             {% if sec %}
-                <h5>Sectores: {#{ sec }#}</h5>
+                <h5>Sectores: {{ sec.nomsec }}</h5>
             {% endif %}
             <div class="panel panel-default">
                 <div class="table-responsive">
@@ -21,6 +34,7 @@
                         <thead>
                             <tr>
                                 <th>Item</th>
+                                <th>Guia</th>
                                 <th>Registrado</th>
                                 <th>Traslado</th>
                                 <th>Cliente</th>
@@ -29,15 +43,16 @@
                         </thead>
                         <tbody>
                             {% for c in guides %}
-                                <tr class="info">
+                                <tr class="success">
                                     <td>{{ forloop.counter }}</td>
-                                    <td>{{ c.regsiter }}</td>
-                                    <td>{{ c.traslate }}</td>
+                                    <td>{{ c.guide }}</td>
+                                    <td>{{ c.register|date:"d-m-Y" }}</td>
+                                    <td>{{ c.traslate|date:"d-m-Y" }}</td>
                                     <td>{{ c.companyname }}</td>
                                     <td>{{ c.currency }}</td>
                                 </tr>
                                 <tr>
-                                    <td colspan="5">
+                                    <td colspan="6">
                                         <table class="table table-hover">
                                             <thead>
                                                 <tr>
@@ -58,7 +73,7 @@
                                                                 {% if forloop.counter0|divisibleby:2 %}
                                                                     <br>
                                                                 {% endif %}
-                                                                    {{ n.quantity }} {{ n.type }} {{ x.meter }} x {{ n.meter }}
+                                                                    {{ n.quantity|safe }} Niple {{ n.type.0 }} {{ x.meter }} x {{ n.meter|safe }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                                                 {% endfor %}
                                                             {% endif %}
                                                         </td>

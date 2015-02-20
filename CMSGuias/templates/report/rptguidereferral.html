@@ -139,16 +139,19 @@
 							<td class="text-center text-up">{{forloop.counter}}</td>
 							<td class="text-center text-up">{{x.cantguide}}</td>
 							<td class="text-center text-up">{{x.materiales.unidad_id}}</td>
-							<td class="nom">{{x.materiales.matnom}} {{x.materiales.matmed}} <br>
+							<td class="nom">{{x.materiales.matnom}} {{x.materiales.matmed}}
 								{% ifequal x.materiales_id|truncatechars:6 "115..." %}
 										{% for i in nipples %}
 											{% ifequal x.materiales_id i.materiales_id %}
-												{{i.cantguide}} Niple {% for k,v in tipo.items %}
+												{% if forloop.counter0|divisibleby:2 %}
+                                                    <br>
+                                                {% endif %}
+												{{ i.cantguide|safe }} Niple {% for k,v in tipo.items %}
 																	{% if k == i.tipo %}
-																		{{i.cantidad|pluralize}} {{v}}{{i.cantidad|pluralize}}
+																		{{ i.cantidad|pluralize }} {{v}}{{ i.cantidad|pluralize }}
 																	{% endif %}
 																{% endfor %}
-																{{x.materiales.matmed}} x {{i.metrado}} cm &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+																{{ x.materiales.matmed }} x {{ i.metrado|safe }} cm &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 											{% endifequal %}
 										{% endfor %}
 									{% endifequal %}

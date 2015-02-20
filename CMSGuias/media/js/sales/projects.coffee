@@ -1,12 +1,12 @@
 $(document).ready ->
-    $(".btn-save, .panel-pro").hide()
+    $(".btn-save, .panel-pro, div.panel-second").hide()
     $("input[name=comienzo], input[name=fin]").datepicker
         "changeMonth": true
         "changeYear" : true
         "showAnim" : "slide"
         "dateFormat" : "yy-mm-dd"
 
-    $(".btn-open > span").mouseenter (event) ->
+    ###$(".btn-open > span").mouseenter (event) ->
         event.preventDefault()
         $(@).removeClass "glyphicon-folder-close"
         .addClass "glyphicon-folder-open"
@@ -14,7 +14,7 @@ $(document).ready ->
     .mouseout (event) ->
         $(@).removeClass "glyphicon-folder-open"
         .addClass "glyphicon-folder-close"
-        return
+        return###
     $("table").floatThead
         useAbsolutePositioning: true
         scrollingTop: 50
@@ -58,6 +58,14 @@ $(document).ready ->
         $(".btn-show-delete").on "click", deleteProject
         return
     , 2000
+    $(".btn-link").hover ->
+        $(@).css "color", "#808080"
+        return
+    , ->
+        $(@).css "color", "#000"
+        return
+    $(".btn-show-group").on "click", showGroup
+    $(".btn-show-table").on "click", showTable
     return
 
 showaddProject = (event) ->
@@ -173,3 +181,12 @@ deleteProject = ->
                 ,"json"
                 return
     return
+
+showGroup = (event) ->
+    $("div.panel-second").fadeOut()
+    $("div.panel-first").fadeIn()
+
+showTable = (event) ->
+    $("div.panel-first").fadeOut()
+    $("div.panel-second").fadeIn()
+    $("table").floatThead "reflow"

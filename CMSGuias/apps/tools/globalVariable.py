@@ -36,7 +36,8 @@ tipo_nipples = {
     'D': 'Brida',
     'E': 'Brida - Brida',
     'F': 'Brida - Rosca',
-    'G': 'Brida - Ranura'
+    'G': 'Brida - Ranura',
+    '-': ''
 }
 
 # name month

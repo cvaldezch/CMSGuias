@@ -249,7 +249,14 @@
                                                 </button>
                                             </li>
                                         {% endif %}
-
+                                        {% if project.status == 'AC' %}
+                                            <li>
+                                                <button class="btn btn-link btn-sm text-black btn-show-guides">
+                                                    <span class="fa fa-tasks"></span>
+                                                    <span>Guias de Remisión</span>
+                                                </button>
+                                            </li>
+                                        {% endif %}
                                         {% endif %}
                                     </ul>
                                 </div>
