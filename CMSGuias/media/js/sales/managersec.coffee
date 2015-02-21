@@ -2320,3 +2320,14 @@ showGuideByProyect = (event) ->
         sec = "None"
     href = "/sales/projects/guide/list/#{pro}/#{sub}/#{sec}"
     location.href = href
+
+showOrdersByProyect = (event) ->
+    pro = $("input[name=pro]").val()
+    sub = $("input[name=sub]").val()
+    sec = $("input[name=sec]").val()
+    if sub is ""
+        sub = "None"
+    if sec is ""
+        sec = "None"
+    href = "/sales/projects/orders/list/#{pro}/#{sub}/#{sec}"
+    location.href = href

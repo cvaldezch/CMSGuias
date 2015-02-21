@@ -20,7 +20,8 @@ project_urls = patterns('',
     url(r'^sectors/', include(sectore_urls)),
     url(r'^subprojects/', include(subproject_urls)),
     url(r'^manager/sector/(?P<pro>\w+)/(?P<sub>\w+)/(?P<sec>\w+)/$', SectorManage.as_view(), name='managersec_view'),
-    url(r'guide/list/(?P<pro>\w+)/(?P<sub>\w+)/(?P<sec>\w+)/$', ListGuideByProject.as_view(), name='view_list_guide_by_projects')
+    url(r'guide/list/(?P<pro>\w+)/(?P<sub>\w+)/(?P<sec>\w+)/$', ListGuideByProject.as_view(), name='view_list_guide_by_projects'),
+    url(r'orders/list/(?P<pro>\w+)/(?P<sub>\w+)/(?P<sec>\w+)/$', ListOrdersByProject.as_view(), name='view_orders_projects'),
 )
 
 urlpatterns = patterns('',

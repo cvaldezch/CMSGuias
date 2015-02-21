@@ -1551,9 +1551,9 @@ class ListGuideByProject(JSONResponseMixin, TemplateView):
         context = dict()
         try:
             if kwargs['sec'] == unicode(None):
-                guide =GuiaRemision.objects.filter(pedido__proyecto_id=kwargs['pro']).order_by('registrado')
+                guide = GuiaRemision.objects.filter(pedido__proyecto_id=kwargs['pro']).order_by('registrado')
             else:
-                guide =GuiaRemision.objects.filter(pedido__proyecto_id=kwargs['pro'], pedido__sector_id=kwargs['sec']).order_by('registrado')
+                guide = GuiaRemision.objects.filter(pedido__proyecto_id=kwargs['pro'], pedido__sector_id=kwargs['sec']).order_by('registrado')
                 context['sec'] = Sectore.objects.get(sector_id=kwargs['sec'])
             if guide:
                 context['guides'] = [
@@ -1588,5 +1588,44 @@ class ListGuideByProject(JSONResponseMixin, TemplateView):
                 context['pro'] = Proyecto.objects.get(pk=kwargs['pro'])
                 context['dates'] = [guide[0].registrado, guide.latest('registrado').registrado]
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
-        except Exception, e:
+        except TemplateDoesNotExist, e:
+            raise Http404(e)
+
+class ListOrdersByProject(JSONResponseMixin, TemplateView):
+
+    template_name = 'sales/listorders.html'
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if kwargs['sec'] == unicode(None):
+                orders = Pedido.objects.all()
+            else:
+                orders = Pedido.objects.all()
+            if orders:
+                context['orders'] = [
+                    {
+                        'orders': o.pedido_id,
+                        'resgister': o.registrado,
+                        'transfer': o.traslado,
+                        'perform': o.empdni.name_complete,
+                        'status': o.status,
+                        'details': [
+                            {
+                                'materials': x.materiales_id,
+                                'name': x.materiales.matnom,
+                                'meter': x.materiales.matmed,
+                                'unit': x.materiales.unidad.uninom,
+                                'brand': x.brand.brand,
+                                'model': x.model.model,
+                                'quantity': x.cantidad
+                            }
+                            for x in Detpedido.objects.filter(proyecto_id=kwargs['pro'], sector_id=kwargs['sec'])
+                        ]
+                    }
+                    for o in orders
+                ]
+            return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        except TemplateDoesNotExist, e:
             raise Http404(e)
