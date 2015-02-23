@@ -160,6 +160,7 @@ $(document).ready ->
     $("button.btn-annimate-up").on "click", tableUp
     $("button.btn-reader-prices").on "click", readerPrices
     $("button.btn-show-guide").on "click", showGuideByProyect
+    $("button.btn-show-orders-do").on "click", showOrdersByProyect
     $("table.table-float").floatThead
         useAbsolutePositioning: true
         scrollingTop: 50
@@ -2329,5 +2330,5 @@ showOrdersByProyect = (event) ->
         sub = "None"
     if sec is ""
         sec = "None"
-    href = "/sales/projects/orders/list/#{pro}/#{sub}/#{sec}"
+    href = "/sales/projects/list/orders/#{pro}/#{sub}/#{sec}"
     location.href = href

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}
+    List Orders By Project
+{% endblock title %}
+{% block menu %}
+    {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
+        {% include "menus/sale.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'logistica' %}
+        {% include "menus/logistics.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+        {% include "menus/operations.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'almacen' %}
+        {% include "menus/storage_menu.htm" %}
+    {% endif %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+    <div class="well">
+        <h3>
+            Lista de Guias de Remision
+            <br>
+            <small>DEL {{ dates.0|date:"d-m-Y" }} AL {{ dates.1|date:"d-m-Y" }}</small>
+        </h3>
+        <h4>Proyecto: {{ pro.proyecto_id }} {{ pro.nompro }} - {{ pro.ruccliente.razonsocial }}</h4>
+        {% if sec %}
+            <h5>Sectores: {{ sec.sector_id }} - {{ sec.nomsec }}</h5>
+        {% endif %}
+        <div class="panel panel-default">
+            <div class="table-responsive">
+                <table class="table table-condensed table-hover">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Pedido</th>
+                            <th>Registrado</th>
+                            <th>Traslado</th>
+                            <th>Realizado</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in orders %}
+                            <tr class="success">
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ d.orders }}</td>
+                                <td>{{ d.register|date:"d-m-Y" }}</td>
+                                <td>{{ d.traslate|date:"d-m-Y" }}</td>
+                                <td>{{ d.perform }}</td>
+                                <td>{{ d.status }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="6">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th class="col-2">Código</th>
+                                                <th>Descripción</th>
+                                                <th>Unidad</th>
+                                                <th>Marca</th>
+                                                <th>Modelo</th>
+                                                <th>Cantidad</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for x in d.details  %}
+                                                <tr>
+                                                    <td>{{ x.materials }}</td>
+                                                    <td>
+                                                        {{ x.name }} - {{ x.meter }}
+                                                        {% if x.nipple %}
+                                                            {% for n in x.nipple  %}
+                                                            {% if forloop.counter0|divisibleby:2 %}
+                                                                <br>
+                                                            {% endif %}
+                                                                {{ n.quantity|safe }} Niple {{ n.type.0 }} {{ x.meter }} x {{ n.meter|safe }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>{{ x.unit }}</td>
+                                                    <td>{{ x.brand }}</td>
+                                                    <td>{{ x.model }}</td>
+                                                    <td>{{ x.quantity|safe }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

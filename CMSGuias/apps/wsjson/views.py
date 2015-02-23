@@ -492,21 +492,29 @@ def post_approved_orders(request):
         except ObjectDoesNotExist, e:
             data['status']= False
             data['msg']= e
-        return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+        return HttpResponse(simplejson.dumps(data), mimetype='application/json')
 # cancel orders
 def post_cancel_orders(request):
     if request.method == 'POST':
         data = {}
         try:
             obj = Pedido.objects.get(pk=request.POST.get('oid'))
+            try:
+                det = Detpedido.objects.filter(pedido_id__in)
+                meter = MetProject.objects.filter(proyecto_id=obj.proyecto_id, subproyecto_id=obj.subproyecto_id, sector_id=obj.sector_id)
+                for x in meter:
+
+            except ObjectDoesNotExist:
+                raise
             obj.status = 'AN'
             obj.flag = False
             obj.save()
             data['status']= True
         except ObjectDoesNotExist, e:
             data['status']= False
-            data['msg']= e
-        return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+            data['msg']= e.__str__()
+        return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+
 # recover list transport
 def get_recover_list_transport(request,truc):
     if request.method == 'GET':
@@ -518,6 +526,7 @@ def get_recover_list_transport(request,truc):
             except ObjectDoesNotExist, e:
                 data['status']= False
             return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+
 # recover list conductor
 def get_recover_list_conductor(request,truc):
     if request.method == 'GET':

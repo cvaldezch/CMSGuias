@@ -1600,9 +1600,10 @@ class ListOrdersByProject(JSONResponseMixin, TemplateView):
         context = dict()
         try:
             if kwargs['sec'] == unicode(None):
-                orders = Pedido.objects.all()
+                orders = Pedido.objects.filter(proyecto_id=kwargs['pro']).order_by('registrado')
             else:
-                orders = Pedido.objects.all()
+                orders = Pedido.objects.filter(proyecto_id=kwargs['pro'], sector_id=kwargs['sec']).order_by('registrado')
+                context['sec'] = Sectore.objects.get(sector_id=kwargs['sec'])
             if orders:
                 context['orders'] = [
                     {
@@ -1619,13 +1620,23 @@ class ListOrdersByProject(JSONResponseMixin, TemplateView):
                                 'unit': x.materiales.unidad.uninom,
                                 'brand': x.brand.brand,
                                 'model': x.model.model,
-                                'quantity': x.cantidad
+                                'quantity': x.cantidad,
+                                'nipple': [
+                                    {
+                                        'type': [ globalVariable.tipo_nipples[k] for k in globalVariable.tipo_nipples if n.tipo == k],
+                                        'meter': n.metrado,
+                                        'quantity': n.cantguide
+                                    }
+                                    for n in Niple.objects.filter(pedido_id=o.pedido_id, materiales_id=x.materiales_id)
+                                ] if x.materiales_id[0:3] == '115' else []
                             }
-                            for x in Detpedido.objects.filter(proyecto_id=kwargs['pro'], sector_id=kwargs['sec'])
+                            for x in Detpedido.objects.filter(pedido_id=o.pedido_id)
                         ]
                     }
                     for o in orders
                 ]
+                context['pro'] = Proyecto.objects.get(pk=kwargs['pro'])
+                context['dates'] = [orders[0].registrado, orders.latest('registrado').registrado]
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404(e)

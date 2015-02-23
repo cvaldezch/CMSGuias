@@ -26,7 +26,7 @@
             </h3>
             <h4>Proyecto: {{ pro.proyecto_id }} {{ pro.nompro }} - {{ pro.ruccliente.razonsocial }}</h4>
             {% if sec %}
-                <h5>Sectores: {{ sec.nomsec }}</h5>
+                <h5>Sectores: {{ sec.sector_id }} - {{ sec.nomsec }}</h5>
             {% endif %}
             <div class="panel panel-default">
                 <div class="table-responsive">
@@ -78,7 +78,7 @@
                                                             {% endif %}
                                                         </td>
                                                         <td>{{ x.unit }}</td>
-                                                        <td>{{ x.quantity }}</td>
+                                                        <td>{{ x.quantity|safe }}</td>
                                                     </tr>
                                                 {% endfor %}
                                             </tbody>
