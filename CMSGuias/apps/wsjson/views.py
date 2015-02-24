@@ -476,6 +476,7 @@ def get_list_stores(request):
         except ObjectDoesNotExist, e:
             data['status']= False
         return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+
 """
 ## end block Recurrent
 """
@@ -493,6 +494,7 @@ def post_approved_orders(request):
             data['status']= False
             data['msg']= e
         return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+
 # cancel orders
 def post_cancel_orders(request):
     if request.method == 'POST':
@@ -500,10 +502,24 @@ def post_cancel_orders(request):
         try:
             obj = Pedido.objects.get(pk=request.POST.get('oid'))
             try:
-                det = Detpedido.objects.filter(pedido_id__in)
-                meter = MetProject.objects.filter(proyecto_id=obj.proyecto_id, subproyecto_id=obj.subproyecto_id, sector_id=obj.sector_id)
-                for x in meter:
-
+                det = Detpedido.objects.filter(pedido_id=request.POST.get('oid'))
+                for x in det:
+                    meter = MetProject.objects.get(proyecto_id=obj.proyecto_id, subproyecto_id=obj.subproyecto_id, sector_id=obj.sector_id, materiales_id=x.materiales_id, brand_id=x.brand_id, model_id=x.model_id)
+                    quantitydev = (x.cantidad + meter.quantityorder)
+                    if quantitydev == meter.cantidad:
+                        meter.tag = '0'
+                        meter.quantityorder = quantitydev
+                    if meter.quantityorder > 0 and quantitydev < meter.cantidad:
+                        meter.tag = '1'
+                        meter.quantityorder = quantitydev
+                    if quantitydev > meter.cantidad:
+                        meter.tag = '0'
+                        meter.quantityorder = meter.cantidad
+                    meter.quantityorder = quantitydev
+                    meter.save()
+                    x.tag = '3'
+                    x.flag = False
+                    x.save()
             except ObjectDoesNotExist:
                 raise
             obj.status = 'AN'
@@ -540,7 +556,6 @@ def get_recover_list_conductor(request,truc):
             return HttpResponse(simplejson.dumps(data), mimetype='application/json')
 
 # Class Views Generics
-#
 #
 class get_OrdersDetails(ListView):
     def get(self, request, *args, **kwargs):
