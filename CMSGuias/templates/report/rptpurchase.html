@@ -48,34 +48,41 @@
     </header>
     <section>
         <div class="details">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th width="2cm">Código</th>
-                        <th width="7cm">Descripción</th>
-                        <!-- <th width="4cm">Medida</th> -->
-                        <th>Unidad</th>
-                        <th>Cantidad</th>
-                        <th>Precio</th>
-                        <th width="2cm">Dscto.</th>
-                        <th>Importe</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for x in details %}
+            {% for d in details %}
+                <table>
+                    <thead>
                         <tr>
-                            <td class="text-center item font-small">{{ forloop.counter|floatformat:"2" }}</td>
-                            <td class="text-center font-small">{{ x.materials_id }}</td>
-                            <td>{{ x.matname }} {{ x.measure }} - {{ x.brand }}</td>
-                            <td class="text-center">{{ x.unit }}</td>
-                            <td class="text-center">{{ x.quantity|safe }}</td>
-                            <td class="text-center">{{ x.price|safe }}</td>
-                            <td class="text-center">{{ x.discount }}%</td>
-                            <td class="text-right">{{ x.amount|safe|floatformat:"2" }}</td>
+                            <th>Item</th>
+                            <th width="2cm">Código</th>
+                            <th width="7cm">Descripción</th>
+                            <!-- <th width="4cm">Medida</th> -->
+                            <th>Unidad</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                            <th width="2cm">Dscto.</th>
+                            <th>Importe</th>
                         </tr>
-                    {% endfor%}
-                </tbody>
+                    </thead>
+                    <tbody>
+                        {% for x in d %}
+                            <tr>
+                                <td class="text-center item font-small">{{ x.item|floatformat:"2" }}</td>
+                                <td class="text-center font-small">{{ x.materials_id }}</td>
+                                <td>{{ x.matname }} {{ x.measure }} - {{ x.brand }}</td>
+                                <td class="text-center">{{ x.unit }}</td>
+                                <td class="text-center">{{ x.quantity|safe }}</td>
+                                <td class="text-center">{{ x.price|safe }}</td>
+                                <td class="text-center">{{ x.discount }}%</td>
+                                <td class="text-right">{{ x.amount|safe|floatformat:"2" }}</td>
+                            </tr>
+                        {% endfor%}
+                    </tbody>
+                </table>
+                {% if not forloop.last %}
+                    <div><pdf:nextpage /></div>
+                {% endif %}
+            {% endfor %}
+            <table>
                 <tfoot>
                     <tr class="border">
                         <td colspan="6" rowspan="4">

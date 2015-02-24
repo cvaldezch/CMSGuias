@@ -198,7 +198,7 @@ class RptPurchase(TemplateView):
         try:
             context = dict()
             context['bedside'] = Compra.objects.get(pk=kwargs['pk'], flag=True)
-            tmp = DetCompra.objects.filter(compra_id=kwargs['pk'])
+            lista = DetCompra.objects.filter(compra_id=kwargs['pk'])
             igv = 0
             subt = 0
             total = 0
@@ -206,15 +206,42 @@ class RptPurchase(TemplateView):
             search.getIGVCurrent(context['bedside'].registrado.strftime('%Y'))
             tdiscount = 0
             # print conf.igv
-            context['details'] = list()
-            for x in tmp:
-                disc = ((x.precio * float(x.discount)) / 100)
-                #tdiscount += (disc * x.cantstatic)
-                precio = x.precio - disc
-                amount = (x.cantstatic * precio)
-                subt += amount
-                context['details'].append({'materials_id':x.materiales_id, 'matname':x.materiales.matnom, 'measure': x.materiales.matmed, 'unit':x.materiales.unidad_id, 'brand': x.brand.brand, 'quantity':x.cantstatic, 'price':x.precio, 'discount': float(x.discount), 'amount':amount})
-
+            lcount = float(lista.count())
+            sheet = 0
+            if lcount > 20:
+                sheet = int(float('%.0f'%(lcount)) / 20)
+                if float(float('%.2f'%(lcount)) / 20) > sheet:
+                    sheet += 1
+            else:
+                sheet = 1
+            counter = 0
+            section = list()
+            for c in range(sheet):
+                dataset = lista[counter:counter+20]
+                tmp = list()
+                for x in dataset:
+                    disc = ((x.precio * float(x.discount)) / 100)
+                    #tdiscount += (disc * x.cantstatic)
+                    precio = x.precio - disc
+                    amount = (x.cantstatic * precio)
+                    subt += amount
+                    tmp.append(
+                            {
+                                'item': counter,
+                                'materials_id': x.materiales_id,
+                                'matname': x.materiales.matnom,
+                                'measure': x.materiales.matmed,
+                                'unit': x.materiales.unidad_id,
+                                'brand': x.brand.brand,
+                                'quantity': x.cantstatic,
+                                'price': x.precio,
+                                'discount': float(x.discount),
+                                'amount': amount
+                            }
+                    )
+                    counter += 1
+                section.append(tmp)
+            context['details'] = section
             igv = search.getIGVCurrent(context['bedside'].registrado.strftime('%Y'))
             context['subtotal'] = subt
             # print context['bedside'].discount, 'DISCOUNT'
