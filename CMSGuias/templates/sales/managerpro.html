@@ -375,7 +375,7 @@
                 </div>
                 <div class="col-md-12">
                     <div class="row">
-                        {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
+                        {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' or user.get_profile.empdni.charge.cargos|lower == 'jefe de operaciones' %}
                         <div class="col-md-6">
                             <div class="panel panel-primary">
                                 <div class="panel-footer">
@@ -399,6 +399,34 @@
                         </div>
                     </div>
                 </div>
+                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+                    <div class="col-md-12">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <strong>Lista de Carta</strong>
+                                <button class="btn btn-sx btn-primary text-black btn-show-letter">
+                                    <span class="fa fa-plus"></span>
+                                </button>
+                                <span class="close fa fa-chevron-down"></span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-condensed table-hover">
+                                    <thead>
+                                        <tr class="success">
+                                            <th class="col-1">Item</th>
+                                            <th>Código</th>
+                                            <th>De</th>
+                                            <th>Para</th>
+                                            <th>Estado</th>
+                                            <th>ACCIÓN</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
                     <div class="col-md-12">
                         <div class="panel panel-info">
@@ -755,7 +783,79 @@
         </div>
     </div>
 </div>
-
+<div class="modal fade" id="statusproject">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <p>
+                    Cambia el estado el proyecto a instalación terminada, para que el área de contabilidad pueda realizar la documentacion respectivas.
+                </p>
+                <p>
+                    <select name="statusp" id="statusp" class="form-control input-sm">
+                        <option value="">--Seleccione--</option>
+                        <option value="FC">Instalación Terminada</option>
+                    </select>
+                </p>
+                <p>
+                    <input type="password" class="form-control input-sm" placeholder="Password">
+                </p>
+                <p class="text-right">
+                    <button class="btn btn-danger btn-sm">
+                        <span class="fa fa-user"></span>
+                        Confirmar
+                    </button>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="letter">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4 class="modal-title">
+                    Generar nueva carta
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">De:</label>
+                            <input type="text" class="form-control input-sm" name="from" placeholder="Quién envia?">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">Para:</label>
+                            <input type="text" class="form-control input-sm" name="to" placeholder="Quién recibe?">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">Estado</label>
+                            <select class="form-control input-sm" name="letter-status" placeholder="Estado">
+                                <option value="">--Estado--</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-default btn-sm pull-left">
+                    <span class="fa fa-times"></span>
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-primary btn-sm generate-letter">
+                    <span class="fa fa-save"></span>
+                    Generar Código
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- end block -->
 {% csrf_token %}
 <input type="hidden" name="dni" value="{{ user.get_profile.empdni_id }}">

@@ -52,9 +52,9 @@ class Proyecto(models.Model):
 
     @property
     def is_out_date(self):
-        print datetime.datetime.today().date()
+        # print datetime.datetime.today().date()
         if datetime.datetime.today().date() > self.fin:
-            print 'is great'
+            #print 'is great'
             return True
         return False
 

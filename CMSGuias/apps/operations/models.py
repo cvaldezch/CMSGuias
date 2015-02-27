@@ -86,3 +86,31 @@ class DeductiveOutputs(models.Model):
 
     class Meta:
         ordering = ['deductive', 'materials']
+
+class Letter(models.Model):
+
+     def url(self, filename):
+        return 'storage/projects/%s/%s/%s/%s'%(globalVariable.get_year,filename)
+
+    letter_id = models.CharField(primary_key=True, max_length=8)
+    froms = models.CharField(max_length=80)
+    fors =  models.CharField(max_length=80)
+    status = models.CharField(max_length=2, default='PE')
+    letter = models.FileField(upload_to=url, blank=True, null=True)
+
+    audit_log = AuditLog()
+
+    class Meta:
+        ordering = ['letter_id']
+
+class AnexoLetter(models.Model):
+    def url(self, filename):
+        return 'storage/projects/%s/%s/%s/%s'%(globalVariable.get_year,filename)
+    letter = models.ForeignKey(Letter, to_field='letter_id')
+    anexo = models.FileField(upload_to=url, blank=True, null=True)
+    flag  =  models.BooleanField()
+
+    audit_log = AuditLog()
+
+    class Meta:
+        ordering = ['letter_id']

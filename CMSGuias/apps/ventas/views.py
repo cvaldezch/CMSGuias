@@ -475,6 +475,9 @@ class ProjectManager(JSONResponseMixin, View):
                         request.session[sess] = uploadFiles.readQuotation(filename)
                         # print request.session[sess]
                     context['status'] = True
+                if 'generateletter' in request.POST:
+
+                    context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

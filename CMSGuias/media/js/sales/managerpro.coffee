@@ -103,6 +103,8 @@ $(document).ready ->
         $(".pods").text("#{@value}%")
         calAmountPurchaseOrder()
         return
+    $("button.btn-show-letter").on "click", showLetter
+    #
     treeAdminaandOpera()
     getListPurchaseOrder()
     tinymce.init
@@ -122,6 +124,7 @@ $(document).ready ->
     $("button.btn-show-loadprices").on "click", showLoadPrices
     $("button[name=upload-prices]").on "click", uploadLoadPrices
     $("button.btn-show-guides").on "click", showGuideByProject
+    $(".generate-letter").on "click", generateLetter
     return
 
 loadsAccounts = (event) ->
@@ -845,4 +848,27 @@ showGuideByProject = (event) ->
         sub = "None"
     href = "/sales/projects/guide/list/#{pro}/#{sub}/None/"
     location.href = href
+    return
+
+showLetter = (event) ->
+    $("#letter").modal "show"
+    return
+
+generateLetter = (event) ->
+    $from = $("input[name=letter-form]")
+    $to = $("input[name=letter-to]")
+    $status = $("select[name=letter-status]")
+    context = new Object
+    context.generateletter = true
+    context.form = $form.val()
+    context.to = $to.val()
+    context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+    $.post "", context, (response) ->
+        if response.status
+            $().toastmessage "showSuccessToast", "Se agenerado la carta Nro #{response.code}"
+            return
+        else
+            $().toastmessage "showErrorToast", "Error\r\nNo se a generado la carta. #{response.raise}"
+            return
+    , "json"
     return
