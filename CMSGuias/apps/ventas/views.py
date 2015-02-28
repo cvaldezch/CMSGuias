@@ -21,12 +21,12 @@ from django.views.generic.edit import UpdateView, CreateView
 from decimal import Decimal
 
 from CMSGuias.apps.home.models import *
-from CMSGuias.apps.operations.models import MetProject, Nipple, Deductive, DeductiveInputs, DeductiveOutputs
+from CMSGuias.apps.operations.models import MetProject, Nipple, Deductive, DeductiveInputs, DeductiveOutputs, Letter, LetterAnexo
 from CMSGuias.apps.almacen.models import Inventario, tmpniple, Pedido, Detpedido, Niple, GuiaRemision, DetGuiaRemision, NipleGuiaRemision
 from .models import *
 from .forms import *
 from CMSGuias.apps.almacen.forms import addOrdersForm
-from CMSGuias.apps.operations.forms import NippleForm
+from CMSGuias.apps.operations.forms import NippleForm, LetterForm
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles, search
 
 
@@ -476,8 +476,17 @@ class ProjectManager(JSONResponseMixin, View):
                         # print request.session[sess]
                     context['status'] = True
                 if 'generateletter' in request.POST:
-
-                    context['status'] = True
+                    key = genkeys.generateLetterCode()
+                    form = LetterForm(request.POST, request.FILES)
+                    if form.is_valid():
+                        form.letter_id = key
+                        form.performed = request.user.get_profile().empdni_id
+                        form.save()
+                        context['code'] = key
+                        context['status'] = True
+                    else:
+                        context['raise'] = 'Error form'
+                        context['status'] = False
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
@@ -907,7 +916,7 @@ class SectorManage(JSONResponseMixin, View):
 
                     quantity = float(request.POST.get('quantity'))
                     orders = obj.quantityorders
-                    print 'pending proccess', pending
+                    # print 'pending proccess', pending
                     if quantity > obj.quantity:
                         if pending > 0 or pending == 0:
                             if orders == obj.quantity:
@@ -1079,7 +1088,7 @@ class SectorManage(JSONResponseMixin, View):
 
                     # save details materail group
                     if 'details' in request.POST:
-                        print request.POST.get('details')
+                        # print request.POST.get('details')
                         for x in json.loads(request.POST.get('details')):
                             try:
                                 obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=x['materials'], flag=True)
@@ -1297,7 +1306,7 @@ class SectorManage(JSONResponseMixin, View):
                             h.save()
                     elif request.POST.get('rtype') == 'CUS':
                         for s in json.loads(request.POST.get('relations')):
-                            print s
+                            #print s
                             relations = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None,sector_id=s)
                             for x in relations:
                                 h = HistoryMetProject()
@@ -1489,7 +1498,7 @@ class SectorManage(JSONResponseMixin, View):
                 if 'readerPrices' in request.POST:
                     period = search.searchPeriodProject(code=kwargs['pro'])
                     filename = '%s/storage/projects/%s/%s/prices.xlsx'%(globalVariable.relative_path, period, kwargs['pro'])
-                    print filename
+                    #print filename
                     if os.path.exists(filename):
                         sess = 'PRICES%s'%(kwargs['pro'])
                         if sess in request.session:

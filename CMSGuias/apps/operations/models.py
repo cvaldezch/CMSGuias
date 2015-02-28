@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 #
 from django.db import models
+from audit_log.models.managers import AuditLog
 
-from CMSGuias.apps.home.models import Materiale, Brand, Model
+from CMSGuias.apps.home.models import Materiale, Brand, Model, Employee
 from CMSGuias.apps.ventas.models import Proyecto, Subproyecto, Sectore
+from CMSGuias.apps.tools import globalVariable
 
 
 class MetProject(models.Model):
@@ -89,23 +91,27 @@ class DeductiveOutputs(models.Model):
 
 class Letter(models.Model):
 
-     def url(self, filename):
-        return 'storage/projects/%s/%s/%s/%s'%(globalVariable.get_year,filename)
+    def url(self, filename):
+        return 'storage/projects/%s/%s'%(globalVariable.get_year,filename)
 
     letter_id = models.CharField(primary_key=True, max_length=8)
+    register = models.DateTimeField(auto_now=True)
+    performed = models.ForeignKey(Employee, to_field='empdni_id')
     froms = models.CharField(max_length=80)
     fors =  models.CharField(max_length=80)
     status = models.CharField(max_length=2, default='PE')
     letter = models.FileField(upload_to=url, blank=True, null=True)
+    observation = models.TextField(blank=True, null=True)
+    flag = models.BooleanField(default=True)
 
     audit_log = AuditLog()
 
     class Meta:
         ordering = ['letter_id']
 
-class AnexoLetter(models.Model):
+class LetterAnexo(models.Model):
     def url(self, filename):
-        return 'storage/projects/%s/%s/%s/%s'%(globalVariable.get_year,filename)
+        return 'storage/projects/%s/%s'%(globalVariable.get_year,filename)
     letter = models.ForeignKey(Letter, to_field='letter_id')
     anexo = models.FileField(upload_to=url, blank=True, null=True)
     flag  =  models.BooleanField()
@@ -113,4 +119,4 @@ class AnexoLetter(models.Model):
     audit_log = AuditLog()
 
     class Meta:
-        ordering = ['letter_id']
+        ordering = ['letter']

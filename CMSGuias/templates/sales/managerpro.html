@@ -401,24 +401,24 @@
                 </div>
                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'operaciones' %}
                     <div class="col-md-12">
-                        <div class="panel panel-primary">
+                        <div class="panel panel-success">
                             <div class="panel-heading">
                                 <strong>Lista de Carta</strong>
-                                <button class="btn btn-sx btn-primary text-black btn-show-letter">
+                                <button class="btn btn-xs btn-success text-black btn-show-letter">
                                     <span class="fa fa-plus"></span>
                                 </button>
                                 <span class="close fa fa-chevron-down"></span>
                             </div>
                             <div class="table-responsive">
-                                <table class="table table-condensed table-hover">
+                                <table class="table table-condensed table-hover table-letter">
                                     <thead>
                                         <tr class="success">
                                             <th class="col-1">Item</th>
-                                            <th>Código</th>
-                                            <th>De</th>
-                                            <th>Para</th>
-                                            <th>Estado</th>
-                                            <th>ACCIÓN</th>
+                                            <th class="text-center">Código</th>
+                                            <th class="text-center">De</th>
+                                            <th class="text-center">Para</th>
+                                            <th class="text-center">Estado</th>
+                                            <th class="text-center">ACCIÓN</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -810,7 +810,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="letter">
+<div class="modal fade" data-backdrop="static" id="letter">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header">
@@ -823,13 +823,13 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label class="control-label">De:</label>
+                            <label class="control-label">De</label>
                             <input type="text" class="form-control input-sm" name="from" placeholder="Quién envia?">
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label class="control-label">Para:</label>
+                            <label class="control-label">Para</label>
                             <input type="text" class="form-control input-sm" name="to" placeholder="Quién recibe?">
                         </div>
                     </div>
@@ -839,6 +839,12 @@
                             <select class="form-control input-sm" name="letter-status" placeholder="Estado">
                                 <option value="">--Estado--</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">Observación</label>
+                            <textarea name="letter-observation" rows="2" class="form-control"></textarea>
                         </div>
                     </div>
                 </div>

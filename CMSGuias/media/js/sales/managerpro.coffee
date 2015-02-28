@@ -858,17 +858,51 @@ generateLetter = (event) ->
     $from = $("input[name=letter-form]")
     $to = $("input[name=letter-to]")
     $status = $("select[name=letter-status]")
+    $observation = $("textarea[name=letter-observation]")
     context = new Object
     context.generateletter = true
     context.form = $form.val()
     context.to = $to.val()
+    context.observation = $observation.val()
     context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
     $.post "", context, (response) ->
         if response.status
             $().toastmessage "showSuccessToast", "Se agenerado la carta Nro #{response.code}"
+            setTimeout ->
+                $("#letter").modal "hide"
+            ,  2600
             return
         else
             $().toastmessage "showErrorToast", "Error\r\nNo se a generado la carta. #{response.raise}"
             return
     , "json"
+    return
+
+getListLetter = (event) ->
+    context = new Object
+    context.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    context.letterlist = true
+    $.getJSON "", context, (response) ->
+        if context.status
+            template = "<tr>
+                        <td>{{ item }}</td>
+                        <td>{{ code }}</td>
+                        <td>{{ form }}</td>
+                        <td>{{ to }}</td>
+                        <td>{{ status }}</td>
+                        <td>
+                            <div class=\"btn-group\">
+                                <button type=\"button\" data-toggle=\"dropdown\" aria-expanded=\"false\" class=\"btn btn-xs btn dropdown-toggle\">
+                                    <span class=\"fa fa-wrench\"></span>
+                                    <span class=\"caret\"></span>
+                                </button>
+                                <ul class=\"dropdown-menu\" role=\"menu\">
+                                    <li><a href=\"\">Subir Carta</a></li>
+                                    <li><a href=\"\">Subir Anexos</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                        </tr>"
+        else
+            $().toastmessage "showErrorToast", ""
     return

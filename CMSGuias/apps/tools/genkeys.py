@@ -10,7 +10,7 @@ from CMSGuias.apps.almacen.models import Pedido, GuiaRemision, Suministro, NoteI
 from CMSGuias.apps.logistica.models import Cotizacion, Compra, ServiceOrder
 from CMSGuias.apps.ventas.models import Proyecto
 from CMSGuias.apps.home.models import Brand, Model, GroupMaterials, TypeGroup
-from CMSGuias.apps.operations.models import Deductive
+from CMSGuias.apps.operations.models import Deductive, Letter
 
 
 ### format date str
@@ -276,6 +276,26 @@ def GenerateIdServiceOrder():
     id = None
     try:
         code = ServiceOrder.objects.aggregate(max=Max('serviceorder_id'))
+        id = code['max']
+        yn = int(datetime.datetime.today().strftime(__year_str))
+        if id is not None:
+            yy = int(id[2:4])
+            counter = int(id[4:10])
+            if yn > yy:
+                counter = 1
+            else:
+                counter += 1
+        else:
+            counter = 1
+        id = '%s%s%s'%('SO',yn.__str__(), '{:0>6d}'.format(counter))
+    except ObjectDoesNotExist, e:
+        raise e
+    return id
+
+def generateLetterCode():
+    id = None
+    try:
+        code = Letter.objects.aggregate(max=Max('letter_id'))
         id = code['max']
         yn = int(datetime.datetime.today().strftime(__year_str))
         if id is not None:

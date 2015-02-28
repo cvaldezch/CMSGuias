@@ -3,7 +3,7 @@
 #
 from django import forms
 
-from .models import MetProject, Nipple
+from .models import MetProject, Nipple, Letter
 # from CMSGuias.apps.almacen.models import tmpniple
 
 
@@ -21,3 +21,8 @@ class NippleForm(forms.ModelForm):
     class Meta:
         model = Nipple
         exclude = {'flag', 'tag',}
+
+class LetterForm(forms.ModelForm):
+    class Meta:
+        model = Letter
+        execute = { 'letter_id', 'performed', 'status' }
