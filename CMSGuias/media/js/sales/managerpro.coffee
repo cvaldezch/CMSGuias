@@ -107,6 +107,7 @@ $(document).ready ->
     #
     treeAdminaandOpera()
     getListPurchaseOrder()
+    getListLetter()
     tinymce.init
         selector: "textarea#message",
         theme: "modern",
@@ -125,6 +126,18 @@ $(document).ready ->
     $("button[name=upload-prices]").on "click", uploadLoadPrices
     $("button.btn-show-guides").on "click", showGuideByProject
     $(".generate-letter").on "click", generateLetter
+    $(document).on "click", ".btn-letter-show-up", showLetterUpload
+    $(document).on "click", ".btn-letter-show-anx", showLetterAnexosUpload
+    $(document).on "click", ".btn-letter-show-edit", showLetterEdit
+    $(document).on "click", ".btn-letter-anular", LetterAnular
+    $(".btn-letter-upload").on "click", uploadLetter
+    $(".btn-upload-anexos").on "click", uploadLetterAnexo
+    $(".btn-open-letter-file").click ->
+        $("input[name=letter-file]").click()
+        return
+    $(".btn-open-letter-anexo-file").click ->
+        $("input[name=letter-anexo-file]").click()
+        return
     return
 
 loadsAccounts = (event) ->
@@ -855,21 +868,32 @@ showLetter = (event) ->
     return
 
 generateLetter = (event) ->
-    $from = $("input[name=letter-form]")
+    $from = $("input[name=letter-from]")
     $to = $("input[name=letter-to]")
     $status = $("select[name=letter-status]")
     $observation = $("textarea[name=letter-observation]")
+    if $.trim($from.val()) is ""
+        $from.focus()
+        $().toastmessage "showWarningToast", "El campo a quién se <q>envia</q> se encuentra vacio."
+        return false
+    if $.trim($to.val()) is ""
+        $to.focus()
+        $().toastmessage "showWarningToast", "El campo <q>recibe</q> se encuentra vacio."
+        return false
     context = new Object
     context.generateletter = true
-    context.form = $form.val()
-    context.to = $to.val()
+    context.froms = $from.val()
+    context.fors = $to.val()
+    context.status = $status.val()
     context.observation = $observation.val()
     context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
     $.post "", context, (response) ->
         if response.status
+            getListLetter()
             $().toastmessage "showSuccessToast", "Se agenerado la carta Nro #{response.code}"
             setTimeout ->
                 $("#letter").modal "hide"
+                return
             ,  2600
             return
         else
@@ -883,26 +907,115 @@ getListLetter = (event) ->
     context.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
     context.letterlist = true
     $.getJSON "", context, (response) ->
-        if context.status
+        if response.status
             template = "<tr>
-                        <td>{{ item }}</td>
-                        <td>{{ code }}</td>
-                        <td>{{ form }}</td>
-                        <td>{{ to }}</td>
-                        <td>{{ status }}</td>
-                        <td>
+                        <td class=\"text-center\">{{ item }}</td>
+                        <td class=\"text-center\">{{ letter }}</td>
+                        <td>{{ froms }}</td>
+                        <td>{{ fors }}</td>
+                        <td class=\"text-center\">{{ status }}</td>
+                        <td class=\"text-center\">{{ file }}</td>
+                        <td class=\"text-center\">
                             <div class=\"btn-group\">
-                                <button type=\"button\" data-toggle=\"dropdown\" aria-expanded=\"false\" class=\"btn btn-xs btn dropdown-toggle\">
+                                <button type=\"button\" data-toggle=\"dropdown\" aria-expanded=\"false\" class=\"btn btn-xs btn-link text-black btn dropdown-toggle\">
                                     <span class=\"fa fa-wrench\"></span>
                                     <span class=\"caret\"></span>
                                 </button>
                                 <ul class=\"dropdown-menu\" role=\"menu\">
-                                    <li><a href=\"\">Subir Carta</a></li>
-                                    <li><a href=\"\">Subir Anexos</a></li>
+                                    <li class=\"text-left\"><button class=\"btn btn-link text-black btn-xs btn-letter-show-edit\" value=\"{{ letter }}\"><span class=\"fa fa-edit\"></span> Editar</button></li>
+                                    <li class=\"text-left\"><button class=\"btn btn-link text-black btn-xs btn-letter-anular\" value=\"{{ letter }}\"><span class=\"fa fa-times-circle\"></span> Anular</button></li>
+                                    <li class=\"divider\"></li>
+                                    <li class=\"text-left\"><button class=\"btn btn-link text-black btn-xs btn-letter-show-up\" value=\"{{ letter }}\"><span class=\"glyphicon glyphicon-upload\"></span> Subir Carta</button></li>
+                                    <li class=\"text-left\"><button class=\"btn btn-link text-black btn-xs btn-letter-show-anx\" value=\"{{ letter }}\"><span class=\"glyphicon glyphicon-upload\"></span> Subir Anexos</button></li>
+                                    <li class=\"divider\"></li>
+                                    <li class=\"text-left\"><button class=\"btn btn-link text-black btn-xs btn-letter-show-details\" value=\"{{ letter }}\"><span class=\"glyphicon glyphicon-list\"></span> Lista de anexos</button></li>
                                 </ul>
                             </div>
                         </td>
                         </tr>"
+            $tb = $(".table-letter > tbody")
+            $tb.empty()
+            for x of response.list
+                response.list[x].item = parseInt(x) + 1
+                $tb.append Mustache.render template, response.list[x]
+            return
         else
-            $().toastmessage "showErrorToast", ""
+            $().toastmessage "showErrorToast", "No se pudo recuperar la lista de cartas. #{response.raise}"
+            return
     return
+
+uploadLetter = (event) ->
+    context = new FormData
+
+    if Object.getOwnPropertyNames(context).length
+        $.ajax
+            data: context
+            url: ""
+            type: "POST"
+            dataType: "json"
+            processData: false
+            contentType: false
+            cache: false
+            beforeSend: (success)->
+                $("#letter-upload")
+                .find ".panel"
+                .append "<div class=\"panel-body\"><span class=\"fa fa-spinner fa-pulse fa-spin\"></span> Cargando</div>"
+                return
+            success: (response) ->
+                if response.status
+                    $("#letter-upload")
+                    .find ".panel-body"
+                    .remove()
+                    $().toastmessage "showSuccessToast", "Se a cargado correctamente la carta."
+                    getListLetter()
+                    return
+                else
+                    $().toastmessage "showErrorToast", "No se a cargado la carta. #{response.raise}"
+                    return
+    return
+
+uploadLetterAnexo = (event) ->
+    context = new FormData
+    if Object.getOwnPropertyNames(context).length
+        $.ajax
+            data: context
+            url: ""
+            type: "POST"
+            dataType: "json"
+            processData: false
+            contentType: false
+            cache: false
+            beforeSend: (success)->
+                $("#anexos-upload")
+                .find ".panel"
+                .append "<div class=\"panel-body\"><span class=\"fa fa-spinner fa-pulse fa-spin\"></span> Cargando</div>"
+                return
+            success: (response) ->
+                if response.status
+                    $("#anexos-upload")
+                    .find ".panel-body"
+                    .remove()
+                    $().toastmessage "showSuccessToast", "Se a cargado correctamente los anexos."
+                    getListLetter()
+                    return
+                else
+                    $().toastmessage "showErrorToast", "No se a cargado los anexos. #{response.raise}"
+                    return
+    return
+
+showLetterUpload = (event) ->
+    $(".btn-letter-upload").val @value
+    $("#letter-upload").modal "show"
+    return
+
+showLetterAnexosUpload = (event) ->
+    $(".btn-upload-anexos").val @value
+    $("#anexos-upload").modal "show"
+    return
+
+showLetterEdit = (event) ->
+    return
+
+LetterAnular = (event) ->
+    return
+

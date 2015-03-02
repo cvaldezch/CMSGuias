@@ -297,17 +297,17 @@ def generateLetterCode():
     try:
         code = Letter.objects.aggregate(max=Max('letter_id'))
         id = code['max']
-        yn = int(datetime.datetime.today().strftime(__year_str))
+        #yn = int(datetime.datetime.today().strftime(__year_str))
         if id is not None:
-            yy = int(id[2:4])
-            counter = int(id[4:10])
-            if yn > yy:
-                counter = 1
-            else:
-                counter += 1
+            # yy = int(id[2:4])
+            # counter = int(id[4:10])
+            # if yn > yy:
+            #     counter = 1
+            # else:
+            counter += 1
         else:
             counter = 1
-        id = '%s%s%s'%('SO',yn.__str__(), '{:0>6d}'.format(counter))
+        id = '%s'%('{:0>8d}'.format(counter))
     except ObjectDoesNotExist, e:
         raise e
     return id

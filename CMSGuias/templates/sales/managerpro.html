@@ -403,11 +403,16 @@
                     <div class="col-md-12">
                         <div class="panel panel-success">
                             <div class="panel-heading">
-                                <strong>Lista de Carta</strong>
-                                <button class="btn btn-xs btn-success text-black btn-show-letter">
-                                    <span class="fa fa-plus"></span>
+                                <h4>
+                                    Lista de Cartas
+                                    <button class="btn btn-xs btn-success text-black btn-show-letter">
+                                        <span class="fa fa-plus"></span>
+                                    </button>
+                                </h4>
+                                <button class="btn btn-lg btn-link close btn-sh-purchase-order">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
                                 </button>
-                                <span class="close fa fa-chevron-down"></span>
+                                <!-- <span class="close fa fa-chevron-down"></span> -->
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-condensed table-hover table-letter">
@@ -415,10 +420,11 @@
                                         <tr class="success">
                                             <th class="col-1">Item</th>
                                             <th class="text-center">Código</th>
-                                            <th class="text-center">De</th>
-                                            <th class="text-center">Para</th>
+                                            <th class="">De</th>
+                                            <th class="">Para</th>
                                             <th class="text-center">Estado</th>
-                                            <th class="text-center">ACCIÓN</th>
+                                            <th class="text-center">Carta</th>
+                                            <th class="text-center">Acción</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -824,20 +830,21 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label class="control-label">De</label>
-                            <input type="text" class="form-control input-sm" name="from" placeholder="Quién envia?">
+                            <input type="text" class="form-control input-sm" name="letter-from" placeholder="Quién envia?" value="{{ request.user.get_profile.empdni.name_complete }}">
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
                             <label class="control-label">Para</label>
-                            <input type="text" class="form-control input-sm" name="to" placeholder="Quién recibe?">
+                            <input type="text" class="form-control input-sm" name="letter-to" placeholder="Quién recibe?">
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
                             <label class="control-label">Estado</label>
                             <select class="form-control input-sm" name="letter-status" placeholder="Estado">
-                                <option value="">--Estado--</option>
+                                <!-- <option value="">--Estado--</option> -->
+                                <option value="PE">Pendiente</option>
                             </select>
                         </div>
                     </div>
@@ -857,6 +864,60 @@
                 <button type="button" class="btn btn-primary btn-sm generate-letter">
                     <span class="fa fa-save"></span>
                     Generar Código
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="letter-upload">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4><span>Cargar Carta</span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="panel panel-primary">
+                    <div class="panel-footer text-center">
+                        <button type="button" class="btn btn-link text-black btn-open-letter-file">
+                            <span class="fa fa-paperclip fa-lg"></span>
+                            <strong>SELECCIONAR</strong>
+                        </button>
+                        <input type="file" class="hide" name="letter-file">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary btn-letter-upload">
+                    <span class="fa fa-cloud-upload"></span>
+                    Cargar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="anexos-upload">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4><span>Cargar Anexos de la carta</span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="panel panel-warning">
+                    <div class="panel-footer text-center">
+                        <button type="button" class="btn btn-link text-black btn-open-letter-anexo-file">
+                            <span class="fa fa-paperclip fa-lg"></span>
+                            <strong>SELECCIONAR</strong>
+                        </button>
+                        <input type="file" class="hide" name="letter-anexos-file" multiple>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-warning text-black btn-upload-anexos">
+                    <span class="fa fa-cloud-upload"></span>
+                    Cargar
                 </button>
             </div>
         </div>

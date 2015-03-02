@@ -261,6 +261,19 @@ class ProjectManager(JSONResponseMixin, View):
                                             for x in DetailsPurchaseOrder.objects.filter(purchase_id=request.GET.get('pk'))
                                             ]
                         context['status'] = True
+                    if 'letterlist' in request.GET:
+                        context['list'] = [
+                            {
+                                'letter': x.letter_id,
+                                'register': x.register.strftime('%d-%m-%Y'),
+                                'froms': x.froms,
+                                'fors': x.fors,
+                                'file': str(x.letter),
+                                'status': x.status
+                            }
+                            for x in Letter.objects.filter(project_id=kwargs['project']).order_by('-register')
+                        ]
+                        context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = e.__str__()
                     context['status'] = False
@@ -478,10 +491,13 @@ class ProjectManager(JSONResponseMixin, View):
                 if 'generateletter' in request.POST:
                     key = genkeys.generateLetterCode()
                     form = LetterForm(request.POST, request.FILES)
+                    # print form
                     if form.is_valid():
-                        form.letter_id = key
-                        form.performed = request.user.get_profile().empdni_id
-                        form.save()
+                        add = form.save(commit=False)
+                        add.letter_id = key
+                        add.project_id = kwargs['project']
+                        add.performed_id = request.user.get_profile().empdni_id
+                        add.save()
                         context['code'] = key
                         context['status'] = True
                     else:

@@ -95,6 +95,7 @@ class Letter(models.Model):
         return 'storage/projects/%s/%s'%(globalVariable.get_year,filename)
 
     letter_id = models.CharField(primary_key=True, max_length=8)
+    project = models.ForeignKey(Proyecto, to_field='proyecto_id')
     register = models.DateTimeField(auto_now=True)
     performed = models.ForeignKey(Employee, to_field='empdni_id')
     froms = models.CharField(max_length=80)

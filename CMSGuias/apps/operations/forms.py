@@ -25,4 +25,4 @@ class NippleForm(forms.ModelForm):
 class LetterForm(forms.ModelForm):
     class Meta:
         model = Letter
-        execute = { 'letter_id', 'performed', 'status' }
+        exclude = { 'letter_id', 'project', 'performed', 'status' }
