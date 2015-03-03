@@ -53,11 +53,11 @@ def deleteFile(uriPath, partial=False):
         else:
             path = uriPath
         if path is not None:
-            print os.remove(path)
+            os.remove(path)
         else:
             return False
     except Exception, e:
-        print e
+        #print e
         return False
 
 def fileExists(paths, partial=False):
@@ -69,7 +69,7 @@ def fileExists(paths, partial=False):
             path = paths
         return os.path.lexists(path)
     except Exception, e:
-        print e
+        #print e
         return False
 
 def descompressRAR(filename, path_to_extract):

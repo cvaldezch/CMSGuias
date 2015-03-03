@@ -132,11 +132,13 @@ $(document).ready ->
     $(document).on "click", ".btn-letter-anular", LetterAnular
     $(".btn-letter-upload").on "click", uploadLetter
     $(".btn-upload-anexos").on "click", uploadLetterAnexo
+    $(".edit-letter").on "click", editLetter
+    $(document).on "click", ".btn-letter-show-observation", showLetterObservation
     $(".btn-open-letter-file").click ->
         $("input[name=letter-file]").click()
         return
     $(".btn-open-letter-anexo-file").click ->
-        $("input[name=letter-anexo-file]").click()
+        $("input[name=letter-anexos-file]").click()
         return
     return
 
@@ -914,7 +916,9 @@ getListLetter = (event) ->
                         <td>{{ froms }}</td>
                         <td>{{ fors }}</td>
                         <td class=\"text-center\">{{ status }}</td>
-                        <td class=\"text-center\">{{ file }}</td>
+                        <td class=\"text-center\">
+                            {{!files}}
+                        </td>
                         <td class=\"text-center\">
                             <div class=\"btn-group\">
                                 <button type=\"button\" data-toggle=\"dropdown\" aria-expanded=\"false\" class=\"btn btn-xs btn-link text-black btn dropdown-toggle\">
@@ -922,13 +926,19 @@ getListLetter = (event) ->
                                     <span class=\"caret\"></span>
                                 </button>
                                 <ul class=\"dropdown-menu\" role=\"menu\">
-                                    <li class=\"text-left\"><button class=\"btn btn-link text-black btn-xs btn-letter-show-edit\" value=\"{{ letter }}\"><span class=\"fa fa-edit\"></span> Editar</button></li>
+                                    <li class=\"text-left\"><button class=\"btn btn-link text-black btn-xs btn-letter-show-edit\" value=\"{{ letter }}\" data-from=\"{{ froms }}\" data-to=\"{{ fors }}\" data-status=\"{{ status }}\" data-observation=\"{{ observation }}\"><span class=\"fa fa-edit\"></span> Editar</button></li>
                                     <li class=\"text-left\"><button class=\"btn btn-link text-black btn-xs btn-letter-anular\" value=\"{{ letter }}\"><span class=\"fa fa-times-circle\"></span> Anular</button></li>
                                     <li class=\"divider\"></li>
                                     <li class=\"text-left\"><button class=\"btn btn-link text-black btn-xs btn-letter-show-up\" value=\"{{ letter }}\"><span class=\"glyphicon glyphicon-upload\"></span> Subir Carta</button></li>
                                     <li class=\"text-left\"><button class=\"btn btn-link text-black btn-xs btn-letter-show-anx\" value=\"{{ letter }}\"><span class=\"glyphicon glyphicon-upload\"></span> Subir Anexos</button></li>
                                     <li class=\"divider\"></li>
                                     <li class=\"text-left\"><button class=\"btn btn-link text-black btn-xs btn-letter-show-details\" value=\"{{ letter }}\"><span class=\"glyphicon glyphicon-list\"></span> Lista de anexos</button></li>
+                                    <li class=\"text-left\">
+                                        <button class=\"btn btn-xs btn-link text-black btn-letter-show-observation\" value=\"{{ observation }}\">
+                                            <span class=\"fa fa-list\"></span>
+                                            Observación
+                                        </button>
+                                    </li>
                                 </ul>
                             </div>
                         </td>
@@ -936,8 +946,13 @@ getListLetter = (event) ->
             $tb = $(".table-letter > tbody")
             $tb.empty()
             for x of response.list
+                tmp = template
+                if response.list[x].file.length
+                    tmp = tmp.replace "{{!files}}", "<a href=\"/media/{{ file }}\" class=\"text-black\" target=\"_blank\">
+                                <span class=\"fa fa-file-text\"></span>
+                            </a>"
                 response.list[x].item = parseInt(x) + 1
-                $tb.append Mustache.render template, response.list[x]
+                $tb.append Mustache.render tmp, response.list[x]
             return
         else
             $().toastmessage "showErrorToast", "No se pudo recuperar la lista de cartas. #{response.raise}"
@@ -945,9 +960,13 @@ getListLetter = (event) ->
     return
 
 uploadLetter = (event) ->
-    context = new FormData
-
-    if Object.getOwnPropertyNames(context).length
+    $file = $("input[name=letter-file]")
+    if $file.get(0).files.length
+        context = new FormData
+        context.append "id", @value
+        context.append "letter", $file.get(0).files[0]
+        context.append "csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val()
+        context.append "uploadLetter", true
         $.ajax
             data: context
             url: ""
@@ -968,15 +987,25 @@ uploadLetter = (event) ->
                     .remove()
                     $().toastmessage "showSuccessToast", "Se a cargado correctamente la carta."
                     getListLetter()
+                    $("#letter-upload").modal "hide"
                     return
                 else
                     $().toastmessage "showErrorToast", "No se a cargado la carta. #{response.raise}"
                     return
+    else
+        $().toastmessage "showWarningToast", "Debe de seleccionar un archivo para subir."
     return
 
 uploadLetterAnexo = (event) ->
-    context = new FormData
-    if Object.getOwnPropertyNames(context).length
+    $file = $("input[name=letter-anexos-file]")
+    if $file.get(0).files.length
+        context = new FormData
+        context.append "id", @value
+        for i in [0...$file.get(0).files.length] by 1
+            context.append "anexo#{i}", $file.get(0).files[i]
+        context.append "csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val()
+        context.append "len", $file.get(0).files.length
+        context.append "uploadLetterAnexo", true
         $.ajax
             data: context
             url: ""
@@ -997,6 +1026,7 @@ uploadLetterAnexo = (event) ->
                     .remove()
                     $().toastmessage "showSuccessToast", "Se a cargado correctamente los anexos."
                     getListLetter()
+                    $("#anexos-upload").modal "hide"
                     return
                 else
                     $().toastmessage "showErrorToast", "No se a cargado los anexos. #{response.raise}"
@@ -1014,8 +1044,76 @@ showLetterAnexosUpload = (event) ->
     return
 
 showLetterEdit = (event) ->
+    $("[name=letter-from-edit]").val @getAttribute "data-from"
+    $("[name=letter-to-edit]").val @getAttribute "data-to"
+    $("[name=letter-status-edit]").val @getAttribute "data-status"
+    $("[name=letter-observation-edit]").val @getAttribute "data-observation"
+    $(".edit-letter").val @value
+    $("#letter-edit").modal "show"
     return
 
 LetterAnular = (event) ->
+    context = new Object
+    context.id = @value
+    $().toastmessage "showToast",
+        text: "Realmente desea anular la carta #{@value}?"
+        type: "confirm"
+        sticky: true
+        buttons: [{value:"Si"}, {value:"No"}]
+        success: (result) ->
+            if result is "Si"
+                context.AnnulerLetter = true
+                context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+                $.post "", context, (response) ->
+                    if response.status
+                        $().toastmessage "showSuccessToast", "Se a anulado correctamente la carta #{context.id}."
+                        getListLetter()
+                        return
+                    else
+                        $().toastmessage "showErrorToast", "Error al anular la carta. #{response.raise}"
+                        return
+                , "json"
+                return
     return
 
+editLetter = (event) ->
+    $from = $("input[name=letter-from-edit]")
+    $to = $("input[name=letter-to-edit]")
+    $status = $("select[name=letter-status-edit]")
+    $observation = $("textarea[name=letter-observation-edit]")
+    if $.trim($from.val()) is ""
+        $from.focus()
+        $().toastmessage "showWarningToast", "El campo a quién se <q>envia</q> se encuentra vacio."
+        return false
+    if $.trim($to.val()) is ""
+        $to.focus()
+        $().toastmessage "showWarningToast", "El campo <q>recibe</q> se encuentra vacio."
+        return false
+    context = new Object
+    context.editLetter = true
+    context.letter_id = @value
+    context.froms = $from.val()
+    context.fors = $to.val()
+    context.status = $status.val()
+    context.observation = $observation.val()
+    context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+    $.post "", context, (response) ->
+        if response.status
+            getListLetter()
+            $().toastmessage "showSuccessToast", "Se editado la carta Nro #{context.letter_id}"
+            setTimeout ->
+                $("#letter-edit").modal "hide"
+                return
+            ,  2600
+            return
+        else
+            $().toastmessage "showErrorToast", "Error\r\nNo se a podido editar la carta. #{response.raise}"
+            return
+    , "json"
+    return
+
+showLetterObservation = (event) ->
+    $("#letter-observation").modal "show"
+    .find "small[name=letter-observation]"
+    .text @value
+    return

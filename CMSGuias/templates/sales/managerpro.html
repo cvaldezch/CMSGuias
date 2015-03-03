@@ -399,7 +399,7 @@
                         </div>
                     </div>
                 </div>
-                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.cargos|lower == 'jefe de operaciones' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
                     <div class="col-md-12">
                         <div class="panel panel-success">
                             <div class="panel-heading">
@@ -918,6 +918,77 @@
                 <button class="btn btn-warning text-black btn-upload-anexos">
                     <span class="fa fa-cloud-upload"></span>
                     Cargar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" data-backdrop="static" id="letter-edit">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4 class="modal-title">
+                    Editar carta
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">De</label>
+                            <input type="text" class="form-control input-sm" name="letter-from-edit" placeholder="Quién envia?">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">Para</label>
+                            <input type="text" class="form-control input-sm" name="letter-to-edit" placeholder="Quién recibe?">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">Estado</label>
+                            <select class="form-control input-sm" name="letter-status-edit" placeholder="Estado">
+                                <option value="PE">Pendiente</option>
+                                <option value="EN">Enviado</option>
+                                <option value="UP">Cardago</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">Observación</label>
+                            <textarea name="letter-observation-edit" rows="2" class="form-control"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-default btn-sm pull-left">
+                    <span class="fa fa-times"></span>
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-primary btn-sm edit-letter">
+                    <span class="fa fa-save"></span>
+                    Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="letter-observation">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4>Observación</h4>
+                <small name="letter-observation"></small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-xs btn-default">
+                    <span class="fa fa-times"></span>
+                    Salir
                 </button>
             </div>
         </div>

@@ -300,7 +300,7 @@ def generateLetterCode():
         #yn = int(datetime.datetime.today().strftime(__year_str))
         if id is not None:
             # yy = int(id[2:4])
-            # counter = int(id[4:10])
+            counter = int(id)
             # if yn > yy:
             #     counter = 1
             # else:

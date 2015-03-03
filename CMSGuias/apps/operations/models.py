@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
+import os
+
 from django.db import models
 from audit_log.models.managers import AuditLog
 
 from CMSGuias.apps.home.models import Materiale, Brand, Model, Employee
 from CMSGuias.apps.ventas.models import Proyecto, Subproyecto, Sectore
-from CMSGuias.apps.tools import globalVariable
+from CMSGuias.apps.tools import globalVariable, search
 
 
 class MetProject(models.Model):
@@ -92,7 +94,14 @@ class DeductiveOutputs(models.Model):
 class Letter(models.Model):
 
     def url(self, filename):
-        return 'storage/projects/%s/%s'%(globalVariable.get_year,filename)
+        uri = 'storage/projects/%s/%s/letters/%s/%s.%s'%(self.project.registrado.strftime('%Y'), self.project_id, self.letter_id, self.letter_id, filename.split('.')[-1])
+        name = '%s%s'%(globalVariable.relative_path, uri)
+        if os.path.exists(name):
+            os.remove(name)
+            # ext = name.split('.')[-1]
+            # ruri = uri.split(self.letter_id)
+            # os.rename(name, '%s%s/%s_1.%s'%(ruri[0], self.letter_id, self.letter_id, ext))
+        return uri
 
     letter_id = models.CharField(primary_key=True, max_length=8)
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
@@ -101,7 +110,7 @@ class Letter(models.Model):
     froms = models.CharField(max_length=80)
     fors =  models.CharField(max_length=80)
     status = models.CharField(max_length=2, default='PE')
-    letter = models.FileField(upload_to=url, blank=True, null=True)
+    letter = models.FileField(upload_to=url, blank=True, null=True, max_length=200)
     observation = models.TextField(blank=True, null=True)
     flag = models.BooleanField(default=True)
 
@@ -112,10 +121,10 @@ class Letter(models.Model):
 
 class LetterAnexo(models.Model):
     def url(self, filename):
-        return 'storage/projects/%s/%s'%(globalVariable.get_year,filename)
+        return 'storage/projects/%s/%s/letters/%s/anexos/%s'%(self.letter.project.registrado.strftime('%Y'), self.letter.project_id, self.letter_id,filename)
     letter = models.ForeignKey(Letter, to_field='letter_id')
-    anexo = models.FileField(upload_to=url, blank=True, null=True)
-    flag  =  models.BooleanField()
+    anexo = models.FileField(upload_to=url, max_length=200, blank=True, null=True)
+    flag  =  models.BooleanField(default=True)
 
     audit_log = AuditLog()
 
