@@ -92,6 +92,7 @@ class Sectore(models.Model):
     fin = models.DateField(null=True,blank=True)
     obser = models.TextField(null=True,blank=True)
     amount = models.FloatField(default=0, blank=True, null=True)
+    amountsales = models.FloatField(default=0, blank=True, null=True)
     atype = models.CharField(max_length=2, default='NN', blank=True)
     link = models.TextField(default='', blank=True)
     status = models.CharField(max_length=2,null=False,default='AC')

@@ -481,7 +481,7 @@ class ProjectManager(JSONResponseMixin, View):
                     )
                     #print filename
                     sess = 'PRICES%s'%(kwargs['project'])
-                    del request.session[sess]
+                    #del request.session[sess]
                     if sess in request.session:
                         del request.session[sess]
                     if not sess in request.session:
@@ -531,6 +531,16 @@ class ProjectManager(JSONResponseMixin, View):
                         context['status'] = True
                     else:
                         context['status'] = False
+                if 'listAnexo' in request.POST:
+                    anexo = LetterAnexo.objects.filter(letter_id=request.POST.get('id')).order_by('anexo')
+                    context['list'] = [
+                        {
+                            'name': str(x.anexo).split('/')[-1],
+                            'file': str(x.anexo)
+                        }
+                        for x in anexo
+                    ]
+                    context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

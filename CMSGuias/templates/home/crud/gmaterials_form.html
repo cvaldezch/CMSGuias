@@ -14,6 +14,14 @@
                     width: "100%"
                 }
             );
+            {% if update %}
+                setTimeout(function() {
+                    var e = $.Event("keypress");
+                    e.which = 13; //choose the one you want
+                    e.keyCode = 13;
+                    $("[name=code]").trigger(e);
+                }, 800);
+            {% endif %}
         });
         function prevent (event) {
             event.preventDefault();
@@ -27,11 +35,12 @@
             };
             if ($("td.id-mat").text()) {
                 data.materials = $("td.id-mat").text()
+                $("[name=materials]").val(data.materials);
             };
             if ($("textarea[name=observation]").val()) {
                 data.observation = $("textarea[name=observation]").val()
             };
-            if (Object.keys(data).length == 4) {
+            if (Object.keys(data).length >= 3) {
                 data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
                 document.forms["myform"].submit();
                 return true;
@@ -51,7 +60,11 @@
     <div class="container">
         <div class="well">
             <h1>Grupo de Materiales</h1>
-            <form method="post" role="form" name="myform" onSubmit="return prevent(event);">
+            {% if update %}
+                <form method="post" role="form" name="myform" action="/gmaterials/edit/save/{{ value.mgroup_id }}/" onSubmit="return prevent(event);">
+            {% else %}
+                <form method="post" role="form" name="myform" onSubmit="return prevent(event);">
+            {% endif %}
                 {% csrf_token %}
                 {#{ form.as_p }#}
                 <div class="panel panel-success">
@@ -61,12 +74,16 @@
                                 <div class="form-group has-warning">
                                     <label class="control-label">Tipo de Grupo</label>
                                     {{ form.tgroup }}
+                                    {% if update %}
+                                        <input type="hidden" value="{{ value.mgroup_id }}" name="mgroup_id">
+                                    {% endif %}
+                                    <input type="hidden" name="materials">
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group has-warning">
                                     <label class="control-label">Codigo</label>
-                                    <input type="text" name="code" class="form-control input-sm">
+                                    <input type="text" name="code" class="form-control input-sm" value="{{ value.materials_id }}">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -85,7 +102,7 @@
                             <div class="col-md-6">
                                 <div class="form-group has-warning">
                                     <label class="control-label">Nombre de Grupo</label>
-                                    <input type="text" name="name" class="form-control input-sm">
+                                    <input type="text" name="name" class="form-control input-sm" value="{{ value.name }}">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -99,8 +116,7 @@
                             <div class="col-md-6">
                                 <div class="form-group has-warning">
                                     <label class="control-label">Observation</label>
-                                    <textarea name="observation" rows="4" class="form-control input-sm">
-                                    </textarea>
+                                    <textarea name="observation" rows="4" class="form-control input-sm">{{ value.observation }}</textarea>
                                 </div>
                             </div>
                         </div>

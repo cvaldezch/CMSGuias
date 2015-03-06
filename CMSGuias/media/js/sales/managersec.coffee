@@ -2207,9 +2207,11 @@ calcAmountSector = (event) ->
         $(".percentpurchasediff").text percentpurchasebad.toFixed 2
         .removeClass "danger"
     # Calc percent sales
-    salesdiff = (estimated - sales)
+    estimatedsales = convertNumber $(".amountmeterestimatedsales").text()
+    # console.error estimatedsales
+    salesdiff = (estimatedsales - sales)
     $(".amountsalesdiff").text salesdiff.toFixed 2
-    percents = ((sales * 100) / estimated)
+    percents = ((sales * 100) / estimatedsales)
     $(".percentsales").text percents.toFixed 2
     salesdiff = (100 - percents)
     $(".percentsalesres").text salesdiff.toFixed 2
@@ -2308,7 +2310,7 @@ calcAmountModifySector = (event) ->
     $(".adiffpurchase").text (purchaseamount - apurchase).toFixed 3
     $(".aimppurchase").text (parseFloat($(".amountmeterestimated").text()) - apurchase).toFixed 2
     $(".amsalesdifftot").text (salesamount - asales).toFixed 3
-    $(".amountsalestot").text (parseFloat($(".amountmeterestimated").text()) - asales).toFixed 2
+    $(".amountsalestot").text (parseFloat($(".amountmeterestimatedsales").text()) - asales).toFixed 2
     return
 
 showGuideByProyect = (event) ->
@@ -2332,3 +2334,8 @@ showOrdersByProyect = (event) ->
         sec = "None"
     href = "/sales/projects/list/orders/#{pro}/#{sub}/#{sec}"
     location.href = href
+
+showPreOrders = (event) ->
+    $table = $(".table-details > tbody > tr")
+
+    return

@@ -401,7 +401,7 @@
                 </div>
                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.cargos|lower == 'jefe de operaciones' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
                     <div class="col-md-12">
-                        <div class="panel panel-success">
+                        <div class="panel panel-success panel-letter">
                             <div class="panel-heading">
                                 <h4>
                                     Lista de Cartas
@@ -409,8 +409,8 @@
                                         <span class="fa fa-plus"></span>
                                     </button>
                                 </h4>
-                                <button class="btn btn-lg btn-link close btn-sh-purchase-order">
-                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                <button class="btn btn-lg btn-link close btn-letter-toggle">
+                                    <span class="glyphicon glyphicon-chevron-up"></span>
                                 </button>
                                 <!-- <span class="close fa fa-chevron-down"></span> -->
                             </div>
@@ -987,6 +987,27 @@
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn btn-xs btn-default">
+                    <span class="fa fa-times"></span>
+                    Salir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="anexo-letter-list">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4 class="modal-title">
+                    Lista de Anexos
+                </h4>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group list-anexo"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-default btn-sm">
                     <span class="fa fa-times"></span>
                     Salir
                 </button>

@@ -99,6 +99,7 @@ getSummaryMaterials = function() {
       $("input[name=cantidad]").val(response.list[0].quantity);
       $("input[name=precio]").val(response.list[0].purchase);
       $("input[name=sales]").val(response.list[0].sale);
+      $("input[name=sale]").val(response.list[0].sale);
     });
   }
 };
@@ -168,6 +169,7 @@ searchMaterialCode = function(code) {
         $("input[name=cantidad]").val(response.list.quantity);
         $("input[name=precio]").val(response.list.purchase);
         $("input[name=sale]").val(response.list.sale);
+        $("input[name=sales]").val(response.list.sale);
       } else {
         $().toastmessage("showWarningToast", "The material not found.");
       }

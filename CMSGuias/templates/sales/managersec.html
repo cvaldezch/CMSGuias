@@ -479,8 +479,8 @@
                                             </tr>
                                             <tr>
                                                 <th>PRECIO DE VENTAS</th>
-                                                <td>
-                                                    {% if not sector.amount %} 0 {% else %} {{ sector.amount|safe }} {% endif %}
+                                                <td class="amountmeterestimatedsales">
+                                                    {% if not sector.amountsales %} 0 {% else %} {{ sector.amountsales|safe }} {% endif %}
                                                 </td>
                                                 <td class="amountsales"></td>
                                                 <td class="amountsalesdiff"></td>
@@ -575,14 +575,22 @@
                                             {% endif %}
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'operaciones'  or user.get_profile.empdni.charge.area|lower == 'almacen' %}
-                                                    <div class="form-group pull-left">
-                                                        <button class="btn btn-xs btn-primary btn-show-orders">
-                                                            <span class="fa fa-cube"></span>
+                                                    <div class="form-group text-left">
+                                                    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+                                                            <button type="button" class="btn btn-default btn-generate-pre-orders">
+                                                                <span class="fa fa-columns"></span>
+                                                                Pre Pedido
+                                                            </button>
+                                                        <!-- </div> -->
+                                                    {% endif %}
+                                                    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'operaciones' or user.get_profile.empdni.charge.area|lower == 'almacen' %}
+                                                    <!-- <div class="form-group"> -->
+                                                        <button class="btn btn-primary btn-show-orders">
+                                                            <span class="fa fa-cubes"></span>
                                                             <span>Hacer Pedido Almacén</span>
                                                         </button>
-                                                    </div>
                                                     {% endif %}
+                                                    </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group pull-left">
@@ -987,7 +995,7 @@
                                                         PRECIO VENTA
                                                     </th>
                                                     <td class="text-center">
-                                                        {% if not sector.amount %} 0 {% else %} {{ sector.amount|safe }} {% endif %}
+                                                        {% if not sector.amountsales %} 0 {% else %} {{ sector.amountsales|safe }} {% endif %}
                                                     </td>
                                                     <td class="text-center amsalescalc"></td>
                                                     <td class="text-center amsalesdiff"></td>
@@ -1613,6 +1621,61 @@
         </button>
     </div>
     <iframe src="" id="planefull" frameborder="0"></iframe>
+</div>
+<!-- generate pre orders -->
+<div class="modal fade" id="preorders">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4 class="model-title">Generar Pre pedido</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-sm btn-default">
+                            <span class="fa fa-times"></span>
+                            Salir
+                        </button>
+                        <button type="button" class="btn btn-sm btn-primary pull-right">
+                            <span class="fa fa-save"></span>
+                            Generar Pre-pedido
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">Traslado</label>
+                            <input type="text" class="form-control input-sm" maxlength="10" placeholder="dd-mm-aaaa" name="pre-transfer">
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="form-group">
+                            <label class="control-label">Asunto</label>
+                            <input type="text" class="form-control input-sm" name="pre-issue" placeholder="Asunto">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="table-response">
+                            <table class="table table-conseded table-hover table-bordered">
+                                <thead>
+                                    <tr class="success">
+                                        <th>Item</th>
+                                        <th>Código</th>
+                                        <th>Descripción</th>
+                                        <th>Unidad</th>
+                                        <th>Marca</th>
+                                        <th>Modelo</th>
+                                        <th>Cantidad</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- Data Project -->
 {% csrf_token %}

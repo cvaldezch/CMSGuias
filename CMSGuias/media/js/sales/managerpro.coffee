@@ -134,6 +134,8 @@ $(document).ready ->
     $(".btn-upload-anexos").on "click", uploadLetterAnexo
     $(".edit-letter").on "click", editLetter
     $(document).on "click", ".btn-letter-show-observation", showLetterObservation
+    $(document).on "click", ".btn-letter-show-details", showListAnexos
+    $(".btn-letter-toggle").on "click", letterToggle
     $(".btn-open-letter-file").click ->
         $("input[name=letter-file]").click()
         return
@@ -948,7 +950,7 @@ getListLetter = (event) ->
             for x of response.list
                 tmp = template
                 if response.list[x].file.length
-                    tmp = tmp.replace "{{!files}}", "<a href=\"/media/{{ file }}\" class=\"text-black\" target=\"_blank\">
+                    tmp = tmp.replace "{{!files}}", "<a href=\"/media/{{ file }}\" class=\"text-black\" target=\"_blank\" rel=\"next\">
                                 <span class=\"fa fa-file-text\"></span>
                             </a>"
                 response.list[x].item = parseInt(x) + 1
@@ -1116,4 +1118,45 @@ showLetterObservation = (event) ->
     $("#letter-observation").modal "show"
     .find "small[name=letter-observation]"
     .text @value
+    return
+
+showListAnexos = (event) ->
+    context = new Object
+    context.id = @value
+    context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+    context.listAnexo = true
+    $.post "", context, (response) ->
+        if response.status
+            template = "<li class=\"list-group-item list-group-item-success\">
+                        <span class=\"badge\">
+                            <button class=\"btn btn-xs btn-link text-white\">
+                                <span class=\"fa fa-trash\"></span>
+                            </button>
+                        </span>
+                        <a href=\"/media/{{ file }}\" class=\"text-black\" target=\"_blank\">{{ name }}</a>
+                      </li>"
+            $lt = $(".list-anexo")
+            $lt.empty()
+            for x of response.list
+                $lt.append Mustache.render template, response.list[x]
+            $("#anexo-letter-list").modal "show"
+            return
+        else
+            $().toastmessage "showErrorToast", "No se a conseguido la lista de anexos."
+            return
+    , "json"
+    return
+
+letterToggle = (event) ->
+    $btn = $(@)
+    $(".panel-letter").find ".table-letter"
+    .toggle ->
+        if @style.display is "table"
+            $btn.find "span"
+            .removeClass "glyphicon-chevron-down"
+            .addClass "glyphicon-chevron-up"
+        else
+            $btn.find "span"
+            .removeClass "glyphicon-chevron-up"
+            .addClass "glyphicon-chevron-down"
     return

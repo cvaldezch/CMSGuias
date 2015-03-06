@@ -103,21 +103,21 @@ def get_resumen_details_materiales(request):
                                         for p in s[request.GET.get('sec')]:
                                             #print p
                                             if x.materiales_id == p['materials']:
-                                                purchase = p['purchase']
-                                                sale = p['sale']
+                                                purchase = round(p['purchase'], 2)
+                                                sale = round(p['sale'], 2)
                                                 quantity = p['quantity']
-                            context['list'] = [
-                                {
-                                    'materialesid': x.materiales_id,
-                                    'matnom': x.matnom,
-                                    'matmed': x.matmed,
-                                    'unidad': x.unidad.uninom,
-                                    'purchase': purchase,
-                                    'sale': sale,
-                                    'quantity': quantity
-                                }
-                            ]
-                            break
+                        context['list'] = [
+                            {
+                                'materialesid': x.materiales_id,
+                                'matnom': x.matnom,
+                                'matmed': x.matmed,
+                                'unidad': x.unidad.uninom,
+                                'purchase': purchase,
+                                'sale': sale,
+                                'quantity': quantity
+                            }
+                        ]
+                        break
                 # res = Materiale.objects.values('materiales_id','matnom','matmed','unidad').filter(matnom__icontains=request.GET['matnom'],matmed__icontains=request.GET['matmed'])[:1]
                 # data['list'].append({ "materialesid": res[0]['materiales_id'], "matnom": res[0]['matnom'], "matmed": res[0]['matmed'], "unidad": res[0]['unidad'] })
                 context['status'] = True
@@ -165,8 +165,8 @@ class GetDetailsMaterialesByCode(DetailView):
                                 for p in s[request.GET.get('sec')]:
                                     #print p
                                     if mat['materiales_id'] == p['materials']:
-                                        purchase = p['purchase']
-                                        sale = p['sale']
+                                        purchase = round(p['purchase'], 2)
+                                        sale = round(p['sale'], 2)
                                         quantity = p['quantity']
                 context['list'] = {
                     'materialesid': mat['materiales_id'],

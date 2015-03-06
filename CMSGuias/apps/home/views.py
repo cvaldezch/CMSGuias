@@ -510,7 +510,7 @@ class GMaterialsCreate(CreateView):
         self.object = form.save(commit=False)
         try:
             tgroup = GroupMaterials.objects.get(materials_id=self.object.materials, tgroup_id=self.object.tgroup)
-            print tgroup, 'tgroup question'
+            #print tgroup, 'tgroup question'
             if tgroup:
                 return HttpResponseRedirect(self.success_url)
             else:
@@ -522,7 +522,7 @@ class GMaterialsCreate(CreateView):
             self.object.save()
             return super(GMaterialsCreate, self).form_valid(form)
 
-class GMaterialsUpdate(UpdateView):
+class GMaterialsUpdateSave(UpdateView):
     form_class = GMaterialsForm
     model = GroupMaterials
     slug_field = 'mgroup_id'
@@ -531,8 +531,32 @@ class GMaterialsUpdate(UpdateView):
     template_name = 'home/crud/gmaterials_form.html'
 
     @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        return super(GMaterialsUpdate, self).dispatch(request, *args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        obj = self.model.objects.get(pk=request.POST.get('mgroup_id'))
+        form = self.form_class(request.POST, instance=obj)
+        print form.is_valid()
+        if form.is_valid():
+            form.save()
+        else:
+            return HttpResponseRedirect('/gmaterials/edit/%s/'%request.POST.get('mgroup_id'))
+        return HttpResponseRedirect(self.success_url)
+    # def dispatch(self, request, *args, **kwargs):
+    #     return super(GMaterialsUpdateSave, self).dispatch(request, *args, **kwargs)
+
+class GMaterialsUpdate(TemplateView):
+    #model = GroupMaterials
+    # slug_field = 'mgroup_id'
+    # slug_url_kwarg = 'mgroup_id'
+    template_name = 'home/crud/gmaterials_form.html'
+
+    #@method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        context['value'] = get_object_or_404(GroupMaterials, pk=kwargs['mgroup_id'])
+        context['form'] = GMaterialsForm(instance=context['value'])
+        context['update'] = True
+        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        #return super(GMaterialsUpdate, self).dispatch(request, *args, **kwargs)
 
 class GMaterialsDelete(DeleteView):
     model = GroupMaterials

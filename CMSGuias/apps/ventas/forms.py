@@ -30,6 +30,7 @@ class SectoreForm(forms.ModelForm):
             'fin' : forms.TextInput(attrs = {'class':'form-control'}),
             'obser' : forms.Textarea(attrs = {'class': 'form-control', 'maxlength': '200', 'rows': '4'}),
             'amount' : forms.TextInput(attrs = {'class':'form-control'}),
+            'amountsales' : forms.TextInput(attrs = {'class':'form-control'}),
             'atype' : forms.Select(attrs = {'class':'form-control'}, choices=atypel),
         }
 

@@ -67,6 +67,7 @@ gmaterials_urls = patterns('',
     url(r'^list/$', GMaterialsList.as_view(), name='gmaterials_list'),
     url(r'^new/$', GMaterialsCreate.as_view(), name='gmaterials_new'),
     url(r'^edit/(?P<mgroup_id>\w+)/$', GMaterialsUpdate.as_view(), name='gmaterials_edit'),
+    url(r'^edit/save/(?P<mgroup_id>\w+)/$', GMaterialsUpdateSave.as_view(), name='gmaterials_edit_save'),
     url(r'^delete/(?P<mgroup_id>\w+)/$', GMaterialsDelete.as_view(), name='gmaterials_del'),
     url(r'^details/(?P<mgroup>\w+)/$', DetailsGMaterials.as_view(), name='gmaterials_details'),
 )
