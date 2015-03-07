@@ -179,6 +179,7 @@ $(document).ready(function() {
   $("button.btn-reader-prices").on("click", readerPrices);
   $("button.btn-show-guide").on("click", showGuideByProyect);
   $("button.btn-show-orders-do").on("click", showOrdersByProyect);
+  $(".btn-generate-pre-orders").on("click", showPreOrders);
   $("table.table-float").floatThead({
     useAbsolutePositioning: true,
     scrollingTop: 50
@@ -2509,6 +2510,36 @@ showOrdersByProyect = function(event) {
 };
 
 showPreOrders = function(event) {
-  var $table;
-  $table = $(".table-details > tbody > tr");
+  var $tb, counter, data, template, x;
+  data = new Object;
+  data.list = new Array;
+  counter = 0;
+  $("input[name=mats]").each(function(index, element) {
+    var $td;
+    if (this.checked) {
+      counter += 1;
+      $td = $("tr." + this.value + " > td");
+      data.list.push({
+        "item": counter,
+        "materials": $td.eq(2).text(),
+        "name": $td.eq(3).text() + " " + $td.eq(4).text(),
+        "unit": $td.eq(5).text(),
+        "brand": $td.eq(6).text(),
+        "model": $td.eq(7).text(),
+        "quantity": $td.eq(9).text(),
+        "comment": $td.find("input").eq(1).val()
+      });
+    }
+  });
+  template = "<tr> <td>{{ item }}</td> <td>{{ materials }}</td> <td>{{ name }}</td> <td>{{ unit }}</td> <td>{{ brand }}</td> <td>{{ model }}</td> <td> <input type=\"number\" step=\"0.01\" min=\"1\" max=\"{{ quantity }}\" class=\"form-control input-sm col-2\" value=\"{{ quantity }}\" > </td> </tr>";
+  if (data.list.length) {
+    $tb = $(".table-pre-orders > tbody");
+    $tb.empty();
+    for (x in data.list) {
+      $tb.append(Mustache.render(template, data.list[x]));
+    }
+    $("#preorders").modal("show");
+  } else {
+    $().toastmessage("showWarningToast", "Debe de seleccionar al menos un material.");
+  }
 };

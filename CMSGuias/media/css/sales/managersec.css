@@ -1,1 +1,1 @@
-table.table-details > tbody,table.table-modify > tbody{font-size:12px}
+table.table-details > tbody,table.table-modify > tbody,table.table-pre-orders > tbody{font-size:12px;}table.table-details > tbody > tr > td > input[type="text"],table.table-modify > tbody > tr > td > input[type="text"],table.table-pre-orders > tbody > tr > td > input[type="text"],table.table-details > tbody > tr > td select,table.table-modify > tbody > tr > td select,table.table-pre-orders > tbody > tr > td select{height:20px;font-size:11px;margin:0;padding:0}

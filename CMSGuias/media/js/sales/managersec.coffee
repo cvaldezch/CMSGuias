@@ -161,6 +161,7 @@ $(document).ready ->
     $("button.btn-reader-prices").on "click", readerPrices
     $("button.btn-show-guide").on "click", showGuideByProyect
     $("button.btn-show-orders-do").on "click", showOrdersByProyect
+    $(".btn-generate-pre-orders").on "click", showPreOrders
     $("table.table-float").floatThead
         useAbsolutePositioning: true
         scrollingTop: 50
@@ -2336,6 +2337,40 @@ showOrdersByProyect = (event) ->
     location.href = href
 
 showPreOrders = (event) ->
-    $table = $(".table-details > tbody > tr")
-
+    data = new Object
+    data.list = new Array
+    counter = 0
+    $("input[name=mats]").each (index, element) ->
+        if @checked
+            counter += 1
+            $td = $("tr.#{@value} > td")
+            data.list.push
+                "item": counter,
+                "materials": $td.eq(2).text(),
+                "name": $td.eq(3).text()+ " " +$td.eq(4).text(),
+                "unit": $td.eq(5).text(),
+                "brand": $td.eq(6).text(),
+                "model": $td.eq(7).text(),
+                "quantity": $td.eq(9).text(),
+                "comment": $td.find("input").eq(1).val()
+            return
+    template = "<tr>
+                <td>{{ item }}</td>
+                <td>{{ materials }}</td>
+                <td>{{ name }}</td>
+                <td>{{ unit }}</td>
+                <td>{{ brand }}</td>
+                <td>{{ model }}</td>
+                <td>
+                    <input type=\"number\" step=\"0.01\" min=\"1\" max=\"{{ quantity }}\" class=\"form-control input-sm col-2\" value=\"{{ quantity }}\" >
+                </td>
+                </tr>"
+    if data.list.length
+        $tb = $(".table-pre-orders > tbody")
+        $tb.empty()
+        for x of data.list
+            $tb.append Mustache.render template, data.list[x]
+        $("#preorders").modal "show"
+    else
+        $().toastmessage "showWarningToast", "Debe de seleccionar al menos un material."
     return
