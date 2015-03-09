@@ -657,7 +657,7 @@
                                                 <td>{{ forloop.counter }}</td>
                                                 <td>
                                                     {% if x.quantity > 0 %}
-                                                        <input type="checkbox" name="mats" value="{{ x.materiales_id }}">
+                                                        <input type="checkbox" name="mats" value="{{ x.materiales_id }}" data-brand="{{ x.brand_id }}" data-model="{{ x.model_id }}">
                                                     {% else %}
                                                         <!-- <input type="hidden" name="mats" value="{{ x.materiales_id }}" disabled> -->
                                                     {% endif %}
@@ -1637,7 +1637,7 @@
                             <span class="fa fa-times"></span>
                             Salir
                         </button>
-                        <button type="button" class="btn btn-sm btn-primary pull-right">
+                        <button type="button" class="btn btn-sm btn-primary pull-right btn-generate-pre-orders">
                             <span class="fa fa-save"></span>
                             Generar Pre-pedido
                         </button>

@@ -162,6 +162,7 @@ $(document).ready ->
     $("button.btn-show-guide").on "click", showGuideByProyect
     $("button.btn-show-orders-do").on "click", showOrdersByProyect
     $(".btn-generate-pre-orders").on "click", showPreOrders
+    $(".btn-generate-pre-orders").on "click", savePreOrders
     $("table.table-float").floatThead
         useAbsolutePositioning: true
         scrollingTop: 50
@@ -2341,7 +2342,7 @@ showPreOrders = (event) ->
     data.list = new Array
     counter = 0
     $("input[name=mats]").each (index, element) ->
-        if @checked
+        if element.checked
             counter += 1
             $td = $("tr.#{@value} > td")
             data.list.push
@@ -2350,7 +2351,9 @@ showPreOrders = (event) ->
                 "name": $td.eq(3).text()+ " " +$td.eq(4).text(),
                 "unit": $td.eq(5).text(),
                 "brand": $td.eq(6).text(),
+                "brand_id": element.getAttribute("data-brand"),
                 "model": $td.eq(7).text(),
+                "model_id": element.getAttribute("data-model"),
                 "quantity": $td.eq(9).text(),
                 "comment": $td.find("input").eq(1).val()
             return
@@ -2362,7 +2365,7 @@ showPreOrders = (event) ->
                 <td>{{ brand }}</td>
                 <td>{{ model }}</td>
                 <td>
-                    <input type=\"number\" step=\"0.01\" min=\"1\" max=\"{{ quantity }}\" class=\"form-control input-sm col-2\" value=\"{{ quantity }}\" >
+                    <input type=\"number\" onBlur=\"validQuantityPreOrder(this)\" step=\"0.01\" min=\"1\" max=\"{{ quantity }}\" class=\"form-control input-sm col-2\" value=\"{{ quantity }}\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\">
                 </td>
                 </tr>"
     if data.list.length
@@ -2373,4 +2376,44 @@ showPreOrders = (event) ->
         $("#preorders").modal "show"
     else
         $().toastmessage "showWarningToast", "Debe de seleccionar al menos un material."
+    return
+
+validQuantityPreOrder = (element) ->
+    console.log element
+    max = parseFloat element.getAttribute "max"
+    quantity = parseFloat element.value
+    if quantity > max
+        element.value = max
+    else if quantity <= 0
+        element.value = max
+    return
+
+savePreOrders = (event) ->
+    context = new Object
+    context.order = new Array
+    $(".table-pre-orders > tbody > tr").each (index, element) ->
+        $td = $(element).find "td"
+        input = $td.eq(6).find("input").get(0)
+        console.log input
+        context.order.push
+            "materials": $td.eq(1).text(),
+            "brand": input.getAttribute("data-brand"),
+            "model": input.getAttribute("data-model"),
+            "quantity": input.value
+        return
+    if context.order.length
+        context.transfer = $("input[name=pre-transfer]")
+        context.issue = $("input[name=pre-issue]")
+        context.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+        console.log context
+        ###$.post "", context, (response) ->
+            if response.status
+                $().toastmessage "showSuccessToast", "Se a generado la Pre Orden a almacén."
+                setTimeout ->
+                    location.reload()
+                , 2600
+                return
+            else
+                $().toastmessage "showWarningToast", "No se puede Generar la pre Orden de pedido a almancen."
+        , "json"###
     return

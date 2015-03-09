@@ -292,22 +292,26 @@ def GenerateIdServiceOrder():
         raise e
     return id
 
-def generateLetterCode():
+def generateLetterCode(pro='PRAA000', ruc = ''):
     id = None
     try:
-        code = Letter.objects.aggregate(max=Max('letter_id'))
-        id = code['max']
-        #yn = int(datetime.datetime.today().strftime(__year_str))
+        code = Letter.objects.latest('register')
+        # print code.register
+        id = code.letter_id
+        yn = int(datetime.datetime.today().strftime(__year_str))
         if id is not None:
-            # yy = int(id[2:4])
-            counter = int(id)
-            # if yn > yy:
-            #     counter = 1
-            # else:
-            counter += 1
+            counter = int(id[-3:])
+            if yn > int(code.register.strftime('%y')):
+                counter = 1
+            else:
+                counter += 1
         else:
             counter = 1
-        id = '%s'%('{:0>8d}'.format(counter))
+        if ruc == '20428776110':
+            signal = 'ICR'
+        else:
+            signal = 'ICT'
+        id = 'CTA-%s-%s-%s'%(signal, pro,'{:0>3d}'.format(counter))
     except ObjectDoesNotExist, e:
         raise e
     return id

@@ -103,7 +103,7 @@ class Letter(models.Model):
             # os.rename(name, '%s%s/%s_1.%s'%(ruri[0], self.letter_id, self.letter_id, ext))
         return uri
 
-    letter_id = models.CharField(primary_key=True, max_length=8)
+    letter_id = models.CharField(primary_key=True, max_length=19)
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
     register = models.DateTimeField(auto_now=True)
     performed = models.ForeignKey(Employee, to_field='empdni_id')

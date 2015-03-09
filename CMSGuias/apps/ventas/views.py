@@ -272,7 +272,7 @@ class ProjectManager(JSONResponseMixin, View):
                                 'status': x.status,
                                 'observation': x.observation
                             }
-                            for x in Letter.objects.filter(Q(project_id=kwargs['project']), ~Q(status='AN')).order_by('register')
+                            for x in Letter.objects.filter(Q(project_id=kwargs['project']), ~Q(status='AN')).order_by('-register')
                         ]
                         context['status'] = True
                 except ObjectDoesNotExist, e:
@@ -490,7 +490,7 @@ class ProjectManager(JSONResponseMixin, View):
                         # print request.session[sess]
                     context['status'] = True
                 if 'generateletter' in request.POST:
-                    key = genkeys.generateLetterCode()
+                    key = genkeys.generateLetterCode(kwargs['project'], request.session.get('company')['ruc'])
                     form = LetterForm(request.POST, request.FILES)
                     # print form
                     if form.is_valid():
@@ -506,10 +506,13 @@ class ProjectManager(JSONResponseMixin, View):
                         context['status'] = False
                 if 'uploadLetter' in request.POST:
                     letter = Letter.objects.get(pk=request.POST.get('id'))
-                    letter.letter = request.FILES['letter']
-                    letter.status = 'UP'
-                    letter.save()
-                    context['status'] = True
+                    if request.user.get_profile().empdni_id == letter.performed_id or request.get_profile().empdni.charge.area.lower() == 'administrator':
+                        letter.letter = request.FILES['letter']
+                        letter.status = 'UP'
+                        letter.save()
+                        context['status'] = True
+                    else:
+                        context['status'] = False
                 if 'uploadLetterAnexo' in request.POST:
                     for x in range(0, int(request.POST.get('len'))):
                         letter = LetterAnexo()
@@ -519,18 +522,23 @@ class ProjectManager(JSONResponseMixin, View):
                     context['status'] = True
                 if 'AnnulerLetter' in request.POST:
                     letter = Letter.objects.get(pk=request.POST.get('id'))
-                    letter.status = 'AN'
-                    letter.flag = False
-                    letter.save()
-                    context['status'] = True
-                if 'editLetter' in request.POST:
-                    letter = Letter.objects.get(pk=request.POST.get('letter_id'))
-                    form = LetterForm(request.POST, instance=letter)
-                    if form.is_valid():
-                        form.save()
+                    if request.user.get_profile().empdni_id == letter.performed_id or request.get_profile().empdni.charge.area.lower() == 'administrator':
+                        letter.status = 'AN'
+                        letter.flag = False
+                        letter.save()
                         context['status'] = True
                     else:
                         context['status'] = False
+                        context['raise'] = 'Solo el responsable de crear la carta puede anularlo.'
+                if 'editLetter' in request.POST:
+                    letter = Letter.objects.get(pk=request.POST.get('letter_id'))
+                    if request.user.get_profile().empdni_id == letter.performed_id:
+                        form = LetterForm(request.POST, instance=letter)
+                        if form.is_valid():
+                            form.save()
+                            context['status'] = True
+                        else:
+                            context['status'] = False
                 if 'listAnexo' in request.POST:
                     anexo = LetterAnexo.objects.filter(letter_id=request.POST.get('id')).order_by('anexo')
                     context['list'] = [
@@ -648,7 +656,9 @@ class SectorManage(JSONResponseMixin, View):
                             'measure': x.materiales.matmed,
                             'unit': x.materiales.unidad.uninom,
                             'brand': x.brand.brand,
+                            'brand_id': x.brand_id,
                             'model': x.model.model,
+                            'model_id': x.model_id,
                             'quantity': x.quantityorder,
                             'cantidad': x.cantidad,
                             'price': x.precio,
