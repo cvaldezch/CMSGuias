@@ -4,7 +4,7 @@ var addListCusSectors, addMaterial, addMaterialUpdateMeter, addoldMaterialRemove
 $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
   $(".panel-add,input[name=read], .step-second, .body-subandsec, .body-sector, .body-materials, .ordersbedside, .panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter, .deductive-one, .panel-deductive-global, .panel-search-material-old, .panel-materials-old, .control-deductive-one, .control-deductive-cus, .panel-price-two").hide();
-  $("input[name=traslado]").datepicker({
+  $("input[name=traslado], input[name=pre-transfer]").datepicker({
     "dateFormat": "yy-mm-dd",
     changeMonth: true,
     changeYear: true,
@@ -152,7 +152,7 @@ $(document).ready(function() {
   $("button.btn-alert-modified").on("click", sendAlertModified);
   $("button.btn-del-all-modify").on("click", deleteAllUpdateMeter);
   tinymce.init({
-    selector: "textarea[name=obser]",
+    selector: "textarea[name=obser]textarea[name=pre-observation]",
     theme: "modern",
     menubar: false,
     statusbar: false,
@@ -171,6 +171,14 @@ $(document).ready(function() {
     font_size_style_values: "10px,12px,13px,14px,16px,18px,20px",
     toolbar: "undo redo | styleselect | fontsizeselect |"
   });
+  tinymce.init({
+    selector: "#pre-observation,#pre-nipples",
+    theme: "modern",
+    menubar: false,
+    statusbar: false,
+    font_size_style_values: "10px,12px,13px,14px,16px,18px,20px",
+    toolbar: "undo redo | styleselect | fontsizeselect | bold italic"
+  });
   $("input[name=mailer-enable]").checkboxpicker().on("change", loadsAccounts);
   $("button.btn-publisher").on("click", publisherCommnet);
   $(".btn-message-edit").on("click", showEditComment);
@@ -180,7 +188,7 @@ $(document).ready(function() {
   $("button.btn-show-guide").on("click", showGuideByProyect);
   $("button.btn-show-orders-do").on("click", showOrdersByProyect);
   $(".btn-generate-pre-orders").on("click", showPreOrders);
-  $(".btn-generate-pre-orders").on("click", savePreOrders);
+  $(".btn-save-pre-orders").on("click", savePreOrders);
   $("table.table-float").floatThead({
     useAbsolutePositioning: true,
     scrollingTop: 50
@@ -2549,7 +2557,6 @@ showPreOrders = function(event) {
 
 validQuantityPreOrder = function(element) {
   var max, quantity;
-  console.log(element);
   max = parseFloat(element.getAttribute("max"));
   quantity = parseFloat(element.value);
   if (quantity > max) {
@@ -2567,7 +2574,6 @@ savePreOrders = function(event) {
     var $td, input;
     $td = $(element).find("td");
     input = $td.eq(6).find("input").get(0);
-    console.log(input);
     context.order.push({
       "materials": $td.eq(1).text(),
       "brand": input.getAttribute("data-brand"),
@@ -2576,21 +2582,30 @@ savePreOrders = function(event) {
     });
   });
   if (context.order.length) {
-    context.transfer = $("input[name=pre-transfer]");
-    context.issue = $("input[name=pre-issue]");
+    context.order = JSON.stringify(context.order);
+    context.transfer = $("input[name=pre-transfer]").val();
+    context.issue = $("input[name=pre-issue]").val();
     context.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
-    console.log(context);
-
-    /*$.post "", context, (response) ->
-        if response.status
-            $().toastmessage "showSuccessToast", "Se a generado la Pre Orden a almacén."
-            setTimeout ->
-                location.reload()
-            , 2600
-            return
-        else
-            $().toastmessage "showWarningToast", "No se puede Generar la pre Orden de pedido a almancen."
-    , "json"
-     */
+    if (context.transfer === "" && context.transfer.length === 10) {
+      $().toastmessage("showWarningToast", "La fecha de traslado no es correcta o se encuentra vacia.");
+      return false;
+    }
+    if (context.issue === "") {
+      $().toastmessage("showWarningToast", "El asunto se encuentra vacia.");
+      return false;
+    }
+    context.observation = $("#pre-observation_ifr").contents().find("body").html();
+    context.nipples = $("#pre-nipples").contents().find("body").html();
+    context.savepreorders = true;
+    $.post("", context, function(response) {
+      if (response.status) {
+        $().toastmessage("showSuccessToast", "Se a generado la Pre Orden a almacén " + response.code + ".");
+        setTimeout(function() {
+          return location.reload();
+        }, 2600);
+      } else {
+        $().toastmessage("showWarningToast", "No se puede Generar la pre Orden de pedido a almancen. " + response.raise);
+      }
+    }, "json");
   }
 };

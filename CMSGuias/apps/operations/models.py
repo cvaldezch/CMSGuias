@@ -130,3 +130,34 @@ class LetterAnexo(models.Model):
 
     class Meta:
         ordering = ['letter']
+
+class PreOrders(models.Model):
+    preorder_id = models.CharField(primary_key=True, max_length=10)
+    project = models.ForeignKey(Proyecto, to_field='proyecto_id')
+    subproject = models.ForeignKey(Subproyecto, to_field='subproyecto_id',blank=True,null=True)
+    sector = models.ForeignKey(Sectore, to_field='sector_id',blank=True,null=True)
+    performed = models.ForeignKey(Employee, to_field='empdni_id')
+    register = models.DateTimeField(auto_now=True)
+    transfer = models.DateField()
+    issue = models.CharField(max_length=200)
+    observation = models.TextField(null=True, blank=True)
+    nipples = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=2, default='PE')
+    flag = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['preorder_id']
+
+    def __unicode__(self):
+        return '%s %s %s'%(self.preorder_id, self.performed, self.issue)
+
+class DetailsPreOrders(models.Model):
+    preorder = models.ForeignKey(PreOrders, to_field='preorder_id')
+    materials = models.ForeignKey(Materiale, to_field='materiales_id')
+    brand = models.ForeignKey(Brand, to_field='brand_id')
+    model = models.ForeignKey(Model, to_field='model_id')
+    quantity = models.FloatField()
+    orders = models.FloatField()
+
+    def __unicode__(self):
+        return '%s %s %f'%(self.preorder, self.materials, self.quantity)

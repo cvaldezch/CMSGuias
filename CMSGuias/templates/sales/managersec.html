@@ -198,11 +198,15 @@
                             <div class="text-right">
                                 <button type="button" class="btn btn-success btn-show-guide">
                                     <span class="fa fa-tasks"></span>
-                                    Lista de Guias Salidas
+                                    Lista de Pre Pedido a Almcén
                                 </button>
                                 <button type="button" class="btn btn-success btn-show-orders-do">
                                     <span class="fa fa-list-alt"></span>
                                     Lista de Pedidos Almacén
+                                </button>
+                                <button type="button" class="btn btn-success btn-show-guide">
+                                    <span class="fa fa-tasks"></span>
+                                    Lista de Guias Salidas
                                 </button>
                             </div>
                             <br>
@@ -583,7 +587,7 @@
                                                             </button>
                                                         <!-- </div> -->
                                                     {% endif %}
-                                                    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'operaciones' or user.get_profile.empdni.charge.area|lower == 'almacen' %}
+                                                    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'almacen' %} <!-- or user.get_profile.empdni.charge.area|lower == 'operaciones' -->
                                                     <!-- <div class="form-group"> -->
                                                         <button class="btn btn-primary btn-show-orders">
                                                             <span class="fa fa-cubes"></span>
@@ -1623,7 +1627,7 @@
     <iframe src="" id="planefull" frameborder="0"></iframe>
 </div>
 <!-- generate pre orders -->
-<div class="modal fade" id="preorders">
+<div class="modal fade" id="preorders" data-backdrop="static">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -1633,11 +1637,11 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-12">
-                        <button type="button" class="btn btn-sm btn-default">
+                        <button type="button" data-dismiss="modal" class="btn btn-sm btn-default">
                             <span class="fa fa-times"></span>
                             Salir
                         </button>
-                        <button type="button" class="btn btn-sm btn-primary pull-right btn-generate-pre-orders">
+                        <button type="button" class="btn btn-sm btn-primary pull-right btn-save-pre-orders">
                             <span class="fa fa-save"></span>
                             Generar Pre-pedido
                         </button>
@@ -1645,13 +1649,25 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label class="control-label">Traslado</label>
-                            <input type="text" class="form-control input-sm" maxlength="10" placeholder="dd-mm-aaaa" name="pre-transfer">
+                            <input type="text" class="form-control input-sm" maxlength="10" placeholder="aaaa-mm-dd" name="pre-transfer">
                         </div>
                     </div>
                     <div class="col-md-10">
                         <div class="form-group">
                             <label class="control-label">Asunto</label>
                             <input type="text" class="form-control input-sm" name="pre-issue" placeholder="Asunto">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Observación</label>
+                            <textarea name="pre-observation" id="pre-observation" rows="2" class="form-control input-sm"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Niples (opcional)</label>
+                            <textarea name="pre-nipples" id="pre-nipples" rows="2" class="form-control input-sm"></textarea>
                         </div>
                     </div>
                     <div class="col-md-12">

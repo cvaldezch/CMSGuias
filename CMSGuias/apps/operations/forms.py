@@ -3,7 +3,7 @@
 #
 from django import forms
 
-from .models import MetProject, Nipple, Letter
+from .models import MetProject, Nipple, Letter, PreOrders
 # from CMSGuias.apps.almacen.models import tmpniple
 
 
@@ -26,3 +26,8 @@ class LetterForm(forms.ModelForm):
     class Meta:
         model = Letter
         exclude = { 'letter_id', 'project', 'performed', 'status' }
+
+class PreOrdersForm(forms.ModelForm):
+    class Meta:
+        model = PreOrders
+        exclude = {'preorder_id', 'performed', 'status', 'project','subproject', 'sector', 'flag'}

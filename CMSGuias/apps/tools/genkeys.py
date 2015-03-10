@@ -10,7 +10,7 @@ from CMSGuias.apps.almacen.models import Pedido, GuiaRemision, Suministro, NoteI
 from CMSGuias.apps.logistica.models import Cotizacion, Compra, ServiceOrder
 from CMSGuias.apps.ventas.models import Proyecto
 from CMSGuias.apps.home.models import Brand, Model, GroupMaterials, TypeGroup
-from CMSGuias.apps.operations.models import Deductive, Letter
+from CMSGuias.apps.operations.models import Deductive, Letter, PreOrders
 
 
 ### format date str
@@ -313,5 +313,25 @@ def generateLetterCode(pro='PRAA000', ruc = ''):
             signal = 'ICT'
         id = 'CTA-%s-%s-%s'%(signal, pro,'{:0>3d}'.format(counter))
     except ObjectDoesNotExist, e:
-        raise e
+        id = 'CTA-%s-%s-%s'%('ICR', pro,'{:0>3d}'.format(1))
+    return id
+
+def generatePreOrdersId():
+    id = None
+    yn = int(datetime.datetime.today().strftime(__year_str))
+    try:
+        code = PreOrders.objects.latest('register')
+        id = code.preorder_id
+        if id is not None:
+            yy = int(id[3:5])
+            counter = int(id[5:10])
+            if yn > yy:
+                counter = 1
+            else:
+                counter += 1
+        else:
+            counter = 1
+        id = '%s%i%s'%('PRO',yn, '{:0>5d}'.format(counter))
+    except ObjectDoesNotExist, e:
+        id = '%s%i%s'%('PRO',yn, '{:0>5d}'.format(1))
     return id

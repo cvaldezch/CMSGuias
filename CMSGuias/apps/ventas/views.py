@@ -21,12 +21,12 @@ from django.views.generic.edit import UpdateView, CreateView
 from decimal import Decimal
 
 from CMSGuias.apps.home.models import *
-from CMSGuias.apps.operations.models import MetProject, Nipple, Deductive, DeductiveInputs, DeductiveOutputs, Letter, LetterAnexo
+from CMSGuias.apps.operations.models import MetProject, Nipple, Deductive, DeductiveInputs, DeductiveOutputs, Letter, LetterAnexo, PreOrders, DetailsPreOrders
 from CMSGuias.apps.almacen.models import Inventario, tmpniple, Pedido, Detpedido, Niple, GuiaRemision, DetGuiaRemision, NipleGuiaRemision
 from .models import *
 from .forms import *
 from CMSGuias.apps.almacen.forms import addOrdersForm
-from CMSGuias.apps.operations.forms import NippleForm, LetterForm
+from CMSGuias.apps.operations.forms import NippleForm, LetterForm, PreOrdersForm
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles, search
 
 
@@ -1613,6 +1613,33 @@ class SectorManage(JSONResponseMixin, View):
                         context['status'] = True
                     else:
                         context['status'] = False
+                if 'savepreorders' in request.POST:
+                    form = PreOrdersForm(request.POST)
+                    if form.is_valid():
+                        add = form.save(commit=False)
+                        key = genkeys.generatePreOrdersId()
+                        add.preorder_id = key
+                        add.project_id = kwargs['pro']
+                        add.subproject_id = kwargs['sub'] if unicode(kwargs['sub']) != 'None' else ''
+                        add.sector_id = kwargs['sec']
+                        add.performed_id = request.user.get_profile().empdni_id
+                        add.save()
+                        #details
+                        details = json.loads(request.POST.get('order'))
+                        for x in details:
+                            det = DetailsPreOrders()
+                            det.preorder_id = key
+                            det.materials_id = x['materials']
+                            det.brand_id = x['brand']
+                            det.model_id = x['model']
+                            det.quantity = x['quantity']
+                            det.orders = x['quantity']
+                            det.save()
+                        context['code'] = key
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+                        context['raise'] = 'Forms invalid.'
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
