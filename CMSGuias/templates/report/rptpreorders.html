@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Report Pre Orders</title>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/reports/stylepreorders.css">
+</head>
+<body>
+    <header>
+        <img id="logo" src="/media/images/icrlogo.png" alt="image">
+        <div id="address" >
+            {{ request.session.company.address }}<!-- <br > -->
+            Central Telefonica: (511) {{ request.session.company.phone }}<!-- <br > -->
+            E-mail: logistica@icrperusa.com
+        </div>
+        <div id="contentserie">
+            <span>NRO PRE-PEDIDO</span>
+            <span>{{ bedside.preorder_id }}</span>
+        </div>
+        <div id="bedsideone">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>ASUNTO:</td>
+                        <td>{{ bedside.issue }}</td>
+                    </tr>
+                    <tr>
+                        <td>PROYECTO:</td>
+                        <td>{{ bedside.project_id }} - {{ bedside.project.nompro }}</td>
+                    </tr>
+                    <tr>
+                        <td>SUBPROYECTO:</td>
+                        <td>{{ bedside.subproject.subproyecto }}</td>
+                    </tr>
+                    <tr>
+                        <td>SECTOR:</td>
+                        <td>{{ bedside.sector_id }} - {{ bedside.sector.nomsec }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="bedsidetwo">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>TRASLADO:</td>
+                        <td>{{ bedside.transfer }}</td>
+                    </tr>
+                    <tr>
+                        <td>REGISTRADO:</td>
+                        <td>{{ bedside.register }}</td>
+                    </tr>
+                    <tr>
+                        <td>REALIZADO:</td>
+                        <td>{{ bedside.performed.name_complete }}</td>
+                    </tr>
+                    <tr>
+                        <td>ESTADO:</td>
+                        <td>
+                            {% for k,v in status.items %}
+                                {% if k == bedside.status %}
+                                    {{ v }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="observation">
+        </div>
+    </header>
+    <section>
+        {% for s in details %}
+            <table id="details">
+                <thead>
+                    <tr>
+                        <th>ITEM</th>
+                        <th width="2.3cm">CÓDIGO</th>
+                        <th>DESCRIPCIÍON</th>
+                        <th width="1.8cm">MARCA</th>
+                        <th width="1.8cm">MODELO</th>
+                        <th width="1.8cm">UND</th>
+                        <th width="2cm">CANTIDAD</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for x in s %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ x.materials_id }}</td>
+                            <td rel="left">{{ x.name }} - {{ x.meter }}</td>
+                            <td>{{ x.brand }}</td>
+                            <td>{{ x.model }}</td>
+                            <td>{{ x.unit }}</td>
+                            <td>{{ x.quantity|safe }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if not forloop.last %}
+                <div><pdf:nextpage /></div>
+            {% endif %}
+        {% endfor %}
+        <div id="footer">
+            <div>
+                <strong>Observación:</strong>
+                {{ bedside.observation|safe }}
+            </div>
+            <div>
+                <strong>Niples</strong>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

@@ -15,4 +15,5 @@ urlpatterns = patterns('CMSGuias.apps.reports.views',
     url(r'^order/purchase/(?P<pk>.*)/$', RptPurchase.as_view(), name='rpt_purchase'),
     url(r'^note/ingress/(?P<pk>\w+)/$', RptNoteIngress.as_view(), name='rpt_noteingress'),
     url(r'^services/orders/(?P<pk>\w{10})/$', RptServiceOrder.as_view(), name='rpt_serviceorder'),
+    url(r'^pre/orders/(?P<porder>\w{10})/$', RptPreOrders.as_view(), name='rpt_preorders'),
 )

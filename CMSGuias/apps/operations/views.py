@@ -49,3 +49,15 @@ class OperationsHome(TemplateView):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(OperationsHome, self).dispatch(request, *args, **kwargs)
+
+# View list pre orders
+class ListPreOrders(TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        try:
+            context = dict()
+            obj = PreOrders.objects.all()
+            #return HttpResponse('hello world')
+        except TemplateDoesNotExist, e:
+            raise Http404(e)

@@ -22,6 +22,7 @@ from CMSGuias.apps.tools import globalVariable, search, number_to_char
 from CMSGuias.apps.logistica.models import Cotizacion, CotCliente, DetCotizacion, Compra, DetCompra, ServiceOrder, DetailsServiceOrder
 from CMSGuias.apps.ventas.models import Proyecto
 from CMSGuias.apps.home.models import Configuracion
+from CMSGuias.apps.operations.models import PreOrders, DetailsPreOrders
 
 
 def fetch_resources(uri, rel):
@@ -299,6 +300,57 @@ class RptServiceOrder(TemplateView):
             context['status'] = globalVariable.status
             context['pagesize'] = 'A4'
             html = render_to_string('report/rptserviceorders.html', context, context_instance=RequestContext(request))
+            return generate_pdf(html)
+        except TemplateDoesNotExist, e:
+            raise Http404(e)
+
+class RptPreOrders(TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        try:
+            context = dict()
+            context['bedside'] = PreOrders.objects.get(preorder_id=kwargs['porder'])
+            lista = DetailsPreOrders.objects.filter(preorder_id=kwargs['porder'])
+            sheet = 0
+            counter = lista.count()
+            if counter >= 30:
+                divisible = (counter/30)
+                if divisible > round(divisible, 1):
+                    sheet = round(divisible, 0) + 1
+                else:
+                    sheet = round(divisible)
+            else:
+                sheet = 1
+            print sheet
+            count = 0
+            context['details'] = list()
+            for s in range(sheet):
+                dataset = lista[count:count+30]
+                tmp = list()
+                for x in dataset:
+                    # disc = ((x.precio * float(x.discount)) / 100)
+                    #tdiscount += (disc * x.cantstatic)
+                    #precio = x.precio - disc
+                    #amount = (x.cantstatic * precio)
+                    #subt += amount
+                    tmp.append(
+                            {
+                                'item': count,
+                                'materials_id': x.materials_id,
+                                'name': x.materials.matnom,
+                                'meter': x.materials.matmed,
+                                'unit': x.materials.unidad.uninom,
+                                'brand': x.brand.brand,
+                                'model': x.model.model,
+                                'quantity': x.quantity,
+                            }
+                    )
+                    count += 1
+                context['details'].append(tmp)
+            context['status'] = globalVariable.status
+            context['pagesize'] = 'A4'
+            html = render_to_string('report/rptpreorders.html', context, context_instance=RequestContext(request))
             return generate_pdf(html)
         except TemplateDoesNotExist, e:
             raise Http404(e)
