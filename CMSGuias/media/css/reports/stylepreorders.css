@@ -1,5 +1,9 @@
 @page {
   margin: 1cm;
+/*@frame header_frame
+        -pdf-frame-content observation
+        margin 0 1cm 0 1cm
+        top 5.6cm*/
   @frame header_frame {
     -pdf-frame-content: logo;
     top: 1cm;
@@ -29,13 +33,8 @@
     top: 4cm;
     width: 45%;
   }
-  @frame header_frame {
-    -pdf-frame-content: observation;
-    margin: 0 1cm 0 1cm;
-    top: 5.6cm;
-  }
   @frame content_frame {
-    top: 7cm;
+    top: 6cm;
     margin: 0 1cm 0 1cm;
   }
 }
@@ -58,13 +57,12 @@
   white-space: pre;
 }
 #bedsideone > table > tbody > tr > td:first-child,
-#bedsidetwo > table > tbody > tr > td:first-child,
-#observation > table > tbody > tr > td:first-child {
+#bedsidetwo > table > tbody > tr > td:first-child {
   font-weight: bold;
   width: 90px;
 }
 section > table > thead > tr:first-child {
-/*border-left 1px solid black*/
+  background-color: #f2f2f2;
   border-top: 1px solid #000;
   border-bottom: 1px solid #000;
 }
@@ -98,10 +96,6 @@ section > table > tbody > tr > td[rel="left"] {
 section > table > tbody > tr:last-child {
   border-bottom: 1px solid #000;
 }
-#footer > div {
-/*border 1px solid black*/
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  width: 50%;
+#footer > div > strong:first-child {
+  font-size: 12px;
 }

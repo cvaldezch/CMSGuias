@@ -322,7 +322,7 @@ class RptPreOrders(TemplateView):
                     sheet = round(divisible)
             else:
                 sheet = 1
-            print sheet
+            # print sheet
             count = 0
             context['details'] = list()
             for s in range(sheet):

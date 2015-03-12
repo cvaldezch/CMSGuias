@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}
+    List Pre Orders
+{% endblock title %}
+{% block script %}
+    <script>
+        $(document).ready(function() {
+            $("[name=showAnuler]").on("click", showAnnulerOrder);
+        });
+        var showAnnulerOrder, changeCompleteOrder;
+        showAnnulerOrder = function(event) {
+            $("[name=annulerOrder]").val(this.value);
+            $(".idorder").text(this.value);
+            $("#anular").modal("show");
+        }
+    </script>
+{% endblock script %}
+{% block menu %}
+    {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
+        {% include "menus/sale.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'logistica' %}
+        {% include "menus/logistics.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+        {% include "menus/operations.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'almacen' %}
+        {% include "menus/storage_menu.htm" %}
+    {% endif %}
+{% endblock menu %}
+{% block content %}
+    <div class="container">
+        <div class="well">
+            <header>
+                <h3>Lista de pre pedidos a almacén</h3>
+            </header>
+            <section>
+                <div class="table-responsive">
+                    <table class="table table-condensed table-hover">
+                        <thead>
+                            <tr class="brand-warning">
+                                <th>Item</th>
+                                <th>Código</th>
+                                <th>Asunto</th>
+                                <th>Traslado</th>
+                                <th>Registrado</th>
+                                <th>Estado</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for x in list %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ x.preorder_id }}</td>
+                                    <td>{{ x.issue }}</td>
+                                    <td>{{ x.transfer }}</td>
+                                    <td>{{ x.register|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% for k, v in status.items %}
+                                            {% if k == x.status %}
+                                                {{ v }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{% url 'rpt_preorders' x.preorder_id %}" class="text-black" target="_blank">
+                                            <span class="fa fa-file"></span>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li class="dropdown-header">CAMBIAR ESTADO</li>
+                                                <li><button type="button" name="showAnuler" class="btn btn-xs btn-link text-black" value="{{ x.preorder_id }}">Anular</button></li>
+                                                <li><button type="button" class="btn btn-xs btn-link text-black" value="{{ x.preorder_id }}">Completado</button></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <th colspan="8" class="text-center">
+                                        No existe Datos para esta tabla.
+                                    </th>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+<!-- modals -->
+<div class="modal fade" id="anular">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4 class="modal-title">
+                    Por que desea anular el <q>Pre Pedido <span class="idorder"></span></q>?
+                </h4>
+                <p>
+                    <textarea name="observation" rows="4" class="form-control"></textarea>
+                </p>
+                <button type="button" data-dismiss="modal" class="btn btn-default btn-sm">
+                    <span class="fa fa-times"></span>
+                    Salir
+                </button>
+                <button type="button" name="annulerOrder" class="btn btn-danger btn-sm">
+                    <span class="fa fa-save"></span>
+                    Anular
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

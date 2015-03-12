@@ -44,7 +44,7 @@ class JSONResponseMixin(object):
 
 # View home Operations
 class OperationsHome(TemplateView):
-    template_name = "operations/home.html"
+    template_name = 'operations/home.html'
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -57,7 +57,8 @@ class ListPreOrders(TemplateView):
     def get(self, request, *args, **kwargs):
         try:
             context = dict()
-            obj = PreOrders.objects.all()
-            #return HttpResponse('hello world')
+            context['list'] = PreOrders.objects.filter(project_id=kwargs['pro'], sector_id=kwargs['sec']).order_by('-register')
+            context['status'] = globalVariable.status
+            return render_to_response('operations/listpreorders.html', context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404(e)

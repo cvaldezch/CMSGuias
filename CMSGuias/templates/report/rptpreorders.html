@@ -102,15 +102,17 @@
                 <div><pdf:nextpage /></div>
             {% endif %}
         {% endfor %}
-        <div id="footer">
-            <div>
-                <strong>Observación:</strong>
-                {{ bedside.observation|safe }}
-            </div>
-            <div>
-                <strong>Niples</strong>
-            </div>
-        </div>
     </section>
+    <br>
+    <div id="footer">
+        <div>
+            <strong>Observación:</strong>
+            {{ bedside.observation|safe }}
+        </div>
+        <div>
+            <strong>Niples</strong>
+            {{ bedside.nipples|safe }}
+        </div>
+    </div>
 </body>
 </html>

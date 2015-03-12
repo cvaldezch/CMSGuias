@@ -35,13 +35,13 @@ vendor-prefixes = webkit moz o ms official
         top 4cm
         width 45%
 
-    @frame header_frame
+    /*@frame header_frame
         -pdf-frame-content observation
         margin 0 1cm 0 1cm
-        top 5.6cm
+        top 5.6cm*/
 
     @frame content_frame
-        top 7cm
+        top 6cm
         margin 0 1cm 0 1cm
 
 #address
@@ -62,8 +62,8 @@ vendor-prefixes = webkit moz o ms official
         white-space pre
 
 #bedsideone,
-#bedsidetwo,
-#observation
+#bedsidetwo
+/*#observation*/
     & > table > tbody > tr
         & > td:first-child
             font-weight bold
@@ -73,7 +73,7 @@ section
     & > table
         & > thead
             & > tr:first-child
-                /*border-left 1px solid black*/
+                background-color #f2f2f2
                 border-top 1px solid black
                 border-bottom 1px solid black
                 & > th
@@ -100,7 +100,7 @@ section
                 border-bottom 1px solid black
 
 #footer
+    /*white-space pre*/
     & > div
-        /*border 1px solid black*/
-        box-sizing border-box
-        width 50%
+        & > strong:first-child
+            font-size 12px

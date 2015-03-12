@@ -196,10 +196,10 @@
                         </div>
                         {% if meter %}
                             <div class="text-right">
-                                <button type="button" class="btn btn-success btn-show-list-pre-orders">
+                                <a href="{% url 'view_list_preordersop' project.proyecto_id subproject.subproyecto_id sector.sector_id %}" class="btn btn-success" target="_blank">
                                     <span class="fa fa-tasks"></span>
                                     Lista de Pre Pedido a Almcén
-                                </button>
+                                </a>
                                 <button type="button" class="btn btn-success btn-show-orders-do">
                                     <span class="fa fa-list-alt"></span>
                                     Lista de Pedidos Almacén

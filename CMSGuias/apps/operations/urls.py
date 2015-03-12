@@ -8,5 +8,5 @@ from .views import *
 urlpatterns = patterns('',
     # url to home
     url(r'^$', OperationsHome.as_view(), name='home_operations'),
-    url(r'^list/preorders/(?P<pro>\w+)/(?P<sub>\w+)/(?P<sec>\w+)/$', ListPreOrders.as_view(), name='view_list_preorders'),
+    url(r'^list/preorders/(?P<pro>\w{7})/(?P<sub>\w+|)/(?P<sec>\w+)/$', ListPreOrders.as_view(), name='view_list_preordersop'),
 )
