@@ -30,4 +30,4 @@ class LetterForm(forms.ModelForm):
 class PreOrdersForm(forms.ModelForm):
     class Meta:
         model = PreOrders
-        exclude = {'preorder_id', 'performed', 'status', 'project','subproject', 'sector', 'flag'}
+        exclude = {'preorder_id', 'performed', 'status', 'project','subproject', 'sector', 'flag', 'annular'}

@@ -3,17 +3,7 @@
     List Pre Orders
 {% endblock title %}
 {% block script %}
-    <script>
-        $(document).ready(function() {
-            $("[name=showAnuler]").on("click", showAnnulerOrder);
-        });
-        var showAnnulerOrder, changeCompleteOrder;
-        showAnnulerOrder = function(event) {
-            $("[name=annulerOrder]").val(this.value);
-            $(".idorder").text(this.value);
-            $("#anular").modal("show");
-        }
-    </script>
+
 {% endblock script %}
 {% block menu %}
     {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
@@ -78,7 +68,7 @@
                                             <ul class="dropdown-menu" role="menu">
                                                 <li class="dropdown-header">CAMBIAR ESTADO</li>
                                                 <li><button type="button" name="showAnuler" class="btn btn-xs btn-link text-black" value="{{ x.preorder_id }}">Anular</button></li>
-                                                <li><button type="button" class="btn btn-xs btn-link text-black" value="{{ x.preorder_id }}">Completado</button></li>
+                                                <li><button type="button" class="btn btn-xs btn-link text-black changeComplete" value="{{ x.preorder_id }}">Completado</button></li>
                                             </ul>
                                         </div>
                                     </td>
@@ -112,7 +102,7 @@
                     <span class="fa fa-times"></span>
                     Salir
                 </button>
-                <button type="button" name="annulerOrder" class="btn btn-danger btn-sm">
+                <button type="button" name="annulerOrder" class="btn btn-danger btn-sm pull-right">
                     <span class="fa fa-save"></span>
                     Anular
                 </button>
@@ -120,4 +110,72 @@
         </div>
     </div>
 </div>
+{% csrf_token %}
+<script>
+    $(document).ready(function() {
+        $("[name=showAnuler]").on("click", showAnnulerOrder);
+        $("[name=annulerOrder]").on("click", annularPreOrder);
+        $(".changeComplete").on("click", completePreOrder);
+    });
+    var showAnnulerOrder, changeCompleteOrder, annularPreOrder, completePreOrder;
+    showAnnulerOrder = function(event) {
+        $("[name=annulerOrder]").val(this.value);
+        $(".idorder").text(this.value);
+        $("#anular").modal("show");
+    }
+    annularPreOrder = function() {
+        var context = new Object();
+        context.pre = this.value;
+        $().toastmessage("showToast",
+            {
+                text: "Realmente desea anular el pre pedido a almacén?",
+                sticky: true,
+                type: "confirm",
+                buttons: [{value:"Si"}, {value:"No"}],
+                success: function(result) {
+                    if (result) {
+                        context.annular = $("[name=observation]").val()
+                        context.csrfmiddlewaretoken =$("[name=csrfmiddlewaretoken]").val()
+                        context.anullarPreOrders = true;
+                        $.post("", context, function(response) {
+                            if (response.status) {
+                                $().toastmessage("showSuccessToast", "Se anulo correctamente.")
+                                setTimeout(function() {
+                                    location.reload();
+                                }, 2600);
+                            } else {
+                                $().toastmessage("showErrorToast", "Error no se a anulado la pre order a almacen. "+ response.raise+"");
+                            }
+                        }, "json");
+                    }
+                }
+            }
+        );
+    }
+    completePreOrder = function() {
+        var context = new Object();
+        context.pre = this.value;
+        $().toastmessage("showToast",
+        {
+            text: "Realmente desea cambiar el estado del Pre pedido a <q>Completado</q>?",
+            type: "confirm",
+            sticky: true,
+            buttons: [{value:"Si"}, {value:"No"}],
+            success: function(result) {
+                context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+                context.changeComplete = true
+                $.post("", context, function(response) {
+                    if(response.status) {
+                        $().toastmessage("showSuccessToast", "Se cambio el estado correctamente.");
+                        setTimeout(function() {
+                            location.reload();
+                        }, 2600);
+                    } else {
+                        $().toastmessage("showErrorToast", "Error no se a podido cambiar el estado a <q>Completo</q>."+response.raise);
+                    }
+                }, "json");
+            }
+        });
+    }
+</script>
 {% endblock content %}

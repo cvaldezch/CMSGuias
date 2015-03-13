@@ -142,6 +142,7 @@ class PreOrders(models.Model):
     issue = models.CharField(max_length=200)
     observation = models.TextField(null=True, blank=True)
     nipples = models.TextField(null=True, blank=True)
+    annular = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=2, default='PE')
     flag = models.BooleanField(default=True)
 
