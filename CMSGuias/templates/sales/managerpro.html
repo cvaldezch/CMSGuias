@@ -196,12 +196,12 @@
                                         <span class="fa fa-cubes"></span>
                                         <span class="visible-lg visible-lg">Acciones</span>
                                     </button>
-                                    <ul class="dropdown-menu" role="menu">
+                                    <ul class="dropdown-menu text-left" role="menu">
                                         {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'operaciones' %}
-                                            <li>
-                                                <button type="Button" class="btn btn-link btn-xs text-black btn-prices-list" data-toggle="modal" data-target="#mlprices">
+                                            <li class="text-left">
+                                                <button type="Button" class="btn btn-link btn-xs text-black btn-close-project" data-toggle="modal" data-target="#mlprices">
                                                     <span class="fa fa-check-circle"></span>
-                                                    <span class="fa fa-star-half-o"></span>
+                                                    <!-- <span class="fa fa-star-half-o"></span> -->
                                                     <span class="glyphicon-class">Terminar Proyecto</span>
                                                 </button>
                                             </li>
@@ -209,7 +209,7 @@
                                         <!-- load file materials -->
                                         {% if request.user.get_profile.empdni.charge.area|lower == 'ventas' or request.user.get_profile.empdni.charge.area|lower == 'administrator' %}
                                             <li>
-                                                <button type="Button" class="btn btn-link btn-xs text-black btn-prices-list" data-toggle="modal" data-target="#mlprices">
+                                                <button type="button" class="btn btn-link btn-xs text-black btn-prices-list pull-left" data-toggle="modal" data-target="#mlprices">
                                                     <span class="fa fa-file-excel-o"></span>
                                                     <span class="glyphicon-class">Cargar Precios</span>
                                                 </button>
@@ -1011,6 +1011,18 @@
                     <span class="fa fa-times"></span>
                     Salir
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="closeProject">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                Lista de Cierre de Proyecto
+            </div>
+            <div class="modal-body">
+
             </div>
         </div>
     </div>

@@ -57,7 +57,11 @@ class ListPreOrders(JSONResponseMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         try:
             context = dict()
-            context['list'] = PreOrders.objects.filter(project_id=kwargs['pro'], sector_id=kwargs['sec'], status='PE').order_by('-register')
+            context['list'] = PreOrders.objects.filter(
+                project_id=kwargs['pro'],
+                sector_id=kwargs['sec'],
+                status='PE'
+            ).order_by('-register')
             context['status'] = globalVariable.status
             return render_to_response('operations/listpreorders.html', context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
@@ -83,3 +87,12 @@ class ListPreOrders(JSONResponseMixin, TemplateView):
                 context['raise'] = str(e)
                 context['status'] = False
             return self.render_to_json_response(context)
+        else:
+            context['list'] = PreOrders.objects.filter(
+                project_id=kwargs['pro'],
+                sector_id=kwargs['sec'],
+                status=request.POST.get('status')
+            ).order_by('-register')
+            context['search'] = request.POST.get('status')
+            context['status'] = globalVariable.status
+            return render_to_response('operations/listpreorders.html', context, context_instance=RequestContext(request))

@@ -26,6 +26,45 @@
                 <h3>Lista de pre pedidos a almacén</h3>
             </header>
             <section>
+                <article>
+                    <div class="panel panel-warning">
+                        <div class="panel-body">
+                            Realizar busca por estado de pedido:
+                            <form action="" method="post">
+                                <div class="row">
+                                    <div class="col-md-11">
+                                        <div class="form-group">
+                                            <label class="control-label">Estado</label>
+                                            <select name="status" class="form-control input-sm" title="Seleccione un Estado" required>
+                                                <!-- <option value="">-- seleccione --</option>
+                                                <option value="AN">ANULAR</option>
+                                                <option value="CO">COMPLETO</option>
+                                                <option value="PE">PENDIENTE</option> -->
+                                                <option value="">-- seleccione --</option>
+                                                {% for k, v in status.items %}
+                                                    {% if k == search %}
+                                                        <option value="{{ k }}" selected>{{ v }}</option>
+                                                    {% else %}
+                                                        <option value="{{ k }}">{{ v }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                            {% csrf_token %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="form-group">
+                                            <label class="control-label">Buscar</label>
+                                            <button type="submit" value="searchPreOrder" class="btn btn-sm btn-warning text-black">
+                                                <span class="glyphicon glyphicon-search"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </article>
                 <div class="table-responsive">
                     <table class="table table-condensed table-hover">
                         <thead>
@@ -60,18 +99,20 @@
                                             <span class="fa fa-file"></span>
                                         </a>
                                     </td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <button class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                                <span class="caret"></span>
-                                            </button>
-                                            <ul class="dropdown-menu" role="menu">
-                                                <li class="dropdown-header">CAMBIAR ESTADO</li>
-                                                <li><button type="button" name="showAnuler" class="btn btn-xs btn-link text-black" value="{{ x.preorder_id }}">Anular</button></li>
-                                                <li><button type="button" class="btn btn-xs btn-link text-black changeComplete" value="{{ x.preorder_id }}">Completado</button></li>
-                                            </ul>
-                                        </div>
-                                    </td>
+                                    {% if x.status != 'CO' and x.status != 'AN' %}
+                                        <td>
+                                            <div class="btn-group">
+                                                <button class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu" role="menu">
+                                                    <li class="dropdown-header">CAMBIAR ESTADO</li>
+                                                    <li><button type="button" name="showAnuler" class="btn btn-xs btn-link text-black" value="{{ x.preorder_id }}">Anular</button></li>
+                                                    <li><button type="button" class="btn btn-xs btn-link text-black changeComplete" value="{{ x.preorder_id }}">Completado</button></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    {% endif %}
                                 </tr>
                             {% empty %}
                                 <tr>
