@@ -1,70 +1,134 @@
 .all-sectors > article {
-    border: 1px solid #428bca;
-    border-radius: 5px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
-    float: left;
-    width: 23%;
-    background: #FFF;
-    margin: 10px 1%;
-    padding: 1%;
-    text-align: center;
+  border: 1px solid #428bca;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  float: left;
+  width: 23%;
+  background: #fff;
+  margin: 10px 1%;
+  padding: 1%;
+  text-align: center;
 }
 .all-sectors > article > a {
-    text-decoration: none;
+  text-decoration: none;
 }
 .sectors {
-    display: inline-block;
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
 }
 .sectors li a {
-    display: inline-table;
-    font-size: 12px;
-    padding: 1% 1%;
-    text-decoration: none;
+  display: inline-table;
+  font-size: 12px;
+  padding: 1% 1%;
+  text-decoration: none;
 }
 @media all and (max-width: 900px) {
-    .all-sectors > article {
-        width: 48%;
-    }
+  .all-sectors > article {
+    width: 48%;
+  }
 }
 @media screen and (max-height: 765px) {
-    .panel-manager{
-        height: 30em;
-        overflow: auto;
-    }
+  .panel-manager height 30em {
+    overflow: auto;
+  }
+  .panel-manager {
+    display: inline-table;
+    height: 100%;
+    overflow: auto;
+  }
 }
 @media screen and (min-height: 960px) {
-    .panel-manager {
-        height: 50em;
-        overflow: auto;
-    }
+  .panel-manager {
+    height: 50em;
+    overflow: auto;
+  }
+  .upfile::-webkit-file-upload-button {
+    visibility: hidden;
+  }
 }
-@media screen and (max-height: 648px) {
-    .panel-manager {
-        display: inline-table;
-        height: 100%;
-        overflow: auto;
-    }
+.upfile {
+  content: 'Select';
+  color: #fff;
+  background: #428bca;
+  border: 1px solid #2b669a;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  cursor: pointer;
 }
-.upfile::-webkit-file-upload-button {
-  visibility: hidden;
-}
-.upfile{
-    content: 'Select';
-    color: #fff;
-    background: #428bca;
-    border: 1px solid #2b669a;
-    border-radius: 5px;
-    cursor: pointer;
-
-}
-.upfile::before{
-      content: 'Seleccione';
-      display: inline-block;
+.upfile::before {
+  content: 'Seleccione';
+  display: inline-block;
 }
 .poids {
-    width: 90px;
-    max-width: 100%;
+  width: 90px;
+  max-width: 100%;
+}
+/* progress bar step */
+.height-content {
+  height: 120px;
+}
+.progress-project {
+  width: 100%;
+/*margin 20px auto*/
+  text-align: center;
+}
+.progress-project .circle,
+.progress-project .bar {
+  background: #fff;
+  border: 1px solid #d5d5da;
+  -webkit-border-radius: 40px;
+  border-radius: 40px;
+  display: block;
+  height: 40px;
+  width: 40px;
+}
+.progress-project .circle .label,
+.progress-project .bar .label {
+  -webkit-border-radius: 32px;
+  border-radius: 32px;
+  color: #b5b5ba;
+  display: inline-block;
+  font-size: 17px;
+  height: 32px;
+  line-height: 30px;
+  margin-top: 3px;
+  width: 32px;
+}
+.progress-project .circle .title,
+.progress-project .bar .title {
+  color: #000;
+  font-size: 13px;
+  position: relative;
+  top: -25px;
+  margin-left: 42px;
+}
+.progress-project .done {
+  background: #bbb;
+}
+.progress-project .done .label {
+  color: #fff;
+  background: #81ce97;
+  -webkit-box-shadow: inset 0 0 2px rgba(0,0,0,0.5);
+  box-shadow: inset 0 0 2px rgba(0,0,0,0.5);
+}
+.progress-project .bar {
+  border-top: none;
+  border-bottom: none;
+  -webkit-border-radius: 0;
+  border-radius: 0;
+  height: 80px;
+  margin-left: 16px;
+  margin-right: 0;
+  margin-top: -2px;
+  margin-bottom: -2px;
+  position: relative;
+/*top -33px*/
+  width: 6px;
+}
+.progress-project .active {
+  background: #bbb;
 }

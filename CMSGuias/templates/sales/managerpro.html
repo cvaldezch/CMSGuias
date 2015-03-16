@@ -199,7 +199,7 @@
                                     <ul class="dropdown-menu text-left" role="menu">
                                         {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'operaciones' %}
                                             <li class="text-left">
-                                                <button type="Button" class="btn btn-link btn-xs text-black btn-close-project" data-toggle="modal" data-target="#mlprices">
+                                                <button type="Button" class="btn btn-link btn-xs text-black btn-close-project" data-toggle="modal" data-target="#closeProject">
                                                     <span class="fa fa-check-circle"></span>
                                                     <!-- <span class="fa fa-star-half-o"></span> -->
                                                     <span class="glyphicon-class">Terminar Proyecto</span>
@@ -1015,14 +1015,76 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="closeProject">
+<div class="modal fade" id="closeProject" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                Lista de Cierre de Proyecto
+                <a data-dismiss="modal" class="close">&times;</a>
+                <h4 class="modal-title">
+                    Lista de Cierre de Proyecto
+                </h4>
             </div>
             <div class="modal-body">
-
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="progress-project">
+                            <div class="circle done">
+                                <span class="label">1</span>
+                                <span class="title">Almacén</span>
+                            </div>
+                            <span class="bar active"></span>
+                            <div class="circle done">
+                                <span class="label">2</span>
+                                <span class="title">Operaciones</span>
+                            </div>
+                            <span class="bar half"></span>
+                            <div class="circle">
+                                <span class="label">3</span>
+                                <span class="title">Documentos</span>
+                            </div>
+                            <span class="bar"></span>
+                            <div class="circle">
+                                <span class="label">4</span>
+                                <span class="title">Contabilidad</span>
+                            </div>
+                            <span class="bar"></span>
+                            <div class="circle">
+                                <span class="label">5</span>
+                                <span class="title">Ventas</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="row">
+                            <div class="col-md-12 height-content">
+                                <strong>Cierre de Almacén</strong>
+                                <br>
+                                <small>
+                                    El cierre de almacén de efectua cuando se a terminado de enviar todos los materiales a obra.
+                                </small>
+                                <p>
+                                    <input type="text" class="form-control input-sm col-3" placeholder="Ingrese Código">
+                                    <button class="btn btn-sm btn-default">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                        Verified
+                                    </button>
+                                </p>
+                            </div>
+                            <div class="col-md-12 height-content">
+                                <strong>Envio de Carta de Entrega</strong>
+                            </div>
+                            <div class="col-md-12 height-content">
+                                <strong>Documentos de Cierre</strong>
+                            </div>
+                            <div class="col-md-12 height-content">
+                                <strong>Valorizaciones, Facturas, Retenciones</strong>
+                            </div>
+                            <div class="col-md-12 height-content">
+                                <strong>Verificación de Cierre</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -135,7 +135,7 @@ $(document).ready ->
     $("button.btn-del-all-modify").on "click", deleteAllUpdateMeter
     # calcDiffModify()
     tinymce.init
-        selector: "textarea[name=obser]textarea[name=pre-observation]",
+        selector: "textarea[name=obser]",
         theme: "modern",
         menubar: false,
         statusbar: false,

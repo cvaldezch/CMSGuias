@@ -152,7 +152,7 @@ $(document).ready(function() {
   $("button.btn-alert-modified").on("click", sendAlertModified);
   $("button.btn-del-all-modify").on("click", deleteAllUpdateMeter);
   tinymce.init({
-    selector: "textarea[name=obser]textarea[name=pre-observation]",
+    selector: "textarea[name=obser]",
     theme: "modern",
     menubar: false,
     statusbar: false,
