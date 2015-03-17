@@ -133,6 +133,7 @@ $(document).ready ->
     $(".btn-letter-upload").on "click", uploadLetter
     $(".btn-upload-anexos").on "click", uploadLetterAnexo
     $(".edit-letter").on "click", editLetter
+    $(".btn-circle").on "click", toggleInfoClose
     $(document).on "click", ".btn-letter-show-observation", showLetterObservation
     $(document).on "click", ".btn-letter-show-details", showListAnexos
     $(".btn-letter-toggle").on "click", letterToggle
@@ -1159,4 +1160,20 @@ letterToggle = (event) ->
             $btn.find "span"
             .removeClass "glyphicon-chevron-up"
             .addClass "glyphicon-chevron-down"
+    return
+
+toggleInfoClose = (event) ->
+    $btn = $(@)
+    console.log $btn
+    $block = $(".step-#{@value}")
+    if $block.is ":visible"
+        $block.css "display", "none"
+        $btn.find "span"
+        .removeClass "fa-angle-double-up"
+        .addClass "fa-angle-double-down"
+    else
+        $block.css "display", "block"
+        $btn.find "span"
+        .removeClass "fa-angle-double-down"
+        .addClass "fa-angle-double-up"
     return

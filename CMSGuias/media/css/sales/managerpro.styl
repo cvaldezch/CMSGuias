@@ -67,7 +67,7 @@ vendor_prefixes ?= webkit moz o ms official
 
 .height-content
   height 120px
-  //overflow auto
+  overflow-y auto
 
 .progress-project
   width 100%
@@ -84,12 +84,14 @@ vendor_prefixes ?= webkit moz o ms official
     width 40px
     & .label
       border-radius 32px
-      color #b5b5ba
+      box-shadow 0 0 2px #000
+      color #2d2d2d //#b5b5ba
       display inline-block
       font-size 17px
       height 32px
-      line-height 30px
+      line-height 25px
       margin-top 3px
+      //vertical-align 32px
       width 32px
     & .title
       color black
@@ -98,11 +100,11 @@ vendor_prefixes ?= webkit moz o ms official
       top -25px
       margin-left 42px
   & .done
-    background #bbb
+    background #888
     & .label
       color #fff
       background #81ce97
-      box-shadow inset 0 0 2px rgba(0,0,0,.5)
+      box-shadow inset 0 0 2px rgba(0,0,0,1)
   & .bar
     border-top none
     border-bottom none
@@ -116,5 +118,23 @@ vendor_prefixes ?= webkit moz o ms official
     /*top -33px*/
     width 6px
   & .active
-    background #bbb
+    background #999
     //background linear-gradient(to bottom, #bbb 40%, #fff 60%)
+.step-one,
+.step-two,
+.step-three,
+.step-four,
+.step-five
+  display none
+  & > p
+    & > button, input
+      display inline
+
+.btn-circle
+  background #fff
+  border 1px solid #eee
+  border-radius 50%
+  margin-top 1px
+  &:hover
+    background #eee
+    box-shadow 0 0 2px rgba(0,0,0,.5)

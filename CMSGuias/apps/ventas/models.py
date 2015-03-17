@@ -61,6 +61,30 @@ class Proyecto(models.Model):
     def __unicode__(self):
         return '%s %s - %s'%(self.proyecto_id,self.nompro,self.ruccliente_id)
 
+class CloseProject(models.Model):
+    def url(self, filename):
+        ruta = 'storage/projects/%s/%s/closure/%s'%(self.proyecto.registrado.strftime('%Y'),self.proyecto_id,filename)
+        return ruta
+    project = models.ForeignKey(Proyecto, to_field='proyecto_id')
+    storageclose = models.BooleanField(default=False, blank=True)
+    datestorage = models.DateField(auto_now=True)
+    letterdelivery = models.FileField(upload_to=url, null=True, max_length=250)
+    dateletter = models.DateField(null=True, blank=True)
+    documents = models.BooleanField(default=False, blank=True)
+    amountbill = models.FloatField(default=0, blank=True)
+    amountigv = models.FloatField(default=0, blank=True)
+    othersingress = models.FloatField(blank=True, default=0)
+    othersouts = models.FloatField(default=0, blank=True)
+    retentions = models.FloatField(default=0, blank=True)
+    closeconfirm = models.CharField(default='', max_length=6, blank=True)
+    close = models.BooleanField(default=False)
+    status = models.CharField(default='PE', blank=True, max_length=2)
+    performedstorage = models.ForeignKey(Employee, related_name='storage', null=True, blank=True)
+    performedoperations = models.ForeignKey(Employee, related_name='operations', null=True, blank=True)
+    performeddocument = models.ForeignKey(Employee, related_name='documents', null=True, blank=True)
+    performedaccounting = models.ForeignKey(Employee, related_name='accounting', null=True, blank=True)
+    performedclose = models.ForeignKey(Employee, related_name='closeasproject', null=True, blank=True)
+
 class Subproyecto(models.Model):
     subproyecto_id = models.CharField(primary_key=True,max_length=7,null=False)
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
@@ -127,9 +151,9 @@ class Sectore(models.Model):
 class SectorFiles(models.Model):
     def url(self, filename):
         if self.subproyecto is None:
-            ruta = 'storage/projects/%s/%s/%s/%s'%(globalVariable.get_year,self.proyecto_id,self.sector_id,filename)
+            ruta = 'storage/projects/%s/%s/%s/%s'%(self.proyecto.registrado.strftime('%Y'),self.proyecto_id,self.sector_id,filename)
         else:
-            ruta = 'storage/projects/%s/%s/%s/%s/%s'%(globalVariable.get_year,self.proyecto_id, self.subproyecto_id,self.sector_id,filename)
+            ruta = 'storage/projects/%s/%s/%s/%s/%s'%(self.proyecto.registrado.strftime('%Y'),self.proyecto_id, self.subproyecto_id,self.sector_id,filename)
         return ruta
 
     sector = models.ForeignKey(Sectore, to_field='sector_id')
