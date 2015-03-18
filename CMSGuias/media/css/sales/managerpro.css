@@ -68,8 +68,8 @@
   max-width: 100%;
 }
 /* progress bar step */
-.height-content {
-  height: 120px;
+.height-content > div {
+  height: 95px;
   overflow-y: auto;
 }
 .progress-project {
