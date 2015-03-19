@@ -1164,7 +1164,7 @@ letterToggle = (event) ->
 
 toggleInfoClose = (event) ->
     $btn = $(@)
-    console.log $btn
+    # console.log $btn
     $block = $(".step-#{@value}")
     if $block.is ":visible"
         $block.css "display", "none"
@@ -1176,4 +1176,35 @@ toggleInfoClose = (event) ->
         $btn.find "span"
         .removeClass "fa-angle-double-down"
         .addClass "fa-angle-double-up"
+    return
+
+# functions for close project
+closeStorage = (event) ->
+    $().toastmessage "showToast",
+        text: "Realmente desea cerrar el almacén?"
+        sticky: true
+        type: "confirm"
+        buttons: [{value:"Si"}, {value:"No"}]
+        success: (result) ->
+            if result is "Si"
+                context = new Object
+                context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+                context.closeStorage = true
+                $.post "", context, (response) ->
+                    if response.status
+                        $().toastmessage "showSuccessToast", "Se a cerrado el almacén correctamente."
+                        $(".progress-project > div.circle:nth-of-type(1)").addClass "done"
+                        $(".progress-project > span.bar:nth-of-type(1)").addClass "active"
+                        setTimeout ->
+                            location.reload()
+                        , "json"
+                    else
+                        $().toastmessage "showErrorToast", "Error no se a podido cerrar el almacén. #{response.raise}"
+                        return
+                , "json"
+                return
+    return
+
+uploadLetterDelivery = (event) ->
+
     return

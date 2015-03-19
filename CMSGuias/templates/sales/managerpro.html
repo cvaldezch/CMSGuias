@@ -1067,17 +1067,15 @@
                                         <small>
                                             El cierre de almacén de efectua cuando se a terminado de enviar todos los materiales a obra.
                                         </small>
-                                        <!-- <button class="btn btn-xs btn-link text-black">
-                                            <span class="fa fa-key"></span>
-                                            Obtener Código
-                                        </button> -->
-                                        <p>
-                                            <!-- <input type="text" class="form-control input-sm col-3" placeholder="Ingrese Código"> -->
-                                            <button class="btn btn-sm btn-success">
-                                                <span class="glyphicon glyphicon-ok"></span>
-                                                Cerrar Almacén
-                                            </button>
-                                        </p>
+                                        {% if user.get_profile.empdni.charge.area|lower == 'almacen' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
+                                            <p>
+                                                <!-- <input type="text" class="form-control input-sm col-3" placeholder="Ingrese Código"> -->
+                                                <button class="btn btn-sm btn-success btn-close-storage">
+                                                    <span class="glyphicon glyphicon-ok"></span>
+                                                    Cerrar Almacén
+                                                </button>
+                                            </p>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -1092,6 +1090,7 @@
                                         <small>
                                             Carge la <strong><q>Carta de Entrega</q></strong> que se enviara al cliente. El archivo de preferencia debera ser pdf.
                                         </small>
+                                        {% if user.get_profile.empdni.charge.cargos|lower == 'jefe de proyecto' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
                                         <p>
                                             <input type="file" accept="application/pdf" name="letterdelivery" class="form-control input-sm">
                                             <button class="btn btn-sm btn-success">
@@ -1099,6 +1098,7 @@
                                                 Cargar y Confirmar
                                             </button>
                                         </p>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -1113,6 +1113,7 @@
                                         <small>
                                             Carge los documentos que se entregaran al cliente y los que crea conveniente. el archivo a cargar devera ser un comprimirdo <q>RAR</q>.
                                         </small>
+                                        {% if user.get_profile.empdni.charge.area|lower == 'operaciones' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
                                         <p>
                                             <input type="file" accept="application/pdf" name="documents" class="form-control input-sm">
                                             <button class="btn btn-sm btn-success">
@@ -1120,6 +1121,7 @@
                                                 Cargar y Confirmar
                                             </button>
                                         </p>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -1131,6 +1133,7 @@
                                 </strong>
                                 <div>
                                     <div class="step-four">
+                                        {% if user.get_profile.empdni.charge.area|lower == 'logistica' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
                                         <div class="">
                                             <div class="form-group">
                                                 <label for="inputEmail3" class=" control-label">Total Facturado</label>
@@ -1163,6 +1166,7 @@
                                                 Guardar Cambios
                                             </button>
                                         </p>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -1176,18 +1180,23 @@
                                 <div>
                                     <div class="step-five">
                                         <small>
-                                            Solicite el código, solo si las demas tarea ya ha sido realizadas
+                                            Solicite el código, solo si las demás tareas ya ha sido realizadas.
                                         </small>
-                                        <p>
-                                            <button class="btn btn-link btn-xs text-black">
-                                                <span class="fa fa-key"></span>
-                                                Obtener Código
-                                            </button>
-                                            <button class="btn btn-success">
-                                                <span class="fa fa-save"></span>
-                                                Cerrar Proyecto
-                                            </button>
-                                        </p>
+                                        {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
+                                            <p>
+                                                <button class="btn btn-link btn-xs text-black">
+                                                    <span class="fa fa-key"></span>
+                                                    Obtener Código
+                                                </button>
+                                                <p>
+                                                    <input type="text" class="form-control input-sm col-2">
+                                                    <button class="btn btn-sm btn-success">
+                                                        <span class="fa fa-save"></span>
+                                                        Cerrar Proyecto
+                                                    </button>
+                                                </p>
+                                            </p>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
