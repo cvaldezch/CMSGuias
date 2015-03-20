@@ -549,6 +549,22 @@ class ProjectManager(JSONResponseMixin, View):
                         for x in anexo
                     ]
                     context['status'] = True
+                if 'closeStorage' in request.POST:
+                    if request.user.get_profile().empdni.charge.area.lower() == 'almacen' or request.user.get_profile().empdni.charge.area.lower() == 'administrator':
+                        CloseProject.objects.get(project_id=kwargs['pro'])
+
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+                        context['raise'] = 'Permissions denied, close storage fail.'
+                if '' in request.POST:
+                    if request.user.get_profile().empdni.charge.area.lower() == 'almacen' or request.user.get_profile().empdni.charge.area.lower() == 'administrator':
+                        CloseProject.objects.get(project_id=kwargs['pro'])
+
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+                        context['raise'] = 'Permissions denied, upload letter fail.'
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

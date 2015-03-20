@@ -1196,9 +1196,9 @@ closeStorage = function(event) {
             $().toastmessage("showSuccessToast", "Se a cerrado el almacén correctamente.");
             $(".progress-project > div.circle:nth-of-type(1)").addClass("done");
             $(".progress-project > span.bar:nth-of-type(1)").addClass("active");
-            return setTimeout(function() {
-              return location.reload();
-            }, "json");
+            setTimeout(function() {
+              location.reload();
+            }, 2600);
           } else {
             $().toastmessage("showErrorToast", "Error no se a podido cerrar el almacén. " + response.raise);
           }
@@ -1208,4 +1208,35 @@ closeStorage = function(event) {
   });
 };
 
-uploadLetterDelivery = function(event) {};
+uploadLetterDelivery = function(event) {
+  var $file, context;
+  context = new FormData;
+  context.append("csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val());
+  $file = $("[name=letterdelivery]").get(0);
+  if ($file.files.length) {
+    context.append("letter", $file.files[0]);
+  } else {
+    $().toastmessage("showWarningToast", "No se a encontrado un archivo para subir al proyecto");
+    return false;
+  }
+  $.ajax({
+    data: context,
+    type: "POST",
+    dataType: "json",
+    contentType: false,
+    processData: false,
+    cache: false,
+    success: function(response) {
+      if (response.status) {
+        $().toastmessage("showSuccessToast", "Se subio la carta de entrega correctamente.");
+        $(".progress-project > div.circle:nth-of-type(2)").addClass("done");
+        $(".progress-project > span.bar:nth-of-type(2)").addClass("active");
+        setTimeout(function() {
+          location.reload();
+        }, 2600);
+      } else {
+        $().toastmessage("showErrorToast", "Error al subir Carta de entrega. " + response.raise);
+      }
+    }
+  });
+};

@@ -1197,7 +1197,9 @@ closeStorage = (event) ->
                         $(".progress-project > span.bar:nth-of-type(1)").addClass "active"
                         setTimeout ->
                             location.reload()
-                        , "json"
+                            return
+                        , 2600
+                        return
                     else
                         $().toastmessage "showErrorToast", "Error no se a podido cerrar el almacén. #{response.raise}"
                         return
@@ -1206,5 +1208,32 @@ closeStorage = (event) ->
     return
 
 uploadLetterDelivery = (event) ->
-
+    context = new FormData
+    context.append "csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val()
+    $file = $("[name=letterdelivery]").get(0)
+    if $file.files.length
+        context.append "letter", $file.files[0]
+    else
+        $().toastmessage "showWarningToast", "No se a encontrado un archivo para subir al proyecto"
+        return false
+    $.ajax
+        data : context
+        type: "POST"
+        dataType: "json"
+        contentType: false
+        processData: false
+        cache: false
+        success: (response) ->
+            if response.status
+                $().toastmessage "showSuccessToast", "Se subio la carta de entrega correctamente."
+                $(".progress-project > div.circle:nth-of-type(2)").addClass "done"
+                $(".progress-project > span.bar:nth-of-type(2)").addClass "active"
+                setTimeout ->
+                    location.reload()
+                    return
+                , 2600
+                return
+            else
+                $().toastmessage "showErrorToast", "Error al subir Carta de entrega. #{response.raise}"
+                return
     return
