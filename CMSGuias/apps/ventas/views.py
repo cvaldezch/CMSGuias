@@ -557,10 +557,15 @@ class ProjectManager(JSONResponseMixin, View):
                     else:
                         context['status'] = False
                         context['raise'] = 'Permissions denied, close storage fail.'
-                if '' in request.POST:
+                if 'letterdelivery' in request.POST:
                     if request.user.get_profile().empdni.charge.area.lower() == 'almacen' or request.user.get_profile().empdni.charge.area.lower() == 'administrator':
                         CloseProject.objects.get(project_id=kwargs['pro'])
-
+                        admin = '/storage/projects/%s/%s/administrative/'%(year, request.POST.get('pro'))
+                        fileadmin = uploadFiles.upload(admin, request.FILES['administrative'], {'name': 'admin'})
+                        # descompress files in the server
+                        context['descompress'] =  uploadFiles.descompressRAR(fileadmin, admin)
+                        # delete files temp
+                        uploadFiles.removeTmp(fileadmin)
                         context['status'] = True
                     else:
                         context['status'] = False

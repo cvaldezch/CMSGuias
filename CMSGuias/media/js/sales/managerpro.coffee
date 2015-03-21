@@ -1213,6 +1213,7 @@ uploadLetterDelivery = (event) ->
     $file = $("[name=letterdelivery]").get(0)
     if $file.files.length
         context.append "letter", $file.files[0]
+        context.append "letterdelivery", true
     else
         $().toastmessage "showWarningToast", "No se a encontrado un archivo para subir al proyecto"
         return false
