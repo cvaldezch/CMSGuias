@@ -1028,16 +1028,32 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div class="progress-project">
-                            <div class="circle">
+                            <div class="circle
+                            {% if closure.storageclose %}
+                                done
+                            {% endif %}
+                            ">
                                 <span class="label">1</span>
                                 <span class="title">Almacén</span>
                             </div>
-                            <span class="bar"></span>
-                            <div class="circle">
+                            <span class="bar
+                            {% if closure.storageclose %}
+                                active
+                            {% endif %}
+                            "></span>
+                            <div class="circle
+                            {% if closure.letterdelivery %}
+                                done
+                            {% endif %}
+                            ">
                                 <span class="label">2</span>
                                 <span class="title">Operaciones</span>
                             </div>
-                            <span class="bar"></span>
+                            <span class="bar
+                            {% if closure.letterdelivery %}
+                                active
+                            {% endif %}
+                            "></span>
                             <div class="circle">
                                 <span class="label">3</span>
                                 <span class="title">Documentos</span>
@@ -1092,11 +1108,13 @@
                                         </small>
                                         {% if user.get_profile.empdni.charge.cargos|lower == 'jefe de proyecto' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
                                         <p>
-                                            <input type="file" accept="application/pdf" name="letterdelivery" class="form-control input-sm">
-                                            <button class="btn btn-sm btn-success">
-                                                <span class="glyphicon glyphicon-upload"></span>
-                                                Cargar y Confirmar
-                                            </button>
+                                            {% if not closure.letterdelivery %}
+                                                <input type="file" accept="application/pdf" name="letterdelivery" class="form-control input-sm">
+                                                <button class="btn btn-sm btn-success uploadletterclosep">
+                                                    <span class="glyphicon glyphicon-upload"></span>
+                                                    Cargar y Confirmar
+                                                </button>
+                                            {% endif %}
                                         </p>
                                         {% endif %}
                                     </div>
@@ -1115,11 +1133,13 @@
                                         </small>
                                         {% if user.get_profile.empdni.charge.area|lower == 'operaciones' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
                                         <p>
-                                            <input type="file" accept="application/pdf" name="documents" class="form-control input-sm">
-                                            <button class="btn btn-sm btn-success">
-                                                <span class="glyphicon glyphicon-upload"></span>
-                                                Cargar y Confirmar
-                                            </button>
+                                            {% if not closure.documents %}
+                                                <input type="file" accept="application/pdf" name="documents" class="form-control input-sm">
+                                                <button class="btn btn-sm btn-success">
+                                                    <span class="glyphicon glyphicon-upload"></span>
+                                                    Cargar y Confirmar
+                                                </button>
+                                            {% endif %}
                                         </p>
                                         {% endif %}
                                     </div>

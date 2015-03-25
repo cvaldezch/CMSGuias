@@ -63,7 +63,7 @@ class Proyecto(models.Model):
 
 class CloseProject(models.Model):
     def url(self, filename):
-        ruta = 'storage/projects/%s/%s/closure/%s'%(self.proyecto.registrado.strftime('%Y'),self.proyecto_id,filename)
+        ruta = 'storage/projects/%s/%s/closure/%s'%(self.project.registrado.strftime('%Y'),self.project_id,filename)
         return ruta
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
     storageclose = models.BooleanField(default=False, blank=True)
@@ -71,6 +71,7 @@ class CloseProject(models.Model):
     letterdelivery = models.FileField(upload_to=url, null=True, max_length=250)
     dateletter = models.DateField(null=True, blank=True)
     documents = models.BooleanField(default=False, blank=True)
+    accounting = models.BooleanField(default=False, blank=True)
     amountbill = models.FloatField(default=0, blank=True)
     amountigv = models.FloatField(default=0, blank=True)
     othersingress = models.FloatField(blank=True, default=0)

@@ -79,13 +79,13 @@ class ProjectsList(JSONResponseMixin, TemplateView):
             if request.user.get_profile().empdni.charge.cargos.lower() == 'jefe de operaciones':
                 context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC')).order_by('-proyecto_id')
 
-            cust = Proyecto.objects.filter(flag=True)
+            cust = Proyecto.objects.filter(Q(flag=True), ~Q(status='DA'))
             if request.user.get_profile().empdni.charge.area.lower() == 'operaciones':
                 cust = cust.filter(empdni_id=request.user.get_profile().empdni_id, status='AC')
             elif request.user.get_profile().empdni.charge.area.lower() == 'logistica' or 'Almacen':
                 cust = cust.filter(status='AC')
             cust = cust.order_by('ruccliente__razonsocial').distinct('ruccliente__razonsocial')
-            context['cust'] = cust
+            context['cust'] = cust #.order_by('ruccliente__razonsocial')
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template Does Not Exist %s'%e)
@@ -293,6 +293,7 @@ class ProjectManager(JSONResponseMixin, View):
             context['method'] = FormaPago.objects.filter(flag=True)
             context['unit'] = Unidade.objects.filter(flag=True)
             context['conf'] = Configuracion.objects.get(periodo=globalVariable.get_year)
+            context['closure'] = CloseProject.objects.get(project_id=kwargs['project'])
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)
@@ -551,25 +552,48 @@ class ProjectManager(JSONResponseMixin, View):
                     context['status'] = True
                 if 'closeStorage' in request.POST:
                     if request.user.get_profile().empdni.charge.area.lower() == 'almacen' or request.user.get_profile().empdni.charge.area.lower() == 'administrator':
-                        CloseProject.objects.get(project_id=kwargs['pro'])
-
+                        try:
+                            close = CloseProject.objects.get(project_id=kwargs['project'])
+                            close.storageclose = True
+                            close.save()
+                        except ObjectDoesNotExist, e:
+                            close = CloseProject()
+                            close.storageclose = True
+                            close.save()
                         context['status'] = True
                     else:
                         context['status'] = False
                         context['raise'] = 'Permissions denied, close storage fail.'
                 if 'letterdelivery' in request.POST:
                     if request.user.get_profile().empdni.charge.area.lower() == 'almacen' or request.user.get_profile().empdni.charge.area.lower() == 'administrator':
-                        CloseProject.objects.get(project_id=kwargs['pro'])
-                        admin = '/storage/projects/%s/%s/administrative/'%(year, request.POST.get('pro'))
-                        fileadmin = uploadFiles.upload(admin, request.FILES['administrative'], {'name': 'admin'})
-                        # descompress files in the server
-                        context['descompress'] =  uploadFiles.descompressRAR(fileadmin, admin)
-                        # delete files temp
-                        uploadFiles.removeTmp(fileadmin)
+                        try:
+                            close = CloseProject.objects.get(project_id=kwargs['project'])
+                            close.letterdelivery = request.FILES['letter']
+                            close.save()
+                        except ObjectDoesNotExist, e:
+                            year = Proyecto.objects.get(proyecto_id=kwargs['project']).registrado.strftime('%Y')
+                            close = CloseProject()
+                            close.project_id = kwargs['project']
+                            close.letterdelivery = request.FILES['letter']
+                            close.save()
+                        # uri = '/storage/projects/%s/%s/closure/'%(year, request.POST.get('pro'))
+                        # fileadmin = uploadFiles.upload(uri, request.FILES['letter'])
                         context['status'] = True
                     else:
                         context['status'] = False
                         context['raise'] = 'Permissions denied, upload letter fail.'
+                if 'documentsCloser' in request.POST:
+                    if request.user.get_profile().empdni.charge.area.lower() == 'operationes' or request.user.get_profile().empdni.charge.area.lower() == 'administrator':
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+                        context['raise'] = 'Permissions denied'
+                if 'accounting' in request.POST:
+                    if request.user.get_profile().empdni.charge.area.lower() == 'losgistica' or request.user.get_profile().empdni.charge.area.lower() == 'administrator':
+                        context['status'] = True
+                    else:
+                        context['raise'] = 'Permissions denied'
+                        context['status'] = False
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

@@ -135,6 +135,7 @@ $(document).ready(function() {
   $(".btn-open-letter-anexo-file").click(function() {
     $("input[name=letter-anexos-file]").click();
   });
+  $(".uploadletterclosep").on("click", uploadLetterDelivery);
 });
 
 loadsAccounts = function(event) {

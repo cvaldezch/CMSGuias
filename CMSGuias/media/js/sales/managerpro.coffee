@@ -143,6 +143,7 @@ $(document).ready ->
     $(".btn-open-letter-anexo-file").click ->
         $("input[name=letter-anexos-file]").click()
         return
+    $(".uploadletterclosep").on "click", uploadLetterDelivery
     return
 
 loadsAccounts = (event) ->

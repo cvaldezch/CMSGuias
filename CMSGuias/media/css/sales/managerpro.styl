@@ -2,6 +2,14 @@ vendor_prefixes ?= webkit moz o ms official
 
 @import 'nib'
 
+.dropdown-menu
+  & > li
+    & > button, a
+      margin-left 5px
+      text-align left
+    & > a
+      margin-left -9px
+
 .all-sectors
   & > article
     border 1px solid #428bca

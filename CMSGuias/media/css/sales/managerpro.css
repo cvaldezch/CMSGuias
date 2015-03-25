@@ -1,3 +1,11 @@
+.dropdown-menu > li > button,
+.dropdown-menu > li a {
+  margin-left: 5px;
+  text-align: left;
+}
+.dropdown-menu > li > a {
+  margin-left: -9px;
+}
 .all-sectors > article {
   border: 1px solid #428bca;
   -webkit-border-radius: 5px;
