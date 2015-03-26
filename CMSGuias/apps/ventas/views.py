@@ -558,6 +558,7 @@ class ProjectManager(JSONResponseMixin, View):
                             close.save()
                         except ObjectDoesNotExist, e:
                             close = CloseProject()
+                            close.project_id = kwargs['project']
                             close.storageclose = True
                             close.save()
                         context['status'] = True
@@ -576,20 +577,46 @@ class ProjectManager(JSONResponseMixin, View):
                             close.project_id = kwargs['project']
                             close.letterdelivery = request.FILES['letter']
                             close.save()
-                        # uri = '/storage/projects/%s/%s/closure/'%(year, request.POST.get('pro'))
-                        # fileadmin = uploadFiles.upload(uri, request.FILES['letter'])
                         context['status'] = True
                     else:
                         context['status'] = False
                         context['raise'] = 'Permissions denied, upload letter fail.'
                 if 'documentsCloser' in request.POST:
                     if request.user.get_profile().empdni.charge.area.lower() == 'operationes' or request.user.get_profile().empdni.charge.area.lower() == 'administrator':
-                        context['status'] = True
+                        if 'documents' in request.FILES or 'documents0' in request.FILES:
+                            try:
+                                close = CloseProject.objects.get(project_id=kwargs['project'])
+                                close.documents = True
+                                close.save()
+                                year = close.project.registrado.strftime('%Y')
+                            except ObjectDoesNotExist, e:
+                                year = Proyecto.objects.get(proyecto_id=kwargs['project']).registrado.strftime('%Y')
+                                close = CloseProject()
+                                close.project_id = kwargs['project']
+                                close.documents = True
+                                close.save()
+                            uri = '/storage/projects/%s/%s/closure/documents/'%(year, kwargs['project'])
+                            if 'totalFiles' in request.POST:
+                                for x in range(int(request.POST.get('totalFiles'))):
+                                    filedocuments = uploadFiles.upload(uri, request.FILES['documents%i'%(x)])
+                                    if filedocuments.split('.')[-1].lower() == 'rar':
+                                        uploadFiles.descompressRAR(filedocuments, uri)
+                                        uploadFiles.deleteFile(filedocuments)
+                            else:
+                                filedocuments = uploadFiles.upload(uri, request.FILES['documents'])
+                                if filedocuments.split('.')[-1].lower() == 'rar':
+                                    uploadFiles.descompressRAR(filedocuments, uri)
+                                    uploadFiles.deleteFile(filedocuments)
+                            context['status'] = True
+                        else:
+                            context['status'] = False
+                            context['raise'] = 'File no exists'
                     else:
                         context['status'] = False
                         context['raise'] = 'Permissions denied'
                 if 'accounting' in request.POST:
                     if request.user.get_profile().empdni.charge.area.lower() == 'losgistica' or request.user.get_profile().empdni.charge.area.lower() == 'administrator':
+
                         context['status'] = True
                     else:
                         context['raise'] = 'Permissions denied'

@@ -15,7 +15,7 @@ $(document).ready ->
         $(".mresponsible").modal("show");
     $(".btn-files").on "click", ->
         $(".mfiles").modal("show");
-    $(".btn-cuadro").on "click", (evetn) ->
+    $(".btn-cuadro").on "click", (event) ->
         changeView 23
     $(".btn-list").on "click", (event) ->
         changeView 100
@@ -143,7 +143,10 @@ $(document).ready ->
     $(".btn-open-letter-anexo-file").click ->
         $("input[name=letter-anexos-file]").click()
         return
+    # Steps Project Closure
+    $(".btn-close-storage").on "click", closeStorage
     $(".uploadletterclosep").on "click", uploadLetterDelivery
+    $(".btn-documents-closure").on "click", loadDocumentsClosure
     return
 
 loadsAccounts = (event) ->
@@ -1238,4 +1241,44 @@ uploadLetterDelivery = (event) ->
             else
                 $().toastmessage "showErrorToast", "Error al subir Carta de entrega. #{response.raise}"
                 return
+    return
+
+loadDocumentsClosure = (event) ->
+    $doc = $("[name=documentsclosure]").get(0).files
+    if $doc.length
+        data = new FormData
+        if $doc.length > 1
+            for i in [0...$doc.length] by 1
+                data.append "documents#{i}", $doc[i]
+            data.append "totalFiles", $doc.length
+        else
+            data.append "documents", $doc[0]
+        data.append "csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val()
+        data.append "documentsCloser", true
+        $.ajax
+            data: data
+            dataType: "json"
+            type: "POST"
+            url: ""
+            contentType: false
+            processData: false
+            cache: false
+            success: (response) ->
+                if response.status
+                    $().toastmessage "showSuccessToast", "Se subio los documentos correctamente."
+                    $(".progress-project > div.circle:nth-of-type(3)").addClass "done"
+                    $(".progress-project > span.bar:nth-of-type(3)").addClass "active"
+                    setTimeout ->
+                        location.reload()
+                        return
+                    , 2600
+                else
+                    $().toastmessage "showErrorToast", "No se a podido cargar el/los archivo(s). #{response.raise}"
+                    return
+    else
+        $().toastmessage "showWarningToast", "No se han encontrado archivos para subir."
+    return
+
+loadCloseAccounting = (event) ->
+
     return
