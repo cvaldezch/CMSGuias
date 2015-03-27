@@ -614,9 +614,22 @@ class ProjectManager(JSONResponseMixin, View):
                     else:
                         context['status'] = False
                         context['raise'] = 'Permissions denied'
-                if 'accounting' in request.POST:
+                if 'saveAccounting' in request.POST:
                     if request.user.get_profile().empdni.charge.area.lower() == 'losgistica' or request.user.get_profile().empdni.charge.area.lower() == 'administrator':
-
+                        try:
+                            close = CloseProject.objects.get(project_id=kwargs['project'])
+                            close.otherin = request.POST.get('otherin')
+                            close.otherout = request.POST.get('otherout')
+                            close.save()
+                        except ObjectDoesNotExist:
+                            close = CloseProject()
+                            close.project_id = kwargs['project']
+                            close.accounting = True
+                            close.tinvoice = request.POST.get('tinvoice')
+                            close.tiva = request.POST.get('tiva')
+                            close.otherin = request.POST.get('otherin')
+                            close.otherout = request.POST.get('otherout')
+                            close.save()
                         context['status'] = True
                     else:
                         context['raise'] = 'Permissions denied'

@@ -1280,5 +1280,52 @@ loadDocumentsClosure = (event) ->
     return
 
 loadCloseAccounting = (event) ->
-
+    data = new FormData
+    invoice = $("[name=closureamount]").val()
+    iva = $("[name=closureiva]").val()
+    otherin = $("[name=closureother]").val()
+    otherout = $("[name=closureout]").val()
+    retention = $("[name=closureretention]").val()
+    if !invoice? or parseInt(invoice) < 0
+        invoice = 0
+    if !iva? or parseInt(iva) < 0
+        iva = 0
+    if !otherin? or parseInt(otherin) < 0
+        otherin = 0
+    if !otherout? or parseInt(otherout) < 0
+        otherout = 0
+    if !retention? or parseInt(retention) < 0
+        retention = 0
+    data.append "tinvoice", invoice
+    data.append "tiva", iva
+    data.append "otherin", otherin
+    data.append "otherout", otherout
+    data.append "retention", retention
+    # validating
+    $file = $("[name=accountingfiles").get(0).files
+    data.append "csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val()
+    if $file.length
+        data.append "accountingfile", $file[0]
+    data.append "saveAccounting", true
+    $.ajax
+        url: ""
+        type: "POST"
+        data: data
+        dataType: "json"
+        cache: false
+        contentType: false
+        processData: false
+        success: (response) ->
+            if response.status
+                $().toastmessage "showSuccessToast", "Se subio los documentos correctamente."
+                $(".progress-project > div.circle:nth-of-type(4)").addClass "done"
+                $(".progress-project > span.bar:nth-of-type(4)").addClass "active"
+                setTimeout ->
+                    location.reload()
+                    return
+                , 2600
+                return
+            else
+                $().toastmessage "showErrorToast", "Error al guardar los cambios de contabilidad. #{response.raise}"
+                return
     return

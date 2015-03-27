@@ -63,8 +63,9 @@ class Proyecto(models.Model):
 
 class CloseProject(models.Model):
     def url(self, filename):
-        ruta = 'storage/projects/%s/%s/closure/%s'%(self.project.registrado.strftime('%Y'),self.project_id,filename)
-        return ruta
+        return 'storage/projects/%s/%s/closure/%s'%(self.project.registrado.strftime('%Y'),self.project_id,filename)
+    def uriaco(self, filename):
+        return 'storage/projects/%s/%s/closure/accounting/%s'%(self.project.registrado.strftime('%Y'),self.project_id,filename)
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
     storageclose = models.BooleanField(default=False, blank=True)
     datestorage = models.DateField(auto_now=True)
@@ -74,11 +75,12 @@ class CloseProject(models.Model):
     accounting = models.BooleanField(default=False, blank=True)
     amountbill = models.FloatField(default=0, blank=True)
     amountigv = models.FloatField(default=0, blank=True)
-    othersingress = models.FloatField(blank=True, default=0)
-    othersouts = models.FloatField(default=0, blank=True)
+    otherin = models.FloatField(blank=True, default=0)
+    otherout = models.FloatField(default=0, blank=True)
     retentions = models.FloatField(default=0, blank=True)
+    fileaccounting = models.FileField(upload_to=uriaco,null=True,max_length=250)
     closeconfirm = models.CharField(default='', max_length=6, blank=True)
-    close = models.BooleanField(default=False)
+    #close = models.BooleanField(default=False)
     status = models.CharField(default='PE', blank=True, max_length=2)
     performedstorage = models.ForeignKey(Employee, related_name='storage', null=True, blank=True)
     performedoperations = models.ForeignKey(Employee, related_name='operations', null=True, blank=True)
