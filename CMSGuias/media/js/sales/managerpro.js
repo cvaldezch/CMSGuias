@@ -1317,7 +1317,7 @@ loadCloseAccounting = function(event) {
   $file = $("[name=accountingfiles").get(0).files;
   data.append("csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val());
   if ($file.length) {
-    data.append("accountingfile", $file[0]);
+    data.append("fileaccounting", $file[0]);
   }
   data.append("saveAccounting", true);
   $.ajax({
