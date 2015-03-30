@@ -147,6 +147,7 @@ $(document).ready ->
     $(".btn-close-storage").on "click", closeStorage
     $(".uploadletterclosep").on "click", uploadLetterDelivery
     $(".btn-documents-closure").on "click", loadDocumentsClosure
+    $(".btn-closure-accounting").on "click", loadCloseAccounting
     return
 
 loadsAccounts = (event) ->
@@ -1328,4 +1329,36 @@ loadCloseAccounting = (event) ->
             else
                 $().toastmessage "showErrorToast", "Error al guardar los cambios de contabilidad. #{response.raise}"
                 return
+    return
+
+# Generate key confirm
+genKeyConfirmationClosureProject = (event) ->
+    data = new Object
+    $pro = $("input[name=pro]")
+    data.genKeyConf = true
+    data.code = $pro.val()
+    data.desc = "approved"
+    data.email = $("input[name=user-email]").val()
+    data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
+    $.post "", data, (response) ->
+        if response.status
+            reason = $("input[name=companyname]").val()
+            data = new Object
+            data.forsb = $("input[name=user-email]").val()
+            data.issue = "Código de confirmación"
+            data.body = "<p><span style=\"color: rgb(33, 33, 33); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; line-height: 19.7999992370605px;\" data-mce-style=\"color: rgb(33, 33, 33); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; line-height: 19.7999992370605px;\">Tu código de confirmación para Aprobar el Proyecto es: <strong>#{response.key}</strong>. Ingresa este código en la casilla de verificacion para continuar.</span></p><p>Generado:&nbsp; #{$("input[name=user-email]").attr "data-name"}</p><p>Proyecto:&nbsp; <strong>\"#{$pro.attr "data-name"}\"</strong></p><p>Ejecutado por:&nbsp; <strong>\"#{reason}\"</strong></p><p>Fecha y hora: #{new Date().toString()}</p><p><span data-mce-style=\"color: rgb(33, 33, 33); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; line-height: 19.7999992370605px;\" style=\"color: rgb(33, 33, 33); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; line-height: 19.7999992370605px;\">Si no has realizado esta operación o tienes cualquier duda respecto código, puedes comunicarte con nosotros 01 371-0443.</span></p>"
+            $.ajax
+                url: "http://190.41.246.91:3000/mailer/" #url: "http://127.0.0.1:3000/mailer/"
+                type: "GET"
+                crossDomain: true
+                data: $.param data
+                dataType: "jsonp",
+                success: (response) ->
+                    if response.status
+                        $().toastmessage "showNoticeToast", "Se a enviado el código de confirmación."
+                    else
+                        $().toastmessage "showErrorToast", "No se podido enviar el correo."
+        else
+            $().toastmessage "showErrorToast", "No se generado el token."
+    , "json"
     return

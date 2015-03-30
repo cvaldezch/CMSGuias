@@ -1067,11 +1067,17 @@
                                active
                             {% endif %}
                             "></span>
-                            <div class="circle">
+                            <div class="circle
+                            {% if closure.accounting %}
+                                done
+                            {% endif %}">
                                 <span class="label">4</span>
                                 <span class="title">Contabilidad</span>
                             </div>
-                            <span class="bar"></span>
+                            <span class="bar
+                            {% if closure.accounting %}
+                                active
+                            {% endif %}"></span>
                             <div class="circle">
                                 <span class="label">5</span>
                                 <span class="title">Ventas</span>
@@ -1164,38 +1170,40 @@
                                 <div>
                                     <div class="step-four">
                                         {% if user.get_profile.empdni.charge.area|lower == 'logistica' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
-                                        <div class="">
-                                            <div class="form-group">
-                                                <label for="inputEmail3" class=" control-label">Total Facturado</label>
-                                                <input type="text" name="closureamount" class="form-control input-sm" id="inputEmail3" placeholder="Total">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="inputEmail3" class="control-label">Total IGV</label>
-                                                <input type="text" class="form-control input-sm" name="closureiva" id="inputEmail3" placeholder="Total IGV">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="inputEmail3" class=" control-label">Otros Ingresos</label>
-                                                <input type="text" name="closureother" class="form-control input-sm" id="inputEmail3" placeholder="Otros ingresos">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="inputEmail3" class=" control-label">Otras Salidas</label>
-                                                <input type="text" class="form-control input-sm" name="closureout" id="inputEmail3" placeholder="Otros ingresos">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="inputEmail3" class=" control-label">Retención</label>
-                                                <input type="text" class="form-control input-sm" id="inputEmail3" name="closureretention" placeholder="Retención">
-                                            </div>
-                                             <div class="form-group">
-                                                <label for="inputEmail3" class=" control-label">Archivos <span>(Opcional)</span></label>
-                                                <input type="file" name="accountingfiles" class="form-control input-sm" id="inputEmail3" placeholder="Retención">
-                                            </div>
-                                        </div>
-                                        <p>
-                                            <button class="btn btn-success btn-xs btn-closure-accounting">
-                                                <span class="fa fa-save"></span>
-                                                Guardar Cambios
-                                            </button>
-                                        </p>
+                                            {% if not closure.accounting %}
+                                                <div class="">
+                                                    <div class="form-group">
+                                                        <label for="inputEmail3" class=" control-label">Total Facturado</label>
+                                                        <input type="text" name="closureamount" class="form-control input-sm" id="inputEmail3" placeholder="Total">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="inputEmail3" class="control-label">Total IGV</label>
+                                                        <input type="text" class="form-control input-sm" name="closureiva" id="inputEmail3" placeholder="Total IGV">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="inputEmail3" class=" control-label">Otros Ingresos</label>
+                                                        <input type="text" name="closureother" class="form-control input-sm" id="inputEmail3" placeholder="Otros ingresos">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="inputEmail3" class=" control-label">Otras Salidas</label>
+                                                        <input type="text" class="form-control input-sm" name="closureout" id="inputEmail3" placeholder="Otros ingresos">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="inputEmail3" class=" control-label">Retención</label>
+                                                        <input type="text" class="form-control input-sm" id="inputEmail3" name="closureretention" placeholder="Retención">
+                                                    </div>
+                                                     <div class="form-group">
+                                                        <label for="inputEmail3" class=" control-label">Archivos <span>(Opcional)</span></label>
+                                                        <input type="file" name="accountingfiles" class="form-control input-sm" id="inputEmail3" placeholder="Retención">
+                                                    </div>
+                                                </div>
+                                                <p>
+                                                    <button class="btn btn-success btn-xs btn-closure-accounting">
+                                                        <span class="fa fa-save"></span>
+                                                        Guardar Cambios
+                                                    </button>
+                                                </p>
+                                            {% endif %}
                                         {% endif %}
                                     </div>
                                 </div>

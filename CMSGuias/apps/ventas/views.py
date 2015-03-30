@@ -616,17 +616,9 @@ class ProjectManager(JSONResponseMixin, View):
                         context['raise'] = 'Permissions denied'
                 if 'saveAccounting' in request.POST:
                     if request.user.get_profile().empdni.charge.area.lower() == 'losgistica' or request.user.get_profile().empdni.charge.area.lower() == 'administrator':
-                        close = null
+                        close = None
                         try:
                             close = CloseProject.objects.get(project_id=kwargs['project'])
-                            # close.accounting = True
-                            # close.tinvoice = request.POST.get('tinvoice')
-                            # close.tiva = request.POST.get('tiva')
-                            # close.otherin = request.POST.get('otherin')
-                            # close.otherout = request.POST.get('otherout')
-                            # close.retention = request.POST.get('retention')
-                            # close.performedaccounting_id = request.user.get_profile().empdni_id
-                            #close.save()
                         except ObjectDoesNotExist:
                             close = CloseProject()
                         close.project_id = kwargs['project']
@@ -639,9 +631,10 @@ class ProjectManager(JSONResponseMixin, View):
                         close.performedaccounting_id = request.user.get_profile().empdni_id
                         if 'fileaccounting' in request.FILES:
                             close.fileaccounting = request.FILES.get('fileaccounting')
-                            #'storage/projects/%s/%s/closure/accounting/%s'%(self.project.registrado.strftime('%Y'),self.project_id,filename)
-                            if request.FILE['fileaccounting'].name.split('.')[-1].lower() == 'rar':
-                                uri = '%s/%s'%(globalVariable.relative_path,str(close.fileaccounting))
+                            if request.FILES['fileaccounting'].name.split('.')[-1].lower() == 'rar':
+                                pro = Proyecto.objects.get(proyecto_id=kwargs['project'])
+                                path= 'storage/projects/%s/%s/closure/accounting/%s'%(pro.registrado.strftime('%Y'),pro.proyecto_id,request.FILES['fileaccounting'].name)
+                                uri = '%s/%s'%(globalVariable.relative_path,path)
                                 uploadFiles.descompressRAR(uri, uri.replace(uri.split('/')[-1],''))
                                 uploadFiles.deleteFile(uri)
                         close.save()
