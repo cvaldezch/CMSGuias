@@ -1222,13 +1222,13 @@
                                         </small>
                                         {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
                                             <p>
-                                                <button class="btn btn-link btn-xs text-black">
+                                                <button class="btn btn-link btn-xs text-black generatekeyclosure">
                                                     <span class="fa fa-key"></span>
                                                     Obtener Código
                                                 </button>
                                                 <p>
-                                                    <input type="text" class="form-control input-sm col-2">
-                                                    <button class="btn btn-sm btn-success">
+                                                    <input type="text" class="form-control input-sm col-2" name="keyclosure">
+                                                    <button class="btn btn-sm btn-success closureProject">
                                                         <span class="fa fa-save"></span>
                                                         Cerrar Proyecto
                                                     </button>

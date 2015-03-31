@@ -642,6 +642,38 @@ class ProjectManager(JSONResponseMixin, View):
                     else:
                         context['raise'] = 'Permissions denied'
                         context['status'] = False
+                if 'genKeyConfClose' in request.POST:
+                    if request.user.get_profile().empdni.charge.area.lower() == 'administrator' or request.user.get_profile().empdni.charge.area.lower() == 'ventas':
+                        key = globalVariable.get_Token()
+                        try:
+                            close = CloseProject.objects.get(project_id=kwargs['project'])
+                            close.closeconfirm = key
+                            close.save()
+                            context['key'] = key
+                            context['status'] = True
+                        except ObjectDoesNotExist, e:
+                            context['status'] = False
+                            context['raise'] = 'Fatal project close, missing other steps.'
+                    else:
+                        context['status'] = False
+                        context['raise'] = 'Permissions denied'
+                if 'closureproject' in request.POST:
+                    if request.user.get_profile().empdni.charge.area.lower() == 'administrator' or request.user.get_profile().empdni.charge.area.lower() == 'ventas':
+                        try:
+                            close = CloseProject.objects.get(project_id=kwargs['project'])
+                            if request.POST.get('keycon') == close.closeconfirm:
+                                close.performedclose_id = request.user.get_profile().empdni_id
+                                close.status = 'CO'
+                                context['status'] = True
+                            else:
+                                context['status'] = False
+                                context['raise'] = 'El Código ingresado no es correcto.'
+                        except ObjectDoesNotExist, e:
+                            context['raise'] = str(e)
+                            context['status'] = False
+                    else:
+                        context['status'] = False
+                        context['raise'] = 'Permissions denied'
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
