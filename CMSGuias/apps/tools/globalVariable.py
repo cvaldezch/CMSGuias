@@ -151,7 +151,7 @@ def format_str_date(_str=None, format='%Y-%m-%d'):
         else:
             str_date = 'str invalid!'
     except Exception, e:
-        print 'Error'
+        #print 'Error'
         str_date = 'date invalid!'
         #messages.add_message(e)
         #raise Http404('Method Error')
@@ -169,7 +169,7 @@ def get_Token():
     token = ''
     try:
         chars = '1C3A5E7B9H2D46FI80GJZXYPRTKL'
-        for x in xrange(1,6):
+        for x in xrange(0,6):
             index = randint(0, (chars.__len__() - 1))
             token = '%s%s'%(token, chars[index])
     except Exception, e:

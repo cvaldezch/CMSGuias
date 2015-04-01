@@ -555,11 +555,13 @@ class ProjectManager(JSONResponseMixin, View):
                         try:
                             close = CloseProject.objects.get(project_id=kwargs['project'])
                             close.storageclose = True
+                            close.performedstorage_id = request.user.get_profile().empdni_id
                             close.save()
                         except ObjectDoesNotExist, e:
                             close = CloseProject()
                             close.project_id = kwargs['project']
                             close.storageclose = True
+                            close.performedstorage_id = request.user.get_profile().empdni_id
                             close.save()
                         context['status'] = True
                     else:
@@ -570,12 +572,16 @@ class ProjectManager(JSONResponseMixin, View):
                         try:
                             close = CloseProject.objects.get(project_id=kwargs['project'])
                             close.letterdelivery = request.FILES['letter']
+                            close.dateletter = globalVariable.date_now()
+                            close.performedoperations_id = request.user.get_profile().empdni_id
                             close.save()
                         except ObjectDoesNotExist, e:
                             year = Proyecto.objects.get(proyecto_id=kwargs['project']).registrado.strftime('%Y')
                             close = CloseProject()
                             close.project_id = kwargs['project']
                             close.letterdelivery = request.FILES['letter']
+                            close.dateletter = globalVariable.date_now()
+                            close.performedoperations_id = request.user.get_profile().empdni_id
                             close.save()
                         context['status'] = True
                     else:
@@ -587,6 +593,7 @@ class ProjectManager(JSONResponseMixin, View):
                             try:
                                 close = CloseProject.objects.get(project_id=kwargs['project'])
                                 close.documents = True
+                                close.performeddocument_id = request.user.get_profile().empdni_id
                                 close.save()
                                 year = close.project.registrado.strftime('%Y')
                             except ObjectDoesNotExist, e:
@@ -594,6 +601,7 @@ class ProjectManager(JSONResponseMixin, View):
                                 close = CloseProject()
                                 close.project_id = kwargs['project']
                                 close.documents = True
+                                close.performeddocument_id = request.user.get_profile().empdni_id
                                 close.save()
                             uri = '/storage/projects/%s/%s/closure/documents/'%(year, kwargs['project'])
                             if 'totalFiles' in request.POST:
@@ -664,6 +672,7 @@ class ProjectManager(JSONResponseMixin, View):
                             if request.POST.get('keycon') == close.closeconfirm:
                                 close.performedclose_id = request.user.get_profile().empdni_id
                                 close.status = 'CO'
+                                close.save()
                                 context['status'] = True
                             else:
                                 context['status'] = False

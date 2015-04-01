@@ -1078,7 +1078,10 @@
                             {% if closure.accounting %}
                                 active
                             {% endif %}"></span>
-                            <div class="circle">
+                            <div class="circle
+                            {% if closure.performedclose_id %}
+                                done
+                            {% endif %}">
                                 <span class="label">5</span>
                                 <span class="title">Ventas</span>
                             </div>
@@ -1222,17 +1225,19 @@
                                         </small>
                                         {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
                                             <p>
-                                                <button class="btn btn-link btn-xs text-black generatekeyclosure">
-                                                    <span class="fa fa-key"></span>
-                                                    Obtener Código
-                                                </button>
-                                                <p>
-                                                    <input type="text" class="form-control input-sm col-2" name="keyclosure">
-                                                    <button class="btn btn-sm btn-success closureProject">
-                                                        <span class="fa fa-save"></span>
-                                                        Cerrar Proyecto
+                                                {% if not closure.performedclose_id %}
+                                                    <button class="btn btn-link btn-xs text-black generatekeyclosure">
+                                                        <span class="fa fa-key"></span>
+                                                        Obtener Código
                                                     </button>
-                                                </p>
+                                                    <p>
+                                                        <input type="text" class="form-control input-sm col-2" maxlength="6" name="keyclosure">
+                                                        <button class="btn btn-sm btn-success closureProject">
+                                                            <span class="fa fa-save"></span>
+                                                            Cerrar Proyecto
+                                                        </button>
+                                                    </p>
+                                                {% endif %}
                                             </p>
                                         {% endif %}
                                     </div>
