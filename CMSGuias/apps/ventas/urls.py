@@ -4,6 +4,7 @@
 from django.conf.urls import patterns, url, include
 
 from .views import *
+from .budget import urls
 
 
 # Sectors Ulrs
@@ -28,4 +29,5 @@ urlpatterns = patterns('',
     # url to home
     url(r'^$', SalesHome.as_view(), name='view_sale'),
     url(r'^projects/', include(project_urls)),
+    url(r'^budget/', include(urls)),
 )

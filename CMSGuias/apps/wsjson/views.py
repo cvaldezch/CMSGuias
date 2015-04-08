@@ -1102,3 +1102,31 @@ class ExportMetProject(View):
                 return response
         except ObjectDoesNotExist, e:
             raise Http404(e)
+
+class ExportMaterialsDB(View):
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            queryset = Materiale.objects.order_by('matnom')
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="materials.csv"'
+            writer = csv.writer(response)
+            writer.writerow(['Código','Descripción','Diametro','Unidad'])
+            if queryset:
+                [
+                    writer.writerow(
+                        [
+                            x.materiales_id.encode('utf-8'),
+                            x.matnom.encode('utf-8'),
+                            x.matmed.encode('utf-8'),
+                            x.unidad.uninom.encode('utf-8')
+                        ]
+                    )
+                    for x in queryset
+                ]
+            else:
+                writer.writerow(['Any materials found'])
+            return response
+        except ObjectDoesNotExist, e:
+            raise Http404(e)
