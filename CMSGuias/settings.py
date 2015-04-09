@@ -156,6 +156,7 @@ INSTALLED_APPS = (
     'CMSGuias.apps.wsjson',
     'CMSGuias.apps.operations',
     'CMSGuias.apps.suppliers',
+    'CMSGuias.apps.ventas.budget',
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'

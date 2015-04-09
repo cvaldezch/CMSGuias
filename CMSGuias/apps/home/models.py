@@ -384,3 +384,16 @@ class KeyConfirm(models.Model):
 
     def __unicode__(self):
         return '%s %s %s'%(self.empdni, self.code, self.key)
+
+class Tools(models.Model):
+    tools_id = models.CharField(max_length=8, primary_key=True)
+    name = models.CharField(max_length=255)
+    flag = models.BooleanField(default=True)
+
+    audit_log = AuditLog()
+
+    class Meta:
+        ordering = ['name']
+
+    def __unicode__(self):
+        return '%s'%(self.name)
