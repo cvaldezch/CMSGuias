@@ -4,7 +4,7 @@
 from django.conf.urls import patterns, url, include
 
 from .views import *
-from .budget.urls import budget_urls
+from CMSGuias.apps.ventas.budget.urls import budget_urls
 
 
 # Sectors Ulrs

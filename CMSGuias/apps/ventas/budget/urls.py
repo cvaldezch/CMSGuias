@@ -5,6 +5,6 @@ from django.conf.urls import patterns, url, include
 
 from .views import *
 
-budget_urls = patterns(
-    url(r'^/analyst/prices/new/',  NewAnalystPrices.as_view()),
+budget_urls = patterns('',
+    url(r'^analysis/prices/$',  NewAnalystPrices.as_view()),
 )

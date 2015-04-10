@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}
+    Analysis
+{% endblock title %}
+{% block menu %}
+    {% include "menus/sale.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+    <div class="well">
+        <h3>Ánalisis de Precio Unitario</h3>
+        <nav class="btn-group">
+            <button type="button" class="btn btn-warning showAnalysis">
+                <span class="fa fa-plus"></span>
+                Nuevo Analisis
+            </button>
+        </nav>
+        <div class="panel panel-warning">
+            <div class="panel-footer">
+                Lista de Analisis de Precios
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-condensed">
+                    <thead>
+                        <tr class="brand-warning">
+                            <th>Item</th>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Unidad</th>
+                            <th>Rendimiento</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for x in analyst %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ x.analysis_id }}</td>
+                                <td>{{ x.name }}</td>
+                                <td>{{ x.unit.uninom }}</td>
+                                <td>{{ x.performace }}</td>
+                                <td>
+                                    <div class="dropup">
+                                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true">
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Action</a></li>
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Another action</a></li>
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Something else here</a></li>
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Separated link</a></li>
+                                          </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <th colspan="6">
+                                    No se han encontrado analisis de precios.
+                                </th>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- block modals -->
+<div class="modal fade" id="manalysis">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Analisis de Precio
+                </h3>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label"></label>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">Descripción</label>
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-sm pull-left" data-dismiss="modal">
+                    <span class="fa fa-times"></span>
+                    Salir
+                </button>
+                <button type="button" class="btn btn-warning btn-sm">
+                    <span class="fa fa-saved"></span>
+                    Añadir Analisis
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- endblock -->
+<!-- script -->
+<script>
+    var showAnalysis;
+    $(function(){
+        $(".showAnalysis").on("click", showAnalysis);
+    });
+    showAnalysis = function()
+    {
+
+    }
+</script>
+{% endblock content %}

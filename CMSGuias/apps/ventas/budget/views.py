@@ -12,7 +12,7 @@ from django.contrib import messages
 # from django.contrib.auth.mod import User
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response, get_list_or_404, get_object_or_404
+from django.shortcuts import get_list_or_404, get_object_or_404, render
 from django.utils import simplejson, timezone
 from django.utils.decorators import method_decorator
 from django.template import RequestContext, TemplateDoesNotExist
@@ -37,6 +37,8 @@ class JSONResponseMixin(object):
         return simplejson.dumps(context, encoding='utf-8')
 
 class NewAnalystPrices(TemplateView):
-    def get_context_data(self, **kwargs):
-        context = super(NewAnalystPrices, self).get_context_data(**kwargs)
-        return context
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        return render(request, 'budget/analysis.html')
