@@ -335,3 +335,38 @@ def generatePreOrdersId():
     except ObjectDoesNotExist, e:
         id = '%s%i%s'%('PRO',yn, '{:0>5d}'.format(1))
     return id
+
+def generateAnalysis(init=''):
+    id = None
+    try:
+        code = Analysis.objects.filter(analysis_id__startswith='AP%s'%init)
+        latest('register')
+        id = code['max']
+        yn = int(datetime.datetime.today().strftime(__year_str))
+        if id is not None:
+            yy = int(id[2:4])
+            counter = int(id[4:10])
+            if yn > yy:
+                counter = 1
+            else:
+                counter += 1
+        else:
+            counter = 1
+        id = '%s%s%s'%('DC', yn.__str__(), '{:0>6d}'.format(counter))
+    except ObjectDoesNotExist, e:
+        raise e
+    return id
+
+def generateGroupAnalysis():
+    id = None
+    try:
+        code = CMSGuias.apps.ventas.budget.models.AnalysisGroup.objects.latest('register')
+        counter = 0
+        if code.agroup_id:
+            counter = (counter + int(code.agroup_id[2:]))
+        else:
+            counter = 1
+        id = '%s%s'%('AG', '{:0>4d}'.format(counter))
+    except ObjectDoesNotExist, e:
+        raise e
+    return id

@@ -4,6 +4,17 @@ from audit_log.models.fields import LastUserField
 from audit_log.models.managers import AuditLog
 
 from CMSGuias.apps.home.models import Materiale, Unidade, Cargo, Tools
+from CMSGuias.apps.tools.genkeys import generateGroupAnalysis
+
+
+class AnalysisGroup(models.Model):
+    agroup_id = models.CharField(max_length=5, default=generateGroupAnalysis(), primary_key=True)
+    name = models.CharField(max_length=255)
+    register = models.DateField(auto_now=True)
+    flag = models.BooleanField(default=True)
+
+    class Meta():
+        ordering = ['register']
 
 
 class Analysis(models.Model):

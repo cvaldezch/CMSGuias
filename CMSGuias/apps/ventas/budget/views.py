@@ -21,6 +21,9 @@ from django.views.generic.edit import UpdateView, CreateView
 from decimal import Decimal
 
 from .models import *
+from .forms import *
+from CMSGuias.apps.home.models import Unidade
+from CMSGuias.apps.tools import genkeys
 
 ## Class Bases Views Generic
 
@@ -36,9 +39,33 @@ class JSONResponseMixin(object):
     def convert_context_to_json(self, context):
         return simplejson.dumps(context, encoding='utf-8')
 
-class NewAnalystPrices(TemplateView):
+class NewAnalystPrices(JSONResponseMixin, TemplateView):
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
-        return render(request, 'budget/analysis.html')
+        context['unit'] = Unidade.objects.filter(flag=True)
+        return render(request, 'budget/analysis.html', context)
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            try:
+                # Save new Analysis
+                if 'analysisnew' in request.POST:
+                    an = Analysis()
+                    form = addAnalysisForm()
+                    if form.is_valid():
+                        add = form.save(commit=False)
+                        key = genkeys.generateAnalyisis()
+                        add.analysis_id = key
+                        add.flag = True;
+                        add.save()
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+                        context['raise'] = ''
+            except ObjectDoesNotExist, e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)
