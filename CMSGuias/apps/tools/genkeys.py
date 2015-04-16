@@ -11,7 +11,7 @@ from CMSGuias.apps.logistica.models import Cotizacion, Compra, ServiceOrder
 from CMSGuias.apps.ventas.models import Proyecto
 from CMSGuias.apps.home.models import Brand, Model, GroupMaterials, TypeGroup
 from CMSGuias.apps.operations.models import Deductive, Letter, PreOrders
-
+from CMSGuias.apps.ventas.budget.models import AnalysisGroup
 
 ### format date str
 __date_str = '%Y-%m-%d'
@@ -20,7 +20,7 @@ __year_str = '%y' # 'AA'
 
 
 def __init__():
-    return "MSG => select key generator"
+    return 'MSG => select key generator'
 
 def GenerateIdOrders():
     id = None
@@ -336,7 +336,7 @@ def generatePreOrdersId():
         id = '%s%i%s'%('PRO',yn, '{:0>5d}'.format(1))
     return id
 
-def generateAnalysis(init=''):
+def generateAnalysis():
     id = None
     try:
         code = Analysis.objects.filter(analysis_id__startswith='AP%s'%init)
@@ -360,13 +360,14 @@ def generateAnalysis(init=''):
 def generateGroupAnalysis():
     id = None
     try:
-        code = CMSGuias.apps.ventas.budget.models.AnalysisGroup.objects.latest('register')
-        counter = 0
+        code = AnalysisGroup.objects.latest('register')
         if code.agroup_id:
-            counter = (counter + int(code.agroup_id[2:]))
+            print code.agroup_id
+            counter = int(code.agroup_id[2:])
+            counter += 1
         else:
             counter = 1
-        id = '%s%s'%('AG', '{:0>4d}'.format(counter))
+        id = '%s%s'%('AG', '{:0>3d}'.format(counter))
     except ObjectDoesNotExist, e:
-        raise e
+        id = '%s%s'%('AG', '{:0>3d}'.format(1))
     return id

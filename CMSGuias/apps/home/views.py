@@ -600,7 +600,7 @@ class DetailsGMaterials(JSONResponseMixin, View):
                                             'tgroup': x.tgroup.typeg
                                             }
                                             for x in details]
-                        print details, 'details'
+                        # print details, 'details'
                         context['status'] = True
                     if 'listDetails' in request.GET:
                         context['details'] = [

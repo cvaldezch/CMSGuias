@@ -1,24 +1,30 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from django.db import models
 
 from audit_log.models.fields import LastUserField
 from audit_log.models.managers import AuditLog
 
 from CMSGuias.apps.home.models import Materiale, Unidade, Cargo, Tools
-from CMSGuias.apps.tools.genkeys import generateGroupAnalysis
 
 
 class AnalysisGroup(models.Model):
-    agroup_id = models.CharField(max_length=5, default=generateGroupAnalysis(), primary_key=True)
+    agroup_id = models.CharField(max_length=5, primary_key=True)
     name = models.CharField(max_length=255)
-    register = models.DateField(auto_now=True)
+    register = models.DateTimeField(auto_now=True)
     flag = models.BooleanField(default=True)
 
     class Meta():
         ordering = ['register']
 
+    def __unicode__(self):
+        return '%s %s'%(self.agroup_id, self.name)
+
 
 class Analysis(models.Model):
     analysis_id = models.CharField(max_length=8, primary_key=True)
+    group = models.ForeignKey(AnalysisGroup, to_field='agroup_id')
     name = models.CharField(max_length=255, null=False)
     unit = models.ForeignKey(Unidade, to_field='unidad_id')
     performance = models.FloatField()

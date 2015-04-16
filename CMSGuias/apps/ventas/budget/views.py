@@ -8,6 +8,7 @@ import json
 from django.db.models import Q, Count, Sum
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 # from django.contrib.auth.mod import User
 from django.contrib.auth.decorators import login_required
@@ -39,12 +40,41 @@ class JSONResponseMixin(object):
     def convert_context_to_json(self, context):
         return simplejson.dumps(context, encoding='utf-8')
 
+class addAnalysisGroup(CreateView):
+    model = AnalysisGroup
+    form_class = addAnalysisGroupForm
+    template_name = 'budget/addanalysisgroup.html'
+    success_url = reverse_lazy('addanalysisgroup')
+
+    def form_valid(self, form):
+        if not self.model.objects.filter(name=form.instance.name.upper()).count():
+            form.instance.agroup_id = genkeys.generateGroupAnalysis()
+            form.instance.name = form.instance.name.upper()
+        else:
+            context = dict()
+            context['status'] = False
+            context['raise'] = 'Error ya existe.'
+            return render(self.request ,self.template_name, context)
+        return super(addAnalysisGroup, self).form_valid(form)
+
+    def form_invalid(self, form):
+        context = dict()
+        context['status'] = False
+        context['raise'] = 'Error al Guardar cambios, %s'%form
+        return HttpResponse(simplejson.dumps(context), mimetype='application/json')
+
+class AnalysisGroupList(TemplateView):
+    def get_context_data(self, **kwargs):
+        context = super(AnalysisGroup, self).get_context_data(**kwargs)
+        return context
+
 class NewAnalystPrices(JSONResponseMixin, TemplateView):
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
         context['unit'] = Unidade.objects.filter(flag=True)
+        context['group'] = AnalysisGroup.objects.filter(flag=True)
         return render(request, 'budget/analysis.html', context)
 
     @method_decorator(login_required)
@@ -69,3 +99,5 @@ class NewAnalystPrices(JSONResponseMixin, TemplateView):
                 context['raise'] = str(e)
                 context['status'] = False
             return self.render_to_json_response(context)
+
+
