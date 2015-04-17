@@ -63,10 +63,20 @@ class addAnalysisGroup(CreateView):
         context['raise'] = 'Error al Guardar cambios, %s'%form
         return HttpResponse(simplejson.dumps(context), mimetype='application/json')
 
-class AnalysisGroupList(TemplateView):
-    def get_context_data(self, **kwargs):
-        context = super(AnalysisGroup, self).get_context_data(**kwargs)
-        return context
+class AnalysisGroupList(JSONResponseMixin, TemplateView):
+
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'list' in request.GET:
+                    context['list'] = list(AnalysisGroup.objects.filter(flag=True).values('agroup_id', 'name').order_by('name'))
+                    context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = str(e)
+                context['status'] = False
+                print context
+            return self.render_to_json_response(context)
 
 class NewAnalystPrices(JSONResponseMixin, TemplateView):
 

@@ -7,7 +7,7 @@ from .views import *
 
 groupAnalysis = patterns('',
     url(r'^add/$', addAnalysisGroup.as_view(), name='addanalysisgroup'),
-    #url(r'^list/$', AnalysisGroup.as_view(), name='listanalysisgroup'),
+    url(r'^list/$', AnalysisGroupList.as_view(), name='listanalysisgroup'),
 )
 
 budget_urls = patterns('',

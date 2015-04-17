@@ -75,82 +75,148 @@
                     Analisis de Precio
                 </h3>
             </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label class="control-label">Tipo</label>
+            <form action="#" method="post" id="registration">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label class="control-label">Tipo</label>
+                                <div class="input-group">
+                                    <select name="group" id="" class="form-control input-sm" data-validation="required" data-validation-error-msg="Debe de seleccionar un grupo.">
+                                        <option value="">--Select--</option>
+                                        {% for x in group %}
+                                            <option value="{{ x.agroup_id }}">{{ x.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <span class="input-group-btn">
+                                        <a href="{% url 'addanalysisgroup' %}" target="popup" class="btn btn-sm btn-default agroup">
+                                            <span class="fa fa-plus"></span>
+                                        </a>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label">Descripción <small>(<span id="pres-max-length">255</span> caracteres restantes.)</small></label>
+                                <textarea name="name" id="" rows="3" class="form-control input-sm" rows="1" data-validation="required" data-validation-error-msg="Ingrese una Descripción"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Unidad</label>
                             <div class="input-group">
-                                <select name="" id="" class="form-control input-sm">
+                                <select name="unit" class="form-control input-sm" data-validation="required" data-validation-error-msg="Debe de seleccionar una Unidad.">
                                     <option value="">--Select--</option>
-                                    {% for x in group %}
-                                        <option value="{{ x.agroup_id }}">{{ x.name }}</option>
+                                    {% for x in unit %}
+                                        <option value="{{ x.unidad_id }}">{{ x.uninom }}</option>
                                     {% endfor %}
                                 </select>
                                 <span class="input-group-btn">
-                                    <a href="{% url 'addanalysisgroup' %}" target="popup" class="btn btn-sm btn-default" onclick=window.open('/sales/budget/analysis/group/add/','name','width=600,height=400')>
+                                    <a href="{% url 'unit_add' %}" target="popup" class="btn btn-default btn-sm ounit">
                                         <span class="fa fa-plus"></span>
                                     </a>
                                 </span>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label class="control-label">Descripción</label>
-                            <textarea name="" id="" rows="3" class="form-control input-sm" rows="1"></textarea>
+                        <div class="col-md-4">
+                            <label class="control-label">Rendimiento</label>
+                            <div class="input-group">
+                                <input type="number" name="performance" class="form-control input-sm" step="0.10" min="0" data-validation="number" data-validation-allowing="float" data-validation-error-msg="Debe de ingresar un rendimiento.">
+                                <span class="input-group-addon">x día.</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="control-label">Unidad</label>
-                        <div class="input-group">
-                            <select name="unit" class="form-control input-sm">
-                                <option value="">--Select--</option>
-                                {% for x in unit %}
-                                    <option value="{{ x.unidad_id }}">{{ x.uninom }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="input-group-btn">
-                                <button class="btn btn-default btn-sm">
-                                    <span class="fa fa-plus"></span>
-                                </button>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="control-label">Rendimiento</label>
-                        <div class="input-group">
-                            <input type="number" class="form-control input-sm" step="0.10" min="0">
-                            <span class="input-group-addon">
-                                x día.
-                            </span>
-                        </div>
+                        {% csrf_token %}
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default btn-sm pull-left" data-dismiss="modal">
-                    <span class="fa fa-times"></span>
-                    Salir
-                </button>
-                <button type="button" class="btn btn-warning btn-sm text-black">
-                    <span class="fa fa-save"></span>
-                    Añadir Analisis
-                </button>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-sm pull-left" data-dismiss="modal">
+                        <span class="fa fa-times"></span>
+                        Salir
+                    </button>
+                    <button type="submit" class="btn btn-warning btn-sm text-black btn-saveAnalysis">
+                        <span class="fa fa-save"></span>
+                        Añadir Analisis
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 <!-- endblock -->
 <!-- script -->
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script>
 <script>
-    var showAnalysis;
+    var showAnalysis, openGroup, openUnit, saveAnalysis;
     $(function(){
+        $('[name=name]').restrictLength( $('#pres-max-length') );
         $(".showAnalysis").on("click", showAnalysis);
+        $(".agroup").on("click", openGroup);
+        $(".ounit").on("click", openUnit);
+        $(".btn-saveAnalysis").on("click", saveAnalysis);
     });
     showAnalysis = function()
     {
         $("#manalysis").modal("show");
+    }
+    openGroup = function()
+    {
+        var url = $(this).attr("href");
+        win = window.open(url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600")
+        interval = window.setInterval(function(){
+            if (win == null || win.closed) {
+                window.clearInterval(interval);
+                var data = new Object();
+                data.list = true;
+                $.getJSON("/sales/budget/analysis/group/list/", data, function(response){
+                    if (response.status) {
+                        $group = $("[name=group]")
+                        $group.empty()
+                        Mustache.tags = new Array("[[","]]");
+                        $group.html(Mustache.render("[[#list]]<option value=\"[[agroup_id]]\">[[ name ]]</option>[[/list]]", response));
+                    };
+                });
+            };
+        }, 1000);
+        return win;
+    }
+    openUnit = function()
+    {
+        var url = $(this).attr("href");
+        win = window.open(url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600")
+        interval = window.setInterval(function(){
+            if (win == null || win.closed) {
+                window.clearInterval(interval);
+                var data = new Object();
+                data.list = true;
+                $.getJSON("/unit/list/", data, function(response){
+                    if (response.status) {
+                        $group = $("[name=unit]")
+                        $group.empty()
+                        Mustache.tags = new Array("[[","]]");
+                        $group.html(Mustache.render("[[#unit]]<option value=\"[[unidad_id]]\">[[ uninom ]]</option>[[/unit]]", response));
+                    };
+                });
+            };
+        }, 1000);
+        return win;
+    }
+    saveAnalysis = function(event)
+    {
+        $.validate({
+            form: "#registration",
+            errorMessagePosition : 'top',
+            onError: function(){
+                //$().toastmessage("showWarningToast", "Error en el formulario, invalido.");
+                //console.log('invalid');
+                return false;
+            },
+            onSuccess: function(){
+                event.preventDefault();
+                console.log("valid");
+                return false;
+            }
+        });
     }
 </script>
 {% endblock content %}

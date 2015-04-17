@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from datetime import datetime
 
 from django.db import models
 
@@ -12,7 +13,7 @@ from CMSGuias.apps.home.models import Materiale, Unidade, Cargo, Tools
 class AnalysisGroup(models.Model):
     agroup_id = models.CharField(max_length=5, primary_key=True)
     name = models.CharField(max_length=255)
-    register = models.DateTimeField(auto_now=True)
+    register = models.DateTimeField(auto_now=True, default=datetime.today())
     flag = models.BooleanField(default=True)
 
     class Meta():
@@ -28,7 +29,7 @@ class Analysis(models.Model):
     name = models.CharField(max_length=255, null=False)
     unit = models.ForeignKey(Unidade, to_field='unidad_id')
     performance = models.FloatField()
-    register = models.DateField(auto_now=True)
+    register = models.DateTimeField(auto_now=True, default=datetime.today())
     flag = models.BooleanField(default=True)
 
     audit_log = AuditLog()

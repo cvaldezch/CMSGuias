@@ -339,10 +339,8 @@ def generatePreOrdersId():
 def generateAnalysis():
     id = None
     try:
-        code = Analysis.objects.filter(analysis_id__startswith='AP%s'%init)
-        latest('register')
+        code = Analysis.objects.latest('register')
         id = code['max']
-        yn = int(datetime.datetime.today().strftime(__year_str))
         if id is not None:
             yy = int(id[2:4])
             counter = int(id[4:10])
@@ -362,7 +360,6 @@ def generateGroupAnalysis():
     try:
         code = AnalysisGroup.objects.latest('register')
         if code.agroup_id:
-            print code.agroup_id
             counter = int(code.agroup_id[2:])
             counter += 1
         else:

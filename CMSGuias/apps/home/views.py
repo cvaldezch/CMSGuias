@@ -733,7 +733,6 @@ class MaterialsKeep(JSONResponseMixin, TemplateView):
                         form = MaterialsForm(request.POST, instance=obj)
                     else:
                         form = MaterialsForm(request.POST)
-                    print form
                     if form.is_valid():
                         form.save()
                         context['status'] = True
@@ -747,3 +746,40 @@ class MaterialsKeep(JSONResponseMixin, TemplateView):
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
+
+class UnitAdd(CreateView):
+    model = Unidade
+    form_class = addUnidadeForm
+    template_name = 'home/crud/unitadd.html'
+    success_url = reverse_lazy('unit_add')
+
+    def form_valid(self, form):
+        if not self.model.objects.filter(unidad_id__istartswith=form.instance.uninom.upper()).count():
+            form.instance.unidad_id = form.instance.uninom
+            form.instance.uninom = form.instance.uninom.upper()
+        else:
+            context = dict()
+            context['status'] = False
+            context['raise'] = 'Error ya existe.'
+            return render(self.request ,self.template_name, context)
+        return super(UnitAdd, self).form_valid(form)
+
+    def form_invalid(self, form):
+        context = dict()
+        context['status'] = False
+        context['raise'] = 'Error al Guardar cambios, %s'%form
+        return HttpResponse(simplejson.dumps(context), mimetype='application/json')
+
+class Unit(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if 'list' in request.GET:
+                context['unit'] = list(Unidade.objects.filter(flag=True).values('unidad_id', 'uninom').order_by('uninom'))
+                context['status'] = True
+        except ObjectDoesNotExist, e:
+            context['raise'] = str(e)
+            context['status'] = False
+        return self.render_to_json_response(context)

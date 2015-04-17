@@ -127,3 +127,9 @@ class GMaterialsForm(forms.ModelForm):
 class MaterialsForm(forms.ModelForm):
     class Meta:
         model = Materiale
+
+# Unidades
+class addUnidadeForm(forms.ModelForm):
+    class Meta:
+        model = Unidade
+        exclude = {'unidad_id', 'flag'}
