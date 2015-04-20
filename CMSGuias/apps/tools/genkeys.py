@@ -11,7 +11,7 @@ from CMSGuias.apps.logistica.models import Cotizacion, Compra, ServiceOrder
 from CMSGuias.apps.ventas.models import Proyecto
 from CMSGuias.apps.home.models import Brand, Model, GroupMaterials, TypeGroup
 from CMSGuias.apps.operations.models import Deductive, Letter, PreOrders
-from CMSGuias.apps.ventas.budget.models import AnalysisGroup
+from CMSGuias.apps.ventas.budget.models import AnalysisGroup, Analysis
 
 ### format date str
 __date_str = '%Y-%m-%d'
@@ -340,19 +340,15 @@ def generateAnalysis():
     id = None
     try:
         code = Analysis.objects.latest('register')
-        id = code['max']
-        if id is not None:
-            yy = int(id[2:4])
-            counter = int(id[4:10])
-            if yn > yy:
-                counter = 1
-            else:
-                counter += 1
+        id = code.analysis_id
+        if code.analysis_id:
+            counter = int(code.analysis_id[2:])
+            counter += 1
         else:
             counter = 1
-        id = '%s%s%s'%('DC', yn.__str__(), '{:0>6d}'.format(counter))
+        id = '%s%s'%('AP', '{:0>6d}'.format(counter))
     except ObjectDoesNotExist, e:
-        raise e
+        id = '%s%s'%('AP', '{:0>6d}'.format(1))
     return id
 
 def generateGroupAnalysis():

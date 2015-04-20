@@ -18,6 +18,54 @@
         <div class="panel panel-warning">
             <div class="panel-footer">
                 Lista de Analisis de Precios
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="inline-radio">
+                                <input type="radio" name="ssearch" value="0">
+                                Código
+                            </label>
+                            <label class="inline-radio">
+                                <input type="radio" name="ssearch" value="1">
+                                Nombre
+                            </label>
+                            <label class="inline-radio">
+                                <input type="radio" name="ssearch" value="2">
+                                Grupo
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">Código</label>
+                            <input type="text" name="scode" class="form-control input-sm" disabled>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label class="control-label">Nombre</label>
+                            <input type="text" name="sname" class="form-control input-sm" disabled>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label">Grupo</label>
+                            <select name="sgroup" class="form-control input-sm" disabled>
+                                {% for x in group %}
+                                    <option value="{{ x.agroup_id }}">{{ x.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <label class="control-label">Buscar</label>
+                            <button class="btn btn-sm btn-warning btn-search">
+                                <span class="fa fa-search"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="table-responsive">
                 <table class="table table-hover table-condensed">
@@ -28,17 +76,19 @@
                             <th>Nombre</th>
                             <th>Unidad</th>
                             <th>Rendimiento</th>
+                            <th>Grupo</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for x in analyst %}
+                        {% for x in analysis %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ x.analysis_id }}</td>
                                 <td>{{ x.name }}</td>
                                 <td>{{ x.unit.uninom }}</td>
                                 <td>{{ x.performace }}</td>
+                                <td>{{ x.group.name }}</td>
                                 <td>
                                     <div class="dropup">
                                         <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true">
@@ -147,13 +197,15 @@
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script>
 <script>
-    var showAnalysis, openGroup, openUnit, saveAnalysis;
+    var showAnalysis, openGroup, openUnit, saveAnalysis, searchChange, searchAnalysis;
     $(function(){
         $('[name=name]').restrictLength( $('#pres-max-length') );
         $(".showAnalysis").on("click", showAnalysis);
         $(".agroup").on("click", openGroup);
         $(".ounit").on("click", openUnit);
         $(".btn-saveAnalysis").on("click", saveAnalysis);
+        $("[name=ssearch]").on("change", searchChange);
+        $(".btn-search").on("click", searchAnalysis);
     });
     showAnalysis = function()
     {
@@ -207,16 +259,76 @@
             form: "#registration",
             errorMessagePosition : 'top',
             onError: function(){
-                //$().toastmessage("showWarningToast", "Error en el formulario, invalido.");
-                //console.log('invalid');
                 return false;
             },
             onSuccess: function(){
                 event.preventDefault();
                 console.log("valid");
+                var context = new Object();
+                context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
+                context.analysisnew = true;
+                context.group = $("[name=group]").val();
+                context.name = $("[name=name]").val();
+                context.unit = $("[name=unit]").val();
+                context.performance = $("[name=performance]").val();
+                $.post("", context, function(response){
+                    if (response.status)
+                    {
+                        $().toastmessage("showSuccessToast", "Se guardaron los camnbios correctamente.");
+                        setTimeout(function() {
+                            location.reload();
+                        }, 2600);
+                    }else{
+                        $().toastmessage("showErrorToast", "Error al registrar analysis");
+                    }
+                }, "json");
                 return false;
             }
         });
+    }
+    searchAnalysis = function()
+    {
+        var rdo = "", context = new Object();
+        $("[name=ssearch]").each(function(){
+            if (this.checked){
+                rdo = this.value;
+            }
+        });
+        if (rdo == "0") {
+            context.code = $("[name=scode]").val();
+        }else if(rdo == "1"){
+            context.name = $("[name=sname]").val();
+        }else if(rdo == "2"){
+            context.group = $("[name=sgroup]").val();
+        };
+        context.list = true;
+        $.getJSON("", context, function(response){
+            if (response.status) {
+                var template = "[[#analysis]]<tr><td>[[ @index ]]</td><td>[[ code ]]</td><td>[[ name ]]</td><td>[[ unit ]]</td><td>[[ performance ]]</td><td>[[ group ]]</td><td><div class=\"dropup\"><button class=\"btn btn-default dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" aria-expanded=\"true\"><span class=\"caret\"></span></button><ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dropdownMenu2\"><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Action</a></li><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Another action</a></li><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Something else here</a></li><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Separated link</a></li></ul> </div></td></tr>[[/analysis]]";
+                var $tb = $("table > tbody");
+                $tb.empty();
+                Mustache.tags = new Array("[[","]]");
+                $tb.html(Mustache.render(template, response));
+            }else{
+                $().toastmessage("showErrorToast", "Error al buscar. "+response.raise);
+            };
+        });
+    }
+    searchChange = function(event)
+    {
+        if (this.value == "0") {
+            $("[name=scode]").attr("disabled", false);
+            $("[name=sname]").attr("disabled", true);
+            $("[name=sgroup]").attr("disabled", true);
+        }else if(this.value == "1"){
+            $("[name=scode]").attr("disabled", true);
+            $("[name=sname]").attr("disabled", false);
+            $("[name=sgroup]").attr("disabled", true);
+        }else if(this.value == "2"){
+            $("[name=scode]").attr("disabled", true);
+            $("[name=sname]").attr("disabled", true);
+            $("[name=sgroup]").attr("disabled", false);
+        };
     }
 </script>
 {% endblock content %}

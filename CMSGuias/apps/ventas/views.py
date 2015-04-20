@@ -374,7 +374,7 @@ class ProjectManager(JSONResponseMixin, View):
                         if search.validKey(request.POST.get('passwd'),kwargs['project'],'approved',request.user.get_profile().empdni_id):
                             #if user.user.is_superuser:
                             pro = Proyecto.objects.get(pk=kwargs['project'])
-                            pro.approved_id = request.POST.get('admin')
+                            pro.approved_id = request.user.get_profile().empdni_id
                             pro.status = 'AC'
                             pro.save()
                             sub = Subproyecto.objects.filter(proyecto_id=kwargs['project'])

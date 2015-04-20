@@ -83,28 +83,60 @@ class NewAnalystPrices(JSONResponseMixin, TemplateView):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
+        if request.is_ajax():
+            try:
+                if 'list' in request.GET:
+                    analysis = None
+                    if 'name' in request.GET:
+                        analysis = Analysis.objects.filter(name__istartswith=request.GET['name']).order_by('name')
+                    if 'code' in request.GET:
+                        analysis = Analysis.objects.filter(pk=request.GET['code'])
+                    if 'group' in request.GET:
+                        analysis = Analysis.objects.filter(group_id=request.GET['group']).order_by('name')
+                    if analysis:
+                        context['analysis'] = [
+                            {
+                                'code': x.analysis_id,
+                                'name': x.name,
+                                'unit': x.unit.uninom,
+                                'performance': x.performance,
+                                'group': x.group.name
+                            }
+                            for x in analysis
+                        ]
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+                        context['raise'] = 'No se han encontrado resultados para la busqueda.'
+            except ObjectDoesNotExist, e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)
+        context['analysis'] = Analysis.objects.filter().order_by('-register')
         context['unit'] = Unidade.objects.filter(flag=True)
         context['group'] = AnalysisGroup.objects.filter(flag=True)
         return render(request, 'budget/analysis.html', context)
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
+        context = dict()
         if request.is_ajax():
             try:
                 # Save new Analysis
                 if 'analysisnew' in request.POST:
                     an = Analysis()
-                    form = addAnalysisForm()
+                    form = addAnalysisForm(request.POST)
                     if form.is_valid():
                         add = form.save(commit=False)
-                        key = genkeys.generateAnalyisis()
+                        key = genkeys.generateAnalysis()
                         add.analysis_id = key
-                        add.flag = True;
+                        add.flag = True
                         add.save()
+                        context['key'] = key
                         context['status'] = True
                     else:
                         context['status'] = False
-                        context['raise'] = ''
+                        context['raise'] = 'Error de Fields invalid.'
             except ObjectDoesNotExist, e:
                 context['raise'] = str(e)
                 context['status'] = False
