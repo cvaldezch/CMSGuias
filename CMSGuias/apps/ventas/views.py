@@ -293,7 +293,10 @@ class ProjectManager(JSONResponseMixin, View):
             context['method'] = FormaPago.objects.filter(flag=True)
             context['unit'] = Unidade.objects.filter(flag=True)
             context['conf'] = Configuracion.objects.get(periodo=globalVariable.get_year)
-            context['closure'] = CloseProject.objects.get(project_id=kwargs['project'])
+            try:
+                context['closure'] = CloseProject.objects.get(project_id=kwargs['project'])
+            except ObjectDoesNotExist, e:
+                pass
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)

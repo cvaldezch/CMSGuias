@@ -3,9 +3,9 @@ var getDataRUC;
 
 $(document).ready(function() {
   $("input,select").attr("class", "form-control input-sm");
-  $("select[name=pais]").on("change", getDepartamentOption);
-  $("select[name=departamento]").on("change", getProvinceOption);
-  $("select[name=provincia]").on("change", getDistrictOption);
+  $("select[name=pais]").on("click", getDepartamentOption);
+  $("select[name=departamento]").on("click", getProvinceOption);
+  $("select[name=provincia]").on("click", getDistrictOption);
   $("button.btn-search").on("click", getDataRUC);
   setTimeout(function() {
     return $("input[name=proveedor_id]").keyup(function(event) {

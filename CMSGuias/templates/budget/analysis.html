@@ -87,18 +87,17 @@
                                 <td>{{ x.analysis_id }}</td>
                                 <td>{{ x.name }}</td>
                                 <td>{{ x.unit.uninom }}</td>
-                                <td>{{ x.performace }}</td>
+                                <td>{{ x.performance }}</td>
                                 <td>{{ x.group.name }}</td>
                                 <td>
-                                    <div class="dropup">
-                                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true">
+                                    <div class="dropdown">
+                                        <button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown" aria-expanded="true">
                                             <span class="caret"></span>
                                         </button>
-                                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
-                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Action</a></li>
-                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Another action</a></li>
-                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Something else here</a></li>
-                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Separated link</a></li>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'detailsamalysis' x.analysis_id %}">Detalle</a></li>
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Editar</a></li>
+                                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Eliminar</a></li>
                                           </ul>
                                     </div>
                                 </td>
@@ -302,9 +301,11 @@
             context.group = $("[name=sgroup]").val();
         };
         context.list = true;
+        var count = 1;
         $.getJSON("", context, function(response){
             if (response.status) {
-                var template = "[[#analysis]]<tr><td>[[ @index ]]</td><td>[[ code ]]</td><td>[[ name ]]</td><td>[[ unit ]]</td><td>[[ performance ]]</td><td>[[ group ]]</td><td><div class=\"dropup\"><button class=\"btn btn-default dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" aria-expanded=\"true\"><span class=\"caret\"></span></button><ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dropdownMenu2\"><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Action</a></li><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Another action</a></li><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Something else here</a></li><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Separated link</a></li></ul> </div></td></tr>[[/analysis]]";
+                response.index = function(){return count++;}
+                var template = "[[#analysis]]<tr><td>[[ index ]]</td><td>[[ code ]]</td><td>[[ name ]]</td><td>[[ unit ]]</td><td>[[ performance ]]</td><td>[[ group ]]</td><td><div class=\"dropdown\"><button class=\"btn btn-default dropdown-toggle btn-xs\" type=\"button\" data-toggle=\"dropdown\" aria-expanded=\"true\"><span class=\"caret\"></span></button><ul class=\"dropdown-menu\" role=\"menu\"><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Detalle</a></li><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Editar</a></li><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Eliminar</a></li></ul></div></td></tr>[[/analysis]]";
                 var $tb = $("table > tbody");
                 $tb.empty();
                 Mustache.tags = new Array("[[","]]");

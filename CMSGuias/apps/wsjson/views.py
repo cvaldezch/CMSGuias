@@ -500,7 +500,7 @@ def post_cancel_orders(request):
     if request.method == 'POST':
         data = {}
         try:
-            obj = Pedido.objects.get(pk=request.POST.get('oid'))
+            obj = Pedido.objects.get(pedido_id=request.POST.get('oid'))
             try:
                 det = Detpedido.objects.filter(pedido_id=request.POST.get('oid'))
                 for x in det:
@@ -520,8 +520,8 @@ def post_cancel_orders(request):
                     x.tag = '3'
                     x.flag = False
                     x.save()
-            except ObjectDoesNotExist:
-                raise
+            except ObjectDoesNotExist, e:
+                data['raise'] = str(e)
             obj.status = 'AN'
             obj.flag = False
             obj.save()

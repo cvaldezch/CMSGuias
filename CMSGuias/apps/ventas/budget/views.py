@@ -78,7 +78,7 @@ class AnalysisGroupList(JSONResponseMixin, TemplateView):
                 print context
             return self.render_to_json_response(context)
 
-class NewAnalystPrices(JSONResponseMixin, TemplateView):
+class AnalystPrices(JSONResponseMixin, TemplateView):
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
@@ -112,7 +112,7 @@ class NewAnalystPrices(JSONResponseMixin, TemplateView):
                 context['raise'] = str(e)
                 context['status'] = False
             return self.render_to_json_response(context)
-        context['analysis'] = Analysis.objects.filter().order_by('-register')
+        context['analysis'] = Analysis.objects.filter(flag=True).order_by('-register')
         context['unit'] = Unidade.objects.filter(flag=True)
         context['group'] = AnalysisGroup.objects.filter(flag=True)
         return render(request, 'budget/analysis.html', context)
@@ -142,4 +142,21 @@ class NewAnalystPrices(JSONResponseMixin, TemplateView):
                 context['status'] = False
             return self.render_to_json_response(context)
 
+class AnalysisDetails(JSONResponseMixin, TemplateView):
 
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        try:
+            context = dict()
+            if request.is_ajax():
+                try:
+                    pass
+                except ObjectDoesNotExist, e:
+                    context['raise'] = str(e)
+            return render(request, 'budget/analysisdetails.html', context)
+            context['analysis'] = Analysis.objects.get(pk=kwargs['analysis'])
+            # context['materials'] = APMaterials.objects.filter(analysis_id=kwargs['analysis']).order_by()
+            # context['manpower'] = APManPower.objects.filter(analysis_id=kwargs['analysis']).order_by()
+            # context['tools'] = APTools.objects.filter(analysis_id=kwargs['analysis']).order_by()
+        except TemplateDoesNotExist, e:
+            raise Http404(e)

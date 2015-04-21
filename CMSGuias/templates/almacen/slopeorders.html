@@ -43,7 +43,7 @@
 				if (response.status) {
 					location.reload()
 				}else{
-					$().toastmessage("showWarningToast","No se a podido anular el pedido.");
+					$().toastmessage("showWarningToast","No se a podido anular el pedido. "+response.raise);
 				};
 			});
 		};
