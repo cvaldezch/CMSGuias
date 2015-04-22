@@ -1,4 +1,10 @@
 {% extends "base.html" %}
+{% block title %}
+    Analysis Details
+{% endblock title %}
+{% block menu %}
+    {% include "menus/sale.htm" %}
+{% endblock menu %}
 {% block content %}
 <div class="container">
     <div class="well">
@@ -6,8 +12,10 @@
             Detalle de Analisis de Precio
         </h3>
         <div class="panel panel-warning">
-            <!-- <div class="panel-footer">
-            </div> -->
+            <div class="panel-footer">
+                    <label>Código</label><span>{{ analysis.analysis_id }}</span>
+                    <label>Nombre</label><span>{{ analysis.name }}</span>
+            </div>
             <div role="tabpanel">
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" role="tablist">
@@ -18,23 +26,77 @@
                         <a href="#manpower" aria-controls="manpower" role="tab" data-toggle="tab">MANO DE OBRA</a>
                     </li>
                     <li role="presentation">
-                        <a href="#tools`" aria-controls="tools`" role="tab" data-toggle="tab">HERRAMIENTAS</a>
+                        <a href="#tools" aria-controls="tools" role="tab" data-toggle="tab">HERRAMIENTAS</a>
                     </li>
                 </ul>
                 <!-- Tab panes -->
                 <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="materials">
+                    <div role="tabpanel" class="tab-pane" id="materials">
+                        <div class="panel panel-info">
+                            <div class="panel-footer">
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-default" type="button">
+                                        <span>+ Material</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <!-- div add materials -->
+                                <div class="materialsadd">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label">Materiales</label>
+                                                <select name="materials" id="materials" class="form-control chosen-select">
+                                                    <option value=""></option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label">Medida</label>
+                                                <select name="measure" id="" class="form-control chosen-select"></select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="alert alert-block alert-success" name="summary">
 
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- List mateirals -->
+                            <div class="table-responsive">
+                                <table class="table table-condensed table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th>Código</th>
+                                            <th>Nombre</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="manpower">
-
                     </div>
-                    <div role="tabpanel" class="tab-pane" id="tools`">
-
+                    <div role="tabpanel" class="tab-pane" id="tools">
                     </div>
                 </div>
+            </div>
+            <div class="panel-body">
             </div>
         </div>
     </div>
 </div>
+<!-- Loads scripts -->
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="{{ MEDIA_URL }}js/chosen.jquery.min.js"></script>
+<script src="{{ MEDIA_URL }}js/budget/detailsAnalysis.js"></script>
+<!-- Lodas styles -->
+<link rel="stylesheet" href="{{ MEDIA_URL }}css/chosen.css">
 {% endblock content %}

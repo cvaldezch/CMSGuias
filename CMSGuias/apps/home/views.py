@@ -688,7 +688,7 @@ class MaterialsKeep(JSONResponseMixin, TemplateView):
                         'finished': x.matacb,
                         'area': x.matare
                     }
-                    for x in Materiale.objects.filter(pk__startswith=request.GET.get('code'))
+                    for x in Materiale.objects.filter(materiales_id__startswith=request.GET.get('code'))
                     ]
                     context['status'] = True
                 if 'desc' in request.GET:
@@ -703,6 +703,44 @@ class MaterialsKeep(JSONResponseMixin, TemplateView):
                     }
                     for x in Materiale.objects.filter(matnom__icontains=request.GET.get('desc'))
                     ]
+                    context['status'] = True
+                # Ajax method for json
+                if 'searchName' in request.GET:
+                    name = Materiale.objects.filter(matnom__icontains=request.GET['name']).distinct('matnom').order_by('matnom')
+                    context['names'] = [
+                        {
+                            'name': x.matnom
+                        }
+                        for x in name
+                    ]
+                    context['status'] = True
+                if 'searchNamebyCode' in request.GET:
+                    name = Materiale.objects.filter(materiales_id=request.GET['scode'])
+                    context['names'] = [
+                        {
+                            'name': x.matnom
+                        }
+                        for x in name
+                    ]
+                    context['status'] = True
+                if 'searchMeter' in request.GET:
+                    meter = Materiale.objects.filter(matnom__icontains=request.GET['name']).distinct('matmed').order_by('matmed')
+                    context['meter'] = [
+                        {
+                            'measure': x.matmed,
+                            'code': x.materiales_id
+                        }
+                        for x in meter
+                    ]
+                    context['status'] = True
+                if 'summary' in request.GET:
+                    material = Materiale.objects.get(materiales_id=request.GET['scode'])
+                    context['summary'] = {
+                        'materiales_id' : material.materiales_id,
+                        'matnom': material.matnom,
+                        'unidad__uninom': material.unidad.uninom
+                    }
+                    #list(material.values('materiales_id','matnom','unidad__uninom'))
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()

@@ -154,8 +154,8 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)
             return render(request, 'budget/analysisdetails.html', context)
-            context['analysis'] = Analysis.objects.get(pk=kwargs['analysis'])
-            # context['materials'] = APMaterials.objects.filter(analysis_id=kwargs['analysis']).order_by()
+            context['analysis'] = Analysis.objects.get(analysis_id=kwargs['analysis'])
+            context['materials'] = APMaterials.objects.filter(analysis_id=kwargs['analysis']).order_by()
             # context['manpower'] = APManPower.objects.filter(analysis_id=kwargs['analysis']).order_by()
             # context['tools'] = APTools.objects.filter(analysis_id=kwargs['analysis']).order_by()
         except TemplateDoesNotExist, e:
