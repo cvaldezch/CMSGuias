@@ -13,8 +13,16 @@
         </h3>
         <div class="panel panel-warning">
             <div class="panel-footer">
-                    <label>Código</label><span>{{ analysis.analysis_id }}</span>
-                    <label>Nombre</label><span>{{ analysis.name }}</span>
+                <dl class="dl-horizontal">
+                    <dt>Código</dt>
+                    <dd>{{ analysis.analysis_id }}</dd>
+                    <dt>Nombre</dt>
+                    <dd>{{ analysis.name }}</dd>
+                    <dt>Unidad</dt>
+                    <dd>{{ analysis.unit.uninom }}</dd>
+                    <dt>Rendimiento</dt>
+                    <dd>{{ analysis.performance|safe }}</dd>
+                </dl>
             </div>
             <div role="tabpanel">
                 <!-- Nav tabs -->
@@ -35,8 +43,17 @@
                         <div class="panel panel-info">
                             <div class="panel-footer">
                                 <div class="btn-group">
-                                    <button class="btn btn-sm btn-default" type="button">
+                                    <button class="btn btn-sm btn-default bshowaddmat" type="button">
                                         <span>+ Material</span>
+                                    </button>
+                                    <button class="btn btn-sm btn-default bdelmat" type="button">
+                                        <span>+ Eliminar Todo</span>
+                                    </button>
+                                    <button class="btn btn-sm btn-default bshownewmat" type="button">
+                                        <span>+ Nuevo Material</span>
+                                    </button>
+                                    <button class="btn btn-sm btn-default bcopymat" type="button">
+                                        <span>+ Copiar Materiales</span>
                                     </button>
                                 </div>
                             </div>
@@ -47,9 +64,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label class="control-label">Materiales</label>
-                                                <select name="materials" id="materials" class="form-control chosen-select">
-                                                    <option value=""></option>
-                                                </select>
+                                                <select name="materials" id="materials" class="form-control chosen-select"></select>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -59,22 +74,39 @@
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="alert alert-block alert-success" name="summary">
-
-                                            </div>
+                                            <div class="alert alert-block alert-warning" name="summary"></div>
                                         </div>
-                                        <div class="col-md-6"></div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="controll-label">Cantidad</label>
+                                                <input type="number" name="mquantity" step="0.10" min="0" class="form-control input-sm">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="controll-label">Precio</label>
+                                                <input type="number" name="mprice" step="0.10" min="0" class="form-control input-sm">
+                                            </div>
+                                            <button type="button" class="btn btn-default btn-sm">
+                                                <span class="fa fa-plus"></span>
+                                                Agregar
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <!-- List mateirals -->
                             <div class="table-responsive">
-                                <table class="table table-condensed table-hover">
+                                <table class="table table-condensed table-hover tmaterials">
                                     <thead>
                                         <tr>
                                             <th>Item</th>
                                             <th>Código</th>
                                             <th>Nombre</th>
+                                            <th>Und</th>
+                                            <th>Cantidad</th>
+                                            <th>Precio</th>
+                                            <th>Parcial</th>
+                                            <th>Editar</th>
+                                            <th>Eliminar</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -88,8 +120,8 @@
                     </div>
                 </div>
             </div>
-            <div class="panel-body">
-            </div>
+            <!-- <div class="panel-body">
+            </div> -->
         </div>
     </div>
 </div>

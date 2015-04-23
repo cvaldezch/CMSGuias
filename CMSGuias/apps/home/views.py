@@ -21,6 +21,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from CMSGuias.apps.home.forms import signupForm, logininForm
 from CMSGuias.apps.tools.redirectHome import RedirectModule
 from CMSGuias.apps.tools import genkeys
+from CMSGuias.apps.logistica.models import Compra, DetCompra
 from .models import *
 from .forms import *
 
@@ -735,12 +736,18 @@ class MaterialsKeep(JSONResponseMixin, TemplateView):
                     context['status'] = True
                 if 'summary' in request.GET:
                     material = Materiale.objects.get(materiales_id=request.GET['scode'])
+                    price = None
+                    try:
+                        price = DetCompra.objects.filter(materiales_id=material.materiales_id).latest('compra__registrado').precio
+                    except ObjectDoesNotExist, e:
+                        price = 0
                     context['summary'] = {
-                        'materiales_id' : material.materiales_id,
-                        'matnom': material.matnom,
-                        'unidad__uninom': material.unidad.uninom
+                        'materials' : material.materiales_id,
+                        'name': material.matnom,
+                        'measure': material.matmed,
+                        'unit': material.unidad.uninom,
+                        'price': price
                     }
-                    #list(material.values('materiales_id','matnom','unidad__uninom'))
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()

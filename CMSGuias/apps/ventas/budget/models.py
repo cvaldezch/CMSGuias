@@ -52,6 +52,10 @@ class APMaterials(models.Model):
     class Meta:
         ordering = ['materials']
 
+    @property
+    def partial(self):
+        return (self.quantity * float(self.price))
+
     def __unicode__(self):
         return '%s %f %d'%(self.materials, self.quantity, self.price)
 

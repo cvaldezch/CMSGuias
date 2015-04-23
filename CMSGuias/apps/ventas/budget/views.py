@@ -153,10 +153,11 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                     pass
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)
-            return render(request, 'budget/analysisdetails.html', context)
+                return self.render_to_json_response(context)
             context['analysis'] = Analysis.objects.get(analysis_id=kwargs['analysis'])
             context['materials'] = APMaterials.objects.filter(analysis_id=kwargs['analysis']).order_by()
             # context['manpower'] = APManPower.objects.filter(analysis_id=kwargs['analysis']).order_by()
             # context['tools'] = APTools.objects.filter(analysis_id=kwargs['analysis']).order_by()
+            return render(request, 'budget/analysisdetails.html', context)
         except TemplateDoesNotExist, e:
             raise Http404(e)

@@ -43,6 +43,7 @@ class Compra(models.Model):
     status = models.CharField(max_length=2, default='PE')
     deposito = models.FileField(upload_to=url, null=True, blank=True)
     discount = models.FloatField(default=0, blank=True)
+    # exchnage = models.DecimalField(max_digist=2, place_decimals=3)
     flag = models.BooleanField(default=True)
 
     class Meta:
