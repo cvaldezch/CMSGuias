@@ -1068,8 +1068,8 @@ valMax = ->
     mat = $input.attr "data-mat"
     if val > max
         $input.val max
-    else if val < 1
-        $input.val 1
+    else if val < 0
+        $input.val 0.1
         id = $input.attr "data-id"
         #$input.val max
         $("tr.#{mat}nip#{id} > td").eq(0).find("input").attr "checked", false

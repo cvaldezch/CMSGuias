@@ -44,7 +44,12 @@
                             <div class="panel-footer">
                                 <div class="btn-group">
                                     <button class="btn btn-sm btn-default bshowaddmat" type="button">
-                                        <span>+ Material</span>
+                                        <span class="fa fa-plus"></span>
+                                        <span>Material</span>
+                                    </button>
+                                    <button class="btn btn-sm btn-default bmrefresh" type="button">
+                                        <span class="fa fa-refresh"></span>
+                                        <span>Actualizar</span>
                                     </button>
                                     <button class="btn btn-sm btn-default bdelmat" type="button">
                                         <span>+ Eliminar Todo</span>
@@ -85,7 +90,7 @@
                                                 <label class="controll-label">Precio</label>
                                                 <input type="number" name="mprice" step="0.10" min="0" class="form-control input-sm">
                                             </div>
-                                            <button type="button" class="btn btn-default btn-sm">
+                                            <button type="button" class="btn btn-default btn-sm btnaddmat">
                                                 <span class="fa fa-plus"></span>
                                                 Agregar
                                             </button>
@@ -97,7 +102,7 @@
                             <div class="table-responsive">
                                 <table class="table table-condensed table-hover tmaterials">
                                     <thead>
-                                        <tr>
+                                        <tr class="brand-warning">
                                             <th>Item</th>
                                             <th>Código</th>
                                             <th>Nombre</th>
@@ -125,6 +130,7 @@
         </div>
     </div>
 </div>
+{% csrf_token %}
 <!-- Loads scripts -->
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>
 <script src="{{ MEDIA_URL }}js/chosen.jquery.min.js"></script>

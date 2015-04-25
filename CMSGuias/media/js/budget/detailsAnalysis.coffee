@@ -6,6 +6,8 @@ $(document).ready ->
     $("[name=materials]").on "change", getmeasure
     $("[name=measure]").on "change", getsummary
     $(".bshowaddmat").on "click", showAddMaterial
+    $(".bmrefresh").on "click", refreshMaterials
+    $(".btnaddmat").on "click", addMaterials
     return
 
 getMaterialsAll = (event) ->
@@ -78,8 +80,12 @@ getsummary = (event) ->
 
 showAddMaterial = (event) ->
     if $(".materialsadd").is(":visible")
+        $(@).removeClass "btn-warning"
+        .addClass "btn-default"
         $(".materialsadd").hide 800
     else
+        $(@).removeClass "btn-default"
+        .addClass "btn-warning"
         $(".materialsadd").show 800
     return
 
@@ -89,22 +95,22 @@ addMaterials = (event) ->
     context.quantity = $("[name=mquantity]").val()
     context.price = $("[name=mprice]").val()
     if context.materials.length is 15
-        if context.quantity
-            if context.price
+        if context.quantity isnt ""
+            if context.price isnt ""
                 context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
                 context.addMaterials = true
                 $.post "", context, (response) ->
                     if response.status
-                        location.reload()
+                        getListMaterials()
                         return
                     else
                         $().toastmessage "showErrorToast", "Error al guardar los cambios. #{response.raise}"
                         return
                 , "json"
             else
-            $().toastmessage "showWarningToast", "Precio invalido."
+                $().toastmessage "showWarningToast", "Precio invalido."
         else
-        $().toastmessage "showWarningToast", "Cantidad invalida."
+            $().toastmessage "showWarningToast", "Cantidad invalida."
     else
         $().toastmessage "showWarningToast", "Código de material incorrecto."
     return
@@ -116,7 +122,18 @@ getListMaterials = (event) ->
         if response.status
             $tbl = $(".tmaterials tbody")
             $tbl.empty()
-            template = "{{#materials}}<tr><td>{{index}}</td><td>{{code}}</td><td>{name}</td><td>{{unit}}</td><td>{{quantity}}</td><td>{{price}}</td><td>{partial}</td><td><button class=\"btn btn-default btn-xs\"><span class=\"fa fa-edit\"></span></button></td><td><button class=\"btn btn-default btn-xs\"><span class=\"fa fa-trash\"></span></button></td></tr>{{/materials}}"
+            template = "{{#materials}}<tr><td>{{index}}</td><td>{{code}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{quantity}}</td><td>{{price}}</td><td>{{partial}}</td><td><button class=\"btn btn-default btn-xs\"><span class=\"fa fa-edit\"></span></button></td><td><button class=\"btn btn-default btn-xs\"><span class=\"fa fa-trash\"></span></button></td></tr>{{/materials}}"
+            counter = 0
+            response.index = ->
+                return counter++
+            $tbl.html Mustache.render template, response
+            return
         else
-            $().toastmessage "showErrorToast"
+            $().toastmessage "showErrorToast", "Error al Obtener la lista. #{response.raise}."
+            return
+    return
+
+refreshMaterials = (event) ->
+    getMaterialsAll()
+    getListMaterials()
     return

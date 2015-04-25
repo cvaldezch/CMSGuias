@@ -8,6 +8,7 @@ import json
 from django.db.models import Q, Count, Sum
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 # from django.contrib.auth.mod import User
@@ -38,7 +39,7 @@ class JSONResponseMixin(object):
         )
 
     def convert_context_to_json(self, context):
-        return simplejson.dumps(context, encoding='utf-8')
+        return simplejson.dumps(context, encoding='utf-8', cls=DjangoJSONEncoder)
 
 class addAnalysisGroup(CreateView):
     model = AnalysisGroup
@@ -150,9 +151,13 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
             context = dict()
             if request.is_ajax():
                 try:
-                    pass
+                    # Transaction Materials
+                    if 'listMaterials' in request.GET:
+                        context['materials'] = list(APMaterials.objects.filter(analysis_id=kwargs['analysis']).extra(select={'code':'materials_id', 'name': 'materials.matnom', 'partial': 'quantity * price'}).values('code', 'name', 'quantity', 'price', 'partial'))
+                        context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)
+                    context['status'] = False
                 return self.render_to_json_response(context)
             context['analysis'] = Analysis.objects.get(analysis_id=kwargs['analysis'])
             context['materials'] = APMaterials.objects.filter(analysis_id=kwargs['analysis']).order_by()
@@ -161,3 +166,21 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
             return render(request, 'budget/analysisdetails.html', context)
         except TemplateDoesNotExist, e:
             raise Http404(e)
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'addMaterials' in request.POST:
+                    add = APMaterials()
+                    add.analysis_id = kwargs['analysis']
+                    add.materials_id = request.POST['materials']
+                    add.quantity = request.POST['quantity']
+                    add.price = request.POST['price']
+                    add.save()
+                    context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)
