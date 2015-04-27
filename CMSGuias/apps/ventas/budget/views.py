@@ -153,14 +153,25 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                 try:
                     # Transaction Materials
                     if 'listMaterials' in request.GET:
-                        context['materials'] = list(APMaterials.objects.filter(analysis_id=kwargs['analysis']).extra(select={'code':'materials_id', 'name': 'materials.matnom', 'partial': 'quantity * price'}).values('code', 'name', 'quantity', 'price', 'partial'))
+                        context['materials'] = [
+                            {
+                                'code': x.materials_id,
+                                'name': x.materials.matnom,
+                                'measure': x.materials.matmed,
+                                'unit': x.materials.unidad.uninom,
+                                'price': x.price,
+                                'quantity': x.quantity,
+                                'partial': x.partial
+                            }
+                            for x in APMaterials.objects.filter(analysis_id=kwargs['analysis'])
+                        ]
                         context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)
                     context['status'] = False
                 return self.render_to_json_response(context)
             context['analysis'] = Analysis.objects.get(analysis_id=kwargs['analysis'])
-            context['materials'] = APMaterials.objects.filter(analysis_id=kwargs['analysis']).order_by()
+            context['materials'] = APMaterials.objects.filter(analysis_id=kwargs['analysis']).order_by('materials__matnom')
             # context['manpower'] = APManPower.objects.filter(analysis_id=kwargs['analysis']).order_by()
             # context['tools'] = APTools.objects.filter(analysis_id=kwargs['analysis']).order_by()
             return render(request, 'budget/analysisdetails.html', context)
@@ -179,6 +190,27 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                     add.quantity = request.POST['quantity']
                     add.price = request.POST['price']
                     add.save()
+                    context['status'] = True
+                if 'editMaterials' in request.POST:
+                    edit = APMaterials.objects.get(analysis_id=kwargs['analysis'], materials_id=request.POST.get('materials'))
+                    edit.price = request.POST.get('price')
+                    edit.quantity = request.POST.get('quantity')
+                    edit.save()
+                    context['status'] = True
+                if 'delMaterials' in request.POST:
+                    APMaterials.objects.get(analysis_id=kwargs['analysis'], materials_id=request.POST.get('materials')).delete()
+                    context['status'] = True
+                if 'addTools' in request.POST:
+                    context['status'] = True
+                if 'editTools' in request.POST:
+                    context['status'] = True
+                if 'delTools' in request.POST:
+                    context['status'] = True
+                if 'addMan' in request.POST:
+                    context['status'] = True
+                if 'editMan' in request.POST:
+                    context['status'] = True
+                if 'delMan' in request.POST:
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = str(e)

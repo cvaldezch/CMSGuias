@@ -103,15 +103,87 @@
                                 <table class="table table-condensed table-hover tmaterials">
                                     <thead>
                                         <tr class="brand-warning">
-                                            <th>Item</th>
-                                            <th>Código</th>
-                                            <th>Nombre</th>
-                                            <th>Und</th>
-                                            <th>Cantidad</th>
-                                            <th>Precio</th>
-                                            <th>Parcial</th>
-                                            <th>Editar</th>
-                                            <th>Eliminar</th>
+                                            <th class="text-center">Item</th>
+                                            <th class="text-center">Código</th>
+                                            <th class="text-center">Nombre</th>
+                                            <th class="text-center">Und</th>
+                                            <th class="text-center">Cantidad</th>
+                                            <th class="text-center">Precio</th>
+                                            <th class="text-center">Parcial</th>
+                                            <th class="text-center">Editar</th>
+                                            <th class="text-center">Eliminar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for x in materials %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ x.materials_id }}</td>
+                                                <td>{{ x.materials.matnom }}</td>
+                                                <td>{{ x.materials.unidad.uninom }}</td>
+                                                <td>{{ x.quantity }}</td>
+                                                <td>{{ x.price }}</td>
+                                                <td>{{ x.partial }}</td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-xs btn-warning">
+                                                        <span class="fa fa-edit"></span>
+                                                    </button>
+                                                </td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-xs btn-danger">
+                                                        <span class="fa fa-trash"></span>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="9"></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="manpower">
+                        <div class="panel panel-info">
+                            <div class="panel-footer">
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-default bshowaddmat" type="button">
+                                        <span class="fa fa-plus"></span>
+                                        <span>Material</span>
+                                    </button>
+                                    <button class="btn btn-sm btn-default bmrefresh" type="button">
+                                        <span class="fa fa-refresh"></span>
+                                        <span>Actualizar</span>
+                                    </button>
+                                    <button class="btn btn-sm btn-default bdelmat" type="button">
+                                        <span>+ Eliminar Todo</span>
+                                    </button>
+                                    <button class="btn btn-sm btn-default bshownewmat" type="button">
+                                        <span>+ Nuevo Material</span>
+                                    </button>
+                                    <button class="btn btn-sm btn-default bcopymat" type="button">
+                                        <span>+ Copiar Materiales</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="panel-body"></div>
+                            <!-- List ManPower -->
+                            <div class="table-responsive">
+                                <table class="table table-hover table-condensed">
+                                    <thead>
+                                        <tr class="brand-warning">
+                                            <th class="text-center">Item</th>
+                                            <th class="text-center">Código</th>
+                                            <th class="text-center">Nombre</th>
+                                            <th class="text-center">Und</th>
+                                            <th class="text-center">Cuadrilla</th>
+                                            <th class="text-center">Cantidad</th>
+                                            <th class="text-center">Precio</th>
+                                            <th class="text-center">Parcial</th>
+                                            <th class="text-center">Editar</th>
+                                            <th class="text-center">Eliminar</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -119,9 +191,50 @@
                             </div>
                         </div>
                     </div>
-                    <div role="tabpanel" class="tab-pane" id="manpower">
-                    </div>
                     <div role="tabpanel" class="tab-pane" id="tools">
+                        <div class="panel panel-info">
+                            <div class="panel-footer">
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-default bshowaddmat" type="button">
+                                        <span class="fa fa-plus"></span>
+                                        <span>Material</span>
+                                    </button>
+                                    <button class="btn btn-sm btn-default bmrefresh" type="button">
+                                        <span class="fa fa-refresh"></span>
+                                        <span>Actualizar</span>
+                                    </button>
+                                    <button class="btn btn-sm btn-default bdelmat" type="button">
+                                        <span>+ Eliminar Todo</span>
+                                    </button>
+                                    <button class="btn btn-sm btn-default bshownewmat" type="button">
+                                        <span>+ Nuevo Material</span>
+                                    </button>
+                                    <button class="btn btn-sm btn-default bcopymat" type="button">
+                                        <span>+ Copiar Materiales</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- List Tools -->
+                            <div class="table-responsive">
+                                <table class="table table-hover table-condensed">
+                                    <thead>
+                                        <tr class="brand-warning">
+                                            <th class="text-center">Item</th>
+                                            <th class="text-center">Código</th>
+                                            <th class="text-center">Nombre</th>
+                                            <th class="text-center">Und</th>
+                                            <th class="text-center">Cuadrilla</th>
+                                            <th class="text-center">Cantidad</th>
+                                            <th class="text-center">Precio</th>
+                                            <th class="text-center">Parcial</th>
+                                            <th class="text-center">Editar</th>
+                                            <th class="text-center">Eliminar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

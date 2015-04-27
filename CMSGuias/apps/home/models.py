@@ -120,6 +120,7 @@ class Cargo(models.Model):
     cargo_id = models.CharField(primary_key=True, max_length=9)
     cargos = models.CharField(max_length=60)
     area = models.CharField(max_length=60, default='Nothing')
+    unit = models.ForeignKey(Unidade, to_field='unidad_id', default='HH', null=True)
     flag = models.BooleanField(default=True)
 
     class Meta:
@@ -388,6 +389,7 @@ class KeyConfirm(models.Model):
 class Tools(models.Model):
     tools_id = models.CharField(max_length=8, primary_key=True)
     name = models.CharField(max_length=255)
+    unit = models.ForeignKey(Unidade, to_field='unidad_id')
     flag = models.BooleanField(default=True)
 
     audit_log = AuditLog()
