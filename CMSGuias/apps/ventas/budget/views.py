@@ -155,6 +155,7 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                     if 'listMaterials' in request.GET:
                         context['materials'] = [
                             {
+                                'pk': x.id,
                                 'code': x.materials_id,
                                 'name': x.materials.matnom,
                                 'measure': x.materials.matmed,
@@ -183,6 +184,7 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
         context = dict()
         if request.is_ajax():
             try:
+                # block keep Materials
                 if 'addMaterials' in request.POST:
                     add = APMaterials()
                     add.analysis_id = kwargs['analysis']
@@ -192,14 +194,21 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                     add.save()
                     context['status'] = True
                 if 'editMaterials' in request.POST:
-                    edit = APMaterials.objects.get(analysis_id=kwargs['analysis'], materials_id=request.POST.get('materials'))
+                    edit = APMaterials.objects.get(
+                        analysis_id=kwargs['analysis'],
+                        materials_id=request.POST.get('materials'),
+                        id=request.POST.get('id')
+                    )
                     edit.price = request.POST.get('price')
                     edit.quantity = request.POST.get('quantity')
                     edit.save()
                     context['status'] = True
                 if 'delMaterials' in request.POST:
-                    APMaterials.objects.get(analysis_id=kwargs['analysis'], materials_id=request.POST.get('materials')).delete()
+                    APMaterials.objects.get(analysis_id=kwargs['analysis'], materials_id=request.POST.get('materials'), id=request.POST.get('id')).delete()
                     context['status'] = True
+                if 'delMaterialsAll' in request.POST:
+                    pass
+                # block end
                 if 'addTools' in request.POST:
                     context['status'] = True
                 if 'editTools' in request.POST:
