@@ -157,8 +157,7 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                             {
                                 'pk': x.id,
                                 'code': x.materials_id,
-                                'name': x.materials.matnom,
-                                'measure': x.materials.matmed,
+                                'name': '%s - %s'%(x.materials.matnom,x.materials.matmed),
                                 'unit': x.materials.unidad.uninom,
                                 'price': x.price,
                                 'quantity': x.quantity,
@@ -186,12 +185,21 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
             try:
                 # block keep Materials
                 if 'addMaterials' in request.POST:
-                    add = APMaterials()
-                    add.analysis_id = kwargs['analysis']
-                    add.materials_id = request.POST['materials']
-                    add.quantity = request.POST['quantity']
-                    add.price = request.POST['price']
-                    add.save()
+                    try:
+                        em = APMaterials.objects.get(
+                            analysis_id=kwargs['analysis'],
+                            materials_id=request.POST.get('materials')
+                        )
+                        em.quantity += float(request.POST.get('quantity'))
+                        em.price = request.POST.get('price')
+                        em.save()
+                    except ObjectDoesNotExist:
+                        add = APMaterials()
+                        add.analysis_id = kwargs['analysis']
+                        add.materials_id = request.POST['materials']
+                        add.quantity = request.POST['quantity']
+                        add.price = request.POST['price']
+                        add.save()
                     context['status'] = True
                 if 'editMaterials' in request.POST:
                     edit = APMaterials.objects.get(
@@ -207,7 +215,8 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                     APMaterials.objects.get(analysis_id=kwargs['analysis'], materials_id=request.POST.get('materials'), id=request.POST.get('id')).delete()
                     context['status'] = True
                 if 'delMaterialsAll' in request.POST:
-                    pass
+                    APMaterials.objects.filter(analysis_id=kwargs['analysis']).delete()
+                    context['status'] = True
                 # block end
                 if 'addTools' in request.POST:
                     context['status'] = True

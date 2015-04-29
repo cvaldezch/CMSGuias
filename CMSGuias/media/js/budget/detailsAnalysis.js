@@ -17,6 +17,7 @@ $(document).ready(function() {
   $(document).on("change", ".edit-tmp-quantity, .edit-tmp-price", calcPartitalMaterial);
   $(document).on("click", ".btn-del-materials", delMaterials);
   $(".bdelmatall").on("click", delMaterialsAll);
+  $(".bshownewmat").on("click", openNewMaterial);
 });
 
 getMaterialsAll = function(event) {
@@ -127,7 +128,7 @@ getListMaterials = function(event) {
     if (response.status) {
       $tbl = $(".tmaterials tbody");
       $tbl.empty();
-      template = "{{#materials}}<tr data-edit=\"{{pk}}\"><td>{{index}}</td><td>{{code}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{quantity}}</td><td>{{price}}</td><td>{{partial}}</td><td class=\"text-center\"><button class=\"btn btn-warning btn-xs btn-edit-materials\" value=\"{{ pk }}\" data-materials=\"{{ code }}\" disabled><span class=\"fa fa-edit\"></span></button></td><td class=\"text-center\"><button class=\"btn btn-danger btn-xs\" value=\"{{ pk }}\" data-materials=\"{{ code }}\"><span class=\"fa fa-trash\"></span></button></td></tr>{{/materials}}";
+      template = "{{#materials}}<tr data-edit=\"{{pk}}\"><td>{{index}}</td><td>{{code}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{quantity}}</td><td>{{price}}</td><td>{{partial}}</td><td class=\"text-center\"><button class=\"btn btn-warning btn-xs btn-edit-materials\" value=\"{{ pk }}\" data-materials=\"{{ code }}\" disabled><span class=\"fa fa-edit\"></span></button></td><td class=\"text-center\"><button class=\"btn btn-danger btn-xs btn-del-materials\" value=\"{{ pk }}\" data-materials=\"{{ code }}\"><span class=\"fa fa-trash\"></span></button></td></tr>{{/materials}}";
       counter = 1;
       response.index = function() {
         return counter++;

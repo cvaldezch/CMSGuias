@@ -119,7 +119,7 @@
                                             <tr class="editm" data-edit="{{ x.pk }}">
                                                 <td>{{ forloop.counter }}</td>
                                                 <td>{{ x.materials_id }}</td>
-                                                <td>{{ x.materials.matnom }}</td>
+                                                <td>{{ x.materials.matnom }} - {{ x.materials.matmed }}</td>
                                                 <td>{{ x.materials.unidad.uninom }}</td>
                                                 <td>{{ x.quantity|safe }}</td>
                                                 <td>{{ x.price|safe }}</td>
@@ -151,7 +151,7 @@
                                 <div class="btn-group">
                                     <button class="btn btn-sm btn-default bshowaddmat" type="button">
                                         <span class="fa fa-plus"></span>
-                                        <span>Material</span>
+                                        <span>Mano de Obra</span>
                                     </button>
                                     <button class="btn btn-sm btn-default bmrefresh" type="button">
                                         <span class="fa fa-refresh"></span>
@@ -161,17 +161,17 @@
                                         <span>+ Eliminar Todo</span>
                                     </button>
                                     <button class="btn btn-sm btn-default bshownewmat" type="button">
-                                        <span>+ Nuevo Material</span>
+                                        <span>+ Nuevo Mano de Obra</span>
                                     </button>
                                     <button class="btn btn-sm btn-default bcopymat" type="button">
-                                        <span>+ Copiar Materiales</span>
+                                        <span>+ Copiar Mano de Obra</span>
                                     </button>
                                 </div>
                             </div>
-                            <div class="panel-body"></div>
+                            <!-- <div class="panel-body"></div> -->
                             <!-- List ManPower -->
                             <div class="table-responsive">
-                                <table class="table table-hover table-condensed">
+                                <table class="table table-hover table-condensed tmanpower">
                                     <thead>
                                         <tr class="brand-warning">
                                             <th class="text-center">Item</th>
@@ -197,7 +197,7 @@
                                 <div class="btn-group">
                                     <button class="btn btn-sm btn-default bshowaddmat" type="button">
                                         <span class="fa fa-plus"></span>
-                                        <span>Material</span>
+                                        <span>Herramientas</span>
                                     </button>
                                     <button class="btn btn-sm btn-default bmrefresh" type="button">
                                         <span class="fa fa-refresh"></span>
@@ -207,16 +207,19 @@
                                         <span>+ Eliminar Todo</span>
                                     </button>
                                     <button class="btn btn-sm btn-default bshownewmat" type="button">
-                                        <span>+ Nuevo Material</span>
+                                        <span>+ Nueva Herramienta</span>
                                     </button>
                                     <button class="btn btn-sm btn-default bcopymat" type="button">
-                                        <span>+ Copiar Materiales</span>
+                                        <span>+ Copiar Herramientas</span>
                                     </button>
+                                </div>
+                                <div class="toolsfortools">
+
                                 </div>
                             </div>
                             <!-- List Tools -->
                             <div class="table-responsive">
-                                <table class="table table-hover table-condensed">
+                                <table class="table table-hover table-condensed ttools">
                                     <thead>
                                         <tr class="brand-warning">
                                             <th class="text-center">Item</th>
