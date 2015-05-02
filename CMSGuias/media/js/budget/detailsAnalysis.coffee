@@ -16,6 +16,9 @@ $(document).ready ->
     $(".bdelmatall").on "click", delMaterialsAll
     $(".bshownewmat").on "click", openNewMaterial
     # block end
+    # block manpower
+
+    # end block
     return
 
 # block Materials
@@ -264,3 +267,7 @@ delMaterialsAll = (event) ->
                         return
                 return
     return
+#end block
+# block Man power
+
+# end block

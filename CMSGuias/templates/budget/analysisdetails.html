@@ -21,7 +21,9 @@
                     <dt>Unidad</dt>
                     <dd>{{ analysis.unit.uninom }}</dd>
                     <dt>Rendimiento</dt>
-                    <dd>{{ analysis.performance|safe }}</dd>
+                    <dd>
+                        <span class="performance">{{ analysis.performance|safe }}</span> <span>x día.</span>
+                    </dd>
                 </dl>
             </div>
             <div role="tabpanel">
@@ -90,7 +92,7 @@
                                                 <label class="controll-label">Precio</label>
                                                 <input type="number" name="mprice" step="0.10" min="0" class="form-control input-sm">
                                             </div>
-                                            <button type="button" class="btn btn-default btn-sm btnaddmat">
+                                            <button type="button" class="btn btn-warning btn-sm btnaddmat">
                                                 <span class="fa fa-plus"></span>
                                                 Agregar
                                             </button>
@@ -146,7 +148,7 @@
                         </div>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="manpower">
-                        <div class="panel panel-info">
+                        <div class="panel panel-primary">
                             <div class="panel-footer">
                                 <div class="btn-group">
                                     <button class="btn btn-sm btn-default bshowaddmat" type="button">
@@ -166,6 +168,29 @@
                                     <button class="btn btn-sm btn-default bcopymat" type="button">
                                         <span>+ Copiar Mano de Obra</span>
                                     </button>
+                                </div>
+                                <div class="panel-body">
+                                    <!-- div for add man power -->
+                                    <div class="addmanpower">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label class="control-label">Mano de Obra</label>
+                                                <select name="manpower" class="form-control input-sm"></select>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="control-label">Cuadrilla</label>
+                                                <input type="text" class="form-control input-sm" name="mgang">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="control-label">Precio</label>
+                                                <input type="text" class="form-control input-sm" name="mpprice">
+                                            </div>
+                                            <div class="col-md-1">
+                                                <label class="control-label">Agregar</label>
+                                                <button class="btn btn-warning btn-sm"></button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <!-- <div class="panel-body"></div> -->
