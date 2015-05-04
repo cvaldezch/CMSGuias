@@ -3,7 +3,7 @@
 #
 import json
 
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, render
 from django.template import RequestContext, TemplateDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
 from django.contrib import messages
@@ -828,3 +828,34 @@ class Unit(JSONResponseMixin, TemplateView):
             context['raise'] = str(e)
             context['status'] = False
         return self.render_to_json_response(context)
+
+class ManPower(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if request.is_ajax():
+                try:
+                    if 'listcbo' in request.GET:
+                        context['list'] = list(Cargo.objects.values('cargo_id','cargos').filter(flag=True).order_by('cargos'))
+                        context['status'] = True
+                except ObjectDoesNotExist, e:
+                    context['raise'] = str(e)
+                    context['status'] = False
+                return self.render_to_json_response(context)
+            return render(request, '', context)
+        except TemplateDoesNotExist, e:
+            raise Http404
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        #if request.is_ajax():
+        try:
+            pass
+        except ObjectDoesNotExist, e:
+            context['raise'] = str(e)
+            #context['status'] = False
+
+        #return self.render_to_json_response(context)

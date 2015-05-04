@@ -163,16 +163,30 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                                 'quantity': x.quantity,
                                 'partial': x.partial
                             }
-                            for x in APMaterials.objects.filter(analysis_id=kwargs['analysis'])
+                            for x in APMaterials.objects.filter(analysis_id=kwargs['analysis']).order_by('materials__matnom')
                         ]
                         context['status'] = True
+                    if 'listManPower' in request.GET:
+                        context['manpower'] = [
+                            {
+                                'id': x.id,
+                                'code': x.manpower_id,
+                                'name': x.manpower.cargos,
+                                'unit': x.manpower.unit.uninom,
+                                'gang': x.gang,
+                                'quantity': x.quantity,
+                                'price': x.price,
+                                'partial': x.partial
+                            }
+                            for x in APManPower.objects.filter(analysis_id=kwargs['analysis']).order_by('manpower__cargos')
+                        ]
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)
                     context['status'] = False
                 return self.render_to_json_response(context)
             context['analysis'] = Analysis.objects.get(analysis_id=kwargs['analysis'])
             context['materials'] = APMaterials.objects.filter(analysis_id=kwargs['analysis']).order_by('materials__matnom')
-            # context['manpower'] = APManPower.objects.filter(analysis_id=kwargs['analysis']).order_by()
+            context['manpower'] = APManPower.objects.filter(analysis_id=kwargs['analysis']).order_by('manpower__cargos')
             # context['tools'] = APTools.objects.filter(analysis_id=kwargs['analysis']).order_by()
             return render(request, 'budget/analysisdetails.html', context)
         except TemplateDoesNotExist, e:

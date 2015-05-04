@@ -82,7 +82,10 @@ unit_urls = patterns('',
     # url(r'^del/(?P<unit>\w+)/$', ),
     url(r'^list/$', Unit.as_view(), name='unit_list'),
 )
-
+# Crud Cargos y/o ManPower
+manpower_urls = patterns('',
+    url(r'^list/cbo/$', ManPower.as_view(), name='manpower_cbolist'),
+)
 # urls main
 urlpatterns = patterns('',
 	url(r'^SignUp/$', LoginView.as_view(), name='vista_login'),
@@ -99,4 +102,5 @@ urlpatterns = patterns('',
     url(r'^gmaterials/', include(gmaterials_urls)),
     url(r'^materials/', include(materials_urls)),
     url(r'^unit/', include(unit_urls)),
+    url(r'^manpower/', include(manpower_urls)),
 )

@@ -151,7 +151,7 @@
                         <div class="panel panel-primary">
                             <div class="panel-footer">
                                 <div class="btn-group">
-                                    <button class="btn btn-sm btn-default bshowaddmat" type="button">
+                                    <button class="btn btn-sm btn-default bshowaddmp" type="button">
                                         <span class="fa fa-plus"></span>
                                         <span>Mano de Obra</span>
                                     </button>
@@ -179,7 +179,7 @@
                                             </div>
                                             <div class="col-md-2">
                                                 <label class="control-label">Cuadrilla</label>
-                                                <input type="text" class="form-control input-sm" name="mgang">
+                                                <input type="text" class="form-control input-sm" placeholder="0.00" name="mpgang">
                                             </div>
                                             <div class="col-md-2">
                                                 <label class="control-label">Precio</label>
@@ -187,7 +187,10 @@
                                             </div>
                                             <div class="col-md-1">
                                                 <label class="control-label">Agregar</label>
-                                                <button class="btn btn-warning btn-sm"></button>
+                                                <button class="btn btn-warning btn-sm btnaddmp">
+                                                    <span class="fa fa-plus"></span>
+                                                    <span>Agregar</span>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -211,7 +214,30 @@
                                             <th class="text-center">Eliminar</th>
                                         </tr>
                                     </thead>
-                                    <tbody></tbody>
+                                    <tbody>
+                                        {% for x in manpower %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ x.manpower_id }}</td>
+                                                <td>{{ x.manpower.cargos }}</td>
+                                                <td>{{ x.unit.uninom }}</td>
+                                                <td>{{ x.gang }}</td>
+                                                <td>{{ x.quantity }}</td>
+                                                <td>{{ x.price }}</td>
+                                                <td>{{ x.partial }}</td>
+                                                <td>
+                                                    <button class=\"btn btn-xs btn-warning\">
+                                                        <span class=\"fa fa-edit\"></span>
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <button class=\"btn btn-danger btn-xs\">
+                                                        <span class=\"fa fa-trash\"></span>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
                                 </table>
                             </div>
                         </div>

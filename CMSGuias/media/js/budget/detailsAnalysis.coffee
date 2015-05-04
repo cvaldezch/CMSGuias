@@ -1,8 +1,9 @@
 $(document).ready ->
     # block materials
     getMaterialsAll()
-    $(".materialsadd").hide()
-    $("[name=materials], [name=measure]").chosen
+    getManPowerAll()
+    $(".materialsadd, .addmanpower").hide()
+    $("[name=materials], [name=measure], [name=manpower]").chosen
         width: "100%"
     $("[name=materials]").on "change", getmeasure
     $("[name=measure]").on "change", getsummary
@@ -17,7 +18,8 @@ $(document).ready ->
     $(".bshownewmat").on "click", openNewMaterial
     # block end
     # block manpower
-
+    $(".bshowaddmp").on "click", showAddManPower
+    $(".btnaddmp").on "click", addManPower
     # end block
     return
 
@@ -269,5 +271,74 @@ delMaterialsAll = (event) ->
     return
 #end block
 # block Man power
+getManPowerAll = (event) ->
+    context = new Object
+    context.listcbo = true
+    $.getJSON "/manpower/list/cbo/", context, (response) ->
+        if response.status
+            $cm = $("[name=manpower]")
+            $cm.empty()
+            template = "{{#list}}<option value=\"{{cargo_id}}\">{{cargos}}</option>{{/list}}"
+            $cm.html Mustache.render template, response
+            $cm.trigger "chosen:updated"
+        else
+            $().toastmessage "showErrorToast", "Error al listar combo. #{response.raise}"
+            return
+    return
 
+showAddManPower = (event) ->
+    if $(".addmanpower").is ":visible"
+        $(@).removeClass "btn-warning"
+        .addClass "btn-default"
+        $(".addmanpower").hide 800
+    else
+        $(@).removeClass "btn-default"
+        .addClass "btn-warning"
+        $(".addmanpower").show 800
+    return
+
+addManPower = (event) ->
+    context = new Object
+    #context.quantity =
+    context.gang = $("[name=mpgang]").val()
+    context.price = $("[name=mpprice]").val()
+    context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+    $.post "", context, (response) ->
+        if response.status
+            listManPower()
+        else
+            $().toastmessage  "showErrorToast", "Error al agregar mano de poder. #{response.raise}"
+            return
+    , "json"
+    return
+
+listManPower = (event) ->
+    context = new Object
+    context.listManPower = true
+    $.getJSON "", context, (response) ->
+        if response.status
+            $tb = $(".tmanpower > tbody")
+            template = "{{#manpower}}<tr>
+                        <td>{{index}}</td>
+                        <td>{{code}}</td>
+                        <td>{{name}}</td>
+                        <td>{{unit}}</td>
+                        <td>{{gang}}</td>
+                        <td>{{quantity}}</td>
+                        <td>{{precio}}</td>
+                        <td>{{partial}}</td>
+                        <td><button class=\"btn btn-xs btn-warning\">
+                            <span class=\"fa fa-edit\"></span>
+                            </button></td>
+                        <td><button class=\"btn btn-danger btn-xs\"><span class=\"fa fa-trash\"></span></button></td>
+                    </tr>{{/manpower}}"
+            $b.empty()
+            counter = 1
+            response.index + ->
+                return counter++
+            $tb.html Mustache.render template, response
+        else
+            $().toastmessage "showErrorToast", "No se obtenido resultados. #{response.raise}"
+            return
+    return
 # end block
