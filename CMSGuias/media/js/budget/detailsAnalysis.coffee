@@ -10,7 +10,7 @@ $(document).ready ->
     $(".bshowaddmat").on "click", showAddMaterial
     $(".bmrefresh").on "click", refreshMaterials
     $(".btnaddmat").on "click", addMaterials
-    $(".editm").on "dblclick", showEditMaterials
+    $(document).on "dblclick", ".editm", showEditMaterials
     $(document).on "click", ".btn-edit-materials", editMaterials
     $(document).on "change", ".edit-tmp-quantity, .edit-tmp-price", calcPartitalMaterial
     $(document).on "click", ".btn-del-materials", delMaterials
@@ -20,6 +20,9 @@ $(document).ready ->
     # block manpower
     $(".bshowaddmp").on "click", showAddManPower
     $(".btnaddmp").on "click", addManPower
+    $(".bmprefresh").on "click", refreshManPower
+    $(".bdelmp").on "click", delManPowerAll
+    $(document).on "dblclick", ".editmp", showEditManPower
     # end block
     return
 
@@ -299,9 +302,20 @@ showAddManPower = (event) ->
 
 addManPower = (event) ->
     context = new Object
-    #context.quantity =
+    context.addMan = true
+    context.performance = $(".performance").text()
+    context.manpower = $("[name=manpower]").val()
     context.gang = $("[name=mpgang]").val()
     context.price = $("[name=mpprice]").val()
+    if context.manpower is ""
+        $().toastmessage "showWarningToast", "Codigo para Mano de obra es incorrecto."
+        return false
+    if not context.gang.match /^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/
+        $().toastmessage "showWarningToast", "Cuadrilla invalida."
+        return false
+    if not context.price.match /^[+]?[0-9]+[\.[0-9]{0,4}]?/
+        $().toastmessage "showWarningToast", "El precio ingresado es incorrecto."
+        return false
     context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
     $.post "", context, (response) ->
         if response.status
@@ -318,27 +332,69 @@ listManPower = (event) ->
     $.getJSON "", context, (response) ->
         if response.status
             $tb = $(".tmanpower > tbody")
-            template = "{{#manpower}}<tr>
+            template = "{{#manpower}}<tr class=\"editmp\">
                         <td>{{index}}</td>
                         <td>{{code}}</td>
                         <td>{{name}}</td>
                         <td>{{unit}}</td>
                         <td>{{gang}}</td>
                         <td>{{quantity}}</td>
-                        <td>{{precio}}</td>
+                        <td>{{price}}</td>
                         <td>{{partial}}</td>
-                        <td><button class=\"btn btn-xs btn-warning\">
+                        <td class=\"text-center\"><button class=\"btn btn-xs btn-warning\" value=\"{{ id }}\" data-mp=\"{{code}}\" disabled>
                             <span class=\"fa fa-edit\"></span>
                             </button></td>
-                        <td><button class=\"btn btn-danger btn-xs\"><span class=\"fa fa-trash\"></span></button></td>
+                        <td class=\"text-center\"><button class=\"btn btn-danger btn-xs\" value=\"{{ id }}\" data-mp=\"{{code}}\"><span class=\"fa fa-trash\"></span></button></td>
                     </tr>{{/manpower}}"
-            $b.empty()
+            $tb.empty()
             counter = 1
-            response.index + ->
+            response.index = ->
                 return counter++
             $tb.html Mustache.render template, response
+            return
         else
             $().toastmessage "showErrorToast", "No se obtenido resultados. #{response.raise}"
             return
     return
+
+delManPowerAll = (event) ->
+    $().toastmessage "showToast",
+        text: "Realmente desea eliminar todo la lista de Mano de Obra?"
+        type: "confirm",
+        sticky: true,
+        buttons: [{value:"Si"}, {value:"No"}],
+        success: (result) ->
+            if result is "Si"
+                context = new Object
+                context.delManPowerAll = true
+                $.post "", context, (response) ->
+                    if response.status
+                        listManPower()
+                        return
+                    else
+                        $().toastmessage "showErrorToast", "Error al eliminar toda la lista. #{response.raise}"
+                        return
+                , "json"
+                return
+    return
+
+refreshManPower = (event) ->
+    getManPowerAll()
+    listManPower()
+    return
 # end block
+
+showEditManPower = (event) ->
+    if $(".edit-mp-gang").length
+        $(".edit-mp-gang").parent("td").html $(".edit-mp-gang").val()
+    if $(".edit-mp-price").length
+        $(".edit-mp-price").parent("td").html $(".edit-mp-price").val()
+    $tr = $(@)
+    $td = $tr.find "td"
+    gang = $td.eq(4).text()
+    #$(".btn-edit-materials").attr "disabled", true
+    $td.eq(8).find("button").attr "disabled", false
+    price = $td.eq(6).text()
+    $td.eq(4).html "<input type=\"text\" value=\"#{gang}\" class=\"form-control input-sm col-2 edit-mp-gang\">"
+    $td.eq(6).html "<input type=\"text\" value=\"#{price}\" class=\"form-control input-sm col-2 edit-mp-price\">"
+    return

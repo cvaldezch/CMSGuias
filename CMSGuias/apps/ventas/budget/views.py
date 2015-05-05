@@ -176,10 +176,11 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                                 'gang': x.gang,
                                 'quantity': x.quantity,
                                 'price': x.price,
-                                'partial': x.partial
+                                'partial': float(x.partial)
                             }
                             for x in APManPower.objects.filter(analysis_id=kwargs['analysis']).order_by('manpower__cargos')
                         ]
+                        context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)
                     context['status'] = False
@@ -239,10 +240,31 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                 if 'delTools' in request.POST:
                     context['status'] = True
                 if 'addMan' in request.POST:
+                    try:
+                        em = APManPower.objects.get(
+                            analysis_id=kwargs['analysis'],
+                            manpower_id=request.POST.get('manpower')
+                        )
+                        em.gang = float(request.POST['gang'])
+                        em.price = float(request.POST.get('price'))
+                        em.quantity = ((float(request.POST['gang']) * 8)/ float(request.POST['performance']))
+                        em.save()
+                    except ObjectDoesNotExist:
+                        add = APManPower()
+                        add.analysis_id = kwargs['analysis']
+                        add.manpower_id = request.POST['manpower']
+                        add.gang = float(request.POST['gang'])
+                        add.price = float(request.POST['price'])
+                        add.quantity = ((float(request.POST['gang']) * 8)/ float(request.POST['performance']))
+                        add.save()
                     context['status'] = True
                 if 'editMan' in request.POST:
                     context['status'] = True
                 if 'delMan' in request.POST:
+                    APManPower.objects.get(analysis_id=kwargs['analysis'], manpower_id=request.POST['manpower']).detele()
+                    context['status'] = True
+                if 'delManPowerAll' in request.POST:
+                    APManPower.objects.filter(analysis_id=kwargs['analysis']).delete()
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = str(e)

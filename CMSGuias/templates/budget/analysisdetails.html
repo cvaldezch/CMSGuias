@@ -155,17 +155,17 @@
                                         <span class="fa fa-plus"></span>
                                         <span>Mano de Obra</span>
                                     </button>
-                                    <button class="btn btn-sm btn-default bmrefresh" type="button">
+                                    <button class="btn btn-sm btn-default bmprefresh" type="button">
                                         <span class="fa fa-refresh"></span>
                                         <span>Actualizar</span>
                                     </button>
-                                    <button class="btn btn-sm btn-default bdelmat" type="button">
+                                    <button class="btn btn-sm btn-default bdelmp" type="button">
                                         <span>+ Eliminar Todo</span>
                                     </button>
-                                    <button class="btn btn-sm btn-default bshownewmat" type="button">
+                                    <button class="btn btn-sm btn-default bshownewmp" type="button">
                                         <span>+ Nuevo Mano de Obra</span>
                                     </button>
-                                    <button class="btn btn-sm btn-default bcopymat" type="button">
+                                    <button class="btn btn-sm btn-default bcopymp" type="button">
                                         <span>+ Copiar Mano de Obra</span>
                                     </button>
                                 </div>
@@ -216,23 +216,23 @@
                                     </thead>
                                     <tbody>
                                         {% for x in manpower %}
-                                            <tr>
+                                            <tr class="editmp">
                                                 <td>{{ forloop.counter }}</td>
                                                 <td>{{ x.manpower_id }}</td>
                                                 <td>{{ x.manpower.cargos }}</td>
-                                                <td>{{ x.unit.uninom }}</td>
-                                                <td>{{ x.gang }}</td>
-                                                <td>{{ x.quantity }}</td>
-                                                <td>{{ x.price }}</td>
-                                                <td>{{ x.partial }}</td>
-                                                <td>
-                                                    <button class=\"btn btn-xs btn-warning\">
-                                                        <span class=\"fa fa-edit\"></span>
+                                                <td>{{ x.manpower.unit.uninom }}</td>
+                                                <td>{{ x.gang|safe }}</td>
+                                                <td>{{ x.quantity|safe }}</td>
+                                                <td>{{ x.price|safe }}</td>
+                                                <td>{{ x.partial|safe }}</td>
+                                                <td class="text-center">
+                                                    <button class="btn btn-xs btn-warning" value="{{ x.id }}" data-mp="{{ x.manpower_id }}" disabled>
+                                                        <span class="fa fa-edit"></span>
                                                     </button>
                                                 </td>
-                                                <td>
-                                                    <button class=\"btn btn-danger btn-xs\">
-                                                        <span class=\"fa fa-trash\"></span>
+                                                <td class="text-center">
+                                                    <button class="btn btn-danger btn-xs" value="{{ x.id }}" data-mp="{{ x.manpower_id }}">
+                                                        <span class="fa fa-trash"></span>
                                                     </button>
                                                 </td>
                                             </tr>

@@ -74,7 +74,7 @@ class APManPower(models.Model):
 
     @property
     def partial(self):
-        return (self.quantity * self.price)
+        return float(self.quantity * self.price)
 
     def __unicode__(self):
         return '%s %s %d %d'%(self.analysis_id, self.manpower, self.quantity, self.price)
