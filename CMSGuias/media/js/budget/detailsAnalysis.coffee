@@ -23,6 +23,8 @@ $(document).ready ->
     $(".bmprefresh").on "click", refreshManPower
     $(".bdelmp").on "click", delManPowerAll
     $(document).on "dblclick", ".editmp", showEditManPower
+    $(document).on "click", ".btn-edit-mp", editManPower
+    $(document).on "click", ".btn-del-mp", delManPower
     # end block
     return
 
@@ -67,27 +69,7 @@ getsummary = (event) ->
     if context.scode.length is 15
         $.getJSON "/materials/", context, (response) ->
             if response.status
-                template = "
-                    <table class=\"table table-condensed font-11\">
-                        <tbody>
-                            <tr>
-                                <th>Código</th>
-                                <td class=\"matid\">{{ summary.materials }}</td>
-                            </tr>
-                            <tr>
-                                <th>Nombre</th>
-                                <td>{{ summary.name }}</td>
-                            </tr>
-                            <tr>
-                                <th>Media</th>
-                                <td>{{ summary.measure }}</td>
-                            </tr>
-                            <tr>
-                                <th>Unidad</th>
-                                <td>{{ summary.unit }}</td>
-                            </tr>
-                        </tbody>
-                    </table>"
+                template = "<table class=\"table table-condensed font-11\"><tbody><tr><th>Código</th><td class=\"matid\">{{ summary.materials }}</td></tr><tr><th>Nombre</th><td>{{ summary.name }}</td></tr><tr><th>Media</th><td>{{ summary.measure }}</td></tr><tr><th>Unidad</th><td>{{ summary.unit }}</td></tr></tbody></table>"
                 $s = $("[name=summary]")
                 $s.empty()
                 $s.html Mustache.render template, response
@@ -272,7 +254,7 @@ delMaterialsAll = (event) ->
                         return
                 return
     return
-#end block
+
 # block Man power
 getManPowerAll = (event) ->
     context = new Object
@@ -332,20 +314,7 @@ listManPower = (event) ->
     $.getJSON "", context, (response) ->
         if response.status
             $tb = $(".tmanpower > tbody")
-            template = "{{#manpower}}<tr class=\"editmp\">
-                        <td>{{index}}</td>
-                        <td>{{code}}</td>
-                        <td>{{name}}</td>
-                        <td>{{unit}}</td>
-                        <td>{{gang}}</td>
-                        <td>{{quantity}}</td>
-                        <td>{{price}}</td>
-                        <td>{{partial}}</td>
-                        <td class=\"text-center\"><button class=\"btn btn-xs btn-warning\" value=\"{{ id }}\" data-mp=\"{{code}}\" disabled>
-                            <span class=\"fa fa-edit\"></span>
-                            </button></td>
-                        <td class=\"text-center\"><button class=\"btn btn-danger btn-xs\" value=\"{{ id }}\" data-mp=\"{{code}}\"><span class=\"fa fa-trash\"></span></button></td>
-                    </tr>{{/manpower}}"
+            template = "{{#manpower}}<tr class=\"editmp\"><td>{{index}}</td><td>{{code}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{gang}}</td><td>{{quantity}}</td><td>{{price}}</td><td>{{partial}}</td><td class=\"text-center\"><button class=\"btn btn-xs btn-warning\" value=\"{{ id }}\" data-mp=\"{{code}}\" disabled><span class=\"fa fa-edit\"></span></button></td><td class=\"text-center\"><button class=\"btn btn-danger btn-xs\" value=\"{{ id }}\" data-mp=\"{{code}}\"><span class=\"fa fa-trash\"></span></button></td></tr>{{/manpower}}"
             $tb.empty()
             counter = 1
             response.index = ->
@@ -398,3 +367,50 @@ showEditManPower = (event) ->
     $td.eq(4).html "<input type=\"text\" value=\"#{gang}\" class=\"form-control input-sm col-2 edit-mp-gang\">"
     $td.eq(6).html "<input type=\"text\" value=\"#{price}\" class=\"form-control input-sm col-2 edit-mp-price\">"
     return
+
+editManPower = (event) ->
+    context = new Object
+    context.addMan = true
+    context.gang = $(".edit-mp-gang").val()
+    context.price = $(".edit-mp-price").val()
+    context.performance = $(".performance").text()
+    context.manpower = @getAttribute "data-mp"
+    if not context.gang.match /^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/
+        $().toastmessage "showWarningToast", "Cuadrilla invalida."
+        return false
+    if not context.price.match /^[+]?[0-9]+[\.[0-9]{0,4}]?/
+        $().toastmessage "showWarningToast", "El precio ingresado es incorrecto."
+        return false
+    context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+    $.post "", context, (response) ->
+        if response.status
+            listManPower()
+            return
+        else
+            $().toastmessage "showErrorToast", "Error al editar los campos. #{response.raise}"
+            return
+    , "json"
+    return
+
+delManPower = (event) ->
+  btn = @
+  $().toastmessage "showToast",
+    text: "Realmente deseas eliminar la mano de Obra?"
+    type: "confirm"
+    sticky: true
+    buttons: [{value:"Si"},{value:"No"}]
+    success: (result) ->
+      if result is "Si"
+        context = new Object
+        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+        context.delMan = true
+        context.manpower = btn.getAttribute "data-mp"
+        $.post "", context, (response) ->
+          if response.status
+            listManPower()
+            return
+          else
+            $().toastmessage "showErrorToast", "Error al eliminar la mano de obra. #{response.raise}"
+            return
+        , "json"
+  return

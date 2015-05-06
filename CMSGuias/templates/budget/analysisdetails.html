@@ -226,12 +226,12 @@
                                                 <td>{{ x.price|safe }}</td>
                                                 <td>{{ x.partial|safe }}</td>
                                                 <td class="text-center">
-                                                    <button class="btn btn-xs btn-warning" value="{{ x.id }}" data-mp="{{ x.manpower_id }}" disabled>
+                                                    <button class="btn btn-xs btn-warning btn-edit-mp" value="{{ x.id }}" data-mp="{{ x.manpower_id }}" disabled>
                                                         <span class="fa fa-edit"></span>
                                                     </button>
                                                 </td>
                                                 <td class="text-center">
-                                                    <button class="btn btn-danger btn-xs" value="{{ x.id }}" data-mp="{{ x.manpower_id }}">
+                                                    <button class="btn btn-danger btn-xs btn-del-mp" value="{{ x.id }}" data-mp="{{ x.manpower_id }}">
                                                         <span class="fa fa-trash"></span>
                                                     </button>
                                                 </td>
@@ -264,7 +264,7 @@
                                         <span>+ Copiar Herramientas</span>
                                     </button>
                                 </div>
-                                <div class="toolsfortools">
+                                <div class="panel-body">
 
                                 </div>
                             </div>

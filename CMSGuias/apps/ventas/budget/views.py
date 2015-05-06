@@ -232,8 +232,11 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                 if 'delMaterialsAll' in request.POST:
                     APMaterials.objects.filter(analysis_id=kwargs['analysis']).delete()
                     context['status'] = True
-                # block end
                 if 'addTools' in request.POST:
+                    try:
+                        pass
+                    except Exception as e:
+                        raise
                     context['status'] = True
                 if 'editTools' in request.POST:
                     context['status'] = True
