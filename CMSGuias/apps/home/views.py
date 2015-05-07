@@ -844,7 +844,10 @@ class ManPower(JSONResponseMixin, TemplateView):
                     context['raise'] = str(e)
                     context['status'] = False
                 return self.render_to_json_response(context)
-            return render(request, '', context)
+            if kwargs['add']:
+                return render(request, 'home/crud/manpower_form.html', context)
+            else:
+                return render(request, 'home/crud/manpower.html')
         except TemplateDoesNotExist, e:
             raise Http404
 
@@ -852,10 +855,20 @@ class ManPower(JSONResponseMixin, TemplateView):
     def post(self, request, *args, **kwargs):
         context = dict()
         #if request.is_ajax():
-        try:
-            pass
-        except ObjectDoesNotExist, e:
-            context['raise'] = str(e)
+        #try:
+        #    pass
+        #except ObjectDoesNotExist, e:
+        #    context['raise'] = str(e)
             #context['status'] = False
-
         #return self.render_to_json_response(context)
+        if kwargs['add']:
+            try:
+                ob = Cargo()
+                ob.cargo_id = request.POST['manpower']
+                ob.cargos = request.POST['name']
+                ob.area = request.POST['area']
+                ob.flag = True
+                ob.save()
+            except ObjectDoesNotExist, e:
+                raise
+            return render(request, 'home/crud/manpower.html')

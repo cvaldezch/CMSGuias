@@ -85,6 +85,7 @@ unit_urls = patterns('',
 # Crud Cargos y/o ManPower
 manpower_urls = patterns('',
     url(r'^list/cbo/$', ManPower.as_view(), name='manpower_cbolist'),
+    url(r'^(?P<add>\w{0,3})$', ManPower.as_view(), name='manpower_view'),
 )
 # urls main
 urlpatterns = patterns('',

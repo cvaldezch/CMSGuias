@@ -1,4 +1,4 @@
-var addManPower, addMaterials, calcPartitalMaterial, delManPower, delManPowerAll, delMaterials, delMaterialsAll, editManPower, editMaterials, getListMaterials, getManPowerAll, getMaterialsAll, getmeasure, getsummary, listManPower, openNewMaterial, refreshManPower, refreshMaterials, showAddManPower, showAddMaterial, showEditManPower, showEditMaterials;
+var addManPower, addMaterials, calcPartitalMaterial, delManPower, delManPowerAll, delMaterials, delMaterialsAll, editManPower, editMaterials, getListMaterials, getManPowerAll, getMaterialsAll, getlistTools, getmeasure, getsummary, listManPower, openNewManPower, openNewMaterial, refreshManPower, refreshMaterials, showAddManPower, showAddMaterial, showEditManPower, showEditMaterials;
 
 $(document).ready(function() {
   getMaterialsAll();
@@ -25,6 +25,7 @@ $(document).ready(function() {
   $(document).on("dblclick", ".editmp", showEditManPower);
   $(document).on("click", ".btn-edit-mp", editManPower);
   $(document).on("click", ".btn-del-mp", delManPower);
+  $(".bshownewmp").on("click", openNewManPower);
 });
 
 getMaterialsAll = function(event) {
@@ -152,7 +153,7 @@ refreshMaterials = function(event) {
   getListMaterials();
 };
 
-openNewMaterial = function() {
+openNewMaterial = function(event) {
   var interval, win;
   win = window.open("/materials/", "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600");
   interval = window.setInterval(function() {
@@ -367,7 +368,7 @@ listManPower = function(event) {
     var $tb, counter, template;
     if (response.status) {
       $tb = $(".tmanpower > tbody");
-      template = "{{#manpower}}<tr class=\"editmp\"><td>{{index}}</td><td>{{code}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{gang}}</td><td>{{quantity}}</td><td>{{price}}</td><td>{{partial}}</td><td class=\"text-center\"><button class=\"btn btn-xs btn-warning\" value=\"{{ id }}\" data-mp=\"{{code}}\" disabled><span class=\"fa fa-edit\"></span></button></td><td class=\"text-center\"><button class=\"btn btn-danger btn-xs\" value=\"{{ id }}\" data-mp=\"{{code}}\"><span class=\"fa fa-trash\"></span></button></td></tr>{{/manpower}}";
+      template = "{{#manpower}}<tr class=\"editmp\"><td>{{index}}</td><td>{{code}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{gang}}</td><td>{{quantity}}</td><td>{{price}}</td><td>{{partial}}</td><td class=\"text-center\"><button class=\"btn btn-xs btn-warning btn-edit-mp\" value=\"{{ id }}\" data-mp=\"{{code}}\" disabled><span class=\"fa fa-edit\"></span></button></td><td class=\"text-center\"><button class=\"btn btn-danger btn-xs btn-del-mp\" value=\"{{ id }}\" data-mp=\"{{code}}\"><span class=\"fa fa-trash\"></span></button></td></tr>{{/manpower}}";
       $tb.empty();
       counter = 1;
       response.index = function() {
@@ -397,6 +398,7 @@ delManPowerAll = function(event) {
       if (result === "Si") {
         context = new Object;
         context.delManPowerAll = true;
+        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
         $.post("", context, function(response) {
           if (response.status) {
             listManPower();
@@ -489,3 +491,17 @@ delManPower = function(event) {
     }
   });
 };
+
+openNewManPower = function() {
+  var interval, win;
+  win = window.open("/manpower/add", "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600");
+  interval = window.setInterval(function() {
+    if (win === null || win.closed) {
+      window.clearInterval(interval);
+      getManPowerAll();
+    }
+  }, 1000);
+  return win;
+};
+
+getlistTools = function(event) {};

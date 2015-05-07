@@ -25,6 +25,7 @@ $(document).ready ->
     $(document).on "dblclick", ".editmp", showEditManPower
     $(document).on "click", ".btn-edit-mp", editManPower
     $(document).on "click", ".btn-del-mp", delManPower
+    $(".bshownewmp").on "click", openNewManPower
     # end block
     return
 
@@ -139,7 +140,7 @@ refreshMaterials = (event) ->
     getListMaterials()
     return
 
-openNewMaterial = ->
+openNewMaterial = (event) ->
     win = window.open "/materials/", "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600"
     interval = window.setInterval ->
         if win == null or win.closed
@@ -314,7 +315,7 @@ listManPower = (event) ->
     $.getJSON "", context, (response) ->
         if response.status
             $tb = $(".tmanpower > tbody")
-            template = "{{#manpower}}<tr class=\"editmp\"><td>{{index}}</td><td>{{code}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{gang}}</td><td>{{quantity}}</td><td>{{price}}</td><td>{{partial}}</td><td class=\"text-center\"><button class=\"btn btn-xs btn-warning\" value=\"{{ id }}\" data-mp=\"{{code}}\" disabled><span class=\"fa fa-edit\"></span></button></td><td class=\"text-center\"><button class=\"btn btn-danger btn-xs\" value=\"{{ id }}\" data-mp=\"{{code}}\"><span class=\"fa fa-trash\"></span></button></td></tr>{{/manpower}}"
+            template = "{{#manpower}}<tr class=\"editmp\"><td>{{index}}</td><td>{{code}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{gang}}</td><td>{{quantity}}</td><td>{{price}}</td><td>{{partial}}</td><td class=\"text-center\"><button class=\"btn btn-xs btn-warning btn-edit-mp\" value=\"{{ id }}\" data-mp=\"{{code}}\" disabled><span class=\"fa fa-edit\"></span></button></td><td class=\"text-center\"><button class=\"btn btn-danger btn-xs btn-del-mp\" value=\"{{ id }}\" data-mp=\"{{code}}\"><span class=\"fa fa-trash\"></span></button></td></tr>{{/manpower}}"
             $tb.empty()
             counter = 1
             response.index = ->
@@ -336,6 +337,7 @@ delManPowerAll = (event) ->
             if result is "Si"
                 context = new Object
                 context.delManPowerAll = true
+                context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
                 $.post "", context, (response) ->
                     if response.status
                         listManPower()
@@ -413,4 +415,18 @@ delManPower = (event) ->
             $().toastmessage "showErrorToast", "Error al eliminar la mano de obra. #{response.raise}"
             return
         , "json"
+  return
+
+openNewManPower = ->
+    win = window.open "/manpower/add", "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600"
+    interval = window.setInterval ->
+        if win == null or win.closed
+            window.clearInterval interval
+            getManPowerAll()
+            return
+    , 1000
+    return win
+
+# block tools
+getlistTools = (event) ->
   return

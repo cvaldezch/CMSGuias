@@ -235,7 +235,7 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                 if 'addTools' in request.POST:
                     try:
                         pass
-                    except Exception as e:
+                    except ObjectDoesNotExist, e:
                         raise
                     context['status'] = True
                 if 'editTools' in request.POST:
@@ -264,7 +264,7 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                 if 'editMan' in request.POST:
                     context['status'] = True
                 if 'delMan' in request.POST:
-                    APManPower.objects.get(analysis_id=kwargs['analysis'], manpower_id=request.POST['manpower']).detele()
+                    APManPower.objects.get(analysis_id=kwargs['analysis'], manpower_id=request.POST['manpower']).delete()
                     context['status'] = True
                 if 'delManPowerAll' in request.POST:
                     APManPower.objects.filter(analysis_id=kwargs['analysis']).delete()

@@ -39,6 +39,8 @@ tipo_nipples = {
     'E': 'Brida - Brida',
     'F': 'Brida - Rosca',
     'G': 'Brida - Ranura',
+    'H': 'Bisel - Bisel',
+    'I': 'Bisel - Rosca',
     '-': ''
 }
 
