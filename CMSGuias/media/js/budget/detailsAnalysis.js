@@ -1,10 +1,11 @@
-var addManPower, addMaterials, calcPartitalMaterial, delManPower, delManPowerAll, delMaterials, delMaterialsAll, editManPower, editMaterials, getListMaterials, getManPowerAll, getMaterialsAll, getlistTools, getmeasure, getsummary, listManPower, openNewManPower, openNewMaterial, refreshManPower, refreshMaterials, showAddManPower, showAddMaterial, showEditManPower, showEditMaterials;
+var addManPower, addMaterials, calcPartitalMaterial, delManPower, delManPowerAll, delMaterials, delMaterialsAll, editManPower, editMaterials, getListMaterials, getManPowerAll, getMaterialsAll, getMeasureTools, getlistTools, getmeasure, getsummary, listManPower, openNewManPower, openNewMaterial, refreshManPower, refreshMaterials, showAddManPower, showAddMaterial, showEditManPower, showEditMaterials;
 
 $(document).ready(function() {
   getMaterialsAll();
   getManPowerAll();
+  getlistTools();
   $(".materialsadd, .addmanpower").hide();
-  $("[name=materials], [name=measure], [name=manpower]").chosen({
+  $("[name=materials], [name=measure], [name=manpower], [name=tools], [name=measuret]").chosen({
     width: "100%"
   });
   $("[name=materials]").on("change", getmeasure);
@@ -504,4 +505,40 @@ openNewManPower = function() {
   return win;
 };
 
-getlistTools = function(event) {};
+getlistTools = function(event) {
+  var context;
+  context = new Object;
+  context.listName = true;
+  $.getJSON("/tools/search/", context, function(response) {
+    var $op, template;
+    if (response.status) {
+      template = "{{#tools}}<option value=\"{{ name }}\">{{ name }}</option>{{/tools}}";
+      $op = $("[name=tools]");
+      $op.empty();
+      $op.html(Mustache.render(template, response));
+      $op.trigger("chosen:updated");
+      return getMeasureTools();
+    } else {
+      $().toastmessage("showErrorToast", "No existe una lista. " + response.raise);
+    }
+  });
+};
+
+getMeasureTools = function(event) {
+  var context;
+  context = new Object;
+  context.searchMeasure = true;
+  context.name = $.trim($("[name=tools]").val());
+  $.getJSON("/tools/search/", context, function(response) {
+    var $mt, template;
+    if (response.status) {
+      template = "{{#measure}}<option value=\"{{ tools_id }}\">{{ measure }}</option>{{/measure}}";
+      $mt = $("[name=measuret]");
+      $mt.empty();
+      $mt.html(Mustache.render(template, response));
+      return $mt.trigger("chosen:updated");
+    } else {
+      $().toastmessage("showErrorToast", "No se han obtenido resultados para tu busqueda. " + response.raise);
+    }
+  });
+};

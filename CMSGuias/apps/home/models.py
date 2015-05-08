@@ -387,8 +387,9 @@ class KeyConfirm(models.Model):
         return '%s %s %s'%(self.empdni, self.code, self.key)
 
 class Tools(models.Model):
-    tools_id = models.CharField(max_length=8, primary_key=True)
+    tools_id = models.CharField(max_length=14, primary_key=True)
     name = models.CharField(max_length=255)
+    measure = models.CharField(max_length=255, null=True)
     unit = models.ForeignKey(Unidade, to_field='unidad_id')
     flag = models.BooleanField(default=True)
 
@@ -398,4 +399,4 @@ class Tools(models.Model):
         ordering = ['name']
 
     def __unicode__(self):
-        return '%s'%(self.name)
+        return '%s - %s'%(self.name, self.measure)

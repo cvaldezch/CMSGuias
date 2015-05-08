@@ -18,7 +18,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, TemplateView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from CMSGuias.apps.home.forms import signupForm, logininForm
+#from CMSGuias.apps.home.forms import signupForm, logininForm
 from CMSGuias.apps.tools.redirectHome import RedirectModule
 from CMSGuias.apps.tools import genkeys
 from CMSGuias.apps.logistica.models import Compra, DetCompra
@@ -872,3 +872,27 @@ class ManPower(JSONResponseMixin, TemplateView):
             except ObjectDoesNotExist, e:
                 raise
             return render(request, 'home/crud/manpower.html')
+
+
+class ToolsView(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwars):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'listName' in request.GET:
+                    context['tools'] = list(Tools.objects.values('name').filter(flag=True).distinct('name').order_by('name'))
+                    context['status'] = True
+                if 'searchMeasure' in request.GET:
+                    context['measure'] = list(Tools.objects.values('tools_id', 'measure').filter(name__icontains=request.GET['name']).distinct('measure').order_by('measure'))
+                    context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)
+        else:
+            try:
+                pass
+            except Exception as e:
+                raise Http404(e)

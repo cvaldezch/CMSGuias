@@ -87,6 +87,10 @@ manpower_urls = patterns('',
     url(r'^list/cbo/$', ManPower.as_view(), name='manpower_cbolist'),
     url(r'^(?P<add>\w{0,3})$', ManPower.as_view(), name='manpower_view'),
 )
+# Crud Tools
+tools_urls = patterns('',
+    url(r'^search/$', ToolsView.as_view()),
+)
 # urls main
 urlpatterns = patterns('',
 	url(r'^SignUp/$', LoginView.as_view(), name='vista_login'),
@@ -104,4 +108,5 @@ urlpatterns = patterns('',
     url(r'^materials/', include(materials_urls)),
     url(r'^unit/', include(unit_urls)),
     url(r'^manpower/', include(manpower_urls)),
+    url(r'^tools/', include(tools_urls)),
 )

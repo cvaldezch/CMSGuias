@@ -2,8 +2,9 @@ $(document).ready ->
     # block materials
     getMaterialsAll()
     getManPowerAll()
+    getlistTools()
     $(".materialsadd, .addmanpower").hide()
-    $("[name=materials], [name=measure], [name=manpower]").chosen
+    $("[name=materials], [name=measure], [name=manpower], [name=tools], [name=measuret]").chosen
         width: "100%"
     $("[name=materials]").on "change", getmeasure
     $("[name=measure]").on "change", getsummary
@@ -26,6 +27,9 @@ $(document).ready ->
     $(document).on "click", ".btn-edit-mp", editManPower
     $(document).on "click", ".btn-del-mp", delManPower
     $(".bshownewmp").on "click", openNewManPower
+    # end block
+    # block tools
+
     # end block
     return
 
@@ -428,5 +432,35 @@ openNewManPower = ->
     return win
 
 # block tools
+# get all list disticnt tools
 getlistTools = (event) ->
+  context = new Object
+  context.listName = true
+  $.getJSON "/tools/search/", context, (response) ->
+    if response.status
+      template = """{{#tools}}<option value="{{ name }}">{{ name }}</option>{{/tools}}"""
+      $op = $("[name=tools]")
+      $op.empty()
+      $op.html Mustache.render template, response
+      $op.trigger "chosen:updated"
+      getMeasureTools()
+    else
+      $().toastmessage "showErrorToast", "No existe una lista. #{response.raise}"
+      return
+  return
+# get  measure for each tools
+getMeasureTools = (event) ->
+  context = new Object
+  context.searchMeasure = true
+  context.name = $.trim $("[name=tools]").val()
+  $.getJSON "/tools/search/", context, (response) ->
+    if response.status
+      template = """{{#measure}}<option value="{{ tools_id }}">{{ measure }}</option>{{/measure}}"""
+      $mt = $("[name=measuret]")
+      $mt.empty()
+      $mt.html Mustache.render template, response
+      $mt.trigger "chosen:updated"
+    else
+      $().toastmessage "showErrorToast", "No se han obtenido resultados para tu busqueda. #{response.raise}"
+      return
   return
