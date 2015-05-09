@@ -1,4 +1,4 @@
-var addManPower, addMaterials, calcPartitalMaterial, delManPower, delManPowerAll, delMaterials, delMaterialsAll, editManPower, editMaterials, getListMaterials, getManPowerAll, getMaterialsAll, getMeasureTools, getlistTools, getmeasure, getsummary, listManPower, openNewManPower, openNewMaterial, refreshManPower, refreshMaterials, showAddManPower, showAddMaterial, showEditManPower, showEditMaterials;
+var addManPower, addMaterials, addTools, calcPartitalMaterial, delManPower, delManPowerAll, delMaterials, delMaterialsAll, editManPower, editMaterials, getListMaterials, getManPowerAll, getMaterialsAll, getMeasureTools, getSummaryTools, getlistTools, getmeasure, getsummary, listManPower, openNewManPower, openNewMaterial, refreshManPower, refreshMaterials, showAddManPower, showAddMaterial, showEditManPower, showEditMaterials;
 
 $(document).ready(function() {
   getMaterialsAll();
@@ -27,6 +27,8 @@ $(document).ready(function() {
   $(document).on("click", ".btn-edit-mp", editManPower);
   $(document).on("click", ".btn-del-mp", delManPower);
   $(".bshownewmp").on("click", openNewManPower);
+  $("[name=tools]").on("change", getMeasureTools);
+  $("[name=measuret]").on("change", getSummaryTools);
 });
 
 getMaterialsAll = function(event) {
@@ -536,9 +538,63 @@ getMeasureTools = function(event) {
       $mt = $("[name=measuret]");
       $mt.empty();
       $mt.html(Mustache.render(template, response));
-      return $mt.trigger("chosen:updated");
+      $mt.trigger("chosen:updated");
+      return setTimeout(function() {
+        return getSummaryTools();
+      }, 300);
     } else {
       $().toastmessage("showErrorToast", "No se han obtenido resultados para tu busqueda. " + response.raise);
+    }
+  });
+};
+
+getSummaryTools = function(event) {
+  var context;
+  context = new Object;
+  context.getSummary = true;
+  context.tools = $("[name=measuret]").val();
+  if (!context.tools.length === 14) {
+    $().toastmessage("showWarningToast", "El codigo es incorrecto.");
+    return false;
+  }
+  $.getJSON("/tools/search/", context, function(response) {
+    var $ob, template;
+    if (response.status) {
+      template = "<table class=\"table table-condensed font-11\"><tbody><tr><th>Código </th><td class=\"tools_id\">{{ summary.tools_id }}</td></tr><tr><th>Nombre </th><td>{{ summary.name }}</td></tr><tr><th>Medida</th><td>{{ summary.measure }}</td></tr><tr><th>Unidad </th><td>{{ summary.unit__uninom }}</td></tr></tbody></table>";
+      $ob = $(".summarytools");
+      $ob.empty();
+      return $ob.html(Mustache.render(template, response));
+    } else {
+      $().toastmessage("showErrorToast", "Error al obtener los datos, " + response.raise);
+    }
+  });
+};
+
+addTools = function(event) {
+  var context;
+  context = new Object;
+  context.tools = $(".tools_id").text();
+  context.gang = $("[name=gangt]").val();
+  context.price = $("[name=pricet]").val();
+  if (context.tools.length === 14) {
+    $().toastmessage("showWarningToast", "Código de herramienta erroneo.");
+    return false;
+  }
+  if (context.gang.match(/^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/)) {
+    $().toastmessage("showWarningToast", "La Cuadrila es incorrecta.");
+    return false;
+  }
+  if (context.price.match(/^[+]?[0-9]+[\.[0-9]{0,4}]?/)) {
+    $().toastmessage("showWarningToast", "El precio ingresado es incorrecto.");
+    return false;
+  }
+  context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
+  context.addTools = True;
+  $.post("", context, function(response) {
+    if (response.status) {
+      getlistTools();
+    } else {
+      $().toastmessage("showErrorToast", "No se a podido agregar herramientas. " + response.raise);
     }
   });
 };

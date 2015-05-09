@@ -234,9 +234,22 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                     context['status'] = True
                 if 'addTools' in request.POST:
                     try:
-                        pass
+                        em = APTools.objects.get(
+                            analysis_id=kwargs['analysis'],
+                            tools_id=request.POST.get('tools')
+                        )
+                        em.gang = flost(request.POST['gang'])
+                        em.price = float(request.POST['price'])
+                        em.quantity = ((float(request.POST['gang']) * 8)/ float(request.POST['performance']))
+                        em.save()
                     except ObjectDoesNotExist, e:
-                        raise
+                        add = APTools()
+                        add.analysis_id = kwargs['analysis']
+                        add.tools_id = request.POST['tools']
+                        add.gang = float(request.POST['gang'])
+                        add.price = float(request.POST['price'])
+                        add.quantity = ((float(request.POST['gang']) * 8)/ float(request.POST['performance']))
+                        add.save()
                     context['status'] = True
                 if 'editTools' in request.POST:
                     context['status'] = True

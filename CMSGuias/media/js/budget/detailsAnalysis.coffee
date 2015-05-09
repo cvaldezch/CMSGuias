@@ -29,7 +29,8 @@ $(document).ready ->
     $(".bshownewmp").on "click", openNewManPower
     # end block
     # block tools
-
+    $("[name=tools]").on "change", getMeasureTools
+    $("[name=measuret]").on "change", getSummaryTools
     # end block
     return
 
@@ -460,7 +461,53 @@ getMeasureTools = (event) ->
       $mt.empty()
       $mt.html Mustache.render template, response
       $mt.trigger "chosen:updated"
+      setTimeout ->
+        getSummaryTools()
+      , 300
     else
       $().toastmessage "showErrorToast", "No se han obtenido resultados para tu busqueda. #{response.raise}"
+      return
+  return
+# get summary tools
+getSummaryTools = (event) ->
+  context = new Object
+  context.getSummary = true
+  context.tools = $("[name=measuret]").val()
+  if not context.tools.length is 14
+    $().toastmessage "showWarningToast", "El codigo es incorrecto."
+    return false
+  $.getJSON "/tools/search/", context, (response) ->
+    if response.status
+      template = """<table class="table table-condensed font-11"><tbody><tr><th>Código </th><td class="tools_id">{{ summary.tools_id }}</td></tr><tr><th>Nombre </th><td>{{ summary.name }}</td></tr><tr><th>Medida</th><td>{{ summary.measure }}</td></tr><tr><th>Unidad </th><td>{{ summary.unit__uninom }}</td></tr></tbody></table>"""
+      $ob = $(".summarytools")
+      $ob.empty()
+      $ob.html Mustache.render template, response
+    else
+      $().toastmessage "showErrorToast", "Error al obtener los datos, #{response.raise}"
+      return
+  return
+# add tools
+addTools = (event) ->
+  context = new Object
+  context.tools = $(".tools_id").text()
+  context.gang = $("[name=gangt]").val()
+  context.price = $("[name=pricet]").val()
+  if context.tools.length is 14
+    $().toastmessage "showWarningToast", "Código de herramienta erroneo."
+    return false
+  if context.gang.match /^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/
+    $().toastmessage "showWarningToast", "La Cuadrila es incorrecta."
+    return false
+  if context.price.match /^[+]?[0-9]+[\.[0-9]{0,4}]?/
+    $().toastmessage "showWarningToast", "El precio ingresado es incorrecto."
+    return false
+  context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+  context.addTools = True
+  $.post "", context, (response) ->
+    if response.status
+      getlistTools()
+      return
+    else
+      $().toastmessage "showErrorToast", "No se a podido agregar herramientas. #{response.raise}"
       return
   return

@@ -887,12 +887,15 @@ class ToolsView(JSONResponseMixin, TemplateView):
                 if 'searchMeasure' in request.GET:
                     context['measure'] = list(Tools.objects.values('tools_id', 'measure').filter(name__icontains=request.GET['name']).distinct('measure').order_by('measure'))
                     context['status'] = True
+                if 'getSummary' in request.GET:
+                    context['summary'] = list(Tools.objects.values('tools_id', 'name', 'measure', 'unit__uninom').filter(tools_id=request.GET['tools']))[0]
+                    context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = str(e)
                 context['status'] = False
             return self.render_to_json_response(context)
-        else:
-            try:
-                pass
-            except Exception as e:
-                raise Http404(e)
+        # else:
+        #     try:
+        #         pass
+        #     except Exception as e:
+        #         raise Http404(e)
