@@ -3,7 +3,7 @@ $(document).ready ->
     getMaterialsAll()
     getManPowerAll()
     getlistTools()
-    $(".materialsadd, .addmanpower").hide()
+    $(".materialsadd, .addmanpower, .addpaneltools").hide()
     $("[name=materials], [name=measure], [name=manpower], [name=tools], [name=measuret]").chosen
         width: "100%"
     $("[name=materials]").on "change", getmeasure
@@ -31,6 +31,13 @@ $(document).ready ->
     # block tools
     $("[name=tools]").on "change", getMeasureTools
     $("[name=measuret]").on "change", getSummaryTools
+    $(".baddtools").on "click", addTools
+    $(".bdeltools").on "click", delToolsAll
+    #$(document).on "dblclick", ".edittool",
+    #$(document).on "click", ".btn-edit-tool",
+    #$(document).on "click", ".btn-del-tool",
+    $(".btoolsrefresh").on "click", refreshTools
+    $(".bshowaddtool").on "click", showaddTools
     # end block
     return
 
@@ -368,7 +375,6 @@ showEditManPower = (event) ->
     $tr = $(@)
     $td = $tr.find "td"
     gang = $td.eq(4).text()
-    #$(".btn-edit-materials").attr "disabled", true
     $td.eq(8).find("button").attr "disabled", false
     price = $td.eq(6).text()
     $td.eq(4).html "<input type=\"text\" value=\"#{gang}\" class=\"form-control input-sm col-2 edit-mp-gang\">"
@@ -492,22 +498,130 @@ addTools = (event) ->
   context.tools = $(".tools_id").text()
   context.gang = $("[name=gangt]").val()
   context.price = $("[name=pricet]").val()
-  if context.tools.length is 14
+  context.performance = $(".performance").text()
+  if context.tools.length isnt 14
     $().toastmessage "showWarningToast", "Código de herramienta erroneo."
     return false
-  if context.gang.match /^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/
+  if not context.gang.match /^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/
     $().toastmessage "showWarningToast", "La Cuadrila es incorrecta."
     return false
-  if context.price.match /^[+]?[0-9]+[\.[0-9]{0,4}]?/
+  if not context.price.match /^[+]?[0-9]+[\.[0-9]{0,4}]?/
     $().toastmessage "showWarningToast", "El precio ingresado es incorrecto."
     return false
   context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
-  context.addTools = True
+  context.addTools = true
   $.post "", context, (response) ->
     if response.status
-      getlistTools()
+      listDetailsTools()
       return
     else
       $().toastmessage "showErrorToast", "No se a podido agregar herramientas. #{response.raise}"
       return
   return
+# delete tools
+delTools = (event) ->
+  btn = @
+  $.toastmessage
+    text: "Realmente desea eliminar la herramienta?"
+    type: "confirm"
+    sticky: true
+    buttons: [{value:"Si"},{value:"No"}]
+    success: (result) ->
+      if result is "Si"
+        context =  new Object
+        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+        context.delTools = true
+        context.tools = btn.value
+        $.post "", context, (response) ->
+          if response.status
+            listDetailsTools()
+            return
+          else
+            $().toastmessage "showErrorToast", "No se a podido eliminar la herramientas. #{response.raise}"
+            return
+        return
+  return
+# delete all tools
+delToolsAll = (event) ->
+  $.toastmessage
+    text: "Realmente desea eliminar toda la lista de herramientas?"
+    type: "confirm"
+    sticky: true
+    buttons: [{value:"Si"},{value:"No"}]
+    success: (result) ->
+      if result is "Si"
+        $.post "", context, (response) ->
+          if response.status
+            listDetailsTools()
+            return
+          else
+            $().toastmessage "showErrorToast", "No se a eliminado la lista de herramientas. #{response.raise}"
+            return
+        return
+  return
+# listTools details
+listDetailsTools = (event) ->
+  context = new Object
+  context.listTools = true
+  $.getJSON "", context, (response) ->
+    if response.status
+      template = """{{#tools}}
+      <tr>
+          <td>{{index}}</td>
+          <td>{{code}}</td>
+          <td>{{name}}</td>
+          <td>{{unit}}</td>
+          <td>{{gang}}</td>
+          <td>{{quantity}}</td>
+          <td>{{price}}</td>
+          <td>{{partial}}</td>
+          <td>
+            <button type="button" class="btn btn-xs btn-warning" disabled>
+              <span class="fa fa-edit"></span>
+            </button>
+          </td>
+          <td>
+            <button type="button" class="btn btn-xs btn-danger">
+              <span class="fa fa-trash"></span>
+            </button>
+          </td>
+      </tr>
+      {{/tools}}"""
+      $tb = $(".ttools > tbody")
+      counter = 1
+      response.index = ->
+        return counter++
+      $tb.html Mustache.render template, response
+      return
+    else
+      $().toastmessage "showErrorToast", "No se han obtenido datos. #{response.raise}"
+      return
+  return
+# refresh list Tools
+refreshTools = (event) ->
+  getlistTools()
+  listDetailsTools()
+  return
+
+showaddTools = (event) ->
+  if $(".addpaneltools").is ":visible"
+      $(@).removeClass "btn-warning"
+      .addClass "btn-default"
+      $(".addpaneltools").hide 800
+  else
+      $(@).removeClass "btn-default"
+      .addClass "btn-warning"
+      $(".addpaneltools").show 800
+  return
+  # if $(".edit-tool-gang").length
+  #     $(".edit-tool-gang").parent("td").html $(".edit-tool-gang").val()
+  # if $(".edit-tool-price").length
+  #     $(".edit-tool-price").parent("td").html $(".edit-tool-price").val()
+  # $tr = $(@)
+  # $td = $tr.find "td"
+  # gang = $td.eq(4).text()
+  # $td.eq(8).find("button").attr "disabled", false
+  # price = $td.eq(6).text()
+  # $td.eq(4).html "<input type=\"text\" value=\"#{gang}\" class=\"form-control input-sm col-2 edit-mp-gang\">"
+  # $td.eq(6).html "<input type=\"text\" value=\"#{price}\" class=\"form-control input-sm col-2 edit-mp-price\">"
+  # return

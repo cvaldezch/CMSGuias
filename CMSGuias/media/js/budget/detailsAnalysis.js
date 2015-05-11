@@ -1,10 +1,10 @@
-var addManPower, addMaterials, addTools, calcPartitalMaterial, delManPower, delManPowerAll, delMaterials, delMaterialsAll, editManPower, editMaterials, getListMaterials, getManPowerAll, getMaterialsAll, getMeasureTools, getSummaryTools, getlistTools, getmeasure, getsummary, listManPower, openNewManPower, openNewMaterial, refreshManPower, refreshMaterials, showAddManPower, showAddMaterial, showEditManPower, showEditMaterials;
+var addManPower, addMaterials, addTools, calcPartitalMaterial, delManPower, delManPowerAll, delMaterials, delMaterialsAll, delTools, delToolsAll, editManPower, editMaterials, getListMaterials, getManPowerAll, getMaterialsAll, getMeasureTools, getSummaryTools, getlistTools, getmeasure, getsummary, listDetailsTools, listManPower, openNewManPower, openNewMaterial, refreshManPower, refreshMaterials, refreshTools, showAddManPower, showAddMaterial, showEditManPower, showEditMaterials, showaddTools;
 
 $(document).ready(function() {
   getMaterialsAll();
   getManPowerAll();
   getlistTools();
-  $(".materialsadd, .addmanpower").hide();
+  $(".materialsadd, .addmanpower, .addpaneltools").hide();
   $("[name=materials], [name=measure], [name=manpower], [name=tools], [name=measuret]").chosen({
     width: "100%"
   });
@@ -29,6 +29,10 @@ $(document).ready(function() {
   $(".bshownewmp").on("click", openNewManPower);
   $("[name=tools]").on("change", getMeasureTools);
   $("[name=measuret]").on("change", getSummaryTools);
+  $(".baddtools").on("click", addTools);
+  $(".bdeltools").on("click", delToolsAll);
+  $(".btoolsrefresh").on("click", refreshTools);
+  $(".bshowaddtool").on("click", showaddTools);
 });
 
 getMaterialsAll = function(event) {
@@ -576,25 +580,120 @@ addTools = function(event) {
   context.tools = $(".tools_id").text();
   context.gang = $("[name=gangt]").val();
   context.price = $("[name=pricet]").val();
-  if (context.tools.length === 14) {
+  context.performance = $(".performance").text();
+  if (context.tools.length !== 14) {
     $().toastmessage("showWarningToast", "Código de herramienta erroneo.");
     return false;
   }
-  if (context.gang.match(/^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/)) {
+  if (!context.gang.match(/^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/)) {
     $().toastmessage("showWarningToast", "La Cuadrila es incorrecta.");
     return false;
   }
-  if (context.price.match(/^[+]?[0-9]+[\.[0-9]{0,4}]?/)) {
+  if (!context.price.match(/^[+]?[0-9]+[\.[0-9]{0,4}]?/)) {
     $().toastmessage("showWarningToast", "El precio ingresado es incorrecto.");
     return false;
   }
   context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
-  context.addTools = True;
+  context.addTools = true;
   $.post("", context, function(response) {
     if (response.status) {
-      getlistTools();
+      listDetailsTools();
     } else {
       $().toastmessage("showErrorToast", "No se a podido agregar herramientas. " + response.raise);
     }
   });
+};
+
+delTools = function(event) {
+  var btn;
+  btn = this;
+  $.toastmessage({
+    text: "Realmente desea eliminar la herramienta?",
+    type: "confirm",
+    sticky: true,
+    buttons: [
+      {
+        value: "Si"
+      }, {
+        value: "No"
+      }
+    ],
+    success: function(result) {
+      var context;
+      if (result === "Si") {
+        context = new Object;
+        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
+        context.delTools = true;
+        context.tools = btn.value;
+        $.post("", context, function(response) {
+          if (response.status) {
+            listDetailsTools();
+          } else {
+            $().toastmessage("showErrorToast", "No se a podido eliminar la herramientas. " + response.raise);
+          }
+        });
+      }
+    }
+  });
+};
+
+delToolsAll = function(event) {
+  $.toastmessage({
+    text: "Realmente desea eliminar toda la lista de herramientas?",
+    type: "confirm",
+    sticky: true,
+    buttons: [
+      {
+        value: "Si"
+      }, {
+        value: "No"
+      }
+    ],
+    success: function(result) {
+      if (result === "Si") {
+        $.post("", context, function(response) {
+          if (response.status) {
+            listDetailsTools();
+          } else {
+            $().toastmessage("showErrorToast", "No se a eliminado la lista de herramientas. " + response.raise);
+          }
+        });
+      }
+    }
+  });
+};
+
+listDetailsTools = function(event) {
+  var context;
+  context = new Object;
+  context.listTools = true;
+  $.getJSON("", context, function(response) {
+    var $tb, counter, template;
+    if (response.status) {
+      template = "{{#tools}}\n<tr>\n    <td>{{index}}</td>\n    <td>{{code}}</td>\n    <td>{{name}}</td>\n    <td>{{unit}}</td>\n    <td>{{gang}}</td>\n    <td>{{quantity}}</td>\n    <td>{{price}}</td>\n    <td>{{partial}}</td>\n    <td>\n      <button type=\"button\" class=\"btn btn-xs btn-warning\" disabled>\n        <span class=\"fa fa-edit\"></span>\n      </button>\n    </td>\n    <td>\n      <button type=\"button\" class=\"btn btn-xs btn-danger\">\n        <span class=\"fa fa-trash\"></span>\n      </button>\n    </td>\n</tr>\n{{/tools}}";
+      $tb = $(".ttools > tbody");
+      counter = 1;
+      response.index = function() {
+        return counter++;
+      };
+      $tb.html(Mustache.render(template, response));
+    } else {
+      $().toastmessage("showErrorToast", "No se han obtenido datos. " + response.raise);
+    }
+  });
+};
+
+refreshTools = function(event) {
+  getlistTools();
+  listDetailsTools();
+};
+
+showaddTools = function(event) {
+  if ($(".addpaneltools").is(":visible")) {
+    $(this).removeClass("btn-warning").addClass("btn-default");
+    $(".addpaneltools").hide(800);
+  } else {
+    $(this).removeClass("btn-default").addClass("btn-warning");
+    $(".addpaneltools").show(800);
+  }
 };

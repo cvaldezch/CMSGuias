@@ -181,6 +181,21 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                             for x in APManPower.objects.filter(analysis_id=kwargs['analysis']).order_by('manpower__cargos')
                         ]
                         context['status'] = True
+                    if 'listTools' in request.GET:
+                        context['tools'] = [
+                            {
+                                'id': x.id,
+                                'code': x.tools_id,
+                                'name': '%s - %s'%(x.tools.name, x.tools.measure),
+                                'unit': x.tools.unit.uninom,
+                                'gang': x.gang,
+                                'quantity': x.quantity,
+                                'price': x.price,
+                                'partial': float(x.partial)
+                            }
+                            for x in APTools.objects.filter(analysis_id=kwargs['analysis']).order_by('tools__name')
+                        ]
+                        context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)
                     context['status'] = False
@@ -251,7 +266,7 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                         add.quantity = ((float(request.POST['gang']) * 8)/ float(request.POST['performance']))
                         add.save()
                     context['status'] = True
-                if 'editTools' in request.POST:
+                if 'delToolsAll' in request.POST:
                     context['status'] = True
                 if 'delTools' in request.POST:
                     context['status'] = True

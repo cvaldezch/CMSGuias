@@ -92,6 +92,10 @@ class APTools(models.Model):
     class Meta:
         ordering = ['tools']
 
+    @property
+    def partial(self):
+        return float(self.quantity * self.price)
+
     def __unicode__(self):
         return '%s %s %d %d'%(self.analysis_id, self.tools, self.quantity, self.price)
 
