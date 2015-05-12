@@ -257,7 +257,7 @@
                                     <button class="btn btn-sm btn-default bdeltools" type="button">
                                         <span>+ Eliminar Todo</span>
                                     </button>
-                                    <button class="btn btn-sm btn-default bshownewmat" type="button">
+                                    <button class="btn btn-sm btn-default bshownewtools" type="button">
                                         <span>+ Nueva Herramienta</span>
                                     </button>
                                     <button class="btn btn-sm btn-default bcopymat" type="button">
@@ -318,7 +318,30 @@
                                             <th class="text-center">Eliminar</th>
                                         </tr>
                                     </thead>
-                                    <tbody></tbody>
+                                    <tbody>
+                                      {% for x in tools %}
+                                        <tr class="edittools">
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ x.tools_id }}</td>
+                                            <td>{{ x.tools.name }}</td>
+                                            <td>{{ x.tools.unit.uninom }}</td>
+                                            <td>{{ x.gang|safe }}</td>
+                                            <td>{{ x.quantity|safe }}</td>
+                                            <td>{{ x.price|safe }}</td>
+                                            <td>{{ x.partial|safe }}</td>
+                                            <td>
+                                              <button type="button" class="btn btn-xs btn-warning btnedittool" value="{{ x.tools_id }}" data-id="{{ x.id }}" disabled>
+                                                <span class="fa fa-edit"></span>
+                                              </button>
+                                            </td>
+                                            <td>
+                                              <button type="button" class="btn btn-xs btn-danger btndeltool" value="{{ x.tools_id }}" data-id=" {{ x.id }}">
+                                                <span class="fa fa-trash"></span>
+                                              </button>
+                                            </td>
+                                        </tr>
+                                      {% endfor %}
+                                    </tbody>
                                 </table>
                             </div>
                         </div>

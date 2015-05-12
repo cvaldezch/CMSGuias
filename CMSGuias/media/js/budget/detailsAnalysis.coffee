@@ -29,13 +29,14 @@ $(document).ready ->
     $(".bshownewmp").on "click", openNewManPower
     # end block
     # block tools
+    $(".bshownewtools").on "click", openNewTools
     $("[name=tools]").on "change", getMeasureTools
     $("[name=measuret]").on "change", getSummaryTools
     $(".baddtools").on "click", addTools
     $(".bdeltools").on "click", delToolsAll
-    #$(document).on "dblclick", ".edittool",
-    #$(document).on "click", ".btn-edit-tool",
-    #$(document).on "click", ".btn-del-tool",
+    $(document).on "dblclick", ".edittools", showEditTools
+    $(document).on "click", ".btnedittool", editTools
+    $(document).on "click", ".btndeltool", delTools
     $(".btoolsrefresh").on "click", refreshTools
     $(".bshowaddtool").on "click", showaddTools
     # end block
@@ -518,10 +519,38 @@ addTools = (event) ->
       $().toastmessage "showErrorToast", "No se a podido agregar herramientas. #{response.raise}"
       return
   return
+# edit Tools
+editTools = (event) ->
+  console.log "click"
+  context = new Object
+  context.tools = @value
+  context.gang = $(".edit-tool-gang").val()
+  context.price = $(".edit-tool-price").val()
+  context.performance = $(".performance").text()
+  if context.tools.length isnt 14
+    $().toastmessage "showWarningToast", "Código de herramienta erroneo."
+    return false
+  if not context.gang.match /^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/
+    $().toastmessage "showWarningToast", "La Cuadrila es incorrecta."
+    return false
+  if not context.price.match /^[+]?[0-9]+[\.[0-9]{0,4}]?/
+    $().toastmessage "showWarningToast", "El precio ingresado es incorrecto."
+    return false
+  context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+  context.addTools = true
+  console.log context
+  $.post "", context, (response) ->
+    if response.status
+      listDetailsTools()
+      return
+    else
+      $().toastmessage "showErrorToast", "No se a podido editar herramientas. #{response.raise}"
+      return
+  return
 # delete tools
 delTools = (event) ->
   btn = @
-  $.toastmessage
+  $().toastmessage "showToast",
     text: "Realmente desea eliminar la herramienta?"
     type: "confirm"
     sticky: true
@@ -543,13 +572,16 @@ delTools = (event) ->
   return
 # delete all tools
 delToolsAll = (event) ->
-  $.toastmessage
+  $().toastmessage "showToast",
     text: "Realmente desea eliminar toda la lista de herramientas?"
     type: "confirm"
     sticky: true
     buttons: [{value:"Si"},{value:"No"}]
     success: (result) ->
       if result is "Si"
+        context = new Object
+        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+        context.delToolsAll = true
         $.post "", context, (response) ->
           if response.status
             listDetailsTools()
@@ -565,28 +597,7 @@ listDetailsTools = (event) ->
   context.listTools = true
   $.getJSON "", context, (response) ->
     if response.status
-      template = """{{#tools}}
-      <tr>
-          <td>{{index}}</td>
-          <td>{{code}}</td>
-          <td>{{name}}</td>
-          <td>{{unit}}</td>
-          <td>{{gang}}</td>
-          <td>{{quantity}}</td>
-          <td>{{price}}</td>
-          <td>{{partial}}</td>
-          <td>
-            <button type="button" class="btn btn-xs btn-warning" disabled>
-              <span class="fa fa-edit"></span>
-            </button>
-          </td>
-          <td>
-            <button type="button" class="btn btn-xs btn-danger">
-              <span class="fa fa-trash"></span>
-            </button>
-          </td>
-      </tr>
-      {{/tools}}"""
+      template = """{{#tools}}<tr class="edittools"><td>{{index}}</td><td>{{code}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{gang}}</td><td>{{quantity}}</td><td>{{price}}</td><td>{{partial}}</td><td><button type="button" class="btn btn-xs btn-warning btnedittool" value="{{ code }}" data-id="{{ id }}" disabled><span class="fa fa-edit"></span></button></td><td><button type="button" class="btn btn-xs btn-danger btndeltool" value="{{ code }}" data-id=" {{ x.id }}"><span class="fa fa-trash"></span></button></td></tr>{{/tools}}"""
       $tb = $(".ttools > tbody")
       counter = 1
       response.index = ->
@@ -613,15 +624,27 @@ showaddTools = (event) ->
       .addClass "btn-warning"
       $(".addpaneltools").show 800
   return
-  # if $(".edit-tool-gang").length
-  #     $(".edit-tool-gang").parent("td").html $(".edit-tool-gang").val()
-  # if $(".edit-tool-price").length
-  #     $(".edit-tool-price").parent("td").html $(".edit-tool-price").val()
-  # $tr = $(@)
-  # $td = $tr.find "td"
-  # gang = $td.eq(4).text()
-  # $td.eq(8).find("button").attr "disabled", false
-  # price = $td.eq(6).text()
-  # $td.eq(4).html "<input type=\"text\" value=\"#{gang}\" class=\"form-control input-sm col-2 edit-mp-gang\">"
-  # $td.eq(6).html "<input type=\"text\" value=\"#{price}\" class=\"form-control input-sm col-2 edit-mp-price\">"
-  # return
+
+showEditTools = (event) ->
+  if $(".edit-tool-gang").length
+      $(".edit-tool-gang").parent("td").html $(".edit-tool-gang").val()
+  if $(".edit-tool-price").length
+      $(".edit-tool-price").parent("td").html $(".edit-tool-price").val()
+  $tr = $(@)
+  $td = $tr.find "td"
+  gang = $td.eq(4).text()
+  $td.eq(8).find("button").attr "disabled", false
+  price = $td.eq(6).text()
+  $td.eq(4).html "<input type=\"text\" value=\"#{gang}\" class=\"form-control input-sm col-2 edit-tool-gang\">"
+  $td.eq(6).html "<input type=\"text\" value=\"#{price}\" class=\"form-control input-sm col-2 edit-tool-price\">"
+  return
+# open new Tools
+openNewTools = ->
+  win = window.open "/tools/add", "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600"
+  interval = window.setInterval ->
+      if win == null or win.closed
+          window.clearInterval interval
+          getlistTools()
+          return
+  , 1000
+  return win

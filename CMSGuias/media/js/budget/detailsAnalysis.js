@@ -1,4 +1,4 @@
-var addManPower, addMaterials, addTools, calcPartitalMaterial, delManPower, delManPowerAll, delMaterials, delMaterialsAll, delTools, delToolsAll, editManPower, editMaterials, getListMaterials, getManPowerAll, getMaterialsAll, getMeasureTools, getSummaryTools, getlistTools, getmeasure, getsummary, listDetailsTools, listManPower, openNewManPower, openNewMaterial, refreshManPower, refreshMaterials, refreshTools, showAddManPower, showAddMaterial, showEditManPower, showEditMaterials, showaddTools;
+var addManPower, addMaterials, addTools, calcPartitalMaterial, delManPower, delManPowerAll, delMaterials, delMaterialsAll, delTools, delToolsAll, editManPower, editMaterials, editTools, getListMaterials, getManPowerAll, getMaterialsAll, getMeasureTools, getSummaryTools, getlistTools, getmeasure, getsummary, listDetailsTools, listManPower, openNewManPower, openNewMaterial, openNewTools, refreshManPower, refreshMaterials, refreshTools, showAddManPower, showAddMaterial, showEditManPower, showEditMaterials, showEditTools, showaddTools;
 
 $(document).ready(function() {
   getMaterialsAll();
@@ -27,10 +27,14 @@ $(document).ready(function() {
   $(document).on("click", ".btn-edit-mp", editManPower);
   $(document).on("click", ".btn-del-mp", delManPower);
   $(".bshownewmp").on("click", openNewManPower);
+  $(".bshownewtools").on("click", openNewTools);
   $("[name=tools]").on("change", getMeasureTools);
   $("[name=measuret]").on("change", getSummaryTools);
   $(".baddtools").on("click", addTools);
   $(".bdeltools").on("click", delToolsAll);
+  $(document).on("dblclick", ".edittools", showEditTools);
+  $(document).on("click", ".btnedittool", editTools);
+  $(document).on("click", ".btndeltool", delTools);
   $(".btoolsrefresh").on("click", refreshTools);
   $(".bshowaddtool").on("click", showaddTools);
 });
@@ -604,10 +608,42 @@ addTools = function(event) {
   });
 };
 
+editTools = function(event) {
+  var context;
+  console.log("click");
+  context = new Object;
+  context.tools = this.value;
+  context.gang = $(".edit-tool-gang").val();
+  context.price = $(".edit-tool-price").val();
+  context.performance = $(".performance").text();
+  if (context.tools.length !== 14) {
+    $().toastmessage("showWarningToast", "Código de herramienta erroneo.");
+    return false;
+  }
+  if (!context.gang.match(/^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/)) {
+    $().toastmessage("showWarningToast", "La Cuadrila es incorrecta.");
+    return false;
+  }
+  if (!context.price.match(/^[+]?[0-9]+[\.[0-9]{0,4}]?/)) {
+    $().toastmessage("showWarningToast", "El precio ingresado es incorrecto.");
+    return false;
+  }
+  context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
+  context.addTools = true;
+  console.log(context);
+  $.post("", context, function(response) {
+    if (response.status) {
+      listDetailsTools();
+    } else {
+      $().toastmessage("showErrorToast", "No se a podido editar herramientas. " + response.raise);
+    }
+  });
+};
+
 delTools = function(event) {
   var btn;
   btn = this;
-  $.toastmessage({
+  $().toastmessage("showToast", {
     text: "Realmente desea eliminar la herramienta?",
     type: "confirm",
     sticky: true,
@@ -638,7 +674,7 @@ delTools = function(event) {
 };
 
 delToolsAll = function(event) {
-  $.toastmessage({
+  $().toastmessage("showToast", {
     text: "Realmente desea eliminar toda la lista de herramientas?",
     type: "confirm",
     sticky: true,
@@ -650,7 +686,11 @@ delToolsAll = function(event) {
       }
     ],
     success: function(result) {
+      var context;
       if (result === "Si") {
+        context = new Object;
+        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
+        context.delToolsAll = true;
         $.post("", context, function(response) {
           if (response.status) {
             listDetailsTools();
@@ -670,7 +710,7 @@ listDetailsTools = function(event) {
   $.getJSON("", context, function(response) {
     var $tb, counter, template;
     if (response.status) {
-      template = "{{#tools}}\n<tr>\n    <td>{{index}}</td>\n    <td>{{code}}</td>\n    <td>{{name}}</td>\n    <td>{{unit}}</td>\n    <td>{{gang}}</td>\n    <td>{{quantity}}</td>\n    <td>{{price}}</td>\n    <td>{{partial}}</td>\n    <td>\n      <button type=\"button\" class=\"btn btn-xs btn-warning\" disabled>\n        <span class=\"fa fa-edit\"></span>\n      </button>\n    </td>\n    <td>\n      <button type=\"button\" class=\"btn btn-xs btn-danger\">\n        <span class=\"fa fa-trash\"></span>\n      </button>\n    </td>\n</tr>\n{{/tools}}";
+      template = "{{#tools}}<tr class=\"edittools\"><td>{{index}}</td><td>{{code}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{gang}}</td><td>{{quantity}}</td><td>{{price}}</td><td>{{partial}}</td><td><button type=\"button\" class=\"btn btn-xs btn-warning btnedittool\" value=\"{{ code }}\" data-id=\"{{ id }}\" disabled><span class=\"fa fa-edit\"></span></button></td><td><button type=\"button\" class=\"btn btn-xs btn-danger btndeltool\" value=\"{{ code }}\" data-id=\" {{ x.id }}\"><span class=\"fa fa-trash\"></span></button></td></tr>{{/tools}}";
       $tb = $(".ttools > tbody");
       counter = 1;
       response.index = function() {
@@ -696,4 +736,33 @@ showaddTools = function(event) {
     $(this).removeClass("btn-default").addClass("btn-warning");
     $(".addpaneltools").show(800);
   }
+};
+
+showEditTools = function(event) {
+  var $td, $tr, gang, price;
+  if ($(".edit-tool-gang").length) {
+    $(".edit-tool-gang").parent("td").html($(".edit-tool-gang").val());
+  }
+  if ($(".edit-tool-price").length) {
+    $(".edit-tool-price").parent("td").html($(".edit-tool-price").val());
+  }
+  $tr = $(this);
+  $td = $tr.find("td");
+  gang = $td.eq(4).text();
+  $td.eq(8).find("button").attr("disabled", false);
+  price = $td.eq(6).text();
+  $td.eq(4).html("<input type=\"text\" value=\"" + gang + "\" class=\"form-control input-sm col-2 edit-tool-gang\">");
+  $td.eq(6).html("<input type=\"text\" value=\"" + price + "\" class=\"form-control input-sm col-2 edit-tool-price\">");
+};
+
+openNewTools = function() {
+  var interval, win;
+  win = window.open("/tools/add", "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600");
+  interval = window.setInterval(function() {
+    if (win === null || win.closed) {
+      window.clearInterval(interval);
+      getlistTools();
+    }
+  }, 1000);
+  return win;
 };

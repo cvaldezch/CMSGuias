@@ -90,6 +90,7 @@ manpower_urls = patterns('',
 # Crud Tools
 tools_urls = patterns('',
     url(r'^search/$', ToolsView.as_view()),
+    url(r'^(?P<add>\w{0,3})/$', ToolsView.as_view(), name='tools_view'),
 )
 # urls main
 urlpatterns = patterns('',

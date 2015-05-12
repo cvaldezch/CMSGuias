@@ -877,7 +877,7 @@ class ManPower(JSONResponseMixin, TemplateView):
 class ToolsView(JSONResponseMixin, TemplateView):
 
     @method_decorator(login_required)
-    def get(self, request, *args, **kwars):
+    def get(self, request, *args, **kwargs):
         context = dict()
         if request.is_ajax():
             try:
@@ -894,8 +894,10 @@ class ToolsView(JSONResponseMixin, TemplateView):
                 context['raise'] = str(e)
                 context['status'] = False
             return self.render_to_json_response(context)
-        # else:
-        #     try:
-        #         pass
-        #     except Exception as e:
-        #         raise Http404(e)
+        else:
+            try:
+                if kwargs['add']:
+                    context['units'] = Unidade.objects.all()
+                    return render(request, 'home/crud/tools_form.html', context)
+            except Exception as e:
+                raise Http404(e)

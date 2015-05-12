@@ -203,7 +203,7 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
             context['analysis'] = Analysis.objects.get(analysis_id=kwargs['analysis'])
             context['materials'] = APMaterials.objects.filter(analysis_id=kwargs['analysis']).order_by('materials__matnom')
             context['manpower'] = APManPower.objects.filter(analysis_id=kwargs['analysis']).order_by('manpower__cargos')
-            # context['tools'] = APTools.objects.filter(analysis_id=kwargs['analysis']).order_by()
+            context['tools'] = APTools.objects.filter(analysis_id=kwargs['analysis']).order_by('tools__name')
             return render(request, 'budget/analysisdetails.html', context)
         except TemplateDoesNotExist, e:
             raise Http404(e)
@@ -253,7 +253,7 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                             analysis_id=kwargs['analysis'],
                             tools_id=request.POST.get('tools')
                         )
-                        em.gang = flost(request.POST['gang'])
+                        em.gang = float(request.POST['gang'])
                         em.price = float(request.POST['price'])
                         em.quantity = ((float(request.POST['gang']) * 8)/ float(request.POST['performance']))
                         em.save()
@@ -267,8 +267,10 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                         add.save()
                     context['status'] = True
                 if 'delToolsAll' in request.POST:
+                    APTools.objects.filter(analysis_id=kwargs['analysis']).delete()
                     context['status'] = True
                 if 'delTools' in request.POST:
+                    APTools.objects.filter(analysis_id=kwargs['analysis'], tools_id=request.POST['tools']).delete()
                     context['status'] = True
                 if 'addMan' in request.POST:
                     try:
@@ -278,7 +280,7 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                         )
                         em.gang = float(request.POST['gang'])
                         em.price = float(request.POST.get('price'))
-                        em.quantity = ((float(request.POST['gang']) * 8)/ float(request.POST['performance']))
+                        em.quantity = ((float(request.POST['gang']) * 8) / float(request.POST['performance']))
                         em.save()
                     except ObjectDoesNotExist:
                         add = APManPower()

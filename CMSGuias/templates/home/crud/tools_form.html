@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+	<div class="container">
+		<div class="well">
+			<h3>Agregar Herrmientas</h3>
+			<form action="" action="post">
+				<div class="form-group">
+					<label class="control-label">Codigo</label>
+					<input type="text" name="tools_id" maxlength="14" class="form-control input-ms" placeholder="Codigo">
+				</div>
+				<div class="form-group">
+					<label for="" class="control-label">Descripción</label>
+					<input type="text" class="form-control input-sm" name="name" placeholder="Ingrese Nombre o descripción de la herramienrta">
+				</div>
+				<div class="form-group">
+					<label for="" class="control-label">Medida</label>
+					<input type="text" class="form-control input-sm" name="measure" placeholder="Ingrede Medida">
+				</div>
+				<div class="form-gruop">
+					<label for="" class="contorl-label">Unidad</label>
+					<select name="unit" class="form-control input-sm">
+						{% for x in units %}
+							<option value="{{ x.unidad_id }}">{{ x.uninom }}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<div class="form-group">
+					<label for=""></label>
+					<button type="reset" class="btn btn-default btn-sm">
+						<span class="fa fa-trash"></span>
+						<span>Limpiar</span>
+					</button>
+					<button type="submit" class="btn btn-warning btn-sm">
+						<span class="fa fa-saved"></span>
+						<span>Guardar Cambios</span>
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+{% endblock %}
