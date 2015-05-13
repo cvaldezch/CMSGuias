@@ -142,6 +142,7 @@ getListMaterials = (event) ->
             response.index = ->
                 return counter++
             $tbl.html Mustache.render template, response
+            getUnitaryPrice()
             return
         else
             $().toastmessage "showErrorToast", "Error al Obtener la lista. #{response.raise}."
@@ -334,6 +335,7 @@ listManPower = (event) ->
             response.index = ->
                 return counter++
             $tb.html Mustache.render template, response
+            getUnitaryPrice()
             return
         else
             $().toastmessage "showErrorToast", "No se obtenido resultados. #{response.raise}"
@@ -603,6 +605,7 @@ listDetailsTools = (event) ->
       response.index = ->
         return counter++
       $tb.html Mustache.render template, response
+      getUnitaryPrice()
       return
     else
       $().toastmessage "showErrorToast", "No se han obtenido datos. #{response.raise}"
@@ -648,3 +651,12 @@ openNewTools = ->
           return
   , 1000
   return win
+
+# get price unitary
+getUnitaryPrice = (event) ->
+  context = new Object
+  context.priceAll = true
+  $.getJSON "", context, (response) ->
+    if response.status
+      $(".tanalysis").text response.total
+  return

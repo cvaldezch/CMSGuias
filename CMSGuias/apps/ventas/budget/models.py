@@ -37,6 +37,16 @@ class Analysis(models.Model):
     class Meta:
         ordering = ['name']
 
+    @property
+    def total(self):
+        tm = APMaterials.objects.extra(select={'total':'select SUM(price * quantity) as total from budget_APMaterials where analysis_id like analysis_id'})[0].total
+        tmp = APManPower.objects.extra(select={'total':'select SUM(price * quantity) as total from budget_APManPower where analysis_id like analysis_id'})[0].total
+        tt = APTools.objects.extra(select={'total':'select SUM(price * quantity) as total from budget_APTools where analysis_id like analysis_id'})[0].total
+        print type(tm)
+        print type(tmp)
+        print type(tt)
+        return round(float(tm+float(tmp)+float(tt)), 2)
+
     def __unicode__(self):
         return '%s %s %s'%(self.analysis_id, self.name, self.register)
 

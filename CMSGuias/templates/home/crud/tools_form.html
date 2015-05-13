@@ -3,7 +3,8 @@
 	<div class="container">
 		<div class="well">
 			<h3>Agregar Herrmientas</h3>
-			<form action="" action="post">
+			<form action="" method="POST">
+				{% csrf_token %}
 				<div class="form-group">
 					<label class="control-label">Codigo</label>
 					<input type="text" name="tools_id" maxlength="14" class="form-control input-ms" placeholder="Codigo">
@@ -31,7 +32,7 @@
 						<span>Limpiar</span>
 					</button>
 					<button type="submit" class="btn btn-warning btn-sm">
-						<span class="fa fa-saved"></span>
+						<span class="fa fa-save"></span>
 						<span>Guardar Cambios</span>
 					</button>
 				</div>

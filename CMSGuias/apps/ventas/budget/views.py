@@ -196,6 +196,9 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                             for x in APTools.objects.filter(analysis_id=kwargs['analysis']).order_by('tools__name')
                         ]
                         context['status'] = True
+                    if 'priceAll' in request.GET:
+                        context['total'] = Analysis.objects.get(analysis_id=kwargs['analysis']).total
+                        context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)
                     context['status'] = False

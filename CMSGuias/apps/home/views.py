@@ -901,3 +901,17 @@ class ToolsView(JSONResponseMixin, TemplateView):
                     return render(request, 'home/crud/tools_form.html', context)
             except Exception as e:
                 raise Http404(e)
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if kwargs['add']:
+                form = addToolsForm(request.POST)
+                if form.is_valid():
+                    form.save()
+                    return HttpResponseRedirect('/tools/')
+                else:
+                    raise Http404('Fail Add Tools')
+        except ObjectDoesNotExist as e:
+            raise

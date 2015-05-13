@@ -13,5 +13,5 @@ groupAnalysis = patterns('',
 
 budget_urls = patterns('',
     url(r'^analysis/group/', include(groupAnalysis)),
-    url(r'^analysis/prices/$',  AnalystPrices.as_view()),
+    url(r'^analysis/prices/$',  AnalystPrices.as_view(), name='analysisprice_view'),
 )

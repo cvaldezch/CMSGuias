@@ -1,4 +1,4 @@
-var addManPower, addMaterials, addTools, calcPartitalMaterial, delManPower, delManPowerAll, delMaterials, delMaterialsAll, delTools, delToolsAll, editManPower, editMaterials, editTools, getListMaterials, getManPowerAll, getMaterialsAll, getMeasureTools, getSummaryTools, getlistTools, getmeasure, getsummary, listDetailsTools, listManPower, openNewManPower, openNewMaterial, openNewTools, refreshManPower, refreshMaterials, refreshTools, showAddManPower, showAddMaterial, showEditManPower, showEditMaterials, showEditTools, showaddTools;
+var addManPower, addMaterials, addTools, calcPartitalMaterial, delManPower, delManPowerAll, delMaterials, delMaterialsAll, delTools, delToolsAll, editManPower, editMaterials, editTools, getListMaterials, getManPowerAll, getMaterialsAll, getMeasureTools, getSummaryTools, getUnitaryPrice, getlistTools, getmeasure, getsummary, listDetailsTools, listManPower, openNewManPower, openNewMaterial, openNewTools, refreshManPower, refreshMaterials, refreshTools, showAddManPower, showAddMaterial, showEditManPower, showEditMaterials, showEditTools, showaddTools;
 
 $(document).ready(function() {
   getMaterialsAll();
@@ -153,6 +153,7 @@ getListMaterials = function(event) {
         return counter++;
       };
       $tbl.html(Mustache.render(template, response));
+      getUnitaryPrice();
     } else {
       $().toastmessage("showErrorToast", "Error al Obtener la lista. " + response.raise + ".");
     }
@@ -386,6 +387,7 @@ listManPower = function(event) {
         return counter++;
       };
       $tb.html(Mustache.render(template, response));
+      getUnitaryPrice();
     } else {
       $().toastmessage("showErrorToast", "No se obtenido resultados. " + response.raise);
     }
@@ -717,6 +719,7 @@ listDetailsTools = function(event) {
         return counter++;
       };
       $tb.html(Mustache.render(template, response));
+      getUnitaryPrice();
     } else {
       $().toastmessage("showErrorToast", "No se han obtenido datos. " + response.raise);
     }
@@ -765,4 +768,15 @@ openNewTools = function() {
     }
   }, 1000);
   return win;
+};
+
+getUnitaryPrice = function(event) {
+  var context;
+  context = new Object;
+  context.priceAll = true;
+  $.getJSON("", context, function(response) {
+    if (response.status) {
+      return $(".tanalysis").text(response.total);
+    }
+  });
 };

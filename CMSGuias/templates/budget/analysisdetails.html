@@ -12,6 +12,10 @@
             Detalle de Analisis de Precio
         </h3>
         <div class="panel panel-warning">
+          <a href="{% url 'analysisprice_view' %}" class="btn btn-default btn-xs">
+            <span class="fa fa-chevron-left"></span>
+            <span class="fa fa-class">Regresar</span>
+          </a>
             <div class="panel-footer">
                 <dl class="dl-horizontal">
                     <dt>Código</dt>
@@ -23,6 +27,10 @@
                     <dt>Rendimiento</dt>
                     <dd>
                         <span class="performance">{{ analysis.performance|safe }}</span> <span>x día.</span>
+                    </dd>
+                    <dt>Precio Unitario</dt>
+                    <dd>
+                        <span class="tanalysis">{{ analysis.total|safe }}</span>
                     </dd>
                 </dl>
             </div>
