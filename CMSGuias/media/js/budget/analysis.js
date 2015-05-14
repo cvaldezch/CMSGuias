@@ -1,4 +1,4 @@
-var editAnalysis, openGroup, openUnit, saveAnalysis, searchAnalysis, searchChange, showAnalysis;
+var clearEdit, delAnalysis, editAnalysis, openGroup, openUnit, saveAnalysis, searchAnalysis, searchChange, showAnalysis;
 
 $(function() {
   $("[name=name]").restrictLength($("#pres-max-length"));
@@ -8,6 +8,10 @@ $(function() {
   $(".btn-saveAnalysis").on("click", saveAnalysis);
   $("[name=ssearch]").on("change", searchChange);
   $(".btn-search").on("click", searchAnalysis);
+  $(document).on("click", ".bedit", editAnalysis);
+  $(document).on("click", ".bdel", delAnalysis);
+  $(".bedit, .bdel").css("cursor", "pointer");
+  $(".analysisClose").on("click", clearEdit);
 });
 
 showAnalysis = function() {
@@ -87,6 +91,7 @@ saveAnalysis = function(event) {
       $.post("", context, (function(response) {
         if (response.status) {
           $().toastmessage("showSuccessToast", "Se guardaron los camnbios correctamente.");
+          clearEdit();
           setTimeout((function() {
             location.reload();
           }), 2600);
@@ -157,5 +162,45 @@ editAnalysis = function(event) {
   $("[name=name]").val(this.getAttribute("data-name"));
   $("[name=unit]").val(this.getAttribute("data-unit"));
   $("[name=performance]").val(this.getAttribute("data-performance"));
-  $("[name=edit]").val(this.value);
+  $("[name=edit]").val(this.getAttribute("data-value"));
+  $("#manalysis").modal("show");
+};
+
+delAnalysis = function(event) {
+  var btn;
+  btn = this;
+  $().toastmessage("showToast", {
+    text: "Realmente desea eliminar el Analisis de Precio Unitario, debe tener en cuenta que se eliminara permanentemente.<br> Eliminar Analisis?",
+    type: "confirm",
+    sticky: true,
+    buttons: [
+      {
+        value: "Si"
+      }, {
+        value: "No"
+      }
+    ],
+    success: function(result) {
+      var context;
+      if (result === "Si") {
+        context = new Object;
+        context.delAnalysis = true;
+        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
+        context.analysis = btn.getAttribute("data-value");
+        $.post("", context, function(response) {
+          if (response.status) {
+            location.reload();
+          } else {
+            $().toastmessage("showErrorToast", "Error al eliminar el Anlisis de Precio");
+          }
+        });
+      }
+    }
+  });
+};
+
+clearEdit = function(event) {
+  $("[name=name]").val("");
+  $("[name=performance]").val("");
+  $("[name=edit]").val("");
 };

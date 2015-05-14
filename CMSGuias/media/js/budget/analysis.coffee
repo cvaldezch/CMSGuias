@@ -6,6 +6,10 @@ $ ->
   $(".btn-saveAnalysis").on "click", saveAnalysis
   $("[name=ssearch]").on "change", searchChange
   $(".btn-search").on "click", searchAnalysis
+  $(document).on "click", ".bedit", editAnalysis
+  $(document).on "click", ".bdel", delAnalysis
+  $(".bedit, .bdel").css "cursor", "pointer"
+  $(".analysisClose").on "click", clearEdit
   return
 
 showAnalysis = ->
@@ -76,6 +80,7 @@ saveAnalysis = (event) ->
       $.post "", context, ((response) ->
         if response.status
           $().toastmessage "showSuccessToast", "Se guardaron los camnbios correctamente."
+          clearEdit()
           setTimeout (->
             location.reload()
             return
@@ -135,9 +140,43 @@ searchChange = (event) ->
 
 # show analysis edit
 editAnalysis = (event) ->
-  $("[name=group]").val @getAttribute "data-group"
-  $("[name=name]").val @getAttribute "data-name"
-  $("[name=unit]").val @getAttribute "data-unit"
-  $("[name=performance]").val @getAttribute "data-performance"
-  $("[name=edit]").val @value
+  $("[name=group]").val this.getAttribute "data-group"
+  $("[name=name]").val this.getAttribute "data-name"
+  $("[name=unit]").val this.getAttribute "data-unit"
+  $("[name=performance]").val this.getAttribute "data-performance"
+  $("[name=edit]").val this.getAttribute "data-value"
+  $("#manalysis").modal "show"
+  return
+
+# Delete analysis
+delAnalysis = (event) ->
+  btn = this
+  $().toastmessage "showToast",
+    text: "Realmente desea eliminar el Analisis de Precio Unitario, debe tener en cuenta que se eliminara permanentemente.<br> Eliminar Analisis?"
+    type: "confirm"
+    sticky: true
+    buttons: [
+      {value: "Si"}
+      {value: "No"}
+    ]
+    success: (result) ->
+      if result is "Si"
+        context = new Object
+        context.delAnalysis = true
+        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+        context.analysis = btn.getAttribute "data-value"
+        $.post "", context, (response) ->
+          if response.status
+            location.reload()
+            return
+          else
+            $().toastmessage "showErrorToast", "Error al eliminar el Anlisis de Precio"
+            return
+        return
+  return
+
+clearEdit = (event) ->
+  $("[name=name]").val ""
+  $("[name=performance]").val ""
+  $("[name=edit]").val ""
   return

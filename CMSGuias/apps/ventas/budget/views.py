@@ -138,6 +138,31 @@ class AnalystPrices(JSONResponseMixin, TemplateView):
                     else:
                         context['status'] = False
                         context['raise'] = 'Error de Fields invalid.'
+                if 'edit' in request.POST:
+                    ed = Analysis.objects.get(analysis_id=request.POST['analysis_id'])
+                    performance = ed.performance
+                    form = addAnalysisForm(request.POST, instance=ed)
+                    if form.is_valid():
+                        # Change details analysis manpower and tools
+                        if performance != float(request.POST['performance']):
+                            for x in APManPower.objects.filter(analysis_id=request.POST['analysis_id']):
+                                x.quantity = ((float(x.gang)*8)/float(request.POST['performance']))
+                                x.save()
+                            for x in APTools.objects.filter(analysis_id=request.POST['analysis_id']):
+                                x.quantity = ((float(x.gang)*8)/float(request.POST['performance']))
+                                x.save()
+                        form.save()
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+                        context['raise'] = 'Error de Fields invalid.'
+                if 'delAnalysis' in request.POST:
+                    analysis = Analysis.objects.get(analysis_id=request.POST['analysis'])
+                    APMaterials.objects.filter(analysis_id=request.POST['analysis']).delete()
+                    APManPower.objects.filter(analysis_id=request.POST['analysis']).delete()
+                    APTools.objects.filter(analysis_id=request.POST['analysis']).delete()
+                    analysis.delete()
+                    context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = str(e)
                 context['status'] = False

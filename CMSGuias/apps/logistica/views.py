@@ -1316,6 +1316,7 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
                 raise Http404(e)
 
     @method_decorator(login_required)
+
     def post(self, request, *args, **kwargs):
         context = dict()
         if request.is_ajax():
@@ -1399,3 +1400,13 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
+
+class PriceMaterialsViews(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            return render(request, 'logistics/searchprices.html', context)
+        except TemplateDoesNotExist as e:
+            raise Http404(e)

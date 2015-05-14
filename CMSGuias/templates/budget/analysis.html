@@ -75,8 +75,9 @@
                       <th>Código</th>
                       <th>Nombre</th>
                       <th>Unidad</th>
-                      <th>Rendimiento</th>
                       <th>Grupo</th>
+                      <th>Rendimiento</th>
+                      <th>P. Unitario</th>
                       <th>Acciones</th>
                   </tr>
               </thead>
@@ -87,17 +88,25 @@
                     <td>{{ x.analysis_id }}</td>
                     <td>{{ x.name }}</td>
                     <td>{{ x.unit.uninom }}</td>
-                    <td>{{ x.performance|safe }}</td>
                     <td>{{ x.group.name }}</td>
-                    <td>
+                    <td>{{ x.performance|safe }}</td>
+                    <td>{{ x.total|safe }}</td>
+                    <td class="text-center">
                       <div class="dropdown">
-                        <button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown" aria-expanded="true">
+                        <button class="btn btn-danger dropdown-toggle btn-xs" type="button" data-toggle="dropdown" aria-expanded="true">
+                          <span class="fa fa-gears"></span>
                           <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
-                          <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'detailsamalysis' x.analysis_id %}">Detalle</a></li>
-                          <li role="presentation"><a role="menuitem" tabindex="-1" href="">Editar</a></li>
-                          <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Eliminar</a></li>
+                          <li role="presentation" class="text-left">
+                            <a role="menuitem" tabindex="-1" href="{% url 'detailsamalysis' x.analysis_id %}"><span class="fa fa-list-alt"></span> Detalle</a>
+                          </li>
+                          <li role="presentation" class="text-left">
+                            <a role="menuitem" tabindex="-1" class="bedit" data-value="{{ x.analysis_id }}" data-group="{{ x.group_id }}" data-name="{{ x.name }}" data-unit="{{ x.unit_id }}" data-performance="{{ x.performance|safe }}"><span class="fa fa-edit"></span> Editar</a>
+                          </li>
+                          <li role="presentation" class="text-left">
+                            <a role="menuitem" tabindex="-1" class="bdel" data-value="{{ x.analysis_id }}"><span class="fa fa-trash"></span> Eliminar</a>
+                          </li>
                         </ul>
                       </div>
                     </td>
@@ -180,7 +189,7 @@
                   </div>
               </div>
               <div class="modal-footer">
-                  <button type="button" class="btn btn-default btn-sm pull-left" data-dismiss="modal">
+                  <button type="button" class="btn btn-default btn-sm pull-left analysisClose" data-dismiss="modal">
                       <span class="fa fa-times"></span>
                       Salir
                   </button>

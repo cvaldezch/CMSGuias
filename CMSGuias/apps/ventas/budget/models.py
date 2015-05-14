@@ -39,16 +39,16 @@ class Analysis(models.Model):
 
     @property
     def total(self):
-        tm = APMaterials.objects.extra(select={'total':'select SUM(price * quantity) as total from budget_APMaterials where analysis_id like analysis_id'})[0].total
-        tmp = APManPower.objects.extra(select={'total':'select SUM(price * quantity) as total from budget_APManPower where analysis_id like analysis_id'})[0].total
-        tt = APTools.objects.extra(select={'total':'select SUM(price * quantity) as total from budget_APTools where analysis_id like analysis_id'})[0].total
-        print type(tm)
-        print type(tmp)
-        print type(tt)
+        tm = APMaterials.objects.extra(select={'total':'select SUM(price * quantity) as total from budget_APMaterials where analysis_id like analysis_id'})
+        tm = tm[0].total if tm else 0
+        tmp = APManPower.objects.extra(select={'total':'select SUM(price * quantity) as total from budget_APManPower where analysis_id like analysis_id'})
+        tmp = tmp[0].total if tmp else 0
+        tt = APTools.objects.extra(select={'total':'select SUM(price * quantity) as total from budget_APTools where analysis_id like analysis_id'})
+        tt = tt[0].total if tt else 0
         return round(float(tm+float(tmp)+float(tt)), 2)
 
     def __unicode__(self):
-        return '%s %s %s'%(self.analysis_id, self.name, self.register)
+        return '%s %s %s %f'%(self.analysis_id, self.name, self.register, self.performance)
 
 class APMaterials(models.Model):
     analysis = models.ForeignKey(Analysis, to_field='analysis_id')
