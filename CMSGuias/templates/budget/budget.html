@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block menu %}
+  {% include "menus/sale.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+  <div class="well">
+    <header>
+      <h3>Presupuestos</h3>
+    </header>
+    <section>
+      <div class="panel panel-primary">
+        <div class="panel-footer">
+          <div class="row">
+            <div class="col-md-2">
+              <div class="form-group">
+                <label for="" class="control-label">Código</label>
+                <input type="text" class="form-control" placeholder="PROPAA0000">
+              </div>
+            </div>
+            <div class="col-md-9">
+              <div class="form-group">
+                <label for="" class="control-label">Nombre</label>
+                <input type="text" class="form-control" placeholder="Descripción">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <div class="panel panel-primary"></div>
+    </section>
+  </div>
+</div>
+{% endblock content %}

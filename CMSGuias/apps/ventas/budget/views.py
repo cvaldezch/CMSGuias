@@ -331,3 +331,16 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                 context['raise'] = str(e)
                 context['status'] = False
             return self.render_to_json_response(context)
+
+# Budget View
+class BudgetView(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            pass
+        else:
+            try:
+                return render(request, 'budget/budget.html')
+            except TemplateDoesNotExist as e:
+                raise Http404(e)
