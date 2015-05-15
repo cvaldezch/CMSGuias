@@ -10,7 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response, get_list_or_404,get_object_or_404
+from django.shortcuts import render_to_response, get_list_or_404, get_object_or_404, render
 from django.utils import simplejson
 from django.utils.decorators import method_decorator
 from django.template import RequestContext, TemplateDoesNotExist
@@ -1406,7 +1406,57 @@ class PriceMaterialsViews(JSONResponseMixin, TemplateView):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
-        try:
-            return render(request, 'logistics/searchprices.html', context)
-        except TemplateDoesNotExist as e:
-            raise Http404(e)
+        if request.is_ajax():
+            try:
+                if 'searchCode' in request.GET:
+                    det = DetCompra.objects.filter(materiales_id=request.GET['code']).distinct('materiales__materiales_id').order_by('materiales__materiales_id')
+                    print det.count()
+                    context['details'] = [
+                        {
+                            'code': det[0].materiales_id,
+                            'name': det[0].materiales.matnom,
+                            'metering': det[0].materiales.matmed,
+                        }
+                    ]
+                    context['status'] = True
+                if 'searchName' in request.GET:
+                    det = DetCompra.objects.filter(materiales__matnom__icontains=request.GET['name'])
+                    det = det.distinct('materiales__matnom', 'materiales__matmed')
+                    # print DetCompra.objects.all().count()
+                    context['details'] = [
+                        {
+                            'code': x.materiales_id,
+                            'name': x.materiales.matnom,
+                            'metering': x.materiales.matmed,
+                        }
+                        for x in det
+                    ]
+                    context['status'] = True
+                if 'prices' in request.GET:
+                    det = DetCompra.objects.filter(materiales_id=request.GET['code']).order_by('-compra__registrado')[:5]
+                    context['data'] = {
+                        'code': det[0].materiales_id,
+                        'name': det[0].materiales.matnom,
+                        'metering': det[0].materiales.matmed,
+                        'unit': det[0].materiales.unidad.uninom
+                    }
+                    context['prices'] = [
+                        {
+                            'purchase': x.compra_id,
+                            'supplier': x.compra.proveedor.razonsocial,
+                            'currency': x.compra.moneda.moneda,
+                            'date': x.compra.registrado.strftime('%d-%m-%Y'),
+                            'price': x.precio
+                        }
+                        for x in det
+                    ]
+                    context['status'] = True
+            except ObjectDoesNotExist as e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)
+        else:
+            try:
+                return render(request, 'logistics/searchprices.html', context)
+            except TemplateDoesNotExist as e:
+                raise Http404(e)
