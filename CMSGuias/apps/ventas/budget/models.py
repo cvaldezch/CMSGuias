@@ -7,7 +7,7 @@ from django.db import models
 from audit_log.models.fields import LastUserField
 from audit_log.models.managers import AuditLog
 
-from CMSGuias.apps.home.models import Materiale, Unidade, Cargo, Tools
+from CMSGuias.apps.home.models import Materiale, Unidade, Cargo, Tools, Moneda
 
 
 class AnalysisGroup(models.Model):
@@ -123,6 +123,8 @@ class Budget(models.Model):
     review = models.CharField(max_length=10)
     version = models.CharField(max_length=5, default='')
     status = models.CharField(max_length=2, default='PE')
+    currency = models.ForeignKey(Moneda, to_field='moneda_id')
+    exchange = models.DecimalField(max_digits=5, decimal_places=3, default=0)
     flag = models.BooleanField(default=True)
 
     audit_log = AuditLog()

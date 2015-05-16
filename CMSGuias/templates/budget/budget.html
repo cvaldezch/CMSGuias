@@ -10,25 +10,123 @@
     </header>
     <section>
       <div class="panel panel-primary">
+        <div class="panel-heading">
+          <nav class="btn-group">
+            <button class="btn btn-sm btn-default">
+              <span class="fa fa-file"></span>
+              <span class="fa-class">Nuevo</span>
+            </button>
+            <button class="btn btn-sm btn-default">
+              <span class="fa fa-search"></span>
+              <span class="fa-class">Buscar</span>
+            </button>
+            <button class="btn btn-sm btn-default">
+              <span class="fa fa-print"></span>
+              <span class="fa-class">Vista</span>
+            </button>
+          </nav>
+        </div>
         <div class="panel-footer">
           <div class="row">
             <div class="col-md-2">
               <div class="form-group">
                 <label for="" class="control-label">Código</label>
-                <input type="text" class="form-control" placeholder="PROPAA0000">
+                <input type="text" class="form-control input-sm" placeholder="PROPAA0000">
               </div>
             </div>
             <div class="col-md-9">
               <div class="form-group">
                 <label for="" class="control-label">Nombre</label>
-                <input type="text" class="form-control" placeholder="Descripción">
+                <input type="text" class="form-control input-sm" placeholder="Descripción">
               </div>
             </div>
+            <div class="col-md-1">
+              <div class="form-group">
+                <label for="" class="control-label">Buscar</label>
+                <button class="btn btn-sm btn-warning">
+                  <span class="fa fa-search"></span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-condensed table-hover table-bordered">
+              <thead>
+                <tr class="brand-danger">
+                  <th class="col-2 text-center">Item</th>
+                  <th class="col-3 text-center">Código</th>
+                  <th>Nombre/Descripción</th>
+                  <th class="col-3 text-center">Acción</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
           </div>
         </div>
       </div>
       <hr>
-      <div class="panel panel-primary"></div>
+      <div class="panel panel-danger">
+        <div class="panel-footer">
+          <div class="row">
+            <div class="col-md-12">
+              <strong>Presupuesto</strong>
+            </div>
+            <div class="col-md-6">
+              <dl class="dl-horizontal">
+                <dt>Presupuesto</dt>
+                <dd></dd>
+                <dt>Cliente</dt>
+                <dd></dd>
+                <dt>Dirección</dt>
+                <dd></dd>
+                <dt>Observación</dt>
+                <dd></dd>
+              </dl>
+            </div>
+            <div class="col-md-6">
+              <dl class="dl-horizontal">
+                <dt>Registrado</dt>
+                <dd></dd>
+                <dt>Jornada Diaria</dt>
+                <dd></dd>
+                <dt>F. Entrega</dt>
+                <dd></dd>
+                <dt>Moneda</dt>
+                <dd></dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+        <div class="panel-heading">
+          <nav class="btn-group">
+            <button class="btn btn-xs btn-default">
+              <span class="fa fa-file"></span>
+              <span class="fa-class">Nuevo</span>
+            </button>
+            <button class="btn btn-xs btn-default">
+              <span class="fa fa-refresh"></span>
+              <span class="fa-class">Actualizar</span>
+            </button>
+            <button class="btn btn-xs btn-default">
+              <span class="fa fa-trash"></span>
+              <span class="fa-class">Eliminar Todo</span>
+            </button>
+            <button class="btn btn-xs btn-default">
+              <span class="fa fa-copy"></span>
+              <span class="fa-class">Copiar</span>
+            </button>
+          </nav>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-condensed table-hover table-bordered">
+            <thead>
+              <tr>
+
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
     </section>
   </div>
 </div>
