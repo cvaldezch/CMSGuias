@@ -24,7 +24,7 @@ from decimal import Decimal
 
 from .models import *
 from .forms import *
-from CMSGuias.apps.home.models import Unidade
+from CMSGuias.apps.home.models import Unidade, Moneda, Pais
 from CMSGuias.apps.tools import genkeys
 
 ## Class Bases Views Generic
@@ -337,10 +337,13 @@ class BudgetView(JSONResponseMixin, TemplateView):
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
+        context = dict()
         if request.is_ajax():
             pass
         else:
             try:
-                return render(request, 'budget/budget.html')
+                context['currency'] = Moneda.objects.filter(flag=True)
+                context['country'] = Pais.objects.filter(flag=True)
+                return render(request, 'budget/budget.html', context)
             except TemplateDoesNotExist as e:
                 raise Http404(e)

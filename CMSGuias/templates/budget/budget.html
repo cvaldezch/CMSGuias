@@ -49,19 +49,19 @@
               </div>
             </div>
           </div>
-          <div class="table-responsive">
-            <table class="table table-condensed table-hover table-bordered">
-              <thead>
-                <tr class="brand-danger">
-                  <th class="col-2 text-center">Item</th>
-                  <th class="col-3 text-center">Código</th>
-                  <th>Nombre/Descripción</th>
-                  <th class="col-3 text-center">Acción</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-condensed table-hover table-bordered">
+            <thead>
+              <tr class="brand-danger">
+                <th class="col-2 text-center">Item</th>
+                <th class="col-3 text-center">Código</th>
+                <th>Nombre/Descripción</th>
+                <th class="col-3 text-center">Acción</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
       </div>
       <hr>
@@ -111,23 +111,129 @@
               <span class="fa fa-trash"></span>
               <span class="fa-class">Eliminar Todo</span>
             </button>
-            <button class="btn btn-xs btn-default">
+            <!-- <button class="btn btn-xs btn-default">
               <span class="fa fa-copy"></span>
               <span class="fa-class">Copiar</span>
-            </button>
+            </button> -->
           </nav>
         </div>
         <div class="table-responsive">
           <table class="table table-condensed table-hover table-bordered">
             <thead>
-              <tr>
-
+              <tr class="brand-danger">
+                <th class="col-2 text-center">Item</th>
+                <th>Descripción</th>
+                <th class="col-3 text-center">Base</th>
+                <th class="col-3 text-center">Oferta</th>
+                <th class="col-2 text-center">Acción</th>
               </tr>
             </thead>
+            <tbody></tbody>
           </table>
         </div>
       </div>
     </section>
+  </div>
+</div>
+<!-- block modals -->
+<div class="modal fade" id="nbudget">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a class="close" data-dismiss="modal">&times;</a>
+        <h4 class="modal-title">Presupuesto</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="" class="control-label">Nombre Presupuesto</label>
+              <input type="text" class="form-control input-sm">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="" class="control-label">Dirección</label>
+              <input type="text" class="form-control input-sm" name="address">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="" class="control-label">Pais</label>
+              <select name="country" class="form-control input-sm">
+                {% for x in country %}
+                  <option value="{{ x.pais_id }}">{{ x.paisnom }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="" class="control-label">Departamento</label>
+              <select name="departament" class="form-control input-sm"></select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="" class="control-label">Provincia</label>
+              <select name="province" class="form-control input-sm"></select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="" class="control-label">Distrito</label>
+              <select name="district" id="" class="form-control input-sm"></select>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label for="" class="control-label">Jornada Diaria</label>
+              <input type="number" min="1" max="24" value="8" class="form-control input-sm">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label for="" class="form-label">Plazo</label>
+              <input type="text" placeholder="dd/mm/aaaa" class="form-control input-sm">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label for="" class="control-label ">Precio Base</label>
+              <input type="text" class="form-control input-sm" value="0">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label for="" class="control-label ">Precio Oferta</label>
+              <input type="text" class="form-control input-sm" value="0">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label for="" class="control-label">Moneda</label>
+              <select name="currency" id="" class="form-control input-sm">
+                {% for x in currency %}
+                  <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label for="" class="control-label">T. Cambio</label>
+              <input name="exchange" id="" class="form-control input-sm">
+            </div>
+          </div>
+          <div class="col-md-8">
+            <div class="form-group">
+              <label for="" class="control-label">Observación</label>
+              <textarea name="observation" class="form-control" rows="4"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock content %}

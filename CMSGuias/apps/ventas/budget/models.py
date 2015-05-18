@@ -7,7 +7,7 @@ from django.db import models
 from audit_log.models.fields import LastUserField
 from audit_log.models.managers import AuditLog
 
-from CMSGuias.apps.home.models import Materiale, Unidade, Cargo, Tools, Moneda
+from CMSGuias.apps.home.models import Materiale, Unidade, Cargo, Tools, Moneda, Pais, Departamento, Provincia, Distrito
 
 
 class AnalysisGroup(models.Model):
@@ -113,8 +113,12 @@ class Budget(models.Model):
     budget_id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
+    country = models.ForeignKey(Pais, to_field='pais_id')
+    departament = models.ForeignKey(Departamento, to_field='departamento_id')
+    province = models.ForeignKey(Provincia, to_field='provincia_id')
+    district = models.ForeignKey(Distrito, to_field='distrito_id')
     register = models.DateField(auto_now=True)
-    hourwork = models.IntegerField(default=0)
+    hourwork = models.IntegerField(default=8)
     finish = models.DateField()
     base = models.DecimalField(max_digits=10, decimal_places=3)
     offer = models.DecimalField(max_digits=10, decimal_places=3)

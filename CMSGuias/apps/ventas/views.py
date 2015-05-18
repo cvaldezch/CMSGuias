@@ -1735,8 +1735,8 @@ class SectorManage(JSONResponseMixin, View):
                             context['mdelete'] = [
                                 {
                                     'materials': x.materiales_id,
-                                    'name': x.materialss.matnom,
-                                    'meter': x.materialss.matmed,
+                                    'name': x.materials.matnom,
+                                    'meter': x.materials.matmed,
                                     'unit': x.materialss.unidad.uninom,
                                     'brand': x.brand.brand,
                                     'model': x.model.model,
