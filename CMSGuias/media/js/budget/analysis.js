@@ -88,7 +88,7 @@ saveAnalysis = function(event) {
       } else {
         context.analysisnew = true;
       }
-      $.post("", context, (function(response) {
+      $.post("", context, function(response) {
         if (response.status) {
           $().toastmessage("showSuccessToast", "Se guardaron los camnbios correctamente.");
           clearEdit();
@@ -98,7 +98,7 @@ saveAnalysis = function(event) {
         } else {
           $().toastmessage("showErrorToast", "Error al registrar analysis");
         }
-      }), "json");
+      }, "json");
       return false;
     }
   });

@@ -12,21 +12,21 @@
       <div class="panel panel-primary">
         <div class="panel-heading">
           <nav class="btn-group">
-            <button class="btn btn-sm btn-default">
+            <button class="btn btn-sm btn-default" type="button" name="showBudget">
               <span class="fa fa-file"></span>
               <span class="fa-class">Nuevo</span>
             </button>
-            <button class="btn btn-sm btn-default">
+            <button class="btn btn-sm btn-default bsearchbudget">
               <span class="fa fa-search"></span>
               <span class="fa-class">Buscar</span>
             </button>
-            <button class="btn btn-sm btn-default">
+            <!-- <button class="btn btn-sm btn-default">
               <span class="fa fa-print"></span>
               <span class="fa-class">Vista</span>
-            </button>
+            </button> -->
           </nav>
         </div>
-        <div class="panel-footer">
+        <div class="panel-footer panel-sbudget">
           <div class="row">
             <div class="col-md-2">
               <div class="form-group">
@@ -57,6 +57,7 @@
                 <th class="col-2 text-center">Item</th>
                 <th class="col-3 text-center">Código</th>
                 <th>Nombre/Descripción</th>
+                <th class="col-2 text-center">Estado</th>
                 <th class="col-3 text-center">Acción</th>
               </tr>
             </thead>
@@ -65,7 +66,7 @@
         </div>
       </div>
       <hr>
-      <div class="panel panel-danger">
+      <div class="panel panel-danger panel-details-budget">
         <div class="panel-footer">
           <div class="row">
             <div class="col-md-12">
@@ -136,7 +137,7 @@
   </div>
 </div>
 <!-- block modals -->
-<div class="modal fade" id="nbudget">
+<div class="modal fade" id="nbudget" data-backdrop="static">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -144,96 +145,115 @@
         <h4 class="modal-title">Presupuesto</h4>
       </div>
       <div class="modal-body">
-        <div class="row">
-          <div class="col-md-6">
-            <div class="form-group">
-              <label for="" class="control-label">Nombre Presupuesto</label>
-              <input type="text" class="form-control input-sm">
+        <form action="" method="post" id="newBudget">
+          <div class="row">
+            <div class="col-md-12">
+              <button type="button" data-dismiss="modal" class="btn btn-default btn-sm">
+                <span class="fa fa-save"></span>
+                <span class="fa-class">Salir</span>
+              </button>
+              <button type="submit" name="saveBudget" class="btn btn-primary btn-sm pull-right">
+                <span class="fa fa-save"></span>
+                <span class="fa-class">Guardar Cambios</span>
+              </button>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group has-primary">
+                <label for="" class="control-label">Nombre Presupuesto</label>
+                <input type="text" name="name" id="name" class="form-control input-sm">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group has-primary">
+                <label for="" class="control-label">Dirección</label>
+                <input type="text" class="form-control input-sm" name="address">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group has-primary">
+                <label for="" class="control-label">Pais</label>
+                <select name="pais" class="form-control input-sm">
+                  {% for x in country %}
+                    <option value="{{ x.pais_id }}">{{ x.paisnom }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group has-primary">
+                <label for="" class="control-label">Departamento</label>
+                <select name="departamento" class="form-control input-sm"></select>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group has-primary">
+                <label for="" class="control-label">Provincia</label>
+                <select name="provincia" class="form-control input-sm"></select>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group has-primary">
+                <label for="" class="control-label">Distrito</label>
+                <select name="distrito" id="" class="form-control input-sm"></select>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group has-primary">
+                <label for="" class="control-label">Jornada Diaria</label>
+                <input type="number" min="1" max="24" name="hours" value="8" class="form-control input-sm">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group has-primary">
+                <label for="" class="control-label">Plazo</label>
+                <input type="text" placeholder="dd/mm/aaaa" name="finish" class="form-control input-sm" name="finish">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group has-primary">
+                <label for="" class="control-label ">Precio Base</label>
+                <input type="text" class="form-control input-sm" value="0" name="base">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group has-primary">
+                <label for="" class="control-label ">Precio Oferta</label>
+                <input type="text" class="form-control input-sm" value="0" name="offer">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group has-primary">
+                <label for="" class="control-label">Moneda</label>
+                <select name="currency" id="" class="form-control input-sm">
+                  {% for x in currency %}
+                    <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group has-primary">
+                <label for="" class="control-label">T. Cambio</label>
+                <input name="exchange" id="" class="form-control input-sm">
+              </div>
+            </div>
+            <div class="col-md-10">
+              <div class="form-group has-primary">
+                <label for="" class="control-label">Observación</label>
+                <textarea name="observation" class="form-control" rows="4"></textarea>
+              </div>
             </div>
           </div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <label for="" class="control-label">Dirección</label>
-              <input type="text" class="form-control input-sm" name="address">
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="form-group">
-              <label for="" class="control-label">Pais</label>
-              <select name="country" class="form-control input-sm">
-                {% for x in country %}
-                  <option value="{{ x.pais_id }}">{{ x.paisnom }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="form-group">
-              <label for="" class="control-label">Departamento</label>
-              <select name="departament" class="form-control input-sm"></select>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="form-group">
-              <label for="" class="control-label">Provincia</label>
-              <select name="province" class="form-control input-sm"></select>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="form-group">
-              <label for="" class="control-label">Distrito</label>
-              <select name="district" id="" class="form-control input-sm"></select>
-            </div>
-          </div>
-          <div class="col-md-2">
-            <div class="form-group">
-              <label for="" class="control-label">Jornada Diaria</label>
-              <input type="number" min="1" max="24" value="8" class="form-control input-sm">
-            </div>
-          </div>
-          <div class="col-md-2">
-            <div class="form-group">
-              <label for="" class="form-label">Plazo</label>
-              <input type="text" placeholder="dd/mm/aaaa" class="form-control input-sm">
-            </div>
-          </div>
-          <div class="col-md-2">
-            <div class="form-group">
-              <label for="" class="control-label ">Precio Base</label>
-              <input type="text" class="form-control input-sm" value="0">
-            </div>
-          </div>
-          <div class="col-md-2">
-            <div class="form-group">
-              <label for="" class="control-label ">Precio Oferta</label>
-              <input type="text" class="form-control input-sm" value="0">
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="form-group">
-              <label for="" class="control-label">Moneda</label>
-              <select name="currency" id="" class="form-control input-sm">
-                {% for x in currency %}
-                  <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-          <div class="col-md-2">
-            <div class="form-group">
-              <label for="" class="control-label">T. Cambio</label>
-              <input name="exchange" id="" class="form-control input-sm">
-            </div>
-          </div>
-          <div class="col-md-8">
-            <div class="form-group">
-              <label for="" class="control-label">Observación</label>
-              <textarea name="observation" class="form-control" rows="4"></textarea>
-            </div>
-          </div>
-        </div>
+        </form>
       </div>
     </div>
   </div>
 </div>
+<!-- import scripts -->
+<script src="http://jqueryvalidation.org/files/dist/jquery.validate.js"></script>
+<script src="http://jqueryvalidation.org/files/dist/additional-methods.js"></script>
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="{{ MEDIA_URL }}js/tinymce.js"></script>
+<script src="{{ MEDIA_URL }}js/getCountry.js"></script>
+<script src="{{ MEDIA_URL }}js/budget/budget.js"></script>
 {% endblock content %}

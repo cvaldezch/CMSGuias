@@ -75,3 +75,10 @@ getDistrictOption = function() {
     }
   });
 };
+
+$(function() {
+  getCountryOption();
+  $("[name=pais]").on("click", getDepartamentOption);
+  $("[name=departamento]").on("click", getProvinceOption);
+  $("[name=provincia]").on("click", getDistrictOption);
+});

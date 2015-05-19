@@ -343,7 +343,7 @@ class BudgetView(JSONResponseMixin, TemplateView):
         else:
             try:
                 context['currency'] = Moneda.objects.filter(flag=True)
-                context['country'] = Pais.objects.filter(flag=True)
+                #context['country'] = Pais.objects.filter(flag=True)
                 return render(request, 'budget/budget.html', context)
             except TemplateDoesNotExist as e:
                 raise Http404(e)

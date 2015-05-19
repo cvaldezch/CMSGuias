@@ -77,7 +77,7 @@ saveAnalysis = (event) ->
         context.analysis_id = $("[name=edit]").val()
       else
         context.analysisnew = true
-      $.post "", context, ((response) ->
+      $.post "", context, (response) ->
         if response.status
           $().toastmessage "showSuccessToast", "Se guardaron los camnbios correctamente."
           clearEdit()
@@ -88,7 +88,7 @@ saveAnalysis = (event) ->
         else
           $().toastmessage "showErrorToast", "Error al registrar analysis"
         return
-      ), "json"
+      , "json"
       false
 
   return
