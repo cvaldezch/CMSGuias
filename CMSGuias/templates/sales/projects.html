@@ -197,92 +197,102 @@
             </div>
             {% if request.user.get_profile.empdni.charge.area|lower == 'operaciones' %}
                 <div class="panel panel-success">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-condensed">
-                                <thead>
-                                    <tr class="brand-danger text-white">
-                                        <th class="text-center">Item</th>
-                                        <th></th>
-                                        <th class="text-center">Codigo</th>
-                                        <th>Nombre de Proyecto</th>
-                                        <th>Contacto</th>
-                                        <th class="text-center col-2">Registrado</th>
-                                        <th class="text-center col-2">Fecha Inicio</th>
-                                        <th class="text-center col-2">Fecha Fin</th>
-                                        <th>Progreso</th>
-                                        {% if user.get_profile.empdni.charge.area|lower == "administrator" or user.get_profile.empdni.charge.area|lower == "ventas"  %}
-                                        <th class="text-center">Editar</th>
-                                        <th class="text-center">Eliminar</th>
-                                        {% endif %}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for x in list %}
-                                        {% if x.itemsPercent != '100.0' %}
-                                            {% if x.is_out_date %}
-                                                <tr class="tr-{{ x.proyecto_id }} danger">
-                                            {% else %}
-                                                {% ifequal x.status 'AC' %}
-                                                    <tr class="tr-{{ x.proyecto_id }} warning">
-                                                {% endifequal %}
-                                                {% ifequal x.status 'PE' %}
-                                                    <tr class="tr-{{ x.proyecto_id }}">
-                                                {% endifequal %}
-                                            {% endif %}
-                                        {% else %}
-                                             {% ifequal x.status 'AC' %}
-                                                    <tr class="tr-{{ x.proyecto_id }} warning">
-                                                {% endifequal %}
-                                                {% ifequal x.status 'PE' %}
-                                                    <tr class="tr-{{ x.proyecto_id }}">
-                                                {% endifequal %}
-                                        {% endif %}
-                                            <td>{{ forloop.counter }}</td>
-                                            <td>
-                                                <a href="{% url 'managerpro_view' x.proyecto_id %}" class="btn btn-link btn-xs btn-open text-black">
-                                                    <span class="fa fa-fire-extinguisher"></span>
-                                                    <span class="glyphicon glyphicon-fire"></span>
-                                                </a>
-                                            </td>
-                                            <td>{{ x.proyecto_id }}</td>
-                                            <td>{{ x.nompro }}</td>
-                                            <td>{{ x.contact }}</td>
-                                            <td class="text-center">{{ x.registrado|date:"Y-m-d" }}</td>
-                                            <td>{{ x.comienzo|date:"Y-m-d" }}</td>
-                                            <td>{{ x.fin|date:"Y-m-d" }}</td>
-                                            <td>
-                                                <div class="progress">
-                                                    <div class="progress-bar
-                                                    {% if x.itemsPercent == '100.0' %}
-                                                        progress-bar-success
-                                                    {% else %}
-                                                        progress-bar-warning
-                                                    {% endif %}
-                                                     text-black" role="progressbar" aria-valuenow="{{ x.itemsPercent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ x.itemsPercent }}%;">
-                                                        {{ x.itemsPercent }}%
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            {% if user.get_profile.empdni.charge.area|lower == "administrator" or user.get_profile.empdni.charge.area|lower == "ventas"  %}
-                                            <td class="text-center">
-                                                <button class="btn btn-link btn-xs text-black btn-show-edit" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-edit"></span>
-                                                </button>
-                                            </td>
-                                            <td class="text-center">
-                                                <button type="Button" class="btn btn-xs btn-link text-red btn-show-delete" title="{{ x.nompro }}" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-trash"></span>
-                                                </button>
-                                            </td>
-                                            {% endif %}
-                                        </tr>
-                                    {% empty %}
-                                        <div class="alert alert-warning">
-                                            <strong>Warning</strong>
-                                            <p>No se han encontrado <q><strong>Proyectos</strong></q> para mostrar. Presione el botón <q><strong>Nuevo Proyecto</strong></q> para agregar.<p>
-                                        </div>
-                                    {% endfor%}
-                                </tbody>
-                            </table>
-                        </div>
+                  <div class="table-responsive">
+                    <table class="table table-hover table-condensed">
+                      <thead>
+                          <tr class="brand-danger text-white">
+                              <th class="text-center">Item</th>
+                              <th></th>
+                              <th class="text-center">Codigo</th>
+                              <th>Nombre de Proyecto</th>
+                              <th>Contacto</th>
+                              <th class="text-center col-2">Registrado</th>
+                              <th class="text-center col-2">Fecha Inicio</th>
+                              <th class="text-center col-2">Fecha Fin</th>
+                              <!-- <th>Progreso</th> -->
+                              {% if user.get_profile.empdni.charge.area|lower == "administrator" or user.get_profile.empdni.charge.area|lower == "ventas"  %}
+                                <th class="text-center">Editar</th>
+                                <th class="text-center">Eliminar</th>
+                              {% endif %}
+                          </tr>
+                      </thead>
+                      <tbody>
+                          {% for x in list %}
+                              <!-- {% if x.itemsPercent != '100.0' %}
+                                  {% if x.is_out_date %}
+                                      <tr class="tr-{{ x.proyecto_id }} danger">
+                                  {% else %}
+                                      {% ifequal x.status 'AC' %}
+                                          <tr class="tr-{{ x.proyecto_id }} warning">
+                                      {% endifequal %}
+                                      {% ifequal x.status 'PE' %}
+                                          <tr class="tr-{{ x.proyecto_id }}">
+                                      {% endifequal %}
+                                  {% endif %}
+                              {% else %}
+                                  {% ifequal x.status 'AC' %}
+                                    <tr class="tr-{{ x.proyecto_id }} warning">
+                                  {% endifequal %}
+                                  {% ifequal x.status 'PE' %}
+                                    <tr class="tr-{{ x.proyecto_id }}">
+                                  {% endifequal %}
+                              {% endif %} -->
+                              {% if x.is_out_date %}
+                                <tr class="tr-{{ x.proyecto_id }} danger">
+                              {% else %}
+                                {% ifequal x.status 'AC' %}
+                                  <tr class="tr-{{ x.proyecto_id }} warning">
+                                {% endifequal %}
+                                {% ifequal x.status 'PE' %}
+                                  <tr class="tr-{{ x.proyecto_id }}">
+                                {% endifequal %}
+                              {% endif %}
+                                  <td>{{ forloop.counter }}</td>
+                                  <td>
+                                      <a href="{% url 'managerpro_view' x.proyecto_id %}" class="btn btn-link btn-xs btn-open text-black">
+                                          <span class="fa fa-fire-extinguisher"></span>
+                                          <span class="glyphicon glyphicon-fire"></span>
+                                      </a>
+                                  </td>
+                                  <td>{{ x.proyecto_id }}</td>
+                                  <td>{{ x.nompro }}</td>
+                                  <td>{{ x.contact }}</td>
+                                  <td class="text-center">{{ x.registrado|date:"Y-m-d" }}</td>
+                                  <td>{{ x.comienzo|date:"Y-m-d" }}</td>
+                                  <td>{{ x.fin|date:"Y-m-d" }}</td>
+                                  <!-- <td>
+                                      <div class="progress">
+                                          <div class="progress-bar
+                                          {#% if x.itemsPercent == '100.0' %#}
+                                              progress-bar-success
+                                          {#% else %#}
+                                              progress-bar-warning
+                                          {#% endif %#}
+                                           text-black" role="progressbar" aria-valuenow="{#{ x.itemsPercent }#}" aria-valuemin="0" aria-valuemax="100" style="width: {#{ x.itemsPercent }#}%;">
+                                              {{ x.itemsPercent }}%
+                                          </div>
+                                      </div>
+                                  </td> -->
+                                  {% if user.get_profile.empdni.charge.area|lower == "administrator" or user.get_profile.empdni.charge.area|lower == "ventas"  %}
+                                  <td class="text-center">
+                                      <button class="btn btn-link btn-xs text-black btn-show-edit" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-edit"></span>
+                                      </button>
+                                  </td>
+                                  <td class="text-center">
+                                      <button type="Button" class="btn btn-xs btn-link text-red btn-show-delete" title="{{ x.nompro }}" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-trash"></span>
+                                      </button>
+                                  </td>
+                                  {% endif %}
+                              </tr>
+                          {% empty %}
+                              <div class="alert alert-warning">
+                                  <strong>Warning</strong>
+                                  <p>No se han encontrado <q><strong>Proyectos</strong></q> para mostrar. Presione el botón <q><strong>Nuevo Proyecto</strong></q> para agregar.<p>
+                              </div>
+                          {% endfor%}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
             {% else %}
                 <div class="panel-group panel-first" id="accordion" role="tablist" aria-multiselectable="true">
@@ -308,17 +318,17 @@
                                                 <th class="text-center col-2">Registrado</th>
                                                 <th class="text-center col-2">Fecha Inicio</th>
                                                 <th class="text-center col-2">Fecha Fin</th>
-                                                <th class="text=center">Progreso</th>
+                                                <!-- <th class="text=center">Progreso</th> -->
                                                 {% if user.get_profile.empdni.charge.area|lower == "administrator" or user.get_profile.empdni.charge.area|lower == "ventas"  %}
-                                                <th class="text-center">Editar</th>
-                                                <th class="text-center">Eliminar</th>
+                                                  <th class="text-center">Editar</th>
+                                                  <th class="text-center">Eliminar</th>
                                                 {% endif %}
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {% for x in list %}
                                                 {% if x.ruccliente_id == c.ruccliente_id %}
-                                                    {% if x.itemsPercent != '100.0' %}
+                                                    <!-- {% if x.itemsPercent != '100.0' %}
                                                         {% if x.is_out_date %}
                                                             <tr class="tr-{{ x.proyecto_id }} danger">
                                                         {% else %}
@@ -336,6 +346,16 @@
                                                             {% ifequal x.status 'PE' %}
                                                                 <tr class="tr-{{ x.proyecto_id }}">
                                                             {% endifequal %}
+                                                    {% endif %} -->
+                                                    {% if x.is_out_date %}
+                                                      <tr class="tr-{{ x.proyecto_id }} danger">
+                                                    {% else %}
+                                                      {% ifequal x.status 'AC' %}
+                                                        <tr class="tr-{{ x.proyecto_id }} warning">
+                                                      {% endifequal %}
+                                                      {% ifequal x.status 'PE' %}
+                                                        <tr class="tr-{{ x.proyecto_id }}">
+                                                      {% endifequal %}
                                                     {% endif %}
                                                         <td>{{ forloop.counter }}</td>
                                                         <td>
@@ -350,19 +370,19 @@
                                                         <td class="text-center">{{ x.registrado|date:"Y-m-d" }}</td>
                                                         <td>{{ x.comienzo|date:"Y-m-d" }}</td>
                                                         <td>{{ x.fin|date:"Y-m-d" }}</td>
-                                                        <td>
+                                                        <!-- <td>
                                                             <div class="progress">
                                                                 <div class="progress-bar
-                                                                {% if x.itemsPercent == '100.0' %}
+                                                                {#% if x.itemsPercent == '100.0' %#}
                                                                     progress-bar-success
-                                                                {% else %}
+                                                                {#% else %#}
                                                                     progress-bar-warning
-                                                                {% endif %}
-                                                                 text-black" role="progressbar" aria-valuenow="{{ x.itemsPercent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ x.itemsPercent }}%;">
-                                                                    {{ x.itemsPercent }}%
+                                                                {#% endif %#}
+                                                                 text-black" role="progressbar" aria-valuenow="{#{ x.itemsPercent }#}" aria-valuemin="0" aria-valuemax="100" style="width: {#{ x.itemsPercent }#}%;">
+                                                                    {#{ x.itemsPercent }#}%
                                                                 </div>
                                                             </div>
-                                                        </td>
+                                                        </td> -->
                                                         {% if user.get_profile.empdni.charge.area|lower == "administrator" or user.get_profile.empdni.charge.area|lower == "ventas"  %}
                                                         <td class="text-center">
                                                             <button class="btn btn-link btn-xs text-black btn-show-edit" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-edit"></span>
@@ -401,7 +421,7 @@
                                     <th class="text-center col-3">Registrado</th>
                                     <th class="text-center col-3">Fecha Inicio</th>
                                     <th class="text-center col-3">Fecha Fin</th>
-                                    <th>Progreso</th>
+                                    <!-- <th>Progreso</th> -->
                                     {% if user.get_profile.empdni.charge.area|lower == "administrator" or user.get_profile.empdni.charge.area|lower == "ventas"  %}
                                     <th class="text-center">Editar</th>
                                     <th class="text-center">Eliminar</th>
@@ -410,7 +430,7 @@
                             </thead>
                             <tbody>
                                 {% for x in list %}
-                                    {% if x.itemsPercent != '100.0' %}
+                                    <!-- {% if x.itemsPercent != '100.0' %}
                                         {% if x.is_out_date %}
                                             <tr class="tr-{{ x.proyecto_id }} danger">
                                         {% else %}
@@ -428,6 +448,16 @@
                                             {% ifequal x.status 'PE' %}
                                                 <tr class="tr-{{ x.proyecto_id }}">
                                             {% endifequal %}
+                                    {% endif %} -->
+                                    {% if x.is_out_date %}
+                                      <tr class="tr-{{ x.proyecto_id }} danger">
+                                    {% else %}
+                                      {% ifequal x.status 'AC' %}
+                                        <tr class="tr-{{ x.proyecto_id }} warning">
+                                      {% endifequal %}
+                                      {% ifequal x.status 'PE' %}
+                                        <tr class="tr-{{ x.proyecto_id }}">
+                                      {% endifequal %}
                                     {% endif %}
                                         <td>{{ forloop.counter }}</td>
                                         <td>
@@ -442,7 +472,7 @@
                                         <td class="text-center">{{ x.registrado|date:"Y-m-d" }}</td>
                                         <td>{{ x.comienzo|date:"Y-m-d" }}</td>
                                         <td>{{ x.fin|date:"Y-m-d" }}</td>
-                                        <td>
+                                        <!-- <td>
                                             <div class="progress">
                                                 <div class="progress-bar
                                                 {% if x.itemsPercent == '100.0' %}
@@ -454,7 +484,7 @@
                                                     {{ x.itemsPercent }}%
                                                 </div>
                                             </div>
-                                        </td>
+                                        </td> -->
                                         {% if user.get_profile.empdni.charge.area|lower == "administrator" or user.get_profile.empdni.charge.area|lower == "ventas"  %}
                                         <td class="text-center">
                                             <button class="btn btn-link btn-xs text-black btn-show-edit" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-edit"></span>

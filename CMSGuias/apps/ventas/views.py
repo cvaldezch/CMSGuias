@@ -74,15 +74,15 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                 # cust = Proyecto.objects.filter(flag=True)
                 # cust = cust.order_by('ruccliente__razonsocial').distinct('ruccliente__razonsocial')
                 # context['cust'] = cust
-            elif request.user.get_profile().empdni.charge.area.lower() == 'logistica' or 'Almacen':
+            elif request.user.get_profile().empdni.charge.area.lower() == 'logistica' or request.user.get_profile().empdni.charge.area.lower() == 'Almacen':
                 context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC')).order_by('-proyecto_id')
             if request.user.get_profile().empdni.charge.cargos.lower() == 'jefe de operaciones':
                 context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC')).order_by('-proyecto_id')
 
-            cust = Proyecto.objects.filter(Q(flag=True), ~Q(status='DA'))
+            cust = context['list']#Proyecto.objects.filter(Q(flag=True), ~Q(status='DA'))
             if request.user.get_profile().empdni.charge.area.lower() == 'operaciones':
                 cust = cust.filter(empdni_id=request.user.get_profile().empdni_id, status='AC')
-            elif request.user.get_profile().empdni.charge.area.lower() == 'logistica' or 'Almacen':
+            elif request.user.get_profile().empdni.charge.area.lower() == 'logistica' or request.user.get_profile().empdni.charge.area.lower() == 'Almacen':
                 cust = cust.filter(status='AC')
             cust = cust.order_by('ruccliente__razonsocial').distinct('ruccliente__razonsocial')
             context['cust'] = cust #.order_by('ruccliente__razonsocial')

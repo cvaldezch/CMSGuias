@@ -24,7 +24,7 @@ from decimal import Decimal
 
 from .models import *
 from .forms import *
-from CMSGuias.apps.home.models import Unidade, Moneda, Pais
+from CMSGuias.apps.home.models import Unidade, Moneda, Pais, Cliente
 from CMSGuias.apps.tools import genkeys
 
 ## Class Bases Views Generic
@@ -343,7 +343,31 @@ class BudgetView(JSONResponseMixin, TemplateView):
         else:
             try:
                 context['currency'] = Moneda.objects.filter(flag=True)
-                #context['country'] = Pais.objects.filter(flag=True)
+                context['customer'] = Cliente.objects.filter(flag=True)
+                context['budget'] = Budget.objects.all()
                 return render(request, 'budget/budget.html', context)
             except TemplateDoesNotExist as e:
                 raise Http404(e)
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if 'saveBudget' in request.POST:
+                form = addBudgetForm(request.POST)
+                if form.is_valid():
+                    add = form.save(commit=False)
+                    key = genkeys.generateBudget()
+                    # print key
+                    add.budget_id = key
+                    add.version = '0'
+                    add.save()
+                    context['id'] = key
+                    context['status'] = True
+                else:
+                    context['status'] = False
+                    context['raise'] = 'Campos incorrectos!'
+        except ObjectDoesNotExist as e:
+            context['raise'] = str(e)
+            context['status'] = False
+        return self.render_to_json_response(context)

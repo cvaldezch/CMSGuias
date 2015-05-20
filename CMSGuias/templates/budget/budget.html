@@ -9,7 +9,7 @@
       <h3>Presupuestos</h3>
     </header>
     <section>
-      <div class="panel panel-primary">
+      <div class="panel panel-primary panel-budgets">
         <div class="panel-heading">
           <nav class="btn-group">
             <button class="btn btn-sm btn-default" type="button" name="showBudget">
@@ -61,7 +61,32 @@
                 <th class="col-3 text-center">Acción</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+              {% for x in budget %}
+                <tr>
+                  <td class="text-center">{{ forloop.counter }}</td>
+                  <td class="text-center">{{ x.budget_id }}</td>
+                  <td>{{ x.name }}</td>
+                  <td class="text-center">{{ x.status }}</td>
+                  <td class="text-center">
+                    <div class="dropdown">
+                      <button class="btn btn-danger dropdown-toggle btn-xs" type="button" data-toggle="dropdown" aria-expanded="true">
+                        <span class="fa fa-cogs"></span>
+                      </button>
+                      <ul class="dropdown-menu" role="menu">
+                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs" tabindex="-1"><span class="fa fa-list-alt"></span> Detalle</a></li>
+                        <li class="divider" style="margin: 0;"></li>
+                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs" tabindex="-1"><span class="fa fa-edit"></span> Editar</a></li>
+                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs" tabindex="-1"><span class="fa fa-trash"></span> Eliminar</a></li>
+                        <li class="divider" style="margin: 0;"></li>
+                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs" tabindex="-1"><span class="fa fa-copy"></span> Copiar</a></li>
+                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs" tabindex="-1"><span class="fa fa-tasks"></span> Revision</a></li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
           </table>
         </div>
       </div>
@@ -73,7 +98,7 @@
               <strong>Presupuesto</strong>
             </div>
             <div class="col-md-6">
-              <dl class="dl-horizontal">
+              <dl class="dl-horizontal colone">
                 <dt>Presupuesto</dt>
                 <dd></dd>
                 <dt>Cliente</dt>
@@ -85,7 +110,7 @@
               </dl>
             </div>
             <div class="col-md-6">
-              <dl class="dl-horizontal">
+              <dl class="dl-horizontal coltwo">
                 <dt>Registrado</dt>
                 <dd></dd>
                 <dt>Jornada Diaria</dt>
@@ -129,7 +154,8 @@
                 <th class="col-2 text-center">Acción</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+            </tbody>
           </table>
         </div>
       </div>
@@ -140,39 +166,51 @@
 <div class="modal fade" id="nbudget" data-backdrop="static">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
+      <form action="#" method="post" id="newBudget">
       <div class="modal-header">
         <a class="close" data-dismiss="modal">&times;</a>
         <h4 class="modal-title">Presupuesto</h4>
+        <div class="row">
+          <div class="col-md-12">
+            <button type="button" data-dismiss="modal" class="btn btn-default btn-sm">
+              <span class="fa fa-save"></span>
+              <span class="fa-class">Salir</span>
+            </button>
+            <button type="submit" name="saveBudget" class="btn btn-primary btn-sm pull-right">
+              <span class="fa fa-save"></span>
+              <span class="fa-class">Guardar Cambios</span>
+            </button>
+          </div>
+        </div>
       </div>
       <div class="modal-body">
-        <form action="" method="post" id="newBudget">
           <div class="row">
-            <div class="col-md-12">
-              <button type="button" data-dismiss="modal" class="btn btn-default btn-sm">
-                <span class="fa fa-save"></span>
-                <span class="fa-class">Salir</span>
-              </button>
-              <button type="submit" name="saveBudget" class="btn btn-primary btn-sm pull-right">
-                <span class="fa fa-save"></span>
-                <span class="fa-class">Guardar Cambios</span>
-              </button>
-            </div>
             <div class="col-md-6">
               <div class="form-group has-primary">
                 <label for="" class="control-label">Nombre Presupuesto</label>
-                <input type="text" name="name" id="name" class="form-control input-sm">
+                <input type="text" name="name" id="name" data-validation="required" placeholder="Ingrese Nombre y/o descripción del presupuesto" data-validation-error-msg="Ingrese una Descripción" class="form-control input-sm">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group has-primary">
+                <label for="" class="control-label">Razón Social Cliente</label>
+                <select name="customers" id="customers" data-validation="required" data-validation-error-msg="Seleccione un Cliente" class="form-control input-sm">
+                  {% for x in customer %}
+                    <option value="{{ x.ruccliente_id }}">{{ x.razonsocial }}</option>
+                  {% endfor %}
+                </select>
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group has-primary">
                 <label for="" class="control-label">Dirección</label>
-                <input type="text" class="form-control input-sm" name="address">
+                <input type="text" class="form-control input-sm" name="address" placeholder="Ingrese la dirección donde se ejecutara el proyecto" data-validation="required" data-validation-error-msg="Ingrese una Dirección">
               </div>
             </div>
             <div class="col-md-3">
               <div class="form-group has-primary">
                 <label for="" class="control-label">Pais</label>
-                <select name="pais" class="form-control input-sm">
+                <select name="pais" class="form-control input-sm" data-validation="required">
                   {% for x in country %}
                     <option value="{{ x.pais_id }}">{{ x.paisnom }}</option>
                   {% endfor %}
@@ -182,31 +220,31 @@
             <div class="col-md-3">
               <div class="form-group has-primary">
                 <label for="" class="control-label">Departamento</label>
-                <select name="departamento" class="form-control input-sm"></select>
+                <select name="departamento" class="form-control input-sm" data-validation="required"></select>
               </div>
             </div>
             <div class="col-md-3">
               <div class="form-group has-primary">
                 <label for="" class="control-label">Provincia</label>
-                <select name="provincia" class="form-control input-sm"></select>
+                <select name="provincia" class="form-control input-sm" data-validation="required"></select>
               </div>
             </div>
             <div class="col-md-3">
               <div class="form-group has-primary">
                 <label for="" class="control-label">Distrito</label>
-                <select name="distrito" id="" class="form-control input-sm"></select>
+                <select name="distrito" id="" class="form-control input-sm" data-validation="required"></select>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-group has-primary">
                 <label for="" class="control-label">Jornada Diaria</label>
-                <input type="number" min="1" max="24" name="hours" value="8" class="form-control input-sm">
+                <input type="number" min="1" max="24" name="hours" value="8" class="form-control input-sm" data-validation="required" data-validataion-error-msg="Ingrese la Jornada Diaria en horas.">
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-group has-primary">
                 <label for="" class="control-label">Plazo</label>
-                <input type="text" placeholder="dd/mm/aaaa" name="finish" class="form-control input-sm" name="finish">
+                <input type="text" placeholder="aaaa/mm/dd" name="finish" class="form-control input-sm" name="finish" data-validation="required" data-validation-error-msg="Plazo estimado del proyecto.">
               </div>
             </div>
             <div class="col-md-2">
@@ -224,7 +262,7 @@
             <div class="col-md-4">
               <div class="form-group has-primary">
                 <label for="" class="control-label">Moneda</label>
-                <select name="currency" id="" class="form-control input-sm">
+                <select name="currency" id="" class="form-control input-sm" data-validation="required" data-validation-error-msg="Debe de seleccionar una moneda.">
                   {% for x in currency %}
                     <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
                   {% endfor %}
@@ -234,26 +272,26 @@
             <div class="col-md-2">
               <div class="form-group has-primary">
                 <label for="" class="control-label">T. Cambio</label>
-                <input name="exchange" id="" class="form-control input-sm">
+                <input name="exchange" id="" class="form-control input-sm" value="0" placeholder="0.0">
               </div>
             </div>
-            <div class="col-md-10">
+            <div class="col-md-12">
               <div class="form-group has-primary">
                 <label for="" class="control-label">Observación</label>
                 <textarea name="observation" class="form-control" rows="4"></textarea>
               </div>
             </div>
           </div>
-        </form>
       </div>
     </div>
+  </form>
   </div>
 </div>
+{% csrf_token %}
 <!-- import scripts -->
-<script src="http://jqueryvalidation.org/files/dist/jquery.validate.js"></script>
-<script src="http://jqueryvalidation.org/files/dist/additional-methods.js"></script>
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>
 <script src="{{ MEDIA_URL }}js/tinymce.js"></script>
+<script src="{{ MEDIA_URL }}js/form-validator.min.js"></script>
 <script src="{{ MEDIA_URL }}js/getCountry.js"></script>
 <script src="{{ MEDIA_URL }}js/budget/budget.js"></script>
 {% endblock content %}

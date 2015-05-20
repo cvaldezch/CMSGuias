@@ -7,7 +7,7 @@ from django.db import models
 from audit_log.models.fields import LastUserField
 from audit_log.models.managers import AuditLog
 
-from CMSGuias.apps.home.models import Materiale, Unidade, Cargo, Tools, Moneda, Pais, Departamento, Provincia, Distrito
+from CMSGuias.apps.home.models import Materiale, Unidade, Cargo, Tools, Moneda, Pais, Departamento, Provincia, Distrito, Cliente
 
 
 class AnalysisGroup(models.Model):
@@ -112,18 +112,19 @@ class APTools(models.Model):
 class Budget(models.Model):
     budget_id = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=255)
+    customers = models.ForeignKey(Cliente, to_field='ruccliente_id', null=True)
     address = models.CharField(max_length=255)
     country = models.ForeignKey(Pais, to_field='pais_id')
     departament = models.ForeignKey(Departamento, to_field='departamento_id')
     province = models.ForeignKey(Provincia, to_field='provincia_id')
     district = models.ForeignKey(Distrito, to_field='distrito_id')
-    register = models.DateField(auto_now=True)
+    register = models.DateTimeField(auto_now=True, null=True)
     hourwork = models.IntegerField(default=8)
     finish = models.DateField()
     base = models.DecimalField(max_digits=10, decimal_places=3)
     offer = models.DecimalField(max_digits=10, decimal_places=3)
     observation = models.TextField()
-    refecence = models.CharField(max_length=10)
+    reference = models.CharField(max_length=10, blank=True, null=True)
     review = models.CharField(max_length=10)
     version = models.CharField(max_length=5, default='')
     status = models.CharField(max_length=2, default='PE')

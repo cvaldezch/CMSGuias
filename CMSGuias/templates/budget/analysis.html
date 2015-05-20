@@ -49,12 +49,12 @@
                   </div>
                   <div class="col-md-3">
                     <div class="form-group">
-                        <label class="control-label">Grupo</label>
-                        <select name="sgroup" class="form-control input-sm" disabled>
-                            {% for x in group %}
-                                <option value="{{ x.agroup_id }}">{{ x.name }}</option>
-                            {% endfor %}
-                        </select>
+                      <label class="control-label">Grupo</label>
+                      <select name="sgroup" class="form-control input-sm" disabled>
+                          {% for x in group %}
+                            <option value="{{ x.agroup_id }}">{{ x.name }}</option>
+                          {% endfor %}
+                      </select>
                     </div>
                   </div>
                   <div class="col-md-1">
@@ -205,7 +205,8 @@
 <!-- endblock -->
 <!-- script -->
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script>
+<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script> -->
+<script src="{{ MEDIA_URL }}js/form-validator.min.js"></script>
 <script src="{{ MEDIA_URL }}js/budget/analysis.js"></script>
 <script>
 //     var showAnalysis, openGroup, openUnit, saveAnalysis, searchChange, searchAnalysis;

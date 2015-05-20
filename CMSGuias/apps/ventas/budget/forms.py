@@ -15,3 +15,8 @@ class addAnalysisGroupForm(forms.ModelForm):
     class Meta:
         model = AnalysisGroup
         exclude = {'agroup_id','regsiter', 'flag',}
+
+class addBudgetForm(forms.ModelForm):
+    class Meta:
+        model = Budget
+        exclude = {'budget_id','reference', 'review', 'version', 'status','flag',}

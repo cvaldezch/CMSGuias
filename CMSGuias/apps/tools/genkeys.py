@@ -11,7 +11,7 @@ from CMSGuias.apps.logistica.models import Cotizacion, Compra, ServiceOrder
 from CMSGuias.apps.ventas.models import Proyecto
 from CMSGuias.apps.home.models import Brand, Model, GroupMaterials, TypeGroup
 from CMSGuias.apps.operations.models import Deductive, Letter, PreOrders
-from CMSGuias.apps.ventas.budget.models import AnalysisGroup, Analysis
+from CMSGuias.apps.ventas.budget.models import AnalysisGroup, Analysis, Budget
 
 ### format date str
 __date_str = '%Y-%m-%d'
@@ -363,4 +363,24 @@ def generateGroupAnalysis():
         id = '%s%s'%('AG', '{:0>3d}'.format(counter))
     except ObjectDoesNotExist, e:
         id = '%s%s'%('AG', '{:0>3d}'.format(1))
+    return id
+
+def generateBudget():
+    id = None
+    yn = int(datetime.datetime.today().strftime(__year_str))
+    try:
+        code = Budget.objects.latest('register')
+        id = code.budget_id
+        if id is not None:
+            yy = int(id[4:6])
+            counter = int(id[6:10])
+            if yn > yy:
+                counter = 1
+            else:
+                counter += 1
+        else:
+            counter = 1
+        id = '%s%i%s'%('PROP',yn, '{:0>4d}'.format(counter))
+    except ObjectDoesNotExist, e:
+        id = '%s%i%s'%('PROP',yn, '{:0>4d}'.format(1))
     return id
