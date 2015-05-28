@@ -339,12 +339,19 @@ class BudgetView(JSONResponseMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         context = dict()
         if request.is_ajax():
-            pass
+            try:
+                if 'budgetData' in request.GET:
+                    context['budget'] = list(Budget.objects.get(budget_id=request.GET['budget']))
+                    context['status'] = True
+            except ObjectDoesNotExist as e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)
         else:
             try:
                 context['currency'] = Moneda.objects.filter(flag=True)
                 context['customer'] = Cliente.objects.filter(flag=True)
-                context['budget'] = Budget.objects.all()
+                context['budget'] = Budget.objects.filter(flag=True, status='PE').order_by('-register')
                 return render(request, 'budget/budget.html', context)
             except TemplateDoesNotExist as e:
                 raise Http404(e)
@@ -354,14 +361,19 @@ class BudgetView(JSONResponseMixin, TemplateView):
         context = dict()
         try:
             if 'saveBudget' in request.POST:
-                form = addBudgetForm(request.POST)
+                if 'editbudget' in request.POST:
+                    form = addBudgetForm(request.POST, instance=Budget.objects.get(budget_id=request.GET['budget']))
+                else:
+                    form = addBudgetForm(request.POST)
                 if form.is_valid():
-                    add = form.save(commit=False)
-                    key = genkeys.generateBudget()
-                    # print key
-                    add.budget_id = key
-                    add.version = '0'
-                    add.save()
+                    if 'editbudget' in request.POST:
+                        form.save()
+                    else:
+                        add = form.save(commit=False)
+                        key = genkeys.generateBudget()
+                        add.budget_id = key
+                        add.version = '0'
+                        add.save()
                     context['id'] = key
                     context['status'] = True
                 else:

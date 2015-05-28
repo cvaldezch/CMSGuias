@@ -57,6 +57,7 @@
                 <th class="col-2 text-center">Item</th>
                 <th class="col-3 text-center">Código</th>
                 <th>Nombre/Descripción</th>
+                <th class="col-2 text-center">Registrado</th>
                 <th class="col-2 text-center">Estado</th>
                 <th class="col-3 text-center">Acción</th>
               </tr>
@@ -67,6 +68,7 @@
                   <td class="text-center">{{ forloop.counter }}</td>
                   <td class="text-center">{{ x.budget_id }}</td>
                   <td>{{ x.name }}</td>
+                  <td class="text-center">{{ x.register|date:"d/m/Y" }}</td>
                   <td class="text-center">{{ x.status }}</td>
                   <td class="text-center">
                     <div class="dropdown">
@@ -74,13 +76,13 @@
                         <span class="fa fa-cogs"></span>
                       </button>
                       <ul class="dropdown-menu" role="menu">
-                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs" tabindex="-1"><span class="fa fa-list-alt"></span> Detalle</a></li>
+                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs showbudgetdetails" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-list-alt"></span> Detalle</a></li>
                         <li class="divider" style="margin: 0;"></li>
-                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs" tabindex="-1"><span class="fa fa-edit"></span> Editar</a></li>
-                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs" tabindex="-1"><span class="fa fa-trash"></span> Eliminar</a></li>
+                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs showbudgetedit" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-edit"></span> Editar</a></li>
+                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs budgetdelete" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-trash"></span> Eliminar</a></li>
                         <li class="divider" style="margin: 0;"></li>
-                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs" tabindex="-1"><span class="fa fa-copy"></span> Copiar</a></li>
-                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs" tabindex="-1"><span class="fa fa-tasks"></span> Revision</a></li>
+                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs budgetcopy" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-copy"></span> Copiar</a></li>
+                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs bdugetrevision" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-tasks"></span> Revision</a></li>
                       </ul>
                     </div>
                   </td>
@@ -287,6 +289,8 @@
   </form>
   </div>
 </div>
+<!-- utils for page -->
+<input type="hidden" name="budget">
 {% csrf_token %}
 <!-- import scripts -->
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>

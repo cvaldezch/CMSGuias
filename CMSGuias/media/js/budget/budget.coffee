@@ -8,6 +8,8 @@ $ ->
   $("[name=showBudget]").on "click", showBudget
   $(".bsearchbudget").on "click", showSearchBudget
   $("[name=saveBudget]").on "click", saveBudget
+  $(".showbudgetdetails").on "click", getBudgetData
+  $(".showbudgetedit").on "click", showBudgetEdit
   tinymce.init
     selector: "textarea[name=observation]"
     # plugins: [
@@ -20,6 +22,7 @@ $ ->
   return
 
 showBudget = (event) ->
+  $("[name=budget]").val ""
   $("#nbudget").modal "show"
   return
 
@@ -53,6 +56,10 @@ saveBudget = (event) ->
       params.observation = $("#observation_ifr").contents().find("body").html()
       params.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
       params.saveBudget = true
+      $edit = $("[name=budget]")
+      if $edit.val()?
+        params.edit = true
+        params.budget = $edit.val()
       $.post "", params, (response) ->
         if response.status
           location.reload()
@@ -64,17 +71,22 @@ saveBudget = (event) ->
       false
   return
 
+showBudgetEdit = (event) ->
+  $("[name=budget]").val this.getAttribute "data-value"
+  return
+
 getBudgetData = (event) ->
   params = new Object
   params.budgetData = true
   params.budget = this.getAttribute "data-value"
+  console.log params
   $.getJSON "", param, (repsonse) ->
     if response.status
       colone = """
       <dt>Presupuesto</dt>
-      <dd>{{  }}</dd>
+      <dd>{{ budget.budget_id }}</dd>
       <dt>Cliente</dt>
-      <dd></dd>
+      <dd>{{ budget.customers }}</dd>
       <dt>Dirección</dt>
       <dd></dd>
       <dt>Observación</dt>

@@ -1,4 +1,4 @@
-var getBudgetData, saveBudget, showBudget, showSearchBudget;
+var getBudgetData, saveBudget, showBudget, showBudgetEdit, showSearchBudget;
 
 $(function() {
   $(".panel-sbudget, .panel-details-budget").hide();
@@ -11,6 +11,8 @@ $(function() {
   $("[name=showBudget]").on("click", showBudget);
   $(".bsearchbudget").on("click", showSearchBudget);
   $("[name=saveBudget]").on("click", saveBudget);
+  $(".showbudgetdetails").on("click", getBudgetData);
+  $(".showbudgetedit").on("click", showBudgetEdit);
   tinymce.init({
     selector: "textarea[name=observation]",
     menubar: false,
@@ -19,6 +21,7 @@ $(function() {
 });
 
 showBudget = function(event) {
+  $("[name=budget]").val("");
   $("#nbudget").modal("show");
 };
 
@@ -35,7 +38,7 @@ saveBudget = function(event) {
       return false;
     },
     onSuccess: function() {
-      var params;
+      var $edit, params;
       event.preventDefault();
       params = new Object;
       params.name = $("[name=name]").val();
@@ -54,6 +57,11 @@ saveBudget = function(event) {
       params.observation = $("#observation_ifr").contents().find("body").html();
       params.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
       params.saveBudget = true;
+      $edit = $("[name=budget]");
+      if ($edit.val() != null) {
+        params.edit = true;
+        params.budget = $edit.val();
+      }
       $.post("", params, function(response) {
         if (response.status) {
           location.reload();
@@ -66,15 +74,20 @@ saveBudget = function(event) {
   });
 };
 
+showBudgetEdit = function(event) {
+  $("[name=budget]").val(this.getAttribute("data-value"));
+};
+
 getBudgetData = function(event) {
   var params;
   params = new Object;
   params.budgetData = true;
   params.budget = this.getAttribute("data-value");
+  console.log(params);
   $.getJSON("", param, function(repsonse) {
     var colone, coltwo;
     if (response.status) {
-      colone = "<dt>Presupuesto</dt>\n<dd>{{  }}</dd>\n<dt>Cliente</dt>\n<dd></dd>\n<dt>Dirección</dt>\n<dd></dd>\n<dt>Observación</dt>\n<dd></dd>";
+      colone = "<dt>Presupuesto</dt>\n<dd>{{ budget.budget_id }}</dd>\n<dt>Cliente</dt>\n<dd>{{ budget.customers }}</dd>\n<dt>Dirección</dt>\n<dd></dd>\n<dt>Observación</dt>\n<dd></dd>";
       coltwo = "<dt>Registrado</dt>\n<dd></dd>\n<dt>Jornada Diaria</dt>\n<dd></dd>\n<dt>F. Entrega</dt>\n<dd></dd>\n<dt>Moneda</dt>\n<dd></dd>";
       return $(".panel-budgets").toggle(800, "linear");
     } else {

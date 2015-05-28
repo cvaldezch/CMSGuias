@@ -89,7 +89,8 @@ emails = [
     'sandra.atencio@icrperusa.com',
     'steven.paredes@icrperusa.com',
     'ssoma1@icrperusa.com',
-    'jesus.esteban@icrperusa.com'
+    'jesus.esteban@icrperusa.com',
+    'operaciones1@icrperusa.com',
 ]
 
 # Type of project

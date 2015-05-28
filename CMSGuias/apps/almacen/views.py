@@ -1173,7 +1173,8 @@ class SupplyView(ListView):
                     proj = obj.values('orders__proyecto__proyecto_id')
                     proj = proj.distinct('orders__proyecto__proyecto_id').order_by('orders__proyecto__proyecto_id')
                     #print ','.join([x['orders__proyecto__proyecto_id'] for x in proj])
-                    bed.orders = ','.join([x['orders__proyecto__proyecto_id'] for x in proj])
+                    print proj
+                    bed.orders = ','.join([x['orders__proyecto__proyecto_id'] for x in proj]) if proj[0]['orders__proyecto__proyecto_id'] is not None else ''
                     bed.save()
                     for x in obj:
                         det = models.DetSuministro()
@@ -1204,19 +1205,20 @@ class ListOrdersSummary(TemplateView):
         context[self.context_object_name] = models.Pedido.objects.filter(Q(flag=True) & Q(status='AP') | Q(status='IN'))
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
+    @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             data = {}
             try:
                 obj = models.tmpsuministro()
-                arr = json.loads(request.POST.get('add-oid'))
-                for x in arr.__len__():
-                    obj.empdni = request.user.get_profile().empdni_id
-                    obj.materiales_id = request.POST.get('id-add')
-                    obj.cantidad = (request.POST.get('cant-add') / arr.__len__())
-                    obj.origin_id = arr[x]
-                    obj.origin = request.POST.get('add-ori')
-                    obj.save()
+                #arr = json.loads(request.POST.get('add-oid'))
+                #for x in arr.__len__():
+                obj.empdni = request.user.get_profile().empdni_id
+                obj.materiales_id = request.POST.get('id-add')
+                obj.cantidad = (request.POST.get('cant-add'))
+                #obj.origin_id = arr[x]
+                obj.origin_id = request.POST.get('add-ori')
+                obj.save()
                 arr = json.loads(request.POST.get('orders'))
                 models.Detpedido.objects.filter(Q(flag=True) & Q(pedido_id__in=arr) & Q(materiales_id=request.POST.get('id-add'))).update(spptag=True)
                 data['status'] = True
