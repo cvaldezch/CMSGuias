@@ -701,6 +701,17 @@ class SectorManage(JSONResponseMixin, View):
         try:
             if request.is_ajax():
                 try:
+                    if 'percentsec' in request.GET:
+                        items = MetProject.objects.filter(
+                            proyecto_id=kwargs['pro'],
+                            subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None,
+                            sector_id=kwargs['sec'])
+                        titem = items.count()
+                        attend = items.filter(tag='2').count()
+                        partital = items.filter(tag='1').cont()
+                        percent = ((attend * 100) / titem)
+                        context['percent'] = '%.1f'%percent
+                        context['status'] = True
                     if 'type' in request.GET:
                         if request.GET.get('type') == 'list':
                             obj = Metradoventa.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), flag=True).order_by('materiales__matnom')
@@ -808,7 +819,6 @@ class SectorManage(JSONResponseMixin, View):
                 context['meter'] = data
                 context['niple'] = globalVariable.tipo_nipples
                 context['store'] = Almacene.objects.filter(flag=True).order_by('nombre')
-            # print context
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)

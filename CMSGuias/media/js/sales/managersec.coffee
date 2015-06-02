@@ -2446,3 +2446,27 @@ showListPreOrders = (event) ->
         sec = "None"
     href = "/sales/projects/guide/list/#{pro}/#{sub}/#{sec}"
     return
+
+## update 02-06-2015
+# rest get precent items attend
+getPercentAttend = (event) ->
+    $.getJSON "",
+        "percentsec": true
+    , (response) ->
+        if response.status
+            $bar = $(".progress-sec")
+            if response.percent == "100.0"
+                $bar.addClass "progress-bar-success"
+            $bar.attr "aria-valuenow", response.percent
+            $bar.css "width": "#{response.percent}%"
+            $bar.text "#{response.percent} % Completo."
+            return
+        else
+            swal
+                title: "Error!"
+                text: "al obtener el procentaje de materiales atendidos. #{response.raise}"
+                showConfirmButton: false
+                timer: 2800
+                type: "error"
+            return
+    return

@@ -36,7 +36,6 @@ class Proyecto(models.Model):
     audit_log = AuditLog()
 
     class Meta:
-        #abstract = True
         ordering = ['nompro']
 
     @property
@@ -52,9 +51,7 @@ class Proyecto(models.Model):
 
     @property
     def is_out_date(self):
-        # print datetime.datetime.today().date()
         if datetime.datetime.today().date() > self.fin:
-            #print 'is great'
             return True
         return False
 
@@ -133,13 +130,13 @@ class Sectore(models.Model):
     def __unicode__(self):
         return '%s'%(self.sector_id)
 
-    @property
-    def itemsPercent(self):
-        obj = operations.models.MetProject.objects.filter(proyecto_id=self.proyecto_id, sector_id=self.sector_id)
-        items = obj.count()
-        attend = obj.filter(tag='2').count()
-        percent = ((attend * 100) / items)
-        return '%.1f'%percent
+    # @property
+    # def itemsPercent(self):
+    #     obj = operations.models.MetProject.objects.filter(proyecto_id=self.proyecto_id, sector_id=self.sector_id)
+    #     items = obj.count()
+    #     attend = obj.filter(tag='2').count()
+    #     percent = ((attend * 100) / items)
+    #     return '%.1f'%percent
 
     @property
     def stadistics(self):
