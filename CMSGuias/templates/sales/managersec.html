@@ -231,12 +231,10 @@
                                         Deductivo
                                     </button>
                                 {% endif %}
-                                {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
-                                    <button class="btn btn-danger text-black btn-save-modify-meter">
-                                        <span class="glyphicon glyphicon-saved"></span>
-                                        Aprobar Modificación
-                                    </button>
-                                {% endif %}
+                                <button class="btn btn-danger text-black btn-save-modify-meter">
+                                  <span class="glyphicon glyphicon-saved"></span>
+                                    Aprobar Modificación
+                                </button>
                             </div>
                         {% endif %}
                     </div>
@@ -398,6 +396,13 @@
                         </div>
                         {% endif %}
                     {% endif %}
+                    <div class="alert alert-block alert-danger alert-percent-fifteen hide">
+                        a
+                        <strong>Alerta! Ten encuenta que:</strong>
+                        <p>
+                            El porcentaje para realizar las modificaciones se encuentra en negativo. Recuerda que si se agregan más articulos a la lista el procentaje de ganancias estara siendo afectado.
+                        </p>
+                    </div>
                     <div class="panel panel-primary">
                         {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
                             <div class="panel-footer">
@@ -449,13 +454,13 @@
                                    </div>
                                </div> -->
                                 <div class="table-responsive">
-                                    <table class="table table-condensed">
+                                    <table class="table table-hover table-condensed table-responsive table-calc-first">
                                         <tbody>
                                             <tr>
                                                 <td rowspan="1" width="200px"></td>
-                                                <th>Importe Aprox.</th>
-                                                <th>Importe de Compra</th>
-                                                <th>Diferencia</th>
+                                                <th>IMPORTE VENTA APROX.</th>
+                                                <th>CALCULO PRECIOS</th>
+                                                <th>QUEDA</th>
                                                 <th colspan="2" class="text-center">
                                                     <span class="glyphicon glyphicon-thumbs-up"></span>
                                                     %
@@ -464,6 +469,12 @@
                                                     <span class="glyphicon glyphicon-thumbs-down"></span>
                                                     %
                                                 </th>
+                                            </tr>
+                                            <tr>
+                                                <th colspan="4"></th>
+                                                <th class="text-center"><small>% CONSUMIDO</small></th>
+                                                <th class="text-center"><small>% RESTA</small></th>
+                                                <th class="text-center"><small>% PERDIDA</small></th>
                                             </tr>
                                             <tr>
                                                 <th>PRECIO DE COMPRA</th>
@@ -486,6 +497,9 @@
                                                 <td class="text-center percentsales"></td>
                                                 <td class="text-center percentsalesres"></td>
                                                 <td class="text-center percentsalesdiff"></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="7"></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -960,14 +974,14 @@
                                     <div class="panel panel-warning">
                                         <table class="table table-condensed">
                                             <tbody>
-                                                <tr>
+                                                <tr class="active">
                                                     <td></td>
-                                                    <th class="text-center">IMPORTE INGRESADO</th>
-                                                    <th class="text-center" colspan="2">IMPORTE VENTA</th>
-                                                    <th class="text-center">IMPORTE MODIFICADO</th>
+                                                    <th class="text-center">IMPORTE VENTA APROX.</th>
+                                                    <th class="text-center" colspan="2">ACTUAL IMPORTE VENTA</th>
+                                                    <th class="text-center">IMPORTE VENTA MODIFICADO</th>
                                                     <th class="text-center" colspan="2">DIFERENCIA</th>
                                                 </tr>
-                                                <tr>
+                                                <tr class="active">
                                                     <td></td>
                                                     <td></td>
                                                     <th class="text-center">CALCULADO</th>
@@ -975,6 +989,27 @@
                                                     <td></td>
                                                     <th class="text-center">CALC. DIF.</th>
                                                     <th class="text-center">TOTAL</th>
+                                                </tr>
+                                                <tr class="active">
+                                                  <td></td>
+                                                  <td class="text-center">
+                                                    <span class="fa fa-square text-success"></span>
+                                                    </td>
+                                                  <td class="text-center">
+                                                    <span class="fa fa-square text-info"></span>
+                                                  </td>
+                                                  <td class="text-center">
+                                                    ( <span class="fa fa-square text-success"></span> - <span class="fa fa-square text-info"></span> )
+                                                  </td>
+                                                  <td class="text-center">
+                                                    <span class="fa fa-square text-warning"></span>
+                                                  </td>
+                                                  <td class="text-center">
+                                                    ( <span class="fa fa-square text-warning"></span> - <span class="fa fa-square text-info"></span> )
+                                                  </td>
+                                                  <td class="text-center">
+                                                    ( <span class="fa fa-square text-success"></span> - <span class="fa fa-square text-warning"></span> )
+                                                  </td>
                                                 </tr>
                                                 <tr>
                                                     <th>
@@ -1033,7 +1068,7 @@
                                 <caption>
                                     <div class="alert alert-block alert-warning text-left">
                                         <strong>Ten en cuenta!</strong>
-                                        <p>Que en el campo <strong><q>Cantidad</q></strong> debes de colocar el metrado total del material para este sector.</p>
+                                        <p>Que en el campo <strong><q>Cantidad</q></strong> se debe de colocar el metrado total del material para este sector.</p>
                                     </div>
                                 </caption>
                                 <thead>
@@ -1705,7 +1740,7 @@
     <input type="hidden" name="exchangep" value="{{ project.exchange|safe }}">
 {% endif %}
 <input type="hidden" name="user-email" value="{{ user.email }}" data-name="{{ user.get_profile.empdni.firstname }} {{ user.get_profile.empdni.lastname }}">
-<input type="hidden" name="area" value="{{ user.get_profile.empdni.charge.area|lower }}">
+<input type="hidden" name="area" value="{{ user.get_profile.empdni.charge.area|lower }}" data-cargo="{{ user.get_profile.empdni.charge.cargos|lower }}">
 <!-- block files -->
 <input type="file" name="plane" class="hide" accept="application/pdf">
 {% endblock content %}

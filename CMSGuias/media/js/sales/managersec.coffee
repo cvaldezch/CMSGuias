@@ -13,7 +13,7 @@ $(document).ready ->
     #$(".btn-new-brand").on "click", openBrand
     #$(".btn-new-model").on "click", openModel
     $("[name=show-plane], .btn-upload-plane-meter").on "click", (event) ->
-        $("input[name=plane]").click()
+    $("input[name=plane]").click()
     $(document).on "click", ".btn-del-mat", delMaterials
     $(document).on "click", ".btn-show-secsub", loadSecandSub
     $(document).on "click", ".btn-show-subproject_id", loadSector
@@ -178,6 +178,7 @@ $(document).ready ->
         scrollingTop: 50
     .mouseenter ->
         $(@).floatThead "reflow"
+    getPercentAttend()
     return
 
 tableUp = (event) ->
@@ -1308,7 +1309,7 @@ showModify = ->
     $(".table-details, .table-niple, .btn-update-meter").fadeOut 200
     $(".panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter").fadeIn 680
     $(".panel-price-two").fadeIn 600
-    $(".panel-price-one").fadeOut 200
+    $(".panel-price-one, .table-calc-first").fadeOut 200
     $("table.table-modify").floatThead "reflow"
     return
 
@@ -1316,7 +1317,7 @@ backModify = ->
     $(".panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter").fadeOut 200
     $(".table-details, .table-niple, .btn-update-meter").fadeIn 680
     $(".panel-price-two").fadeOut 200
-    $(".panel-price-one").fadeIn 600
+    $(".panel-price-one, .table-calc-first").fadeIn 600
     return
 
 startModidfy = ->
@@ -2316,13 +2317,37 @@ calcAmountModifySector = (event) ->
         apurchase += (quantity * purchase)
         asales += (quantity * sales)
         return
-    $(".amodifynowpurchase").text apurchase.toFixed 2
-    $(".amsalesmodifynow").text asales.toFixed 2
+    $(".amodifynowpurchase").text apurchase.toFixed 3
+    $(".amsalesmodifynow").text asales.toFixed 3
     #if purchaseamount > amodifynowpurchase
-    $(".adiffpurchase").text (purchaseamount - apurchase).toFixed 3
-    $(".aimppurchase").text (parseFloat($(".amountmeterestimated").text()) - apurchase).toFixed 2
-    $(".amsalesdifftot").text (salesamount - asales).toFixed 3
-    $(".amountsalestot").text (parseFloat($(".amountmeterestimatedsales").text()) - asales).toFixed 2
+    $(".adiffpurchase").text (apurchase - purchaseamount).toFixed 3
+    $(".aimppurchase").text (parseFloat($(".amountmeterestimated").text()) - apurchase).toFixed 3
+    $(".amsalesdifftot").text (asales - salesamount).toFixed 3
+    $(".amountsalestot").text (parseFloat($(".amountmeterestimatedsales").text()) - asales).toFixed 3
+    ####
+    # Permisse storage approved
+    iva = parseFloat $(".amountmeterestimatedsales").text()
+    ivm = parseFloat asales.toFixed 3
+    percent = ((ivm*100)/iva)
+    $cargo = $("[name=area]").attr("data-cargo")
+    if $cargo is "jefe de operaciones"
+        $(".btn-save-modify-meter").addClass "hide"
+        if percent >= 15
+            $(".btn-save-modify-meter").removeClass "hide"
+        else
+            swal
+                title: "Alerta!"
+                text: "Has alcanzado el maximo monto para realizar modificaciones. <br> Te recomendamos contactarte con el area de <q>Ventas</q>."
+                timer: 3000
+                type: "warning"
+                showConfirmButton: false
+    if percent < 15
+        swal
+            title: "Alerta!"
+            text: "Has alcanzado el porcentaje maximo para las modificaciones. Si sigues ingresando el porcentaje de ganancia sera menor."
+            type: "warning",
+            timer: 2800,
+            showConfirmButton: false
     return
 
 showGuideByProyect = (event) ->
@@ -2450,23 +2475,23 @@ showListPreOrders = (event) ->
 ## update 02-06-2015
 # rest get precent items attend
 getPercentAttend = (event) ->
-    $.getJSON "",
-        "percentsec": true
-    , (response) ->
-        if response.status
-            $bar = $(".progress-sec")
-            if response.percent == "100.0"
-                $bar.addClass "progress-bar-success"
-            $bar.attr "aria-valuenow", response.percent
-            $bar.css "width": "#{response.percent}%"
-            $bar.text "#{response.percent} % Completo."
-            return
-        else
-            swal
-                title: "Error!"
-                text: "al obtener el procentaje de materiales atendidos. #{response.raise}"
-                showConfirmButton: false
-                timer: 2800
-                type: "error"
-            return
-    return
+  $.getJSON "",
+    "percentsec": true
+  , (response) ->
+    if response.status
+      $bar = $(".progress-sec")
+      if response.percent == "100.0"
+          $bar.addClass "progress-bar-success"
+      $bar.attr "aria-valuenow", response.percent
+      $bar.css "width": "#{response.percent}%"
+      $bar.text "#{response.percent} % Completo."
+      return
+    else
+      swal
+          title: "Error!"
+          text: "al obtener el porcentaje de materiales atendidos. #{response.raise}"
+          showConfirmButton: false
+          timer: 2800
+          type: "error"
+      return
+  return

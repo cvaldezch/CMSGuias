@@ -309,15 +309,19 @@ searchBrandOption = function() {
   $.getJSON("/json/brand/list/option/", function(response) {
     var $brand, template, x;
     if (response.status) {
-      template = "<option value=\"{{ brand_id }}\">{{ brand }}</option>";
+      template = "<option value=\"{{ brand_id }}\" {{ select }}>{{ brand }}</option>";
       $brand = $("select[name=brand]");
       $brand.empty();
       for (x in response.brand) {
+        if (response.brand[x].brand_id === "BR000") {
+          response.brand[x].select = "selected";
+        }
         $brand.append(Mustache.render(template, response.brand[x]));
       }
     } else {
       $().toastmessage("showWarningToast", "No se a podido obtener la lista de marcas.");
     }
+    $("select[name=brand]").click();
   });
 };
 

@@ -708,8 +708,12 @@ class SectorManage(JSONResponseMixin, View):
                             sector_id=kwargs['sec'])
                         titem = items.count()
                         attend = items.filter(tag='2').count()
-                        partital = items.filter(tag='1').cont()
-                        percent = ((attend * 100) / titem)
+                        partital = items.filter(tag='1').count()
+                        attend = (attend + (partital/2))
+                        if attend > 0:
+                            percent = ((attend * 100) / titem)
+                        else:
+                            percent = 0
                         context['percent'] = '%.1f'%percent
                         context['status'] = True
                     if 'type' in request.GET:
@@ -763,7 +767,7 @@ class SectorManage(JSONResponseMixin, View):
                         context['ingress'] = ingress
                         context['status'] = True
                 except ObjectDoesNotExist, e:
-                    context['raise'] = e.__str__()
+                    context['raise'] = str(e)
                     context['status'] = False
                 return self.render_to_json_response(context)
             ### block manager sector global
@@ -777,12 +781,8 @@ class SectorManage(JSONResponseMixin, View):
             context['exchange'] = TipoCambio.objects.filter(fecha=globalVariable.date_now())
             context['alerts'] = Alertasproyecto.objects.filter(Q(proyecto_id=kwargs['pro']), Q(subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None), Q(sector_id=kwargs['sec']), Q(flag=True)).order_by('-registrado')
             ### end block global
-
-            ##
-            #   Deductive
-            ##
+            ##   Deductive
             context['dsectors'] = Sectore.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None)
-            #
             materials = Metradoventa.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom')
             met = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom')
             if materials:
