@@ -29,6 +29,14 @@ class MetProject(models.Model):
     class Meta:
         ordering = ['proyecto']
 
+    @property
+    def amountPurchase(self):
+        return float('{0:.3f}'.format(self.precio * self.cantidad))
+
+    @property
+    def amountSales(self):
+        return float('{0:.3f}'.format(float(self.precio) * self.cantidad))
+
     def __unicode__(self):
         return '%s %s %s %f %f'%(self.proyecto, self.sector_id, self.materiales_id, self.cantidad, self.precio)
 

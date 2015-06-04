@@ -1387,6 +1387,8 @@ startModidfy = ->
                 statusprice = ""
                 if response.details[x].price <= 0 or response.details[x].quantity <= 0
                     statusprice = "danger"
+                else
+                    statusprice = "active" # class default
                 tmp = tmp.replace "{{!class}}", statusprice
                 $tb.append Mustache.render tmp, response.details[x]
                 $sel = $("#brand-#{response.details[x].materials}-#{response.details[x].brand_id}")
@@ -1406,6 +1408,7 @@ startModidfy = ->
                     if response.listModel[b].model_id is response.details[x].model_id
                         selectModel = selectModel.replace "{{!sel}}", "selected"
                     $sel.append Mustache.render selectModel, response.listModel[b]
+            $(".amountpurchasecalcmodify").val response.apurchase
             # calcDiffModify()
             calcAmountModifySector()
         else
@@ -2324,28 +2327,35 @@ calcAmountModifySector = (event) ->
     $(".amsalesdifftot").text (asales - salesamount).toFixed 3
     $(".amountsalestot").text (parseFloat($(".amountmeterestimatedsales").text()) - asales).toFixed 3
     # Permisse storage approved
-    iva = parseFloat $(".amountmeterestimatedsales").text()
-    ivm = parseFloat asales.toFixed 3
-    percent = (((iva*100)/ivm)-100)
-    console.log iva
-    console.log ivm
+    ipa = parseFloat $(".amountmeterestimated").text()
+    ipm = parseFloat apurchase.toFixed 3
+    percent = (((ipm * 100) / ipa))
+    console.log ipa
+    console.log ipm
     console.log percent
     $cargo = $("[name=area]").attr("data-cargo")
     if $cargo is "jefe de operaciones"
+        ipa = parseFloat $(".amountpurchaseestimated").val()
+        ipm = parseFloat $(".amountpurchasecalcmodify").val()
+        percent = (((ipm * 100) / ipa))
+        console.log ipa
+        console.log ipm
+        console.log percent
         $(".btn-save-modify-meter").addClass "hide"
-        if percent >= 15
+        if percent < 100
             $(".btn-save-modify-meter").removeClass "hide"
         else
             swal
                 title: "Alerta!"
-                text: "Has alcanzado el maximo monto para realizar modificaciones. <br> Te recomendamos contactarte con el area de <q>Ventas</q>."
-                timer: 3000
+                text: "Has alcanzado el maximo monto para realizar modificaciones. <br> Te recomendamos contactarte con el area de <q>Ventas</q> si se requiere seguir realizando modificaciones."
                 type: "warning"
-                showConfirmButton: false
-    if percent < 15
+                html: true
+                showConfirmButton: true
+                confirmButtonColor: "#DD6B55"
+    if percent >= 100
         swal
             title: "Alerta!"
-            text: "Has alcanzado el porcentaje maximo para las modificaciones. Si sigues ingresando el porcentaje de ganancia sera menor."
+            text: "Has alcanzado el porcentaje maximo para realizar modificaciones."
             type: "warning",
             showConfirmButton: true
             confirmButtonColor: "#DD6B55"

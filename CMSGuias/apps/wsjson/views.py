@@ -68,8 +68,8 @@ def get_meter_materials(request):
     if request.method == 'GET':
         context = {}
         try:
-            meter = Materiale.objects.values('matmed').filter(matnom__icontains=request.GET['matnom']).distinct('matmed').order_by('matmed')
-            context['list'] = [{'matmed': x['matmed']} for x in meter]
+            meter = Materiale.objects.values('materiales_id','matmed').filter(matnom__icontains=request.GET['matnom']).distinct('matmed').order_by('matmed')
+            context['list'] = [{'materiales_id': x['materiales_id'],'matmed': x['matmed']} for x in meter]
             context['status'] = True
         except ObjectDoesNotExist:
             context['status'] = False
@@ -89,9 +89,10 @@ def get_resumen_details_materiales(request):
             context = dict()
             try:
                 #data = {'list': []}
-                summ = Materiale.objects.filter(matnom__icontains=request.GET.get('matnom'), matmed__icontains=request.GET.get('matmed'))
+                summ = Materiale.objects.filter(materiales_id=request.GET['matid'])# matmed__icontains=request.GET.get('matmed'))
+                print summ
                 for x in summ:
-                    if x.matmed == request.GET.get('matmed'):
+                    if x.materiales_id == request.GET['matid']:
                         purchase = 0 ; sale = 0 ; quantity = 0
                         if 'pro' in request.GET:
                             name = 'PRICES%s'%(request.GET.get('pro'))
@@ -106,6 +107,10 @@ def get_resumen_details_materiales(request):
                                                 purchase = round(p['purchase'], 2)
                                                 sale = round(p['sale'], 2)
                                                 quantity = p['quantity']
+                            else:
+                                getprices = MetProject.objects.filter(materiales_id=x.materiales_id)
+                                if getprices:
+                                    pass
                         context['list'] = [
                             {
                                 'materialesid': x.materiales_id,

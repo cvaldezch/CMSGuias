@@ -47,7 +47,7 @@ getMeters = ->
     unless $nom.val() is ""
         data = matnom: $nom.val().trim()
         $.getJSON "/json/get/meter/materials/", data, (response) ->
-            template = "<option value='{{ matmed }}'>{{ matmed }}</option>"
+            template = "<option value=\"{{ materiales_id }}\">{{ matmed }}</option>"
             $med = $("[name=meter]")
             $med.empty()
             for x of response.list
@@ -66,7 +66,8 @@ getSummaryMaterials = ->
   if $nom.val().trim() isnt "" and $med.val() isnt ""
     data =
       matnom: $nom.val()
-      matmed: $med.val()
+      # matmed: $med.val()
+      matid: $med.val()
       pro: $pro.val()
       sec: $sec.val()
     $.getJSON "/json/get/resumen/details/materiales/", data, (response) ->
@@ -295,9 +296,9 @@ searchBrandOption = ->
         if response.brand[x].brand_id is "BR000"
           response.brand[x].select = "selected"
         $brand.append Mustache.render(template, response.brand[x])
+      $brand.click()
     else
       $().toastmessage "showWarningToast", "No se a podido obtener la lista de marcas."
-    $("select[name=brand]").change()
     return
   return
 

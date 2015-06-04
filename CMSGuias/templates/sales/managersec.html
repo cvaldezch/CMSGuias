@@ -231,10 +231,12 @@
                                         Deductivo
                                     </button>
                                 {% endif %}
-                                <button class="btn btn-danger text-black btn-save-modify-meter">
-                                  <span class="glyphicon glyphicon-saved"></span>
-                                    Aprobar Modificación
-                                </button>
+                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.cargos|lower == 'jefe de operaciones' %}
+                                  <button class="btn btn-danger text-black btn-save-modify-meter">
+                                    <span class="glyphicon glyphicon-saved"></span>
+                                      Aprobar Modificación
+                                  </button>
+                                {% endif %}
                             </div>
                         {% endif %}
                     </div>
@@ -458,8 +460,8 @@
                                         <tbody>
                                             <tr>
                                                 <td rowspan="1" width="200px"></td>
-                                                <th>IMPORTE VENTA APROX.</th>
-                                                <th>CALCULO PRECIOS</th>
+                                                <th>IMPORTE VENTA PRESUPUESTO</th>
+                                                <th>ACTUAL IMPORTE VENTA</th>
                                                 <th>QUEDA</th>
                                                 <th colspan="2" class="text-center">
                                                     <span class="glyphicon glyphicon-thumbs-up"></span>
@@ -506,12 +508,16 @@
                                 </div>
                             </div>
                         {% endif %}
+                        {% if user.get_profile.empdni.charge.cargos|lower == 'jefe de operaciones'  %}
+                          <input type="hidden" class="amountpurchaseestimated" value="{% if not sector.amount %} 0 {% else %} {{ sector.amount|safe }} {% endif %}">
+                          <input type="hidden" class="amountpurchasecalcmodify">
+                        {% endif %}
                         <div class="table-responsive">
                             {% if not meter %}
                                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
                                     <input type="hidden" id="calcAmountSectorFirst">
                                 {% endif %}
-                                <table class="table table-hover table-condensed table-details table-float">
+                                <table class="table table-hover table-condensed table-details table-float table-responsive">
                                     <thead>
                                         <tr class="brand-primary text-white">
                                             <th></th>
@@ -580,7 +586,7 @@
                                 </table>
                             {% endif %}
                             {% if meter %}
-                                <table class="table table-hover table-condensed table-details table-float">
+                                <table class="table table-hover table-condensed table-details table-float table-responsive">
                                     {% ifequal project.status 'AC' %}
                                         <caption>
                                             {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
@@ -1064,7 +1070,7 @@
                                     </button>
                                 </div>
                             </caption>
-                            <table class="table table-bordered table-condensed table-hover table-modify table-float">
+                            <table class="table table-bordered table-condensed table-hover table-modify table-float table-responsive">
                                 <caption>
                                     <div class="alert alert-block alert-warning text-left">
                                         <strong>Ten en cuenta!</strong>

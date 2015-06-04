@@ -906,8 +906,8 @@ class SectorManage(JSONResponseMixin, View):
                         obj = Metradoventa.objects.filter(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') else None, sector_id=request.POST.get('sec'))
                         obj.delete()
                         context['status'] = True
-                else:
-                    context['status'] = False
+                # else:
+                #     context['status'] = False
                 if 'addnip' in request.POST:
                     if 'id' in request.POST:
                         obj = Nipple.objects.get(pk=request.POST.get('id'))
@@ -1023,6 +1023,7 @@ class SectorManage(JSONResponseMixin, View):
                             sector_id=kwargs['sec'],
                             flag=True
                         ).order_by('materials__matnom')
+                    amountp = 0
                     list_ = list()
                     if not update:
                         for x in MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom'):
@@ -1054,10 +1055,11 @@ class SectorManage(JSONResponseMixin, View):
                                     'orders': x.quantityorder,
                                     'price': x.precio,
                                     'sales': float(x.sales),
-                                    'amount': '{0:.3f}'.format((x.cantidad * x.precio)),
+                                    'amount': x.amountPurchase,
                                     'tag': x.tag
                                 }
                             )
+                            amountp += x.amountPurchase
                     else:
                         for x in update:
                             list_.append(
@@ -1078,7 +1080,9 @@ class SectorManage(JSONResponseMixin, View):
                                     'tag': x.tag
                                 }
                             )
+                            amountp += x.amount
                     context['details'] = list_
+                    context['apurchase'] = amountp
                     context['listBrand'] = [
                         {
                             'brand_id': x.brand_id,
