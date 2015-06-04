@@ -105,6 +105,7 @@ class GuiaRemision(models.Model):
     nropla = models.ForeignKey(Transporte, to_field='nropla_id')
     status = models.CharField(max_length=2, default='46')
     motive = models.CharField(max_length=2, default='VE', blank=True)
+    comment = models.TextField(default='')
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):

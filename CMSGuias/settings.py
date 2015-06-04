@@ -19,8 +19,8 @@ DATABASES = {
         'NAME': 'erpicrperu',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': 'postgres',
-        'PASSWORD': 'codehell',
-        'HOST': 'localhost',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PASSWORD': 'fronhell',
+        'HOST': '192.168.8.90',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '5432',                      # Set to empty string for default.
     }
 }
@@ -143,7 +143,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    'django_evolution',
+    #'django_evolution',
+    'south',
     # 'CMSGuias.django_yuml',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',

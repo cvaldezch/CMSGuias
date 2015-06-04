@@ -2255,7 +2255,6 @@ readerPrices = (event) ->
     data = new Object()
     data.readerPrices = true
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
-    console.log data
     $.post "", data, (response) ->
         if response.status
             $().toastmessage "showNoticeToast", "Se a leido correctamente el archivo."
@@ -2324,11 +2323,13 @@ calcAmountModifySector = (event) ->
     $(".aimppurchase").text (parseFloat($(".amountmeterestimated").text()) - apurchase).toFixed 3
     $(".amsalesdifftot").text (asales - salesamount).toFixed 3
     $(".amountsalestot").text (parseFloat($(".amountmeterestimatedsales").text()) - asales).toFixed 3
-    ####
     # Permisse storage approved
     iva = parseFloat $(".amountmeterestimatedsales").text()
     ivm = parseFloat asales.toFixed 3
-    percent = ((ivm*100)/iva)
+    percent = (((iva*100)/ivm)-100)
+    console.log iva
+    console.log ivm
+    console.log percent
     $cargo = $("[name=area]").attr("data-cargo")
     if $cargo is "jefe de operaciones"
         $(".btn-save-modify-meter").addClass "hide"
@@ -2346,8 +2347,8 @@ calcAmountModifySector = (event) ->
             title: "Alerta!"
             text: "Has alcanzado el porcentaje maximo para las modificaciones. Si sigues ingresando el porcentaje de ganancia sera menor."
             type: "warning",
-            timer: 2800,
-            showConfirmButton: false
+            showConfirmButton: true
+            confirmButtonColor: "#DD6B55"
     return
 
 showGuideByProyect = (event) ->
