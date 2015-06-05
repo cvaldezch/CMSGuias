@@ -206,9 +206,9 @@
                               <th class="text-center">Codigo</th>
                               <th>Nombre de Proyecto</th>
                               <th>Contacto</th>
-                              <th class="text-center col-2">Registrado</th>
-                              <th class="text-center col-2">Fecha Inicio</th>
-                              <th class="text-center col-2">Fecha Fin</th>
+                              <th class="text-center col-3">Registrado</th>
+                              <th class="text-center col-3">Fecha Inicio</th>
+                              <th class="text-center col-3">Fecha Fin</th>
                               <!-- <th>Progreso</th> -->
                               {% if user.get_profile.empdni.charge.area|lower == "administrator" or user.get_profile.empdni.charge.area|lower == "ventas"  %}
                                 <th class="text-center">Editar</th>
@@ -257,9 +257,9 @@
                                   <td>{{ x.proyecto_id }}</td>
                                   <td>{{ x.nompro }}</td>
                                   <td>{{ x.contact }}</td>
-                                  <td class="text-center">{{ x.registrado|date:"Y-m-d" }}</td>
-                                  <td>{{ x.comienzo|date:"Y-m-d" }}</td>
-                                  <td>{{ x.fin|date:"Y-m-d" }}</td>
+                                  <td class="text-center">{{ x.registrado|date:"d/m/Y" }}</td>
+                                  <td>{{ x.comienzo|date:"d/m/Y" }}</td>
+                                  <td>{{ x.fin|date:"d/m/Y" }}</td>
                                   <!-- <td>
                                       <div class="progress">
                                           <div class="progress-bar
@@ -367,9 +367,9 @@
                                                         <td>{{ x.proyecto_id }}</td>
                                                         <td>{{ x.nompro }}</td>
                                                         <td>{{ x.contact }}</td>
-                                                        <td class="text-center">{{ x.registrado|date:"Y-m-d" }}</td>
-                                                        <td>{{ x.comienzo|date:"Y-m-d" }}</td>
-                                                        <td>{{ x.fin|date:"Y-m-d" }}</td>
+                                                        <td class="text-center">{{ x.registrado|date:"d/m/Y" }}</td>
+                                                        <td>{{ x.comienzo|date:"d/m/Y" }}</td>
+                                                        <td>{{ x.fin|date:"d/m/Y" }}</td>
                                                         <!-- <td>
                                                             <div class="progress">
                                                                 <div class="progress-bar
@@ -469,9 +469,9 @@
                                         <td>{{ x.proyecto_id }}</td>
                                         <td>{{ x.nompro }}</td>
                                         <td>{{ x.contact }}</td>
-                                        <td class="text-center">{{ x.registrado|date:"Y-m-d" }}</td>
-                                        <td>{{ x.comienzo|date:"Y-m-d" }}</td>
-                                        <td>{{ x.fin|date:"Y-m-d" }}</td>
+                                        <td class="text-center">{{ x.registrado|date:"d/m/Y" }}</td>
+                                        <td>{{ x.comienzo|date:"d/m/Y" }}</td>
+                                        <td>{{ x.fin|date:"d/m/Y" }}</td>
                                         <!-- <td>
                                             <div class="progress">
                                                 <div class="progress-bar

@@ -1251,34 +1251,9 @@ class SectorManage(JSONResponseMixin, View):
                                 model=request.POST.get('model'),
                                 flag=True
                             )
-                        quantity = (obj.quantity + float(request.POST.get('quantity')))
-                        # if obj.tag != '0':
-                        #     if obj.quantity < quantity:
-                        #         if obj.tag == '1':
-                        #             obj.quantityorders = (obj.quantityorders + (quantity - obj.quantity))
-                        #             obj.tag = '1'
-                        #         elif obj.tag == '2':
-                        #             obj.quantityorders = (quantity - obj.quantity)
-                        #             obj.tag = '1'
-                        #     elif obj.quantity > quantity:
-                        #         if obj.tag == '1':
-                        #             o = (obj.quantityorders - (obj.quantity - quantity))
-                        #             if o <= 0:
-                        #                 obj.quantityorders = 0
-                        #                 obj.tag = '2'
-                        #             else:
-                        #                 obj.quantityorders = o
-                        #                 obj.tag = '1'
-                        #         elif obj.tag == '2':
-                        #             obj.quantityorders = 0
-                        #             obj.tag = '2'
-                        # else:
-                        #     obj.tag = '0'
-                        # obj.quantity = quantity
-                        # obj.save()
-                        context['raise'] = 'El Material ya se encuentra ingresado editelo.'
-
                         context['status'] = False
+                        # quantity = (obj.quantity + float(request.POST.get('quantity')))
+                        context['raise'] = 'El Material ya se encuentra ingresado editelo.'
                     except ObjectDoesNotExist, e:
                         obj = UpdateMetProject()
                         obj.proyecto_id = kwargs['pro']
@@ -1288,19 +1263,14 @@ class SectorManage(JSONResponseMixin, View):
                         obj.brand_id = request.POST.get('brand')
                         obj.model_id = request.POST.get('model')
                         obj.quantity = float(request.POST.get('quantity'))
-                        if request.user.get_profile().empdni.charge.area.lower() != 'operaciones':
-                            obj.price = float(request.POST.get('price'))
-                            obj.sales = float(request.POST.get('sales'))
-                        else:
-                            obj.price = 0
-                            obj.sales = 0
+                        obj.price = float(request.POST.get('price'))
+                        obj.sales = float(request.POST.get('sales'))
                         obj.comment = ''
                         obj.quantityorders = request.POST.get('quantity')
                         obj.tag = '0'
                         obj.flag = True
                         obj.save()
                         context['status'] = True
-
                     # save details materail group
                     if 'details' in request.POST:
                         # print request.POST.get('details')

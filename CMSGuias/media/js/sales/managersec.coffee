@@ -1926,14 +1926,20 @@ approvedModify = (event) ->
             if result is "Si"
                 $.post "", data, (response) ->
                     if response.status
-                        $().toastmessage "showNoticeToast", "Se a realizado los cambios"
+                        # $().toastmessage "showNoticeToast", "Se a realizado los cambios"
+                        swal
+                            title: "Felicidades!"
+                            text: "Se han realizado los cambios solicitados."
+                            type: "success"
+                            timer: 2600
+                            showConfirmButton: false
                         setTimeout ->
                             location.reload()
                             return
                         , 2600
                         return
                     else
-                        $().toastmessage "showErrorToast", ""
+                        $().toastmessage "showErrorToast", "Error al guardar los cambios solicitados. #{response.raise}"
                         return
                 return
     return
@@ -2352,13 +2358,14 @@ calcAmountModifySector = (event) ->
                 html: true
                 showConfirmButton: true
                 confirmButtonColor: "#DD6B55"
-    if percent >= 100
-        swal
-            title: "Alerta!"
-            text: "Has alcanzado el porcentaje maximo para realizar modificaciones."
-            type: "warning",
-            showConfirmButton: true
-            confirmButtonColor: "#DD6B55"
+    else
+        if percent >= 100
+            swal
+                title: "Alerta!"
+                text: "Has alcanzado el porcentaje maximo para realizar modificaciones."
+                type: "warning",
+                showConfirmButton: true
+                confirmButtonColor: "#DD6B55"
     return
 
 showGuideByProyect = (event) ->

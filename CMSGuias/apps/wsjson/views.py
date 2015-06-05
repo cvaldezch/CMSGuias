@@ -1,23 +1,21 @@
-#-*- Encoding: utf-8 -*-
-#
+# -*- coding: utf-8 -*-
 import csv
 import json
 import datetime
-import time, urllib2
+import urllib2
 import re
 from bs4 import BeautifulSoup
 
-from django.shortcuts import get_object_or_404
+# from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
-from django.views.generic import ListView, DetailView, View
-from django.contrib import messages
-from django.contrib.auth.models import User
+from django.http import HttpResponse, Http404
+# from django.contrib.auth.models import User
+from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Sum
 from django.utils import simplejson
 from django.utils.decorators import method_decorator
-from django.core import serializers
+from django.views.generic import DetailView, ListView, View
 
 from CMSGuias.apps.almacen.models import *
 from CMSGuias.apps.home.models import *
@@ -88,29 +86,37 @@ def get_resumen_details_materiales(request):
         if request.method == 'GET':
             context = dict()
             try:
-                #data = {'list': []}
-                summ = Materiale.objects.filter(materiales_id=request.GET['matid'])# matmed__icontains=request.GET.get('matmed'))
-                print summ
+                summ = Materiale.objects.filter(
+                    materiales_id=request.GET['matid'])
+                # matmed__icontains=request.GET.get('matmed'))
                 for x in summ:
                     if x.materiales_id == request.GET['matid']:
-                        purchase = 0 ; sale = 0 ; quantity = 0
+                        purchase, sale, quantity = 0, 0, 0
                         if 'pro' in request.GET:
-                            name = 'PRICES%s'%(request.GET.get('pro'))
+                            name = 'PRICES%s' % (request.GET.get('pro'))
                             if name in request.session:
                                 sectors = request.session[name]
                                 for s in sectors:
                                     if request.GET.get('sec') in s:
-                                        #print s[request.GET.get('sec')]
                                         for p in s[request.GET.get('sec')]:
-                                            #print p
-                                            if x.materiales_id == p['materials']:
-                                                purchase = round(p['purchase'], 2)
+                                            condition = (
+                                                        x.materiales_id ==
+                                                        p['materials']
+                                                        )
+                                            if condition:
+                                                purchase = round(
+                                                            p['purchase'], 2)
                                                 sale = round(p['sale'], 2)
                                                 quantity = p['quantity']
                             else:
-                                getprices = MetProject.objects.filter(materiales_id=x.materiales_id)
+                                getprices = MetProject.objects.filter(
+                                    materiales_id=x.materiales_id).distinct(
+                                    'proyecto__proyecto_id').order_by(
+                                    'proyecto__proyecto_id')
                                 if getprices:
-                                    pass
+                                    purchase = max(
+                                            [p.precio for p in getprices])
+                                    sale = max([p.sales for p in getprices])
                         context['list'] = [
                             {
                                 'materialesid': x.materiales_id,
@@ -118,18 +124,17 @@ def get_resumen_details_materiales(request):
                                 'matmed': x.matmed,
                                 'unidad': x.unidad.uninom,
                                 'purchase': purchase,
-                                'sale': sale,
+                                'sale': float(sale),
                                 'quantity': quantity
                             }
                         ]
                         break
-                # res = Materiale.objects.values('materiales_id','matnom','matmed','unidad').filter(matnom__icontains=request.GET['matnom'],matmed__icontains=request.GET['matmed'])[:1]
-                # data['list'].append({ "materialesid": res[0]['materiales_id'], "matnom": res[0]['matnom'], "matmed": res[0]['matmed'], "unidad": res[0]['unidad'] })
                 context['status'] = True
             except ObjectDoesNotExist:
                 context['raise'] = e.__str__()
                 context['status'] = False
-            return HttpResponse(simplejson.dumps(context), mimetype='application/json')
+            return HttpResponse(simplejson.dumps(context),
+                                mimetype='application/json')
 
 class SearchBrand(JSONResponseMixin, DetailView):
     def get(self, request, *args, **kwargs):
@@ -158,34 +163,45 @@ class GetDetailsMaterialesByCode(DetailView):
         context = dict()
         if request.is_ajax():
             try:
-                mat = Materiale.objects.values('materiales_id','matnom','matmed','unidad').get(pk=request.GET.get('code'))
-                purchase = 0 ; sale = 0 ; quantity = 0
+                mat = Materiale.objects.values(
+                        'materiales_id', 'matnom', 'matmed', 'unidad').get(
+                        pk=request.GET.get('code'))
+                purchase, sale, quantity = 0, 0, 0
                 if 'pro' in request.GET:
-                    name = 'PRICES%s'%(request.GET.get('pro'))
+                    name = 'PRICES%s' % (request.GET.get('pro'))
                     if name in request.session:
                         sectors = request.session[name]
                         for s in sectors:
                             if request.GET.get('sec') in s:
-                                #print s[request.GET.get('sec')]
                                 for p in s[request.GET.get('sec')]:
-                                    #print p
                                     if mat['materiales_id'] == p['materials']:
                                         purchase = round(p['purchase'], 2)
                                         sale = round(p['sale'], 2)
                                         quantity = p['quantity']
+                    else:
+                        getprices = MetProject.objects.filter(
+                            materiales_id=mat['materiales_id']).distinct(
+                            'proyecto__proyecto_id').order_by(
+                            'proyecto__proyecto_id')
+                        if getprices:
+                            purchase = max(
+                                    [p.precio for p in getprices])
+                            sale = max([p.sales for p in getprices])
                 context['list'] = {
                     'materialesid': mat['materiales_id'],
                     'matnom': mat['matnom'],
                     'matmed': mat['matmed'],
                     'unidad': mat['unidad'],
                     'purchase': purchase,
-                    'sale': sale,
+                    'sale': float(sale),
                     'quantity': quantity
                 }
                 context['status'] = True
             except ObjectDoesNotExist, e:
+                context['raise'] = str(e)
                 context['status'] = False
-            return HttpResponse(simplejson.dumps(context), mimetype='application/json')
+            return HttpResponse(simplejson.dumps(context),
+                                mimetype='application/json')
 
 def save_order_temp_materials(request):
     data = dict()
@@ -587,7 +603,7 @@ class SupplyDetailView(DetailView):
             response['content-type'] = 'application/json'
             response['mimetype'] = 'application/json'
             queryset = DetSuministro.objects.filter(suministro_id__exact=kwargs['sid'], flag=True)
-            queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad__uninom', 'brand__brand','model__model','brand_id','model_id')
+            queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad__uninom','brand__brand','model__model','brand_id','model_id')
             queryset = queryset.annotate(cantidad=Sum('cantshop')).order_by('materiales__matnom')
             context['list'] = [
                 {
