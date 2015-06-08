@@ -766,6 +766,12 @@ class SectorManage(JSONResponseMixin, View):
                             ingress += (x.cantshop * x.metrado)
                         context['ingress'] = ingress
                         context['status'] = True
+                    if 'withoutprices' in request.GET:
+                        wprices = UpdateMetProject.objects.filter(
+                            proyecto_id=kwargs['pro'],
+                            subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None,
+                            sector_id=kwargs['sec'], )
+
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)
                     context['status'] = False
@@ -1011,8 +1017,8 @@ class SectorManage(JSONResponseMixin, View):
                         obj.cantidad = x['quantity']
                         obj.quantityorder = x['quantity']
                         obj.precio = x['price']
-                        obj.brand_id = x['brand']
-                        obj.model_id = x['model']
+                        obj.brand_id = x['brand'] if x['brand'] == '' else 'BR000'
+                        obj.model_id = x['model'] if x['model'] == '' else 'MO000'
                         obj.flag = True
                         obj.save()
                     context['status'] = True

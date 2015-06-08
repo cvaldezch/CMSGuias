@@ -173,6 +173,7 @@ $(document).ready ->
     $("button.btn-show-orders-do").on "click", showOrdersByProyect
     $(".btn-generate-pre-orders").on "click", showPreOrders
     $(".btn-save-pre-orders").on "click", savePreOrders
+    $(".bshowprices").on "click", showModalSetPrices
     $("table.table-float").floatThead
         useAbsolutePositioning: true
         scrollingTop: 50
@@ -2511,5 +2512,36 @@ getPercentAttend = (event) ->
           showConfirmButton: false
           timer: 2800
           type: "error"
+      return
+  return
+
+showModalSetPrices = (event) ->
+  context = new Object
+  context.withoutprices = true
+  $.getJSON "", context, (response) ->
+    if response.status
+      template = """
+      <tr>
+        <th>{{ index }}</th>
+        <th>{{ materials }}</th>
+        <th>{{ name }}</th>
+        <th>{{ unit }}</th>
+        <th>
+          <input type="text" class="form-control input-sm col-2" value="{{ purchase }}">
+        </th>
+        <th>
+          <input type="text" class="form-control input-sm col-2" value="{{ sales }}">
+        </th>
+      </tr>
+      """
+      $("#withoutPrice").modal "show"
+      return
+    else
+      swal
+        title: "Error"
+        text: "No ha podido traer los materiales sin precios. #{response.raise}"
+        type: "error",
+        showConfirmButton: false
+        timer: 2600
       return
   return

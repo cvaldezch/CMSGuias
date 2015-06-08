@@ -1057,10 +1057,12 @@
                                         Recargar
                                     </button>
                                 </div>
-                                <button class="btn btn-warning btn-sm">
-                                  <span class="glyphicon glyphicon-list-alt text-black"></span>
-                                  <span class="glyphicon-class">Materiales sin Precios</span>
-                                </button>
+                                {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'ventas' or request.user.get_profile.empdni.charge.area|lower == 'logistica' %}
+                                  <button type="button" class="btn btn-warning btn-sm bshowprices">
+                                    <span class="glyphicon glyphicon-list-alt text-black"></span>
+                                    <span class="glyphicon-class">Materiales sin Precios</span>
+                                  </button>
+                                {% endif %}
                                 <div class="pull-right">
                                     {% if request.user.get_profile.empdni.charge.area|lower == 'operaciones' %}
                                         <button class="btn btn-sm btn-default btn-alert-modified">
