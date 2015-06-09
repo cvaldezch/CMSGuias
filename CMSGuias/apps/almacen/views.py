@@ -871,10 +871,10 @@ def view_generate_document_out(request,oid):
                         det = models.Detpedido.objects.filter(pedido_id__exact=request.POST.get('pedido'),tag='1',flag=True)
                         for x in det:
                             obj = models.DetGuiaRemision()
-                            obj.guia_id= guidekeys
-                            obj.materiales_id= x.materiales_id
-                            obj.cantguide= x.cantguide
-                            obj.flag= True
+                            obj.guia_id = guidekeys
+                            obj.materiales_id = x.materiales_id
+                            obj.cantguide = x.cantguide
+                            obj.flag = True
                             obj.save()
                             ob = models.Detpedido.objects.get(pk__exact=x.id)
                             ob.tag= '2' if x.cantshop <= 0 else '0'
@@ -898,25 +898,28 @@ def view_generate_document_out(request,oid):
                             # brands = models.InventoryBrand.objects.filter(materiales_id=x.materiales_id, periodo=globalVariable.get_year)
 
                         # recover details nipples
-                        nip= models.Niple.objects.filter(pedido_id__exact=request.POST.get('pedido'),tag='1',flag=True)
+                        nip = models.Niple.objects.filter(pedido_id__exact=request.POST.get('pedido'), tag='1',flag=True)
                         for x in nip:
                             obj= models.NipleGuiaRemision()
-                            obj.guia_id= guidekeys
-                            obj.materiales_id= x.materiales_id
-                            obj.metrado= x.metrado
-                            obj.cantguide= x.cantguide
-                            obj.tipo= x.tipo
-                            obj.flag= True
+                            obj.guia_id = guidekeys
+                            obj.materiales_id = x.materiales_id
+                            obj.metrado = x.metrado
+                            obj.cantguide = x.cantguide
+                            obj.tipo = x.tipo
+                            obj.flag = True
                             # save details niples for guide referral
                             obj.save()
-                            ob= models.Niple.objects.get(pk__exact=x.id)
+                            ob = models.Niple.objects.get(pk__exact=x.id)
                             ob.tag= '2' if x.cantshop <= 0 else '0'
                             ob.save()
-                        data['status']= True
-                        data['guide']= guidekeys
+                        data['status'] = True
+                        data['guide'] = guidekeys
                     except ObjectDoesNotExist, e:
-                        data['status']= False
-                    return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+                        data['status'] = False
+                else:
+                    data['status'] = False
+                    data['raise'] = 'Form invalid'
+                return HttpResponse(simplejson.dumps(data), mimetype='application/json')
     except TemplateDoesNotExist, e:
         message('Error: Template not found')
         raise Http404
@@ -927,8 +930,8 @@ def view_list_guide_referral_success(request):
     try:
         if request.method == 'GET':
             if request.is_ajax():
-                data= {}
-                ls= []
+                data = {}
+                ls = []
                 try:
                     if request.GET.get('tra') == 'series':
                         lst= models.GuiaRemision.objects.get(pk=request.GET.get('series'),status='GE',flag=True)
