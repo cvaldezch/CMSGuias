@@ -14,10 +14,12 @@ from django.db.models import Count, Max, Sum, Q
 from django.utils import simplejson
 from django.core.paginator import EmptyPage, Paginator, PageNotAnInteger
 from django.views.generic import TemplateView, ListView, View
-from django.core import serializers
+# from django.core import serializers
 
 from CMSGuias.apps.almacen import models
-from CMSGuias.apps.home.models import Cliente, Almacene, Transportista, Conductore, Transporte, userProfile, Employee
+from CMSGuias.apps.home.models import (
+    Cliente, Almacene, Transportista,
+    Conductore, Transporte, userProfile, Employee)
 from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
 from CMSGuias.apps.almacen import forms
 from CMSGuias.apps.tools import genkeys, globalVariable
@@ -48,14 +50,16 @@ class StorageHome(View):
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
-        return render_to_response(self.template_name,context_instance=RequestContext(request))
+        return render_to_response(
+            self.template_name, context_instance=RequestContext(request))
 
 @login_required(login_url='/SignUp/')
 def view_pedido(request):
     try:
         if request.method == 'GET':
-            #print request.user.get_profile().empdni
-            return render_to_response('almacen/pedido.html',context_instance=RequestContext(request))
+            return render_to_response(
+                                    'almacen/pedido.html',
+                                    context_instance=RequestContext(request))
         if request.method == 'POST':
             data = {}
             form = forms.addOrdersForm(request.POST, request.FILES)
@@ -68,7 +72,8 @@ def view_pedido(request):
                 add.flag = True
                 add.save()
                 # detail Orders Details
-                tmpd = models.tmppedido.objects.filter(empdni__exact=request.user.get_profile().empdni_id)
+                tmpd = models.tmppedido.objects.filter(
+                        empdni__exact=request.user.get_profile().empdni_id)
                 for x in tmpd:
                     det = models.Detpedido()
                     det.pedido_id = id
@@ -725,9 +730,14 @@ def view_conductor_edit(request,cid,tid):
 def view_orders_pending(request):
     try:
         if request.method == 'GET':
-            lst= models.Pedido.objects.filter(flag=True,status='PE').order_by('-pedido_id')
-            ctx= { 'lista': lst }
-            return render_to_response('almacen/slopeorders.html',ctx,context_instance=RequestContext(request))
+            lst = models.Pedido.objects.filter(
+                    flag=True,
+                    status='PE').order_by('-pedido_id')
+            ctx = {'lista': lst}
+            return render_to_response(
+                            'almacen/slopeorders.html',
+                            ctx,
+                            context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
         messages('Error template not found')
         raise Http404('Process Error')
@@ -1202,8 +1212,14 @@ class ListOrdersSummary(TemplateView):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
-        context[self.context_object_name] = models.Pedido.objects.filter(Q(flag=True) & Q(status='AP') | Q(status='IN'))
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        context[self.context_object_name] = models.Pedido.objects.filter(
+                                Q(flag=True),
+                                Q(status='AP') |
+                                Q(status='IN')).order_by('-registrado')
+        return render_to_response(
+                self.template_name,
+                context,
+                context_instance=RequestContext(request))
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):

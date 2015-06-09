@@ -174,6 +174,7 @@ $(document).ready ->
     $(".btn-generate-pre-orders").on "click", showPreOrders
     $(".btn-save-pre-orders").on "click", savePreOrders
     $(".bshowprices").on "click", showModalSetPrices
+    $(".saveWithoutPrice").on "click", saveWithoutPrice
     $("table.table-float").floatThead
         useAbsolutePositioning: true
         scrollingTop: 50
@@ -2520,20 +2521,28 @@ showModalSetPrices = (event) ->
   context.withoutprices = true
   $.getJSON "", context, (response) ->
     if response.status
+      counter = 1
+      response.index = -> counter++
       template = """
+      {{#details}}
       <tr>
-        <th>{{ index }}</th>
-        <th>{{ materials }}</th>
-        <th>{{ name }}</th>
-        <th>{{ unit }}</th>
-        <th>
-          <input type="text" class="form-control input-sm col-2" value="{{ purchase }}">
-        </th>
-        <th>
+        <td>{{ index }}</td>
+        <td>{{ materials_id }}</td>
+        <td>{{ materials__matnom }} - {{ materials__matmed }}</td>
+        <td>{{ brand__brand }}</td>
+        <td>{{ materials__unidad__uninom }}</td>
+        <td>
+          <input type="text" class="form-control input-sm col-2" data-brand="{{ brand_id }}" data-model="{{ model_id }}" value="{{ price }}">
+        </td>
+        <td>
           <input type="text" class="form-control input-sm col-2" value="{{ sales }}">
-        </th>
+        </td>
       </tr>
+      {{/details}}
       """
+      $tb = $(".twithoutp > tbody")
+      $tb.empty()
+      $tb.html Mustache.render template, response
       $("#withoutPrice").modal "show"
       return
     else
@@ -2544,4 +2553,54 @@ showModalSetPrices = (event) ->
         showConfirmButton: false
         timer: 2600
       return
+  return
+
+saveWithoutPrice = (event) ->
+  context = new Object
+  context.savewithoutprice = true
+  list = new Array
+  zero = 0
+  $(".twithoutp > tbody > tr").each ->
+    $td = $(this).find "td"
+    purchase = parseFloat $td.eq(5).find("input").eq(0).val()
+    sales = parseFloat $td.eq(6).find("input").eq(0).val()
+    if purchase is 0 or sales is 0
+      zero++
+      swal
+        title: "Alerta!"
+        text: "Debe de ingresar un precio valido y mayor a cero!"
+        type: "warning"
+        showConfirmButton: false
+        timer: 2600
+      return false
+    list.push
+      'materials': $td.eq(1).text()
+      'brand': $td.eq(5).find("input").eq(0).attr "data-brand"
+      'model': $td.eq(5).find("input").eq(0).attr "data-model"
+      'purchase': purchase
+      'sales': sales
+    return
+  if zero is 0
+    context.list = JSON.stringify list
+    context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+    $.post "", context, (response) ->
+      if response.status
+        setTimeout ->
+          location.reload()
+        , 3000
+        swal
+          title: "Felicidades!"
+          text: "Se a guardado los cambios correctamente."
+          type: "success"
+          showConfirmButton: false
+          timer: 3000
+        return
+      else
+        swal
+          title: "Error!"
+          text: "No se a guardado los cambios. #{response.raise}"
+          type: "error"
+          showConfirmButton: false
+          timer: 2600
+        return
   return
