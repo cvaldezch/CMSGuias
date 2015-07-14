@@ -1,0 +1,30 @@
+{
+  "name": "CMSGuias",
+  "version": "0.0.0",
+  "homepage": "https://github.com/christian6/CMSGuias",
+  "description": "Libraries",
+  "main": "bower.js",
+  "moduleType": [
+    "amd",
+    "globals"
+  ],
+  "authors": [
+    "Christian Valdez"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "angularjs": "~1.4.2",
+    "jquery": "~2.1.4"
+  },
+  "dependencies": {
+    "angularjs": "~1.4.2",
+    "jquery": "~2.1.4"
+  }
+}

@@ -6,3 +6,5 @@
 django_yuml/
 projects/
 pedido/
+vendor/
+storage/

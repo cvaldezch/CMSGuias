@@ -4,10 +4,11 @@ from datetime import datetime
 
 from django.db import models
 
-from audit_log.models.fields import LastUserField
+# from audit_log.models.fields import LastUserField
 from audit_log.models.managers import AuditLog
 
-from CMSGuias.apps.home.models import Materiale, Unidade, Cargo, Tools, Moneda, Pais, Departamento, Provincia, Distrito, Cliente
+from CMSGuias.apps.home.models import Materiale, Unidade, Cargo,
+Tools, Moneda, Pais, Departamento, Provincia, Distrito, Cliente
 
 
 class AnalysisGroup(models.Model):
@@ -20,7 +21,7 @@ class AnalysisGroup(models.Model):
         ordering = ['register']
 
     def __unicode__(self):
-        return '%s %s'%(self.agroup_id, self.name)
+        return '%s %s' % (self.agroup_id, self.name)
 
 
 class Analysis(models.Model):
@@ -39,11 +40,17 @@ class Analysis(models.Model):
 
     @property
     def total(self):
-        tm = APMaterials.objects.extra(select={'total':'select SUM(price * quantity) as total from budget_APMaterials where analysis_id like analysis_id'})
+        tm = APMaterials.objects.extra(
+            select={'total': 'select SUM(price * quantity) as' +
+            ' total from budget_APMaterials where analysis_id like analysis_id'})
         tm = tm[0].total if tm else 0
-        tmp = APManPower.objects.extra(select={'total':'select SUM(price * quantity) as total from budget_APManPower where analysis_id like analysis_id'})
+        tmp = APManPower.objects.extra(
+            select={'total': 'select SUM(price * quantity) as'+
+            ' total from budget_APManPower where analysis_id like analysis_id'})
         tmp = tmp[0].total if tmp else 0
-        tt = APTools.objects.extra(select={'total':'select SUM(price * quantity) as total from budget_APTools where analysis_id like analysis_id'})
+        tt = APTools.objects.extra(
+            select={'total': 'select SUM(price * quantity) as'+
+            ' total from budget_APTools where analysis_id like analysis_id'})
         tt = tt[0].total if tt else 0
         return round(float(tm+float(tmp)+float(tt)), 2)
 

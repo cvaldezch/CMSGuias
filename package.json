@@ -1,0 +1,27 @@
+{
+  "name": "CMSGuias",
+  "version": "1.0.0",
+  "description": "Developer and auto compile coffeescript and stylus and other process",
+  "main": "Gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/christian6/CMSGuias.git"
+  },
+  "author": "Christian Valdez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/christian6/CMSGuias/issues"
+  },
+  "homepage": "https://github.com/christian6/CMSGuias#readme",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-coffee": "^2.3.1",
+    "gulp-plumber": "^1.0.1",
+    "gulp-stylus": "^2.0.5",
+    "gulp-watch": "^4.3.1",
+    "nib": "^1.1.0"
+  }
+}
