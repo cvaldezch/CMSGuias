@@ -7,8 +7,9 @@ from django.db import models
 # from audit_log.models.fields import LastUserField
 from audit_log.models.managers import AuditLog
 
-from CMSGuias.apps.home.models import Materiale, Unidade, Cargo,
-Tools, Moneda, Pais, Departamento, Provincia, Distrito, Cliente
+from CMSGuias.apps.home.models import (Materiale, Unidade, Cargo, Tools,
+                                       Moneda, Pais, Departamento, Provincia,
+                                       Distrito, Cliente)
 
 
 class AnalysisGroup(models.Model):
@@ -41,21 +42,20 @@ class Analysis(models.Model):
     @property
     def total(self):
         tm = APMaterials.objects.extra(
-            select={'total': 'select SUM(price * quantity) as' +
-            ' total from budget_APMaterials where analysis_id like analysis_id'})
+            select={'total': "select SUM(price * quantity) as total from budget_APMaterials where analysis_id like analysis_id"})
         tm = tm[0].total if tm else 0
         tmp = APManPower.objects.extra(
-            select={'total': 'select SUM(price * quantity) as'+
-            ' total from budget_APManPower where analysis_id like analysis_id'})
+            select={'total': 'select SUM(price * quantity) as total from budget_APManPower where analysis_id like analysis_id'})
         tmp = tmp[0].total if tmp else 0
         tt = APTools.objects.extra(
-            select={'total': 'select SUM(price * quantity) as'+
-            ' total from budget_APTools where analysis_id like analysis_id'})
+            select={'total': 'select SUM(price * quantity) as total from budget_APTools where analysis_id like analysis_id'})
         tt = tt[0].total if tt else 0
-        return round(float(tm+float(tmp)+float(tt)), 2)
+        return round(float(tm + float(tmp) + float(tt)), 2)
 
     def __unicode__(self):
-        return '%s %s %s %f'%(self.analysis_id, self.name, self.register, self.performance)
+        return '%s %s %s %f' % (self.analysis_id, self.name,
+                                self.register, self.performance)
+
 
 class APMaterials(models.Model):
     analysis = models.ForeignKey(Analysis, to_field='analysis_id')
@@ -74,7 +74,8 @@ class APMaterials(models.Model):
         return (self.quantity * float(self.price))
 
     def __unicode__(self):
-        return '%s %f %d'%(self.materials, self.quantity, self.price)
+        return '%s %f %d' % (self.materials, self.quantity, self.price)
+
 
 class APManPower(models.Model):
     analysis = models.ForeignKey(Analysis, to_field='analysis_id')
@@ -94,7 +95,9 @@ class APManPower(models.Model):
         return float(self.quantity * self.price)
 
     def __unicode__(self):
-        return '%s %s %d %d'%(self.analysis_id, self.manpower, self.quantity, self.price)
+        return '%s %s %d %d' % (self.analysis_id,
+                                self.manpower, self.quantity, self.price)
+
 
 class APTools(models.Model):
     analysis = models.ForeignKey(Analysis, to_field='analysis_id')
@@ -114,7 +117,9 @@ class APTools(models.Model):
         return float(self.quantity * self.price)
 
     def __unicode__(self):
-        return '%s %s %d %d'%(self.analysis_id, self.tools, self.quantity, self.price)
+        return '%s %s %d %d' % (self.analysis_id,
+                                self.tools, self.quantity, self.price)
+
 
 class Budget(models.Model):
     budget_id = models.CharField(max_length=10, primary_key=True)
@@ -145,12 +150,13 @@ class Budget(models.Model):
         ordering = ['budget_id']
 
     def __unicode__(self):
-        return '%s %s'%(self.budget_id, self.name)
+        return '%s %s' % (self.budget_id, self.name)
+
 
 class BudgetItems(models.Model):
     budget = models.ForeignKey(Budget, to_field='budget_id')
     budgeti_id = models.CharField(max_length=13, primary_key=True)
-    item =  models.DecimalField(max_digits=3, decimal_places=2)
+    item = models.DecimalField(max_digits=3, decimal_places=2)
     name = models.CharField(max_length=255)
     base = models.DecimalField(max_digits=10, decimal_places=3)
     offer = models.DecimalField(max_digits=10, decimal_places=3)
@@ -162,12 +168,14 @@ class BudgetItems(models.Model):
         ordering = ['name']
 
     def __unicode__(self):
-        return '%s %s %s %d'%(self.budget_id, self.item, self.name, self.base)
+        return '%s %s %s %d' % (self.budget_id, self.item,
+                                self.name, self.base)
+
 
 class BudgetSub(models.Model):
     budget = models.ForeignKey(Budget, to_field='budget_id')
     budgeti = models.ForeignKey(BudgetItems, to_field='budgeti_id')
-    budgetsub_id =  models.CharField(max_length=16, primary_key=True)
+    budgetsub_id = models.CharField(max_length=16, primary_key=True)
     name = models.CharField(max_length=255)
     unit = models.ForeignKey(Unidade, to_field='unidad_id')
     status = models.CharField(default='PE', max_length=2)
@@ -178,10 +186,11 @@ class BudgetSub(models.Model):
     class Meta:
         ordering = ['name']
 
+
 class BudgetDetails(models.Model):
     budget = models.ForeignKey(Budget, to_field='budget_id')
     budgeti = models.ForeignKey(BudgetItems, to_field='budgeti_id')
-    budgetsub =  models.ForeignKey(BudgetSub, to_field='budgetsub_id')
+    budgetsub = models.ForeignKey(BudgetSub, to_field='budgetsub_id')
     analysis = models.ForeignKey(Analysis, to_field='analysis_id')
     quantity = models.FloatField()
 
@@ -191,4 +200,4 @@ class BudgetDetails(models.Model):
         ordering = ['analysis']
 
     def __unicode__(self):
-        return '%s %s %f'%(self.budget_id, self.analysis, self.quantity)
+        return '%s %s %f' % (self.budget_id, self.analysis, self.quantity)

@@ -25,6 +25,9 @@
   },
   "dependencies": {
     "angularjs": "~1.4.2",
-    "jquery": "~2.1.4"
+    "jquery": "~2.1.4",
+    "materialize": "~0.97.0",
+    "font-awesome": "~4.3.0",
+    "normalize-css": "~3.0.3"
   }
 }
