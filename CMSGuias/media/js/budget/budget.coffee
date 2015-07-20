@@ -1,10 +1,10 @@
 $ ->
-  $(".panel-sbudget, .panel-details-budget").hide()
-  $("[name=finish]").datepicker
-    changeMonth: true
-    changeYear: true
-    minDate: "0"
-    dateFormat: "yy-mm-dd"
+  #$(".panel-sbudget, .panel-details-budget").hide()
+  #$("[name=finish]").datepicker
+  #  changeMonth: true
+  #  changeYear: true
+  #  minDate: "0"
+  #  dateFormat: "yy-mm-dd"
   $("[name=showBudget]").on "click", showBudget
   $(".bsearchbudget").on "click", showSearchBudget
   $("[name=saveBudget]").on "click", saveBudget
