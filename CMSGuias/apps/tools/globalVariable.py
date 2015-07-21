@@ -41,6 +41,7 @@ tipo_nipples = {
     'G': 'Brida - Ranura',
     'H': 'Bisel - Bisel',
     'I': 'Bisel - Rosca',
+    'J': 'BridaHechizo',
     '-': ''
 }
 

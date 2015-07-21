@@ -15,7 +15,8 @@ $(function() {
 
 showBudget = function(event) {
   $("[name=budget]").val("");
-  $("#nbudget").modal("show");
+  $("#nbudget").openModal();
+  console.log("leanModal");
 };
 
 showSearchBudget = function(event) {

@@ -23,7 +23,8 @@ $ ->
 
 showBudget = (event) ->
   $("[name=budget]").val ""
-  $("#nbudget").modal "show"
+  $("#nbudget").openModal()
+  console.log "leanModal"
   return
 
 showSearchBudget = (event) ->

@@ -14,9 +14,9 @@
           <button class="btn waves-effect" type="button" name="showBudget">
             Nuevo
           </button>
-          <bnt class="btn waves-effect" type="button" name="bsearchbudget">
+          <button class="btn waves-effect" type="button" name="bsearchbudget">
             Buscar
-          </bnt>
+          </button>
         </div>
       </div>
       <!-- <div class="panel panel-primary panel-budgets">
@@ -86,13 +86,23 @@
                         <span class="fa fa-cogs"></span>
                       </button>
                       <ul class="dropdown-menu" role="menu">
-                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs showbudgetdetails" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-list-alt"></span> Detalle</a></li>
+                        <li role="presentation">
+                          <a href="#" role="menuitem" class="text-left btn-xs showbudgetdetails" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-list-alt"></span> Detalle</a>
+                        </li>
                         <li class="divider" style="margin: 0;"></li>
-                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs showbudgetedit" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-edit"></span> Editar</a></li>
-                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs budgetdelete" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-trash"></span> Eliminar</a></li>
+                        <li role="presentation">
+                          <a href="#" role="menuitem" class="text-left btn-xs showbudgetedit" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-edit"></span> Editar</a>
+                        </li>
+                        <li role="presentation">
+                          <a href="#" role="menuitem" class="text-left btn-xs budgetdelete" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-trash"></span> Eliminar</a>
+                        </li>
                         <li class="divider" style="margin: 0;"></li>
-                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs budgetcopy" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-copy"></span> Copiar</a></li>
-                        <li role="presentation"><a href="#" role="menuitem" class="text-left btn-xs bdugetrevision" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-tasks"></span> Revision</a></li>
+                        <li role="presentation">
+                          <a href="#" role="menuitem" class="text-left btn-xs budgetcopy" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-copy"></span> Copiar</a>
+                        </li>
+                        <li role="presentation">
+                          <a href="#" role="menuitem" class="text-left btn-xs bdugetrevision" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-tasks"></span> Revision</a>
+                        </li>
                       </ul>
                     </div>
                   </td>
@@ -176,15 +186,14 @@
 </div>
 <!-- block modals -->
 <div class="modal fade" id="nbudget" data-backdrop="static">
-  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <form action="#" method="post" id="newBudget">
       <div class="modal-header">
-        <a class="close" data-dismiss="modal">&times;</a>
+        <a class="modal-close right">&times;</a>
         <h4 class="modal-title">Presupuesto</h4>
         <div class="row">
           <div class="col-md-12">
-            <button type="button" data-dismiss="modal" class="btn btn-default btn-sm">
+            <button type="button" class="btn btn-default btn-sm bnt">
               <span class="fa fa-save"></span>
               <span class="fa-class">Salir</span>
             </button>
