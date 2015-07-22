@@ -27,6 +27,10 @@
     {% block fontawesome %}
         <link rel="stylesheet" href="{{ MEDIA_URL }}vendor/font-awesome/css/font-awesome.min.css">
     {% endblock fontawesome %}
+    {% block sweetalert %}
+        <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}vendor/sweetalert/dist/sweetalert.css">
+        <script type="text/javascript" src="{{ MEDIA_URL }}vendor/sweetalert/dist/sweetalert.min.js"></script>
+    {% endblock sweetalert %}
     <!-- Part Styles -->
     {% block style %}{% endblock %}
     <!-- <script type="text/javascript" src="{{ MEDIA_URL }}js/validateFields.js"></script> -->
@@ -34,9 +38,7 @@
     <!-- Part Scripts -->
     {% block scripts %}{% endblock %}
     <!-- Part Style-Basic -->
-    {% block stylebase %}
-    <!-- <link rel="stylesheet" href="/media/css/base.css"> -->
-    {% endblock %}
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/basemd.css">
     <!--[if IE]><script type="text/javascript">
         var e = ("abbr,article,spam,aside,audio,canvas,datalist,details,figure,
         footer,header,hgroup,mark,menu,meter,nav,output,progress,

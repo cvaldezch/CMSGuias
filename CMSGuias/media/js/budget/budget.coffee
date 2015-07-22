@@ -1,24 +1,25 @@
 $ ->
-  #$(".panel-sbudget, .panel-details-budget").hide()
-  #$("[name=finish]").datepicker
-  #  changeMonth: true
-  #  changeYear: true
-  #  minDate: "0"
-  #  dateFormat: "yy-mm-dd"
+  # $(".panel-sbudget, .panel-details-budget").hide()
+  $("select").material_select()
+  $("[name=finish]").pickadate
+    closeOnSelect: true
+    container: 'body'
+    selectMonths: true
+    selectYears: 15
+    format: 'yyyy-mm-dd'
+  # .on 'open', ->
+  #   $('[name=finish]').appendTo 'body'
+  #   return
   $("[name=showBudget]").on "click", showBudget
-  $(".bsearchbudget").on "click", showSearchBudget
   $("[name=saveBudget]").on "click", saveBudget
+  $(".bsearchbudget").on "click", showSearchBudget
   $(".showbudgetdetails").on "click", getBudgetData
   $(".showbudgetedit").on "click", showBudgetEdit
   tinymce.init
     selector: "textarea[name=observation]"
-    # plugins: [
-    #     "advlist autolink lists link image charmap print preventiew anchor",
-    #     "searchreplace visualblocks code fullscreen",
-    #     "insertdatetime media table contextmenu paste"
-    # ],
     menubar: false
     toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
+  $(".modal.bottom-sheet").css "max-height", "65%"
   return
 
 showBudget = (event) ->
@@ -66,7 +67,7 @@ saveBudget = (event) ->
           location.reload()
           return
         else
-          $().toastmessage "showErrorToast", "No se han guardado lo datos correctamente. #{response.raise}"
+          swal "Oops Alert!", "No se han guardado lo datos correctamente. #{response.raise}", "warning"
           return
       , "json"
       false
@@ -108,4 +109,14 @@ getBudgetData = (event) ->
     else
       $().toastmessage "showErrorToast", "No se encontraron datos. #{response.raise}"
       return
+  return
+
+# implement AngularJS
+app = angular.module 'BudgetApp', []
+app.controller 'BudgetCtrl', ($scope) ->
+  $scope.ssearch = false
+  $scope.bgdetails = false
+  $scope.$watch 'bgdetails', (val) ->
+    console.log val
+    return
   return

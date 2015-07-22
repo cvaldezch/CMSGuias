@@ -1,9 +1,17 @@
-var getBudgetData, saveBudget, showBudget, showBudgetEdit, showSearchBudget;
+var app, getBudgetData, saveBudget, showBudget, showBudgetEdit, showSearchBudget;
 
 $(function() {
+  $("select").material_select();
+  $("[name=finish]").pickadate({
+    closeOnSelect: true,
+    container: 'body',
+    selectMonths: true,
+    selectYears: 15,
+    format: 'yyyy-mm-dd'
+  });
   $("[name=showBudget]").on("click", showBudget);
-  $(".bsearchbudget").on("click", showSearchBudget);
   $("[name=saveBudget]").on("click", saveBudget);
+  $(".bsearchbudget").on("click", showSearchBudget);
   $(".showbudgetdetails").on("click", getBudgetData);
   $(".showbudgetedit").on("click", showBudgetEdit);
   tinymce.init({
@@ -11,6 +19,7 @@ $(function() {
     menubar: false,
     toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
   });
+  $(".modal.bottom-sheet").css("max-height", "65%");
 });
 
 showBudget = function(event) {
@@ -60,7 +69,7 @@ saveBudget = function(event) {
         if (response.status) {
           location.reload();
         } else {
-          $().toastmessage("showErrorToast", "No se han guardado lo datos correctamente. " + response.raise);
+          swal("Oops Alert!", "No se han guardado lo datos correctamente. " + response.raise, "warning");
         }
       }, "json");
       return false;
@@ -89,3 +98,13 @@ getBudgetData = function(event) {
     }
   });
 };
+
+app = angular.module('BudgetApp', []);
+
+app.controller('BudgetCtrl', function($scope) {
+  $scope.ssearch = false;
+  $scope.bgdetails = false;
+  $scope.$watch('bgdetails', function(val) {
+    console.log(val);
+  });
+});

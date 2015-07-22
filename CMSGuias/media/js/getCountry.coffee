@@ -6,7 +6,7 @@ getCountryOption = ->
             $country.empty()
             for x of response.country
                 $country.append Mustache.render template, response.country[x]
-
+            $country.material_select('destroy')
         return
     return
 
@@ -21,7 +21,7 @@ getDepartamentOption = ->
             $departament.empty()
             for x of response.departament
                 $departament.append Mustache.render template, response.departament[x]
-
+            $departament.material_select('destroy')
         return
     return
 
@@ -37,7 +37,7 @@ getProvinceOption = ->
             $province.empty()
             for x of response.province
                 $province.append Mustache.render template, response.province[x]
-
+            $province.material_select('destroy')
         return
     return
 
@@ -54,7 +54,7 @@ getDistrictOption = ->
             $district.empty()
             for x of response.district
                 $district.append Mustache.render template, response.district[x]
-
+            $district.material_select('destroy')
         return
     return
 

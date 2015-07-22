@@ -421,6 +421,7 @@ class BudgetView(JSONResponseMixin, TemplateView):
             try:
                 context['currency'] = Moneda.objects.filter(flag=True)
                 context['customer'] = Cliente.objects.filter(flag=True)
+                # context['country'] = Pais.objects.filter(flag=True)
                 context['budget'] = Budget.objects.filter(
                     flag=True, status='PE').order_by('-register')
                 return render(request, 'budget/budget.html', context)
@@ -438,6 +439,7 @@ class BudgetView(JSONResponseMixin, TemplateView):
                             budget_id=request.GET['budget']))
                 else:
                     form = addBudgetForm(request.POST)
+                print form
                 if form.is_valid():
                     if 'editbudget' in request.POST:
                         form.save()

@@ -34,3 +34,70 @@
 
   /* Support for IE. */
   font-feature-settings 'liga'
+
+.code
+  background #999
+  background-color #999
+
+
+input[type=text]:focus:not([readonly]),
+input[type=password]:focus:not([readonly]),
+input[type=email]:focus:not([readonly]),
+input[type=url]:focus:not([readonly]),
+input[type=time]:focus:not([readonly]),
+input[type=date]:focus:not([readonly]),
+input[type=datetime-local]:focus:not([readonly]),
+input[type=tel]:focus:not([readonly]),
+input[type=number]:focus:not([readonly]),
+input[type=search]:focus:not([readonly]),
+textarea.materialize-textarea:focus:not([readonly])
+  border-bottom 1px solid #006064
+  box-shadow 0 1px 0 0 #006064
+
+input[type=text]:hover:not([readonly]) + label,
+input[type=password]:hover:not([readonly]) + label,
+input[type=email]:hover:not([readonly]) + label,
+input[type=url]:hover:not([readonly]) + label,
+input[type=time]:hover:not([readonly]) + label,
+input[type=date]:hover:not([readonly]) + label
+input[type=datetime-local]:hover:not([readonly]) + label,
+input[type=tel]:hover:not([readonly]) + label,
+input[type=number]:hover:not([readonly]) + label,
+input[type=search]:hover:not([readonly]) + label,
+textarea.materialize-textarea:hover:not([readonly]) + label
+  color #000
+
+input[type=text]:focus:not([readonly]) + label,
+input[type=password]:focus:not([readonly]) + label,
+input[type=email]:focus:not([readonly]) + label,
+input[type=url]:focus:not([readonly]) + label,
+input[type=time]:focus:not([readonly]) + label,
+input[type=date]:focus:not([readonly]) + label
+input[type=datetime-local]:focus:not([readonly]) + label,
+input[type=tel]:focus:not([readonly]) + label,
+input[type=number]:focus:not([readonly]) + label,
+input[type=search]:focus:not([readonly]) + label,
+textarea.materialize-textarea:focus:not([readonly]) + label
+  color #006064
+
+// /* label color */
+
+// /* label focus color */
+// .input-field input[type=text]:focus + label
+//   color #006064
+// /* label underline focus color */
+// .input-field input[type=text]:focus:not([readonly])
+//   border-bottom 1px solid #006064
+//   box-shadow 0 1px 0 0 #006064
+// /* valid color */
+// .input-field input[type=text].valid
+//   border-bottom 1px solid #006064
+//   box-shadow 0 1px 0 0 #006064
+// /* invalid color */
+// .input-field input[type=text].invalid
+//   border-bottom 1px solid #000
+//   box-shadow 0 1px 0 0 #000
+
+// /* icon prefix focus color */
+// .input-field .prefix.active
+//   color #006064
