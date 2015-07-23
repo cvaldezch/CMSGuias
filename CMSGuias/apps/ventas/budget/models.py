@@ -156,7 +156,7 @@ class Budget(models.Model):
 class BudgetItems(models.Model):
     budget = models.ForeignKey(Budget, to_field='budget_id')
     budgeti_id = models.CharField(max_length=13, primary_key=True)
-    item = models.DecimalField(max_digits=3, decimal_places=2)
+    item = models.IntegerField(null=False)
     name = models.CharField(max_length=255)
     base = models.DecimalField(max_digits=10, decimal_places=3)
     offer = models.DecimalField(max_digits=10, decimal_places=3)

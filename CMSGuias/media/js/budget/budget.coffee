@@ -1,6 +1,7 @@
 $ ->
   # $(".panel-sbudget, .panel-details-budget").hide()
   $("select").material_select()
+  $(".modal-trigger").leanModal()
   $("[name=finish]").pickadate
     closeOnSelect: true
     container: 'body'
@@ -82,41 +83,71 @@ getBudgetData = (event) ->
   params.budgetData = true
   params.budget = this.getAttribute "data-value"
   console.log params
-  $.getJSON "", param, (repsonse) ->
+  $.getJSON "", params, (response) ->
     if response.status
       colone = """
-      <dt>Presupuesto</dt>
-      <dd>{{ budget.budget_id }}</dd>
-      <dt>Cliente</dt>
-      <dd>{{ budget.customers }}</dd>
-      <dt>Dirección</dt>
-      <dd></dd>
-      <dt>Observación</dt>
-      <dd></dd>
+        <dt>Presupuesto</dt>
+        <dd>{{ budget.budget_id }}</dd>
+        <dt>Cliente</dt>
+        <dd>{{ budget.customers }}</dd>
+        <dt>Dirección</dt>
+        <dd>{{ budget.address }}, {{ budget.country }}, {{ budget.departament }}, {{ budget.province }}, {{ budget.district }}</dd>
+        <dt>Observación</dt>
+        <dd>{{ budget.observation }}</dd>
       """
       coltwo =
         """
         <dt>Registrado</dt>
-        <dd></dd>
+        <dd>{{ budget.register }}</dd>
         <dt>Jornada Diaria</dt>
-        <dd></dd>
+        <dd>{{ budget.hourwork }}</dd>
         <dt>F. Entrega</dt>
-        <dd></dd>
+        <dd>{{ budget.finish }}</dd>
         <dt>Moneda</dt>
-        <dd></dd>
+        <dd>{{ budget.currency }}</dd>
         """
-      $(".panel-budgets").toggle 800,"linear"
+      $(".colone").html Mustache.render colone, response
+      $(".coltwo").html Mustache.render coltwo, response
     else
-      $().toastmessage "showErrorToast", "No se encontraron datos. #{response.raise}"
+      swal "Alerta!", "No se encontraron datos. #{response.raise}", "warning"
       return
   return
 
 # implement AngularJS
 app = angular.module 'BudgetApp', []
-app.controller 'BudgetCtrl', ($scope) ->
+      .config ($httpProvider) ->
+        $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+        return
+app.controller 'BudgetCtrl', ($scope, $http) ->
+  # $http.defaults.headers.post['X-Requested-With'] = 'XMLHttpRequest'
+  # $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
   $scope.ssearch = false
+  $scope.bgbedside = false
   $scope.bgdetails = false
+  $scope.details = {}
+  $scope.showDetails = (target) ->
+    params = new Object
+    params.budgetData = true
+    params.budget = target
+    console.log params
+    $scope.bgbedside = true
+    $scope.bgdetails = true
+    $http
+      url: ""
+      params: params
+      method: "GET"
+    .success (response) ->
+      if response.status
+        $scope.details = response.budget
+        console.log $scope.details
+        return
+      else
+        swal "Alerta!", "No se encontraron datos. #{response.raise}", "warning"
+    return
   $scope.$watch 'bgdetails', (val) ->
     console.log val
+    if val
+      $scope.ssearch = false
+      return
     return
   return

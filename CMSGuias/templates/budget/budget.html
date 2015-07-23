@@ -8,12 +8,14 @@
     <h3>Presupuestos</h3>
   </header>
   <section ng-controller="BudgetCtrl">
-    <div class="card">
+    <div class="card" ng-hide="bgbedside">
       <div class="card-action">
-        <button class="btn waves-effect" type="button" name="showBudget">
+        <button class="btn waves-effect grey lighten-5 grey-text text-darken-4" type="button" name="showBudget">
+          <span class="fa fa-file"></span>
           Nuevo
         </button>
-        <button class="btn waves-effect" type="button" ng-model="ssearch" ng-click="ssearch =! ssearch">
+        <button class="btn waves-effect light-green darken-1" type="button" ng-model="ssearch" ng-click="ssearch =! ssearch">
+          <span class="fa fa-search"></span>
           Buscar
         </button>
       </div>
@@ -23,14 +25,14 @@
         <div class="row">
           <div class="col s12 m3 l3">
             <div class="input-field">
-              <label>Código PROPAA0000</label>
               <input type="text" class="" maxlength="11">
+              <label>Código PROPAA0000</label>
             </div>
           </div>
           <div class="col s12 m9 l9">
             <div class="input-field">
-              <label>Nombre Presupuesto</label>
               <input type="text" class="">
+              <label>Nombre Presupuesto</label>
             </div>
           </div>
           <div class="col s12 m1 l1">
@@ -42,100 +44,127 @@
         </div>
       </div>
     </div>
-    <div class="table-responsive">
-      <table class="table table-condensed table-hover table-bordered">
-        <thead>
-          <tr class="brand-danger">
-            <th class="col-2 text-center">Item</th>
-            <th class="col-3 text-center">Código</th>
-            <th>Nombre/Descripción</th>
-            <th class="col-2 text-center">Registrado</th>
-            <th class="col-2 text-center">Estado</th>
-            <th class="col-3 text-center">Acción</th>
+    <table class="table table-condensed responsive-table hoverable bordered" ng-hide="bgbedside">
+      <thead>
+        <tr class="brand-danger">
+          <th class="col-2 text-center">Item</th>
+          <th class="col-3 text-center">Código</th>
+          <th>Nombre/Descripción</th>
+          <th class="col-2 text-center">Registrado</th>
+          <th class="col-2 text-center">Estado</th>
+          <th class="col-3 text-center">Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for x in budget %}
+          <tr>
+            <td class="text-center">{{ forloop.counter }}</td>
+            <td class="text-center">{{ x.budget_id }}</td>
+            <td>{{ x.name }}</td>
+            <td class="text-center">{{ x.register|date:"d/m/Y" }}</td>
+            <td class="text-center">{{ x.status }}</td>
+            <td class="text-center">
+              <button class="dropdown-button btn amber lighten-2 grey-text text-darken-3" type="button" data-activates="dropdown-{{ x.budget_id }}" data-hover="true" data-constrainwidth="200" data-beloworigin="false">
+                <span class="fa fa-cogs"></span>
+              </button>
+              <ul class="dropdown-content" id="dropdown-{{ x.budget_id }}">
+                <li>
+                  <a href="#" class="grey-text text-darken-3" ng-model="bgbedside" ng-click="showDetails('{{ x.budget_id }}')" tabindex="-1"><span class="fa fa-list-alt"></span> Detalle</a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                  <a href="#" class="showbudgetedit grey-text text-darken-3" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-edit"></span> Editar</a>
+                </li>
+                <li>
+                  <a href="#" class="budgetdelete grey-text text-darken-3" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-trash"></span> Eliminar</a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                  <a href="#" class="budgetcopy grey-text text-darken-3" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-copy"></span> Copiar</a>
+                </li>
+                <li>
+                  <a href="#" class="bdugetrevision grey-text text-darken-3" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-tasks"></span> Revision</a>
+                </li>
+              </ul>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {% for x in budget %}
-            <tr>
-              <td class="text-center">{{ forloop.counter }}</td>
-              <td class="text-center">{{ x.budget_id }}</td>
-              <td>{{ x.name }}</td>
-              <td class="text-center">{{ x.register|date:"d/m/Y" }}</td>
-              <td class="text-center">{{ x.status }}</td>
-              <td class="text-center">
-                <div class="dropdown">
-                  <button class="btn btn-danger dropdown-toggle btn-xs" type="button" data-toggle="dropdown" aria-expanded="true">
-                    <span class="fa fa-cogs"></span>
-                  </button>
-                  <ul class="dropdown-menu" role="menu">
-                    <li role="presentation">
-                      <a href="#" role="menuitem" class="text-left btn-xs showbudgetdetails" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-list-alt"></span> Detalle</a>
-                    </li>
-                    <li class="divider" style="margin: 0;"></li>
-                    <li role="presentation">
-                      <a href="#" role="menuitem" class="text-left btn-xs showbudgetedit" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-edit"></span> Editar</a>
-                    </li>
-                    <li role="presentation">
-                      <a href="#" role="menuitem" class="text-left btn-xs budgetdelete" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-trash"></span> Eliminar</a>
-                    </li>
-                    <li class="divider" style="margin: 0;"></li>
-                    <li role="presentation">
-                      <a href="#" role="menuitem" class="text-left btn-xs budgetcopy" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-copy"></span> Copiar</a>
-                    </li>
-                    <li role="presentation">
-                      <a href="#" role="menuitem" class="text-left btn-xs bdugetrevision" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-tasks"></span> Revision</a>
-                    </li>
-                  </ul>
-                </div>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    <div class="panel panel-danger" ng-show="bgdetails">
-      <div class="panel-footer">
-        <div class="row">
-          <div class="col-md-12">
-            <strong>Presupuesto</strong>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="card-panel" ng-show="bgdetails">
+      <div class="card">
+        <div class="card-content row">
+          <div class="col s12 m12 l12">
+            <button type="button" ng-click="bgbedside=!bgbedside; bgdetails=!bgdetails" class="btn waves-effect grey darken-1">
+              <span class="fa fa-chevron-left"></span> REgresar
+            </button>
           </div>
-          <div class="col-md-6">
-            <dl class="dl-horizontal colone">
-              <dt>Presupuesto</dt>
-              <dd></dd>
-              <dt>Cliente</dt>
-              <dd></dd>
-              <dt>Dirección</dt>
-              <dd></dd>
-              <dt>Observación</dt>
-              <dd></dd>
-            </dl>
+          <div class="col s12 m6 l6">
+            {% verbatim %}
+              <table>
+                <tbody>
+                  <tr>
+                    <th>Presupuesto</th>
+                    <td>{{ details.budget_id }} {{ details.name }}</td>
+                  </tr>
+                  <tr>
+                    <th>Cliente</th>
+                    <td>{{ details.customers }}</td>
+                  </tr>
+                  <tr>
+                    <th>Dirección</th>
+                    <td>{{ details.address }}</td>
+                  </tr>
+                  <tr>
+                    <th>Observación</th>
+                    <td>{{ details.observation }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            {% endverbatim %}
           </div>
-          <div class="col-md-6">
-            <dl class="dl-horizontal coltwo">
-              <dt>Registrado</dt>
-              <dd></dd>
-              <dt>Jornada Diaria</dt>
-              <dd></dd>
-              <dt>F. Entrega</dt>
-              <dd></dd>
-              <dt>Moneda</dt>
-              <dd></dd>
-            </dl>
+          <div class="col s12 m6 l6">
+            {% verbatim %}
+              <table>
+                <tbody>
+                  <tr>
+                    <th>Registrado</th>
+                    <td>{{ details.register | date: "dd-mm-y"}}</td>
+                  </tr>
+                  <tr>
+                    <th>Jornada Diaria</th>
+                    <td>{{ details.hourwork }} /h</td>
+                  </tr>
+                  <tr>
+                    <th>F. Entrega</th>
+                    <td>{{ details.finish }}</td>
+                  </tr>
+                  <tr>
+                    <th>Moneda</th>
+                    <td>{{ details.currency }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            {% endverbatim %}
           </div>
         </div>
       </div>
-      <div class="panel-heading">
-        <nav class="btn-group">
-          <button class="btn btn-xs btn-default">
+      <div class="card hoverable amber lighten-2">
+        <div class="card-content">
+          <span class="card-title grey-text text-darken-3">
+            Item Presupuesto
+          </span>
+        </div>
+        <div class="card-action ">
+          <button class="btn waves-effect grey lighten-4 black-text modal-trigger" data-target="mitems">
             <span class="fa fa-file"></span>
             <span class="fa-class">Nuevo</span>
           </button>
-          <button class="btn btn-xs btn-default">
+          <button class="btn waves-effect light-green lighten-3 black-text">
             <span class="fa fa-refresh"></span>
             <span class="fa-class">Actualizar</span>
           </button>
-          <button class="btn btn-xs btn-default">
+          <button class="btn waves-effect red darken-1">
             <span class="fa fa-trash"></span>
             <span class="fa-class">Eliminar Todo</span>
           </button>
@@ -143,17 +172,16 @@
             <span class="fa fa-copy"></span>
             <span class="fa-class">Copiar</span>
           </button> -->
-        </nav>
-      </div>
-      <div class="table-responsive">
-        <table class="table table-condensed table-hover table-bordered">
+        </div>
+
+        <table class="table table-responsive hoverable yellow lighten-5">
           <thead>
-            <tr class="brand-danger">
-              <th class="col-2 text-center">Item</th>
+            <tr class="amber lighten-5">
+              <th class="center-align">Item</th>
               <th>Descripción</th>
-              <th class="col-3 text-center">Base</th>
-              <th class="col-3 text-center">Oferta</th>
-              <th class="col-2 text-center">Acción</th>
+              <th class="center-align">Base</th>
+              <th class="center-align">Oferta</th>
+              <th class="center-align">Acción</th>
             </tr>
           </thead>
           <tbody>
@@ -188,7 +216,7 @@
           <div class="col s12 m6 l6">
             <div class="input-field">
               <input type="text" name="name" id="name" data-validation="required" placeholder="Ingrese Nombre y/o descripción del presupuesto" data-validation-error-msg="Ingrese una Descripción" class="form-control input-sm">
-              <label class="black-text">Nombre Presupuesto</label>
+              <label>Nombre Presupuesto</label>
             </div>
           </div>
           <div class="col s12 m6 l6">
@@ -198,53 +226,53 @@
                   <option value="{{ x.ruccliente_id }}" class="grey-text">{{ x.razonsocial }}</option>
                 {% endfor %}
               </select>
-              <label class="black-text">Razón Social Cliente</label>
+              <label>Razón Social Cliente</label>
             </div>
           </div>
           <div class="col s12 m12 l12">
             <div class="input-field">
               <input type="text" class="form-control input-sm" name="address" placeholder="Ingrese la dirección donde se ejecutara el proyecto" data-validation="required" data-validation-error-msg="Ingrese una Dirección">
-              <label class="black-text">Dirección</label>
+              <label>Dirección</label>
             </div>
           </div>
           <div class="col s12 m3 l3">
-            <label class="black-text">Pais</label>
+            <label>Pais</label>
             <select name="pais" class="browser-default" data-validation="required"></select>
           </div>
           <div class="col s12 m3 l3">
-            <label class="black-text">Departamento</label>
+            <label>Departamento</label>
             <select name="departamento" class="browser-default" placeholder="Departamento" data-validation="required"></select>
           </div>
           <div class="col s12 m3 l3">
-            <label class="black-text">Provincia</label>
+            <label>Provincia</label>
             <select name="provincia" class="browser-default" placeholder="Provincia" data-validation="required"></select>
           </div>
           <div class="col s12 m3 l3">
-            <label class="black-text">Distrito</label>
+            <label>Distrito</label>
             <select name="distrito" class="browser-default" placeholder="Distrito" data-validation="required"></select>
           </div>
           <div class="col s12 m4 l2">
             <div class="input-field">
               <input type="number" min="1" max="24" name="hours" value="8" data-validation="required" data-validataion-error-msg="Ingrese la Jornada Diaria en horas.">
-              <label class="black-text">Jornada Diaria</label>
+              <label>Jornada Diaria</label>
             </div>
           </div>
           <div class="col s12 m4 l2">
             <div class="input-field">
               <input type="text" placeholder="dd-mm-yyyy" name="finish" data-validation="required" data-validation-error-msg="Plazo estimado del proyecto.">
-              <label class="black-text">Plazo</label>
+              <label>Plazo</label>
             </div>
           </div>
           <div class="col s12 m4 l2">
             <div class="input-field">
               <input type="text" value="0" name="base">
-              <label class="black-text">Precio Base</label>
+              <label>Precio Base</label>
             </div>
           </div>
           <div class="col s12 m4 l2">
             <div class="input-field">
               <input type="text" class="form-control input-sm" value="0" name="offer">
-              <label class="black-text">Precio Oferta</label>
+              <label>Precio Oferta</label>
             </div>
           </div>
           <div class="col s12 m4 l2">
@@ -254,17 +282,17 @@
                   <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
                 {% endfor %}
               </select>
-              <label class="black-text">Moneda</label>
+              <label>Moneda</label>
             </div>
           </div>
           <div class="col s12 m4 l2">
             <div class="input-field">
               <input type="text" name="exchange" class="validate" value="0" placeholder="0.0">
-              <label class="black-text">T. Cambio</label>
+              <label>T. Cambio</label>
             </div>
           </div>
           <div class="col s12 m12 l12">
-            <label class="black-text">Observación</label>
+            <label>Observación</label>
             <div class="input-field">
               <textarea name="observation" class="materialize-textarea" rows="4"></textarea>
             </div>
@@ -272,6 +300,40 @@
         </div>
       </div>
     </form>
+  </div>
+</div>
+<!-- block modals add items -->
+<div class="modal bottom-sheet" id="mitems">
+  <div class="modal-content">
+    <div class="row">
+      <div class="col s12 m12 l12">
+        <h4>Item del Presupuesto</h4>
+      </div>
+      <div class="col s12 m12 l12">
+        <div class="input-field">
+          <input type="text" name="itname">
+          <label>Descripción de Item</label>
+        </div>
+      </div>
+      <div class="col s12 m12 l12 input-field">
+        <input type="text" name="ibase">
+        <label>Importe Base</label>
+      </div>
+      <div class="col s12 m12 l12 input-field">
+        <input type="text" name="ioffer">
+        <label>Importe Oferta</label>
+      </div>
+      <div class="col s12 m12 l12 input-field">
+        <div class="switch">
+          <label>
+            Desactivado
+            <input type="checkbox" name="itag" value="true">
+            <span class="lever"></span>
+            Activado
+          </label>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 <!-- utils for page -->

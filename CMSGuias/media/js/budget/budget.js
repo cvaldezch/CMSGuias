@@ -2,6 +2,7 @@ var app, getBudgetData, saveBudget, showBudget, showBudgetEdit, showSearchBudget
 
 $(function() {
   $("select").material_select();
+  $(".modal-trigger").leanModal();
   $("[name=finish]").pickadate({
     closeOnSelect: true,
     container: 'body',
@@ -87,24 +88,54 @@ getBudgetData = function(event) {
   params.budgetData = true;
   params.budget = this.getAttribute("data-value");
   console.log(params);
-  $.getJSON("", param, function(repsonse) {
+  $.getJSON("", params, function(response) {
     var colone, coltwo;
     if (response.status) {
-      colone = "<dt>Presupuesto</dt>\n<dd>{{ budget.budget_id }}</dd>\n<dt>Cliente</dt>\n<dd>{{ budget.customers }}</dd>\n<dt>Dirección</dt>\n<dd></dd>\n<dt>Observación</dt>\n<dd></dd>";
-      coltwo = "<dt>Registrado</dt>\n<dd></dd>\n<dt>Jornada Diaria</dt>\n<dd></dd>\n<dt>F. Entrega</dt>\n<dd></dd>\n<dt>Moneda</dt>\n<dd></dd>";
-      return $(".panel-budgets").toggle(800, "linear");
+      colone = "<dt>Presupuesto</dt>\n<dd>{{ budget.budget_id }}</dd>\n<dt>Cliente</dt>\n<dd>{{ budget.customers }}</dd>\n<dt>Dirección</dt>\n<dd>{{ budget.address }}, {{ budget.country }}, {{ budget.departament }}, {{ budget.province }}, {{ budget.district }}</dd>\n<dt>Observación</dt>\n<dd>{{ budget.observation }}</dd>";
+      coltwo = "<dt>Registrado</dt>\n<dd>{{ budget.register }}</dd>\n<dt>Jornada Diaria</dt>\n<dd>{{ budget.hourwork }}</dd>\n<dt>F. Entrega</dt>\n<dd>{{ budget.finish }}</dd>\n<dt>Moneda</dt>\n<dd>{{ budget.currency }}</dd>";
+      $(".colone").html(Mustache.render(colone, response));
+      return $(".coltwo").html(Mustache.render(coltwo, response));
     } else {
-      $().toastmessage("showErrorToast", "No se encontraron datos. " + response.raise);
+      swal("Alerta!", "No se encontraron datos. " + response.raise, "warning");
     }
   });
 };
 
-app = angular.module('BudgetApp', []);
+app = angular.module('BudgetApp', []).config(function($httpProvider) {
+  $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+});
 
-app.controller('BudgetCtrl', function($scope) {
+app.controller('BudgetCtrl', function($scope, $http) {
   $scope.ssearch = false;
+  $scope.bgbedside = false;
   $scope.bgdetails = false;
+  $scope.details = {};
+  $scope.showDetails = function(target) {
+    var params;
+    params = new Object;
+    params.budgetData = true;
+    params.budget = target;
+    console.log(params);
+    $scope.bgbedside = true;
+    $scope.bgdetails = true;
+    $http({
+      url: "",
+      params: params,
+      method: "GET"
+    }).success(function(response) {
+      if (response.status) {
+        $scope.details = response.budget;
+        console.log($scope.details);
+      } else {
+        return swal("Alerta!", "No se encontraron datos. " + response.raise, "warning");
+      }
+    });
+  };
   $scope.$watch('bgdetails', function(val) {
     console.log(val);
+    if (val) {
+      $scope.ssearch = false;
+      return;
+    }
   });
 });

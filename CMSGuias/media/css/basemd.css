@@ -41,21 +41,8 @@ input[type=tel]:focus:not([readonly]),
 input[type=number]:focus:not([readonly]),
 input[type=search]:focus:not([readonly]),
 textarea.materialize-textarea:focus:not([readonly]) {
-  border-bottom: 1px solid #006064;
-  box-shadow: 0 1px 0 0 #006064;
-}
-input[type=text]:hover:not([readonly]) + label,
-input[type=password]:hover:not([readonly]) + label,
-input[type=email]:hover:not([readonly]) + label,
-input[type=url]:hover:not([readonly]) + label,
-input[type=time]:hover:not([readonly]) + label,
-input[type=date]:hover:not([readonly]) + label,
-input[type=datetime-local]:hover:not([readonly]) + label,
-input[type=tel]:hover:not([readonly]) + label,
-input[type=number]:hover:not([readonly]) + label,
-input[type=search]:hover:not([readonly]) + label,
-textarea.materialize-textarea:hover:not([readonly]) + label {
-  color: #000;
+  border-bottom: 1px solid #0091ea;
+  box-shadow: 0 1px 0 0 #0091ea;
 }
 input[type=text]:focus:not([readonly]) + label,
 input[type=password]:focus:not([readonly]) + label,
@@ -68,5 +55,13 @@ input[type=tel]:focus:not([readonly]) + label,
 input[type=number]:focus:not([readonly]) + label,
 input[type=search]:focus:not([readonly]) + label,
 textarea.materialize-textarea:focus:not([readonly]) + label {
-  color: #006064;
+  color: #0091ea;
+}
+.input-field input {
+  border-bottom: 1px solid #9e9e9e;
+  box-shadow: 0 1px 0 0 #9e9e9e;
+}
+.input-field .prefix.active,
+.input-field .active {
+  color: #0091ea;
 }

@@ -407,12 +407,29 @@ class BudgetView(JSONResponseMixin, TemplateView):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
+        print request
         if request.is_ajax():
             try:
                 if 'budgetData' in request.GET:
-                    context['budget'] = list(Budget.objects.get(
-                        budget_id=request.GET['budget']))
+                    budget = Budget.objects.get(
+                        budget_id=request.GET['budget'])
+                    context['budget'] = {
+                        'budget_id': budget.budget_id,
+                        'name': budget.name,
+                        'customers': budget.customers.razonsocial,
+                        'address': budget.address,
+                        'country': budget.country.paisnom,
+                        'departament': budget.departament.depnom,
+                        'province': budget.province.pronom,
+                        'district': budget.district.distnom,
+                        'register': budget.register,
+                        'hourwork': budget.hourwork,
+                        'finish': budget.finish,
+                        'currency': budget.currency.moneda,
+                        'observation': budget.observation
+                    }
                     context['status'] = True
+                    print context
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False
