@@ -125,6 +125,7 @@ app.controller 'BudgetCtrl', ($scope, $http) ->
   $scope.bgbedside = false
   $scope.bgdetails = false
   $scope.details = {}
+  $scope.items = {}
   $scope.showDetails = (target) ->
     params = new Object
     params.budgetData = true
@@ -143,6 +144,34 @@ app.controller 'BudgetCtrl', ($scope, $http) ->
         return
       else
         swal "Alerta!", "No se encontraron datos. #{response.raise}", "warning"
+        return
+    return
+  # save Details
+  $scope.saveItemBudget = ->
+    console.log $scope.items
+    params = $scope.items
+    if not Object.getOwnPropertyNames(params).length
+      swal "Alerta!", "Los campos se encontran vacios!", "warning"
+      return false
+    params.itag = $("[name=itag]").is(":checked")
+    if params.iname is 'undefined'
+      return false
+    if params.ibase is 'undefined'
+      return false
+    if params.ioffer is 'undefined'
+      return false
+    params.saveItemBudget = true
+    $http
+      url: ""
+      params: params
+      method: "POST"
+    .success (response) ->
+      if response.status
+        console.log response
+        return
+      else
+        swal "Alerta!", "No se encontraron datos. #{response.raise}.", "warning"
+        return
     return
   $scope.$watch 'bgdetails', (val) ->
     console.log val

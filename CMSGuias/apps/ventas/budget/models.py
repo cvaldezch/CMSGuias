@@ -138,7 +138,7 @@ class Budget(models.Model):
     observation = models.TextField()
     reference = models.CharField(max_length=10, blank=True, null=True)
     review = models.CharField(max_length=10)
-    version = models.CharField(max_length=5, default='')
+    version = models.CharField(max_length=5, default='RV0001')
     status = models.CharField(max_length=2, default='PE')
     currency = models.ForeignKey(Moneda, to_field='moneda_id')
     exchange = models.DecimalField(max_digits=5, decimal_places=3, default=0)
@@ -160,6 +160,7 @@ class BudgetItems(models.Model):
     name = models.CharField(max_length=255)
     base = models.DecimalField(max_digits=10, decimal_places=3)
     offer = models.DecimalField(max_digits=10, decimal_places=3)
+    register = models.DateTimeField(auto_now=True, null=True)
     tag = models.BooleanField(default=True)
 
     audit_log = AuditLog()

@@ -110,6 +110,7 @@ app.controller('BudgetCtrl', function($scope, $http) {
   $scope.bgbedside = false;
   $scope.bgdetails = false;
   $scope.details = {};
+  $scope.items = {};
   $scope.showDetails = function(target) {
     var params;
     params = new Object;
@@ -127,7 +128,38 @@ app.controller('BudgetCtrl', function($scope, $http) {
         $scope.details = response.budget;
         console.log($scope.details);
       } else {
-        return swal("Alerta!", "No se encontraron datos. " + response.raise, "warning");
+        swal("Alerta!", "No se encontraron datos. " + response.raise, "warning");
+      }
+    });
+  };
+  $scope.saveItemBudget = function() {
+    var params;
+    console.log($scope.items);
+    params = $scope.items;
+    if (!Object.getOwnPropertyNames(params).length) {
+      swal("Alerta!", "Los campos se encontran vacios!", "warning");
+      return false;
+    }
+    params.itag = $("[name=itag]").is(":checked");
+    if (params.iname === 'undefined') {
+      return false;
+    }
+    if (params.ibase === 'undefined') {
+      return false;
+    }
+    if (params.ioffer === 'undefined') {
+      return false;
+    }
+    params.saveItemBudget = true;
+    $http({
+      url: "",
+      params: params,
+      method: "POST"
+    }).success(function(response) {
+      if (response.status) {
+        console.log(response);
+      } else {
+        swal("Alerta!", "No se encontraron datos. " + response.raise + ".", "warning");
       }
     });
   };

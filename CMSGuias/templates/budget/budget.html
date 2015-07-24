@@ -189,6 +189,51 @@
         </table>
       </div>
     </div>
+    <!-- Modals Angular -->
+    <!-- block modals add items -->
+    <div class="modal bottom-sheet" id="mitems">
+      <div class="modal-content">
+        {% verbatim %}
+        <div class="row">
+          <div class="col s12 m12 l12">
+            <h4>Item del Presupuesto</h4>
+            <button type="button" class="btn grey lighten-4 left modal-close grey-text text-darken-3">
+              <span class="fa fa-times"></span>
+              Cancelar
+            </button>
+            <button type="button" class="btn light-blue darken-3 right" ng-click="saveItemBudget()">
+              <span class="fa fa-save"></span>
+              Guardar
+            </button>
+          </div>
+          <div class="col s12 m12 l12">
+            <div class="input-field">
+              <input type="text" name="iname" ng-model="items.iname">
+              <label>Descripción de Item</label>
+            </div>
+          </div>
+          <div class="col s12 m12 l12 input-field">
+            <input type="text" name="ibase" ng-model="items.ibase">
+            <label>Importe Base</label>
+          </div>
+          <div class="col s12 m12 l12 input-field">
+            <input type="text" name="ioffer" ng-model="items.ioffer">
+            <label>Importe Oferta</label>
+          </div>
+          <div class="col s12 m12 l12 input-field">
+            <div class="switch">
+              <label>
+                Desactivado
+                <input type="checkbox" name="itag" ng-modal="items.itag">
+                <span class="lever"></span>
+                Activado
+              </label>
+            </div>
+          </div>
+        </div>
+        {% endverbatim %}
+      </div>
+    </div>
   </section>
 </div>
 <!-- block modals -->
@@ -300,40 +345,6 @@
         </div>
       </div>
     </form>
-  </div>
-</div>
-<!-- block modals add items -->
-<div class="modal bottom-sheet" id="mitems">
-  <div class="modal-content">
-    <div class="row">
-      <div class="col s12 m12 l12">
-        <h4>Item del Presupuesto</h4>
-      </div>
-      <div class="col s12 m12 l12">
-        <div class="input-field">
-          <input type="text" name="itname">
-          <label>Descripción de Item</label>
-        </div>
-      </div>
-      <div class="col s12 m12 l12 input-field">
-        <input type="text" name="ibase">
-        <label>Importe Base</label>
-      </div>
-      <div class="col s12 m12 l12 input-field">
-        <input type="text" name="ioffer">
-        <label>Importe Oferta</label>
-      </div>
-      <div class="col s12 m12 l12 input-field">
-        <div class="switch">
-          <label>
-            Desactivado
-            <input type="checkbox" name="itag" value="true">
-            <span class="lever"></span>
-            Activado
-          </label>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 <!-- utils for page -->

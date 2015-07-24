@@ -103,7 +103,7 @@ class AnalystPrices(JSONResponseMixin, TemplateView):
                     if 'name' in request.GET:
                         analysis = Analysis.objects.filter(
                             name__istartswith=request.GET['name']
-                            ).order_by('name')
+                        ).order_by('name')
                     if 'code' in request.GET:
                         analysis = Analysis.objects.filter(
                             pk=request.GET['code'])
@@ -168,14 +168,14 @@ class AnalystPrices(JSONResponseMixin, TemplateView):
                                 analysis_id=request.POST['analysis_id'])
                             for x in apm:
                                 x.quantity = (
-                                    (float(x.gang)*8)
+                                    (float(x.gang) * 8)
                                     / float(request.POST['performance']))
                                 x.save()
                             apt = APTools.objects.filter(
                                 analysis_id=request.POST['analysis_id'])
                             for x in apt:
                                 x.quantity = (
-                                    (float(x.gang)*8)
+                                    (float(x.gang) * 8)
                                     / float(request.POST['performance']))
                                 x.save()
                         form.save()
@@ -223,7 +223,7 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                             }
                             for x in APMaterials.objects.filter(
                                 analysis_id=kwargs['analysis']
-                                ).order_by('materials__matnom')
+                            ).order_by('materials__matnom')
                         ]
                         context['status'] = True
                     if 'listManPower' in request.GET:
@@ -240,7 +240,7 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                             }
                             for x in APManPower.objects.filter(
                                 analysis_id=kwargs['analysis']
-                                ).order_by('manpower__cargos')
+                            ).order_by('manpower__cargos')
                         ]
                         context['status'] = True
                     if 'listTools' in request.GET:
@@ -258,7 +258,7 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                             }
                             for x in APTools.objects.filter(
                                 analysis_id=kwargs['analysis']
-                                ).order_by('tools__name')
+                            ).order_by('tools__name')
                         ]
                         context['status'] = True
                     if 'priceAll' in request.GET:
@@ -270,16 +270,16 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                     context['status'] = False
                 return self.render_to_json_response(context)
             context['analysis'] = Analysis.objects.get(
-                                    analysis_id=kwargs['analysis'])
+                analysis_id=kwargs['analysis'])
             context['materials'] = APMaterials.objects.filter(
-                                    analysis_id=kwargs['analysis']
-                                    ).order_by('materials__matnom')
+                analysis_id=kwargs['analysis']
+            ).order_by('materials__matnom')
             context['manpower'] = APManPower.objects.filter(
-                                    analysis_id=kwargs['analysis']
-                                    ).order_by('manpower__cargos')
+                analysis_id=kwargs['analysis']
+            ).order_by('manpower__cargos')
             context['tools'] = APTools.objects.filter(
-                                analysis_id=kwargs['analysis']
-                                ).order_by('tools__name')
+                analysis_id=kwargs['analysis']
+            ).order_by('tools__name')
             return render(request, 'budget/analysisdetails.html', context)
         except TemplateDoesNotExist, e:
             raise Http404(e)
@@ -336,9 +336,9 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                         em.gang = float(request.POST['gang'])
                         em.price = float(request.POST['price'])
                         em.quantity = (
-                                        (float(request.POST['gang']) * 8)
-                                        / float(request.POST['performance'])
-                                    )
+                            (float(request.POST['gang']) * 8)
+                            / float(request.POST['performance'])
+                        )
                         em.save()
                     except ObjectDoesNotExist, e:
                         add = APTools()
@@ -347,8 +347,8 @@ class AnalysisDetails(JSONResponseMixin, TemplateView):
                         add.gang = float(request.POST['gang'])
                         add.price = float(request.POST['price'])
                         add.quantity = (
-                                (float(request.POST['gang']) * 8)
-                                / float(request.POST['performance']))
+                            (float(request.POST['gang']) * 8)
+                            / float(request.POST['performance']))
                         add.save()
                     context['status'] = True
                 if 'delToolsAll' in request.POST:
@@ -407,7 +407,6 @@ class BudgetView(JSONResponseMixin, TemplateView):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
-        print request
         if request.is_ajax():
             try:
                 if 'budgetData' in request.GET:
@@ -429,7 +428,6 @@ class BudgetView(JSONResponseMixin, TemplateView):
                         'observation': budget.observation
                     }
                     context['status'] = True
-                    print context
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False
@@ -456,7 +454,6 @@ class BudgetView(JSONResponseMixin, TemplateView):
                             budget_id=request.GET['budget']))
                 else:
                     form = addBudgetForm(request.POST)
-                print form
                 if form.is_valid():
                     if 'editbudget' in request.POST:
                         form.save()
@@ -471,6 +468,25 @@ class BudgetView(JSONResponseMixin, TemplateView):
                 else:
                     context['status'] = False
                     context['raise'] = 'Campos incorrectos!'
+            if 'saveItemBudget' in request.POST:
+                print request.POST
+                if 'editItem' in request.POST:
+                    form = addItemBudgetForm(request.POST, instance=BudgetItems.objects.get(budget_id=request.POST['budget_id'], version=request.POST['version'] if 'version' in request.POST else 'RV001'))
+                else:
+                    form = addItemBudgetForm(request.POST)
+                if form.is_valid():
+                    add = form.save(commit=False)
+                    if 'editItem' in request.POST:
+                        pass
+                    else:
+                        add.budget_id = request.POST['budget_id']
+                        add.item = (BudgetItems.objects.get(budget_id=request.POST['budget_id']).item + 1)
+                        add.budgeti_id = ('%s%s' % (request.POST['budget_id'], '{:0>3d}'.format(add.item)))
+                    add.save()
+                    context['status'] = True
+                else:
+                    context['raise'] = 'fields empty'
+                    context['status'] = False
         except ObjectDoesNotExist as e:
             context['raise'] = str(e)
             context['status'] = False
