@@ -471,17 +471,22 @@ class BudgetView(JSONResponseMixin, TemplateView):
             if 'saveItemBudget' in request.POST:
                 print request.POST
                 if 'editItem' in request.POST:
-                    form = addItemBudgetForm(request.POST, instance=BudgetItems.objects.get(budget_id=request.POST['budget_id'], version=request.POST['version'] if 'version' in request.POST else 'RV001'))
+                    form = addItemBudgetForm(
+                            request.POST,
+                            instance=BudgetItems.objects.get(
+                                budget_id=request.POST['budget_id'],
+                                version=request.POST['version'] if 'version' in request.POST else 'RV001'))
                 else:
                     form = addItemBudgetForm(request.POST)
                 if form.is_valid():
                     add = form.save(commit=False)
-                    if 'editItem' in request.POST:
-                        pass
-                    else:
+                    if 'editItem' not in request.POST:
                         add.budget_id = request.POST['budget_id']
-                        add.item = (BudgetItems.objects.get(budget_id=request.POST['budget_id']).item + 1)
-                        add.budgeti_id = ('%s%s' % (request.POST['budget_id'], '{:0>3d}'.format(add.item)))
+                        add.item = (BudgetItems.objects.get(
+                            budget_id=request.POST['budget_id']).item + 1)
+                        add.budgeti_id = ('%s%s' % (
+                            request.POST['budget_id'],
+                            '{:0>3d}'.format(add.item)))
                     add.save()
                     context['status'] = True
                 else:
