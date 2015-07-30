@@ -19,6 +19,10 @@ $(document).ready ->
     $(".btn-show-deposit").on "click", showChoiceDeposit
     $("button.btn-save-purchase").on "click", savePurchase
     $("button.btn-delp").on "click", annularPurchase
+    tinymce.init
+        selector: "[name=observation]"
+        menubar: false
+        toolbar_items_size: "small"
     return
 
 changeSearch = ->
@@ -146,6 +150,8 @@ getDataPurchase = (purchase) ->
             $("select[name=currency]").val response.currency
             $("input[name=transfer]").val response.transfer
             $("input[name=contact]").val response.contact
+            $("input[name=quotation]").val response.quotation
+            $("#observation_ifr").contents().find('body').html response.observation
             $("input.edsct").val response.discount
             $("span.eigv").text "#{response.igv}%"
             $tb = $("table.table-pod > tbody")
@@ -247,6 +253,7 @@ addNewMaterialPurchase = (event) ->
     if isNaN(data.price) or data.price <= 0
         $().toastmessage "showWarningToast", "El precio ingresado debe ser mayor a 0."
         return false
+    data.discount = convertNumber $("input[name=discount]").val()
     if isNaN(data.discount)
         data.discount = 0
     data.brand = $("select[name=brand]").val()
@@ -393,6 +400,7 @@ saveEditDetailsPurchase = (event) ->
     if isNaN(data.price) or data.price <= 0
         $().toastmessage "showWarningToast", "El precio ingresado debe ser mayor que 0."
         return false
+    data.discount = convertNumber $("input[name=ediscount]").val()
     if isNaN(data.discount)
         data.discount = 0
     data.brand = $("select[name=ebrand]").val()
@@ -403,7 +411,7 @@ saveEditDetailsPurchase = (event) ->
     data.editDPurchase = true
     data.purchase = $.trim $("span.nrop").text()
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
-    #console.log data
+    console.log data
     $.post "", data, (response) ->
         if response.status
             $("input[name=equantity]").val ""
@@ -414,6 +422,8 @@ saveEditDetailsPurchase = (event) ->
             return
         else
             $().toastmessage "showErrorToast", "No se a actualizado el material."
+            return
+    , "json"
     return
 
 showChoiceDeposit = (event) ->
@@ -431,6 +441,8 @@ savePurchase = (event) ->
     data.append "purchase", $.trim $("span.nrop").text()
     data.append "discount", convertNumber $("input.edsct").val()
     data.append "purchaseSave", true
+    data.append "quotation", $("[name=quotation]").val()
+    data.append "observation", $("#observation_ifr").contents().html()
     data.append "csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val()
     $files = $("input[name=deposit]")
     if $files.get(0).files.length

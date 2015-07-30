@@ -469,7 +469,6 @@ class BudgetView(JSONResponseMixin, TemplateView):
                     context['status'] = False
                     context['raise'] = 'Campos incorrectos!'
             if 'saveItemBudget' in request.POST:
-                print request.POST
                 if 'editItem' in request.POST:
                     form = addItemBudgetForm(
                             request.POST,
@@ -478,6 +477,7 @@ class BudgetView(JSONResponseMixin, TemplateView):
                                 version=request.POST['version'] if 'version' in request.POST else 'RV001'))
                 else:
                     form = addItemBudgetForm(request.POST)
+                print form
                 if form.is_valid():
                     add = form.save(commit=False)
                     if 'editItem' not in request.POST:

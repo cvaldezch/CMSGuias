@@ -101,11 +101,15 @@ getBudgetData = function(event) {
   });
 };
 
-app = angular.module('BudgetApp', []).config(function($httpProvider) {
+app = angular.module('BudgetApp', ['ngCookies']).config(function($httpProvider) {
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+  $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+  $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
 });
 
-app.controller('BudgetCtrl', function($scope, $http) {
+app.controller('BudgetCtrl', function($scope, $http, $cookies) {
+  $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+  $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
   $scope.ssearch = false;
   $scope.bgbedside = false;
   $scope.bgdetails = false;
@@ -151,10 +155,18 @@ app.controller('BudgetCtrl', function($scope, $http) {
       return false;
     }
     params.saveItemBudget = true;
+    params.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
+    params.name = params.iname;
+    params.offer = params.ioffer;
+    params.base = params.ibase;
+    params.tag = params.itag;
     $http({
       url: "",
-      params: params,
-      method: "POST"
+      method: "POST",
+      data: $.param(params),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     }).success(function(response) {
       if (response.status) {
         console.log(response);
@@ -163,6 +175,7 @@ app.controller('BudgetCtrl', function($scope, $http) {
       }
     });
   };
+  $scope.getItems = function() {};
   $scope.$watch('bgdetails', function(val) {
     console.log(val);
     if (val) {

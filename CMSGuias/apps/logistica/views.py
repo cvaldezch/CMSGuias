@@ -4,13 +4,13 @@ import json
 import hashlib
 
 from django.db.models import Q, Count, Sum
-from django.core import serializers
+# from django.core import serializers
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response, get_list_or_404, get_object_or_404, render
+from django.shortcuts import render_to_response, render
 from django.utils import simplejson
 from django.utils.decorators import method_decorator
 from django.template import RequestContext, TemplateDoesNotExist
@@ -18,7 +18,7 @@ from django.views.generic import TemplateView, View, ListView
 from django.views.generic.edit import CreateView
 from xlrd import open_workbook, XL_CELL_EMPTY
 
-from CMSGuias.apps.almacen.models import Suministro, Inventario
+from CMSGuias.apps.almacen.models import Suministro
 from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda, Configuracion, LoginProveedor, Brand, Model, Employee, Unidade
 from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra, tmpcotizacion, tmpcompra, ServiceOrder, DetailsServiceOrder
 from CMSGuias.apps.ventas.models import Proyecto, Subproyecto
@@ -816,7 +816,12 @@ class ListPurchase(JSONResponseMixin, TemplateView):
                     ob.traslado = globalVariable.format_str_date(request.POST.get('transfer'))
                     ob.contacto = request.POST.get('contact')
                     ob.discount = float(request.POST.get('discount'))
-                    ob.deposito = request.FILES['deposit']
+                    if request.POST['quotation']:
+                        obj.quotation = request.POST['quotation']
+                    if request.POST['observation']:
+                        obj.observation = request.POST['observation']
+                    if request.FILES['deposit']:
+                        ob.deposito = request.FILES['deposit']
                     ob.save()
                     context['status'] = True
                 if 'annularPurchase' in request.POST:

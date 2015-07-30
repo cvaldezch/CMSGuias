@@ -23,6 +23,11 @@ $(document).ready(function() {
   $(".btn-show-deposit").on("click", showChoiceDeposit);
   $("button.btn-save-purchase").on("click", savePurchase);
   $("button.btn-delp").on("click", annularPurchase);
+  tinymce.init({
+    selector: "[name=observation]",
+    menubar: false,
+    toolbar_items_size: "small"
+  });
 });
 
 changeSearch = function() {
@@ -152,6 +157,8 @@ getDataPurchase = function(purchase) {
       $("select[name=currency]").val(response.currency);
       $("input[name=transfer]").val(response.transfer);
       $("input[name=contact]").val(response.contact);
+      $("input[name=quotation]").val(response.quotation);
+      $("#observation_ifr").contents().find('body').html(response.observation);
       $("input.edsct").val(response.discount);
       $("span.eigv").text(response.igv + "%");
       $tb = $("table.table-pod > tbody");
@@ -228,6 +235,7 @@ addNewMaterialPurchase = function(event) {
     $().toastmessage("showWarningToast", "El precio ingresado debe ser mayor a 0.");
     return false;
   }
+  data.discount = convertNumber($("input[name=discount]").val());
   if (isNaN(data.discount)) {
     data.discount = 0;
   }
@@ -385,6 +393,7 @@ saveEditDetailsPurchase = function(event) {
     $().toastmessage("showWarningToast", "El precio ingresado debe ser mayor que 0.");
     return false;
   }
+  data.discount = convertNumber($("input[name=ediscount]").val());
   if (isNaN(data.discount)) {
     data.discount = 0;
   }
@@ -397,6 +406,7 @@ saveEditDetailsPurchase = function(event) {
   data.editDPurchase = true;
   data.purchase = $.trim($("span.nrop").text());
   data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
+  console.log(data);
   $.post("", data, function(response) {
     if (response.status) {
       $("input[name=equantity]").val("");
@@ -405,9 +415,9 @@ saveEditDetailsPurchase = function(event) {
       $(".mdpurchase").modal("hide");
       listDetails();
     } else {
-      return $().toastmessage("showErrorToast", "No se a actualizado el material.");
+      $().toastmessage("showErrorToast", "No se a actualizado el material.");
     }
-  });
+  }, "json");
 };
 
 showChoiceDeposit = function(event) {
@@ -426,6 +436,8 @@ savePurchase = function(event) {
   data.append("purchase", $.trim($("span.nrop").text()));
   data.append("discount", convertNumber($("input.edsct").val()));
   data.append("purchaseSave", true);
+  data.append("quotation", $("[name=quotation]").val());
+  data.append("observation", $("#observation_ifr").contents().html());
   data.append("csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val());
   $files = $("input[name=deposit]");
   if ($files.get(0).files.length) {

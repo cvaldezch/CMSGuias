@@ -32,6 +32,7 @@ class Compra(models.Model):
     proveedor = models.ForeignKey(Proveedor, to_field='proveedor_id')
     empdni = models.ForeignKey(Employee, to_field='empdni_id', default='')
     cotizacion = models.ForeignKey(Cotizacion, to_field='cotizacion_id', null=True, blank=True)
+    quotation = models.CharField(max_length=25, null=True, blank=True)
     projects = models.CharField(max_length=250, null=True, blank=True, default='')
     lugent = models.CharField(max_length=200, null=True, blank=True)
     documento = models.ForeignKey(Documentos, to_field='documento_id', null=True, blank=True)
@@ -44,6 +45,7 @@ class Compra(models.Model):
     deposito = models.FileField(upload_to=url, null=True, blank=True)
     discount = models.FloatField(default=0, blank=True)
     # exchnage = models.DecimalField(max_digist=2, place_decimals=3)
+    observation = models.TextField(null=True, blank=True)
     flag = models.BooleanField(default=True)
 
     class Meta:

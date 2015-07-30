@@ -117,7 +117,7 @@
                   </tr>
                   <tr>
                     <th>Observación</th>
-                    <td>{{ details.observation }}</td>
+                    <td><div ng-bind-html="details.observation"></div></td>
                   </tr>
                 </tbody>
               </table>
@@ -356,5 +356,6 @@
 <script src="{{ MEDIA_URL }}js/form-validator.min.js"></script>
 <script src="{{ MEDIA_URL }}js/getCountry.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angularjs/angular.min.js"></script>
+<script type="text/javascript" src="https://code.angularjs.org/1.4.3/angular-cookies.min.js"></script>
 <script src="{{ MEDIA_URL }}js/budget/budget.js"></script>
 {% endblock content %}

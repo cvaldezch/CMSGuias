@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#Generate Reports PDF's
+# Generate Reports PDF's
 
 import os
 from django.conf import settings
@@ -203,15 +203,15 @@ class RptPurchase(TemplateView):
             igv = 0
             subt = 0
             total = 0
-            #conf = Configuracion.objects.get(periodo=globalVariable.get_year)
+            # conf = Configuracion.objects.get(periodo=globalVariable.get_year)
             search.getIGVCurrent(context['bedside'].registrado.strftime('%Y'))
             tdiscount = 0
             # print conf.igv
             lcount = float(lista.count())
             sheet = 0
             if lcount > 20:
-                sheet = int(float('%.0f'%(lcount)) / 20)
-                if float(float('%.2f'%(lcount)) / 20) > sheet:
+                sheet = int(float('%.0f' % (lcount)) / 20)
+                if float(float('%.2f' % (lcount)) / 20) > sheet:
                     sheet += 1
             else:
                 sheet = 1
@@ -228,12 +228,13 @@ class RptPurchase(TemplateView):
                     subt += amount
                     tmp.append(
                             {
-                                'item': counter,
+                                'item': counter + 1,
                                 'materials_id': x.materiales_id,
                                 'matname': x.materiales.matnom,
                                 'measure': x.materiales.matmed,
                                 'unit': x.materiales.unidad_id,
                                 'brand': x.brand.brand,
+                                'model': x.model.model,
                                 'quantity': x.cantstatic,
                                 'price': x.precio,
                                 'discount': float(x.discount),
