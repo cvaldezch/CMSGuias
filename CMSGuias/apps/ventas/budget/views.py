@@ -428,6 +428,18 @@ class BudgetView(JSONResponseMixin, TemplateView):
                         'observation': budget.observation
                     }
                     context['status'] = True
+                if 'listItems' in request.GET:
+                    context['items'] = [
+                        {
+                            'item': x.item,
+                            'name': x.name,
+                            'base': x.base,
+                            'offer': x.offer,
+                            'register': x.register.strftime('%Y-%m-%d')
+                        }
+                        for x in BudgetItems.objects.filter(budget_id=request.GET['budget']).order_by('item')
+                    ]
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False
@@ -461,7 +473,7 @@ class BudgetView(JSONResponseMixin, TemplateView):
                         add = form.save(commit=False)
                         key = genkeys.generateBudget()
                         add.budget_id = key
-                        add.version = '0'
+                        add.version = 'RV001'
                         add.save()
                     context['id'] = key
                     context['status'] = True
@@ -477,13 +489,12 @@ class BudgetView(JSONResponseMixin, TemplateView):
                                 version=request.POST['version'] if 'version' in request.POST else 'RV001'))
                 else:
                     form = addItemBudgetForm(request.POST)
-                print form
                 if form.is_valid():
                     add = form.save(commit=False)
                     if 'editItem' not in request.POST:
                         add.budget_id = request.POST['budget_id']
-                        add.item = (BudgetItems.objects.get(
-                            budget_id=request.POST['budget_id']).item + 1)
+                        add.item = (BudgetItems.objects.filter(
+                            budget_id=request.POST['budget_id']).count() + 1)
                         add.budgeti_id = ('%s%s' % (
                             request.POST['budget_id'],
                             '{:0>3d}'.format(add.item)))
@@ -493,6 +504,7 @@ class BudgetView(JSONResponseMixin, TemplateView):
                     context['raise'] = 'fields empty'
                     context['status'] = False
         except ObjectDoesNotExist as e:
+            print e
             context['raise'] = str(e)
             context['status'] = False
         return self.render_to_json_response(context)

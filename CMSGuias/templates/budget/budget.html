@@ -181,10 +181,23 @@
               <th>Descripción</th>
               <th class="center-align">Base</th>
               <th class="center-align">Oferta</th>
-              <th class="center-align">Acción</th>
+              <th class="center-align">Eliminar</th>
             </tr>
           </thead>
           <tbody>
+          {% verbatim %}
+            <tr ng-repeat="mi in listItems">
+              <td class="center-align">{{ mi.item | number:2 }}</td>
+              <td>{{ mi.name }}</td>
+              <td class="right-align">{{ mi.base }}</td>
+              <td class="right-align">{{ mi.offer }}</td>
+              <td class="center-align">
+                <button class="btn-flat red-text">
+                  <span class="fa fa-times"></span>
+                </button>
+              </td>
+            </tr>
+          {% endverbatim %}
           </tbody>
         </table>
       </div>
@@ -234,6 +247,10 @@
         {% endverbatim %}
       </div>
     </div>
+    <!-- utils for page -->
+    {% verbatim %}
+      <input type="hidden" name="budget" value="{{ details.budget_id }}">
+    {% endverbatim %}
   </section>
 </div>
 <!-- block modals -->
@@ -347,8 +364,6 @@
     </form>
   </div>
 </div>
-<!-- utils for page -->
-<input type="hidden" name="budget">
 {% csrf_token %}
 <!-- import scripts -->
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>
@@ -356,6 +371,7 @@
 <script src="{{ MEDIA_URL }}js/form-validator.min.js"></script>
 <script src="{{ MEDIA_URL }}js/getCountry.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angularjs/angular.min.js"></script>
-<script type="text/javascript" src="https://code.angularjs.org/1.4.3/angular-cookies.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js"></script>
 <script src="{{ MEDIA_URL }}js/budget/budget.js"></script>
 {% endblock content %}

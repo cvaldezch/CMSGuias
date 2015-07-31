@@ -114,7 +114,7 @@ getBudgetData = (event) ->
   return
 
 # implement AngularJS
-app = angular.module 'BudgetApp', ['ngCookies']
+app = angular.module 'BudgetApp', ['ngCookies', 'ngSanitize']
       .config ($httpProvider) ->
         $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
         $httpProvider.defaults.xsrfCookieName = 'csrftoken'
@@ -134,9 +134,8 @@ app.controller 'BudgetCtrl', ($scope, $http, $cookies) ->
     params = new Object
     params.budgetData = true
     params.budget = target
-    console.log params
     $scope.bgbedside = true
-    $scope.bgdetails = true
+    console.log params
     $http
       url: ""
       params: params
@@ -144,7 +143,7 @@ app.controller 'BudgetCtrl', ($scope, $http, $cookies) ->
     .success (response) ->
       if response.status
         $scope.details = response.budget
-        console.log $scope.details
+        $scope.bgdetails = true
         return
       else
         swal "Alerta!", "No se encontraron datos. #{response.raise}", "warning"
@@ -170,6 +169,11 @@ app.controller 'BudgetCtrl', ($scope, $http, $cookies) ->
     params.offer = params.ioffer
     params.base = params.ibase
     params.tag = params.itag
+    if $("[name=budget]").val() isnt "" or not typeof($("[name=budget]").val()) is "undefined"
+      params.budget_id = $("[name=budget]").val()
+    else
+      swal "Alerta!", "No se a encontrado el código del presupuesto.", "warning"
+      return false
     $http
       url: ""
       method: "POST"
@@ -179,18 +183,32 @@ app.controller 'BudgetCtrl', ($scope, $http, $cookies) ->
     .success (response) ->
       if response.status
         console.log response
+        $scope.getItems()
+        $("#mitems").closeModal()
         return
       else
-        swal "Alerta!", "No se encontraron datos. #{response.raise}.", "warning"
+        swal "Alerta!", "No se guardado los datos. #{response.raise}.", "error"
         return
     return
   $scope.getItems = ->
-    # ...
+    params =
+      listItems: true
+      budget: $scope.details.budget_id
+    console.log params
+    $http.get "", params: params
+      .success (response) ->
+        if response.status
+          $scope.listItems = response.items
+        else
+          swal "Error.", "No se ha encontrado datos.  #{response.raise}", "error"
+          return
     return
   $scope.$watch 'bgdetails', (val) ->
     console.log val
     if val
       $scope.ssearch = false
-      return
+      $scope.getItems()
+    if not val
+      $scope.details['budget_id'] = ''
     return
   return

@@ -101,7 +101,7 @@ getBudgetData = function(event) {
   });
 };
 
-app = angular.module('BudgetApp', ['ngCookies']).config(function($httpProvider) {
+app = angular.module('BudgetApp', ['ngCookies', 'ngSanitize']).config(function($httpProvider) {
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
   $httpProvider.defaults.xsrfCookieName = 'csrftoken';
   $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
@@ -120,9 +120,8 @@ app.controller('BudgetCtrl', function($scope, $http, $cookies) {
     params = new Object;
     params.budgetData = true;
     params.budget = target;
-    console.log(params);
     $scope.bgbedside = true;
-    $scope.bgdetails = true;
+    console.log(params);
     $http({
       url: "",
       params: params,
@@ -130,7 +129,7 @@ app.controller('BudgetCtrl', function($scope, $http, $cookies) {
     }).success(function(response) {
       if (response.status) {
         $scope.details = response.budget;
-        console.log($scope.details);
+        $scope.bgdetails = true;
       } else {
         swal("Alerta!", "No se encontraron datos. " + response.raise, "warning");
       }
@@ -160,6 +159,12 @@ app.controller('BudgetCtrl', function($scope, $http, $cookies) {
     params.offer = params.ioffer;
     params.base = params.ibase;
     params.tag = params.itag;
+    if ($("[name=budget]").val() !== "" || !typeof ($("[name=budget]").val()) === "undefined") {
+      params.budget_id = $("[name=budget]").val();
+    } else {
+      swal("Alerta!", "No se a encontrado el código del presupuesto.", "warning");
+      return false;
+    }
     $http({
       url: "",
       method: "POST",
@@ -170,17 +175,38 @@ app.controller('BudgetCtrl', function($scope, $http, $cookies) {
     }).success(function(response) {
       if (response.status) {
         console.log(response);
+        $scope.getItems();
+        $("#mitems").closeModal();
       } else {
-        swal("Alerta!", "No se encontraron datos. " + response.raise + ".", "warning");
+        swal("Alerta!", "No se guardado los datos. " + response.raise + ".", "error");
       }
     });
   };
-  $scope.getItems = function() {};
+  $scope.getItems = function() {
+    var params;
+    params = {
+      listItems: true,
+      budget: $scope.details.budget_id
+    };
+    console.log(params);
+    $http.get("", {
+      params: params
+    }).success(function(response) {
+      if (response.status) {
+        return $scope.listItems = response.items;
+      } else {
+        swal("Error.", "No se ha encontrado datos.  " + response.raise, "error");
+      }
+    });
+  };
   $scope.$watch('bgdetails', function(val) {
     console.log(val);
     if (val) {
       $scope.ssearch = false;
-      return;
+      $scope.getItems();
+    }
+    if (!val) {
+      $scope.details['budget_id'] = '';
     }
   });
 });
