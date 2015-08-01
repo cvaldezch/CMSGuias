@@ -159,6 +159,10 @@ app.controller('BudgetCtrl', function($scope, $http, $cookies) {
     params.offer = params.ioffer;
     params.base = params.ibase;
     params.tag = params.itag;
+    if (typeof params.iedit !== "undefined") {
+      params.editItem = params.iedit;
+      params.budgeti = params.ibudgeti;
+    }
     if ($("[name=budget]").val() !== "" || !typeof ($("[name=budget]").val()) === "undefined") {
       params.budget_id = $("[name=budget]").val();
     } else {
@@ -176,6 +180,7 @@ app.controller('BudgetCtrl', function($scope, $http, $cookies) {
       if (response.status) {
         console.log(response);
         $scope.getItems();
+        $scope.items = {};
         $("#mitems").closeModal();
       } else {
         swal("Alerta!", "No se guardado los datos. " + response.raise + ".", "error");
@@ -199,6 +204,19 @@ app.controller('BudgetCtrl', function($scope, $http, $cookies) {
       }
     });
   };
+  $scope.showEditItem = function() {
+    console.log(this.mi);
+    $scope.items = {
+      iname: this.mi.name,
+      ibase: this.mi.base,
+      ioffer: this.mi.offer,
+      itag: this.mi.tag,
+      iedit: true,
+      ibudgeti: this.mi.budgeti
+    };
+    console.log($scope.items);
+    $("#mitems").openModal();
+  };
   $scope.$watch('bgdetails', function(val) {
     console.log(val);
     if (val) {
@@ -209,4 +227,7 @@ app.controller('BudgetCtrl', function($scope, $http, $cookies) {
       $scope.details['budget_id'] = '';
     }
   });
+  $scope.test = function() {
+    console.log("you dblclick me!");
+  };
 });

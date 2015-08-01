@@ -428,18 +428,7 @@ class BudgetView(JSONResponseMixin, TemplateView):
                         'observation': budget.observation
                     }
                     context['status'] = True
-                if 'listItems' in request.GET:
-                    context['items'] = [
-                        {
-                            'item': x.item,
-                            'name': x.name,
-                            'base': x.base,
-                            'offer': x.offer,
-                            'register': x.register.strftime('%Y-%m-%d')
-                        }
-                        for x in BudgetItems.objects.filter(budget_id=request.GET['budget']).order_by('item')
-                    ]
-                    context['status'] = True
+
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False
@@ -483,10 +472,10 @@ class BudgetView(JSONResponseMixin, TemplateView):
             if 'saveItemBudget' in request.POST:
                 if 'editItem' in request.POST:
                     form = addItemBudgetForm(
-                            request.POST,
-                            instance=BudgetItems.objects.get(
-                                budget_id=request.POST['budget_id'],
-                                version=request.POST['version'] if 'version' in request.POST else 'RV001'))
+                        request.POST,
+                        instance=BudgetItems.objects.get(
+                            budget_id=request.POST['budget_id'],
+                            budgeti_id=request.POST['budgeti'] if 'budgeti' in request.POST else request.POST['budget_id'] + '001'))
                 else:
                     form = addItemBudgetForm(request.POST)
                 if form.is_valid():
@@ -508,3 +497,47 @@ class BudgetView(JSONResponseMixin, TemplateView):
             context['raise'] = str(e)
             context['status'] = False
         return self.render_to_json_response(context)
+
+
+class BudgetItemsView(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if request.is_ajax():
+                try:
+                    if 'listItems' in request.GET:
+                        oitems = BudgetItems.objects.filter(
+                            budget_id=request.GET['budget']).order_by('item')
+                        context['items'] = [
+                            {
+                                'item': x.item,
+                                'budgeti': x.budgeti_id,
+                                'name': x.name,
+                                'base': x.base,
+                                'offer': x.offer,
+                                'register': x.register.strftime('%Y-%m-%d'),
+                                'tag': x.tag
+                            }
+                            for x in oitems
+                        ]
+                        context['status'] = True
+                except ObjectDoesNotExist as e:
+                    context['raise'] = str(e)
+                    context['status'] = False
+                return self.convert_context_to_json(context)
+            return render(request, 'budget/budgetitems.html', context)
+        except TemplateDoesNotExist as e:
+            raise Http404(e)
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                pass
+            except ObjectDoesNotExist as e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)

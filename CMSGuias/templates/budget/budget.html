@@ -156,15 +156,15 @@
           </span>
         </div>
         <div class="card-action ">
-          <button class="btn waves-effect grey lighten-4 black-text modal-trigger" data-target="mitems">
+          <button type="button" class="btn waves-effect grey lighten-4 black-text modal-trigger" data-target="mitems" ng-click="items={}">
             <span class="fa fa-file"></span>
             <span class="fa-class">Nuevo</span>
           </button>
-          <button class="btn waves-effect light-green lighten-3 black-text">
+          <button type="button" ng-click="getItems()" class="btn waves-effect green lighten-1 black-text">
             <span class="fa fa-refresh"></span>
             <span class="fa-class">Actualizar</span>
           </button>
-          <button class="btn waves-effect red darken-1">
+          <button type="button" class="btn waves-effect red darken-1">
             <span class="fa fa-trash"></span>
             <span class="fa-class">Eliminar Todo</span>
           </button>
@@ -184,9 +184,9 @@
               <th class="center-align">Eliminar</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="white lighten-5">
           {% verbatim %}
-            <tr ng-repeat="mi in listItems">
+            <tr ng-repeat="mi in listItems" ng-dblClick="showEditItem()">
               <td class="center-align">{{ mi.item | number:2 }}</td>
               <td>{{ mi.name }}</td>
               <td class="right-align">{{ mi.base }}</td>
@@ -218,26 +218,28 @@
               <span class="fa fa-save"></span>
               Guardar
             </button>
+            <input type="hidden" ng-model="items.iedit">
+            <input type="hidden" ng-model="items.ibudgeti">
           </div>
           <div class="col s12 m12 l12">
             <div class="input-field">
-              <input type="text" name="iname" ng-model="items.iname">
-              <label>Descripción de Item</label>
+              <input type="text" name="iname" ng-model="items.iname" ng-value="items.iname">
+              <label ng-class="{active: items.iname}">Descripción de Item</label>
             </div>
           </div>
           <div class="col s12 m12 l12 input-field">
-            <input type="text" name="ibase" ng-model="items.ibase">
-            <label>Importe Base</label>
+            <input type="text" name="ibase" ng-model="items.ibase" ng-value="items.ibase">
+            <label ng-class="{active: items.ibase}">Importe Base</label>
           </div>
           <div class="col s12 m12 l12 input-field">
-            <input type="text" name="ioffer" ng-model="items.ioffer">
-            <label>Importe Oferta</label>
+            <input type="text" name="ioffer" ng-model="items.ioffer" ng-value="items.ioffer">
+            <label ng-class="{active: items.ioffer}">Importe Oferta</label>
           </div>
           <div class="col s12 m12 l12 input-field">
             <div class="switch">
               <label>
                 Desactivado
-                <input type="checkbox" name="itag" ng-modal="items.itag">
+                <input type="checkbox" name="itag" ng-model="items.itag" ng-value="items.itag">
                 <span class="lever"></span>
                 Activado
               </label>
@@ -249,7 +251,7 @@
     </div>
     <!-- utils for page -->
     {% verbatim %}
-      <input type="hidden" name="budget" value="{{ details.budget_id }}">
+      <input type="hidden" name="budget" ng-value="details.budget_id">
     {% endverbatim %}
   </section>
 </div>

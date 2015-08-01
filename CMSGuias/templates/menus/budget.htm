@@ -24,15 +24,15 @@
   <nav class="grey darken-3">
     <div class="nav-warpper">
       <a class="brand-logo" href="/sales/">Ventas</a>
-      <a href="#" data-activates="mobile-demo" class="button-collapse">
+      <a href="#" data-beloworigin="true" data-activates="mobile-demo" class="button-collapse">
         <span class="fa fa-bars"></span>
       </a>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
         <li><a href="/"><span class="fa fa-home fa-lg"></span></a></li>
-        <li><a href="#!" class="dropdown-button" data-hover="true" data-activates="menu-budget">Presupuestos <b class="fa fa-caret-down"></b></a></li>
-        <li><a href="#!" class="dropdown-button" data-hover="true" data-activates="menu-analysis">Análisis de Precio <b class="fa fa-caret-down"></b></a></li>
+        <li><a href="#!" class="dropdown-button" data-hover="true" data-beloworigin="true" data-activates="menu-budget">Presupuestos <b class="fa fa-caret-down"></b></a></li>
+        <li><a href="#!" class="dropdown-button" data-hover="true" data-beloworigin="true" data-activates="menu-analysis">Análisis de Precio <b class="fa fa-caret-down"></b></a></li>
         <li>
-          <a class="dropdown-button" href="#!" data-hover="true" data-activates="user-setting">
+          <a class="dropdown-button" href="#!" data-hover="true" data-activates="user-setting" data-gutter="0" data-beloworigin="true">
             {{ user.get_profile.empdni.firstname }}, {{ user.get_profile.empdni.lastname }} <b class="fa fa-caret-down"></b>
           </a>
         </li>

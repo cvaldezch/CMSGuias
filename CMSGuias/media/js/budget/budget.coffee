@@ -169,6 +169,9 @@ app.controller 'BudgetCtrl', ($scope, $http, $cookies) ->
     params.offer = params.ioffer
     params.base = params.ibase
     params.tag = params.itag
+    if typeof(params.iedit) isnt "undefined"
+      params.editItem = params.iedit
+      params.budgeti = params.ibudgeti
     if $("[name=budget]").val() isnt "" or not typeof($("[name=budget]").val()) is "undefined"
       params.budget_id = $("[name=budget]").val()
     else
@@ -184,6 +187,7 @@ app.controller 'BudgetCtrl', ($scope, $http, $cookies) ->
       if response.status
         console.log response
         $scope.getItems()
+        $scope.items = {}
         $("#mitems").closeModal()
         return
       else
@@ -203,6 +207,18 @@ app.controller 'BudgetCtrl', ($scope, $http, $cookies) ->
           swal "Error.", "No se ha encontrado datos.  #{response.raise}", "error"
           return
     return
+  $scope.showEditItem = ->
+    console.log this.mi
+    $scope.items =
+      iname: this.mi.name
+      ibase: this.mi.base
+      ioffer: this.mi.offer
+      itag: this.mi.tag
+      iedit: true
+      ibudgeti: this.mi.budgeti
+    console.log $scope.items
+    $("#mitems").openModal()
+    return
   $scope.$watch 'bgdetails', (val) ->
     console.log val
     if val
@@ -210,5 +226,8 @@ app.controller 'BudgetCtrl', ($scope, $http, $cookies) ->
       $scope.getItems()
     if not val
       $scope.details['budget_id'] = ''
+    return
+  $scope.test = ->
+    console.log "you dblclick me!"
     return
   return
