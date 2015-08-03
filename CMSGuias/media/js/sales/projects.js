@@ -30,6 +30,7 @@ $(document).ready(function() {
   tinymce.init({
     selector: "textarea[name=obser]",
     theme: "modern",
+    height: 500,
     menubar: false,
     statusbar: false,
     plugins: "link contextmenu fullscreen",
@@ -140,6 +141,7 @@ CreateProject = function(event) {
       pass = true;
     }
   });
+  console.log(data);
   if (pass) {
     data['obser'] = $("#obser_ifr").contents().find("body").html();
     data['type'] = "new";

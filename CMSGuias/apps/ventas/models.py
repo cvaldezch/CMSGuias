@@ -1,36 +1,41 @@
 # -*- coding: utf-8 -*-
 #
+import datetime
 from django.db import models
-from audit_log.models.fields import LastUserField
+# from audit_log.models.fields import LastUserField
 from audit_log.models.managers import AuditLog
 
-from CMSGuias.apps.home.models import Pais, Departamento, Provincia, Distrito, Cliente, Materiale, Employee, Brand, Model, Cargo, Moneda, Documentos, FormaPago, Unidade
+from CMSGuias.apps.home.models import (
+    Pais, Departamento, Provincia, Distrito, Cliente,
+    Materiale, Employee, Brand, Model, Cargo, Moneda,
+    Documentos, FormaPago, Unidade)
 from CMSGuias.apps.tools import globalVariable, search
 from CMSGuias.apps import operations
 
-import datetime
 
 class Proyecto(models.Model):
-    STATUS_PROJECT = (('PE','PEDIENTE'),('AC', 'ACTIVO'),('CO', 'COMPLETO'),)
-    proyecto_id = models.CharField(primary_key=True, max_length=7,null=False)
-    ruccliente = models.ForeignKey(Cliente, to_field='ruccliente_id',null=True)
+    STATUS_PROJECT = (('PE', 'PEDIENTE'), ('AC', 'ACTIVO'), ('CO', 'COMPLETO'),)
+    proyecto_id = models.CharField(primary_key=True, max_length=7, null=False)
+    ruccliente = models.ForeignKey(Cliente, to_field='ruccliente_id', null=True)
     nompro = models.CharField(max_length=200)
-    registrado = models.DateTimeField(auto_now=True,null=False)
+    registrado = models.DateTimeField(auto_now=True, null=False)
     comienzo = models.DateField(null=True)
-    fin = models.DateField(null=True,blank=True)
+    fin = models.DateField(null=True, blank=True)
     pais = models.ForeignKey(Pais, to_field='pais_id')
     departamento = models.ForeignKey(Departamento, to_field='departamento_id')
     provincia = models.ForeignKey(Provincia, to_field='provincia_id')
     distrito = models.ForeignKey(Distrito, to_field='distrito_id')
     direccion = models.CharField(max_length=200, null=False)
-    obser = models.TextField(null=True,blank=True)
-    status = models.CharField(max_length=2,null=False,default='00')
+    obser = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=2, null=False, default='00')
     empdni = models.ForeignKey(Employee, related_name='proyectoAsEmployee', null=True, blank=True)
     approved = models.ForeignKey(Employee, related_name='approvedAsEmployee', null=True, blank=True)
     currency = models.ForeignKey(Moneda, to_field='moneda_id', null=True, blank=True)
     exchange = models.FloatField(null=True, blank=True)
     typep = models.CharField(max_length=3, default='ACI')
     contact = models.CharField(max_length=254, null=True, blank=True, default='')
+    phone = models.CharField(max_length=16, blank=True, null=True)
+    email = models.EmailField(max_length=254, blank=True, null=True)
     flag = models.BooleanField(default=True, null=False)
 
     audit_log = AuditLog()
@@ -40,14 +45,15 @@ class Proyecto(models.Model):
 
     @property
     def itemsPercent(self):
-        obj = operations.models.MetProject.objects.filter(proyecto_id=self.proyecto_id)
+        obj = operations.models.MetProject.objects.filter(
+                proyecto_id=self.proyecto_id)
         items = obj.count()
         if items:
             attend = obj.filter(tag='2').count()
             percent = ((attend * 100) / items)
         else:
             percent = 0
-        return '%.1f'%percent
+        return '%.1f' % percent
 
     @property
     def is_out_date(self):
@@ -56,7 +62,8 @@ class Proyecto(models.Model):
         return False
 
     def __unicode__(self):
-        return '%s %s - %s'%(self.proyecto_id,self.nompro,self.ruccliente_id)
+        return '%s %s %s' % (self.proyecto_id, self.nompro, self.ruccliente_id)
+
 
 class CloseProject(models.Model):
     def url(self, filename):

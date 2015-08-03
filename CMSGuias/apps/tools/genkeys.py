@@ -409,7 +409,7 @@ def generateBudget():
         else:
             counter = 1
         id = '%s%i%s' % ('PROP', yn, '{:0>4d}'.format(counter))
-    except ObjectDoesNotExist, e:
-        raise e
+    except ObjectDoesNotExist as e:
+        print e
         id = '%s%i%s' % ('PROP', yn, '{:0>4d}'.format(1))
     return id

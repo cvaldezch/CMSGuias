@@ -57,12 +57,14 @@ class JSONResponseMixin(object):
                                 encoding='utf-8',
                                 cls=DjangoJSONEncoder)
 
+
 class SalesHome(TemplateView):
     template_name = 'sales/home.html'
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(SalesHome, self).dispatch(request, *args, **kwargs)
+
 
 class ProjectsList(JSONResponseMixin, TemplateView):
     template_name = 'sales/projects.html'
@@ -110,7 +112,6 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                 if request.POST.get('type') == 'new':
                     form = ProjectForm(request.POST)
                     key = genkeys.GenerateIdPorject()
-                    #print form, form.is_valid(), request.user.get_profile().empdni_id, key
                     if form.is_valid():
                         add = form.save(commit=False)
                         add.proyecto_id = key

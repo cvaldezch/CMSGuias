@@ -17,7 +17,7 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import render
 from django.utils import simplejson
 from django.utils.decorators import method_decorator
-# from django.template import RequestContext, TemplateDoesNotExist
+from django.template import TemplateDoesNotExist
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView
 # from decimal import Decimal
@@ -409,26 +409,7 @@ class BudgetView(JSONResponseMixin, TemplateView):
         context = dict()
         if request.is_ajax():
             try:
-                if 'budgetData' in request.GET:
-                    budget = Budget.objects.get(
-                        budget_id=request.GET['budget'])
-                    context['budget'] = {
-                        'budget_id': budget.budget_id,
-                        'name': budget.name,
-                        'customers': budget.customers.razonsocial,
-                        'address': budget.address,
-                        'country': budget.country.paisnom,
-                        'departament': budget.departament.depnom,
-                        'province': budget.province.pronom,
-                        'district': budget.district.distnom,
-                        'register': budget.register,
-                        'hourwork': budget.hourwork,
-                        'finish': budget.finish,
-                        'currency': budget.currency.moneda,
-                        'observation': budget.observation
-                    }
-                    context['status'] = True
-
+                pass
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False
@@ -469,31 +450,7 @@ class BudgetView(JSONResponseMixin, TemplateView):
                 else:
                     context['status'] = False
                     context['raise'] = 'Campos incorrectos!'
-            if 'saveItemBudget' in request.POST:
-                if 'editItem' in request.POST:
-                    form = addItemBudgetForm(
-                        request.POST,
-                        instance=BudgetItems.objects.get(
-                            budget_id=request.POST['budget_id'],
-                            budgeti_id=request.POST['budgeti'] if 'budgeti' in request.POST else request.POST['budget_id'] + '001'))
-                else:
-                    form = addItemBudgetForm(request.POST)
-                if form.is_valid():
-                    add = form.save(commit=False)
-                    if 'editItem' not in request.POST:
-                        add.budget_id = request.POST['budget_id']
-                        add.item = (BudgetItems.objects.filter(
-                            budget_id=request.POST['budget_id']).count() + 1)
-                        add.budgeti_id = ('%s%s' % (
-                            request.POST['budget_id'],
-                            '{:0>3d}'.format(add.item)))
-                    add.save()
-                    context['status'] = True
-                else:
-                    context['raise'] = 'fields empty'
-                    context['status'] = False
         except ObjectDoesNotExist as e:
-            print e
             context['raise'] = str(e)
             context['status'] = False
         return self.render_to_json_response(context)
@@ -507,6 +464,25 @@ class BudgetItemsView(JSONResponseMixin, TemplateView):
         try:
             if request.is_ajax():
                 try:
+                    if 'budgetData' in request.GET:
+                        print kwargs['budget']
+                        budget = Budget.objects.get(
+                            budget_id=kwargs['budget'])
+                        context['budget'] = {
+                            'budget_id': budget.budget_id,
+                            'name': budget.name,
+                            'customers': budget.customers.razonsocial,
+                            'address': budget.address,
+                            'country': budget.country.paisnom,
+                            'departament': budget.departament.depnom,
+                            'province': budget.province.pronom,
+                            'district': budget.district.distnom,
+                            'register': budget.register,
+                            'hourwork': budget.hourwork,
+                            'finish': budget.finish,
+                            'currency': budget.currency.moneda,
+                            'observation': budget.observation}
+                        context['status'] = True
                     if 'listItems' in request.GET:
                         oitems = BudgetItems.objects.filter(
                             budget_id=request.GET['budget']).order_by('item')
@@ -526,7 +502,7 @@ class BudgetItemsView(JSONResponseMixin, TemplateView):
                 except ObjectDoesNotExist as e:
                     context['raise'] = str(e)
                     context['status'] = False
-                return self.convert_context_to_json(context)
+                return self.render_to_json_response(context)
             return render(request, 'budget/budgetitems.html', context)
         except TemplateDoesNotExist as e:
             raise Http404(e)
@@ -536,7 +512,32 @@ class BudgetItemsView(JSONResponseMixin, TemplateView):
         context = dict()
         if request.is_ajax():
             try:
-                pass
+                if 'saveItemBudget' in request.POST:
+                    if 'editItem' in request.POST:
+                        form = addItemBudgetForm(
+                            request.POST,
+                            instance=BudgetItems.objects.get(
+                                budget_id=kwargs['budget'],
+                                budgeti_id=request.POST['budgeti'] if 'budgeti' in request.POST else request.POST['budget_id'] + '001'))
+                    else:
+                        form = addItemBudgetForm(request.POST)
+                    if form.is_valid():
+                        add = form.save(commit=False)
+                        if 'editItem' not in request.POST:
+                            add.budget_id = request.POST['budget_id']
+                            add.item = (
+                                BudgetItems.objects.filter(
+                                    budget_id=request.POST['budget_id']
+                                ).count() + 1
+                            )
+                            add.budgeti_id = ('%s%s' % (
+                                request.POST['budget_id'],
+                                '{:0>3d}'.format(add.item)))
+                        add.save()
+                        context['status'] = True
+                    else:
+                        context['raise'] = 'fields empty'
+                        context['status'] = False
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

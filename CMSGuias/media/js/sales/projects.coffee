@@ -25,6 +25,7 @@ $(document).ready ->
     tinymce.init
         selector: "textarea[name=obser]",
         theme: "modern",
+        height: 500,
         menubar: false,
         statusbar: false,
         plugins: "link contextmenu fullscreen",
@@ -126,7 +127,7 @@ CreateProject = (event) ->
             data[@name] = $(@).val()
             pass = true
             return
-    # console.log data
+    console.log data
     if pass
         data['obser'] = $("#obser_ifr").contents().find("body").html()
         data['type'] = "new"

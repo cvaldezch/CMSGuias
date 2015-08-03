@@ -1,24 +1,32 @@
 #!/usr/bin/env python
-#-*- Encoding: utf-8 -*-
-#
-from django import forms
+# -*- Encoding: utf-8 -*-
 
-from .models import Proyecto, Sectore, Subproyecto, SectorFiles, Metradoventa, Alertasproyecto, PurchaseOrder
+from django import forms
+from .models import (
+    Proyecto, Sectore, Subproyecto, SectorFiles,
+    Metradoventa, Alertasproyecto, PurchaseOrder)
+
 
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Proyecto
-        exclude = {'proyecto_id','registrado','status','flag','empdni' }
+        exclude = {
+                    'proyecto_id',
+                    'registrado',
+                    'status',
+                    'flag',
+                    'empdni'}
+
 
 class SectoreForm(forms.ModelForm):
     class Meta:
         model = Sectore
-        exclude = {'registrado', 'status', 'flag',}
+        exclude = {'registrado', 'status', 'flag'}
         atypel = (
-                    ('NN','NOTHING'),
-                    ('GL','GLOBAL'),
-                    ('LC','SECTOR'),
-                    ('PE','PERSONALIZADO'),
+                    ('NN', 'NOTHING'),
+                    ('GL', 'GLOBAL'),
+                    ('LC', 'SECTOR'),
+                    ('PE', 'PERSONALIZADO'),
                 )
         widgets = {
             'sector_id' : forms.TextInput(attrs = {'class':'form-control','maxlength': '13'}),
@@ -46,22 +54,26 @@ class SubprojectForm(forms.ModelForm):
             'obser': forms.Textarea(attrs ={'class': 'form-control', 'maxlength':'200','rows':'3'}),
         }
 
+
 class SectorFilesForm(forms.ModelForm):
     class Meta:
         model = SectorFiles
-        exclude = {'flag',}
+        exclude = {'flag'}
+
 
 class MetradoventaForm(forms.ModelForm):
     class Meta:
         model = Metradoventa
-        exclude = {'flag','sales'}
+        exclude = {'flag', 'sales'}
+
 
 class AlertasproyectoForm(forms.ModelForm):
     class Meta:
         model = Alertasproyecto
-        exclude = {'registrado', 'empdni', 'charge', 'flag',}
+        exclude = {'registrado', 'empdni', 'charge', 'flag'}
+
 
 class PurchaseOrderForm(forms.ModelForm):
     class Meta:
         model = PurchaseOrder
-        exclude = {'id','project','flag',}
+        exclude = {'id', 'project', 'flag'}

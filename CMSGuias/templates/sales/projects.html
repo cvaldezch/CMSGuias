@@ -44,7 +44,7 @@
                 <div class="panel-body">
                     <div class="row">
                         {% csrf_token %}
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="form-group has-primary">
                                 <label class="control-label">Cliente</label>
                                 <div class="input-group input-group-sm">
@@ -62,7 +62,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-6">
                             <div class="form-group has-primary">
                                 <label class="control-label">Nombre Proyecto</label>
                                 <input type="text" name="nompro" class="form-control input-sm">
@@ -165,15 +165,27 @@
                             </div>
                         </div>
                         <div class="col-md-5">
+                          <div class="form-group has-primary">
+                            <label class="control-label">Email Contacto</label>
+                            <input type="email" name="email" class="form-control input-sm">
+                          </div>
+                        </div>
+                        <div class="col-md-2">
+                          <div class="form-group has-primary">
+                            <label class="control-label">Telefono Contacto</label>
+                            <input type="text" name="phone" class="form-control input-sm">
+                          </div>
+                        </div>
+                        <div class="col-md-10">
                             <div class="form-group has-primary">
                                 <label class="control-label">Contacto de Proyecto</label>
                                 <input type="text" name="contact" class="form-control input-sm">
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="form-group has-primary">
                                 <label class="control-label">Observación</label>
-                                <textarea name="obser" id="obser" rows="5" class="form-control input-sm"></textarea>
+                                <textarea name="obser" id="obser" rows="8" class="form-control input-sm"></textarea>
                             </div>
                         </div>
                     </div>

@@ -1,0 +1,189 @@
+{% extends "basemd.html" %}
+{% block menu %}
+  {% include "menus/budget.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container" data-ng-app="bItemsApp">
+  <header>
+    <h3>Items de Presupuesto</h3>
+  </header>
+  <section data-ng-controller="BItemsCtrl">
+    <div class="card-panel">
+      <div class="card">
+        <div class="card-content row">
+          <div class="col s12 m12 l12">
+            <a href="{% url 'budget_view' %}" class="btn waves-effect grey darken-1">
+              <span class="fa fa-chevron-left"></span> Regresar
+            </a>
+          </div>
+          <div class="col s12 m6 l6">
+            {% verbatim %}
+              <table>
+                <tbody>
+                  <tr>
+                    <th>Presupuesto</th>
+                    <td>{{ details.budget_id }} {{ details.name }}</td>
+                  </tr>
+                  <tr>
+                    <th>Cliente</th>
+                    <td>{{ details.customers }}</td>
+                  </tr>
+                  <tr>
+                    <th>Dirección</th>
+                    <td>{{ details.address }}</td>
+                  </tr>
+                  <tr>
+                    <th>Observación</th>
+                    <td><div ng-bind-html="details.observation"></div></td>
+                  </tr>
+                </tbody>
+              </table>
+            {% endverbatim %}
+          </div>
+          <div class="col s12 m6 l6">
+            {% verbatim %}
+              <table>
+                <tbody>
+                  <tr>
+                    <th>Registrado</th>
+                    <td>{{ details.register | date: "dd-mm-y"}}</td>
+                  </tr>
+                  <tr>
+                    <th>Jornada Diaria</th>
+                    <td>{{ details.hourwork }} /h</td>
+                  </tr>
+                  <tr>
+                    <th>F. Entrega</th>
+                    <td>{{ details.finish }}</td>
+                  </tr>
+                  <tr>
+                    <th>Moneda</th>
+                    <td>{{ details.currency }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            {% endverbatim %}
+          </div>
+        </div>
+      </div>
+      <div class="card hoverable amber lighten-2">
+        <div class="card-content">
+          <span class="card-title grey-text text-darken-3">
+            Item Presupuesto
+          </span>
+        </div>
+        <div class="card-action ">
+          <button type="button" class="btn waves-effect grey lighten-4 black-text modal-trigger" data-target="mitems" ng-click="items={}">
+            <span class="fa fa-file"></span>
+            <span class="fa-class">Nuevo</span>
+          </button>
+          <button type="button" ng-click="getItems()" class="btn waves-effect green lighten-1 black-text">
+            <span class="fa fa-refresh"></span>
+            <span class="fa-class">Actualizar</span>
+          </button>
+          <button type="button" class="btn waves-effect red darken-1">
+            <span class="fa fa-trash"></span>
+            <span class="fa-class">Eliminar Todo</span>
+          </button>
+          <!-- <button class="btn btn-xs btn-default">
+            <span class="fa fa-copy"></span>
+            <span class="fa-class">Copiar</span>
+          </button> -->
+        </div>
+        {% verbatim %}
+          <script type="text/ng-template" id="listItems.html">
+            <td class="center-align">{{ mi.item | number:2 }}</td>
+            <td>{{ mi.name }}</td>
+            <td class="right-align">{{ mi.base }}</td>
+            <td class="right-align">{{ mi.offer }}</td>
+            <td class="center-align">
+              <button class="btn-flat red-text">
+                <span class="fa fa-times"></span>
+              </button>
+              <a class="dropdown-button btn" data-hover="true" href="#" data-activates="dropdown{{mi.item}}">Drop Me!</a>
+              <ul id="dropdown{{mi.item}}" class="dropdown-content">
+                <li><a href="#!">one</a></li>
+                <li><a href="#!">two</a></li>
+                <li class="divider"></li>
+                <li><a href="#!">three</a></li>
+              </ul>
+            </td>
+          </script>
+        {% endverbatim %}
+        <table class="table table-responsive hoverable yellow lighten-5">
+          <thead>
+            <tr class="amber lighten-5">
+              <th class="center-align">Item</th>
+              <th>Descripción</th>
+              <th class="center-align">Base</th>
+              <th class="center-align">Oferta</th>
+              <th class="center-align">Eliminar</th>
+            </tr>
+          </thead>
+          <tbody class="white lighten-5">
+          {% verbatim %}
+            <tr ng-repeat="mi in listItems" ng-dblClick="showEditItem()" ng-include="'listItems.html'">
+            </tr>
+          {% endverbatim %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Modals Angular -->
+    <!-- block modals add items -->
+    <div class="modal bottom-sheet" id="mitems">
+      <div class="modal-content">
+        {% verbatim %}
+        <div class="row">
+          <div class="col s12 m12 l12">
+            <h4>Item del Presupuesto</h4>
+            <button type="button" class="btn grey lighten-4 left modal-close grey-text text-darken-3">
+              <span class="fa fa-times"></span>
+              Cancelar
+            </button>
+            <button type="button" class="btn light-blue darken-3 right" ng-click="saveItemBudget()">
+              <span class="fa fa-save"></span>
+              Guardar
+            </button>
+            <input type="hidden" ng-model="items.iedit">
+            <input type="hidden" ng-model="items.ibudgeti">
+          </div>
+          <div class="col s12 m12 l12">
+            <div class="input-field">
+              <input type="text" name="iname" ng-model="items.iname" ng-value="items.iname">
+              <label ng-class="{active: items.iname}">Descripción de Item</label>
+            </div>
+          </div>
+          <div class="col s12 m12 l12 input-field">
+            <input type="text" name="ibase" ng-model="items.ibase" ng-value="items.ibase">
+            <label ng-class="{active: items.ibase}">Importe Base</label>
+          </div>
+          <div class="col s12 m12 l12 input-field">
+            <input type="text" name="ioffer" ng-model="items.ioffer" ng-value="items.ioffer">
+            <label ng-class="{active: items.ioffer}">Importe Oferta</label>
+          </div>
+          <div class="col s12 m12 l12 input-field">
+            <div class="switch">
+              <label>
+                Desactivado
+                <input type="checkbox" name="itag" ng-model="items.itag" ng-value="items.itag">
+                <span class="lever"></span>
+                Activado
+              </label>
+            </div>
+          </div>
+        </div>
+        {% endverbatim %}
+      </div>
+    </div>
+    <!-- utils for page -->
+    {% verbatim %}
+      <input type="hidden" name="budget" ng-value="details.budget_id">
+    {% endverbatim %}
+  </section>
+</div>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angularjs/angular.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/budget/budgetitems.js"></script>
+{% endblock content %}

@@ -160,7 +160,7 @@
                                     <strong>Dirección: </strong> {{ project.direccion }} - {{ project.distrito.distnom }}  - {{ project.provincia.pronom }} - {{ project.departamento.depnom }} - {{ project.pais.paisnom }}
                                 </p>
                                 <p class="contact-project">
-                                    <strong>Contacto:</strong> {{ project.contact }}
+                                    <strong>Contacto:</strong> {{ project.contact }} <br><strong>Correo:</strong> {{ project.email }} <br><strong>Teléfono:</strong> {{ project.phone }}
                                 </p>
                                 {% if project.empdni_id %}
                                     <p>
