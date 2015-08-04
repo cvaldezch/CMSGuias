@@ -90,6 +90,9 @@ app.controller 'BItemsCtrl', ($scope, $http, $cookies) ->
       .success (response) ->
         if response.status
           $scope.listItems = response.items
+          setTimeout ->
+            $('.dropdown-button').dropdown()
+          , 800
         else
           swal "Error.", "No se ha encontrado datos.  #{response.raise}", "error"
           return
@@ -105,11 +108,38 @@ app.controller 'BItemsCtrl', ($scope, $http, $cookies) ->
       ibudgeti: this.mi.budgeti
     console.log $scope.items
     $("#mitems").openModal()
-    $('.dropdown-button').dropdown()
     return
   $scope.actionCopy = ->
     return
-
+  $scope.actionDelete = ->
+    console.log this.mi
+    params =
+      delitems: true
+      budgeti: this.mi.budgeti
+    console.log params
+    if typeof(params.budgeti) is "undefined"
+      swal "Alerta!", "Parametro  incorrecto.", "warning"
+      return false
+    swal
+      title: "Eliminar Item?"
+      text: "desea eliminar el item con todo su contenido?"
+      type: "warning"
+      showCancelButton: true
+      confirmButtonColor: "#dd6b55"
+      confirButtonText: "Eliminar!"
+      closeOnConfirm: true
+    , (isConfirm) ->
+      if isConfirm
+        $http.post "", params: params
+          .success (response) ->
+            if response.status
+              $scope.getItems()
+              return
+            else
+              swal "Error!", "Error al eliminar el item. #{response.raise}", "error"
+              return
+      return
+    return
   # $scope.$watch 'bgdetails', (val) ->
   #   console.log val
   #   if val

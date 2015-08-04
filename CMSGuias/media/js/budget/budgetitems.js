@@ -100,7 +100,10 @@ app.controller('BItemsCtrl', function($scope, $http, $cookies) {
       params: params
     }).success(function(response) {
       if (response.status) {
-        return $scope.listItems = response.items;
+        $scope.listItems = response.items;
+        return setTimeout(function() {
+          return $('.dropdown-button').dropdown();
+        }, 800);
       } else {
         swal("Error.", "No se ha encontrado datos.  " + response.raise, "error");
       }
@@ -118,7 +121,40 @@ app.controller('BItemsCtrl', function($scope, $http, $cookies) {
     };
     console.log($scope.items);
     $("#mitems").openModal();
-    $('.dropdown-button').dropdown();
   };
-  return $scope.actionCopy = function() {};
+  $scope.actionCopy = function() {};
+  return $scope.actionDelete = function() {
+    var params;
+    console.log(this.mi);
+    params = {
+      delitems: true,
+      budgeti: this.mi.budgeti
+    };
+    console.log(params);
+    if (typeof params.budgeti === "undefined") {
+      swal("Alerta!", "Parametro  incorrecto.", "warning");
+      return false;
+    }
+    swal({
+      title: "Eliminar Item?",
+      text: "desea eliminar el item con todo su contenido?",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dd6b55",
+      confirButtonText: "Eliminar!",
+      closeOnConfirm: true
+    }, function(isConfirm) {
+      if (isConfirm) {
+        $http.post("", {
+          params: params
+        }).success(function(response) {
+          if (response.status) {
+            $scope.getItems();
+          } else {
+            swal("Error!", "Error al eliminar el item. " + response.raise, "error");
+          }
+        });
+      }
+    });
+  };
 });

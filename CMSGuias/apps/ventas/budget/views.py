@@ -538,6 +538,8 @@ class BudgetItemsView(JSONResponseMixin, TemplateView):
                     else:
                         context['raise'] = 'fields empty'
                         context['status'] = False
+                if 'copyItems' in request.POST:
+                    pass
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

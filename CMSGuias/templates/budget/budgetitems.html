@@ -66,7 +66,7 @@
           </div>
         </div>
       </div>
-      <div class="card hoverable amber lighten-2">
+      <div class="card amber lighten-2">
         <div class="card-content">
           <span class="card-title grey-text text-darken-3">
             Item Presupuesto
@@ -90,44 +90,40 @@
             <span class="fa-class">Copiar</span>
           </button> -->
         </div>
-        {% verbatim %}
-          <script type="text/ng-template" id="listItems.html">
-            <td class="center-align">{{ mi.item | number:2 }}</td>
-            <td>{{ mi.name }}</td>
-            <td class="right-align">{{ mi.base }}</td>
-            <td class="right-align">{{ mi.offer }}</td>
-            <td class="center-align">
-              <button class="btn-flat red-text">
-                <span class="fa fa-times"></span>
-              </button>
-              <a class="dropdown-button btn" data-hover="true" href="#" data-activates="dropdown{{mi.item}}">Drop Me!</a>
-              <ul id="dropdown{{mi.item}}" class="dropdown-content">
-                <li><a href="#!">one</a></li>
-                <li><a href="#!">two</a></li>
-                <li class="divider"></li>
-                <li><a href="#!">three</a></li>
-              </ul>
-            </td>
-          </script>
-        {% endverbatim %}
-        <table class="table table-responsive hoverable yellow lighten-5">
-          <thead>
-            <tr class="amber lighten-5">
-              <th class="center-align">Item</th>
-              <th>Descripción</th>
-              <th class="center-align">Base</th>
-              <th class="center-align">Oferta</th>
-              <th class="center-align">Eliminar</th>
-            </tr>
-          </thead>
-          <tbody class="white lighten-5">
-          {% verbatim %}
-            <tr ng-repeat="mi in listItems" ng-dblClick="showEditItem()" ng-include="'listItems.html'">
-            </tr>
-          {% endverbatim %}
-          </tbody>
-        </table>
       </div>
+      {% verbatim %}
+        <script type="text/ng-template" id="listItems.html">
+          <td class="center-align">{{ mi.item | number:2 }}</td>
+          <td>{{ mi.name }}</td>
+          <td class="right-align">{{ mi.base }}</td>
+          <td class="right-align">{{ mi.offer }}</td>
+          <td class="center-align">
+            <a class="dropdown-button black-text" data-hover="true" href="#" data-activates="items{{mi.item}}" data-constrainwidth="200"><span class="fa fa-cogs"></span></a>
+            <ul id="items{{mi.item}}" class="dropdown-content">
+              <li><a href="#!" data-ng-click="showEditItem()" class="grey-text text-darken-4"><span class="fa fa-edit"></span> Editar</a></li>
+              <li><a href="#!" data-ng-click="actionDelete()" class="grey-text text-darken-4"><span class="fa fa-trash"></span> Eliminar</a></li>
+              <li class="divider"></li>
+              <li><a href="#!" class="grey-text text-darken-4"><span class="fa fa-copy"></span> Copiar</a></li>
+            </ul>
+          </td>
+        </script>
+      {% endverbatim %}
+      <table class="table table-responsive hoverable yellow lighten-5">
+        <thead>
+          <tr class="amber lighten-5">
+            <th class="center-align">Item</th>
+            <th>Descripción</th>
+            <th class="center-align">Base</th>
+            <th class="center-align">Oferta</th>
+            <th class="center-align">Eliminar</th>
+          </tr>
+        </thead>
+        <tbody class="white lighten-5">
+        {% verbatim %}
+          <tr ng-repeat="mi in listItems" ng-dblClick="showEditItem()" ng-include="'listItems.html'"></tr>
+        {% endverbatim %}
+        </tbody>
+      </table>
     </div>
     <!-- Modals Angular -->
     <!-- block modals add items -->
