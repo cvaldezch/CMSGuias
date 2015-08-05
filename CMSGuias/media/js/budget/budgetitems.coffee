@@ -89,6 +89,7 @@ app.controller 'BItemsCtrl', ($scope, $http, $cookies) ->
     $http.get "", params: params
       .success (response) ->
         if response.status
+          $scope.searchItem = ''
           $scope.listItems = response.items
           setTimeout ->
             $('.dropdown-button').dropdown()
@@ -110,11 +111,30 @@ app.controller 'BItemsCtrl', ($scope, $http, $cookies) ->
     $("#mitems").openModal()
     return
   $scope.actionCopy = ->
+    params =
+      copyItem: true
+      budgeti: this.mi.budgeti
+    console.log params
+    $http
+      url: ""
+      data: $.param params
+      method: "post"
+    .success (response) ->
+      if response.status
+        swal
+          title: "Felicidades"
+          text: "Se a copiado correctamente."
+          type: "success"
+          timer: 2500
+        $scope.getItems()
+        return
+      else
+        swal "Alerta!", "No se pudo relizar la copia del item", "warning"
+        return
     return
   $scope.actionDelete = ->
-    console.log this.mi
     params =
-      delitems: true
+      delItem: true
       budgeti: this.mi.budgeti
     console.log params
     if typeof(params.budgeti) is "undefined"
@@ -130,16 +150,58 @@ app.controller 'BItemsCtrl', ($scope, $http, $cookies) ->
       closeOnConfirm: true
     , (isConfirm) ->
       if isConfirm
-        $http.post "", params: params
-          .success (response) ->
-            if response.status
-              $scope.getItems()
-              return
-            else
-              swal "Error!", "Error al eliminar el item. #{response.raise}", "error"
-              return
+        $http
+          url: ""
+          data: $.param params
+          method: "post"
+        .success (response) ->
+          if response.status
+            swal
+              title: 'Felicidades!'
+              text: 'se elimino correctamente.'
+              type: 'success'
+              timer: 2500
+              showconfirmButton: false
+            $scope.getItems()
+            return
+          else
+            swal "Error!", "Error al eliminar el item. #{response.raise}", "error"
+            return
       return
     return
+  $scope.actionDeleteAllItems = ->
+    params =
+      delItemsAll: true
+    swal
+      title: "Eliminar todos los Items?"
+      text: "desea eliminar todos los items con todo su contenido?"
+      type: "warning"
+      showCancelButton: true
+      confirmButtonColor: "#dd6b55"
+      confirButtonText: "Eliminar Todo!"
+      closeOnConfirm: true
+    , (isConfirm) ->
+      if isConfirm
+        $http
+          url: ""
+          data: $.param params
+          method: "post"
+        .success (response) ->
+          if response.status
+            swal
+              title: 'Felicidades!'
+              text: 'se elimino todo correctamente.'
+              type: 'success'
+              timer: 2500
+              showconfirmButton: false
+            $scope.getItems()
+            return
+          else
+            swal "Error!", "Error al eliminar el item. #{response.raise}", "error"
+            return
+      return
+    return
+  return
   # $scope.$watch 'bgdetails', (val) ->
   #   console.log val
   #   if val

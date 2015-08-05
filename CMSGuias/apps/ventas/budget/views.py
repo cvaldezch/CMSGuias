@@ -470,6 +470,7 @@ class BudgetItemsView(JSONResponseMixin, TemplateView):
                             budget_id=kwargs['budget'])
                         context['budget'] = {
                             'budget_id': budget.budget_id,
+                            'revision': budget.version,
                             'name': budget.name,
                             'customers': budget.customers.razonsocial,
                             'address': budget.address,
@@ -538,8 +539,40 @@ class BudgetItemsView(JSONResponseMixin, TemplateView):
                     else:
                         context['raise'] = 'fields empty'
                         context['status'] = False
-                if 'copyItems' in request.POST:
-                    pass
+                if 'copyItem' in request.POST:
+                    icopy = BudgetItems.objects.get(
+                        budget_id=kwargs['budget'],
+                        budgeti_id=request.POST['budgeti'])
+                    item = (BudgetItems.objects.filter(
+                                    budget_id=kwargs['budget']
+                                ).count() + 1)
+                    add = BudgetItems(
+                        budget_id=kwargs['budget'],
+                        item=item,
+                        budgeti_id='%s%s' % (
+                                kwargs['budget'], '{:0>3d}'.format(item)),
+                        name='%s %s' % (icopy.name, 'Copia'),
+                        base=icopy.base,
+                        offer=icopy.offer,
+                        tag=icopy.tag
+                        )
+                    add.save()
+                    # copy details budget
+                    context['status'] = True
+                if 'delItem' in request.POST:
+                    # delete details item
+                    # delete bedside item
+                    item = BudgetItems.objects.get(
+                        budget_id=kwargs['budget'],
+                        budgeti_id=request.POST['budgeti'])
+                    item.delete()
+                    context['status'] = True
+                if 'delItemsAll' in request.POST:
+                    # delete all details items
+                    # delete all items
+                    BudgetItems.objects.filter(
+                        budget_id=kwargs['budget']).delete()
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

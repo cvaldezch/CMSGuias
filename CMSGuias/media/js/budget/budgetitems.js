@@ -100,6 +100,7 @@ app.controller('BItemsCtrl', function($scope, $http, $cookies) {
       params: params
     }).success(function(response) {
       if (response.status) {
+        $scope.searchItem = '';
         $scope.listItems = response.items;
         return setTimeout(function() {
           return $('.dropdown-button').dropdown();
@@ -122,12 +123,35 @@ app.controller('BItemsCtrl', function($scope, $http, $cookies) {
     console.log($scope.items);
     $("#mitems").openModal();
   };
-  $scope.actionCopy = function() {};
-  return $scope.actionDelete = function() {
+  $scope.actionCopy = function() {
     var params;
-    console.log(this.mi);
     params = {
-      delitems: true,
+      copyItem: true,
+      budgeti: this.mi.budgeti
+    };
+    console.log(params);
+    $http({
+      url: "",
+      data: $.param(params),
+      method: "post"
+    }).success(function(response) {
+      if (response.status) {
+        swal({
+          title: "Felicidades",
+          text: "Se a copiado correctamente.",
+          type: "success",
+          timer: 2500
+        });
+        $scope.getItems();
+      } else {
+        swal("Alerta!", "No se pudo relizar la copia del item", "warning");
+      }
+    });
+  };
+  $scope.actionDelete = function() {
+    var params;
+    params = {
+      delItem: true,
       budgeti: this.mi.budgeti
     };
     console.log(params);
@@ -145,10 +169,55 @@ app.controller('BItemsCtrl', function($scope, $http, $cookies) {
       closeOnConfirm: true
     }, function(isConfirm) {
       if (isConfirm) {
-        $http.post("", {
-          params: params
+        $http({
+          url: "",
+          data: $.param(params),
+          method: "post"
         }).success(function(response) {
           if (response.status) {
+            swal({
+              title: 'Felicidades!',
+              text: 'se elimino correctamente.',
+              type: 'success',
+              timer: 2500,
+              showconfirmButton: false
+            });
+            $scope.getItems();
+          } else {
+            swal("Error!", "Error al eliminar el item. " + response.raise, "error");
+          }
+        });
+      }
+    });
+  };
+  $scope.actionDeleteAllItems = function() {
+    var params;
+    params = {
+      delItemsAll: true
+    };
+    swal({
+      title: "Eliminar todos los Items?",
+      text: "desea eliminar todos los items con todo su contenido?",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dd6b55",
+      confirButtonText: "Eliminar Todo!",
+      closeOnConfirm: true
+    }, function(isConfirm) {
+      if (isConfirm) {
+        $http({
+          url: "",
+          data: $.param(params),
+          method: "post"
+        }).success(function(response) {
+          if (response.status) {
+            swal({
+              title: 'Felicidades!',
+              text: 'se elimino todo correctamente.',
+              type: 'success',
+              timer: 2500,
+              showconfirmButton: false
+            });
             $scope.getItems();
           } else {
             swal("Error!", "Error al eliminar el item. " + response.raise, "error");

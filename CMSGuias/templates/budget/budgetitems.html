@@ -10,59 +10,70 @@
   <section data-ng-controller="BItemsCtrl">
     <div class="card-panel">
       <div class="card">
-        <div class="card-content row">
-          <div class="col s12 m12 l12">
-            <a href="{% url 'budget_view' %}" class="btn waves-effect grey darken-1">
-              <span class="fa fa-chevron-left"></span> Regresar
-            </a>
-          </div>
-          <div class="col s12 m6 l6">
-            {% verbatim %}
-              <table>
-                <tbody>
-                  <tr>
-                    <th>Presupuesto</th>
-                    <td>{{ details.budget_id }} {{ details.name }}</td>
-                  </tr>
-                  <tr>
-                    <th>Cliente</th>
-                    <td>{{ details.customers }}</td>
-                  </tr>
-                  <tr>
-                    <th>Dirección</th>
-                    <td>{{ details.address }}</td>
-                  </tr>
-                  <tr>
-                    <th>Observación</th>
-                    <td><div ng-bind-html="details.observation"></div></td>
-                  </tr>
-                </tbody>
-              </table>
-            {% endverbatim %}
-          </div>
-          <div class="col s12 m6 l6">
-            {% verbatim %}
-              <table>
-                <tbody>
-                  <tr>
-                    <th>Registrado</th>
-                    <td>{{ details.register | date: "dd-mm-y"}}</td>
-                  </tr>
-                  <tr>
-                    <th>Jornada Diaria</th>
-                    <td>{{ details.hourwork }} /h</td>
-                  </tr>
-                  <tr>
-                    <th>F. Entrega</th>
-                    <td>{{ details.finish }}</td>
-                  </tr>
-                  <tr>
-                    <th>Moneda</th>
-                    <td>{{ details.currency }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            {% endverbatim %}
+        <div class="card-action">
+          <a href="{% url 'budget_view' %}" class="btn waves-effect grey darken-1 white-text">
+            <i class="fa fa-chevron-left"></i> Regresar
+          </a>
+          <button type="button" class="btn-floating waves-effect right transparent" data-ng-model="tbshow" data-ng-click="tbshow=!tbshow">
+            <i data-ng-class="{'fa-chevron-down':tbshow, 'fa-chevron-up':!tbshow}" class="fa fa-chevron-up grey-text text-darken-4"></i>
+          </button>
+        </div>
+      </div>
+      <div class="card" data-ng-hide="tbshow">
+        <div class="card-content">
+          <div class="row">
+            <div class="col s12 m6 l6">
+              {% verbatim %}
+                <table>
+                  <tbody>
+                    <tr>
+                      <th>Presupuesto</th>
+                      <td>{{ details.budget_id }} {{ details.name }}</td>
+                    </tr>
+                    <tr>
+                      <th>Revisión</th>
+                      <td>{{ details.revision }}</td>
+                    </tr>
+                    <tr>
+                      <th>Cliente</th>
+                      <td>{{ details.customers }}</td>
+                    </tr>
+                    <tr>
+                      <th>Dirección</th>
+                      <td>{{ details.address }}</td>
+                    </tr>
+                    <tr>
+                      <th>Observación</th>
+                      <td><div ng-bind-html="details.observation"></div></td>
+                    </tr>
+                  </tbody>
+                </table>
+              {% endverbatim %}
+            </div>
+            <div class="col s12 m6 l6">
+              {% verbatim %}
+                <table>
+                  <tbody>
+                    <tr>
+                      <th>Registrado</th>
+                      <td>{{ details.register | date: "dd-mm-y"}}</td>
+                    </tr>
+                    <tr>
+                      <th>Jornada Diaria</th>
+                      <td>{{ details.hourwork }} /h</td>
+                    </tr>
+                    <tr>
+                      <th>F. Entrega</th>
+                      <td>{{ details.finish }}</td>
+                    </tr>
+                    <tr>
+                      <th>Moneda</th>
+                      <td>{{ details.currency }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              {% endverbatim %}
+            </div>
           </div>
         </div>
       </div>
@@ -74,21 +85,37 @@
         </div>
         <div class="card-action ">
           <button type="button" class="btn waves-effect grey lighten-4 black-text modal-trigger" data-target="mitems" ng-click="items={}">
-            <span class="fa fa-file"></span>
+            <i class="fa fa-file"></i>
             <span class="fa-class">Nuevo</span>
           </button>
+          <button type="button" class="btn waves-effect light-blue darken-2" data-ng-model="sishow" data-ng-click="sishow=!sishow">
+            <i class="fa fa-search"></i>
+            <span>Buscar</span>
+          </button>
           <button type="button" ng-click="getItems()" class="btn waves-effect green lighten-1 black-text">
-            <span class="fa fa-refresh"></span>
+            <i class="fa fa-refresh"></i>
             <span class="fa-class">Actualizar</span>
           </button>
-          <button type="button" class="btn waves-effect red darken-1">
-            <span class="fa fa-trash"></span>
+          <button type="button" class="btn waves-effect red darken-1" data-ng-click="actionDeleteAllItems()">
+            <i class="fa fa-trash"></i>
             <span class="fa-class">Eliminar Todo</span>
           </button>
           <!-- <button class="btn btn-xs btn-default">
             <span class="fa fa-copy"></span>
             <span class="fa-class">Copiar</span>
           </button> -->
+          <div class="card grey darken-4" data-ng-show="sishow">
+            <div class="card-content">
+              <button type="button" class="btn-floating waves-effect transparent right" data-ng-click="sishow=!sishow">
+                <i class="fa fa-times white-text"></i>
+              </button>
+              <div class="input-field">
+                <i class="fa fa-search prefix white-text"></i>
+                <input type="text" class="white-text" data-ng-model="searchItem" data-ng-value="searchItem">
+                <label for="label for search">Escribe lo que quieres buscar</label>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       {% verbatim %}
@@ -100,10 +127,12 @@
           <td class="center-align">
             <a class="dropdown-button black-text" data-hover="true" href="#" data-activates="items{{mi.item}}" data-constrainwidth="200"><span class="fa fa-cogs"></span></a>
             <ul id="items{{mi.item}}" class="dropdown-content">
-              <li><a href="#!" data-ng-click="showEditItem()" class="grey-text text-darken-4"><span class="fa fa-edit"></span> Editar</a></li>
-              <li><a href="#!" data-ng-click="actionDelete()" class="grey-text text-darken-4"><span class="fa fa-trash"></span> Eliminar</a></li>
+              <li><a href="#!" data-ng-click="actionDetails()" class="grey-text text-darken-4"><span class="fa fa-copy"></span> Copiar</a></li>
               <li class="divider"></li>
-              <li><a href="#!" class="grey-text text-darken-4"><span class="fa fa-copy"></span> Copiar</a></li>
+              <li><a href="#!" data-ng-click="showEditItem()" class="light-blue-text text-accent-4"><span class="fa fa-edit"></span> Editar</a></li>
+              <li><a href="#!" data-ng-click="actionDelete()" class="red-text text-darken-1"><span class="fa fa-trash"></span> Eliminar</a></li>
+              <li class="divider"></li>
+              <li><a href="#!" data-ng-click="actionCopy()" class="grey-text text-darken-4"><span class="fa fa-copy"></span> Copiar</a></li>
             </ul>
           </td>
         </script>
@@ -120,7 +149,7 @@
         </thead>
         <tbody class="white lighten-5">
         {% verbatim %}
-          <tr ng-repeat="mi in listItems" ng-dblClick="showEditItem()" ng-include="'listItems.html'"></tr>
+          <tr ng-repeat="mi in listItems | filter:searchItem" ng-dblClick="showEditItem()" ng-include="'listItems.html'"></tr>
         {% endverbatim %}
         </tbody>
       </table>
