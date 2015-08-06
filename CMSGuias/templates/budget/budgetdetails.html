@@ -1,0 +1,44 @@
+{% extends "basemd.html" %}
+{% block title %}
+  Details Budget
+{% endblock title %}
+{% block menu %}
+  {% include "menus/budget.htm" %}
+{% endblock menu %}
+{% block content %}
+<section data-ng-app="bidApp">
+  <div class="container" data-ng-controller="bidCtrl">
+    <div class="card-panel">
+      <div class="card-content">
+        <h3 class="card-title">Detalle de Item - Presupuesto</h3>
+        {% verbatim %}
+        <div class="row">
+          <div class="col m6 l6">
+            <p>
+              <strong>Items :</strong> {{ }}
+            </p>
+            <p>
+              <strong>Descripción :</strong> {{ }}
+            </p>
+          </div>
+          <div class="col m6 l6">
+            <p>
+              <strong>Precio Base :</strong> {{ }}
+            </p>
+            <p>
+              <strong>Precio Oferta :</strong> {{ }}
+            </p>
+          </div>
+        </div>
+        {% endverbatim %}
+      </div>
+    </div>
+    <div class="card hoverable"></div>
+  </div>
+</section>
+<!-- scripts -->
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angularjs/angular.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/budget/budgetdetails.js"></script>
+{% endblock content %}

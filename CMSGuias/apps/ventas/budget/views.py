@@ -10,6 +10,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse_lazy
+from django.core import serializers
 # from django.contrib import messages
 # from django.contrib.auth.mod import User
 from django.contrib.auth.decorators import login_required
@@ -490,6 +491,7 @@ class BudgetItemsView(JSONResponseMixin, TemplateView):
                         context['items'] = [
                             {
                                 'item': x.item,
+                                'budget': x.budget_id,
                                 'budgeti': x.budgeti_id,
                                 'name': x.name,
                                 'base': x.base,
@@ -577,3 +579,32 @@ class BudgetItemsView(JSONResponseMixin, TemplateView):
                 context['raise'] = str(e)
                 context['status'] = False
             return self.render_to_json_response(context)
+
+
+class BudgetItemDetails(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        try:
+            context = dict()
+            if request.is_ajax():
+                try:
+                    if 'item' in request.GET:
+                        print kwargs['budget']
+                        print kwargs['item']
+                        context['lit'] = str(serializers.serialize(
+                            'json', [BudgetItems.objects.get(
+                                budget_id=kwargs['budget'],
+                                budgeti_id=kwargs['item'])]))
+                        context['status'] = True
+                        print context
+                    if 'listDetails' in request.GET:
+                        pass
+                except ObjectDoesNotExist as e:
+                    context['raise'] = str(e)
+                    context['status'] = False
+                print context
+                return self.render_to_json_response(context)
+            return render(request, 'budget/budgetdetails.html', context)
+        except TemplateDoesNotExist as e:
+            raise Http404(e)
