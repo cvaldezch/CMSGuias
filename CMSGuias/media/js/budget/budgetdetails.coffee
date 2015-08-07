@@ -12,17 +12,42 @@ app.controller 'bidCtrl', ($scope, $http, $cookies) ->
     console.log 'init document'
     $scope.getItem()
     return
+  $scope.item = {}
   $scope.getItem = ->
     $http.get "",
       params:
         item: true
-      (response) ->
+    .success (response) ->
+      if response.status
+        $scope.item = response.lit[0]
+        # console.log $scope.item
+        return
+      else
+        swal "Error", "no se han encontrado datos. #{response.raise}", "error"
+        return
+    return
+  $scope.listDetails = ->
+    $http.get "", params: params
+      .success (response) ->
         if response.status
-          console.log response
-          $scope.item = response.lit
+          $scope.details = response.details
           return
         else
-          swal "Error", "no se han encontrado datos. #{response.raise}", "error"
+          swal "Alerta!", "No se han encontrado datos. #{response.raise}", "warning"
           return
     return
+  $scope.actionEdit = ->
+    params = details
+    $http
+      url: ''
+      method: 'post'
+      data: $.param params
+    .success (response) ->
+      if response.status
+        $scope.list
+      else
+        swal "Error!", "No se a podido guardar los cambios. #{response.raise}", "error"
+        return
+    return
+
   return

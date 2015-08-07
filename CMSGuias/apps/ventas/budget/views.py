@@ -590,20 +590,17 @@ class BudgetItemDetails(JSONResponseMixin, TemplateView):
             if request.is_ajax():
                 try:
                     if 'item' in request.GET:
-                        print kwargs['budget']
-                        print kwargs['item']
-                        context['lit'] = str(serializers.serialize(
-                            'json', [BudgetItems.objects.get(
-                                budget_id=kwargs['budget'],
-                                budgeti_id=kwargs['item'])]))
+                        context['lit'] = simplejson.loads(
+                            serializers.serialize(
+                                'json', [BudgetItems.objects.get(
+                                    budget_id=kwargs['budget'],
+                                    budgeti_id=kwargs['item'])]))
                         context['status'] = True
-                        print context
                     if 'listDetails' in request.GET:
                         pass
                 except ObjectDoesNotExist as e:
                     context['raise'] = str(e)
                     context['status'] = False
-                print context
                 return self.render_to_json_response(context)
             return render(request, 'budget/budgetdetails.html', context)
         except TemplateDoesNotExist as e:

@@ -1376,7 +1376,7 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
                     request.session['serorddet'] = tmp
                     for x in request.session['serorddet']:
                         x['item'] = item
-                        item+= 1
+                        item += 1
                     context['list'] = request.session['serorddet']
                     context['status'] = True
                 if 'generateService' in request.POST:

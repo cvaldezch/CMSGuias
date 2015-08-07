@@ -15,25 +15,51 @@
         <div class="row">
           <div class="col m6 l6">
             <p>
-              <strong>Items :</strong> {{ }}
+              <strong>Items :</strong> {{ item.fields.item | number:2 }}
             </p>
             <p>
-              <strong>Descripción :</strong> {{ }}
+              <strong>Descripción :</strong> {{ item.fields.name }}
             </p>
           </div>
           <div class="col m6 l6">
             <p>
-              <strong>Precio Base :</strong> {{ }}
+              <strong>Precio Base :</strong> {{ item.fields.base }}
             </p>
             <p>
-              <strong>Precio Oferta :</strong> {{ }}
+              <strong>Precio Oferta :</strong> {{ item.fields.offer }}
             </p>
           </div>
         </div>
         {% endverbatim %}
       </div>
     </div>
-    <div class="card hoverable"></div>
+    <!-- tool bar -->
+    <div class="card">
+      <div class="card-content">
+        <button type="button" class="btn">
+          <i class="fa fa-file"></i>
+          <span>Nuevo</span>
+        </button>
+      </div>
+    </div>
+    <div class="card hoverable">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% verbatim %}
+            <tr data-ng-repeat="x in analysis">
+              <td>{{x.$index}}</td>
+              <td>{{x.name}}</td>
+            </tr>
+          {% endverbatim %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </section>
 <!-- scripts -->
