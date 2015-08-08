@@ -36,10 +36,63 @@
     <!-- tool bar -->
     <div class="card">
       <div class="card-content">
-        <button type="button" class="btn">
+        <a href="#manalysis" class="btn modal-trigger waves-effect">
           <i class="fa fa-file"></i>
           <span>Nuevo</span>
+        </a>
+        <button type="button" class="btn waves-effect">
+          <i class="fa fa-refresh"></i>
+          <span>Actualizar</span>
         </button>
+      </div>
+    </div>
+    <div class="modal bottom-sheet" id="manalysis">
+      <div class="modal-content">
+        <strong class="card-title">
+          Busqueda de Analisis de Precio
+        </strong>
+        <div class="row">
+          <div class="col l8 m8 s12">
+            <div class="input-field">
+              <i class="fa fa-angle-right prefix"></i>
+              <input type="text" name="APDesc" data-ng-keyup="searchAnalysis($event)">
+              <label for="">Descripción o Nombre Analisis de Precio</label>
+            </div>
+          </div>
+          <div class="col l4 m4 s12">
+            <div class="input-field">
+              <i class="fa fa-angle-right prefix"></i>
+              <input type="text" name="APCode" data-ng-keyup="searchAnalysis($event)">
+              <label>Código Analisis</label>
+            </div>
+          </div>
+          <div class="col l12">
+            <table class="responsive-table">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Descripción</th>
+                  <th>Unidad</th>
+                  <th>Rendimiento</th>
+                  <th>Importe</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% verbatim %}
+                  <tr data-ng-repeat="x in listAnalysis">
+                    <td>{{x.$index}}</td>
+                    <td>{{x.name}}</td>
+                    <td>{{x.unit}}</td>
+                    <td>{{x.performance}}</td>
+                    <td>{{x.amount}}</td>
+                    <td>OK</td>
+                  </tr>
+                {% endverbatim %}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
     <div class="card hoverable">
@@ -48,6 +101,10 @@
           <tr>
             <th>#</th>
             <th>Descripción</th>
+            <th>Unidad</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Importe</th>
           </tr>
         </thead>
         <tbody>
@@ -55,6 +112,7 @@
             <tr data-ng-repeat="x in analysis">
               <td>{{x.$index}}</td>
               <td>{{x.name}}</td>
+              <td></td>
             </tr>
           {% endverbatim %}
         </tbody>

@@ -546,18 +546,18 @@ class BudgetItemsView(JSONResponseMixin, TemplateView):
                         budget_id=kwargs['budget'],
                         budgeti_id=request.POST['budgeti'])
                     item = (BudgetItems.objects.filter(
-                                    budget_id=kwargs['budget']
-                                ).count() + 1)
+                        budget_id=kwargs['budget']
+                    ).count() + 1)
                     add = BudgetItems(
                         budget_id=kwargs['budget'],
                         item=item,
                         budgeti_id='%s%s' % (
-                                kwargs['budget'], '{:0>3d}'.format(item)),
+                            kwargs['budget'], '{:0>3d}'.format(item)),
                         name='%s %s' % (icopy.name, 'Copia'),
                         base=icopy.base,
                         offer=icopy.offer,
                         tag=icopy.tag
-                        )
+                    )
                     add.save()
                     # copy details budget
                     context['status'] = True
@@ -598,6 +598,20 @@ class BudgetItemDetails(JSONResponseMixin, TemplateView):
                         context['status'] = True
                     if 'listDetails' in request.GET:
                         pass
+                    if 'searchAnalysis' in request.GET:
+                        analysis = None
+                        if request.GET['searchBy'] == 'APDesc':
+                            analysis = Analysis.objects.filter(
+                                name__istartswith=request.GET['searchVal'])
+                        if request.GET['searchBy'] == 'APCode':
+                            analysis = Analysis.objects.filter(
+                                analysis_id__istartswith=request.GET[
+                                    'searchVal'])
+                        if analysis:
+                            context['analysis'] = list(analysis)
+                            context['status'] = True
+                        else:
+                            context['status'] = False
                 except ObjectDoesNotExist as e:
                     context['raise'] = str(e)
                     context['status'] = False

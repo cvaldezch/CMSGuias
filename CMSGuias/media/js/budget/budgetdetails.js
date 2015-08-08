@@ -11,6 +11,7 @@ app.controller('bidCtrl', function($scope, $http, $cookies) {
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
   angular.element(document).ready(function() {
     console.log('init document');
+    $(".modal-trigger").leanModal();
     $scope.getItem();
   });
   $scope.item = {};
@@ -52,5 +53,25 @@ app.controller('bidCtrl', function($scope, $http, $cookies) {
         swal("Error!", "No se a podido guardar los cambios. " + response.raise, "error");
       }
     });
+  };
+  $scope.searchAnalysis = function($event) {
+    var params;
+    if ($event.keyCode === 13) {
+      params = {
+        searchBy: $event.currentTarget.name,
+        searchVal: $event.currentTarget.value,
+        searchAnalysis: true
+      };
+      $http.get("", {
+        params: params
+      }).success(function(response) {
+        if (response.status) {
+          $scope.listAnalysis = response.anlysis;
+        } else {
+          swal("Alerta!", "No hay datos para tu busqueda", "info");
+        }
+      });
+      console.log(params);
+    }
   };
 });
