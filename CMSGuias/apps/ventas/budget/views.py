@@ -466,7 +466,6 @@ class BudgetItemsView(JSONResponseMixin, TemplateView):
             if request.is_ajax():
                 try:
                     if 'budgetData' in request.GET:
-                        print kwargs['budget']
                         budget = Budget.objects.get(
                             budget_id=kwargs['budget'])
                         context['budget'] = {
@@ -491,6 +490,7 @@ class BudgetItemsView(JSONResponseMixin, TemplateView):
                         context['items'] = [
                             {
                                 'item': x.item,
+                                'version': x.budget.version,
                                 'budget': x.budget_id,
                                 'budgeti': x.budgeti_id,
                                 'name': x.name,
@@ -506,6 +506,7 @@ class BudgetItemsView(JSONResponseMixin, TemplateView):
                     context['raise'] = str(e)
                     context['status'] = False
                 return self.render_to_json_response(context)
+            # context = kwargs
             return render(request, 'budget/budgetitems.html', context)
         except TemplateDoesNotExist as e:
             raise Http404(e)
@@ -601,14 +602,24 @@ class BudgetItemDetails(JSONResponseMixin, TemplateView):
                     if 'searchAnalysis' in request.GET:
                         analysis = None
                         if request.GET['searchBy'] == 'APDesc':
+                            print request.GET
                             analysis = Analysis.objects.filter(
-                                name__istartswith=request.GET['searchVal'])
+                                name__icontains=request.GET['searchVal'])
                         if request.GET['searchBy'] == 'APCode':
                             analysis = Analysis.objects.filter(
                                 analysis_id__istartswith=request.GET[
                                     'searchVal'])
                         if analysis:
-                            context['analysis'] = list(analysis)
+                            context['analysis'] = [
+                                {
+                                    'analysis': x.analysis_id,
+                                    'name': x.name,
+                                    'performance': x.performance,
+                                    'unit': x.unit.uninom,
+                                    'amount': x.total
+                                }
+                                for x in analysis
+                            ]
                             context['status'] = True
                         else:
                             context['status'] = False
@@ -616,6 +627,8 @@ class BudgetItemDetails(JSONResponseMixin, TemplateView):
                     context['raise'] = str(e)
                     context['status'] = False
                 return self.render_to_json_response(context)
+            context = kwargs
+            print context
             return render(request, 'budget/budgetdetails.html', context)
         except TemplateDoesNotExist as e:
             raise Http404(e)

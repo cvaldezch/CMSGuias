@@ -11,6 +11,10 @@
     <div class="card-panel">
       <div class="card-content">
         <h3 class="card-title">Detalle de Item - Presupuesto</h3>
+        <a href="{% url 'items_view' budget  version %}" class="btn grey darken-3">
+          <i class="fa fa-chevron-left"></i>
+          regresar
+        </a>
         {% verbatim %}
         <div class="row">
           <div class="col m6 l6">
@@ -36,7 +40,7 @@
     <!-- tool bar -->
     <div class="card">
       <div class="card-content">
-        <a href="#manalysis" class="btn modal-trigger waves-effect">
+        <a href="#manalysis" class="btn modal-trigger waves-effect grey lighten-4 grey-text text-darken-4">
           <i class="fa fa-file"></i>
           <span>Nuevo</span>
         </a>
@@ -70,6 +74,7 @@
             <table class="responsive-table">
               <thead>
                 <tr>
+                  <th>#</th>
                   <th>Código</th>
                   <th>Descripción</th>
                   <th>Unidad</th>
@@ -81,12 +86,17 @@
               <tbody>
                 {% verbatim %}
                   <tr data-ng-repeat="x in listAnalysis">
-                    <td>{{x.$index}}</td>
+                    <td>{{$index + 1}}</td>
+                    <td>{{x.analysis}}</td>
                     <td>{{x.name}}</td>
                     <td>{{x.unit}}</td>
                     <td>{{x.performance}}</td>
                     <td>{{x.amount}}</td>
-                    <td>OK</td>
+                    <td>
+                      <button type="button" class="btn-floating waves-effect green lighten-1">
+                        <i class="fa fa-plus"></i>
+                      </button>
+                    </td>
                   </tr>
                 {% endverbatim %}
               </tbody>

@@ -66,12 +66,14 @@ app.controller('bidCtrl', function($scope, $http, $cookies) {
         params: params
       }).success(function(response) {
         if (response.status) {
-          $scope.listAnalysis = response.anlysis;
+          $scope.listAnalysis = response.analysis;
         } else {
           swal("Alerta!", "No hay datos para tu busqueda", "info");
         }
       });
-      console.log(params);
     }
+  };
+  $scope.addAnalysis = function() {
+    console.log(this);
   };
 });

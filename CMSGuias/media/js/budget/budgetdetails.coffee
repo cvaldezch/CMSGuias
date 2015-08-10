@@ -50,7 +50,7 @@ app.controller 'bidCtrl', ($scope, $http, $cookies) ->
         swal "Error!", "No se a podido guardar los cambios. #{response.raise}", "error"
         return
     return
-  $scope.searchAnalysis = ($event)->
+  $scope.searchAnalysis = ($event) ->
     if $event.keyCode is 13
       params =
         searchBy: $event.currentTarget.name
@@ -59,11 +59,13 @@ app.controller 'bidCtrl', ($scope, $http, $cookies) ->
       $http.get "", params: params
         .success (response) ->
           if response.status
-            $scope.listAnalysis = response.anlysis
+            $scope.listAnalysis = response.analysis
             return
           else
             swal "Alerta!", "No hay datos para tu busqueda", "info"
             return
-      console.log params
+    return
+  $scope.addAnalysis = ->
+    console.log this
     return
   return

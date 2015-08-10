@@ -9,6 +9,7 @@ import cgi
 
 # from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum, Q
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
@@ -21,7 +22,7 @@ from CMSGuias.apps.almacen import models
 from CMSGuias.apps.tools import globalVariable, search, number_to_char
 from CMSGuias.apps.logistica.models import Cotizacion, CotCliente, DetCotizacion, Compra, DetCompra, ServiceOrder, DetailsServiceOrder
 from CMSGuias.apps.ventas.models import Proyecto
-from CMSGuias.apps.home.models import Configuracion
+from CMSGuias.apps.home.models import Configuracion, Conductore
 from CMSGuias.apps.operations.models import PreOrders, DetailsPreOrders
 
 
@@ -117,7 +118,7 @@ def rpt_guide_referral_format(request, gid, pg):
             html = render_to_string("report/"+page+".html",ctx,context_instance=RequestContext(request))
             return generate_pdf(html)
     except TemplateDoesNotExist, e:
-        raise Http404
+        raise Http404(e)
 
 # Report Supply
 class RptSupply(TemplateView):
