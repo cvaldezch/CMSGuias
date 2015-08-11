@@ -89,14 +89,19 @@ vendor-prefixes = webkit moz o ms
   font-family: courier;
   src: url(/media/fonts/courier.ttf)
 
+@font-face
+  font-family: narrow;
+  src: url(/media/fonts/1979_dot_matrix.ttf)
+
 *
-  font-family ubuntu
+  font-family: narrow
+  font-size: 10px
 
 .text-center
   text-align center
 
 .text-normal
-  font-size 13px
+  font-size 11px
 
 #delivery, #arrival
   text-indent 3cm
@@ -107,15 +112,24 @@ vendor-prefixes = webkit moz o ms
 
 .details
   table
-    & > thead
-      & > tr
-        padding-top 0.15cm
-        padding-bottom 0.1cm
+    // & > thead
+    //   & > tr
+    //     padding-top 0.15cm
+    //     padding-bottom 0.1cm
     & > tbody
       & > tr
-        padding-top 0.05cm
-        padding-bottom 0.01cm
+        & > td
+          //padding-top 0.1cm
+          padding-bottom 0.10cm
+          font-style normal
+          font-family narrow
+          font-weight 400
+          font-size 9px
 
 .text-up
   font-size 13px
   vertical-align top
+
+.xfont
+  font-family: narrow
+  padding: 2px 0 2px 0

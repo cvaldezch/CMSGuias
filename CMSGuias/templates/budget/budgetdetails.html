@@ -39,7 +39,7 @@
     </div>
     <!-- tool bar -->
     <div class="card">
-      <div class="card-content">
+      <div class="card-action">
         <a href="#manalysis" class="btn modal-trigger waves-effect grey lighten-4 grey-text text-darken-4">
           <i class="fa fa-file"></i>
           <span>Nuevo</span>
@@ -49,6 +49,20 @@
           <span>Actualizar</span>
         </button>
       </div>
+      {% verbatim %}
+        <div class="card-content">
+          <div class="row">
+            <div class="col l10">
+              <strong>Descripción:</strong>
+              <label for="">{{adda.name}}</label>
+            </div>
+            <div class="col l2 input-field">
+              <strong>Código:</strong>
+              <label for="">{{adda.code}}</label>
+            </div>
+          </div>
+        </div>
+      {% endverbatim %}
     </div>
     <div class="modal bottom-sheet" id="manalysis">
       <div class="modal-content">
@@ -85,7 +99,7 @@
               </thead>
               <tbody>
                 {% verbatim %}
-                  <tr data-ng-repeat="x in listAnalysis">
+                  <tr data-ng-repeat="x in listAnalysis" data-ng-dblClick="addAnalysis()">
                     <td>{{$index + 1}}</td>
                     <td>{{x.analysis}}</td>
                     <td>{{x.name}}</td>
@@ -93,7 +107,7 @@
                     <td>{{x.performance}}</td>
                     <td>{{x.amount}}</td>
                     <td>
-                      <button type="button" class="btn-floating waves-effect green lighten-1">
+                      <button type="button" class="btn-floating waves-effect green lighten-1" data-ng-click="addAnalysis()">
                         <i class="fa fa-plus"></i>
                       </button>
                     </td>

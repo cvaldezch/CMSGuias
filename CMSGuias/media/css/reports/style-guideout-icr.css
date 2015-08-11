@@ -85,14 +85,19 @@
   font-family: courier;
   src: url("/media/fonts/courier.ttf");
 }
+@font-face {
+  font-family: narrow;
+  src: url("/media/fonts/1979_dot_matrix.ttf");
+}
 * {
-  font-family: ubuntu;
+  font-family: narrow;
+  font-size: 10px;
 }
 .text-center {
   text-align: center;
 }
 .text-normal {
-  font-size: 13px;
+  font-size: 11px;
 }
 #delivery,
 #arrival {
@@ -102,15 +107,18 @@
   font-size: 14px;
   font-weight: bold;
 }
-.details table > thead > tr {
-  padding-top: 0.15cm;
+.details table > tbody > tr > td {
   padding-bottom: 0.1cm;
-}
-.details table > tbody > tr {
-  padding-top: 0.05cm;
-  padding-bottom: 0.01cm;
+  font-style: normal;
+  font-family: narrow;
+  font-weight: 400;
+  font-size: 9px;
 }
 .text-up {
   font-size: 13px;
   vertical-align: top;
+}
+.xfont {
+  font-family: narrow;
+  padding: 2px 0 2px 0;
 }

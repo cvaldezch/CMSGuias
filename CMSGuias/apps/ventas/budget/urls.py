@@ -14,12 +14,12 @@ groupAnalysis = patterns(
 )
 
 budgeturi = patterns(
-  '',
-  url(r'^$', BudgetView.as_view(), name='budget_view'),
-  url(r'^body/(?P<budget>\w{10})/(?P<rev>\w{5})/$',
-      BudgetItemsView.as_view(), name='items_view'),
-  url(r'^details/(?P<budget>\w{10})/(?P<item>\w{13})/(?P<version>\w{5})/',
-      BudgetItemDetails.as_view(), name='bdetails_view'),
+    '',
+    url(r'^$', BudgetView.as_view(), name='budget_view'),
+    url(r'^body/(?P<budget>\w{10})/(?P<rev>\w{5})/$',
+        BudgetItemsView.as_view(), name='items_view'),
+    url(r'^details/(?P<budget>\w{10})/(?P<item>\w{13})/(?P<version>\w{5})/',
+        BudgetItemDetails.as_view(), name='bdetails_view'),
 )
 
 budget_urls = patterns(

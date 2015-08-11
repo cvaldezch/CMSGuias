@@ -66,6 +66,11 @@ app.controller 'bidCtrl', ($scope, $http, $cookies) ->
             return
     return
   $scope.addAnalysis = ->
-    console.log this
+    $scope.adda =
+      code: this.x.analysis
+      name: this.x.name
+      performance: this.x.performance
+      amount: this.x.amount
+    console.log $scope.adda
     return
   return
