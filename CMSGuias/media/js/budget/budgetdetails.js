@@ -77,9 +77,10 @@ app.controller('bidCtrl', function($scope, $http, $cookies) {
     $scope.adda = {
       code: this.x.analysis,
       name: this.x.name,
+      unit: this.x.unidad,
       performance: this.x.performance,
       amount: this.x.amount
     };
-    console.log($scope.adda);
+    $("#manalysis").closeModal();
   };
 });

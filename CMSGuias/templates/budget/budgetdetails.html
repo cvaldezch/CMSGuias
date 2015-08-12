@@ -52,13 +52,29 @@
       {% verbatim %}
         <div class="card-content">
           <div class="row">
-            <div class="col l10">
-              <strong>Descripción:</strong>
-              <label for="">{{adda.name}}</label>
+            <div class="col l9">
+              <p>
+                <strong>Descripción:</strong>
+                <input type="text" class="grey-text text-darken-4" value="{{adda.name}}" disabled>
+              </p>
             </div>
-            <div class="col l2 input-field">
-              <strong>Código:</strong>
-              <label for="">{{adda.code}}</label>
+            <div class="col l2">
+              <p>
+                <strong>Código:</strong>
+                <input type="text" class="grey-text text-darken-4" value="{{adda.code}}" disabled>
+              </p>
+            </div>
+            <div class="col l2">
+              <strong>Unidad:</strong>
+              <input type="text" class="grey-text text-darken-4" value="{{adda.unit}}" disabled>
+            </div>
+            <div class="col l2">
+              <strong>Rendimiento:</strong>
+              <input type="text" class="grey-text text-darken-4" value="{{adda.performance}}" disabled>
+            </div>
+            <div class="col l2">
+              <strong>Importe:</strong>
+              <input type="text" class="grey-text text-darken-4" value="{{adda.amount}}" disabled>
             </div>
           </div>
         </div>
