@@ -44,14 +44,19 @@
           <i class="fa fa-file"></i>
           <span>Nuevo</span>
         </a>
-        <button type="button" class="btn waves-effect">
+        <button type="button" class="btn waves-effect light-green lighten-2" data-ng-click="listDetails()">
           <i class="fa fa-refresh"></i>
           <span>Actualizar</span>
         </button>
       </div>
       {% verbatim %}
-        <div class="card-content">
+        <div class="card-content lime lighten-5" data-ng-show="ashow">
           <div class="row">
+            <div class="col l12">
+              <button type="button" data-ng-click="ashow=!ashow" class="btn-floating right transparent">
+                <i class="fa fa-times grey-text text-darken-4"></i>
+              </button>
+            </div>
             <div class="col l9">
               <p>
                 <strong>Descripción:</strong>
@@ -61,20 +66,32 @@
             <div class="col l2">
               <p>
                 <strong>Código:</strong>
-                <input type="text" class="grey-text text-darken-4" value="{{adda.code}}" disabled>
+                <input type="text" class="grey-text text-darken-4" value="{{adda.analysis}}" disabled>
               </p>
+            </div>
+            <div class="col l2">
+              <strong>Rendimiento:</strong>
+              <i class="prefix">x día</i>
+              <input type="text" class="grey-text text-darken-4" value="{{adda.performance}}" disabled>
             </div>
             <div class="col l2">
               <strong>Unidad:</strong>
               <input type="text" class="grey-text text-darken-4" value="{{adda.unit}}" disabled>
             </div>
             <div class="col l2">
-              <strong>Rendimiento:</strong>
-              <input type="text" class="grey-text text-darken-4" value="{{adda.performance}}" disabled>
-            </div>
-            <div class="col l2">
               <strong>Importe:</strong>
               <input type="text" class="grey-text text-darken-4" value="{{adda.amount}}" disabled>
+            </div>
+            <div class="col l2 input-field">
+              <input type="number" data-ng-model="adda.quantity">
+              <label>Cantidad</label>
+            </div>
+            <div class="col l2">
+              <strong>&nbsp;</strong>
+              <button type="button" class="btn waves-effect amber lighten-1 grey-text text-darken-4" data-ng-click="addAnalysis()">
+                <i class="fa fa-plus"></i>
+                <span>Agregar</span>
+              </button>
             </div>
           </div>
         </div>
@@ -115,7 +132,7 @@
               </thead>
               <tbody>
                 {% verbatim %}
-                  <tr data-ng-repeat="x in listAnalysis" data-ng-dblClick="addAnalysis()">
+                  <tr data-ng-repeat="x in listAnalysis" data-ng-dblClick="showAnalysis()">
                     <td>{{$index + 1}}</td>
                     <td>{{x.analysis}}</td>
                     <td>{{x.name}}</td>
@@ -123,7 +140,7 @@
                     <td>{{x.performance}}</td>
                     <td>{{x.amount}}</td>
                     <td>
-                      <button type="button" class="btn-floating waves-effect green lighten-1" data-ng-click="addAnalysis()">
+                      <button type="button" class="btn-floating waves-effect green lighten-1" data-ng-click="showAnalysis()">
                         <i class="fa fa-plus"></i>
                       </button>
                     </td>
@@ -149,9 +166,12 @@
         </thead>
         <tbody>
           {% verbatim %}
-            <tr data-ng-repeat="x in analysis">
-              <td>{{x.$index}}</td>
-              <td>{{x.name}}</td>
+            <tr data-ng-repeat="x in details">
+              <td>{{$index + 1}}</td>
+              <td>{{x.fields.analysis.fields.name}}</td>
+              <td>{{x.fields.analysis.fields.unit}}</td>
+              <td></td>
+              <td></td>
               <td></td>
             </tr>
           {% endverbatim %}

@@ -598,7 +598,14 @@ class BudgetItemDetails(JSONResponseMixin, TemplateView):
                                     budgeti_id=kwargs['item'])]))
                         context['status'] = True
                     if 'listDetails' in request.GET:
-                        pass
+                        context['lanalysis'] = simplejson.loads(
+                            serializers.serialize(
+                                'json',
+                                BudgetDetails.objects.filter(
+                                    budget_id=kwargs['budget'],
+                                    budgeti_id=kwargs['item']),
+                                indent=4, relations=('analysis',)))
+                        context['status'] = True
                     if 'searchAnalysis' in request.GET:
                         analysis = None
                         if request.GET['searchBy'] == 'APDesc':
@@ -632,3 +639,21 @@ class BudgetItemDetails(JSONResponseMixin, TemplateView):
             return render(request, 'budget/budgetdetails.html', context)
         except TemplateDoesNotExist as e:
             raise Http404(e)
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'addAnalysis' in request.POST:
+                    BudgetDetails(
+                        budget_id=kwargs['budget'],
+                        budgeti_id=kwargs['item'],
+                        analysis_id=request.POST['analysis'],
+                        quantity=request.POST['quantity']
+                    ).save()
+                    context['status'] = True
+            except ObjectDoesNotExist as e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)

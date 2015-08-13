@@ -28,10 +28,13 @@ app.controller 'bidCtrl', ($scope, $http, $cookies) ->
         return
     return
   $scope.listDetails = ->
+    params =
+      listDetails: true
     $http.get "", params: params
       .success (response) ->
         if response.status
-          $scope.details = response.details
+          $scope.details = response.lanalysis
+          console.log $scope.details
           return
         else
           swal "Alerta!", "No se han encontrado datos. #{response.raise}", "warning"
@@ -65,14 +68,35 @@ app.controller 'bidCtrl', ($scope, $http, $cookies) ->
             swal "Alerta!", "No hay datos para tu busqueda", "info"
             return
     return
-  $scope.addAnalysis = ->
+  $scope.showAnalysis = ->
     $scope.adda =
-      code: this.x.analysis
+      analysis: this.x.analysis
       name: this.x.name
-      unit: this.x.unidad
+      unit: this.x.unit
       performance: this.x.performance
       amount: this.x.amount
     $("#manalysis").closeModal()
-    console.log
+    $scope.ashow = true
+    return
+  $scope.addAnalysis = ->
+    data = $scope.adda
+    # console.log typeof data.quantity
+    if typeof(data.quantity) is "undefined"
+      swal "Alerta!", "No se a ingresado una cantidad para el analisis.", "warning"
+      return false
+    data.addAnalysis = true
+    $http
+      method: "post"
+      url: ""
+      data: $.param data
+    .success (response) ->
+      if response.status
+        $scope.listDetails()
+        $scope.ashow = false
+        return
+      else
+        swal "Error", "No se podido agregar el analysis", "error"
+        return
+    console.log data
     return
   return

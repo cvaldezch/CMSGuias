@@ -191,7 +191,8 @@ class BudgetSub(models.Model):
 class BudgetDetails(models.Model):
     budget = models.ForeignKey(Budget, to_field='budget_id')
     budgeti = models.ForeignKey(BudgetItems, to_field='budgeti_id')
-    budgetsub = models.ForeignKey(BudgetSub, to_field='budgetsub_id')
+    budgetsub = models.ForeignKey(
+                    BudgetSub, to_field='budgetsub_id', null=True, blank=True)
     analysis = models.ForeignKey(Analysis, to_field='analysis_id')
     quantity = models.FloatField()
 
