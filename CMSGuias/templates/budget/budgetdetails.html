@@ -170,9 +170,9 @@
               <td>{{$index + 1}}</td>
               <td>{{x.fields.analysis.fields.name}}</td>
               <td>{{x.fields.analysis.fields.unit}}</td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td>{{x.fields.analysis.extras.total}}</td>
+              <td>{{x.fields.quantity}}</td>
+              <td>{{x.fields.analysis.extras.total * x.fields.quantity | number:2}}</td>
             </tr>
           {% endverbatim %}
         </tbody>
@@ -180,6 +180,7 @@
     </div>
   </div>
 </section>
+
 <!-- scripts -->
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angularjs/angular.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>

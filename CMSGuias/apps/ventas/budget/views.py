@@ -604,7 +604,12 @@ class BudgetItemDetails(JSONResponseMixin, TemplateView):
                                 BudgetDetails.objects.filter(
                                     budget_id=kwargs['budget'],
                                     budgeti_id=kwargs['item']),
-                                indent=4, relations=('analysis',)))
+                                indent=4,
+                                relations={
+                                    'analysis': {
+                                        'extras': ('total',)
+                                    }
+                                }))
                         context['status'] = True
                     if 'searchAnalysis' in request.GET:
                         analysis = None
@@ -646,12 +651,30 @@ class BudgetItemDetails(JSONResponseMixin, TemplateView):
         if request.is_ajax():
             try:
                 if 'addAnalysis' in request.POST:
-                    BudgetDetails(
-                        budget_id=kwargs['budget'],
-                        budgeti_id=kwargs['item'],
-                        analysis_id=request.POST['analysis'],
-                        quantity=request.POST['quantity']
-                    ).save()
+                    # BudgetDetails(
+                    #     budget_id=kwargs['budget'],
+                    #     budgeti_id=kwargs['item'],
+                    #     analysis_id=request.POST['analysis'],
+                    #     quantity=request.POST['quantity']
+                    # ).save()
+                    # create copy Analysis
+                    bd = Budget.objects.get(
+                            budget_id=kwargs['budget'],
+                            version=kwargs['version'])
+                    ap = Analysis.objects.get(
+                            analysis_id=request.POST['analysis'])
+                    # copy bedside analysis price
+                    adc = AnalysisDetails(
+                            adetails_id='%s%s' % (
+                                    kwargs['item'],
+                                    request.POST['analysis']),
+                            analysis_id=request.POST['analysis'],
+                            name=ap.name,
+                            unit=ap.unit,
+                            performance=ap.performance,
+                            flag=True)
+                    adc.save()
+                    # copy details analysis materiales, man power and tools
                     context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
