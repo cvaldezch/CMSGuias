@@ -121,13 +121,13 @@
 							<td class="text-center item">{{ forloop.counter }}</td>
 							<td class="text-center cod">{{ x.materiales_id }}</td>
 							<td class="text-center">{{ x.cantidad }}</td>
-							<td class="">{{ x.materiales.matnom }} - Niple{{ x.cantidad|pluralize }}
+							<td class="">Niple{{ x.cantidad|pluralize }}
 										{% for k,v in tipo.items %}
 											{% ifequal k x.tipo %}
 												{{ v }}{{ x.cantidad|pluralize }}
 											{% endifequal %}
 										{% endfor %}
-							--- {{ x.comment }}
+							- {{ x.comment }}
 							</td>
 							<td>{{ x.materiales.matmed }}</td>
 							<td class="text-center">x</td>

@@ -674,6 +674,7 @@ class BudgetItemDetails(JSONResponseMixin, TemplateView):
                             performance=ap.performance,
                             flag=True)
                     adc.save()
+                    print bd
                     # copy details analysis materiales, man power and tools
                     context['status'] = True
             except ObjectDoesNotExist as e:

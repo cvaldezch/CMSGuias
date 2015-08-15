@@ -41,12 +41,16 @@ def get_description_materials(request):
     context = dict()
     if request.method == 'GET':
         try:
-            name = Materiale.objects.values('matnom').filter(matnom__icontains=request.GET.get('nom')).distinct('matnom').order_by('matnom')
+            name = Materiale.objects.values('matnom').filter(
+                    matnom__icontains=request.GET.get('nom')
+                    ).distinct('matnom').order_by('matnom')
             context['name'] = [{'matnom': x['matnom']} for x in name]
             context['status'] = True
         except ObjectDoesNotExist:
             context['status'] = False
-        return HttpResponse(simplejson.dumps(context), mimetype='application/json')
+        return HttpResponse(
+                simplejson.dumps(context),
+                mimetype='application/json')
     # try:
     #     if request.method == 'GET':
     #         try:
@@ -62,11 +66,14 @@ def get_description_materials(request):
     # except ObjectDoesNotExist:
     #     raise Http404
 
+
 def get_meter_materials(request):
     if request.method == 'GET':
         context = {}
         try:
-            meter = Materiale.objects.values('materiales_id','matmed').filter(matnom__icontains=request.GET['matnom']).distinct('matmed').order_by('matmed')
+            meter = Materiale.objects.values('materiales_id', 'matmed').filter(
+                    matnom__icontains=request.GET['matnom']
+                    ).distinct('matmed').order_by('matmed')
             context['list'] = [{'materiales_id': x['materiales_id'],'matmed': x['matmed']} for x in meter]
             context['status'] = True
         except ObjectDoesNotExist:
@@ -1124,16 +1131,17 @@ class ExportMetProject(View):
         except ObjectDoesNotExist, e:
             raise Http404(e)
 
+
 class ExportMaterialsDB(View):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
-        context = dict()
+        # context = dict()
         try:
             queryset = Materiale.objects.order_by('matnom')
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="materials.csv"'
             writer = csv.writer(response)
-            writer.writerow(['Código','Descripción','Diametro','Unidad'])
+            writer.writerow(['Código', 'Descripción', 'Diametro', 'Unidad'])
             if queryset:
                 [
                     writer.writerow(
@@ -1151,3 +1159,20 @@ class ExportMaterialsDB(View):
             return response
         except ObjectDoesNotExist, e:
             raise Http404(e)
+
+
+class EmailsForsProject(JSONResponseMixin, View):
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'getfors' in request.GET:
+                    fors = Emails.objects.filter(
+                        issue__contains=request.GET['name']).order_by('-id')[0]
+                    context['fors'] = fors.fors
+                    context['status'] = True
+            except ObjectDoesNotExist as e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)
