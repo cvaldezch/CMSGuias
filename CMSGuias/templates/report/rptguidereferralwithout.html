@@ -24,11 +24,11 @@
             <div id="ruc" class="text-normal">
                 {{ guide.ruccliente_id }}
             </div>
-            <div id="transfer" class="text-normal">
-                {{ guide.traslado|date:"d" }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                {{ guide.traslado|date:"F" }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                {{ guide.traslado|date:"y" }}
-            </div>
+
+            <div id="day">{{ guide.traslado|date:"d" }}</div>
+            <div id="month">{{ guide.traslado|date:"F" }}</div>
+            <div id="year">{{ guide.traslado|date:"y" }}</div>
+
             <div id="transport-brand" class="text-normal">
                 {{ guide.nropla.marca }} {{ guide.nropla_id }}
             </div>
@@ -46,11 +46,13 @@
             </div>
         </header>
         <section>
+        <br>
+        <br><br>
             <div class="details">
                 <table>
                     <thead>
                         <tr>
-                            <th width="1cm">&nbsp;</th>
+                            <th width="1cm"></th>
                             <th width="2cm"></th>
                             <th width="1.9cm"></th>
                             <th></th>
@@ -62,7 +64,7 @@
                                 <td class="text-center text-up">{{ forloop.counter }}</td>
                                 <td class="text-center text-up">{{ x.cantguide|safe }}</td>
                                 <td class="text-center text-up">{{ x.materiales.unidad.uninom|upper }}</td>
-                                <td class="text-up">{{ x.materiales.matnom }} {{ x.materiales.matmed }}
+                                <td class="text-up">{{ x.materiales.matnom|upper }} {{ x.materiales.matmed|upper }}
                                     {% if nipples %}
                                         {% ifequal x.materiales_id|truncatechars:6 "115..." %}
                                             {% for i in nipples %}
@@ -76,7 +78,7 @@
                                                             {{ i.cantidad|pluralize }} {{ v }}{{ i.cantidad|pluralize }}
                                                         {% endif %}
                                                     {% endfor %}
-                                                    {{ x.materiales.matmed }} x {{ i.metrado }} cm &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    {{ x.materiales.matmed|upper }} x {{ i.metrado }} cm &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                                 {% endifequal %}
                                             {% endfor %}
                                         {% endifequal %}

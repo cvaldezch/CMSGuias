@@ -32,9 +32,27 @@
   }
   @frame header_frame {
     -pdf-frame-content: transfer;
-    right: 2cm;
+    right: 10cm;
     top: 10.1cm;
     width: 6.2cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: day;
+    right: 5cm;
+    top: 10.1cm;
+    width: 2cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: month;
+    right: 3.5cm;
+    top: 10.1cm;
+    width: 2cm;
+  }
+  @frame header_frame {
+    -pdf-frame-content: year;
+    right: 1cm;
+    top: 10.1cm;
+    width: 2cm;
   }
   @frame header_frame {
     -pdf-frame-content: transport-brand;
@@ -87,7 +105,7 @@
 }
 @font-face {
   font-family: narrow;
-  src: url("/media/fonts/1979_dot_matrix.ttf");
+  src: url("/media/fonts/2086.ttf");
 }
 * {
   font-family: narrow;
@@ -107,12 +125,15 @@
   font-size: 14px;
   font-weight: bold;
 }
+#transfer {
+  border: 1px solid #000;
+}
 .details table > tbody > tr > td {
   padding-bottom: 0.1cm;
-  font-style: normal;
+  text-transform: uppercase;
   font-family: narrow;
   font-weight: 400;
-  font-size: 9px;
+  font-size: 11px;
 }
 .text-up {
   font-size: 13px;

@@ -659,21 +659,33 @@ class BudgetItemDetails(JSONResponseMixin, TemplateView):
                     # ).save()
                     # create copy Analysis
                     bd = Budget.objects.get(
-                            budget_id=kwargs['budget'],
-                            version=kwargs['version'])
+                        budget_id=kwargs['budget'],
+                        version=kwargs['version'])
                     ap = Analysis.objects.get(
-                            analysis_id=request.POST['analysis'])
+                        analysis_id=request.POST['analysis'])
                     # copy bedside analysis price
                     adc = AnalysisDetails(
-                            adetails_id='%s%s' % (
-                                    kwargs['item'],
-                                    request.POST['analysis']),
-                            analysis_id=request.POST['analysis'],
-                            name=ap.name,
-                            unit=ap.unit,
-                            performance=ap.performance,
-                            flag=True)
+                        adetails_id='%s%s' % (
+                            kwargs['item'],
+                            request.POST['analysis']),
+                        analysis_id=request.POST['analysis'],
+                        name=ap.name,
+                        unit=ap.unit,
+                        performance=ap.performance,
+                        flag=True)
                     adc.save()
+                    # save ap materials
+                    # for m in APMaterials.objects.filter(
+                    #         request.POST['analysis']):
+                    # DAPMaterials(
+                    #     adetails_id=adetails_id='%s%s' % (
+                    #                     kwargs['item'],
+                    #                     request.POST['analysis']),
+                    #     materials_id=m.materials_id,
+                    #     quantity=m.quantity
+                    #     price=m.price
+                    #     flag=True
+                    # ).save()
                     print bd
                     # copy details analysis materiales, man power and tools
                     context['status'] = True
