@@ -8,39 +8,39 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'DAPMaterials'
-        db.create_table(u'budget_dapmaterials', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('danalysis', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['budget.AnalysisDetails'])),
-            ('materials', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['home.Materiale'])),
-            ('quantity', self.gf('django.db.models.fields.FloatField')()),
-            ('price', self.gf('django.db.models.fields.DecimalField')(max_digits=8, decimal_places=3)),
-            ('flag', self.gf('django.db.models.fields.BooleanField')(default=True)),
-        ))
-        db.send_create_signal(u'budget', ['DAPMaterials'])
+        # Deleting model 'BudgetDetailsAuditLogEntry'
+        db.delete_table(u'budget_budgetdetailsauditlogentry')
 
-        # Adding model 'DAPMaterialsAuditLogEntry'
-        db.create_table(u'budget_dapmaterialsauditlogentry', (
-            (u'id', self.gf('django.db.models.fields.IntegerField')(db_index=True, blank=True)),
-            ('danalysis', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['budget.AnalysisDetails'])),
-            ('materials', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['home.Materiale'])),
-            ('quantity', self.gf('django.db.models.fields.FloatField')()),
-            ('price', self.gf('django.db.models.fields.DecimalField')(max_digits=8, decimal_places=3)),
-            ('flag', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            (u'action_user', self.gf('audit_log.models.fields.LastUserField')(related_name=u'_dapmaterials_audit_log_entry', to=orm['auth.User'])),
-            (u'action_id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            (u'action_date', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
-            (u'action_type', self.gf('django.db.models.fields.CharField')(max_length=1)),
-        ))
-        db.send_create_signal(u'budget', ['DAPMaterialsAuditLogEntry'])
+        # Deleting model 'BudgetDetails'
+        db.delete_table(u'budget_budgetdetails')
 
 
     def backwards(self, orm):
-        # Deleting model 'DAPMaterials'
-        db.delete_table(u'budget_dapmaterials')
+        # Adding model 'BudgetDetailsAuditLogEntry'
+        db.create_table(u'budget_budgetdetailsauditlogentry', (
+            ('budgetsub', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['budget.BudgetSub'], null=True, blank=True)),
+            (u'action_user', self.gf('audit_log.models.fields.LastUserField')(related_name=u'_budgetdetails_audit_log_entry', to=orm['auth.User'])),
+            (u'id', self.gf('django.db.models.fields.IntegerField')(blank=True, db_index=True)),
+            ('budget', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['budget.Budget'])),
+            ('analysis', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['budget.Analysis'])),
+            ('budgeti', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['budget.BudgetItems'])),
+            (u'action_date', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
+            (u'action_type', self.gf('django.db.models.fields.CharField')(max_length=1)),
+            (u'action_id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('quantity', self.gf('django.db.models.fields.FloatField')()),
+        ))
+        db.send_create_signal(u'budget', ['BudgetDetailsAuditLogEntry'])
 
-        # Deleting model 'DAPMaterialsAuditLogEntry'
-        db.delete_table(u'budget_dapmaterialsauditlogentry')
+        # Adding model 'BudgetDetails'
+        db.create_table(u'budget_budgetdetails', (
+            ('budgetsub', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['budget.BudgetSub'], null=True, blank=True)),
+            ('budget', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['budget.Budget'])),
+            ('analysis', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['budget.Analysis'])),
+            ('budgeti', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['budget.BudgetItems'])),
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('quantity', self.gf('django.db.models.fields.FloatField')()),
+        ))
+        db.send_create_signal(u'budget', ['BudgetDetails'])
 
 
     models = {
@@ -80,7 +80,7 @@ class Migration(SchemaMigration):
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['budget.AnalysisGroup']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'performance': ('django.db.models.fields.FloatField', [], {}),
-            'register': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2015, 8, 14, 0, 0)', 'auto_now': 'True', 'blank': 'True'}),
+            'register': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2015, 8, 18, 0, 0)', 'auto_now': 'True', 'blank': 'True'}),
             'unit': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['home.Unidade']"})
         },
         u'budget.analysisauditlogentry': {
@@ -94,7 +94,7 @@ class Migration(SchemaMigration):
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['budget.AnalysisGroup']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'performance': ('django.db.models.fields.FloatField', [], {}),
-            'register': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2015, 8, 14, 0, 0)', 'auto_now': 'True', 'blank': 'True'}),
+            'register': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2015, 8, 18, 0, 0)', 'auto_now': 'True', 'blank': 'True'}),
             'unit': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['home.Unidade']"})
         },
         u'budget.analysisdetails': {
@@ -104,7 +104,7 @@ class Migration(SchemaMigration):
             'flag': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'performance': ('django.db.models.fields.FloatField', [], {}),
-            'register': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2015, 8, 14, 0, 0)', 'auto_now': 'True', 'blank': 'True'}),
+            'register': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2015, 8, 18, 0, 0)', 'auto_now': 'True', 'blank': 'True'}),
             'unit': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['home.Unidade']"})
         },
         u'budget.analysisdetailsauditlogentry': {
@@ -118,7 +118,7 @@ class Migration(SchemaMigration):
             'flag': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'performance': ('django.db.models.fields.FloatField', [], {}),
-            'register': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2015, 8, 14, 0, 0)', 'auto_now': 'True', 'blank': 'True'}),
+            'register': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2015, 8, 18, 0, 0)', 'auto_now': 'True', 'blank': 'True'}),
             'unit': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['home.Unidade']"})
         },
         u'budget.analysisgroup': {
@@ -126,7 +126,7 @@ class Migration(SchemaMigration):
             'agroup_id': ('django.db.models.fields.CharField', [], {'max_length': '5', 'primary_key': 'True'}),
             'flag': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'register': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2015, 8, 14, 0, 0)', 'auto_now': 'True', 'blank': 'True'})
+            'register': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2015, 8, 18, 0, 0)', 'auto_now': 'True', 'blank': 'True'})
         },
         u'budget.apmanpower': {
             'Meta': {'ordering': "['manpower']", 'object_name': 'APManPower'},
@@ -250,26 +250,6 @@ class Migration(SchemaMigration):
             'status': ('django.db.models.fields.CharField', [], {'default': "'PE'", 'max_length': '2'}),
             'version': ('django.db.models.fields.CharField', [], {'default': "'RV0001'", 'max_length': '5'})
         },
-        u'budget.budgetdetails': {
-            'Meta': {'ordering': "['budgeti']", 'object_name': 'BudgetDetails'},
-            'budget': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['budget.Budget']"}),
-            'budgeti': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['budget.BudgetItems']"}),
-            'budgetsub': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['budget.BudgetSub']", 'null': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'quantity': ('django.db.models.fields.FloatField', [], {})
-        },
-        u'budget.budgetdetailsauditlogentry': {
-            'Meta': {'ordering': "(u'-action_date',)", 'object_name': 'BudgetDetailsAuditLogEntry'},
-            u'action_date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            u'action_id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            u'action_type': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
-            u'action_user': ('audit_log.models.fields.LastUserField', [], {'related_name': "u'_budgetdetails_audit_log_entry'", 'to': u"orm['auth.User']"}),
-            'budget': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['budget.Budget']"}),
-            'budgeti': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['budget.BudgetItems']"}),
-            'budgetsub': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['budget.BudgetSub']", 'null': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'blank': 'True'}),
-            'quantity': ('django.db.models.fields.FloatField', [], {})
-        },
         u'budget.budgetitems': {
             'Meta': {'ordering': "['name']", 'object_name': 'BudgetItems'},
             'base': ('django.db.models.fields.DecimalField', [], {'max_digits': '10', 'decimal_places': '3'}),
@@ -320,9 +300,33 @@ class Migration(SchemaMigration):
             'status': ('django.db.models.fields.CharField', [], {'default': "'PE'", 'max_length': '2'}),
             'unit': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['home.Unidade']"})
         },
+        u'budget.dapmanpower': {
+            'Meta': {'ordering': "['manpower']", 'object_name': 'DAPManPower'},
+            'adetails': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['budget.AnalysisDetails']"}),
+            'flag': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'gang': ('django.db.models.fields.DecimalField', [], {'max_digits': '3', 'decimal_places': '2'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'manpower': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['home.Cargo']"}),
+            'price': ('django.db.models.fields.DecimalField', [], {'max_digits': '8', 'decimal_places': '3'}),
+            'quantity': ('django.db.models.fields.DecimalField', [], {'max_digits': '5', 'decimal_places': '2'})
+        },
+        u'budget.dapmanpowerauditlogentry': {
+            'Meta': {'ordering': "(u'-action_date',)", 'object_name': 'DAPManPowerAuditLogEntry'},
+            u'action_date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            u'action_id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'action_type': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
+            u'action_user': ('audit_log.models.fields.LastUserField', [], {'related_name': "u'_dapmanpower_audit_log_entry'", 'to': u"orm['auth.User']"}),
+            'adetails': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['budget.AnalysisDetails']"}),
+            'flag': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'gang': ('django.db.models.fields.DecimalField', [], {'max_digits': '3', 'decimal_places': '2'}),
+            u'id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'blank': 'True'}),
+            'manpower': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['home.Cargo']"}),
+            'price': ('django.db.models.fields.DecimalField', [], {'max_digits': '8', 'decimal_places': '3'}),
+            'quantity': ('django.db.models.fields.DecimalField', [], {'max_digits': '5', 'decimal_places': '2'})
+        },
         u'budget.dapmaterials': {
             'Meta': {'ordering': "['materials']", 'object_name': 'DAPMaterials'},
-            'danalysis': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['budget.AnalysisDetails']"}),
+            'adetails': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['budget.AnalysisDetails']"}),
             'flag': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'materials': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['home.Materiale']"}),
@@ -335,12 +339,36 @@ class Migration(SchemaMigration):
             u'action_id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             u'action_type': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
             u'action_user': ('audit_log.models.fields.LastUserField', [], {'related_name': "u'_dapmaterials_audit_log_entry'", 'to': u"orm['auth.User']"}),
-            'danalysis': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['budget.AnalysisDetails']"}),
+            'adetails': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['budget.AnalysisDetails']"}),
             'flag': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             u'id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'blank': 'True'}),
             'materials': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['home.Materiale']"}),
             'price': ('django.db.models.fields.DecimalField', [], {'max_digits': '8', 'decimal_places': '3'}),
             'quantity': ('django.db.models.fields.FloatField', [], {})
+        },
+        u'budget.daptools': {
+            'Meta': {'ordering': "['tools']", 'object_name': 'DAPTools'},
+            'adetails': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['budget.AnalysisDetails']"}),
+            'flag': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'gang': ('django.db.models.fields.DecimalField', [], {'max_digits': '3', 'decimal_places': '2'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'price': ('django.db.models.fields.DecimalField', [], {'max_digits': '8', 'decimal_places': '3'}),
+            'quantity': ('django.db.models.fields.DecimalField', [], {'max_digits': '5', 'decimal_places': '2'}),
+            'tools': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['home.Tools']"})
+        },
+        u'budget.daptoolsauditlogentry': {
+            'Meta': {'ordering': "(u'-action_date',)", 'object_name': 'DAPToolsAuditLogEntry'},
+            u'action_date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            u'action_id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'action_type': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
+            u'action_user': ('audit_log.models.fields.LastUserField', [], {'related_name': "u'_daptools_audit_log_entry'", 'to': u"orm['auth.User']"}),
+            'adetails': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['budget.AnalysisDetails']"}),
+            'flag': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'gang': ('django.db.models.fields.DecimalField', [], {'max_digits': '3', 'decimal_places': '2'}),
+            u'id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'blank': 'True'}),
+            'price': ('django.db.models.fields.DecimalField', [], {'max_digits': '8', 'decimal_places': '3'}),
+            'quantity': ('django.db.models.fields.DecimalField', [], {'max_digits': '5', 'decimal_places': '2'}),
+            'tools': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['home.Tools']"})
         },
         u'contenttypes.contenttype': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},

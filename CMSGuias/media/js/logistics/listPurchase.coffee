@@ -442,7 +442,7 @@ savePurchase = (event) ->
     data.append "discount", convertNumber $("input.edsct").val()
     data.append "purchaseSave", true
     data.append "quotation", $("[name=quotation]").val()
-    data.append "observation", $("#observation_ifr").contents().html()
+    data.append "observation", $("#observation_ifr").contents().find("body").html()
     data.append "csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val()
     $files = $("input[name=deposit]")
     if $files.get(0).files.length

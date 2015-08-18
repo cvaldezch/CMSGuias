@@ -817,10 +817,10 @@ class ListPurchase(JSONResponseMixin, TemplateView):
                     ob.contacto = request.POST.get('contact')
                     ob.discount = float(request.POST.get('discount'))
                     if request.POST['quotation']:
-                        obj.quotation = request.POST['quotation']
+                        ob.quotation = request.POST['quotation']
                     if request.POST['observation']:
-                        obj.observation = request.POST['observation']
-                    if request.FILES['deposit']:
+                        ob.observation = request.POST['observation']
+                    if 'deposit' in request.FILES:
                         ob.deposito = request.FILES['deposit']
                     ob.save()
                     context['status'] = True

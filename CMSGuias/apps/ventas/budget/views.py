@@ -651,12 +651,6 @@ class BudgetItemDetails(JSONResponseMixin, TemplateView):
         if request.is_ajax():
             try:
                 if 'addAnalysis' in request.POST:
-                    # BudgetDetails(
-                    #     budget_id=kwargs['budget'],
-                    #     budgeti_id=kwargs['item'],
-                    #     analysis_id=request.POST['analysis'],
-                    #     quantity=request.POST['quantity']
-                    # ).save()
                     # create copy Analysis
                     bd = Budget.objects.get(
                         budget_id=kwargs['budget'],
@@ -675,17 +669,42 @@ class BudgetItemDetails(JSONResponseMixin, TemplateView):
                         flag=True)
                     adc.save()
                     # save ap materials
-                    # for m in APMaterials.objects.filter(
-                    #         request.POST['analysis']):
-                    # DAPMaterials(
-                    #     adetails_id=adetails_id='%s%s' % (
-                    #                     kwargs['item'],
-                    #                     request.POST['analysis']),
-                    #     materials_id=m.materials_id,
-                    #     quantity=m.quantity
-                    #     price=m.price
-                    #     flag=True
-                    # ).save()
+                    dAPM = APMaterials.objects.filter(request.POST['analysis'])
+                    for m in dAPM:
+                        DAPMaterials(
+                            adetails_id='%s%s' % (kwargs['item'], request.POST[
+                                                    'analysis']),
+                            materials_id=m.materials_id,
+                            quantity=m.quantity,
+                            price=m.price,
+                            flag=True
+                        ).save()
+                    dAPMP = APManPower.objects.filter(
+                                analysis_id=request.POST['analysis'])
+                    for mp in dAPMP:
+                        DAPManPower(
+                            adetails_id='%s%s' % (kwargs['item'], request.POST[
+                                'analysis']),
+                            manpower_id=mp.manpower_id,
+                            gang=mp.gang,
+                            quantity=(
+                                (mp.gang * bg.hourwork) / ap.performance),
+                            price=mp.price,
+                            flag=True
+                        ).save()
+                    dAPT = APTools.objects.filter(
+                            analysis_id=request.POST['analysis'])
+                    for t in dAPT:
+                        DAPTools(
+                            adetails_id='%s%s' % (kwargs['item'], request.POST[
+                                'analysis']),
+                            tools_id=x.tools_id,
+                            gang=t.gang,
+                            quantity=(
+                                    (t.gang * bd.hourwork) / ap.performance),
+                            price=t.price,
+                            flag=True
+                        ).save()
                     print bd
                     # copy details analysis materiales, man power and tools
                     context['status'] = True

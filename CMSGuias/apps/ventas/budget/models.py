@@ -120,92 +120,6 @@ class APTools(models.Model):
         return '%s %s %d %d' % (self.analysis_id,
                                 self.tools, self.quantity, self.price)
 
-
-class Budget(models.Model):
-    budget_id = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=255)
-    customers = models.ForeignKey(Cliente, to_field='ruccliente_id', null=True)
-    address = models.CharField(max_length=255)
-    country = models.ForeignKey(Pais, to_field='pais_id')
-    departament = models.ForeignKey(Departamento, to_field='departamento_id')
-    province = models.ForeignKey(Provincia, to_field='provincia_id')
-    district = models.ForeignKey(Distrito, to_field='distrito_id')
-    register = models.DateTimeField(auto_now=True, null=True)
-    hourwork = models.IntegerField(default=8)
-    finish = models.DateField()
-    base = models.DecimalField(max_digits=10, decimal_places=3)
-    offer = models.DecimalField(max_digits=10, decimal_places=3)
-    observation = models.TextField()
-    reference = models.CharField(max_length=10, blank=True, null=True)
-    review = models.CharField(max_length=10)
-    version = models.CharField(max_length=5, default='RV0001')
-    status = models.CharField(max_length=2, default='PE')
-    currency = models.ForeignKey(Moneda, to_field='moneda_id')
-    exchange = models.DecimalField(max_digits=5, decimal_places=3, default=0)
-    flag = models.BooleanField(default=True)
-
-    audit_log = AuditLog()
-
-    class Meta:
-        ordering = ['budget_id']
-
-    def __unicode__(self):
-        return '%s %s' % (self.budget_id, self.name)
-
-
-class BudgetItems(models.Model):
-    budget = models.ForeignKey(Budget, to_field='budget_id')
-    budgeti_id = models.CharField(max_length=13, primary_key=True)
-    item = models.IntegerField(null=False)
-    name = models.CharField(max_length=255)
-    base = models.DecimalField(max_digits=10, decimal_places=3)
-    offer = models.DecimalField(max_digits=10, decimal_places=3)
-    register = models.DateTimeField(auto_now=True, null=True)
-    tag = models.BooleanField(default=True)
-
-    audit_log = AuditLog()
-
-    class Meta:
-        ordering = ['name']
-
-    def __unicode__(self):
-        return '%s %s %s %d' % (self.budget_id, self.item,
-                                self.name, self.base)
-
-
-class BudgetSub(models.Model):
-    budget = models.ForeignKey(Budget, to_field='budget_id')
-    budgeti = models.ForeignKey(BudgetItems, to_field='budgeti_id')
-    budgetsub_id = models.CharField(max_length=16, primary_key=True)
-    name = models.CharField(max_length=255)
-    unit = models.ForeignKey(Unidade, to_field='unidad_id')
-    status = models.CharField(default='PE', max_length=2)
-    flag = models.BooleanField(default=True)
-
-    audit_log = AuditLog()
-
-    class Meta:
-        ordering = ['name']
-
-
-class BudgetDetails(models.Model):
-    budget = models.ForeignKey(Budget, to_field='budget_id')
-    budgeti = models.ForeignKey(BudgetItems, to_field='budgeti_id')
-    budgetsub = models.ForeignKey(
-                BudgetSub, to_field='budgetsub_id', null=True, blank=True)
-    analysis = models.ForeignKey(Analysis, to_field='analysis_id')
-    # adetails = models.CharField()
-    quantity = models.FloatField()
-
-    audit_log = AuditLog()
-
-    class Meta:
-        ordering = ['budgeti']
-
-    def __unicode__(self):
-        return '%s %s %f' % (self.budget_id, self.quantity)
-
-
 class AnalysisDetails(models.Model):
     adetails_id = models.CharField(max_length=21, primary_key=True)
     analysis = models.ForeignKey(Analysis, to_field='analysis_id')
@@ -300,3 +214,87 @@ class DAPTools(models.Model):
     def __unicode__(self):
         return '%s %s %d %d' % (self.adetails_id,
                                 self.tools, self.quantity, self.price)
+
+
+class Budget(models.Model):
+    budget_id = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=255)
+    customers = models.ForeignKey(Cliente, to_field='ruccliente_id', null=True)
+    address = models.CharField(max_length=255)
+    country = models.ForeignKey(Pais, to_field='pais_id')
+    departament = models.ForeignKey(Departamento, to_field='departamento_id')
+    province = models.ForeignKey(Provincia, to_field='provincia_id')
+    district = models.ForeignKey(Distrito, to_field='distrito_id')
+    register = models.DateTimeField(auto_now=True, null=True)
+    hourwork = models.IntegerField(default=8)
+    finish = models.DateField()
+    base = models.DecimalField(max_digits=10, decimal_places=3)
+    offer = models.DecimalField(max_digits=10, decimal_places=3)
+    observation = models.TextField()
+    reference = models.CharField(max_length=10, blank=True, null=True)
+    review = models.CharField(max_length=10)
+    version = models.CharField(max_length=5, default='RV0001')
+    status = models.CharField(max_length=2, default='PE')
+    currency = models.ForeignKey(Moneda, to_field='moneda_id')
+    exchange = models.DecimalField(max_digits=5, decimal_places=3, default=0)
+    flag = models.BooleanField(default=True)
+
+    audit_log = AuditLog()
+
+    class Meta:
+        ordering = ['budget_id']
+
+    def __unicode__(self):
+        return '%s %s' % (self.budget_id, self.name)
+
+
+class BudgetItems(models.Model):
+    budget = models.ForeignKey(Budget, to_field='budget_id')
+    budgeti_id = models.CharField(max_length=13, primary_key=True)
+    item = models.IntegerField(null=False)
+    name = models.CharField(max_length=255)
+    base = models.DecimalField(max_digits=10, decimal_places=3)
+    offer = models.DecimalField(max_digits=10, decimal_places=3)
+    register = models.DateTimeField(auto_now=True, null=True)
+    tag = models.BooleanField(default=True)
+
+    audit_log = AuditLog()
+
+    class Meta:
+        ordering = ['name']
+
+    def __unicode__(self):
+        return '%s %s %s %d' % (self.budget_id, self.item,
+                                self.name, self.base)
+
+
+class BudgetSub(models.Model):
+    budget = models.ForeignKey(Budget, to_field='budget_id')
+    budgeti = models.ForeignKey(BudgetItems, to_field='budgeti_id')
+    budgetsub_id = models.CharField(max_length=16, primary_key=True)
+    name = models.CharField(max_length=255)
+    unit = models.ForeignKey(Unidade, to_field='unidad_id')
+    status = models.CharField(default='PE', max_length=2)
+    flag = models.BooleanField(default=True)
+
+    audit_log = AuditLog()
+
+    class Meta:
+        ordering = ['name']
+
+
+class BudgetDetails(models.Model):
+    budget = models.ForeignKey(Budget, to_field='budget_id')
+    budgeti = models.ForeignKey(BudgetItems, to_field='budgeti_id')
+    budgetsub = models.ForeignKey(
+                BudgetSub, to_field='budgetsub_id', null=True, blank=True)
+    adetails = models.ForeignKey(AnalysisDetails, to_field='adetails_id')
+    quantity = models.FloatField()
+
+    audit_log = AuditLog()
+
+    class Meta:
+        ordering = ['budgeti']
+
+    def __unicode__(self):
+        return '%s %s %f' % (self.budget_id, self.quantity)
