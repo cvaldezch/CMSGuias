@@ -201,7 +201,7 @@ class AnalystPrices(JSONResponseMixin, TemplateView):
             return self.render_to_json_response(context)
 
 
-class AnalysisDetails(JSONResponseMixin, TemplateView):
+class AnalysisDetailsView(JSONResponseMixin, TemplateView):
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
@@ -656,57 +656,70 @@ class BudgetItemDetails(JSONResponseMixin, TemplateView):
                         budget_id=kwargs['budget'],
                         version=kwargs['version'])
                     ap = Analysis.objects.get(
-                        analysis_id=request.POST['analysis'])
+                            analysis_id=request.POST['analysis'])
                     # copy bedside analysis price
-                    adc = AnalysisDetails(
-                        adetails_id='%s%s' % (
-                            kwargs['item'],
-                            request.POST['analysis']),
-                        analysis_id=request.POST['analysis'],
-                        name=ap.name,
-                        unit=ap.unit,
-                        performance=ap.performance,
-                        flag=True)
+                    adc = AnalysisDetails()
+                    adc.adetails_id = '%s%s' % (kwargs['item'], request.POST[
+                                        'analysis'])
+                    adc.analysis_id = request.POST['analysis']
+                    adc.name = ap.name
+                    adc.unit = ap.unit
+                    adc.performance = ap.performance
+                    adc.flag = True
                     adc.save()
+                    # copy details analysis materiales, man power and tools
                     # save ap materials
-                    dAPM = APMaterials.objects.filter(request.POST['analysis'])
-                    for m in dAPM:
-                        DAPMaterials(
-                            adetails_id='%s%s' % (kwargs['item'], request.POST[
-                                                    'analysis']),
-                            materials_id=m.materials_id,
-                            quantity=m.quantity,
-                            price=m.price,
-                            flag=True
-                        ).save()
+                    dAPM = APMaterials.objects.filter(analysis_id=request.POST[
+                            'analysis'])
+                    # adetails =
+                    if dAPM:
+                        for m in dAPM:
+                            adm = DAPMaterials()
+                            adm.adetails_id = '%s%s' % (
+                                kwargs['item'],
+                                request.POST['analysis'])
+                            adm.materials_id = m.materials_id
+                            adm.quantity = m.quantity
+                            adm.price = m.price
+                            adm.flag = True
+                            adm.save()
                     dAPMP = APManPower.objects.filter(
                                 analysis_id=request.POST['analysis'])
-                    for mp in dAPMP:
-                        DAPManPower(
-                            adetails_id='%s%s' % (kwargs['item'], request.POST[
-                                'analysis']),
-                            manpower_id=mp.manpower_id,
-                            gang=mp.gang,
-                            quantity=(
-                                (mp.gang * bg.hourwork) / ap.performance),
-                            price=mp.price,
-                            flag=True
-                        ).save()
+                    if dAPMP:
+                        for mp in dAPMP:
+                            admp = DAPManPower()
+                            admp.adetails_id = '%s%s' % (
+                                    kwargs['item'], request.POST['analysis'])
+                            admp.manpower_id = mp.manpower_id
+                            admp.gang = mp.gang
+                            admp.quantity = (
+                                (float(mp.gang) * bd.hourwork) / ap.performance),
+                            admp.price = mp.price
+                            admp.flag = True
+                            admp.save()
                     dAPT = APTools.objects.filter(
                             analysis_id=request.POST['analysis'])
-                    for t in dAPT:
-                        DAPTools(
-                            adetails_id='%s%s' % (kwargs['item'], request.POST[
-                                'analysis']),
-                            tools_id=x.tools_id,
-                            gang=t.gang,
-                            quantity=(
-                                    (t.gang * bd.hourwork) / ap.performance),
-                            price=t.price,
-                            flag=True
-                        ).save()
-                    print bd
-                    # copy details analysis materiales, man power and tools
+                    if dAPT:
+                        for t in dAPT:
+                            dapt = DAPTools()
+                            dapt.adetails_id = '%s%s' % (
+                                kwargs['item'], request.POST['analysis'])
+                            dapt.tools_id = x.tools_id
+                            dapt.gang = t.gang,
+                            dapt.quantity = (
+                                    (float(t.gang) * bd.hourwork) / ap.performance),
+                            dapt.price = t.price,
+                            dapt.flag = True
+                            dapt.save()
+                    bdet = BudgetDetails()
+                    bdet.budget_id = kwargs['budget']
+                    bdet.budgeti_id = kwargs['item']
+                    bdet.adetails_id = '%s%s' % (kwargs['item'], request.POST[
+                                            'analysis'])
+                    bdet.quantity = request.POST['quantity']
+                    bdet.price = ap.total
+                    bdet.discount = request.POST['discount']
+                    bdet.save()
                     context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)

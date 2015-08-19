@@ -290,6 +290,8 @@ class BudgetDetails(models.Model):
                 BudgetSub, to_field='budgetsub_id', null=True, blank=True)
     adetails = models.ForeignKey(AnalysisDetails, to_field='adetails_id')
     quantity = models.FloatField()
+    price = models.DecimalField(max_digits=8, decimal_places=3, default=0)
+    discount = models.DecimalField(max_digits=3, decimal_places=2, default=0)
 
     audit_log = AuditLog()
 

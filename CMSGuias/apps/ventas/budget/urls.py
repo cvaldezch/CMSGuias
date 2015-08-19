@@ -9,7 +9,7 @@ groupAnalysis = patterns(
     '',
     url(r'^add/$', addAnalysisGroup.as_view(), name='addanalysisgroup'),
     url(r'^list/$', AnalysisGroupList.as_view(), name='listanalysisgroup'),
-    url(r'^details/(?P<analysis>\w+)/$', AnalysisDetails.as_view(),
+    url(r'^details/(?P<analysis>\w+)/$', AnalysisDetailsView.as_view(),
         name='detailsamalysis'),
 )
 

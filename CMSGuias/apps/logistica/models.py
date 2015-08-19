@@ -1,10 +1,22 @@
+# -*- coding: utf-8 -*-
+
 from django.db import models
 
-#import CMSGuias
-from CMSGuias.apps.home.models import Almacene, Documentos, FormaPago, Materiale, Moneda, Proveedor, Employee, Brand, Model, Unidade
-from CMSGuias.apps.ventas.models import Proyecto, Subproyecto, Sectore
+# import CMSGuias
+from CMSGuias.apps.home.models import (
+    Almacene,
+    Documentos,
+    FormaPago,
+    Materiale,
+    Moneda,
+    Proveedor,
+    Employee,
+    Brand,
+    Model,
+    Unidade)
+from CMSGuias.apps.ventas.models import Proyecto, Subproyecto
 from CMSGuias.apps.tools import globalVariable
-#from CMSGuias.apps.almacen.models import Suministro
+# from CMSGuias.apps.almacen.models import Suministro
 
 
 class Cotizacion(models.Model):
