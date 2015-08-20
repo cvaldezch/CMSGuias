@@ -48,6 +48,10 @@
           <i class="fa fa-refresh"></i>
           <span>Actualizar</span>
         </button>
+        <button type="button" class="btn waves-effect red lighten-1">
+          <i class="fa fa-trash"></i>
+          <span>Eliminar</span>
+        </button>
       </div>
       {% verbatim %}
         <div class="card-content lime lighten-5" data-ng-show="ashow">
@@ -83,10 +87,14 @@
               <input type="text" class="grey-text text-darken-4" value="{{adda.amount}}" disabled>
             </div>
             <div class="col l2 input-field">
-              <input type="number" data-ng-model="adda.quantity">
+              <input type="number" min="0" data-ng-model="adda.quantity">
               <label>Cantidad</label>
             </div>
-            <div class="col l2">
+            <!-- <div class="col l2 input-field">
+              <input type="number" min="0" max="100" data-ng-model="adda.discount" data-ng-value="0" value="0">
+              <label>Descuento</label>
+            </div> -->
+            <div class="col l1">
               <strong>&nbsp;</strong>
               <button type="button" class="btn waves-effect amber lighten-1 grey-text text-darken-4" data-ng-click="addAnalysis()">
                 <i class="fa fa-plus"></i>
@@ -168,11 +176,11 @@
           {% verbatim %}
             <tr data-ng-repeat="x in details">
               <td>{{$index + 1}}</td>
-              <td>{{x.fields.analysis.fields.name}}</td>
-              <td>{{x.fields.analysis.fields.unit}}</td>
-              <td>{{x.fields.analysis.extras.total}}</td>
+              <td>{{x.fields.adetails.fields.name}}</td>
+              <td>{{x.fields.adetails.fields.unit}}</td>
+              <td>{{x.fields.adetails.extras.total}}</td>
               <td>{{x.fields.quantity}}</td>
-              <td>{{x.fields.analysis.extras.total * x.fields.quantity | number:2}}</td>
+              <td>{{x.fields.adetails.extras.total * x.fields.quantity | number:2}}</td>
             </tr>
           {% endverbatim %}
         </tbody>

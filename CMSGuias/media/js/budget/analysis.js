@@ -1,6 +1,7 @@
-var clearEdit, delAnalysis, editAnalysis, openGroup, openUnit, saveAnalysis, searchAnalysis, searchChange, showAnalysis;
+var clearEdit, delAnalysis, editAnalysis, openGroup, openUnit, saveAnalysis, searchAnalysis, searchChange;
 
 $(function() {
+  var showAnalysis;
   $("[name=name]").restrictLength($("#pres-max-length"));
   $(".showAnalysis").on("click", showAnalysis);
   $(".agroup").on("click", openGroup);
@@ -12,11 +13,12 @@ $(function() {
   $(document).on("click", ".bdel", delAnalysis);
   $(".bedit, .bdel").css("cursor", "pointer");
   $(".analysisClose").on("click", clearEdit);
-});
-
-showAnalysis = function() {
+  $('select').material_select();
+  $('.dropdown-button').dropdown();
+  return;
+  showAnalysis = function() {};
   $("#manalysis").modal("show");
-};
+});
 
 openGroup = function() {
   var interval, url, win;
@@ -34,7 +36,7 @@ openGroup = function() {
           $group = $("[name=group]");
           $group.empty();
           Mustache.tags = new Array("[[", "]]");
-          $group.html(Mustache.render("[[#list]]<option value=\"[[agroup_id]]\">[[ name ]]</option>[[/list]]", response));
+          $group.html(Mustache.render("[[#list]]<option value=[[agroup_id]]\">[[ name ]]</option>[[/list]]", response));
         }
       });
     }
@@ -90,16 +92,15 @@ saveAnalysis = function(event) {
       }
       $.post("", context, function(response) {
         if (response.status) {
-          $().toastmessage("showSuccessToast", "Se guardaron los camnbios correctamente.");
+          swal("Felicidades!", "Se guardaron los camnbios correctamente.", "success");
           clearEdit();
-          setTimeout((function() {
+          setTimeout(function() {
             location.reload();
-          }), 2600);
+          }, 2600);
         } else {
-          $().toastmessage("showErrorToast", "Error al registrar analysis");
+          swal("Error", "Error al registrar analysis", "error");
         }
       }, "json");
-      return false;
     }
   });
 };
@@ -136,7 +137,7 @@ searchAnalysis = function() {
       Mustache.tags = new Array("[[", "]]");
       $tb.html(Mustache.render(template, response));
     } else {
-      $().toastmessage("showErrorToast", "Error al buscar. " + response.raise);
+      swal("Alerta!", "Error al buscar. " + response.raise, "warning");
     }
   });
 };
@@ -169,32 +170,30 @@ editAnalysis = function(event) {
 delAnalysis = function(event) {
   var btn;
   btn = this;
-  $().toastmessage("showToast", {
-    text: "Realmente desea eliminar el Analisis de Precio Unitario, debe tener en cuenta que se eliminara permanentemente.<br> Eliminar Analisis?",
-    type: "confirm",
-    sticky: true,
-    buttons: [
-      {
-        value: "Si"
-      }, {
-        value: "No"
-      }
-    ],
-    success: function(result) {
-      var context;
-      if (result === "Si") {
-        context = new Object;
-        context.delAnalysis = true;
-        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
-        context.analysis = btn.getAttribute("data-value");
-        $.post("", context, function(response) {
-          if (response.status) {
-            location.reload();
-          } else {
-            $().toastmessage("showErrorToast", "Error al eliminar el Anlisis de Precio");
-          }
-        });
-      }
+  swal({
+    title: "Eliminar Analisis?",
+    text: "Realmente desea eliminar el Analisis de Precio Unitario?",
+    type: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#dd6b55",
+    confirmButtonText: "Si, eliminar!",
+    cancelButtonText: "No, Cancelar",
+    closeOnConfirm: true,
+    closeOnCancel: true
+  }, function(isConfirm) {
+    var context;
+    if (isConfirm) {
+      context = new Object;
+      context.delAnalysis = true;
+      context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
+      context.analysis = btn.getAttribute("data-value");
+      $.post("", context, function(response) {
+        if (response.status) {
+          location.reload();
+        } else {
+          swal("Error", "Error al eliminar el Anlisis de Precio", "warning");
+        }
+      });
     }
   });
 };

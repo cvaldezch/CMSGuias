@@ -10,16 +10,18 @@ $ ->
   $(document).on "click", ".bdel", delAnalysis
   $(".bedit, .bdel").css "cursor", "pointer"
   $(".analysisClose").on "click", clearEdit
+  $('select').material_select()
+  $('.dropdown-button').dropdown()
   return
 
-showAnalysis = ->
+  showAnalysis = ->
   $("#manalysis").modal "show"
   return
 
 openGroup = ->
   url = $(this).attr("href")
-  win = window.open(url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600")
-  interval = window.setInterval(->
+  win = window.open url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600"
+  interval = window.setInterval ->
     if not win? or win.closed
       window.clearInterval interval
       data = new Object()
@@ -29,17 +31,16 @@ openGroup = ->
           $group = $("[name=group]")
           $group.empty()
           Mustache.tags = new Array("[[", "]]")
-          $group.html Mustache.render("[[#list]]<option value=\"[[agroup_id]]\">[[ name ]]</option>[[/list]]", response)
+          $group.html Mustache.render """[[#list]]<option value=[[agroup_id]]">[[ name ]]</option>[[/list]]""", response
         return
-
     return
-  , 1000)
+  , 1000
   win
 
 openUnit = ->
   url = $(this).attr("href")
   win = window.open(url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600")
-  interval = window.setInterval(->
+  interval = window.setInterval ->
     if not win? or win.closed
       window.clearInterval interval
       data = new Object()
@@ -49,11 +50,10 @@ openUnit = ->
           $group = $("[name=unit]")
           $group.empty()
           Mustache.tags = new Array("[[", "]]")
-          $group.html Mustache.render("[[#unit]]<option value=\"[[unidad_id]]\">[[ uninom ]]</option>[[/unit]]", response)
+          $group.html Mustache.render """[[#unit]]<option value="[[unidad_id]]">[[ uninom ]]</option>[[/unit]]""", response
         return
-
     return
-  , 1000)
+  , 1000
   win
 
 saveAnalysis = (event) ->
@@ -62,7 +62,6 @@ saveAnalysis = (event) ->
     errorMessagePosition: "top"
     onError: ->
       false
-
     onSuccess: ->
       event.preventDefault()
       #console.log "valid"
@@ -79,18 +78,17 @@ saveAnalysis = (event) ->
         context.analysisnew = true
       $.post "", context, (response) ->
         if response.status
-          $().toastmessage "showSuccessToast", "Se guardaron los camnbios correctamente."
+          swal "Felicidades!", "Se guardaron los camnbios correctamente.", "success"
           clearEdit()
-          setTimeout (->
+          setTimeout ->
             location.reload()
             return
-          ), 2600
+          , 2600
         else
-          $().toastmessage "showErrorToast", "Error al registrar analysis"
+          swal "Error", "Error al registrar analysis", "error"
         return
       , "json"
-      false
-
+      return
   return
 
 searchAnalysis = ->
@@ -105,22 +103,21 @@ searchAnalysis = ->
   else if rdo is "1"
     context.name = $("[name=sname]").val()
   else context.group = $("[name=sgroup]").val()  if rdo is "2"
+
   context.list = true
   count = 1
   $.getJSON "", context, (response) ->
     if response.status
       response.index = ->
         count++
-
-      template = "[[#analysis]]<tr><td>[[ index ]]</td><td>[[ code ]]</td><td>[[ name ]]</td><td>[[ unit ]]</td><td>[[ performance ]]</td><td>[[ group ]]</td><td><div class=\"dropdown\"><button class=\"btn btn-default dropdown-toggle btn-xs\" type=\"button\" data-toggle=\"dropdown\" aria-expanded=\"true\"><span class=\"caret\"></span></button><ul class=\"dropdown-menu\" role=\"menu\"><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Detalle</a></li><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Editar</a></li><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Eliminar</a></li></ul></div></td></tr>[[/analysis]]"
+      template = """[[#analysis]]<tr><td>[[ index ]]</td><td>[[ code ]]</td><td>[[ name ]]</td><td>[[ unit ]]</td><td>[[ performance ]]</td><td>[[ group ]]</td><td><div class="dropdown"><button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown" aria-expanded="true"><span class="caret"></span></button><ul class="dropdown-menu" role="menu"><li role="presentation"><a role="menuitem" tabindex="-1" href="#">Detalle</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">Editar</a></li><li role="presentation"><a role="menuitem" tabindex="-1" href="#">Eliminar</a></li></ul></div></td></tr>[[/analysis]]"""
       $tb = $("table > tbody")
       $tb.empty()
       Mustache.tags = new Array("[[", "]]")
       $tb.html Mustache.render(template, response)
     else
-      $().toastmessage "showErrorToast", "Error al buscar. " + response.raise
+      swal "Alerta!", "Error al buscar. #{response.raise}", "warning"
     return
-
   return
 
 searchChange = (event) ->
@@ -151,28 +148,30 @@ editAnalysis = (event) ->
 # Delete analysis
 delAnalysis = (event) ->
   btn = this
-  $().toastmessage "showToast",
-    text: "Realmente desea eliminar el Analisis de Precio Unitario, debe tener en cuenta que se eliminara permanentemente.<br> Eliminar Analisis?"
-    type: "confirm"
-    sticky: true
-    buttons: [
-      {value: "Si"}
-      {value: "No"}
-    ]
-    success: (result) ->
-      if result is "Si"
-        context = new Object
-        context.delAnalysis = true
-        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
-        context.analysis = btn.getAttribute "data-value"
-        $.post "", context, (response) ->
-          if response.status
-            location.reload()
-            return
-          else
-            $().toastmessage "showErrorToast", "Error al eliminar el Anlisis de Precio"
-            return
-        return
+  swal
+    title: "Eliminar Analisis?"
+    text: "Realmente desea eliminar el Analisis de Precio Unitario?"
+    type: "warning"
+    showCancelButton: true
+    confirmButtonColor: "#dd6b55"
+    confirmButtonText: "Si, eliminar!"
+    cancelButtonText: "No, Cancelar"
+    closeOnConfirm: true
+    closeOnCancel: true
+  , (isConfirm) ->
+    if isConfirm
+      context = new Object
+      context.delAnalysis = true
+      context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+      context.analysis = btn.getAttribute "data-value"
+      $.post "", context, (response) ->
+        if response.status
+          location.reload()
+          return
+        else
+          swal "Error", "Error al eliminar el Anlisis de Precio", "warning"
+          return
+      return
   return
 
 clearEdit = (event) ->

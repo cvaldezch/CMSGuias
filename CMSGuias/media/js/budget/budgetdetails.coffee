@@ -84,6 +84,8 @@ app.controller 'bidCtrl', ($scope, $http, $cookies) ->
     if typeof(data.quantity) is "undefined"
       swal "Alerta!", "No se a ingresado una cantidad para el analisis.", "warning"
       return false
+    if typeof(data.discount) is "undefined"
+      data.discount = 0
     data.addAnalysis = true
     $http
       method: "post"

@@ -1,126 +1,113 @@
-{% extends "base.html" %}
+{% extends "basemd.html" %}
 {% block title %}
     Analysis
 {% endblock title %}
 {% block menu %}
-    {% include "menus/sale.htm" %}
+    {% include "menus/budget.htm" %}
 {% endblock menu %}
 {% block content %}
 <div class="container">
   <div class="well">
     <h3>Ánalisis de Precio Unitario</h3>
-    <nav class="btn-group">
-        <button type="button" class="btn btn-warning showAnalysis">
-            <span class="fa fa-plus"></span>
-            Nuevo Analisis
-        </button>
-    </nav>
-      <div class="panel panel-warning">
-          <div class="panel-footer">
-            Lista de Analisis de Precios
-              <div class="row">
-                  <div class="col-md-12">
-                    <div class="form-group">
-                        <label class="inline-radio">
-                            <input type="radio" name="ssearch" value="0">
-                            Código
-                        </label>
-                        <label class="inline-radio">
-                            <input type="radio" name="ssearch" value="1">
-                            Nombre
-                        </label>
-                        <label class="inline-radio">
-                            <input type="radio" name="ssearch" value="2">
-                            Grupo
-                        </label>
-                    </div>
-                  </div>
-                  <div class="col-md-2">
-                    <div class="form-group">
-                        <label class="control-label">Código</label>
-                        <input type="text" name="scode" class="form-control input-sm" disabled>
-                    </div>
-                  </div>
-                  <div class="col-md-5">
-                    <div class="form-group">
-                        <label class="control-label">Nombre</label>
-                        <input type="text" name="sname" class="form-control input-sm" disabled>
-                    </div>
-                  </div>
-                  <div class="col-md-3">
-                    <div class="form-group">
-                      <label class="control-label">Grupo</label>
-                      <select name="sgroup" class="form-control input-sm" disabled>
-                          {% for x in group %}
-                            <option value="{{ x.agroup_id }}">{{ x.name }}</option>
-                          {% endfor %}
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-md-1">
-                    <div class="form-group">
-                        <label class="control-label">Buscar</label>
-                        <button class="btn btn-sm btn-warning btn-search">
-                            <span class="fa fa-search"></span>
-                        </button>
-                    </div>
-                  </div>
+      <div class="card-panel">
+        <div class="card-action">
+          <div class="row">
+            <div class="col l12 m12 s12">
+              <button type="button" class="btn grey lighten-3 grey-text text-darken-3 showAnalysis">
+                <span class="fa fa-plus"></span>
+                Nuevo Analisis
+              </button>
+            </div>
+            <div class="col l12 m12 s12">
+              <p>
+                <input type="radio" class="with-gap" name="ssearch" id="s1" value="0">
+                <label for="s1">Código</label>
+                <input type="radio" class="with-gap" name="ssearch" id="s2" value="1">
+                <label for="s2">Nombre</label>
+                <input type="radio" class="with-gap" name="ssearch" id="s3" value="2">
+                <label for="s3">Grupo</label>
+              </p>
+            </div>
+            <div class="col l2 m3 s12">
+              <div class="input-field">
+                <input type="text" name="scode" disabled>
+                <label>Código</label>
               </div>
+            </div>
+            <div class="col l6 m6 s12">
+              <div class="input-field">
+                <input type="text" name="sname" disabled>
+                <label class="control-label">Nombre</label>
+              </div>
+            </div>
+            <div class="col l3 m3 s12">
+                <label>Grupo</label>
+                <select name="sgroup" class="browser-default" disabled>
+                  {% for x in group %}
+                    <option value="{{ x.agroup_id }}">{{ x.name }}</option>
+                  {% endfor %}
+                </select>
+            </div>
+            <div class="col l1 m1 s12">
+              <label>Buscar</label>
+              <button type="button" class="btn btn-sm btn-warning btn-search">
+                <span class="fa fa-search"></span>
+              </button>
+            </div>
           </div>
-          <div class="table-responsive">
-            <table class="table table-hover table-condensed">
-              <thead>
-                  <tr class="brand-warning">
-                      <th>Item</th>
-                      <th>Código</th>
-                      <th>Nombre</th>
-                      <th>Unidad</th>
-                      <th>Grupo</th>
-                      <th>Rendimiento</th>
-                      <th>P. Unitario</th>
-                      <th>Acciones</th>
-                  </tr>
-              </thead>
-              <tbody>
-                {% for x in analysis %}
-                  <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ x.analysis_id }}</td>
-                    <td>{{ x.name }}</td>
-                    <td>{{ x.unit.uninom }}</td>
-                    <td>{{ x.group.name }}</td>
-                    <td>{{ x.performance|safe }}</td>
-                    <td>{{ x.total|safe }}</td>
-                    <td class="text-center">
-                      <div class="dropdown">
-                        <button class="btn btn-danger dropdown-toggle btn-xs" type="button" data-toggle="dropdown" aria-expanded="true">
-                          <span class="fa fa-gears"></span>
-                          <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                          <li role="presentation" class="text-left">
-                            <a role="menuitem" tabindex="-1" href="{% url 'detailsamalysis' x.analysis_id %}"><span class="fa fa-list-alt"></span> Detalle</a>
-                          </li>
-                          <li role="presentation" class="text-left">
-                            <a role="menuitem" tabindex="-1" class="bedit" data-value="{{ x.analysis_id }}" data-group="{{ x.group_id }}" data-name="{{ x.name }}" data-unit="{{ x.unit_id }}" data-performance="{{ x.performance|safe }}"><span class="fa fa-edit"></span> Editar</a>
-                          </li>
-                          <li role="presentation" class="text-left">
-                            <a role="menuitem" tabindex="-1" class="bdel" data-value="{{ x.analysis_id }}"><span class="fa fa-trash"></span> Eliminar</a>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                {% empty %}
-                  <tr>
-                    <th colspan="6">
-                        No se han encontrado analisis de precios.
-                    </th>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover table-condensed">
+            <thead>
+                <tr class="brand-warning">
+                    <th>Item</th>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Unidad</th>
+                    <th>Grupo</th>
+                    <th>Rendimiento</th>
+                    <th>P. Unitario</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for x in analysis %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ x.analysis_id }}</td>
+                  <td>{{ x.name }}</td>
+                  <td>{{ x.unit.uninom }}</td>
+                  <td>{{ x.group.name }}</td>
+                  <td>{{ x.performance|safe }}</td>
+                  <td>{{ x.total|safe }}</td>
+                  <td class="text-center">
+                      <a class="btn" href="#" class="dropdown-button btn" data-activates="dropdown">
+                        <i class="fa fa-gears"></i>
+                        <span class="caret"></span>
+                      </a>
+                      <ul class="dropdown-content" id="dropdown">
+                        <li class="text-left">
+                          <a role="menuitem" tabindex="-1" href="{% url 'detailsamalysis' x.analysis_id %}"><span class="fa fa-list-alt"></span> Detalle</a>
+                        </li>
+                        <li class="text-left">
+                          <a role="menuitem" tabindex="-1" class="bedit" data-value="{{ x.analysis_id }}" data-group="{{ x.group_id }}" data-name="{{ x.name }}" data-unit="{{ x.unit_id }}" data-performance="{{ x.performance|safe }}"><span class="fa fa-edit"></span> Editar</a>
+                        </li>
+                        <li class="text-left">
+                          <a role="menuitem" tabindex="-1" class="bdel" data-value="{{ x.analysis_id }}"><span class="fa fa-trash"></span> Eliminar</a>
+                        </li>
+                      </ul>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <th colspan="6">
+                      No se han encontrado analisis de precios.
+                  </th>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
   </div>
 </div>

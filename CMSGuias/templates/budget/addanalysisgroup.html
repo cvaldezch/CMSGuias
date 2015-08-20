@@ -1,10 +1,14 @@
-{% extends "base.html" %}
+{% extends "basemd.html" %}
+{% block menu %}
+    {% include "menus/budget.htm" %}
+{% endblock menu %}
 {% block content %}
 <div class="container">
-    <div class="well">
+    <div class="card-panel hoverable">
         <h3>
             Grupo de Analisis
         </h3>
+        <br>
         <div class="panel panel-warning">
             {% if raise %}
                 <div class="panel-footer">
@@ -15,15 +19,15 @@
                 {% csrf_token %}
                 <div class="panel-body">
                     <div class="form">
-                        <div class="form-group">
-                            <label class="control-label">Nombre de Grupo</label>
-                            <input type="text" name="name" class="form-control input-sm" REQUIRED>
+                        <div class="input-field">
+                            <input type="text" name="name" REQUIRED>
+                            <label>Nombre de Grupo</label>
                         </div>
                         <div class="form-group">
-                            <button type="reset" class="btn btn-default">
+                            <button type="reset" class="btn waves-effect grey lighten-5 grey-text text-darken-3">
                                 <span class="fa fa-trash"></span> Limpiar
                             </button>
-                            <button type="submit" class="btn btn-warning">
+                            <button type="submit" class="btn waves-effect light-blue accent-4">
                                 <span class="fa fa-save"></span> Guardar Cambios
                             </button>
                         </div>

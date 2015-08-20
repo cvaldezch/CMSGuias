@@ -606,7 +606,7 @@ class BudgetItemDetails(JSONResponseMixin, TemplateView):
                                     budgeti_id=kwargs['item']),
                                 indent=4,
                                 relations={
-                                    'analysis': {
+                                    'adetails': {
                                         'extras': ('total',)
                                     }
                                 }))
@@ -656,11 +656,11 @@ class BudgetItemDetails(JSONResponseMixin, TemplateView):
                         budget_id=kwargs['budget'],
                         version=kwargs['version'])
                     ap = Analysis.objects.get(
-                            analysis_id=request.POST['analysis'])
+                        analysis_id=request.POST['analysis'])
                     # copy bedside analysis price
                     adc = AnalysisDetails()
                     adc.adetails_id = '%s%s' % (kwargs['item'], request.POST[
-                                        'analysis'])
+                        'analysis'])
                     adc.analysis_id = request.POST['analysis']
                     adc.name = ap.name
                     adc.unit = ap.unit
@@ -670,8 +670,7 @@ class BudgetItemDetails(JSONResponseMixin, TemplateView):
                     # copy details analysis materiales, man power and tools
                     # save ap materials
                     dAPM = APMaterials.objects.filter(analysis_id=request.POST[
-                            'analysis'])
-                    # adetails =
+                        'analysis'])
                     if dAPM:
                         for m in dAPM:
                             adm = DAPMaterials()
@@ -684,41 +683,44 @@ class BudgetItemDetails(JSONResponseMixin, TemplateView):
                             adm.flag = True
                             adm.save()
                     dAPMP = APManPower.objects.filter(
-                                analysis_id=request.POST['analysis'])
+                        analysis_id=request.POST['analysis'])
                     if dAPMP:
                         for mp in dAPMP:
                             admp = DAPManPower()
                             admp.adetails_id = '%s%s' % (
-                                    kwargs['item'], request.POST['analysis'])
+                                kwargs['item'], request.POST['analysis'])
                             admp.manpower_id = mp.manpower_id
                             admp.gang = mp.gang
                             admp.quantity = (
-                                (float(mp.gang) * bd.hourwork) / ap.performance),
+                                (float(
+                                    mp.gang) * bd.hourwork) / ap.performance)
                             admp.price = mp.price
                             admp.flag = True
                             admp.save()
                     dAPT = APTools.objects.filter(
-                            analysis_id=request.POST['analysis'])
+                        analysis_id=request.POST['analysis'])
                     if dAPT:
                         for t in dAPT:
                             dapt = DAPTools()
                             dapt.adetails_id = '%s%s' % (
                                 kwargs['item'], request.POST['analysis'])
                             dapt.tools_id = x.tools_id
-                            dapt.gang = t.gang,
+                            dapt.gang = t.gang
                             dapt.quantity = (
-                                    (float(t.gang) * bd.hourwork) / ap.performance),
-                            dapt.price = t.price,
+                                (float(t.gang) * bd.hourwork) / ap.performance)
+                            dapt.price = t.price
                             dapt.flag = True
                             dapt.save()
+                    # Save budget item details
                     bdet = BudgetDetails()
                     bdet.budget_id = kwargs['budget']
                     bdet.budgeti_id = kwargs['item']
                     bdet.adetails_id = '%s%s' % (kwargs['item'], request.POST[
-                                            'analysis'])
+                        'analysis'])
                     bdet.quantity = request.POST['quantity']
                     bdet.price = ap.total
-                    bdet.discount = request.POST['discount']
+                    bdet.discount = request.POST[
+                        'discount'] if 'discount' in request.POST else 0
                     bdet.save()
                     context['status'] = True
             except ObjectDoesNotExist as e:
