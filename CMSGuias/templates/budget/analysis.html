@@ -50,7 +50,7 @@
             </div>
             <div class="col l1 m1 s12">
               <label>Buscar</label>
-              <button type="button" class="btn btn-sm btn-warning btn-search">
+              <button type="button" class="btn green lighten-1 btn-search">
                 <span class="fa fa-search"></span>
               </button>
             </div>
@@ -78,10 +78,10 @@
                   <td>{{ x.name }}</td>
                   <td>{{ x.unit.uninom }}</td>
                   <td>{{ x.group.name }}</td>
-                  <td>{{ x.performance|safe }}</td>
+                  <td class="center-align">{{ x.performance|safe }}</td>
                   <td>{{ x.total|safe }}</td>
                   <td class="text-center">
-                      <a class="btn" href="#" class="dropdown-button btn" data-activates="dropdown">
+                      <a href="#!" class="dropdown-button btn yellow darken-2" data-activates="dropdown">
                         <i class="fa fa-gears"></i>
                         <span class="caret"></span>
                       </a>

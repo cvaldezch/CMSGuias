@@ -118,7 +118,8 @@ class AnalystPrices(JSONResponseMixin, TemplateView):
                                 'name': x.name,
                                 'unit': x.unit.uninom,
                                 'performance': x.performance,
-                                'group': x.group.name
+                                'group': x.group.name,
+                                'total': x.total
                             }
                             for x in analysis
                         ]

@@ -14,7 +14,9 @@ $(function() {
   $(".bedit, .bdel").css("cursor", "pointer");
   $(".analysisClose").on("click", clearEdit);
   $('select').material_select();
-  $('.dropdown-button').dropdown();
+  $('.dropdown-button').dropdown({
+    constrain_width: 200
+  });
   return;
   showAnalysis = function() {};
   $("#manalysis").modal("show");
@@ -131,11 +133,14 @@ searchAnalysis = function() {
       response.index = function() {
         return count++;
       };
-      template = "[[#analysis]]<tr><td>[[ index ]]</td><td>[[ code ]]</td><td>[[ name ]]</td><td>[[ unit ]]</td><td>[[ performance ]]</td><td>[[ group ]]</td><td><div class=\"dropdown\"><button class=\"btn btn-default dropdown-toggle btn-xs\" type=\"button\" data-toggle=\"dropdown\" aria-expanded=\"true\"><span class=\"caret\"></span></button><ul class=\"dropdown-menu\" role=\"menu\"><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Detalle</a></li><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Editar</a></li><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Eliminar</a></li></ul></div></td></tr>[[/analysis]]";
+      template = "[[#analysis]]<tr><td>[[ index ]]</td><td>[[ code ]]</td><td>[[ name ]]</td><td>[[ unit ]]</td><td>[[ group ]]</td><td class=\"center-align\">[[ performance ]]</td><td>[[ total ]]</td><td><button class=\"dropdown-button btn yellow darken-2\" type=\"button\" data-activates=\"dropdown\"><i class=\"fa fa-gears\"></i></button><ul class=\"dropdown-content\" id=\"dropdown\"><li class=\"text-left\"><a role=\"menuitem\" tabindex=\"-1\" href=\"/sales/budget/analysis/group/details/[[code]]/\"><span class=\"fa fa-list-alt\"></span> Detalle</a></li><li class=\"text-left\"><a role=\"menuitem\" tabindex=\"-1\" class=\"bedit\" data-value=\"[[code]]\" data-group=\"[[group]]\" data-name=\"[[name]]\" data-unit=\"[[unit]]\" data-performance=\"[[performance]]\"><span class=\"fa fa-edit\"></span> Editar</a></li><li class=\"text-left\"><a role=\"menuitem\" tabindex=\"-1\" class=\"bdel\" data-value=\"[[analysis_id]]\"><span class=\"fa fa-trash\"></span> Eliminar</a></li></ul></td></tr>[[/analysis]]";
       $tb = $("table > tbody");
       $tb.empty();
       Mustache.tags = new Array("[[", "]]");
       $tb.html(Mustache.render(template, response));
+      $('.dropdown-button').dropdown({
+        constrain_width: 200
+      });
     } else {
       swal("Alerta!", "Error al buscar. " + response.raise, "warning");
     }

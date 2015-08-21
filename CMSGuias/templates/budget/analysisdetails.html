@@ -1,58 +1,62 @@
-{% extends "base.html" %}
+{% extends "basemd.html" %}
 {% block title %}
     Analysis Details
 {% endblock title %}
 {% block menu %}
-    {% include "menus/sale.htm" %}
+    {% include "menus/budget.htm" %}
 {% endblock menu %}
 {% block content %}
 <div class="container">
-    <div class="well">
+    <div class="card-panel">
         <h3>
             Detalle de Analisis de Precio
         </h3>
-        <div class="panel panel-warning">
-          <a href="{% url 'analysisprice_view' %}" class="btn btn-default btn-xs">
-            <span class="fa fa-chevron-left"></span>
-            <span class="fa fa-class">Regresar</span>
-          </a>
-            <div class="panel-footer">
-                <dl class="dl-horizontal">
-                    <dt>Código</dt>
-                    <dd>{{ analysis.analysis_id }}</dd>
-                    <dt>Nombre</dt>
-                    <dd>{{ analysis.name }}</dd>
-                    <dt>Unidad</dt>
-                    <dd>{{ analysis.unit.uninom }}</dd>
-                    <dt>Rendimiento</dt>
-                    <dd>
-                        <span class="performance">{{ analysis.performance|safe }}</span> <span>x día.</span>
-                    </dd>
-                    <dt>Precio Unitario</dt>
-                    <dd>
-                        <span class="tanalysis">{{ analysis.total|safe }}</span>
-                    </dd>
-                </dl>
+        <div class="card">
+            <div class="card-action">
+                <a href="{% url 'analysisprice_view' %}" class="btn waves-effect grey lighten-5 grey-text text-darken-3">
+                    <i class="fa fa-chevron-left"></i>
+                    <span>Regresar</span>
+                </a>
             </div>
-            <div role="tabpanel">
+            <div class="card-content">
+                <p>
+                    <strong>Código: </strong> {{ analysis.analysis_id }}
+                </p>
+                <p>
+                    <strong>Descripción: </strong> {{ analysis.name }}
+                </p>
+                <p>
+                    <strong>Rendimiento</strong>
+                    <span class="performance">{{ analysis.performance|safe }}</span>
+                    <span>x 8h.</span>
+                </p>
+                <p>
+                    <strong>Unidad: </strong> {{ analysis.unit.uninom }}
+                </p>
+                <p>
+                    <strong>Precio Unitario: </strong>
+                    <span class="tanalysis">{{ analysis.total|safe }}</span>
+                </p>
+            </div>
+            <div role="row">
                 <!-- Nav tabs -->
-                <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation">
-                        <a href="#materials" aria-controls="materials" role="tab" data-toggle="tab">MATERIALES</a>
+                <ul class="tabs">
+                    <li class="tab col4 red grey-text text-lighten-4">
+                        <a href="#materials">MATERIALES</a>
                     </li>
-                    <li role="presentation">
-                        <a href="#manpower" aria-controls="manpower" role="tab" data-toggle="tab">MANO DE OBRA</a>
+                    <li class="tab col4">
+                        <a href="#manpower">MANO DE OBRA</a>
                     </li>
-                    <li role="presentation">
-                        <a href="#tools" aria-controls="tools" role="tab" data-toggle="tab">HERRAMIENTAS</a>
+                    <li class="tab col4">
+                        <a href="#tools">HERRAMIENTAS</a>
                     </li>
                 </ul>
                 <!-- Tab panes -->
                 <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane" id="materials">
+                    <div class="tab-pane" id="materials">
                         <div class="panel panel-info">
-                            <div class="panel-footer">
-                                <div class="btn-group">
+                            <div class="card">
+                                <div class="card-action">
                                     <button class="btn btn-sm btn-default bshowaddmat" type="button">
                                         <span class="fa fa-plus"></span>
                                         <span>Material</span>
@@ -72,26 +76,26 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="panel-body">
+                            <div class="card">
                                 <!-- div add materials -->
-                                <div class="materialsadd">
+                                <div class="materialsadd card-content">
                                     <div class="row">
-                                        <div class="col-md-6">
+                                        <div class="col l6">
                                             <div class="form-group">
                                                 <label class="control-label">Materiales</label>
                                                 <select name="materials" id="materials" class="form-control chosen-select"></select>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col l6">
                                             <div class="form-group">
                                                 <label class="control-label">Medida</label>
                                                 <select name="measure" id="" class="form-control chosen-select"></select>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col l6">
                                             <div class="alert alert-block alert-warning" name="summary"></div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col l6">
                                             <div class="form-group">
                                                 <label class="controll-label">Cantidad</label>
                                                 <input type="number" name="mquantity" step="0.10" min="0" class="form-control input-sm">
@@ -155,7 +159,7 @@
                             </div>
                         </div>
                     </div>
-                    <div role="tabpanel" class="tab-pane" id="manpower">
+                    <div class="tab-pane" id="manpower">
                         <div class="panel panel-primary">
                             <div class="panel-footer">
                                 <div class="btn-group">
@@ -250,7 +254,7 @@
                             </div>
                         </div>
                     </div>
-                    <div role="tabpanel" class="tab-pane" id="tools">
+                    <div class="tab-pane" id="tools">
                         <div class="panel panel-info">
                             <div class="panel-footer">
                                 <div class="btn-group">
