@@ -37,6 +37,7 @@ $(document).ready(function() {
   $(document).on("click", ".btndeltool", delTools);
   $(".btoolsrefresh").on("click", refreshTools);
   $(".bshowaddtool").on("click", showaddTools);
+  $(".indicator").css("background", "#2d2d2d");
 });
 
 getMaterialsAll = function(event) {
@@ -49,7 +50,7 @@ getMaterialsAll = function(event) {
     if (response.status) {
       $op = $("[name=materials]");
       $op.empty();
-      template = "{{#names}}<option value=\"{{ name }}\">{{ name }}</option>{{/names}}";
+      template = "{{#names}}<option value=\"{{name}}\">{{name}}</option>{{/names}}";
       $op.html(Mustache.render(template, response));
       $op.trigger("chosen:updated");
       return getmeasure();
@@ -68,7 +69,7 @@ getmeasure = function(event) {
       $se = $("[name=measure]");
       $se.empty();
       $se.append("<option></option>");
-      template = "{{#meter}} <option value=\"{{code}}\">{{measure}}</option> {{/meter}}";
+      template = "{{#meter}}<option value=\"{{code}}\">{{measure}}</option> {{/meter}}";
       $se.html(Mustache.render(template, response));
       $se.trigger("chosen:updated");
       setTimeout(function() {
@@ -95,7 +96,7 @@ getsummary = function(event) {
       }
     });
   } else {
-    $().toastmessage("showWarningToast", "El código del material no es valido.");
+    swal("Alerta!", "El código del material no es valido.", "warning");
   }
 };
 
@@ -124,17 +125,17 @@ addMaterials = function(event) {
           if (response.status) {
             getListMaterials();
           } else {
-            $().toastmessage("showErrorToast", "Error al guardar los cambios. " + response.raise);
+            swal("Error!", "Error al guardar los cambios. " + response.raise, "error");
           }
         }, "json");
       } else {
-        $().toastmessage("showWarningToast", "Precio invalido.");
+        swal("Alerta!", "Precio invalido.", "warning");
       }
     } else {
-      $().toastmessage("showWarningToast", "Cantidad invalida.");
+      swal("Alerta!", "Cantidad invalida.", "warning");
     }
   } else {
-    $().toastmessage("showWarningToast", "Código de material incorrecto.");
+    swal("Alerta!", "Código de material incorrecto.", "warning");
   }
 };
 
@@ -155,7 +156,7 @@ getListMaterials = function(event) {
       $tbl.html(Mustache.render(template, response));
       getUnitaryPrice();
     } else {
-      $().toastmessage("showErrorToast", "Error al Obtener la lista. " + response.raise + ".");
+      swal("Alerta!", "Error al Obtener la lista. " + response.raise + ".", "warning");
     }
   });
 };
@@ -177,7 +178,7 @@ openNewMaterial = function(event) {
   return win;
 };
 
-showEditMaterials = function(event) {
+showEditMaterials = function() {
   var $td, $tr, price, quantity;
   if ($(".edit-tmp-quantity").length) {
     $(".edit-tmp-quantity").parent("td").html($(".edit-tmp-quantity").val());
@@ -187,6 +188,7 @@ showEditMaterials = function(event) {
   }
   $tr = $(this);
   $td = $tr.find("td");
+  console.log($td);
   quantity = $td.eq(4).text();
   $(".btn-edit-materials").attr("disabled", true);
   $td.eq(7).find("button").attr("disabled", false);
@@ -207,11 +209,11 @@ editMaterials = function(event) {
   context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
   try {
     if (!context.quantity.match(/^[+]?[0-9]+[\.[0-9]+]?/)) {
-      $().toastmessage("showWarningToast", "No se a ingreso un número, cantidad incorrecta.");
+      swal("Alerta!", "No se a ingreso un número, cantidad incorrecta.", "warning");
       return false;
     }
     if (!context.price.match(/^[+]?[0-9]+[\.[0-9]+]?/)) {
-      $().toastmessage("showWarningToast", "No se a ingreso un número, precio incorrecto.");
+      swal("Alerta!", "No se a ingreso un número, precio incorrecto.", "warning");
       return false;
     }
     context.editMaterials = true;
@@ -223,12 +225,12 @@ editMaterials = function(event) {
         $(".edit-tmp-quantity").parent("td").html($(".edit-tmp-quantity").val());
         $(".edit-tmp-price").parent("td").html($(".edit-tmp-price").val());
       } else {
-        $().toastmessage("showErrorToast", "No se a podido editar. " + response.raise + ".");
+        swal("Alerta!", "No se a podido editar. " + response.raise + ".", "warning");
       }
     }, "json");
   } catch (_error) {
     e = _error;
-    $().toastmessage("showWarningToast", "No se habilito la edición.");
+    swal("Alerta", "No se habilito la edición.", "warning");
   }
 };
 
@@ -251,65 +253,55 @@ calcPartitalMaterial = function(event) {
 delMaterials = function(event) {
   var btn;
   btn = this;
-  $().toastmessage("showToast", {
+  swal({
+    title: "Eliminar",
     text: "Realmente deseas eliminar el material?",
-    type: "confirm",
-    sticky: true,
-    buttons: [
-      {
-        value: "Si"
-      }, {
-        value: "No"
-      }
-    ],
-    success: function(result) {
-      var context;
-      if (result === "Si") {
-        context = new Object;
-        context.materials = btn.getAttribute("data-materials");
-        context.id = btn.value;
-        context.delMaterials = true;
-        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
-        $.post("", context, function(response) {
-          if (response.status) {
-            $().toastmessage("showSuccessToast", "Se a eliminado el material.");
-            getListMaterials();
-          } else {
-            $().toastmessage("showErrorToast", "No se a podido eliminar el material. " + response.raise);
-          }
-        });
-      }
+    type: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#dd9b55",
+    confirmButtonText: "Si, eliminar!"
+  }, function(isConfirm) {
+    var context;
+    if (isConfirm) {
+      context = new Object;
+      context.materials = btn.getAttribute("data-materials");
+      context.id = btn.value;
+      context.delMaterials = true;
+      context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
+      $.post("", context, function(response) {
+        if (response.status) {
+          swal("Alerta", "Se a eliminado el material.", "warning");
+          getListMaterials();
+        } else {
+          swal("Alerta", "No se a podido eliminar el material. " + response.raise, "warning");
+        }
+      });
     }
   });
 };
 
 delMaterialsAll = function(event) {
-  $().toastmessage("showToast", {
+  swal({
+    title: "Eliminar todo los materiales",
     text: "Realmente deseas eliminar todo la lista de materiales?",
-    type: "confirm",
-    sticky: true,
-    buttons: [
-      {
-        value: "Si"
-      }, {
-        value: "No"
-      }
-    ],
-    success: function(result) {
-      var context;
-      if (result === "Si") {
-        context = new Object;
-        context.delMaterialsAll = true;
-        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
-        $.post("", context, function(response) {
-          if (response.status) {
-            $().toastmessage("showSuccessToast", "Se a eliminado el material.");
-            getListMaterials();
-          } else {
-            $().toastmessage("showErrorToast", "No se a podido eliminar el material. " + response.raise);
-          }
-        });
-      }
+    type: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Si, eliminar",
+    confirmButtonColor: "#bb0655"
+  }, function(isConfirm) {
+    var context;
+    if (isConfirm) {
+      context = new Object;
+      context.delMaterialsAll = true;
+      context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
+      $.post("", context, function(response) {
+        if (response.status) {
+          swal("Felicidades", "Se a eliminado el material.", "success");
+          getListMaterials();
+        } else {
+          swal("Error", "No se a podido eliminar el material. " + response.raise, "error");
+        }
+      });
     }
   });
 };
@@ -327,7 +319,7 @@ getManPowerAll = function(event) {
       $cm.html(Mustache.render(template, response));
       return $cm.trigger("chosen:updated");
     } else {
-      $().toastmessage("showErrorToast", "Error al listar combo. " + response.raise);
+      swal("Alerta!", "Error al listar combo. " + response.raise, "warning");
     }
   });
 };
@@ -351,15 +343,15 @@ addManPower = function(event) {
   context.gang = $("[name=mpgang]").val();
   context.price = $("[name=mpprice]").val();
   if (context.manpower === "") {
-    $().toastmessage("showWarningToast", "Codigo para Mano de obra es incorrecto.");
+    swal("Alerta!", "Codigo para Mano de obra es incorrecto.", "warning");
     return false;
   }
   if (!context.gang.match(/^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/)) {
-    $().toastmessage("showWarningToast", "Cuadrilla invalida.");
+    swal("Alerta!", "Cuadrilla invalida.", "warning");
     return false;
   }
   if (!context.price.match(/^[+]?[0-9]+[\.[0-9]{0,4}]?/)) {
-    $().toastmessage("showWarningToast", "El precio ingresado es incorrecto.");
+    swal("Alerta!", "El precio ingresado es incorrecto.", "warning");
     return false;
   }
   context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
@@ -367,7 +359,7 @@ addManPower = function(event) {
     if (response.status) {
       return listManPower();
     } else {
-      $().toastmessage("showErrorToast", "Error al agregar mano de poder. " + response.raise);
+      swal("Alerta!", "Error al agregar mano de poder. " + response.raise, "warning");
     }
   }, "json");
 };
@@ -389,37 +381,32 @@ listManPower = function(event) {
       $tb.html(Mustache.render(template, response));
       getUnitaryPrice();
     } else {
-      $().toastmessage("showErrorToast", "No se obtenido resultados. " + response.raise);
+      swal("Alerta!", "No se obtenido resultados. " + response.raise, "warning");
     }
   });
 };
 
 delManPowerAll = function(event) {
-  $().toastmessage("showToast", {
+  swal({
+    title: "Eliminar?",
     text: "Realmente desea eliminar todo la lista de Mano de Obra?",
-    type: "confirm",
-    sticky: true,
-    buttons: [
-      {
-        value: "Si"
-      }, {
-        value: "No"
-      }
-    ],
-    success: function(result) {
-      var context;
-      if (result === "Si") {
-        context = new Object;
-        context.delManPowerAll = true;
-        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
-        $.post("", context, function(response) {
-          if (response.status) {
-            listManPower();
-          } else {
-            $().toastmessage("showErrorToast", "Error al eliminar toda la lista. " + response.raise);
-          }
-        }, "json");
-      }
+    type: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Si, eliminar",
+    confirmButtonColor: "#ddb655"
+  }, function(isConfirm) {
+    var context;
+    if (isConfirm) {
+      context = new Object;
+      context.delManPowerAll = true;
+      context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
+      $.post("", context, function(response) {
+        if (response.status) {
+          listManPower();
+        } else {
+          swal("Error", "Error al eliminar toda la lista. " + response.raise, "error");
+        }
+      }, "json");
     }
   });
 };
@@ -455,11 +442,11 @@ editManPower = function(event) {
   context.performance = $(".performance").text();
   context.manpower = this.getAttribute("data-mp");
   if (!context.gang.match(/^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/)) {
-    $().toastmessage("showWarningToast", "Cuadrilla invalida.");
+    swal("Alerta!", "Cuadrilla invalida.", "warning");
     return false;
   }
   if (!context.price.match(/^[+]?[0-9]+[\.[0-9]{0,4}]?/)) {
-    $().toastmessage("showWarningToast", "El precio ingresado es incorrecto.");
+    swal("Alerta!", "El precio ingresado es incorrecto.", "warning");
     return false;
   }
   context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
@@ -467,7 +454,7 @@ editManPower = function(event) {
     if (response.status) {
       listManPower();
     } else {
-      $().toastmessage("showErrorToast", "Error al editar los campos. " + response.raise);
+      swal("Alerta!", "Error al editar los campos. " + response.raise, "warning");
     }
   }, "json");
 };
@@ -475,32 +462,27 @@ editManPower = function(event) {
 delManPower = function(event) {
   var btn;
   btn = this;
-  $().toastmessage("showToast", {
+  swal({
+    title: "Eliminar?",
     text: "Realmente deseas eliminar la mano de Obra?",
-    type: "confirm",
-    sticky: true,
-    buttons: [
-      {
-        value: "Si"
-      }, {
-        value: "No"
-      }
-    ],
-    success: function(result) {
-      var context;
-      if (result === "Si") {
-        context = new Object;
-        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
-        context.delMan = true;
-        context.manpower = btn.getAttribute("data-mp");
-        return $.post("", context, function(response) {
-          if (response.status) {
-            listManPower();
-          } else {
-            $().toastmessage("showErrorToast", "Error al eliminar la mano de obra. " + response.raise);
-          }
-        }, "json");
-      }
+    type: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#ddb655",
+    confirmButtonText: "Si, eliminar"
+  }, function(isConfirm) {
+    var context;
+    if (isConfirm) {
+      context = new Object;
+      context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
+      context.delMan = true;
+      context.manpower = btn.getAttribute("data-mp");
+      return $.post("", context, function(response) {
+        if (response.status) {
+          listManPower();
+        } else {
+          swal("Alerta!", "Error al eliminar la mano de obra. " + response.raise, "warning");
+        }
+      }, "json");
     }
   });
 };
@@ -531,7 +513,7 @@ getlistTools = function(event) {
       $op.trigger("chosen:updated");
       return getMeasureTools();
     } else {
-      $().toastmessage("showErrorToast", "No existe una lista. " + response.raise);
+      swal("Alerta!", "No existe una lista. " + response.raise, "warning");
     }
   });
 };
@@ -553,18 +535,18 @@ getMeasureTools = function(event) {
         return getSummaryTools();
       }, 300);
     } else {
-      $().toastmessage("showErrorToast", "No se han obtenido resultados para tu busqueda. " + response.raise);
+      swal("Alerta", "No se han obtenido resultados para tu busqueda. " + response.raise, "warning");
     }
   });
 };
 
-getSummaryTools = function(event) {
+getSummaryTools = function() {
   var context;
   context = new Object;
   context.getSummary = true;
   context.tools = $("[name=measuret]").val();
-  if (!context.tools.length === 14) {
-    $().toastmessage("showWarningToast", "El codigo es incorrecto.");
+  if (context.tools.length !== 14) {
+    swal("Alerta", "El codigo es incorrecto.", "warning");
     return false;
   }
   $.getJSON("/tools/search/", context, function(response) {
@@ -575,7 +557,7 @@ getSummaryTools = function(event) {
       $ob.empty();
       return $ob.html(Mustache.render(template, response));
     } else {
-      $().toastmessage("showErrorToast", "Error al obtener los datos, " + response.raise);
+      swal("Alerta", "Error al obtener los datos, " + response.raise, "warning");
     }
   });
 };
@@ -588,15 +570,15 @@ addTools = function(event) {
   context.price = $("[name=pricet]").val();
   context.performance = $(".performance").text();
   if (context.tools.length !== 14) {
-    $().toastmessage("showWarningToast", "Código de herramienta erroneo.");
+    swal("Alerta!", "Código de herramienta erroneo.", "warning");
     return false;
   }
   if (!context.gang.match(/^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/)) {
-    $().toastmessage("showWarningToast", "La Cuadrila es incorrecta.");
+    swal("Alerta!", "La Cuadrila es incorrecta.", "warning");
     return false;
   }
   if (!context.price.match(/^[+]?[0-9]+[\.[0-9]{0,4}]?/)) {
-    $().toastmessage("showWarningToast", "El precio ingresado es incorrecto.");
+    swal("Alerta!", "El precio ingresado es incorrecto.", "warning");
     return false;
   }
   context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
@@ -605,7 +587,7 @@ addTools = function(event) {
     if (response.status) {
       listDetailsTools();
     } else {
-      $().toastmessage("showErrorToast", "No se a podido agregar herramientas. " + response.raise);
+      swal("Alerta!", "No se a podido agregar herramientas. " + response.raise, "warning");
     }
   });
 };
@@ -619,15 +601,15 @@ editTools = function(event) {
   context.price = $(".edit-tool-price").val();
   context.performance = $(".performance").text();
   if (context.tools.length !== 14) {
-    $().toastmessage("showWarningToast", "Código de herramienta erroneo.");
+    swal("Alerta!", "Código de herramienta erroneo.", "warning");
     return false;
   }
   if (!context.gang.match(/^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/)) {
-    $().toastmessage("showWarningToast", "La Cuadrila es incorrecta.");
+    swal("Alerta!", "La Cuadrila es incorrecta.", "warning");
     return false;
   }
   if (!context.price.match(/^[+]?[0-9]+[\.[0-9]{0,4}]?/)) {
-    $().toastmessage("showWarningToast", "El precio ingresado es incorrecto.");
+    swal("Alerta!", "El precio ingresado es incorrecto.", "warning");
     return false;
   }
   context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
@@ -637,7 +619,7 @@ editTools = function(event) {
     if (response.status) {
       listDetailsTools();
     } else {
-      $().toastmessage("showErrorToast", "No se a podido editar herramientas. " + response.raise);
+      swal("Alerta!", "No se a podido editar herramientas. " + response.raise, "warning");
     }
   });
 };
@@ -645,62 +627,52 @@ editTools = function(event) {
 delTools = function(event) {
   var btn;
   btn = this;
-  $().toastmessage("showToast", {
+  swal({
+    title: "Eliminar",
     text: "Realmente desea eliminar la herramienta?",
-    type: "confirm",
-    sticky: true,
-    buttons: [
-      {
-        value: "Si"
-      }, {
-        value: "No"
-      }
-    ],
-    success: function(result) {
-      var context;
-      if (result === "Si") {
-        context = new Object;
-        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
-        context.delTools = true;
-        context.tools = btn.value;
-        $.post("", context, function(response) {
-          if (response.status) {
-            listDetailsTools();
-          } else {
-            $().toastmessage("showErrorToast", "No se a podido eliminar la herramientas. " + response.raise);
-          }
-        });
-      }
+    type: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Si, eliminar",
+    confirmButtonColor: "#ddb655"
+  }, function(isConfirm) {
+    var context;
+    if (isConfirm) {
+      context = new Object;
+      context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
+      context.delTools = true;
+      context.tools = btn.value;
+      $.post("", context, function(response) {
+        if (response.status) {
+          listDetailsTools();
+        } else {
+          swal("Alerta!", "No se a podido eliminar la herramientas. " + response.raise, "warning");
+        }
+      });
     }
   });
 };
 
 delToolsAll = function(event) {
-  $().toastmessage("showToast", {
+  swal({
+    title: "Eliminar",
     text: "Realmente desea eliminar toda la lista de herramientas?",
-    type: "confirm",
-    sticky: true,
-    buttons: [
-      {
-        value: "Si"
-      }, {
-        value: "No"
-      }
-    ],
-    success: function(result) {
-      var context;
-      if (result === "Si") {
-        context = new Object;
-        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
-        context.delToolsAll = true;
-        $.post("", context, function(response) {
-          if (response.status) {
-            listDetailsTools();
-          } else {
-            $().toastmessage("showErrorToast", "No se a eliminado la lista de herramientas. " + response.raise);
-          }
-        });
-      }
+    type: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#ddb655",
+    confirmButtonText: "Si, eliminar"
+  }, function(isConfirm) {
+    var context;
+    if (isConfirm) {
+      context = new Object;
+      context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
+      context.delToolsAll = true;
+      $.post("", context, function(response) {
+        if (response.status) {
+          listDetailsTools();
+        } else {
+          swal("Alerta!", "No se a eliminado la lista de herramientas. " + response.raise, "warning");
+        }
+      });
     }
   });
 };
@@ -721,7 +693,7 @@ listDetailsTools = function(event) {
       $tb.html(Mustache.render(template, response));
       getUnitaryPrice();
     } else {
-      $().toastmessage("showErrorToast", "No se han obtenido datos. " + response.raise);
+      swal("Error", "No se han obtenido datos. " + response.raise, "error");
     }
   });
 };

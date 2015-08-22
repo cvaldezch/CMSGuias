@@ -41,14 +41,14 @@
             <div role="row">
                 <!-- Nav tabs -->
                 <ul class="tabs">
-                    <li class="tab col4 red grey-text text-lighten-4">
-                        <a href="#materials">MATERIALES</a>
+                    <li class="tab col4 blue lighten-1">
+                        <a href="#materials" class="grey-text text-lighten-5">MATERIALES</a>
                     </li>
-                    <li class="tab col4">
-                        <a href="#manpower">MANO DE OBRA</a>
+                    <li class="tab col4 orange lighten-1">
+                        <a href="#manpower" class="grey-text text-lighten-5">MANO DE OBRA</a>
                     </li>
-                    <li class="tab col4">
-                        <a href="#tools">HERRAMIENTAS</a>
+                    <li class="tab col4 lime lighten-1">
+                        <a href="#tools" class="grey-text text-lighten-5">HERRAMIENTAS</a>
                     </li>
                 </ul>
                 <!-- Tab panes -->
@@ -57,18 +57,18 @@
                         <div class="panel panel-info">
                             <div class="card">
                                 <div class="card-action">
-                                    <button class="btn btn-sm btn-default bshowaddmat" type="button">
+                                    <button class="btn bshowaddmat blue darken-1" type="button">
                                         <span class="fa fa-plus"></span>
                                         <span>Material</span>
                                     </button>
-                                    <button class="btn btn-sm btn-default bmrefresh" type="button">
+                                    <button class="btn bmrefresh grey lighten-4 grey-text text-darken-3" type="button">
                                         <span class="fa fa-refresh"></span>
                                         <span>Actualizar</span>
                                     </button>
-                                    <button class="btn btn-sm btn-default bdelmatall" type="button">
+                                    <button class="btn red darken-1 bdelmatall" type="button">
                                         <span>+ Eliminar Todo</span>
                                     </button>
-                                    <button class="btn btn-sm btn-default bshownewmat" type="button">
+                                    <button class="btn light-green lighten-1 bshownewmat" type="button">
                                         <span>+ Nuevo Material</span>
                                     </button>
                                     <button class="btn btn-sm btn-default bcopymat" type="button">
@@ -78,17 +78,17 @@
                             </div>
                             <div class="card">
                                 <!-- div add materials -->
-                                <div class="materialsadd card-content">
+                                <div class="materialsadd card-content blue lighten-5">
                                     <div class="row">
                                         <div class="col l6">
-                                            <div class="form-group">
-                                                <label class="control-label">Materiales</label>
+                                            <div class="">
+                                                <label>Materiales</label>
                                                 <select name="materials" id="materials" class="form-control chosen-select"></select>
                                             </div>
                                         </div>
                                         <div class="col l6">
                                             <div class="form-group">
-                                                <label class="control-label">Medida</label>
+                                                <label>Medida</label>
                                                 <select name="measure" id="" class="form-control chosen-select"></select>
                                             </div>
                                         </div>
@@ -96,15 +96,15 @@
                                             <div class="alert alert-block alert-warning" name="summary"></div>
                                         </div>
                                         <div class="col l6">
-                                            <div class="form-group">
-                                                <label class="controll-label">Cantidad</label>
-                                                <input type="number" name="mquantity" step="0.10" min="0" class="form-control input-sm">
+                                            <div class="input-field">
+                                                <label>Cantidad</label>
+                                                <input type="number" name="mquantity" step="0.10" min="0">
                                             </div>
-                                            <div class="form-group">
-                                                <label class="controll-label">Precio</label>
-                                                <input type="number" name="mprice" step="0.10" min="0" class="form-control input-sm">
+                                            <div class="input-field">
+                                                <input type="number" name="mprice" step="0.10" min="0" value="0">
+                                                <label>Precio</label>
                                             </div>
-                                            <button type="button" class="btn btn-warning btn-sm btnaddmat">
+                                            <button type="button" class="btn blue lighten-1 btnaddmat">
                                                 <span class="fa fa-plus"></span>
                                                 Agregar
                                             </button>

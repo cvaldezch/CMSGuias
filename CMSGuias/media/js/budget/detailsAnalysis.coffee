@@ -39,6 +39,7 @@ $(document).ready ->
     $(document).on "click", ".btndeltool", delTools
     $(".btoolsrefresh").on "click", refreshTools
     $(".bshowaddtool").on "click", showaddTools
+    $(".indicator").css "background", "#2d2d2d"
     # end block
     return
 
@@ -51,7 +52,7 @@ getMaterialsAll = (event) ->
         if response.status
             $op = $("[name=materials]")
             $op.empty()
-            template = "{{#names}}<option value=\"{{ name }}\">{{ name }}</option>{{/names}}"
+            template = """{{#names}}<option value="{{name}}">{{name}}</option>{{/names}}"""
             $op.html Mustache.render template, response
             $op.trigger "chosen:updated"
             getmeasure()
@@ -66,7 +67,7 @@ getmeasure = (event) ->
             $se = $("[name=measure]")
             $se.empty()
             $se.append "<option></option>"
-            template = "{{#meter}} <option value=\"{{code}}\">{{measure}}</option> {{/meter}}"
+            template = """{{#meter}}<option value="{{code}}">{{measure}}</option> {{/meter}}"""
             $se.html Mustache.render template, response
             $se.trigger "chosen:updated"
             setTimeout ->
@@ -83,23 +84,23 @@ getsummary = (event) ->
     if context.scode.length is 15
         $.getJSON "/materials/", context, (response) ->
             if response.status
-                template = "<table class=\"table table-condensed font-11\"><tbody><tr><th>Código</th><td class=\"matid\">{{ summary.materials }}</td></tr><tr><th>Nombre</th><td>{{ summary.name }}</td></tr><tr><th>Media</th><td>{{ summary.measure }}</td></tr><tr><th>Unidad</th><td>{{ summary.unit }}</td></tr></tbody></table>"
+                template = """<table class="table table-condensed font-11"><tbody><tr><th>Código</th><td class="matid">{{ summary.materials }}</td></tr><tr><th>Nombre</th><td>{{ summary.name }}</td></tr><tr><th>Media</th><td>{{ summary.measure }}</td></tr><tr><th>Unidad</th><td>{{ summary.unit }}</td></tr></tbody></table>"""
                 $s = $("[name=summary]")
                 $s.empty()
                 $s.html Mustache.render template, response
                 $("[name=mprice]").val response.summary.price
                 return
     else
-        $().toastmessage "showWarningToast", "El código del material no es valido."
+        swal "Alerta!", "El código del material no es valido.", "warning"
     return
 
 showAddMaterial = (event) ->
     if $(".materialsadd").is(":visible")
-        $(@).removeClass "btn-warning"
+        $(this).removeClass "btn-warning"
         .addClass "btn-default"
         $(".materialsadd").hide 800
     else
-        $(@).removeClass "btn-default"
+        $(this).removeClass "btn-default"
         .addClass "btn-warning"
         $(".materialsadd").show 800
     return
@@ -119,15 +120,15 @@ addMaterials = (event) ->
                         getListMaterials()
                         return
                     else
-                        $().toastmessage "showErrorToast", "Error al guardar los cambios. #{response.raise}"
+                        swal "Error!", "Error al guardar los cambios. #{response.raise}", "error"
                         return
                 , "json"
             else
-                $().toastmessage "showWarningToast", "Precio invalido."
+                swal "Alerta!", "Precio invalido.", "warning"
         else
-            $().toastmessage "showWarningToast", "Cantidad invalida."
+            swal "Alerta!", "Cantidad invalida.", "warning"
     else
-        $().toastmessage "showWarningToast", "Código de material incorrecto."
+        swal "Alerta!", "Código de material incorrecto.", "warning"
     return
 
 getListMaterials = (event) ->
@@ -137,7 +138,7 @@ getListMaterials = (event) ->
         if response.status
             $tbl = $(".tmaterials tbody")
             $tbl.empty()
-            template = "{{#materials}}<tr data-edit=\"{{pk}}\"><td>{{index}}</td><td>{{code}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{quantity}}</td><td>{{price}}</td><td>{{partial}}</td><td class=\"text-center\"><button class=\"btn btn-warning btn-xs btn-edit-materials\" value=\"{{ pk }}\" data-materials=\"{{ code }}\" disabled><span class=\"fa fa-edit\"></span></button></td><td class=\"text-center\"><button class=\"btn btn-danger btn-xs btn-del-materials\" value=\"{{ pk }}\" data-materials=\"{{ code }}\"><span class=\"fa fa-trash\"></span></button></td></tr>{{/materials}}"
+            template = """{{#materials}}<tr data-edit="{{pk}}"><td>{{index}}</td><td>{{code}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{quantity}}</td><td>{{price}}</td><td>{{partial}}</td><td class="text-center"><button class="btn btn-warning btn-xs btn-edit-materials" value="{{ pk }}" data-materials="{{ code }}" disabled><span class="fa fa-edit"></span></button></td><td class="text-center"><button class="btn btn-danger btn-xs btn-del-materials" value="{{ pk }}" data-materials="{{ code }}"><span class="fa fa-trash"></span></button></td></tr>{{/materials}}"""
             counter = 1
             response.index = ->
                 return counter++
@@ -145,7 +146,7 @@ getListMaterials = (event) ->
             getUnitaryPrice()
             return
         else
-            $().toastmessage "showErrorToast", "Error al Obtener la lista. #{response.raise}."
+            swal "Alerta!", "Error al Obtener la lista. #{response.raise}.", "warning"
             return
     return
 
@@ -164,21 +165,22 @@ openNewMaterial = (event) ->
     , 1000
     return win
 
-showEditMaterials = (event) ->
+showEditMaterials = ->
     if $(".edit-tmp-quantity").length
         $(".edit-tmp-quantity").parent("td").html $(".edit-tmp-quantity").val()
     if $(".edit-tmp-price").length
         $(".edit-tmp-price").parent("td").html $(".edit-tmp-price").val()
-    $tr = $(@)
+    $tr = $(this)
     $td = $tr.find "td"
+    console.log $td
     quantity = $td.eq(4).text()
     $(".btn-edit-materials").attr "disabled", true
     $td.eq(7).find("button").attr "disabled", false
     ###if quantity.indexOf "," then quantity=  quantity.replace ",", "."
     quantity = parseFloat quantity###
     price = $td.eq(5).text()
-    $td.eq(4).html "<input type=\"text\" value=\"#{quantity}\" class=\"form-control input-sm col-2 edit-tmp-quantity\">"
-    $td.eq(5).html "<input type=\"text\" value=\"#{price}\" class=\"form-control input-sm col-2 edit-tmp-price\">"
+    $td.eq(4).html """<input type="text" value="#{quantity}" class="form-control input-sm col-2 edit-tmp-quantity">"""
+    $td.eq(5).html """<input type="text" value="#{price}" class="form-control input-sm col-2 edit-tmp-price">"""
     return
 
 editMaterials =  (event) ->
@@ -188,10 +190,10 @@ editMaterials =  (event) ->
     context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
     try
         if not context.quantity.match /^[+]?[0-9]+[\.[0-9]+]?/
-            $().toastmessage "showWarningToast", "No se a ingreso un número, cantidad incorrecta."
+            swal "Alerta!", "No se a ingreso un número, cantidad incorrecta.", "warning"
             return false
         if not context.price.match /^[+]?[0-9]+[\.[0-9]+]?/
-            $().toastmessage "showWarningToast", "No se a ingreso un número, precio incorrecto."
+            swal "Alerta!", "No se a ingreso un número, precio incorrecto.", "warning"
             return false
         context.editMaterials = true
         context.materials = @getAttribute "data-materials"
@@ -203,11 +205,11 @@ editMaterials =  (event) ->
                 $(".edit-tmp-price").parent("td").html $(".edit-tmp-price").val()
                 return
             else
-                $().toastmessage "showErrorToast", "No se a podido editar. #{response.raise}."
+                swal "Alerta!", "No se a podido editar. #{response.raise}.", "warning"
                 return
         , "json"
     catch e
-        $().toastmessage "showWarningToast", "No se habilito la edición."
+        swal "Alerta", "No se habilito la edición.", "warning"
     return
 
 calcPartitalMaterial = (event) ->
@@ -224,50 +226,54 @@ calcPartitalMaterial = (event) ->
     return
 
 delMaterials = (event) ->
-    btn = @
-    $().toastmessage "showToast",
+    btn = this
+    swal
+        title: "Eliminar",
         text: "Realmente deseas eliminar el material?"
-        type: "confirm"
-        sticky: true
-        buttons: [{value:"Si"}, {value:"No"}]
-        success: (result) ->
-            if result is "Si"
-                context = new Object
-                context.materials = btn.getAttribute "data-materials"
-                context.id = btn.value
-                context.delMaterials = true
-                context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
-                $.post "", context, (response) ->
-                    if response.status
-                        $().toastmessage "showSuccessToast", "Se a eliminado el material."
-                        getListMaterials()
-                        return
-                    else
-                        $().toastmessage "showErrorToast", "No se a podido eliminar el material. #{response.raise}"
-                        return
-                return
+        type: "warning"
+        showCancelButton: true
+        confirmButtonColor: "#dd9b55"
+        confirmButtonText: "Si, eliminar!"
+    , (isConfirm) ->
+        if isConfirm
+            context = new Object
+            context.materials = btn.getAttribute "data-materials"
+            context.id = btn.value
+            context.delMaterials = true
+            context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+            $.post "", context, (response) ->
+                if response.status
+                    swal "Alerta", "Se a eliminado el material.", "warning"
+                    getListMaterials()
+                    return
+                else
+                    swal "Alerta", "No se a podido eliminar el material. #{response.raise}", "warning"
+                    return
+            return
     return
 
 delMaterialsAll = (event) ->
-    $().toastmessage "showToast",
+    swal
+        title: "Eliminar todo los materiales",
         text: "Realmente deseas eliminar todo la lista de materiales?"
-        type: "confirm"
-        sticky: true
-        buttons: [{value:"Si"}, {value:"No"}]
-        success: (result) ->
-            if result is "Si"
-                context = new Object
-                context.delMaterialsAll = true
-                context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
-                $.post "", context, (response) ->
-                    if response.status
-                        $().toastmessage "showSuccessToast", "Se a eliminado el material."
-                        getListMaterials()
-                        return
-                    else
-                        $().toastmessage "showErrorToast", "No se a podido eliminar el material. #{response.raise}"
-                        return
-                return
+        type: "warning"
+        showCancelButton: true
+        confirmButtonText: "Si, eliminar"
+        confirmButtonColor: "#bb0655"
+    , (isConfirm) ->
+        if isConfirm
+            context = new Object
+            context.delMaterialsAll = true
+            context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+            $.post "", context, (response) ->
+                if response.status
+                    swal "Felicidades", "Se a eliminado el material.", "success"
+                    getListMaterials()
+                    return
+                else
+                    swal "Error", "No se a podido eliminar el material. #{response.raise}", "error"
+                    return
+            return
     return
 
 # block Man power
@@ -278,21 +284,21 @@ getManPowerAll = (event) ->
         if response.status
             $cm = $("[name=manpower]")
             $cm.empty()
-            template = "{{#list}}<option value=\"{{cargo_id}}\">{{cargos}}</option>{{/list}}"
+            template = """{{#list}}<option value="{{cargo_id}}">{{cargos}}</option>{{/list}}"""
             $cm.html Mustache.render template, response
             $cm.trigger "chosen:updated"
         else
-            $().toastmessage "showErrorToast", "Error al listar combo. #{response.raise}"
+            swal "Alerta!", "Error al listar combo. #{response.raise}", "warning"
             return
     return
 
 showAddManPower = (event) ->
     if $(".addmanpower").is ":visible"
-        $(@).removeClass "btn-warning"
+        $(this).removeClass "btn-warning"
         .addClass "btn-default"
         $(".addmanpower").hide 800
     else
-        $(@).removeClass "btn-default"
+        $(this).removeClass "btn-default"
         .addClass "btn-warning"
         $(".addmanpower").show 800
     return
@@ -305,20 +311,20 @@ addManPower = (event) ->
     context.gang = $("[name=mpgang]").val()
     context.price = $("[name=mpprice]").val()
     if context.manpower is ""
-        $().toastmessage "showWarningToast", "Codigo para Mano de obra es incorrecto."
+        swal "Alerta!", "Codigo para Mano de obra es incorrecto.", "warning"
         return false
     if not context.gang.match /^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/
-        $().toastmessage "showWarningToast", "Cuadrilla invalida."
+        swal "Alerta!", "Cuadrilla invalida.", "warning"
         return false
     if not context.price.match /^[+]?[0-9]+[\.[0-9]{0,4}]?/
-        $().toastmessage "showWarningToast", "El precio ingresado es incorrecto."
+        swal "Alerta!", "El precio ingresado es incorrecto.", "warning"
         return false
     context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
     $.post "", context, (response) ->
         if response.status
             listManPower()
         else
-            $().toastmessage  "showErrorToast", "Error al agregar mano de poder. #{response.raise}"
+            swal  "Alerta!", "Error al agregar mano de poder. #{response.raise}", "warning"
             return
     , "json"
     return
@@ -329,7 +335,7 @@ listManPower = (event) ->
     $.getJSON "", context, (response) ->
         if response.status
             $tb = $(".tmanpower > tbody")
-            template = "{{#manpower}}<tr class=\"editmp\"><td>{{index}}</td><td>{{code}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{gang}}</td><td>{{quantity}}</td><td>{{price}}</td><td>{{partial}}</td><td class=\"text-center\"><button class=\"btn btn-xs btn-warning btn-edit-mp\" value=\"{{ id }}\" data-mp=\"{{code}}\" disabled><span class=\"fa fa-edit\"></span></button></td><td class=\"text-center\"><button class=\"btn btn-danger btn-xs btn-del-mp\" value=\"{{ id }}\" data-mp=\"{{code}}\"><span class=\"fa fa-trash\"></span></button></td></tr>{{/manpower}}"
+            template = """{{#manpower}}<tr class="editmp"><td>{{index}}</td><td>{{code}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{gang}}</td><td>{{quantity}}</td><td>{{price}}</td><td>{{partial}}</td><td class="text-center"><button class="btn btn-xs btn-warning btn-edit-mp" value="{{ id }}" data-mp="{{code}}" disabled><span class="fa fa-edit"></span></button></td><td class="text-center"><button class="btn btn-danger btn-xs btn-del-mp" value="{{ id }}" data-mp="{{code}}"><span class="fa fa-trash"></span></button></td></tr>{{/manpower}}"""
             $tb.empty()
             counter = 1
             response.index = ->
@@ -338,30 +344,33 @@ listManPower = (event) ->
             getUnitaryPrice()
             return
         else
-            $().toastmessage "showErrorToast", "No se obtenido resultados. #{response.raise}"
+            swal "Alerta!", "No se obtenido resultados. #{response.raise}", "warning"
             return
     return
 
 delManPowerAll = (event) ->
-    $().toastmessage "showToast",
+    swal
+        title: "Eliminar?"
         text: "Realmente desea eliminar todo la lista de Mano de Obra?"
-        type: "confirm",
-        sticky: true,
-        buttons: [{value:"Si"}, {value:"No"}],
-        success: (result) ->
-            if result is "Si"
-                context = new Object
-                context.delManPowerAll = true
-                context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
-                $.post "", context, (response) ->
-                    if response.status
-                        listManPower()
-                        return
-                    else
-                        $().toastmessage "showErrorToast", "Error al eliminar toda la lista. #{response.raise}"
-                        return
-                , "json"
-                return
+        type: "warning"
+        showCancelButton: true
+        confirmButtonText: "Si, eliminar"
+        confirmButtonColor: "#ddb655"
+
+    , (isConfirm) ->
+        if isConfirm
+            context = new Object
+            context.delManPowerAll = true
+            context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+            $.post "", context, (response) ->
+                if response.status
+                    listManPower()
+                    return
+                else
+                    swal "Error", "Error al eliminar toda la lista. #{response.raise}", "error"
+                    return
+            , "json"
+            return
     return
 
 refreshManPower = (event) ->
@@ -380,8 +389,8 @@ showEditManPower = (event) ->
     gang = $td.eq(4).text()
     $td.eq(8).find("button").attr "disabled", false
     price = $td.eq(6).text()
-    $td.eq(4).html "<input type=\"text\" value=\"#{gang}\" class=\"form-control input-sm col-2 edit-mp-gang\">"
-    $td.eq(6).html "<input type=\"text\" value=\"#{price}\" class=\"form-control input-sm col-2 edit-mp-price\">"
+    $td.eq(4).html """<input type="text" value="#{gang}" class="form-control input-sm col-2 edit-mp-gang">"""
+    $td.eq(6).html """<input type="text" value="#{price}" class="form-control input-sm col-2 edit-mp-price">"""
     return
 
 editManPower = (event) ->
@@ -392,10 +401,10 @@ editManPower = (event) ->
     context.performance = $(".performance").text()
     context.manpower = @getAttribute "data-mp"
     if not context.gang.match /^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/
-        $().toastmessage "showWarningToast", "Cuadrilla invalida."
+        swal "Alerta!", "Cuadrilla invalida.", "warning"
         return false
     if not context.price.match /^[+]?[0-9]+[\.[0-9]{0,4}]?/
-        $().toastmessage "showWarningToast", "El precio ingresado es incorrecto."
+        swal "Alerta!", "El precio ingresado es incorrecto.", "warning"
         return false
     context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
     $.post "", context, (response) ->
@@ -403,20 +412,22 @@ editManPower = (event) ->
             listManPower()
             return
         else
-            $().toastmessage "showErrorToast", "Error al editar los campos. #{response.raise}"
+            swal "Alerta!", "Error al editar los campos. #{response.raise}", "warning"
             return
     , "json"
     return
 
 delManPower = (event) ->
   btn = @
-  $().toastmessage "showToast",
+  swal
+    title: "Eliminar?"
     text: "Realmente deseas eliminar la mano de Obra?"
-    type: "confirm"
-    sticky: true
-    buttons: [{value:"Si"},{value:"No"}]
-    success: (result) ->
-      if result is "Si"
+    type: "warning"
+    showCancelButton: true
+    confirmButtonColor: "#ddb655"
+    confirmButtonText: "Si, eliminar"
+  , (isConfirm) ->
+      if isConfirm
         context = new Object
         context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
         context.delMan = true
@@ -426,7 +437,7 @@ delManPower = (event) ->
             listManPower()
             return
           else
-            $().toastmessage "showErrorToast", "Error al eliminar la mano de obra. #{response.raise}"
+            swal "Alerta!", "Error al eliminar la mano de obra. #{response.raise}", "warning"
             return
         , "json"
   return
@@ -455,7 +466,7 @@ getlistTools = (event) ->
       $op.trigger "chosen:updated"
       getMeasureTools()
     else
-      $().toastmessage "showErrorToast", "No existe una lista. #{response.raise}"
+      swal "Alerta!", "No existe una lista. #{response.raise}", "warning"
       return
   return
 # get  measure for each tools
@@ -474,16 +485,16 @@ getMeasureTools = (event) ->
         getSummaryTools()
       , 300
     else
-      $().toastmessage "showErrorToast", "No se han obtenido resultados para tu busqueda. #{response.raise}"
+      swal "Alerta", "No se han obtenido resultados para tu busqueda. #{response.raise}", "warning"
       return
   return
 # get summary tools
-getSummaryTools = (event) ->
+getSummaryTools = ->
   context = new Object
   context.getSummary = true
   context.tools = $("[name=measuret]").val()
-  if not context.tools.length is 14
-    $().toastmessage "showWarningToast", "El codigo es incorrecto."
+  if context.tools.length isnt 14
+    swal "Alerta", "El codigo es incorrecto.", "warning"
     return false
   $.getJSON "/tools/search/", context, (response) ->
     if response.status
@@ -492,9 +503,10 @@ getSummaryTools = (event) ->
       $ob.empty()
       $ob.html Mustache.render template, response
     else
-      $().toastmessage "showErrorToast", "Error al obtener los datos, #{response.raise}"
+      swal "Alerta", "Error al obtener los datos, #{response.raise}", "warning"
       return
   return
+
 # add tools
 addTools = (event) ->
   context = new Object
@@ -503,13 +515,13 @@ addTools = (event) ->
   context.price = $("[name=pricet]").val()
   context.performance = $(".performance").text()
   if context.tools.length isnt 14
-    $().toastmessage "showWarningToast", "Código de herramienta erroneo."
+    swal "Alerta!", "Código de herramienta erroneo.", "warning"
     return false
   if not context.gang.match /^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/
-    $().toastmessage "showWarningToast", "La Cuadrila es incorrecta."
+    swal "Alerta!", "La Cuadrila es incorrecta.", "warning"
     return false
   if not context.price.match /^[+]?[0-9]+[\.[0-9]{0,4}]?/
-    $().toastmessage "showWarningToast", "El precio ingresado es incorrecto."
+    swal "Alerta!", "El precio ingresado es incorrecto.", "warning"
     return false
   context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
   context.addTools = true
@@ -518,7 +530,7 @@ addTools = (event) ->
       listDetailsTools()
       return
     else
-      $().toastmessage "showErrorToast", "No se a podido agregar herramientas. #{response.raise}"
+      swal "Alerta!", "No se a podido agregar herramientas. #{response.raise}", "warning"
       return
   return
 # edit Tools
@@ -530,13 +542,13 @@ editTools = (event) ->
   context.price = $(".edit-tool-price").val()
   context.performance = $(".performance").text()
   if context.tools.length isnt 14
-    $().toastmessage "showWarningToast", "Código de herramienta erroneo."
+    swal "Alerta!", "Código de herramienta erroneo.", "warning"
     return false
   if not context.gang.match /^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/
-    $().toastmessage "showWarningToast", "La Cuadrila es incorrecta."
+    swal "Alerta!", "La Cuadrila es incorrecta.", "warning"
     return false
   if not context.price.match /^[+]?[0-9]+[\.[0-9]{0,4}]?/
-    $().toastmessage "showWarningToast", "El precio ingresado es incorrecto."
+    swal "Alerta!", "El precio ingresado es incorrecto.", "warning"
     return false
   context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
   context.addTools = true
@@ -546,19 +558,22 @@ editTools = (event) ->
       listDetailsTools()
       return
     else
-      $().toastmessage "showErrorToast", "No se a podido editar herramientas. #{response.raise}"
+      swal "Alerta!", "No se a podido editar herramientas. #{response.raise}", "warning"
       return
   return
+
 # delete tools
 delTools = (event) ->
-  btn = @
-  $().toastmessage "showToast",
+  btn = this
+  swal
+    title: "Eliminar",
     text: "Realmente desea eliminar la herramienta?"
-    type: "confirm"
-    sticky: true
-    buttons: [{value:"Si"},{value:"No"}]
-    success: (result) ->
-      if result is "Si"
+    type: "warning"
+    showCancelButton: true
+    confirmButtonText: "Si, eliminar"
+    confirmButtonColor: "#ddb655"
+  , (isConfirm) ->
+      if isConfirm
         context =  new Object
         context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
         context.delTools = true
@@ -568,19 +583,22 @@ delTools = (event) ->
             listDetailsTools()
             return
           else
-            $().toastmessage "showErrorToast", "No se a podido eliminar la herramientas. #{response.raise}"
+            swal "Alerta!", "No se a podido eliminar la herramientas. #{response.raise}", "warning"
             return
         return
   return
+
 # delete all tools
 delToolsAll = (event) ->
-  $().toastmessage "showToast",
+  swal
+    title: "Eliminar"
     text: "Realmente desea eliminar toda la lista de herramientas?"
-    type: "confirm"
-    sticky: true
-    buttons: [{value:"Si"},{value:"No"}]
-    success: (result) ->
-      if result is "Si"
+    type: "warning"
+    showCancelButton: true
+    confirmButtonColor: "#ddb655"
+    confirmButtonText: "Si, eliminar"
+  , (isConfirm) ->
+      if isConfirm
         context = new Object
         context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
         context.delToolsAll = true
@@ -589,10 +607,11 @@ delToolsAll = (event) ->
             listDetailsTools()
             return
           else
-            $().toastmessage "showErrorToast", "No se a eliminado la lista de herramientas. #{response.raise}"
+            swal "Alerta!", "No se a eliminado la lista de herramientas. #{response.raise}", "warning"
             return
         return
   return
+
 # listTools details
 listDetailsTools = (event) ->
   context = new Object
@@ -608,7 +627,7 @@ listDetailsTools = (event) ->
       getUnitaryPrice()
       return
     else
-      $().toastmessage "showErrorToast", "No se han obtenido datos. #{response.raise}"
+      swal "Error", "No se han obtenido datos. #{response.raise}", "error"
       return
   return
 # refresh list Tools
@@ -638,8 +657,8 @@ showEditTools = (event) ->
   gang = $td.eq(4).text()
   $td.eq(8).find("button").attr "disabled", false
   price = $td.eq(6).text()
-  $td.eq(4).html "<input type=\"text\" value=\"#{gang}\" class=\"form-control input-sm col-2 edit-tool-gang\">"
-  $td.eq(6).html "<input type=\"text\" value=\"#{price}\" class=\"form-control input-sm col-2 edit-tool-price\">"
+  $td.eq(4).html """<input type="text" value="#{gang}" class="form-control input-sm col-2 edit-tool-gang">"""
+  $td.eq(6).html """<input type="text" value="#{price}" class="form-control input-sm col-2 edit-tool-price">"""
   return
 # open new Tools
 openNewTools = ->
