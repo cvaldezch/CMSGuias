@@ -148,6 +148,7 @@ INSTALLED_APPS = (
     # 'CMSGuias.django_yuml',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'CMSGuias.apps.agenda',
     'CMSGuias.apps.almacen',
     'CMSGuias.apps.home',
     'CMSGuias.apps.logistica',

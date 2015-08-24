@@ -88,7 +88,6 @@ class AnalysisGroupList(JSONResponseMixin, TemplateView):
             except ObjectDoesNotExist, e:
                 context['raise'] = str(e)
                 context['status'] = False
-                print context
             return self.render_to_json_response(context)
 
 
