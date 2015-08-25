@@ -17,7 +17,7 @@ urlpatterns = patterns('',
     url(r'^sales/', include('CMSGuias.apps.ventas.urls')),
     url(r'^operations/', include('CMSGuias.apps.operations.urls')),
     url(r'^proveedor/', include('CMSGuias.apps.suppliers.urls')),
-    url(r'^diary/', include('CMSGuias.apps.agenda.urls')),
+    url(r'^agenda/', include('CMSGuias.apps.agenda.urls')),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

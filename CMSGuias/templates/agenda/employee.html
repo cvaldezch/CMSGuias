@@ -1,0 +1,141 @@
+{% extends "basemd.html" %}
+{% block content %}
+<div data-ng-app="EmpApp" data-ng-controller="empCtrl">
+  <div class="card-panel">
+    <div class="row">
+      <div class="col l12">
+        <a href="{% url 'diaryview' %}" class="btn waves-effect green lighten-1 grey-text text-darken-3">
+          <i class="fa fa-home"></i>
+          <span>Principal</span>
+        </a>
+      </div>
+    </div>
+    <h3 class="card-title">Empleados</h3>
+    <div class="card-content">
+      <div class="row">
+        <div class="col m2 s12">
+          <button type="button" data-target="madd" class="btn modal-trigger waves-effect grey lighten-5 grey-text text-darken-3">
+            <i class="fa fa-plus"></i>
+            <span>Nuevo</span>
+          </button>
+        </div>
+        <div class="col m2 s12">
+          <button type="button" class="btn waves-effect light-green lighten-5 grey-text text-darken-3" data-ng-click="predicate='fields.firstname'">
+            <i class="fa fa-sort"></i>
+            <span>Nombres</span>
+          </button>
+        </div>
+        <div class="col m2 s12">
+          <button type="button" class="btn waves-effect lime lighten-5 grey-text text-darken-3" data-ng-click="predicate='fields.charge.fields.cargos'">
+            <i class="fa fa-sort"></i>
+            <span>Cargos</span>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col l12 m12 s12">
+          <div class="input-field">
+            <i class="prefix fa fa-filter"></i>
+            <input type="text" data-ng-model="search">
+            <label>Buscar Empleado</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <table class="table responsive-table bordered">
+      <thead>
+        <tr class="cyan darken-3">
+          <th>#</th>
+          <th>DNI</th>
+          <th>Nombres</th>
+          <th>Cargo</th>
+          <th>Tel. Trabajo</th>
+          <th>Telefono</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% verbatim %}
+          <tr data-ng-repeat="x in list | filter:search | orderBy:predicate:reverse">
+            <td>{{$index+1}}</td>
+            <td>{{x.pk}}</td>
+            <td>{{x.fields.firstname}} {{x.fields.lastname}}</td>
+            <td>{{x.fields.charge.fields.cargos}}</td>
+            <td>{{x.fields.phonejob}}</td>
+            <td>{{x.fields.phone}}</td>
+            <td class="center-align">
+              <button type="button" class="btn-flat waves-effect">
+                <i class="fa fa-list-alt"></i>
+              </button>
+            </td>
+          </tr>
+        {% endverbatim %}
+      </tbody>
+    </table>
+  </div>
+<div class="modal bottom-sheet" id="madd">
+  <div class="modal-content">
+    <h4>Agregar Empleado</h4>
+    <div class="row">
+      <div class="col l2 input-field">
+        <i class="prefix">#</i>
+        <input type="text">
+        <label for="">DNI</label>
+      </div>
+      <div class="col l5 input-field">
+        <i class="prefix fa fa-font"></i>
+        <input type="text">
+        <label for="">Nombres</label>
+      </div>
+      <div class="col l5 input-field">
+        <i class="prefix fa fa-font"></i>
+        <input type="text">
+        <label for="">Apellidos</label>
+      </div>
+      <div class="col l3 input-field">
+        <i class="prefix fa fa-calendar"></i>
+        <input type="text" class="datepicker">
+        <label for="">Nacimiento</label>
+      </div>
+      <div class="col l5 input-field">
+        <i class="prefix">@</i>
+        <input type="text">
+        <label for="">Email</label>
+      </div>
+      <div class="col l4 input-field">
+        <i class="prefix fa fa-users"></i>
+        <input type="text">
+        <label for="">Cargo</label>
+      </div>
+      <div class="col l12 input-field">
+        <i class="prefix fa fa-map-marker"></i>
+        <input type="text">
+        <label for="">Dirección</label>
+      </div>
+      <div class="col l12 m12 s12 divider">
+      </div>
+      <div class="col l4 input-field">
+        <i class="prefix fa fa-mobile"></i>
+        <input type="text">
+        <label for="">Tel. Personal</label>
+      </div>
+      <div class="col l4 input-field">
+        <i class="prefix fa fa-phone"></i>
+        <input type="text">
+        <label for="">Tel. Trabajo</label>
+      </div>
+      <div class="col l4 input-field">
+        <i class="prefix fa fa-phone-square"></i>
+        <input type="text">
+        <label for="">Tel Fijo</label>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<!-- tools utils -->
+<script src="{{ MEDIA_URL }}vendor/angularjs/angular.min.js"></script>
+<script src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js"></script>
+<script src="{{ MEDIA_URL }}js/diary/employee.js"></script>
+{% endblock content %}
