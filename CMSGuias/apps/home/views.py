@@ -5,9 +5,11 @@ import json
 
 from django.shortcuts import render_to_response, get_object_or_404, render
 from django.template import RequestContext, TemplateDoesNotExist
-from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
+from django.http import (
+    HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound)
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.core import serializers
 from django.db.models import Count
 # necesario para el login y autenticacion
 from django.contrib.auth import login, logout, authenticate
@@ -872,6 +874,28 @@ class ManPower(JSONResponseMixin, TemplateView):
             except ObjectDoesNotExist, e:
                 raise
             return render(request, 'home/crud/manpower.html')
+
+
+class ChargeView(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'charge' in request.GET:
+                    context['charge'] = simplejson.loads(
+                        serializers.serialize(
+                            'json', Cargo.objects.filter(flag=True)))
+                    context['status'] = True
+            except ObjectDoesNotExist as e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)
+        # try:
+        #     return render(request, '')
+        # except TemplateDoesNotExist as e:
+        #     raise Http404(e)
 
 
 class ToolsView(JSONResponseMixin, TemplateView):

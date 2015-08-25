@@ -16,7 +16,9 @@ app.controller("empCtrl", function($scope, $http, $cookies) {
       format: 'yyyy-mm-dd'
     });
     $('.modal-trigger').leanModal();
+    $(".modal.bottom-sheet").css("max-height", "60%");
     $scope.listEmployee();
+    $scope.listCharge();
   });
   $scope.predicate = 'fields.firstname';
   $scope.listEmployee = function() {
@@ -30,6 +32,40 @@ app.controller("empCtrl", function($scope, $http, $cookies) {
         $scope.list = response.employee;
       } else {
         swal("Alerta!", "No se han encontrado datos.", "warning");
+      }
+    });
+  };
+  $scope.listCharge = function() {
+    $http.get('/charge/', {
+      params: {
+        charge: true
+      }
+    }).success(function(response) {
+      if (response.status) {
+        $scope.charge = response.charge;
+      } else {
+        swal('Alerta!', 'No se han encontrado datos', 'warning');
+      }
+    });
+  };
+  $scope.saveEmployee = function() {
+    var params;
+    console.log($scope.employee);
+    if (typeof $scope.employee.empdni_id === "undefined") {
+      return false;
+    }
+    params = $scope.employee;
+    params.save = true;
+    $http({
+      url: '',
+      method: 'post',
+      data: $.param(params)
+    }).success(function(response) {
+      if (response.status) {
+        $scope.listEmployee();
+        $("#madd").closeModal();
+      } else {
+        swal('Error', 'error al guardar los cambios.', 'error');
       }
     });
   };

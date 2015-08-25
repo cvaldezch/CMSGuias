@@ -15,6 +15,7 @@ from django.views.generic import TemplateView
 
 from .models import *
 from CMSGuias.apps.home.models import Employee
+from .forms import EmployeeForm
 
 
 class JSONResponseMixin(object):
@@ -64,3 +65,26 @@ class EmployeeView(JSONResponseMixin, TemplateView):
             return render(request, 'agenda/employee.html')
         except TemplateDoesNotExist, e:
             raise Http404(e)
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if 'save' in request.POST:
+                employee = Employee.objects.get(
+                            empdni_id=request.POST['empdni_id'])
+                if employee:
+                    form = EmployeeForm(request.POST, instance=employee)
+                else:
+                    form = EmployeeForm()
+                print form
+                if form.is_valid():
+                    form.save()
+                    context['status'] = True
+                else:
+                    context['status'] = False
+                    context['raise'] = 'fields error.'
+        except ObjectDoesNotExist as e:
+            context['raise'] = str(e)
+            context['status'] = False
+        return self.render_to_json_response(context)

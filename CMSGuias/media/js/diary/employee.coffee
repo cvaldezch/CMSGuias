@@ -14,7 +14,9 @@ app.controller "empCtrl", ($scope, $http, $cookies) ->
       container: 'body'
       format: 'yyyy-mm-dd'
     $('.modal-trigger').leanModal()
+    $(".modal.bottom-sheet").css "max-height", "60%"
     $scope.listEmployee()
+    $scope.listCharge()
     return
   $scope.predicate = 'fields.firstname'
   $scope.listEmployee = ->
@@ -30,5 +32,35 @@ app.controller "empCtrl", ($scope, $http, $cookies) ->
         swal "Alerta!", "No se han encontrado datos.", "warning"
         return
     return
+  $scope.listCharge = ->
+    $http.get '/charge/',
+      params:
+        charge: true
+    .success (response) ->
+      if response.status
+        $scope.charge = response.charge
+        return
+      else
+        swal 'Alerta!', 'No se han encontrado datos', 'warning'
+        return
+    return
+  $scope.saveEmployee = ->
+    console.log $scope.employee
+    if typeof($scope.employee.empdni_id) is "undefined"
+      return false
+    params = $scope.employee
+    params.save = true
+    $http
+      url: ''
+      method: 'post'
+      data: $.param params
+    .success (response) ->
+      if response.status
+        $scope.listEmployee()
+        $("#madd").closeModal()
+        return
+      else
+        swal 'Error', 'error al guardar los cambios.', 'error'
+        return
+    return
   return
-

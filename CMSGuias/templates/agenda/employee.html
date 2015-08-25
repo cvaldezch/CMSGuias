@@ -50,7 +50,7 @@
           <th>Nombres</th>
           <th>Cargo</th>
           <th>Tel. Trabajo</th>
-          <th>Telefono</th>
+          <th>Teléfono</th>
           <th></th>
         </tr>
       </thead>
@@ -75,58 +75,80 @@
   </div>
 <div class="modal bottom-sheet" id="madd">
   <div class="modal-content">
-    <h4>Agregar Empleado</h4>
+    <h4>Empleado</h4>
+    <div class="row">
+      <div class="col l12">
+        <button type="button" class="btn waves-effect grey lighten-5 grey-text text-darken-3 modal-action modal-close">
+          <i class="fa fa-times"></i>
+          <span>Cancelar</span>
+        </button>
+        <button type="button" class="btn waves-effect blue darken-3 right" data-ng-click="saveEmployee()">
+          <i class="fa fa-save"></i>
+          <span>Guardar</span>
+        </button>
+      </div>
+    </div>
     <div class="row">
       <div class="col l2 input-field">
         <i class="prefix">#</i>
-        <input type="text">
+        <input type="text" data-ng-model="employee.empdni_id">
         <label for="">DNI</label>
       </div>
       <div class="col l5 input-field">
         <i class="prefix fa fa-font"></i>
-        <input type="text">
+        <input type="text" data-ng-model="employee.firstname">
         <label for="">Nombres</label>
       </div>
       <div class="col l5 input-field">
         <i class="prefix fa fa-font"></i>
-        <input type="text">
+        <input type="text" data-ng-model="employee.lastname">
         <label for="">Apellidos</label>
       </div>
       <div class="col l3 input-field">
         <i class="prefix fa fa-calendar"></i>
-        <input type="text" class="datepicker">
+        <input type="text" class="datepicker" data-ng-model="employee.birth">
         <label for="">Nacimiento</label>
       </div>
       <div class="col l5 input-field">
         <i class="prefix">@</i>
-        <input type="text">
+        <input type="text" data-ng-model="employee.email">
         <label for="">Email</label>
       </div>
-      <div class="col l4 input-field">
-        <i class="prefix fa fa-users"></i>
-        <input type="text">
-        <label for="">Cargo</label>
+      <div class="col l4">
+        <div class="row">
+          <div class="col l2 valign-wrapper">
+            <i class="fa fa-users fa-2x valign"></i>
+          </div>
+          <div class="col l10">
+            <label>Cargo</label>
+            {% verbatim %}
+              <select class="browser-default" data-ng-model="employee.charge">
+                <option value="{{x.pk}}" data-ng-repeat="x in charge">{{x.fields.cargos}}</option>
+              </select>
+            {% endverbatim %}
+          </div>
+        </div>
       </div>
       <div class="col l12 input-field">
         <i class="prefix fa fa-map-marker"></i>
-        <input type="text">
+        <input type="text" data-ng-model="employee.address">
         <label for="">Dirección</label>
       </div>
       <div class="col l12 m12 s12 divider">
       </div>
       <div class="col l4 input-field">
         <i class="prefix fa fa-mobile"></i>
-        <input type="text">
+        <input type="text" data-ng-model="employee.phone">
         <label for="">Tel. Personal</label>
       </div>
       <div class="col l4 input-field">
         <i class="prefix fa fa-phone"></i>
-        <input type="text">
+        <input type="text" data-ng-model="employee.phonejob">
         <label for="">Tel. Trabajo</label>
       </div>
       <div class="col l4 input-field">
         <i class="prefix fa fa-phone-square"></i>
-        <input type="text">
+        <input type="text" data-ng-model="employee.fixed">
         <label for="">Tel Fijo</label>
       </div>
     </div>
