@@ -18,6 +18,7 @@ app.controller "empCtrl", ($scope, $http, $cookies) ->
     $scope.listEmployee()
     $scope.listCharge()
     return
+  $scope.data = {}
   $scope.predicate = 'fields.firstname'
   $scope.listEmployee = ->
     $http.get '',
@@ -62,5 +63,19 @@ app.controller "empCtrl", ($scope, $http, $cookies) ->
       else
         swal 'Error', 'error al guardar los cambios.', 'error'
         return
+    return
+  $scope.edit = ->
+    $scope.employee =
+      empdni_id: this.x.pk
+      firstname: this.x.fields.firstname
+      lastname: this.x.fields.lastname
+      birth: this.x.fields.birth
+      email: this.x.fields.email
+      address: this.x.fields.address
+      phone: this.x.fields.phone
+      phonejob: this.x.fields.phonejob
+      fixed: this.x.fields.fixed
+    $("[name=charge]").val this.x.fields.charge
+    $("#madd").openModal()
     return
   return

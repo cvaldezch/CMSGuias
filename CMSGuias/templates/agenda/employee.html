@@ -52,6 +52,8 @@
           <th>Tel. Trabajo</th>
           <th>Teléfono</th>
           <th></th>
+          <th></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -64,8 +66,18 @@
             <td>{{x.fields.phonejob}}</td>
             <td>{{x.fields.phone}}</td>
             <td class="center-align">
-              <button type="button" class="btn-flat waves-effect">
+              <button type="button" class="btn-flat waves-effect" data-ng-click="">
                 <i class="fa fa-list-alt"></i>
+              </button>
+            </td>
+            <td class="center-align">
+              <button type="button" class="btn-flat waves-effect blue-text" data-ng-click="edit()">
+                <i class="fa fa-edit"></i>
+              </button>
+            </td>
+            <td class="center-align">
+              <button type="button" class="btn-flat waves-effect red-text">
+                <i class="fa fa-trash"></i>
               </button>
             </td>
           </tr>
@@ -91,27 +103,27 @@
     <div class="row">
       <div class="col l2 input-field">
         <i class="prefix">#</i>
-        <input type="text" data-ng-model="employee.empdni_id">
-        <label for="">DNI</label>
+        <input type="text" data-ng-model="employee.empdni_id" value="employee.empdni_id">
+        <label>DNI</label>
       </div>
       <div class="col l5 input-field">
         <i class="prefix fa fa-font"></i>
-        <input type="text" data-ng-model="employee.firstname">
-        <label for="">Nombres</label>
+        <input type="text" data-ng-model="employee.firstname" value="employee.firstname">
+        <label>Nombres</label>
       </div>
       <div class="col l5 input-field">
         <i class="prefix fa fa-font"></i>
-        <input type="text" data-ng-model="employee.lastname">
-        <label for="">Apellidos</label>
+        <input type="text" data-ng-model="employee.lastname" value="employee.lastname">
+        <label>Apellidos</label>
       </div>
       <div class="col l3 input-field">
         <i class="prefix fa fa-calendar"></i>
-        <input type="text" class="datepicker" data-ng-model="employee.birth">
-        <label for="">Nacimiento</label>
+        <input type="text" class="datepicker" data-ng-model="employee.birth" value="employee.birth">
+        <label>Nacimiento</label>
       </div>
       <div class="col l5 input-field">
         <i class="prefix">@</i>
-        <input type="text" data-ng-model="employee.email">
+        <input type="text" data-ng-model="employee.email" value="employee.email">
         <label for="">Email</label>
       </div>
       <div class="col l4">
@@ -122,8 +134,8 @@
           <div class="col l10">
             <label>Cargo</label>
             {% verbatim %}
-              <select class="browser-default" data-ng-model="employee.charge">
-                <option value="{{x.pk}}" data-ng-repeat="x in charge">{{x.fields.cargos}}</option>
+              <select class="browser-default" data-ng-model="employee.charge" name="charge">
+                value="{{x.pk}}" data-ng-repeat="x in charge">{{x.fields.cargos}}</option>
               </select>
             {% endverbatim %}
           </div>
@@ -131,24 +143,24 @@
       </div>
       <div class="col l12 input-field">
         <i class="prefix fa fa-map-marker"></i>
-        <input type="text" data-ng-model="employee.address">
+        <input type="text" data-ng-model="employee.address" value="employee.address">
         <label for="">Dirección</label>
       </div>
       <div class="col l12 m12 s12 divider">
       </div>
       <div class="col l4 input-field">
         <i class="prefix fa fa-mobile"></i>
-        <input type="text" data-ng-model="employee.phone">
+        <input type="text" data-ng-model="employee.phone" value="employee.phone">
         <label for="">Tel. Personal</label>
       </div>
       <div class="col l4 input-field">
         <i class="prefix fa fa-phone"></i>
-        <input type="text" data-ng-model="employee.phonejob">
+        <input type="text" data-ng-model="employee.phonejob" value="employee.phonejob">
         <label for="">Tel. Trabajo</label>
       </div>
       <div class="col l4 input-field">
         <i class="prefix fa fa-phone-square"></i>
-        <input type="text" data-ng-model="employee.fixed">
+        <input type="text" data-ng-model="employee.fixed" value="employee.fixed">
         <label for="">Tel Fijo</label>
       </div>
     </div>

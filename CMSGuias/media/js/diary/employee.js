@@ -20,6 +20,7 @@ app.controller("empCtrl", function($scope, $http, $cookies) {
     $scope.listEmployee();
     $scope.listCharge();
   });
+  $scope.data = {};
   $scope.predicate = 'fields.firstname';
   $scope.listEmployee = function() {
     $http.get('', {
@@ -68,5 +69,20 @@ app.controller("empCtrl", function($scope, $http, $cookies) {
         swal('Error', 'error al guardar los cambios.', 'error');
       }
     });
+  };
+  $scope.edit = function() {
+    $scope.employee = {
+      empdni_id: this.x.pk,
+      firstname: this.x.fields.firstname,
+      lastname: this.x.fields.lastname,
+      birth: this.x.fields.birth,
+      email: this.x.fields.email,
+      address: this.x.fields.address,
+      phone: this.x.fields.phone,
+      phonejob: this.x.fields.phonejob,
+      fixed: this.x.fields.fixed
+    };
+    $("[name=charge]").val(this.x.fields.charge);
+    $("#madd").openModal();
   };
 });
