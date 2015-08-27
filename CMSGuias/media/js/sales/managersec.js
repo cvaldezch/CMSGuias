@@ -17,8 +17,9 @@ $(document).ready(function() {
   $("[name=plane-del]").on("click", delPlane);
   $(".btn-add").on("click", addMaterial);
   $(".btn-show-del").on("click", dellAllMaterial);
-  $("[name=show-plane], .btn-upload-plane-meter").on("click", function(event) {});
-  $("input[name=plane]").click();
+  $("[name=show-plane], .btn-upload-plane-meter").on("click", function(event) {
+    return $("input[name=plane]").click();
+  });
   $(document).on("click", ".btn-del-mat", delMaterials);
   $(document).on("click", ".btn-show-secsub", loadSecandSub);
   $(document).on("click", ".btn-show-subproject_id", loadSector);

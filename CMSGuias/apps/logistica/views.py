@@ -1,4 +1,4 @@
- # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import json
 import hashlib
@@ -19,15 +19,24 @@ from django.views.generic.edit import CreateView
 from xlrd import open_workbook, XL_CELL_EMPTY
 
 from CMSGuias.apps.almacen.models import Suministro
-from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda, Configuracion, LoginProveedor, Brand, Model, Employee, Unidade
-from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra, tmpcotizacion, tmpcompra, ServiceOrder, DetailsServiceOrder
+from CMSGuias.apps.home.models import (
+                                        Proveedor, Documentos, FormaPago,
+                                        Almacene, Moneda, Configuracion,
+                                        LoginProveedor, Brand, Model,
+                                        Employee, Unidade)
+from .models import (
+                        Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion,
+                        DetCompra, tmpcotizacion, tmpcompra, ServiceOrder,
+                        DetailsServiceOrder)
 from CMSGuias.apps.ventas.models import Proyecto, Subproyecto
 from CMSGuias.apps.operations.models import MetProject
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles, search
-from .forms import addTmpCotizacionForm, addTmpCompraForm, CompraForm, ProveedorForm, ServiceOrderForm
+from .forms import (
+                    addTmpCotizacionForm, addTmpCompraForm, CompraForm,
+                    ProveedorForm, ServiceOrderForm)
 
 
-### Class Bases Views generic
+# Class Bases Views generic
 
 class JSONResponseMixin(object):
     def render_to_json_response(self, context, **response_kwargs):
@@ -41,7 +50,7 @@ class JSONResponseMixin(object):
     def convert_context_to_json(self, context):
         return simplejson.dumps(context, encoding='utf-8')
 
-# view home logistics
+
 class LogisticsHome(TemplateView):
     template_name = 'logistics/home.html'
 
@@ -49,7 +58,7 @@ class LogisticsHome(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         return super(LogisticsHome, self).dispatch(request, *args, **kwargs)
 
-# Class view Supply
+
 class SupplyPending(TemplateView):
     template_name = 'logistics/supplypending.html'
 
@@ -58,7 +67,8 @@ class SupplyPending(TemplateView):
         context = super(SupplyPending, self).get_context_data(**kwargs)
         if request.GET.get('rdo') is not None:
             if request.GET.get('rdo') == 'code':
-                model = Suministro.objects.filter(pk=request.GET.get('id-su'),flag=True, status='PE')
+                model = Suministro.objects.filter(
+                        pk=request.GET.get('id-su'), flag=True, status='PE')
             elif request.GET.get('rdo') == 'date':
                 if request.GET.get('fi-su') != '' and request.GET.get('ff-su') == '':
                     messages.error(request, 'Ha ocurrido un error miestras se realizaba la consulta %s'%(str(request)))
@@ -79,7 +89,10 @@ class SupplyPending(TemplateView):
 
         context['supply'] = supply
         context['status'] = globalVariable.status
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        return render_to_response(
+                self.template_name,
+                context,
+                context_instance=RequestContext(request))
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):

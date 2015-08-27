@@ -313,7 +313,7 @@ searchModelOption = ->
         $model.empty()
         for x of response.model
             tmp = template
-            if brand is "BR000"
+            if response.model[x].model_id is "MO000"
                 tmp = tmp.replace "{{!sel}}", "selected"
             $model.append Mustache.render(tmp, response.model[x])
       else

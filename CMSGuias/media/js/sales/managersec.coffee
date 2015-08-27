@@ -13,7 +13,7 @@ $(document).ready ->
     #$(".btn-new-brand").on "click", openBrand
     #$(".btn-new-model").on "click", openModel
     $("[name=show-plane], .btn-upload-plane-meter").on "click", (event) ->
-    $("input[name=plane]").click()
+        $("input[name=plane]").click()
     $(document).on "click", ".btn-del-mat", delMaterials
     $(document).on "click", ".btn-show-secsub", loadSecandSub
     $(document).on "click", ".btn-show-subproject_id", loadSector

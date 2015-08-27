@@ -119,11 +119,16 @@ def get_resumen_details_materiales(request):
                                 getprices = MetProject.objects.filter(
                                     materiales_id=x.materiales_id).distinct(
                                     'proyecto__proyecto_id').order_by(
-                                    'proyecto__proyecto_id')
+                                    'proyecto__proyecto_id').reverse()[0]
+                                print getprices
                                 if getprices:
-                                    purchase = max(
-                                            [p.precio for p in getprices])
-                                    sale = max([p.sales for p in getprices])
+                                    # for m in getprices:
+                                    #    print m.proyecto_id, m.sales, m.precio
+                                    purchase = getprices.precio
+                                    # max([p.precio for p in getprices])
+                                    sale = getprices.sales
+                                    # max([p.sales for p in getprices])
+
                         context['list'] = [
                             {
                                 'materialesid': x.materiales_id,

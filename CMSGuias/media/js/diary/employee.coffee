@@ -75,7 +75,7 @@ app.controller "empCtrl", ($scope, $http, $cookies) ->
       phone: this.x.fields.phone
       phonejob: this.x.fields.phonejob
       fixed: this.x.fields.fixed
-    $("[name=charge]").val this.x.fields.charge
+    $("[name=charge]").val this.x.fields.charge.pk
     $("#madd").openModal()
     return
   return

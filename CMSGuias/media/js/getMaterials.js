@@ -339,7 +339,7 @@ searchModelOption = function() {
         $model.empty();
         for (x in response.model) {
           tmp = template;
-          if (brand === "BR000") {
+          if (response.model[x].model_id === "MO000") {
             tmp = tmp.replace("{{!sel}}", "selected");
           }
           $model.append(Mustache.render(tmp, response.model[x]));
