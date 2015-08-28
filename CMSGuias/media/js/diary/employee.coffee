@@ -57,6 +57,7 @@ app.controller "empCtrl", ($scope, $http, $cookies) ->
       data: $.param params
     .success (response) ->
       if response.status
+        swal 'Felicidades!', 'Se dio de baja al empleado.', 'success'
         $scope.listEmployee()
         $("#madd").closeModal()
         return
@@ -77,5 +78,43 @@ app.controller "empCtrl", ($scope, $http, $cookies) ->
       fixed: this.x.fields.fixed
     $("[name=charge]").val this.x.fields.charge.pk
     $("#madd").openModal()
+    return
+  $scope.showDetails = ->
+    $scope.employee =
+      empdni_id: this.x.pk
+      firstname: this.x.fields.firstname
+      lastname: this.x.fields.lastname
+      birth: this.x.fields.birth
+      email: this.x.fields.email
+      charge: this.x.fields.charge.fields.cargos
+      address: this.x.fields.address
+      phone: this.x.fields.phone
+      phonejob: this.x.fields.phonejob
+      fixed: this.x.fields.fixed
+    $("#mdetails").openModal()
+  $scope.showDelete = ->
+    $scope.employee =
+      empdni_id: this.x.pk
+      firstname: this.x.fields.firstname
+      lastname: this.x.fields.lastname
+      email: this.x.fields.email
+    console.log $scope.employee, "here "
+    $("#delemp").openModal()
+  $scope.employeeDown = ->
+    params = $scope.employee
+    params.delemp = true
+    console.log params
+    $http
+      url: ''
+      data: $.param params
+      method: 'post'
+    .success (response) ->
+      if response.status
+        $scope.employee.observation = ''
+        $scope.listEmployee()
+        return
+      else
+        swal 'Error!', 'No se a podido realizar la transacción con existo!', 'error'
+        return
     return
   return

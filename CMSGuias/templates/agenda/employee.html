@@ -66,7 +66,7 @@
             <td>{{x.fields.phonejob}}</td>
             <td>{{x.fields.phone}}</td>
             <td class="center-align">
-              <button type="button" class="btn-flat waves-effect" data-ng-click="">
+              <button type="button" class="btn-flat waves-effect" data-ng-click="showDetails()">
                 <i class="fa fa-list-alt"></i>
               </button>
             </td>
@@ -76,7 +76,7 @@
               </button>
             </td>
             <td class="center-align">
-              <button type="button" class="btn-flat waves-effect red-text">
+              <button type="button" class="btn-flat waves-effect red-text" data-ng-click="showDelete()">
                 <i class="fa fa-trash"></i>
               </button>
             </td>
@@ -168,25 +168,97 @@
     </div>
   </div>
   <!-- modal details -->
-  <div class="modal" id="mdetails">
+  <div class="modal" id="mdetails" style="width: 30%">
     <div class="modal-content">
+      <h4>Datos de Empleado</h4>
+    {% verbatim %}
       <div class="row">
-        <div class="col l2 m2 s2">DNI</div>
-        <div class="col l10 m10 s10">7049258</div>
-        <div class="col l2 m2 s2">Nombres</div>
-        <div class="col l10 m10 s10">Christian Valdez</div>
-        <div class="col l2 m2 s2">Cargos</div>
-        <div class="col l10 m10 s10">Christian Valdez</div>
-        <div class="col l2 m2 s2">Teléfono</div>
-        <div class="col l10 m10 s10">Christian Valdez</div>
-        <div class="col l2 m2 s2">Personal</div>
-        <div class="col l10 m10 s10">Christian Valdez</div>
-        <div class="col l2 m2 s2">Telefono Fijo</div>
-        <div class="col l10 m10 s10">Christian Valdez</div>
+        <div class="col l12">
+          <div class="row">
+            <div class="col l4 m4 s4 right-align"><strong>DNI</strong></div>
+            <div class="col l8 m8 s8">{{employee.empdni_id}}</div>
+          </div>
+        </div>
+        <div class="col l12">
+          <div class="row">
+            <div class="col l4 m4 s4 right-align"><strong>Nombres</strong></div>
+            <div class="col l8 m8 s8">{{employee.firstname}}</div>
+          </div>
+        </div>
+        <div class="col l12">
+          <div class="row">
+            <div class="col l4 m4 s4 right-align"><strong>Apellidos</strong></div>
+            <div class="col l8 m8 s8">{{employee.lastname}}</div>
+          </div>
+        </div>
+        <div class="col l12">
+          <div class="row">
+            <div class="col l4 m4 s4 right-align"><strong>Correos</strong></div>
+            <div class="col l8 m8 s8">{{employee.email}}</div>
+          </div>
+        </div>
+        <div class="col l12">
+          <div class="row">
+            <div class="col l4 m4 s4 right-align"><strong>Cargos</strong></div>
+            <div class="col l8 m8 s8">{{employee.charge}}</div>
+          </div>
+        </div>
+        <div class="col l12">
+          <div class="row">
+            <div class="col l4 m4 s4 right-align"><strong>Teléfono</strong></div>
+            <div class="col l8 m8 s8">{{employee.phonejob}}</div>
+          </div>
+        </div>
+        <div class="col l12">
+          <div class="row">
+            <div class="col l4 m4 s4 right-align"><strong>Personal</strong></div>
+            <div class="col l8 m8 s8">{{employee.phone}}</div>
+          </div>
+        </div>
+        <div class="col l12">
+          <div class="row">
+            <div class="col l4 m4 s4 right-align"><strong>Telefono Fijo</strong></div>
+            <div class="col l8 m8 s8">{{employee.fixed}}</div>
+          </div>
+        </div>
       </div>
+    {% endverbatim %}
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="modal-action modal-close btn waves-effect grey lighten-5 grey-text text-darken-3">
+        <i class="fa fa-times"></i>
+        <span>Cerrar</span>
+      </button>
+    </div>
+  </div>
+  <!-- modal change status employee -->
+  {% verbatim %}
+  <div class="modal" id="delemp">
+    <div class="modal-content">
+      <h4>Dar de baja a Empleado {{employee.firstname}} {{employee.lastname}}?</h4>
+      <p>
+        Esta seguro que sea dar de baja el empleado {{employee.firstname}} {{employee.lastname}}.
+      </p>
+      <p>
+        <div class="input-field">
+          <textarea class="materialize-textarea" data-ng-model="employee.observation"></textarea>
+          <label>Observaciones</label>
+        </div>
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="modal-action modal-close btn waves-effect grey lighten-5 grey-text text-darken-3 left">
+        <i class="fa fa-times"></i>
+        <span>Cancelar</span>
+      </button>
+      <button type="button" class="btn waves-effect red lighten-1" data-ng-click="employeeDown()">
+        <i class="fa fa-trash"></i>
+        <span>De Baja!</span>
+      </button>
     </div>
   </div>
 </div>
+{% endverbatim %}
 <!-- tools utils -->
 <script src="{{ MEDIA_URL }}vendor/angularjs/angular.min.js"></script>
 <script src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>

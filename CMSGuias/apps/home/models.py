@@ -159,6 +159,7 @@ class Employee(models.Model):
     email = models.EmailField(max_length=80, null=True, blank=True)
     fixed = models.CharField(max_length=26, null=True, blank=True)
     phonejob = models.CharField(max_length=27, null=True, blank=True)
+    observation = models.TextField(null=True, blank=True)
     flag = models.BooleanField(default=True)
 
     audit_log = AuditLog()

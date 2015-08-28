@@ -96,19 +96,13 @@
   }
 }
 @font-face {
-  font-family: ubuntu;
-  src: url("/media/fonts/2086.ttf");
-}
-@font-face {
-  font-family: courier;
-  src: url("/media/fonts/courier.ttf");
-}
-@font-face {
-  font-family: narrow;
+  font-family: 'dot';
+  src: url("/media/fonts/2086.eot");
+  src: url("/media/fonts/2086.woff");
   src: url("/media/fonts/2086.ttf");
 }
 * {
-  font-family: narrow;
+  font-family: 'dot' !important;
   font-size: 10px;
 }
 .text-center {
@@ -131,15 +125,18 @@
 .details table > tbody > tr > td {
   padding-bottom: 0.1cm;
   text-transform: uppercase;
-  font-family: narrow;
+  font-family: 'dot' !important;
   font-weight: 400;
   font-size: 11px;
 }
-.text-up {
+.text-up,
+#day,
+#month,
+#year {
   font-size: 13px;
   vertical-align: top;
 }
 .xfont {
-  font-family: narrow;
+  font-family: 'dot' !important;
   padding: 2px 0 2px 0;
 }

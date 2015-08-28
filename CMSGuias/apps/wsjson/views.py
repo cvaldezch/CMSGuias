@@ -116,18 +116,20 @@ def get_resumen_details_materiales(request):
                                                 sale = round(p['sale'], 2)
                                                 quantity = p['quantity']
                             else:
-                                getprices = MetProject.objects.filter(
-                                    materiales_id=x.materiales_id).distinct(
-                                    'proyecto__proyecto_id').order_by(
-                                    'proyecto__proyecto_id').reverse()[0]
-                                print getprices
-                                if getprices:
-                                    # for m in getprices:
-                                    #    print m.proyecto_id, m.sales, m.precio
-                                    purchase = getprices.precio
-                                    # max([p.precio for p in getprices])
-                                    sale = getprices.sales
-                                    # max([p.sales for p in getprices])
+                                try:
+                                    getprices = MetProject.objects.filter(materiales_id=x.materiales_id).distinct('proyecto__proyecto_id').order_by('proyecto__proyecto_id').reverse()
+                                    if getprices:
+                                        getprices = getprices[0]
+                                        purchase = getprices.precio
+                                        # max([p.precio for p in getprices])
+                                        sale = getprices.sales
+                                        # max([p.sales for p in getprices])
+                                    else:
+                                        purchase = 0
+                                        sale = 0
+                                except ObjectDoesNotExist, e:
+                                    purchase = 0
+                                    sale = 0
 
                         context['list'] = [
                             {
@@ -147,6 +149,7 @@ def get_resumen_details_materiales(request):
                 context['status'] = False
             return HttpResponse(simplejson.dumps(context),
                                 mimetype='application/json')
+
 
 class SearchBrand(JSONResponseMixin, DetailView):
     def get(self, request, *args, **kwargs):
@@ -191,14 +194,20 @@ class GetDetailsMaterialesByCode(DetailView):
                                         sale = round(p['sale'], 2)
                                         quantity = p['quantity']
                     else:
-                        getprices = MetProject.objects.filter(
-                            materiales_id=mat['materiales_id']).distinct(
-                            'proyecto__proyecto_id').order_by(
-                            'proyecto__proyecto_id')
-                        if getprices:
-                            purchase = max(
-                                    [p.precio for p in getprices])
-                            sale = max([p.sales for p in getprices])
+                        try:
+                            getprices = MetProject.objects.filter(materiales_id=x.materiales_id).distinct('proyecto__proyecto_id').order_by('proyecto__proyecto_id').reverse()
+                            if getprices:
+                                getprices = getprices[0]
+                                purchase = getprices.precio
+                                # max([p.precio for p in getprices])
+                                sale = getprices.sales
+                                # max([p.sales for p in getprices])
+                            else:
+                                purchase = 0
+                                sale = 0
+                        except ObjectDoesNotExist, e:
+                            purchase = 0
+                            sale = 0
                 context['list'] = {
                     'materialesid': mat['materiales_id'],
                     'matnom': mat['matnom'],

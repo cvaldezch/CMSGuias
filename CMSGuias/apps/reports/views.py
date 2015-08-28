@@ -72,7 +72,7 @@ def rpt_orders_details(request, pid, sts):
             lcount = float(lista.count())
             if lcount > 30:
                 sheet = int(float('%.0f' % (lcount)) / 30)
-                if float(float('%.2f' % (float(lcount)) / 30)) > sheet:
+                if float(float('%.3f' % (float(lcount))) / 30) > sheet:
                     sheet += 1
             else:
                 sheet = 1

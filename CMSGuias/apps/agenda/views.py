@@ -84,6 +84,13 @@ class EmployeeView(JSONResponseMixin, TemplateView):
                 else:
                     context['status'] = False
                     context['raise'] = 'fields error.'
+            if 'delemp' in request.POST:
+                employee = Employee.objects.get(
+                            empdni_id=request.POST['empdni_id'])
+                employee.observation = request.POST['observation']
+                employee.flag = False
+                employee.save()
+                context['status'] = True
         except ObjectDoesNotExist as e:
             context['raise'] = str(e)
             context['status'] = False

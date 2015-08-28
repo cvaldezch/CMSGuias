@@ -63,6 +63,7 @@ app.controller("empCtrl", function($scope, $http, $cookies) {
       data: $.param(params)
     }).success(function(response) {
       if (response.status) {
+        swal('Felicidades!', 'Se dio de baja al empleado.', 'success');
         $scope.listEmployee();
         $("#madd").closeModal();
       } else {
@@ -84,5 +85,48 @@ app.controller("empCtrl", function($scope, $http, $cookies) {
     };
     $("[name=charge]").val(this.x.fields.charge.pk);
     $("#madd").openModal();
+  };
+  $scope.showDetails = function() {
+    $scope.employee = {
+      empdni_id: this.x.pk,
+      firstname: this.x.fields.firstname,
+      lastname: this.x.fields.lastname,
+      birth: this.x.fields.birth,
+      email: this.x.fields.email,
+      charge: this.x.fields.charge.fields.cargos,
+      address: this.x.fields.address,
+      phone: this.x.fields.phone,
+      phonejob: this.x.fields.phonejob,
+      fixed: this.x.fields.fixed
+    };
+    return $("#mdetails").openModal();
+  };
+  $scope.showDelete = function() {
+    $scope.employee = {
+      empdni_id: this.x.pk,
+      firstname: this.x.fields.firstname,
+      lastname: this.x.fields.lastname,
+      email: this.x.fields.email
+    };
+    console.log($scope.employee, "here ");
+    return $("#delemp").openModal();
+  };
+  $scope.employeeDown = function() {
+    var params;
+    params = $scope.employee;
+    params.delemp = true;
+    console.log(params);
+    $http({
+      url: '',
+      data: $.param(params),
+      method: 'post'
+    }).success(function(response) {
+      if (response.status) {
+        $scope.employee.observation = '';
+        $scope.listEmployee();
+      } else {
+        swal('Error!', 'No se a podido realizar la transacción con existo!', 'error');
+      }
+    });
   };
 });

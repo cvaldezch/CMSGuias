@@ -99,20 +99,23 @@ vendor-prefixes = webkit moz o ms
     top 32cm
     margin 0 1cm 0 1cm
 
-@font-face
-  font-family ubuntu
-  src url(/media/fonts/2086.ttf)
+// @font-face
+//   font-family ubuntu
+//   src url(/media/fonts/2086.ttf)
 
 @font-face
-  font-family: courier;
-  src: url(/media/fonts/courier.ttf)
+  font-family 'dot'
+  src url('/media/fonts/2086.eot')
+  src url('/media/fonts/2086.woff')
+  src url('/media/fonts/2086.ttf')
+  //src: local('2086'), url('/media/fonts/2086.woff') format('woff'), url('/media/fonts/2086.ttf') format('truetype');
 
-@font-face
-  font-family: narrow;
-  src: url(/media/fonts/2086.ttf)
+// @font-face
+//   font-family: dot;
+//   src: url(/media/fonts/2086.ttf)
 
 *
-  font-family: narrow
+  font-family: 'dot' !important
   font-size: 10px
 
 .text-center
@@ -143,16 +146,16 @@ vendor-prefixes = webkit moz o ms
           //padding-top 0.1cm
           padding-bottom 0.10cm
           text-transform uppercase
-          font-family narrow
+          font-family 'dot' !important
           font-weight 400
           font-size 11px
 
-.text-up
+.text-up, #day, #month, #year
   font-size 13px
   vertical-align top
 
 .xfont
-  font-family: narrow
+  font-family: 'dot' !important
   padding: 2px 0 2px 0
 
 
