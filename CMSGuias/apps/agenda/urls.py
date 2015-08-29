@@ -10,4 +10,5 @@ urlpatterns = patterns(
     '',
     url(r'^$', HomeView.as_view(), name='diaryview'),
     url(r'^employee/$', EmployeeView.as_view(), name='diaryemployeeview'),
+    url(r'^supplier/$', )
 )

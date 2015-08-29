@@ -96,12 +96,13 @@ class EmployeeView(JSONResponseMixin, TemplateView):
             context['status'] = False
         return self.render_to_json_response(context)
 
+
 class SupplierView(JSONResponseMixin, TemplateView):
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
-         try:
-             pass
-         except ObjectDoesNotExist as e:
-             context['raise'] = e
+        try:
+            pass
+        except ObjectDoesNotExist as e:
+            pass
