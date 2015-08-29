@@ -102,6 +102,7 @@
 	<h3>Lista de Nipples</h3>
 	<section>
 		<div class="details">
+		{% for n in nipples %}
 			<table>
 				<thead>
 					<tr>
@@ -116,22 +117,19 @@
 					</tr>
 				</thead>
 				<tbody>
-					{% for x in nipples %}
+					{% for x in n %}
 						<tr>
-							<td class="text-center item">{{ forloop.counter }}</td>
-							<td class="text-center cod">{{ x.materiales_id }}</td>
-							<td class="text-center">{{ x.cantidad }}</td>
-							<td class="">Niple{{ x.cantidad|pluralize }}
-										{% for k,v in tipo.items %}
-											{% ifequal k x.tipo %}
-												{{ v }}{{ x.cantidad|pluralize }}
-											{% endifequal %}
-										{% endfor %}
-							- {{ x.comment }}
+							<td class="text-center item">{{ x.item }}</td>
+							<td class="text-center cod">{{ x.materials }}</td>
+							<td class="text-center">{{ x.quantity }}</td>
+							<td class="">Niple{{ x.quantity|pluralize }} {{ x.type }}{{ x.quantity|pluralize }}
+							{% if x.comment %}
+								- {{ x.comment }}
+							{% endif %}
 							</td>
-							<td>{{ x.materiales.matmed }}</td>
+							<td class="text-center">{{ x.measure }}</td>
 							<td class="text-center">x</td>
-							<td class="text-center">{{ x.metrado }}</td>
+							<td class="text-center">{{ x.meter }}</td>
 							<td class="text-center">cm</td>
 						</tr>
 					{% endfor%}
@@ -142,6 +140,10 @@
 					</tr>
 				</tfoot>
 			</table>
+			{% if not forloop.last %}
+				<div><pdf:nextpage /></div>
+			{% endif %}
+		{% endfor %}
 		</div>
 	</section>
 	{% endif %}

@@ -1,32 +1,42 @@
 {% extends "basemd.html" %}
 {% block content %}
 <div class="container">
-  <div class="card-panel yellow lighten-5">
-    <div class="card-content">
-      <div class="row">
-        <div class="col l4 m4 s12 center-align">
-          <p class="">
-            <a href="{% url 'diaryemployeeview' %}" class="btn btn-large waves-effect z-depth-2">
-              <i class="fa fa-user"></i>
-              <span>Empleado</span>
-            </a>
-          </p>
+  <div class="section">
+    <div class="card-panel yellow lighten-5">
+      <div class="card-content">
+        <div class="row">
+          <div class="col l6 offset-l3 center-align">
+            <i class="fa fa-tty fa-3x"></i>
+            <p>
+              <h4>Agenda</h4>
+            </p>
+          </div>
         </div>
-        <div class="col l4 m4 s12 center-align">
-          <p class="">
-            <a href="#utton" class="btn btn-large waves-effect z-depth-2">
-              <i class="fa fa-user"></i>
-              <span>Proveedor</span>
-            </a>
-          </p>
-        </div>
-        <div class="col l4 m4 s12 center-align">
-          <p class="">
-            <a href="#utton" class="btn btn-large waves-effect z-depth-2">
-              <i class="fa fa-user"></i>
-              <span>Cliente</span>
-            </a>
-          </p>
+        <div class="row">
+          <div class="col l4 m4 s12 center-align">
+            <p class="">
+              <a href="{% url 'diaryemployeeview' %}" class="btn btn-large red red-lighten-1 waves-effect z-depth-2">
+                <i class="fa fa-user"></i>
+                <span>Empleado</span>
+              </a>
+            </p>
+          </div>
+          <div class="col l4 m4 s12 center-align">
+            <p class="">
+              <a href="#utton" class="btn btn-large red red-lighten-1 waves-effect z-depth-2">
+                <i class="fa fa-user"></i>
+                <span>Proveedor</span>
+              </a>
+            </p>
+          </div>
+          <div class="col l4 m4 s12 center-align">
+            <p class="">
+              <a href="#utton" class="btn btn-large red red-lighten-1 waves-effect z-depth-2">
+                <i class="fa fa-user"></i>
+                <span>Cliente</span>
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </div>

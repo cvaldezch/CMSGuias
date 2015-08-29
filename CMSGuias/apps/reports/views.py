@@ -96,7 +96,36 @@ def rpt_orders_details(request, pid, sts):
                     counter += 1
                 section.append(tmp)
             context['lista'] = section
-            context['nipples'] = nipples
+            secn = list()
+            count = 0
+            sheet = 0
+            tipo = globalVariable.tipo_nipples
+            if nipples.count() > 35:
+                sheet = int(float('%.0f' % (nipples.count())) / 30)
+                if float(float('%.3f' % (float(nipples.count()))) / 30) > sheet:
+                    sheet += 1
+            else:
+                sheet = 1
+            print sheet, 'sheet'
+            print nipples.count(), 'nipples'
+            for c in range(sheet):
+                datset = nipples[count:count+35]
+                tmp = list()
+                print datset, 'datset'
+                for x in datset:
+                    tmp.append({
+                        'item': (count + 1),
+                        'materials': x.materiales_id,
+                        'quantity': x.cantidad,
+                        'type': tipo[x.tipo],
+                        'comment': x.comment,
+                        'measure': x.materiales.matmed,
+                        'meter': x.metrado
+                    })
+                    print tmp, 'temp'
+                    count += 1
+                secn.append(tmp)
+            context['nipples'] = secn
             context['tipo'] = globalVariable.tipo_nipples
             html = render_to_string('report/rptordersstore.html', context, context_instance=RequestContext(request))
             return generate_pdf(html)

@@ -124,6 +124,7 @@ app.controller("empCtrl", function($scope, $http, $cookies) {
       if (response.status) {
         $scope.employee.observation = '';
         $scope.listEmployee();
+        $("#delemp").closeModal();
       } else {
         swal('Error!', 'No se a podido realizar la transacción con existo!', 'error');
       }

@@ -112,6 +112,7 @@ app.controller "empCtrl", ($scope, $http, $cookies) ->
       if response.status
         $scope.employee.observation = ''
         $scope.listEmployee()
+        $("#delemp").closeModal()
         return
       else
         swal 'Error!', 'No se a podido realizar la transacción con existo!', 'error'
