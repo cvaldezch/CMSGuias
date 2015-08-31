@@ -7,6 +7,7 @@ getCountryOption = ->
             for x of response.country
                 $country.append Mustache.render template, response.country[x]
             $country.material_select('destroy')
+            # $country.attr "data-ng-model", "pais"
         return
     return
 
@@ -22,6 +23,7 @@ getDepartamentOption = ->
             for x of response.departament
                 $departament.append Mustache.render template, response.departament[x]
             $departament.material_select('destroy')
+            # $departament.attr "data-ng-model", "departamento"
         return
     return
 
@@ -38,6 +40,7 @@ getProvinceOption = ->
             for x of response.province
                 $province.append Mustache.render template, response.province[x]
             $province.material_select('destroy')
+            # $province.attr "data-ng-model", "provincia"
         return
     return
 
@@ -55,6 +58,7 @@ getDistrictOption = ->
             for x of response.district
                 $district.append Mustache.render template, response.district[x]
             $district.material_select('destroy')
+            # $district.attr "data-ng-model", "distrito"
         return
     return
 

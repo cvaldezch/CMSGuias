@@ -362,8 +362,11 @@ class Proveedor(models.Model):
     tipo = models.CharField(max_length=8)
     origen = models.CharField(max_length=10)
     last_login = models.DateTimeField(auto_now=True, null=True)
-    email = models.CharField(max_length=60, default='ejemplo@dominio.com')
-    contact = models.CharField(max_length=200, default='', blank=True)
+    email = models.CharField(
+                max_length=60, default='ejemplo@dominio.com', null=True)
+    contact = models.CharField(
+                max_length=200, default='', blank=True, null=True)
+    register = models.DateTimeField(auto_now=True, blank=True, null=True)
     flag = models.BooleanField(default=True)
 
     class Meta:

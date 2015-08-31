@@ -1,19 +1,156 @@
 {% extends "basemd.html" %}
 {% block content %}
-<div class="container">
-	<header>
-		<a href="{% url 'diaryview' %}" class="btn light-green lighten-1 grey-text text-darken-3">
-			<i class="fa fa-home"></i>
-			principal
-		</a>
-		<h3>Proveedores</h3>
-	</header>
-	<div class="section">
-		<div class="card">
-
-		</div>
-		<div class="row">
-		</div>
-	</div>
+<div class="card-panel" data-ng-app="supApp" data-ng-controller="supCtrl">
+  <div class="card-content">
+    <header>
+      <a href="{% url 'diaryview' %}" class="btn light-green lighten-1 grey-text text-darken-3">
+        <i class="fa fa-home"></i>
+        principal
+      </a>
+      <h3>Proveedores</h3>
+    </header>
+    <div class="card-action">
+      <div class="row">
+        <div class="col-m2 s12">
+          <button data-target="madd" class="btn modal-trigger waves-effect grey lighten-5 grey-text text-darken-3" type="button">
+            <i class="fa fa-plus"></i>
+            <span>Nuevo</span>
+          </button>
+        </div>
+        <div class="col l12 m12 s12">
+          <div class="input-field">
+            <i class="prefix fa fa-filter"></i>
+            <input type="text" data-ng-model="search">
+            <label>Buscar Proveedores</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <table class="table responsive-table bodered">
+      <thead>
+        <tr class="red light-3">
+          <th>#</th>
+          <th>RUC</th>
+          <th>Razón Social</th>
+          <th>Correo</th>
+          <th>Teléfono</th>
+          <th>Origen</th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% verbatim %}
+          <tr data-ng-repeat="x in list | filter:search | orderBy:predicate:reverse">
+            <td>{{$index+1}}</td>
+            <td>{{x.pk}}</td>
+            <td>{{x.fields.razonsocial}}</td>
+            <td>{{x.fields.email}}</td>
+            <td>{{x.fields.telefono}}</td>
+            <td>{{x.fields.origen}}</td>
+            <td class="center-align">
+              <button type="button" class="btn-flat waves-effect" data-ng-click="showDetails()">
+                <i class="fa fa-list-alt"></i>
+              </button>
+            </td>
+            <td class="center-align">
+              <button type="button" class="btn-flat waves-effect blue-text" data-ng-click="showEdit()">
+                <i class="fa fa-edit"></i>
+              </button>
+            </td>
+            <td class="center-align">
+              <button type="button" class="btn-flat waves-effect red-text" data-ng-click="showDelete()">
+                <i class="fa fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        {% endverbatim %}
+      </tbody>
+    </table>
+  </div>
+  <!-- modals -->
+  <div class="modal bottom-sheet" id="madd">
+    <div class="modal-content">
+      <h4>Proveedor</h4>
+      <div class="row">
+        <div class="col l12">
+          <button type="button" class="btn waves-effect grey lighten-5 grey-text text-darken-3 modal-action modal-close">
+            <i class="fa fa-times"></i>
+            <span>Cancelar</span>
+          </button>
+          <button type="button" class="btn waves-effect blue darken-3 right" data-ng-click="saveSupplier()">
+            <i class="fa fa-save"></i>
+            <span>Guardar</span>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col l3 input-field">
+          <i class="prefix">#</i>
+          <input type="text" data-ng-model="supplier.proveedor_id">
+          <label data-ng-class="{'active':supplier.proveedor_id}">RUC</label>
+        </div>
+        <div class="col l9 input-field">
+          <i class="prefix fa fa-font"></i>
+          <input type="text" data-ng-model="supplier.razonsocial">
+          <label data-ng-class="{'active':supplier.razonsocial}">Razón Social</label>
+        </div>
+        <div class="col l3 input-field">
+          <label class="active" data-ng-class="{'active':supplier.pais}">Pais</label>
+          <select name="pais" data-ng-model="supplier.pais" class="browser-default"></select>
+        </div>
+        <div class="col l3 input-field">
+          <label class="active" data-ng-class="{'active':supplier.departamento}">Departamento</label>
+          <select name="departamento" data-ng-model="supplier.departamento" class="browser-default"></select>
+        </div>
+        <div class="col l3 input-field">
+          <label class="active" data-ng-class="{'active':supplier.provincia}">Provincia</label>
+          <select name="provincia" data-ng-model="supplier.provincia" class="browser-default"></select>
+        </div>
+        <div class="col l3 input-field">
+          <label class="active" data-ng-class="{'active':supplier.distrito}">Distrito</label>
+          <select name="distrito" data-ng-model="supplier.distrito" class="browser-default"></select>
+        </div>
+        <div class="col l6 input-field">
+          <i class="prefix fa fa-map-marker"></i>
+          <input type="text" data-ng-model="supplier.direccion">
+          <label data-ng-class="{'active':supplier.direccion}">Dirección</label>
+        </div>
+        <div class="col l3 input-field">
+          <i class="prefix fa fa-phone"></i>
+          <input type="text" data-ng-model="supplier.telefono">
+          <label data-ng-class="{'active':supplier.telefono}">Teléfono</label>
+        </div>
+        <div class="col l2 input-field">
+          <i class="prefix fa fa-info"></i>
+          <input type="text" data-ng-model="supplier.tipo">
+          <label data-ng-class="{'active':supplier.tipo}">Tipo</label>
+        </div>
+        <div class="col l2 input-field">
+          <i class="prefix fa fa-flag"></i>
+          <input type="text" data-ng-model="supplier.origen">
+          <label data-ng-class="{'active':supplier.origen}">Origen</label>
+        </div>
+        <div class="col l4 input-field">
+          <i class="prefix fa fa-user"></i>
+          <input type="text" data-ng-model="supplier.contact">
+          <label data-ng-class="{'active':supplier.contact}">Contacto</label>
+        </div>
+        <div class="col l4 input-field">
+          <i class="prefix">@</i>
+          <input type="text" data-ng-model="supplier.email">
+          <label data-ng-class="{'active':supplier.email}">Correo</label>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+<!-- tools utils -->
+<script src="{{ MEDIA_URL }}vendor/angularjs/angular.min.js"></script>
+<script src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js"></script>
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="{{ MEDIA_URL }}js/getCountry.js"></script>
+<script src="{{ MEDIA_URL }}js/diary/supplier.js"></script>
 {% endblock content %}

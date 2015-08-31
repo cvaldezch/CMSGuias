@@ -63,7 +63,7 @@ app.controller("empCtrl", function($scope, $http, $cookies) {
       data: $.param(params)
     }).success(function(response) {
       if (response.status) {
-        swal('Felicidades!', 'Se dio de baja al empleado.', 'success');
+        swal('Felicidades!', 'Se guardo correctamente los datos.', 'success');
         $scope.listEmployee();
         $("#madd").closeModal();
       } else {

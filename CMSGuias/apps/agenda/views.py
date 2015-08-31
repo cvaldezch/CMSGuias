@@ -14,7 +14,7 @@ from django.views.generic import TemplateView
 
 
 from .models import *
-from CMSGuias.apps.home.models import Employee
+from CMSGuias.apps.home.models import Employee, Proveedor
 from .forms import EmployeeForm
 
 
@@ -102,7 +102,23 @@ class SupplierView(JSONResponseMixin, TemplateView):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
+        if request.is_ajax():
+            try:
+                if 'list' in request.GET:
+                    context['supplier'] = simplejson.loads(
+                        serializers.serialize(
+                            'json', Proveedor.objects.filter(flag=True),
+                            relations=(
+                                'pais',
+                                'departamento',
+                                'provincia',
+                                'distrito',)))
+                    context['status'] = True
+            except ObjectDoesNotExist as e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)
         try:
-            pass
-        except ObjectDoesNotExist as e:
-            pass
+            return render(request, 'agenda/supplier.html', context)
+        except TemplateDoesNotExist as e:
+            raise Http404(e)
