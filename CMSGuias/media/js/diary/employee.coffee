@@ -50,6 +50,7 @@ app.controller "empCtrl", ($scope, $http, $cookies) ->
     if typeof($scope.employee.empdni_id) is "undefined"
       return false
     params = $scope.employee
+    params.charge = $("[name=charge]").val()
     params.save = true
     $http
       url: ''
@@ -66,17 +67,22 @@ app.controller "empCtrl", ($scope, $http, $cookies) ->
         return
     return
   $scope.edit = ->
+    em = this
     $scope.employee =
-      empdni_id: this.x.pk
-      firstname: this.x.fields.firstname
-      lastname: this.x.fields.lastname
-      birth: this.x.fields.birth
-      email: this.x.fields.email
-      address: this.x.fields.address
-      phone: this.x.fields.phone
-      phonejob: this.x.fields.phonejob
-      fixed: this.x.fields.fixed
-    $("[name=charge]").val this.x.fields.charge.pk
+      empdni_id: em.x.pk
+      firstname: em.x.fields.firstname
+      lastname: em.x.fields.lastname
+      birth: em.x.fields.birth
+      email: em.x.fields.email
+      address: em.x.fields.address
+      phone: em.x.fields.phone
+      phonejob: em.x.fields.phonejob
+      fixed: em.x.fields.fixed
+      charge: em.x.fields.charge.pk
+    # console.log em
+    #$("[name=charge] option").filter ->
+    #  this.value is em.x.fields.charge.pk
+    #.attr 'selected', true
     $("#madd").openModal()
     return
   $scope.showDetails = ->

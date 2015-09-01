@@ -135,8 +135,8 @@
             <div class="col l10">
               <label data-ng-class="{'active':employee.charge}">Cargo</label>
               {% verbatim %}
-                <select class="browser-default" data-ng-model="employee.charge" name="charge">
-                  <option value="{{x.pk}}" data-ng-repeat="x in charge">{{x.fields.cargos}}</option>
+                <select class="browser-default ng-valid ng-dirty" data-ng-model="employee.charge" name="charge">
+                  <option ng-repeat="x in charge" value="{{x.pk}}">{{x.fields.cargos}}</option>
                 </select>
               {% endverbatim %}
             </div>

@@ -13,7 +13,7 @@
         <div class="card-action">
           <div class="row">
             <div class="col l12 m12 s12">
-              <button type="button" class="btn grey lighten-3 grey-text text-darken-3 showAnalysis">
+              <button type="button" class="btn light-green lighten-1 grey-text text-darken-3 modal-trigger" data-target="manalysis">
                 <span class="fa fa-plus"></span>
                 Nuevo Analisis
               </button>
@@ -28,7 +28,7 @@
                 <label for="s3">Grupo</label>
               </p>
             </div>
-            <div class="col l2 m3 s12">
+            <div class="col l2 m6 s12">
               <div class="input-field">
                 <input type="text" name="scode" disabled>
                 <label>Código</label>
@@ -48,289 +48,149 @@
                   {% endfor %}
                 </select>
             </div>
-            <div class="col l1 m1 s12">
+            <div class="col l1 m2 s12">
               <label>Buscar</label>
-              <button type="button" class="btn green lighten-1 btn-search">
+              <button type="button" class="btn lime lighten-1 btn-search">
                 <span class="fa fa-search"></span>
               </button>
             </div>
           </div>
         </div>
-        <div class="table-responsive">
-          <table class="table table-hover table-condensed">
-            <thead>
-                <tr class="brand-warning">
-                    <th>Item</th>
-                    <th>Código</th>
-                    <th>Nombre</th>
-                    <th>Unidad</th>
-                    <th>Grupo</th>
-                    <th>Rendimiento</th>
-                    <th>P. Unitario</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-              {% for x in analysis %}
-                <tr>
-                  <td>{{ forloop.counter }}</td>
-                  <td>{{ x.analysis_id }}</td>
-                  <td>{{ x.name }}</td>
-                  <td>{{ x.unit.uninom }}</td>
-                  <td>{{ x.group.name }}</td>
-                  <td class="center-align">{{ x.performance|safe }}</td>
-                  <td>{{ x.total|safe }}</td>
-                  <td class="text-center">
-                      <a href="#!" class="dropdown-button btn yellow darken-2" data-activates="dropdown">
-                        <i class="fa fa-gears"></i>
-                        <span class="caret"></span>
-                      </a>
-                      <ul class="dropdown-content" id="dropdown">
-                        <li class="text-left">
-                          <a role="menuitem" tabindex="-1" href="{% url 'detailsamalysis' x.analysis_id %}"><span class="fa fa-list-alt"></span> Detalle</a>
-                        </li>
-                        <li class="text-left">
-                          <a role="menuitem" tabindex="-1" class="bedit" data-value="{{ x.analysis_id }}" data-group="{{ x.group_id }}" data-name="{{ x.name }}" data-unit="{{ x.unit_id }}" data-performance="{{ x.performance|safe }}"><span class="fa fa-edit"></span> Editar</a>
-                        </li>
-                        <li class="text-left">
-                          <a role="menuitem" tabindex="-1" class="bdel" data-value="{{ x.analysis_id }}"><span class="fa fa-trash"></span> Eliminar</a>
-                        </li>
-                      </ul>
-                  </td>
-                </tr>
-              {% empty %}
-                <tr>
-                  <th colspan="6">
-                      No se han encontrado analisis de precios.
-                  </th>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+        <table class="table responsive-table">
+          <thead>
+              <tr class="brand-warning">
+                  <th>Item</th>
+                  <th>Código</th>
+                  <th>Nombre</th>
+                  <th>Unidad</th>
+                  <th>Grupo</th>
+                  <th>Rendimiento</th>
+                  <th>P. Unitario</th>
+                  <th>Acciones</th>
+              </tr>
+          </thead>
+          <tbody>
+            {% for x in analysis %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ x.analysis_id }}</td>
+                <td>{{ x.name }}</td>
+                <td>{{ x.unit.uninom }}</td>
+                <td>{{ x.group.name }}</td>
+                <td class="center-align">{{ x.performance|safe }}</td>
+                <td>{{ x.total|safe }}</td>
+                <td class="text-center">
+                    <a href="#!" class="dropdown-button btn yellow darken-2 grey-text text-darken-3" data-activates="dropdown">
+                      <i class="fa fa-gears"></i>
+                      <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-content" id="dropdown">
+                      <li class="text-left">
+                        <a class="grey-text text-darken-3" href="{% url 'detailsamalysis' x.analysis_id %}"><span class="fa fa-list-alt"></span> Detalle</a>
+                      </li>
+                      <li class="text-left">
+                        <a class="grey-text text-darken-3 bedit" data-value="{{ x.analysis_id }}" data-group="{{ x.group_id }}" data-name="{{ x.name }}" data-unit="{{ x.unit_id }}" data-performance="{{ x.performance|safe }}"><span class="fa fa-edit"></span> Editar</a>
+                      </li>
+                      <li class="text-left">
+                        <a class="bdel grey-text text-darken-3" data-value="{{ x.analysis_id }}"><span class="fa fa-trash"></span> Eliminar</a>
+                      </li>
+                    </ul>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <th colspan="6">
+                    No se han encontrado analisis de precios.
+                </th>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
   </div>
 </div>
 <!-- block modals -->
-<div class="modal fade" id="manalysis" data-backdrop="static">
-  <div class="modal-dialog">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h3 class="modal-title">
-                  Analisis de Precio
-              </h3>
-          </div>
-          <form action="#" method="post" id="registration">
-              <div class="modal-body">
-                  <div class="row">
-                      <div class="col-md-5">
-                          <div class="form-group">
-                              <label class="control-label">Tipo</label>
-                              <div class="input-group">
-                                  <select name="group" id="" class="form-control input-sm" data-validation="required" data-validation-error-msg="Debe de seleccionar un grupo.">
-                                      <option value="">--Select--</option>
-                                      {% for x in group %}
-                                          <option value="{{ x.agroup_id }}">{{ x.name }}</option>
-                                      {% endfor %}
-                                  </select>
-                                  <span class="input-group-btn">
-                                      <a href="{% url 'addanalysisgroup' %}" target="popup" class="btn btn-sm btn-default agroup">
-                                          <span class="fa fa-plus"></span>
-                                      </a>
-                                  </span>
-                              </div>
-                          </div>
-                      </div>
-                      <div class="col-md-12">
-                          <div class="form-group">
-                              <label class="control-label">Descripción <small>(<span id="pres-max-length">255</span> caracteres restantes.)</small></label>
-                              <textarea name="name" id="" rows="3" class="form-control input-sm" rows="1" data-validation="required" data-validation-error-msg="Ingrese una Descripción"></textarea>
-                          </div>
-                      </div>
-                      <div class="col-md-3">
-                          <label class="control-label">Unidad</label>
-                          <div class="input-group">
-                              <select name="unit" class="form-control input-sm" data-validation="required" data-validation-error-msg="Debe de seleccionar una Unidad.">
-                                  <option value="">--Select--</option>
-                                  {% for x in unit %}
-                                      <option value="{{ x.unidad_id }}">{{ x.uninom }}</option>
-                                  {% endfor %}
-                              </select>
-                              <span class="input-group-btn">
-                                  <a href="{% url 'unit_add' %}" target="popup" class="btn btn-default btn-sm ounit">
-                                      <span class="fa fa-plus"></span>
-                                  </a>
-                              </span>
-                          </div>
-                      </div>
-                      <div class="col-md-4">
-                          <label class="control-label">Rendimiento</label>
-                          <div class="input-group">
-                              <input type="number" name="performance" class="form-control input-sm" step="0.10" min="0" data-validation="number" data-validation-allowing="float" data-validation-error-msg="Debe de ingresar un rendimiento.">
-                              <span class="input-group-addon">x día.</span>
-                          </div>
-                      </div>
-                      <!-- form utils -->
-                      {% csrf_token %}
-                      <input type="hidden" name="edit">
-                  </div>
-              </div>
-              <div class="modal-footer">
-                  <button type="button" class="btn btn-default btn-sm pull-left analysisClose" data-dismiss="modal">
-                      <span class="fa fa-times"></span>
-                      Salir
-                  </button>
-                  <button type="submit" class="btn btn-warning btn-sm text-black btn-saveAnalysis">
-                      <span class="fa fa-save"></span>
-                      Añadir Analisis
-                  </button>
-              </div>
-          </form>
+<div class="modal bottom-sheet" id="manalysis">
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Analisis de Precio</h3>
       </div>
-  </div>
+      <form id="registration">
+          <div class="row">
+            <div class="col l12">
+              <button type="button" class="btn analysisClose modal-action modal-close grey lighten-5 grey-text text-darken-3">
+                <span class="fa fa-times"></span>
+                Salir
+              </button>
+              <button type="submit" class="btn btn-saveAnalysis green lighten-1 right">
+                <span class="fa fa-save"></span>
+                Guardar Analisis
+              </button>
+            </div>
+            <div class="col l5">
+              <div class="row">
+                <div class="col l10">
+                  <label>Tipo</label>
+                  <select name="group" class="browser-default" data-validation="required" data-validation-error-msg="Debe de seleccionar un grupo.">
+                    <option value="">--Select--</option>
+                    {% for x in group %}
+                      <option value="{{ x.agroup_id }}">{{ x.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col l2">
+                  <label></label>
+                  <button type="button" data-href="{% url 'addanalysisgroup' %}" class="btn grey grey-lighten-4 agroup">
+                    <span class="fa fa-plus"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col l12">
+              <div class="input-field">
+                <textarea name="name" id="" rows="3" class="materialize-textarea input-sm" rows="1" data-validation="required" data-validation-error-msg="Ingrese una Descripción"></textarea>
+                <label class="control-label">Descripción <small>(<span id="pres-max-length">255</span> caracteres restantes.)</small></label>
+              </div>
+            </div>
+            <div class="col l3">
+              <div class="row">
+                <div class="col l9">
+                  <div class="input-group">
+                    <label class="control-label">Unidad</label>
+                    <select name="unit" class="browser-default" data-validation="required" data-validation-error-msg="Debe de seleccionar una Unidad.">
+                      <option value="">--Select--</option>
+                      {% for x in unit %}
+                          <option value="{{ x.unidad_id }}">{{ x.uninom }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <div class="col l3">
+                  <label></label>
+                  <button type="button" data-href="{% url 'unit_add' %}" class="btn grey grey-lighten-4 btn-default btn-sm ounit">
+                    <span class="fa fa-plus"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col l4">
+              <div class="input-field">
+                <input type="number" name="performance" class="form-control input-sm" step="0.10" min="0" data-validation="number" data-validation-allowing="float" data-validation-error-msg="Debe de ingresar un rendimiento.">
+                <label>Rendimiento</label>
+              </div>
+              <span class="prefix right">x día.</span>
+            </div>
+            <!-- form utils -->
+            {% csrf_token %}
+            <input type="hidden" name="edit">
+          </div>
+      </form>
+    </div>
 </div>
 <!-- endblock -->
 <!-- script -->
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>
-<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script> -->
 <script src="{{ MEDIA_URL }}js/form-validator.min.js"></script>
 <script src="{{ MEDIA_URL }}js/budget/analysis.js"></script>
-<script>
-//     var showAnalysis, openGroup, openUnit, saveAnalysis, searchChange, searchAnalysis;
-//     $(function(){
-//         $('[name=name]').restrictLength( $('#pres-max-length') );
-//         $(".showAnalysis").on("click", showAnalysis);
-//         $(".agroup").on("click", openGroup);
-//         $(".ounit").on("click", openUnit);
-//         $(".btn-saveAnalysis").on("click", saveAnalysis);
-//         $("[name=ssearch]").on("change", searchChange);
-//         $(".btn-search").on("click", searchAnalysis);
-//     });
-//     showAnalysis = function()
-//     {
-//         $("#manalysis").modal("show");
-//     }
-//     openGroup = function()
-//     {
-//         var url = $(this).attr("href");
-//         win = window.open(url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600")
-//         interval = window.setInterval(function(){
-//             if (win == null || win.closed) {
-//                 window.clearInterval(interval);
-//                 var data = new Object();
-//                 data.list = true;
-//                 $.getJSON("/sales/budget/analysis/group/list/", data, function(response){
-//                     if (response.status) {
-//                         $group = $("[name=group]")
-//                         $group.empty()
-//                         Mustache.tags = new Array("[[","]]");
-//                         $group.html(Mustache.render("[[#list]]<option value=\"[[agroup_id]]\">[[ name ]]</option>[[/list]]", response));
-//                     };
-//                 });
-//             };
-//         }, 1000);
-//         return win;
-//     }
-//     openUnit = function()
-//     {
-//         var url = $(this).attr("href");
-//         win = window.open(url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600")
-//         interval = window.setInterval(function(){
-//             if (win == null || win.closed) {
-//                 window.clearInterval(interval);
-//                 var data = new Object();
-//                 data.list = true;
-//                 $.getJSON("/unit/list/", data, function(response){
-//                     if (response.status) {
-//                         $group = $("[name=unit]")
-//                         $group.empty()
-//                         Mustache.tags = new Array("[[","]]");
-//                         $group.html(Mustache.render("[[#unit]]<option value=\"[[unidad_id]]\">[[ uninom ]]</option>[[/unit]]", response));
-//                     };
-//                 });
-//             };
-//         }, 1000);
-//         return win;
-//     }
-//     saveAnalysis = function(event)
-//     {
-//         $.validate({
-//             form: "#registration",
-//             errorMessagePosition : 'top',
-//             onError: function(){
-//                 return false;
-//             },
-//             onSuccess: function(){
-//                 event.preventDefault();
-//                 console.log("valid");
-//                 var context = new Object();
-//                 context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
-//                 context.analysisnew = true;
-//                 context.group = $("[name=group]").val();
-//                 context.name = $("[name=name]").val();
-//                 context.unit = $("[name=unit]").val();
-//                 context.performance = $("[name=performance]").val();
-//                 $.post("", context, function(response){
-//                     if (response.status)
-//                     {
-//                         $().toastmessage("showSuccessToast", "Se guardaron los camnbios correctamente.");
-//                         setTimeout(function() {
-//                             location.reload();
-//                         }, 2600);
-//                     }else{
-//                         $().toastmessage("showErrorToast", "Error al registrar analysis");
-//                     }
-//                 }, "json");
-//                 return false;
-//             }
-//         });
-//     }
-//     searchAnalysis = function()
-//     {
-//         var rdo = "", context = new Object();
-//         $("[name=ssearch]").each(function(){
-//             if (this.checked){
-//                 rdo = this.value;
-//             }
-//         });
-//         if (rdo == "0") {
-//             context.code = $("[name=scode]").val();
-//         }else if(rdo == "1"){
-//             context.name = $("[name=sname]").val();
-//         }else if(rdo == "2"){
-//             context.group = $("[name=sgroup]").val();
-//         };
-//         context.list = true;
-//         var count = 1;
-//         $.getJSON("", context, function(response){
-//             if (response.status) {
-//                 response.index = function(){return count++;}
-//                 var template = "[[#analysis]]<tr><td>[[ index ]]</td><td>[[ code ]]</td><td>[[ name ]]</td><td>[[ unit ]]</td><td>[[ performance ]]</td><td>[[ group ]]</td><td><div class=\"dropdown\"><button class=\"btn btn-default dropdown-toggle btn-xs\" type=\"button\" data-toggle=\"dropdown\" aria-expanded=\"true\"><span class=\"caret\"></span></button><ul class=\"dropdown-menu\" role=\"menu\"><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Detalle</a></li><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Editar</a></li><li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">Eliminar</a></li></ul></div></td></tr>[[/analysis]]";
-//                 var $tb = $("table > tbody");
-//                 $tb.empty();
-//                 Mustache.tags = new Array("[[","]]");
-//                 $tb.html(Mustache.render(template, response));
-//             }else{
-//                 $().toastmessage("showErrorToast", "Error al buscar. "+response.raise);
-//             };
-//         });
-//     }
-//     searchChange = function(event)
-//     {
-//         if (this.value == "0") {
-//             $("[name=scode]").attr("disabled", false);
-//             $("[name=sname]").attr("disabled", true);
-//             $("[name=sgroup]").attr("disabled", true);
-//         }else if(this.value == "1"){
-//             $("[name=scode]").attr("disabled", true);
-//             $("[name=sname]").attr("disabled", false);
-//             $("[name=sgroup]").attr("disabled", true);
-//         }else if(this.value == "2"){
-//             $("[name=scode]").attr("disabled", true);
-//             $("[name=sname]").attr("disabled", true);
-//             $("[name=sgroup]").attr("disabled", false);
-//         };
-//     }
-//
-</script>
 {% endblock content %}

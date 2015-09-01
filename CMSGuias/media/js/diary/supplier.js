@@ -45,6 +45,19 @@ app.controller('supCtrl', function($scope, $http, $cookies) {
     params.provincia = $("[name=provincia]").val();
     params.distrito = $("[name=distrito]").val();
     console.log(params);
+    $http({
+      url: '',
+      method: 'post',
+      data: $.param(params)
+    }).success(function(response) {
+      if (response.status) {
+        swal('Felicidades!', 'Se guardo los datos correctamente.', 'success');
+        $scope.listEmployee();
+        $("#madd").closeModal();
+      } else {
+        swal('Error', 'error al guardar los cambios.', 'error');
+      }
+    });
   };
   $scope.showEdit = function() {
     var option;

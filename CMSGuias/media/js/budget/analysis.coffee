@@ -1,6 +1,6 @@
 $ ->
   $("[name=name]").restrictLength $("#pres-max-length")
-  $(".showAnalysis").on "click", showAnalysis
+  # $(".showAnalysis").on "click", showAnalysis
   $(".agroup").on "click", openGroup
   $(".ounit").on "click", openUnit
   $(".btn-saveAnalysis").on "click", saveAnalysis
@@ -13,14 +13,12 @@ $ ->
   $('select').material_select()
   $('.dropdown-button').dropdown
     constrain_width: 200
-  return
-
-  showAnalysis = ->
-  $("#manalysis").modal "show"
+  $('.modal-trigger').leanModal()
+  $(".modal.bottom-sheet").css "max-height", "60%"
   return
 
 openGroup = ->
-  url = $(this).attr("href")
+  url = $(this).attr("data-href")
   win = window.open url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600"
   interval = window.setInterval ->
     if not win? or win.closed
@@ -39,7 +37,7 @@ openGroup = ->
   win
 
 openUnit = ->
-  url = $(this).attr("href")
+  url = $(this).attr "data-href"
   win = window.open(url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600")
   interval = window.setInterval ->
     if not win? or win.closed
@@ -57,15 +55,13 @@ openUnit = ->
   , 1000
   win
 
-saveAnalysis = (event) ->
+saveAnalysis = ->
   $.validate
     form: "#registration"
     errorMessagePosition: "top"
     onError: ->
       false
     onSuccess: ->
-      event.preventDefault()
-      #console.log "valid"
       context = new Object()
       context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
       context.group = $("[name=group]").val()
@@ -77,7 +73,8 @@ saveAnalysis = (event) ->
         context.analysis_id = $("[name=edit]").val()
       else
         context.analysisnew = true
-      $.post "", context, (response) ->
+      $.post '', context, (response) ->
+        console.log response
         if response.status
           swal "Felicidades!", "Se guardaron los camnbios correctamente.", "success"
           clearEdit()
@@ -85,9 +82,10 @@ saveAnalysis = (event) ->
             location.reload()
             return
           , 2600
+          return
         else
           swal "Error", "Error al registrar analysis", "error"
-        return
+          return
       , "json"
       return
   return

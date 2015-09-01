@@ -56,6 +56,7 @@ app.controller("empCtrl", function($scope, $http, $cookies) {
       return false;
     }
     params = $scope.employee;
+    params.charge = $("[name=charge]").val();
     params.save = true;
     $http({
       url: '',
@@ -72,18 +73,20 @@ app.controller("empCtrl", function($scope, $http, $cookies) {
     });
   };
   $scope.edit = function() {
+    var em;
+    em = this;
     $scope.employee = {
-      empdni_id: this.x.pk,
-      firstname: this.x.fields.firstname,
-      lastname: this.x.fields.lastname,
-      birth: this.x.fields.birth,
-      email: this.x.fields.email,
-      address: this.x.fields.address,
-      phone: this.x.fields.phone,
-      phonejob: this.x.fields.phonejob,
-      fixed: this.x.fields.fixed
+      empdni_id: em.x.pk,
+      firstname: em.x.fields.firstname,
+      lastname: em.x.fields.lastname,
+      birth: em.x.fields.birth,
+      email: em.x.fields.email,
+      address: em.x.fields.address,
+      phone: em.x.fields.phone,
+      phonejob: em.x.fields.phonejob,
+      fixed: em.x.fields.fixed,
+      charge: em.x.fields.charge.pk
     };
-    $("[name=charge]").val(this.x.fields.charge.pk);
     $("#madd").openModal();
   };
   $scope.showDetails = function() {

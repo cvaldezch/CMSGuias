@@ -41,19 +41,19 @@ app.controller 'supCtrl', ($scope, $http, $cookies) ->
     params.provincia = $("[name=provincia]").val()
     params.distrito = $("[name=distrito]").val()
     console.log params
-    # $http
-    #   url: ''
-    #   method: 'post'
-    #   data: $.param params
-    # .success (response) ->
-    #   if response.status
-    #     swal 'Felicidades!', 'Se guardo los datos correctamente.', 'success'
-    #     $scope.listEmployee()
-    #     $("#madd").closeModal()
-    #     return
-    #   else
-    #     swal 'Error', 'error al guardar los cambios.', 'error'
-    #     return
+    $http
+      url: ''
+      method: 'post'
+      data: $.param params
+    .success (response) ->
+      if response.status
+        swal 'Felicidades!', 'Se guardo los datos correctamente.', 'success'
+        $scope.listEmployee()
+        $("#madd").closeModal()
+        return
+      else
+        swal 'Error', 'error al guardar los cambios.', 'error'
+        return
     return
   $scope.showEdit = ->
     $scope.supplier =
