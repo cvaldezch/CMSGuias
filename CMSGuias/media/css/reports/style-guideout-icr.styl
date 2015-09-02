@@ -105,10 +105,9 @@ vendor-prefixes = webkit moz o ms
 
 @font-face
   font-family 'dot'
-  src url('/media/fonts/2086.eot')
-  src url('/media/fonts/2086.woff')
-  src url('/media/fonts/2086.ttf')
-  //src: local('2086'), url('/media/fonts/2086.woff') format('woff'), url('/media/fonts/2086.ttf') format('truetype');
+  src url('/media/fonts/Tahoma.eot')
+  src url('/media/fonts/Tahoma.woff')
+  src url('/media/fonts/Tahoma.ttf')
 
 // @font-face
 //   font-family: dot;
@@ -116,20 +115,25 @@ vendor-prefixes = webkit moz o ms
 
 *
   font-family: 'dot' !important
-  font-size: 10px
+  font-size: 14px
 
 .text-center
   text-align center
 
 .text-normal
-  font-size 11px
+  font-family: 'dot' !important
+  font-size 13px
+
+.text-number
+  font-family: 'dot' !important
+  font-size 15px
 
 #delivery, #arrival
   text-indent 3cm
 
 #nro
-  font-size 14px
-  font-weight bold
+  font-size 16px //14
+  font-weight 600
 
 #transfer
   border 1px solid #000
@@ -144,13 +148,14 @@ vendor-prefixes = webkit moz o ms
       & > tr
         & > td
           //padding-top 0.1cm
-          padding-bottom 0.10cm
-          text-transform uppercase
+          padding-bottom 0.08cm
           font-family 'dot' !important
-          font-weight 400
-          font-size 11px
+          font-size 13px // 11px
+        .text-quantity
+          font-size 15px
+          font-weight bold
 
-.text-up, #day, #month, #year
+.text-up
   font-size 13px
   vertical-align top
 

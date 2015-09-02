@@ -97,42 +97,46 @@
 }
 @font-face {
   font-family: 'dot';
-  src: url("/media/fonts/2086.eot");
-  src: url("/media/fonts/2086.woff");
-  src: url("/media/fonts/2086.ttf");
+  src: url("/media/fonts/Tahoma.eot");
+  src: url("/media/fonts/Tahoma.woff");
+  src: url("/media/fonts/Tahoma.ttf");
 }
 * {
   font-family: 'dot' !important;
-  font-size: 10px;
+  font-size: 14px;
 }
 .text-center {
   text-align: center;
 }
 .text-normal {
-  font-size: 11px;
+  font-family: 'dot' !important;
+  font-size: 13px;
+}
+.text-number {
+  font-family: 'dot' !important;
+  font-size: 15px;
 }
 #delivery,
 #arrival {
   text-indent: 3cm;
 }
 #nro {
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 16px;
+  font-weight: 600;
 }
 #transfer {
   border: 1px solid #000;
 }
 .details table > tbody > tr > td {
-  padding-bottom: 0.1cm;
-  text-transform: uppercase;
+  padding-bottom: 0.08cm;
   font-family: 'dot' !important;
-  font-weight: 400;
-  font-size: 11px;
+  font-size: 13px;
 }
-.text-up,
-#day,
-#month,
-#year {
+.details table > tbody > tr .text-quantity {
+  font-size: 15px;
+  font-weight: bold;
+}
+.text-up {
   font-size: 13px;
   vertical-align: top;
 }

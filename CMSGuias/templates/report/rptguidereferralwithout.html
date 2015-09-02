@@ -21,27 +21,27 @@
             <div id="reason" class="text-normal">
                 {{ guide.pedido.proyecto.ruccliente.razonsocial }}
             </div>
-            <div id="ruc" class="text-normal">
+            <div id="ruc" class="text-number">
                 {{ guide.ruccliente_id }}
             </div>
 
-            <div id="day">{{ guide.traslado|date:"d" }}</div>
-            <div id="month">{{ guide.traslado|date:"F" }}</div>
-            <div id="year">{{ guide.traslado|date:"y" }}</div>
+            <div class="text-normal" id="day">{{ guide.traslado|date:"d" }}</div>
+            <div class="text-normal" id="month">{{ guide.traslado|date:"F"|upper }}</div>
+            <div class="text-normal" id="year">{{ guide.traslado|date:"y" }}</div>
 
-            <div id="transport-brand" class="text-normal">
+            <div id="transport-brand" class="text-number">
                 {{ guide.nropla.marca }} {{ guide.nropla_id }}
             </div>
-            <div id="transport-inscription" class="text-normal">
+            <div id="transport-inscription" class="text-number">
                 {{ guide.condni.coninscription }}
             </div>
-            <div id="transport-license" class="text-normal">
+            <div id="transport-license" class="text-number">
                 {{guide.condni.conlic}}
             </div>
             <div id="carrie-reason" class="text-normal">
                 {{ guide.traruc.tranom }}
             </div>
-            <div id="carrie-ruc" class="text-normal">
+            <div id="carrie-ruc" class="text-number">
                 {{ guide.traruc_id }}
             </div>
         </header>
@@ -62,9 +62,9 @@
                         {% for x in det %}
                             <tr>
                                 <td class="text-center text-up">{{ forloop.counter }}</td>
-                                <td class="text-center text-up">{{ x.cantguide|safe }}</td>
+                                <td class="text-center text-up text-quantity">{{ x.cantguide|safe }}</td>
                                 <td class="text-center text-up">{{ x.materiales.unidad.uninom|upper }}</td>
-                                <td class="text-up">{{ x.materiales.matnom|upper }} {{ x.materiales.matmed|upper }}
+                                <td class="text-number">{{ x.materiales.matnom|upper }} {{ x.materiales.matmed|upper }}
                                     {% if nipples %}
                                         {% ifequal x.materiales_id|truncatechars:6 "115..." %}
                                             {% for i in nipples %}
@@ -78,7 +78,7 @@
                                                             {{ i.cantidad|pluralize }} {{ v }}{{ i.cantidad|pluralize }}
                                                         {% endif %}
                                                     {% endfor %}
-                                                    {{ x.materiales.matmed|upper }} x {{ i.metrado }} cm &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    {{ x.materiales.matmed }} x {{ i.metrado }} cm &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                                 {% endifequal %}
                                             {% endfor %}
                                         {% endifequal %}
