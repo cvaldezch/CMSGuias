@@ -195,7 +195,7 @@ class GetDetailsMaterialesByCode(DetailView):
                                         quantity = p['quantity']
                     else:
                         try:
-                            getprices = MetProject.objects.filter(materiales_id=x.materiales_id).distinct('proyecto__proyecto_id').order_by('proyecto__proyecto_id').reverse()
+                            getprices = MetProject.objects.filter(materiales_id=mat['materiales_id']).distinct('proyecto__proyecto_id').order_by('proyecto__proyecto_id').reverse()
                             if getprices:
                                 getprices = getprices[0]
                                 purchase = getprices.precio

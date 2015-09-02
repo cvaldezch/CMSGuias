@@ -55,14 +55,9 @@ openUnit = ->
   , 1000
   win
 
-saveAnalysis = ->
-  $.validate
-    form: "#registration"
-    errorMessagePosition: "top"
-    onError: ->
-      false
-    onSuccess: ->
-      context = new Object()
+saveAnalysis = (e) ->
+  # here valid form
+      context = {}
       context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
       context.group = $("[name=group]").val()
       context.name = $("[name=name]").val()
@@ -88,6 +83,7 @@ saveAnalysis = ->
           return
       , "json"
       return
+  e.preventDefault()
   return
 
 searchAnalysis = ->

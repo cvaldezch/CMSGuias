@@ -67,42 +67,37 @@ openUnit = function() {
   return win;
 };
 
-saveAnalysis = function() {
-  $.validate({
-    form: "#registration",
-    errorMessagePosition: "top",
-    onError: function() {
-      return false;
-    },
-    onSuccess: function() {
-      var context;
-      context = new Object();
-      context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
-      context.group = $("[name=group]").val();
-      context.name = $("[name=name]").val();
-      context.unit = $("[name=unit]").val();
-      context.performance = $("[name=performance]").val();
-      if ($("[name=edit]").val().length === 8) {
-        context.edit = true;
-        context.analysis_id = $("[name=edit]").val();
-      } else {
-        context.analysisnew = true;
-      }
-      $.post('', context, function(response) {
-        console.log(response);
-        if (response.status) {
-          swal("Felicidades!", "Se guardaron los camnbios correctamente.", "success");
-          clearEdit();
-          setTimeout(function() {
-            location.reload();
-          }, 2600);
-        } else {
-          swal("Error", "Error al registrar analysis", "error");
-        }
-      }, "json");
+saveAnalysis = function(e) {
+  var context;
+  context = {};
+  context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
+  context.group = $("[name=group]").val();
+  context.name = $("[name=name]").val();
+  context.unit = $("[name=unit]").val();
+  context.performance = $("[name=performance]").val();
+  if ($("[name=edit]").val().length === 8) {
+    context.edit = true;
+    context.analysis_id = $("[name=edit]").val();
+  } else {
+    context.analysisnew = true;
+  }
+  $.post('', context, function(response) {
+    console.log(response);
+    if (response.status) {
+      swal("Felicidades!", "Se guardaron los camnbios correctamente.", "success");
+      clearEdit();
+      setTimeout(function() {
+        location.reload();
+      }, 2600);
+    } else {
+      swal("Error", "Error al registrar analysis", "error");
     }
-  });
+  }, "json");
 };
+
+e.preventDefault();
+
+return;
 
 searchAnalysis = function() {
   var context, count, rdo;
