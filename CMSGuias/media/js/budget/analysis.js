@@ -68,36 +68,48 @@ openUnit = function() {
 };
 
 saveAnalysis = function(e) {
-  var context;
+  var $group, $name, $performance, $unit, context;
+  $group = $('[name=group]').val();
+  $name = $('[name=name]').val();
+  $unit = $('[name=unit]').val();
+  $performance = $('[name=performance]').val();
+  if (typeof $group === 'undefined') {
+    return false;
+  }
+  if (typeof $name === 'undefined') {
+    return false;
+  }
+  if (typeof $unit === 'undefined') {
+    return false;
+  }
+  if (typeof $performance === 'undefined') {
+    return false;
+  }
   context = {};
-  context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
-  context.group = $("[name=group]").val();
-  context.name = $("[name=name]").val();
-  context.unit = $("[name=unit]").val();
-  context.performance = $("[name=performance]").val();
-  if ($("[name=edit]").val().length === 8) {
+  context.group = $group;
+  context.name = $name;
+  context.unit = $unit;
+  context.performance = $performance;
+  context.csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+  if ($('[name=edit]').val().length === 8) {
     context.edit = true;
-    context.analysis_id = $("[name=edit]").val();
+    context.analysis_id = $('[name=edit]').val();
   } else {
     context.analysisnew = true;
   }
   $.post('', context, function(response) {
-    console.log(response);
     if (response.status) {
-      swal("Felicidades!", "Se guardaron los camnbios correctamente.", "success");
+      swal('Felicidades!', 'Se guardaron los camnbios correctamente.', 'success');
       clearEdit();
       setTimeout(function() {
         location.reload();
       }, 2600);
     } else {
-      swal("Error", "Error al registrar analysis", "error");
+      swal('Error', "Error al registrar analysis. " + response.raise, 'error');
     }
-  }, "json");
+  }, 'json');
+  e.preventDefault();
 };
-
-e.preventDefault();
-
-return;
 
 searchAnalysis = function() {
   var context, count, rdo;
@@ -155,13 +167,13 @@ searchChange = function(event) {
   }
 };
 
-editAnalysis = function(event) {
-  $("[name=group]").val(this.getAttribute("data-group"));
-  $("[name=name]").val(this.getAttribute("data-name"));
-  $("[name=unit]").val(this.getAttribute("data-unit"));
-  $("[name=performance]").val(this.getAttribute("data-performance"));
-  $("[name=edit]").val(this.getAttribute("data-value"));
-  $("#manalysis").modal("show");
+editAnalysis = function() {
+  $('[name=group]').val(this.getAttribute('data-group'));
+  $('[name=name]').val(this.getAttribute('data-name'));
+  $('[name=unit]').val(this.getAttribute('data-unit'));
+  $('[name=performance]').val(this.getAttribute('data-performance'));
+  $('[name=edit]').val(this.getAttribute('data-value'));
+  $('#manalysis').openModal('show');
 };
 
 delAnalysis = function(event) {

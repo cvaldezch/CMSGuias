@@ -37,7 +37,7 @@
             <div class="col l6 m6 s12">
               <div class="input-field">
                 <input type="text" name="sname" disabled>
-                <label class="control-label">Nombre</label>
+                <label>Nombre</label>
               </div>
             </div>
             <div class="col l3 m3 s12">
@@ -80,16 +80,16 @@
                 <td class="center-align">{{ x.performance|safe }}</td>
                 <td>{{ x.total|safe }}</td>
                 <td class="text-center">
-                    <a href="#!" class="dropdown-button btn yellow darken-2 grey-text text-darken-3" data-activates="dropdown">
+                    <a href="#!" class="dropdown-button btn yellow darken-2 grey-text text-darken-3" data-activates="dropdown{{x.analysis_id}}">
                       <i class="fa fa-gears"></i>
                       <span class="caret"></span>
                     </a>
-                    <ul class="dropdown-content" id="dropdown">
+                    <ul class="dropdown-content" id="dropdown{{x.analysis_id}}">
                       <li class="text-left">
                         <a class="grey-text text-darken-3" href="{% url 'detailsamalysis' x.analysis_id %}"><span class="fa fa-list-alt"></span> Detalle</a>
                       </li>
                       <li class="text-left">
-                        <a class="grey-text text-darken-3 bedit" data-value="{{ x.analysis_id }}" data-group="{{ x.group_id }}" data-name="{{ x.name }}" data-unit="{{ x.unit_id }}" data-performance="{{ x.performance|safe }}"><span class="fa fa-edit"></span> Editar</a>
+                        <a class="grey-text text-darken-3 bedit" data-value="{{ x.analysis_id }}" data-group="{{ x.group_id }}" data-name="{{ x.name }}" data-unit="{{ x.unit.uninom }}" data-performance="{{ x.performance|safe }}"><span class="fa fa-edit"></span> Editar</a>
                       </li>
                       <li class="text-left">
                         <a class="bdel grey-text text-darken-3" data-value="{{ x.analysis_id }}"><span class="fa fa-trash"></span> Eliminar</a>
@@ -132,7 +132,7 @@
                 <div class="col l10">
                   <label>Tipo</label>
                   <select name="group" class="browser-default" data-validation="required" data-validation-error-msg="Debe de seleccionar un grupo.">
-                    <option value="">--Select--</option>
+                    <option value="">-- Select --</option>
                     {% for x in group %}
                       <option value="{{ x.agroup_id }}">{{ x.name }}</option>
                     {% endfor %}
@@ -149,14 +149,14 @@
             <div class="col l12">
               <div class="input-field">
                 <textarea name="name" id="" rows="3" class="materialize-textarea input-sm" rows="1" data-validation="required" data-validation-error-msg="Ingrese una Descripción"></textarea>
-                <label class="control-label">Descripción <small>(<span id="pres-max-length">255</span> caracteres restantes.)</small></label>
+                <label>Descripción <small>(<span id="pres-max-length">255</span> caracteres restantes.)</small></label>
               </div>
             </div>
             <div class="col l3">
               <div class="row">
                 <div class="col l9">
                   <div class="input-group">
-                    <label class="control-label">Unidad</label>
+                    <label>Unidad</label>
                     <select name="unit" class="browser-default" data-validation="required" data-validation-error-msg="Debe de seleccionar una Unidad.">
                       <option value="">--Select--</option>
                       {% for x in unit %}

@@ -2,7 +2,7 @@ $(document).ready ->
     # block materials
     getMaterialsAll()
     getManPowerAll()
-    getlistTools()
+    # getlistTools()
     $(".materialsadd, .addmanpower, .addpaneltools").hide()
     $("[name=materials], [name=measure], [name=manpower], [name=tools], [name=measuret]").chosen
         width: "100%"
@@ -30,15 +30,15 @@ $(document).ready ->
     # end block
     # block tools
     $(".bshownewtools").on "click", openNewTools
-    $("[name=tools]").on "change", getMeasureTools
-    $("[name=measuret]").on "change", getSummaryTools
-    $(".baddtools").on "click", addTools
-    $(".bdeltools").on "click", delToolsAll
-    $(document).on "dblclick", ".edittools", showEditTools
-    $(document).on "click", ".btnedittool", editTools
-    $(document).on "click", ".btndeltool", delTools
-    $(".btoolsrefresh").on "click", refreshTools
-    $(".bshowaddtool").on "click", showaddTools
+    # $("[name=tools]").on "change", getMeasureTools
+    # $("[name=measuret]").on "change", getSummaryTools
+    # $(".baddtools").on "click", addTools
+    # $(".bdeltools").on "click", delToolsAll
+    # $(document).on "dblclick", ".edittools", showEditTools
+    # $(document).on "click", ".btnedittool", editTools
+    # $(document).on "click", ".btndeltool", delTools
+    # $(".btoolsrefresh").on "click", refreshTools
+    # $(".bshowaddtool").on "click", showaddTools
     $(".indicator").css "background", "#2d2d2d"
     # end block
     return
@@ -454,220 +454,219 @@ openNewManPower = ->
 
 # block tools
 # get all list disticnt tools
-getlistTools = (event) ->
-  context = new Object
-  context.listName = true
-  $.getJSON "/tools/search/", context, (response) ->
-    if response.status
-      template = """{{#tools}}<option value="{{ name }}">{{ name }}</option>{{/tools}}"""
-      $op = $("[name=tools]")
-      $op.empty()
-      $op.html Mustache.render template, response
-      $op.trigger "chosen:updated"
-      getMeasureTools()
-    else
-      swal "Alerta!", "No existe una lista. #{response.raise}", "warning"
-      return
-  return
-# get  measure for each tools
-getMeasureTools = (event) ->
-  context = new Object
-  context.searchMeasure = true
-  context.name = $.trim $("[name=tools]").val()
-  $.getJSON "/tools/search/", context, (response) ->
-    if response.status
-      template = """{{#measure}}<option value="{{ tools_id }}">{{ measure }}</option>{{/measure}}"""
-      $mt = $("[name=measuret]")
-      $mt.empty()
-      $mt.html Mustache.render template, response
-      $mt.trigger "chosen:updated"
-      setTimeout ->
-        getSummaryTools()
-      , 300
-    else
-      swal "Alerta", "No se han obtenido resultados para tu busqueda. #{response.raise}", "warning"
-      return
-  return
+# getlistTools = (event) ->
+#   context = new Object
+#   context.listName = true
+#   $.getJSON "/tools/search/", context, (response) ->
+#     if response.status
+#       template = """{{#tools}}<option value="{{ name }}">{{ name }}</option>{{/tools}}"""
+#       $op = $("[name=tools]")
+#       $op.empty()
+#       $op.html Mustache.render template, response
+#       $op.trigger "chosen:updated"
+#       getMeasureTools()
+#     else
+#       swal "Alerta!", "No existe una lista. #{response.raise}", "warning"
+#       return
+#   return
+# # get  measure for each tools
+# getMeasureTools = (event) ->
+#   context = new Object
+#   context.searchMeasure = true
+#   context.name = $.trim $("[name=tools]").val()
+#   $.getJSON "/tools/search/", context, (response) ->
+#     if response.status
+#       template = """{{#measure}}<option value="{{ tools_id }}">{{ measure }}</option>{{/measure}}"""
+#       $mt = $("[name=measuret]")
+#       $mt.empty()
+#       $mt.html Mustache.render template, response
+#       $mt.trigger "chosen:updated"
+#       setTimeout ->
+#         getSummaryTools()
+#       , 300
+#     else
+#       swal "Alerta", "No se han obtenido resultados para tu busqueda. #{response.raise}", "warning"
+#       return
+#   return
 # get summary tools
-getSummaryTools = ->
-  context = new Object
-  context.getSummary = true
-  context.tools = $("[name=measuret]").val()
-  if context.tools.length isnt 14
-    swal "Alerta", "El codigo es incorrecto.", "warning"
-    return false
-  $.getJSON "/tools/search/", context, (response) ->
-    if response.status
-      template = """<table class="table table-condensed font-11"><tbody><tr><th>Código </th><td class="tools_id">{{ summary.tools_id }}</td></tr><tr><th>Nombre </th><td>{{ summary.name }}</td></tr><tr><th>Medida</th><td>{{ summary.measure }}</td></tr><tr><th>Unidad </th><td>{{ summary.unit__uninom }}</td></tr></tbody></table>"""
-      $ob = $(".summarytools")
-      $ob.empty()
-      $ob.html Mustache.render template, response
-    else
-      swal "Alerta", "Error al obtener los datos, #{response.raise}", "warning"
-      return
-  return
+# getSummaryTools = ->
+#   context = new Object
+#   context.getSummary = true
+#   context.tools = $("[name=measuret]").val()
+#   if context.tools.length isnt 14
+#     swal "Alerta", "El codigo es incorrecto.", "warning"
+#     return false
+#   $.getJSON "/tools/search/", context, (response) ->
+#     if response.status
+#       template = """<table class="table table-condensed font-11"><tbody><tr><th>Código </th><td class="tools_id">{{ summary.tools_id }}</td></tr><tr><th>Nombre </th><td>{{ summary.name }}</td></tr><tr><th>Medida</th><td>{{ summary.measure }}</td></tr><tr><th>Unidad </th><td>{{ summary.unit__uninom }}</td></tr></tbody></table>"""
+#       $ob = $(".summarytools")
+#       $ob.empty()
+#       $ob.html Mustache.render template, response
+#     else
+#       swal "Alerta", "Error al obtener los datos, #{response.raise}", "warning"
+#       return
+#   return
 
-# add tools
-addTools = (event) ->
-  context = new Object
-  context.tools = $(".tools_id").text()
-  context.gang = $("[name=gangt]").val()
-  context.price = $("[name=pricet]").val()
-  context.performance = $(".performance").text()
-  if context.tools.length isnt 14
-    swal "Alerta!", "Código de herramienta erroneo.", "warning"
-    return false
-  if not context.gang.match /^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/
-    swal "Alerta!", "La Cuadrila es incorrecta.", "warning"
-    return false
-  if not context.price.match /^[+]?[0-9]+[\.[0-9]{0,4}]?/
-    swal "Alerta!", "El precio ingresado es incorrecto.", "warning"
-    return false
-  context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
-  context.addTools = true
-  $.post "", context, (response) ->
-    if response.status
-      listDetailsTools()
-      return
-    else
-      swal "Alerta!", "No se a podido agregar herramientas. #{response.raise}", "warning"
-      return
-  return
-# edit Tools
-editTools = (event) ->
-  console.log "click"
-  context = new Object
-  context.tools = @value
-  context.gang = $(".edit-tool-gang").val()
-  context.price = $(".edit-tool-price").val()
-  context.performance = $(".performance").text()
-  if context.tools.length isnt 14
-    swal "Alerta!", "Código de herramienta erroneo.", "warning"
-    return false
-  if not context.gang.match /^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/
-    swal "Alerta!", "La Cuadrila es incorrecta.", "warning"
-    return false
-  if not context.price.match /^[+]?[0-9]+[\.[0-9]{0,4}]?/
-    swal "Alerta!", "El precio ingresado es incorrecto.", "warning"
-    return false
-  context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
-  context.addTools = true
-  console.log context
-  $.post "", context, (response) ->
-    if response.status
-      listDetailsTools()
-      return
-    else
-      swal "Alerta!", "No se a podido editar herramientas. #{response.raise}", "warning"
-      return
-  return
+# # add tools
+# addTools = (event) ->
+#   context = {}
+#   context.tools = $(".tools_id").text()
+#   context.gang = $("[name=gangt]").val()
+#   context.price = $("[name=pricet]").val()
+#   context.performance = $(".performance").text()
+#   if context.tools.length isnt 14
+#     swal "Alerta!", "Código de herramienta erroneo.", "warning"
+#     return false
+#   if not context.gang.match /^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/
+#     swal "Alerta!", "La Cuadrila es incorrecta.", "warning"
+#     return false
+#   if not context.price.match /^[+]?[0-9]+[\.[0-9]{0,4}]?/
+#     swal "Alerta!", "El precio ingresado es incorrecto.", "warning"
+#     return false
+#   context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+#   context.addTools = true
+#   $.post "", context, (response) ->
+#     if response.status
+#       listDetailsTools()
+#       return
+#     else
+#       swal "Alerta!", "No se a podido agregar herramientas. #{response.raise}", "warning"
+#       return
+#   return
+# # edit Tools
+# editTools = (event) ->
+#   console.log "click"
+#   context = new Object
+#   context.tools = @value
+#   context.gang = $(".edit-tool-gang").val()
+#   context.price = $(".edit-tool-price").val()
+#   context.performance = $(".performance").text()
+#   if context.tools.length isnt 14
+#     swal "Alerta!", "Código de herramienta erroneo.", "warning"
+#     return false
+#   if not context.gang.match /^[+]?[0-9]{1,3}[\.[0-9]{0,3}]?/
+#     swal "Alerta!", "La Cuadrila es incorrecta.", "warning"
+#     return false
+#   if not context.price.match /^[+]?[0-9]+[\.[0-9]{0,4}]?/
+#     swal "Alerta!", "El precio ingresado es incorrecto.", "warning"
+#     return false
+#   context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+#   context.addTools = true
+#   console.log context
+#   $.post "", context, (response) ->
+#     if response.status
+#       listDetailsTools()
+#       return
+#     else
+#       swal "Alerta!", "No se a podido editar herramientas. #{response.raise}", "warning"
+#       return
+#   return
 
-# delete tools
-delTools = (event) ->
-  btn = this
-  swal
-    title: "Eliminar",
-    text: "Realmente desea eliminar la herramienta?"
-    type: "warning"
-    showCancelButton: true
-    confirmButtonText: "Si, eliminar"
-    confirmButtonColor: "#ddb655"
-  , (isConfirm) ->
-      if isConfirm
-        context =  new Object
-        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
-        context.delTools = true
-        context.tools = btn.value
-        $.post "", context, (response) ->
-          if response.status
-            listDetailsTools()
-            return
-          else
-            swal "Alerta!", "No se a podido eliminar la herramientas. #{response.raise}", "warning"
-            return
-        return
-  return
+# # delete tools
+# delTools = (event) ->
+#   btn = this
+#   swal
+#     title: "Eliminar",
+#     text: "Realmente desea eliminar la herramienta?"
+#     type: "warning"
+#     showCancelButton: true
+#     confirmButtonText: "Si, eliminar"
+#     confirmButtonColor: "#ddb655"
+#   , (isConfirm) ->
+#       if isConfirm
+#         context =  new Object
+#         context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+#         context.delTools = true
+#         context.tools = btn.value
+#         $.post "", context, (response) ->
+#           if response.status
+#             listDetailsTools()
+#             return
+#           else
+#             swal "Alerta!", "No se a podido eliminar la herramientas. #{response.raise}", "warning"
+#             return
+#         return
+#   return
 
-# delete all tools
-delToolsAll = (event) ->
-  swal
-    title: "Eliminar"
-    text: "Realmente desea eliminar toda la lista de herramientas?"
-    type: "warning"
-    showCancelButton: true
-    confirmButtonColor: "#ddb655"
-    confirmButtonText: "Si, eliminar"
-  , (isConfirm) ->
-      if isConfirm
-        context = new Object
-        context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
-        context.delToolsAll = true
-        $.post "", context, (response) ->
-          if response.status
-            listDetailsTools()
-            return
-          else
-            swal "Alerta!", "No se a eliminado la lista de herramientas. #{response.raise}", "warning"
-            return
-        return
-  return
+# # delete all tools
+# delToolsAll = (event) ->
+#   swal
+#     title: "Eliminar"
+#     text: "Realmente desea eliminar toda la lista de herramientas?"
+#     type: "warning"
+#     showCancelButton: true
+#     confirmButtonColor: "#ddb655"
+#     confirmButtonText: "Si, eliminar"
+#   , (isConfirm) ->
+#       if isConfirm
+#         context = new Object
+#         context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+#         context.delToolsAll = true
+#         $.post "", context, (response) ->
+#           if response.status
+#             listDetailsTools()
+#             return
+#           else
+#             swal "Alerta!", "No se a eliminado la lista de herramientas. #{response.raise}", "warning"
+#             return
+#         return
+#   return
 
-# listTools details
-listDetailsTools = (event) ->
-  context = new Object
-  context.listTools = true
-  $.getJSON "", context, (response) ->
-    if response.status
-      template = """{{#tools}}<tr class="edittools"><td>{{index}}</td><td>{{code}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{gang}}</td><td>{{quantity}}</td><td>{{price}}</td><td>{{partial}}</td><td><button type="button" class="btn btn-xs btn-warning btnedittool" value="{{ code }}" data-id="{{ id }}" disabled><span class="fa fa-edit"></span></button></td><td><button type="button" class="btn btn-xs btn-danger btndeltool" value="{{ code }}" data-id=" {{ x.id }}"><span class="fa fa-trash"></span></button></td></tr>{{/tools}}"""
-      $tb = $(".ttools > tbody")
-      counter = 1
-      response.index = ->
-        return counter++
-      $tb.html Mustache.render template, response
-      getUnitaryPrice()
-      return
-    else
-      swal "Error", "No se han obtenido datos. #{response.raise}", "error"
-      return
-  return
-# refresh list Tools
-refreshTools = (event) ->
-  getlistTools()
-  listDetailsTools()
-  return
+# # listTools details
+# listDetailsTools = (event) ->
+#   context = new Object
+#   context.listTools = true
+#   $.getJSON "", context, (response) ->
+#     if response.status
+#       template = """{{#tools}}<tr class="edittools"><td>{{index}}</td><td>{{code}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{gang}}</td><td>{{quantity}}</td><td>{{price}}</td><td>{{partial}}</td><td><button type="button" class="btn btn-xs btn-warning btnedittool" value="{{ code }}" data-id="{{ id }}" disabled><span class="fa fa-edit"></span></button></td><td><button type="button" class="btn btn-xs btn-danger btndeltool" value="{{ code }}" data-id=" {{ x.id }}"><span class="fa fa-trash"></span></button></td></tr>{{/tools}}"""
+#       $tb = $(".ttools > tbody")
+#       counter = 1
+#       response.index = ->
+#         return counter++
+#       $tb.html Mustache.render template, response
+#       getUnitaryPrice()
+#       return
+#     else
+#       swal "Error", "No se han obtenido datos. #{response.raise}", "error"
+#       return
+#   return
+# # refresh list Tools
+# refreshTools = (event) ->
+#   getlistTools()
+#   listDetailsTools()
+#   return
 
-showaddTools = (event) ->
-  if $(".addpaneltools").is ":visible"
-      $(@).removeClass "btn-warning"
-      .addClass "btn-default"
-      $(".addpaneltools").hide 800
-  else
-      $(@).removeClass "btn-default"
-      .addClass "btn-warning"
-      $(".addpaneltools").show 800
-  return
+# showaddTools = (event) ->
+#   if $(".addpaneltools").is ":visible"
+#       $(@).removeClass "btn-warning"
+#       .addClass "btn-default"
+#       $(".addpaneltools").hide 800
+#   else
+#       $(@).removeClass "btn-default"
+#       .addClass "btn-warning"
+#       $(".addpaneltools").show 800
+#   return
 
-showEditTools = (event) ->
-  if $(".edit-tool-gang").length
-      $(".edit-tool-gang").parent("td").html $(".edit-tool-gang").val()
-  if $(".edit-tool-price").length
-      $(".edit-tool-price").parent("td").html $(".edit-tool-price").val()
-  $tr = $(@)
-  $td = $tr.find "td"
-  gang = $td.eq(4).text()
-  $td.eq(8).find("button").attr "disabled", false
-  price = $td.eq(6).text()
-  $td.eq(4).html """<input type="text" value="#{gang}" class="form-control input-sm col-2 edit-tool-gang">"""
-  $td.eq(6).html """<input type="text" value="#{price}" class="form-control input-sm col-2 edit-tool-price">"""
-  return
+# showEditTools = (event) ->
+#   if $(".edit-tool-gang").length
+#       $(".edit-tool-gang").parent("td").html $(".edit-tool-gang").val()
+#   if $(".edit-tool-price").length
+#       $(".edit-tool-price").parent("td").html $(".edit-tool-price").val()
+#   $tr = $(@)
+#   $td = $tr.find "td"
+#   gang = $td.eq(4).text()
+#   $td.eq(8).find("button").attr "disabled", false
+#   price = $td.eq(6).text()
+#   $td.eq(4).html """<input type="text" value="#{gang}" class="form-control input-sm col-2 edit-tool-gang">"""
+#   $td.eq(6).html """<input type="text" value="#{price}" class="form-control input-sm col-2 edit-tool-price">"""
+#   return
 # open new Tools
 openNewTools = ->
   win = window.open "/tools/add", "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600"
   interval = window.setInterval ->
-      if win == null or win.closed
-          window.clearInterval interval
-          getlistTools()
-          return
+    if win == null or win.closed
+      window.clearInterval interval
+        #getlistTools()
   , 1000
   return win
 
@@ -679,3 +678,15 @@ getUnitaryPrice = (event) ->
     if response.status
       $(".tanalysis").text response.total
   return
+
+app = angular.module 'andApp', ['ngCookeis', 'ngSanitize']
+    .config ($httpProvider) ->
+        $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+        $httpProvider.defaults.xsrfCookieName = 'csrftoken'
+        $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken'
+        return
+
+app.controller 'toolsCtrl', ($scope, $http, $cookies) ->
+    $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken
+    $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
+

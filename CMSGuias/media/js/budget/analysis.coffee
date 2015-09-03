@@ -56,33 +56,42 @@ openUnit = ->
   win
 
 saveAnalysis = (e) ->
-  # here valid form
-      context = {}
-      context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
-      context.group = $("[name=group]").val()
-      context.name = $("[name=name]").val()
-      context.unit = $("[name=unit]").val()
-      context.performance = $("[name=performance]").val()
-      if $("[name=edit]").val().length is 8
-        context.edit = true
-        context.analysis_id = $("[name=edit]").val()
-      else
-        context.analysisnew = true
-      $.post '', context, (response) ->
-        console.log response
-        if response.status
-          swal "Felicidades!", "Se guardaron los camnbios correctamente.", "success"
-          clearEdit()
-          setTimeout ->
-            location.reload()
-            return
-          , 2600
-          return
-        else
-          swal "Error", "Error al registrar analysis", "error"
-          return
-      , "json"
+  $group = $('[name=group]').val()
+  $name = $('[name=name]').val()
+  $unit = $('[name=unit]').val()
+  $performance = $('[name=performance]').val()
+  if typeof($group) is 'undefined'
+    return false
+  if typeof($name) is 'undefined'
+    return false
+  if typeof($unit) is 'undefined'
+    return false
+  if typeof($performance) is 'undefined'
+    return false
+  context = {}
+  context.group = $group
+  context.name = $name
+  context.unit = $unit
+  context.performance = $performance
+  context.csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val()
+  if $('[name=edit]').val().length is 8
+    context.edit = true
+    context.analysis_id = $('[name=edit]').val()
+  else
+    context.analysisnew = true
+  $.post '', context, (response) ->
+    if response.status
+      swal 'Felicidades!', 'Se guardaron los camnbios correctamente.', 'success'
+      clearEdit()
+      setTimeout ->
+        location.reload()
+        return
+      , 2600
       return
+    else
+      swal 'Error', "Error al registrar analysis. #{response.raise}", 'error'
+      return
+  , 'json'
   e.preventDefault()
   return
 
@@ -133,13 +142,13 @@ searchChange = (event) ->
   return
 
 # show analysis edit
-editAnalysis = (event) ->
-  $("[name=group]").val this.getAttribute "data-group"
-  $("[name=name]").val this.getAttribute "data-name"
-  $("[name=unit]").val this.getAttribute "data-unit"
-  $("[name=performance]").val this.getAttribute "data-performance"
-  $("[name=edit]").val this.getAttribute "data-value"
-  $("#manalysis").modal "show"
+editAnalysis = ->
+  $('[name=group]').val this.getAttribute 'data-group'
+  $('[name=name]').val this.getAttribute 'data-name'
+  $('[name=unit]').val this.getAttribute 'data-unit'
+  $('[name=performance]').val this.getAttribute 'data-performance'
+  $('[name=edit]').val this.getAttribute 'data-value'
+  $('#manalysis').openModal 'show'
   return
 
 # Delete analysis

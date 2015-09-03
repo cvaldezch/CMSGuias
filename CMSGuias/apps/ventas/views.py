@@ -71,38 +71,50 @@ class ProjectsList(JSONResponseMixin, TemplateView):
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
-        context = super(ProjectsList, self).get_context_data(**kwargs)
+        context = dict()
         try:
-            if request.user.get_profile().empdni.charge.area.lower() == 'ventas' or request.user.get_profile().empdni.charge.area.lower() == 'administrator':
-                context['list'] = Proyecto.objects.filter(Q(flag=True), ~Q(status='DA')).order_by('-proyecto_id')
-                context['country'] = Pais.objects.filter(flag=True)
-                context['customers'] = Cliente.objects.filter(flag=True)
+            area = request.user.get_profile().empdni.charge.area.lower()
+            if area == 'ventas' or area == 'administrator':
+                context['list'] = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    ~Q(status='DA')).order_by('-proyecto_id')
+
                 context['currency'] = Moneda.objects.filter(flag=True)
                 context['typep'] = globalVariable.typeProject
-                # cust = Proyecto.objects.filter(flag=True)
-                # cust = cust.order_by('ruccliente__razonsocial').distinct('ruccliente__razonsocial')
-                # context['cust'] = cust
-            elif request.user.get_profile().empdni.charge.area.lower() == 'operaciones':
-                context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC'), empdni_id=request.user.get_profile().empdni_id).order_by('-proyecto_id')
-                # cust = Proyecto.objects.filter(flag=True)
-                # cust = cust.order_by('ruccliente__razonsocial').distinct('ruccliente__razonsocial')
-                # context['cust'] = cust
-            elif request.user.get_profile().empdni.charge.area.lower() == 'logistica' or request.user.get_profile().empdni.charge.area.lower() == 'almacen':
-                context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC')).order_by('-proyecto_id')
-            if request.user.get_profile().empdni.charge.cargos.lower() == 'jefe de operaciones':
-                context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC')).order_by('-proyecto_id')
 
-            cust = context['list']#Proyecto.objects.filter(Q(flag=True), ~Q(status='DA'))
-            if request.user.get_profile().empdni.charge.area.lower() == 'operaciones':
-                cust = cust.filter(empdni_id=request.user.get_profile().empdni_id, status='AC')
-            elif request.user.get_profile().empdni.charge.area.lower() == 'logistica' or request.user.get_profile().empdni.charge.area.lower() == 'almacen':
+            elif area == 'operaciones':
+                context['list'] = Proyecto.objects.filter(
+                                Q(flag=True),
+                                Q(status='AC'),
+                                empdni_id=request.user.get_profile().empdni_id
+                                ).order_by('-proyecto_id')
+            elif area == 'logistica' or area == 'almacen':
+                context['list'] = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    Q(status='AC')).order_by('-proyecto_id')
+            cnom = request.user.get_profile().empdni.charge.cargos.lower()
+            if cnom == 'jefe de operaciones':
+                context['list'] = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    Q(status='AC')).order_by('-proyecto_id')
+            cust = context['list']
+            if area == 'operaciones':
+                cust = cust.filter(
+                            empdni_id=request.user.get_profile().empdni_id,
+                            status='AC')
+            elif area == 'logistica' or area == 'almacen':
                 cust = cust.filter(status='AC')
-            cust = cust.order_by('ruccliente__razonsocial').distinct('ruccliente__razonsocial')
-            context['cust'] = cust #.order_by('ruccliente__razonsocial')
-            return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+            cust = cust.order_by(
+                    'ruccliente__razonsocial').distinct(
+                    'ruccliente__razonsocial')
+            context['cust'] = cust
+            return render_to_response(
+                    self.template_name,
+                    context,
+                    context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
-            messages.error(request, 'Template Does Not Exist %s'%e)
-            raise Http404('Template Does Not Exist %s'%e)
+            messages.error(request, 'Template Does Not Exist %s' % e)
+            raise Http404('Template Does Not Exist %s' % e)
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
@@ -126,6 +138,7 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                 context['status'] = False
             return self.render_to_json_response(context)
 
+
 # add sectors
 class SectorsView(JSONResponseMixin, View):
     template_name = 'sales/crud/sectors_form.html'
@@ -134,8 +147,15 @@ class SectorsView(JSONResponseMixin, View):
         context = dict()
         if request.is_ajax():
             try:
-                obj = Sectore.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, flag=True).order_by('subproyecto','planoid')
-                context['list'] =[{'sector_id': x.sector_id, 'nomsec': x.nomsec, 'planoid' : x.planoid} for x in obj]
+                obj = Sectore.objects.filter(
+                        proyecto_id=request.GET.get('pro'),
+                        subproyecto_id=request.GET.get(
+                            'sub') if request.GET.get('sub') != '' else None,
+                        flag=True).order_by('subproyecto', 'planoid')
+                context['list'] = [{
+                    'sector_id': x.sector_id,
+                    'nomsec': x.nomsec,
+                    'planoid': x.planoid} for x in obj]
                 context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
@@ -228,7 +248,11 @@ class SubprojectsView(JSONResponseMixin, View):
         except ObjectDoesNotExist, e:
             context['raise'] = e.__str__()
             context['status'] = False
-        return render_to_response(self.template_name, context, context_instance = RequestContext(request))
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
+
 
 # Manager View Project
 class ProjectManager(JSONResponseMixin, View):
@@ -242,58 +266,62 @@ class ProjectManager(JSONResponseMixin, View):
                 try:
                     if 'listPurchase' in request.GET:
                         context['list'] = [{
-                                            'nro': x.nropurchase,
-                                            'issued': globalVariable.format_date_str(x.issued),
-                                            'document': x.document.documento,
-                                            'order': str(x.order),
-                                            'id': x.id
-                                            }
-                                            for x in PurchaseOrder.objects.filter(flag=True, project_id=kwargs['project']).order_by('register')
-                                            ]
+                            'nro': x.nropurchase,
+                            'issued': globalVariable.format_date_str(x.issued),
+                            'document': x.document.documento,
+                            'order': str(x.order),
+                            'id': x.id}
+                            for x in PurchaseOrder.objects.filter(
+                                        flag=True,
+                                        project_id=kwargs['project']
+                                        ).order_by('register')]
                         context['status'] = True
                     if 'editPurchase' in request.GET:
-                        obj = PurchaseOrder.objects.get(pk=request.GET.get('pk'))
+                        obj = PurchaseOrder.objects.get(
+                                pk=request.GET.get('pk'))
                         context['nropurchase'] = obj.nropurchase
-                        context['issued'] = globalVariable.format_date_str(obj.issued)
+                        context['issued'] = globalVariable.format_date_str(
+                                                obj.issued)
                         context['currency'] = obj.currency_id
                         context['document'] = obj.document_id
                         context['method'] = obj.method_id
                         context['observation'] = obj.observation
                         context['dsct'] = obj.dsct
                         context['igv'] = obj.igv
-                        context['details'] = [
-                                            {
-                                            'description': x.description,
-                                            'unit': x.unit.uninom,
-                                            'delivery': globalVariable.format_date_str(x.delivery),
-                                            'quantity': x.quantity,
-                                            'price': x.price,
-                                            'amount': (x.quantity * x.price)
-                                            }
-                                            for x in DetailsPurchaseOrder.objects.filter(purchase_id=request.GET.get('pk'))
-                                            ]
+                        context['details'] = [{
+                            'description': x.description,
+                            'unit': x.unit.uninom,
+                            'delivery': globalVariable.format_date_str(
+                                            x.delivery),
+                            'quantity': x.quantity,
+                            'price': x.price,
+                            'amount': (x.quantity * x.price)}
+                            for x in DetailsPurchaseOrder.objects.filter(
+                                        purchase_id=request.GET.get('pk'))]
                         context['status'] = True
                     if 'letterlist' in request.GET:
-                        context['list'] = [
-                            {
-                                'letter': x.letter_id,
-                                'register': x.register.strftime('%d-%m-%Y'),
-                                'froms': x.froms,
-                                'fors': x.fors,
-                                'file': str(x.letter),
-                                'status': x.status,
-                                'observation': x.observation
-                            }
-                            for x in Letter.objects.filter(Q(project_id=kwargs['project']), ~Q(status='AN')).order_by('-register')
-                        ]
+                        context['list'] = [{
+                            'letter': x.letter_id,
+                            'register': x.register.strftime('%d-%m-%Y'),
+                            'froms': x.froms,
+                            'fors': x.fors,
+                            'file': str(x.letter),
+                            'status': x.status,
+                            'observation': x.observation}
+                            for x in Letter.objects.filter(
+                                        Q(project_id=kwargs['project']),
+                                        ~Q(status='AN')).order_by('-register')]
                         context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = e.__str__()
                     context['status'] = False
                 return self.render_to_json_response(context)
-            context['project'] = Proyecto.objects.get(pk=kwargs['project'], flag=True)
+            context['project'] = Proyecto.objects.get(
+                                    pk=kwargs['project'], flag=True)
             try:
-                context['subpro'] = Subproyecto.objects.filter(proyecto_id=kwargs['project'], flag=True)
+                context['subpro'] = Subproyecto.objects.filter(
+                                        proyecto_id=kwargs['project'],
+                                        flag=True)
             except ObjectDoesNotExist, e:
                 context['subpro'] = list()
             context['sectors'] = Sectore.objects.filter(proyecto_id=kwargs['project'], flag=True).order_by('subproyecto','planoid')
@@ -387,19 +415,22 @@ class ProjectManager(JSONResponseMixin, View):
                         #user = userProfile.objects.get(empdni_id=request.POST.get('admin'))
                         # authenticate password admin
                         if search.validKey(request.POST.get('passwd'),kwargs['project'],'approved',request.user.get_profile().empdni_id):
-                            #if user.user.is_superuser:
+                            # if user.user.is_superuser:
                             pro = Proyecto.objects.get(pk=kwargs['project'])
                             pro.approved_id = request.user.get_profile().empdni_id
                             pro.status = 'AC'
                             pro.save()
-                            sub = Subproyecto.objects.filter(proyecto_id=kwargs['project'])
+                            sub = Subproyecto.objects.filter(
+                                    proyecto_id=kwargs['project'])
                             if sub:
                                 sub.update(status='AC')
-                            sec = Sectore.objects.filter(proyecto_id=kwargs['project'])
+                            sec = Sectore.objects.filter(
+                                    proyecto_id=kwargs['project'])
                             if sec:
                                 sec.update(status='AC')
                             # paste all list of materials to 'MetProject'
-                            for x in Metradoventa.objects.filter(proyecto_id=kwargs['project']):
+                            for x in Metradoventa.objects.filter(
+                                        proyecto_id=kwargs['project']):
                                 obj = MetProject()
                                 obj.proyecto_id = x.proyecto_id
                                 obj.subproyecto_id = x.subproyecto_id

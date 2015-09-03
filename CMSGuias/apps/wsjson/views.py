@@ -72,7 +72,7 @@ def get_meter_materials(request):
         context = {}
         try:
             meter = Materiale.objects.values('materiales_id', 'matmed').filter(
-                    matnom__icontains=request.GET['matnom']
+                    matnom=request.GET['matnom']
                     ).distinct('matmed').order_by('matmed')
             context['list'] = [{'materiales_id': x['materiales_id'],'matmed': x['matmed']} for x in meter]
             context['status'] = True
@@ -89,12 +89,13 @@ def get_meter_materials(request):
     # except ObjectDoesNotExist:
     #     raise Http404
 
+
 def get_resumen_details_materiales(request):
         if request.method == 'GET':
             context = dict()
             try:
                 summ = Materiale.objects.filter(
-                    materiales_id=request.GET['matid'])
+                        materiales_id=request.GET['matid'])
                 # matmed__icontains=request.GET.get('matmed'))
                 for x in summ:
                     if x.materiales_id == request.GET['matid']:

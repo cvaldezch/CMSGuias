@@ -6,7 +6,7 @@
     {% include "menus/budget.htm" %}
 {% endblock menu %}
 {% block content %}
-<div class="container">
+<div data-ng-app="andApp">
     <div class="card-panel">
         <h3>
             Detalle de Analisis de Precio
@@ -160,125 +160,123 @@
                         </div>
                     </div>
                     <div class="tab-pane" id="manpower">
-                        <div class="panel panel-primary">
-                            <div class="panel-footer">
-                                <div class="btn-group">
-                                    <button class="btn btn-sm btn-default bshowaddmp" type="button">
+                        <div class="panel panel-warning">
+                            <div class="card">
+                                <div class="card-action">
+                                    <button class="btn orange lighten-1 bshowaddmp" type="button">
                                         <span class="fa fa-plus"></span>
                                         <span>Mano de Obra</span>
                                     </button>
-                                    <button class="btn btn-sm btn-default bmprefresh" type="button">
+                                    <button class="btn grey lighten-5 grey-text text-darken-3 bmprefresh" type="button">
                                         <span class="fa fa-refresh"></span>
                                         <span>Actualizar</span>
                                     </button>
-                                    <button class="btn btn-sm btn-default bdelmp" type="button">
+                                    <button class="btn red lighten-1 bdelmp" type="button">
                                         <span>+ Eliminar Todo</span>
                                     </button>
-                                    <button class="btn btn-sm btn-default bshownewmp" type="button">
+                                    <button class="btn light-green lighten-2 grey-text text-darken-3 bshownewmp" type="button">
                                         <span>+ Nuevo Mano de Obra</span>
                                     </button>
-                                    <button class="btn btn-sm btn-default bcopymp" type="button">
+                                    <button class="btn  bcopymp" type="button">
                                         <span>+ Copiar Mano de Obra</span>
                                     </button>
                                 </div>
-                                <div class="panel-body">
+                            </div>
+                            <div class="card addmanpower">
+                                <div class="card-action">
                                     <!-- div for add man power -->
-                                    <div class="addmanpower">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label class="control-label">Mano de Obra</label>
-                                                <select name="manpower" class="form-control input-sm"></select>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <label class="control-label">Cuadrilla</label>
-                                                <input type="text" class="form-control input-sm" placeholder="0.00" name="mpgang">
-                                            </div>
-                                            <div class="col-md-2">
-                                                <label class="control-label">Precio</label>
-                                                <input type="text" class="form-control input-sm" name="mpprice">
-                                            </div>
-                                            <div class="col-md-1">
-                                                <label class="control-label">Agregar</label>
-                                                <button class="btn btn-warning btn-sm btnaddmp">
-                                                    <span class="fa fa-plus"></span>
-                                                    <span>Agregar</span>
-                                                </button>
-                                            </div>
+                                    <div class="row">
+                                        <div class="col l6">
+                                            <label class="control-label">Mano de Obra</label>
+                                            <select name="manpower" class="form-control input-sm"></select>
+                                        </div>
+                                        <div class="col l2">
+                                            <label class="control-label">Cuadrilla</label>
+                                            <input type="text" class="form-control input-sm" placeholder="0.00" name="mpgang">
+                                        </div>
+                                        <div class="col l2">
+                                            <label class="control-label">Precio</label>
+                                            <input type="text" class="form-control input-sm" name="mpprice">
+                                        </div>
+                                        <div class="col l1">
+                                            <label class="control-label">Agregar</label>
+                                            <button class="btn btnaddmp orange lighten-1">
+                                                <span class="fa fa-plus"></span>
+                                                <span>Agregar</span>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <!-- <div class="panel-body"></div> -->
                             <!-- List ManPower -->
-                            <div class="table-responsive">
-                                <table class="table table-hover table-condensed tmanpower">
-                                    <thead>
-                                        <tr class="brand-warning">
-                                            <th class="text-center">Item</th>
-                                            <th class="text-center">Código</th>
-                                            <th class="text-center">Nombre</th>
-                                            <th class="text-center">Und</th>
-                                            <th class="text-center">Cuadrilla</th>
-                                            <th class="text-center">Cantidad</th>
-                                            <th class="text-center">Precio</th>
-                                            <th class="text-center">Parcial</th>
-                                            <th class="text-center">Editar</th>
-                                            <th class="text-center">Eliminar</th>
+                            <table class="table responsive-table tmanpower">
+                                <thead>
+                                    <tr class="brand-warning">
+                                        <th class="text-center">Item</th>
+                                        <th class="text-center">Código</th>
+                                        <th class="text-center">Nombre</th>
+                                        <th class="text-center">Und</th>
+                                        <th class="text-center">Cuadrilla</th>
+                                        <th class="text-center">Cantidad</th>
+                                        <th class="text-center">Precio</th>
+                                        <th class="text-center">Parcial</th>
+                                        <th class="text-center">Editar</th>
+                                        <th class="text-center">Eliminar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for x in manpower %}
+                                        <tr class="editmp">
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ x.manpower_id }}</td>
+                                            <td>{{ x.manpower.cargos }}</td>
+                                            <td>{{ x.manpower.unit.uninom }}</td>
+                                            <td>{{ x.gang|safe }}</td>
+                                            <td>{{ x.quantity|safe }}</td>
+                                            <td>{{ x.price|safe }}</td>
+                                            <td>{{ x.partial|safe }}</td>
+                                            <td class="text-center">
+                                                <button class="btn btn-xs btn-warning btn-edit-mp" value="{{ x.id }}" data-mp="{{ x.manpower_id }}" disabled>
+                                                    <span class="fa fa-edit"></span>
+                                                </button>
+                                            </td>
+                                            <td class="text-center">
+                                                <button class="btn btn-danger btn-xs btn-del-mp" value="{{ x.id }}" data-mp="{{ x.manpower_id }}">
+                                                    <span class="fa fa-trash"></span>
+                                                </button>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for x in manpower %}
-                                            <tr class="editmp">
-                                                <td>{{ forloop.counter }}</td>
-                                                <td>{{ x.manpower_id }}</td>
-                                                <td>{{ x.manpower.cargos }}</td>
-                                                <td>{{ x.manpower.unit.uninom }}</td>
-                                                <td>{{ x.gang|safe }}</td>
-                                                <td>{{ x.quantity|safe }}</td>
-                                                <td>{{ x.price|safe }}</td>
-                                                <td>{{ x.partial|safe }}</td>
-                                                <td class="text-center">
-                                                    <button class="btn btn-xs btn-warning btn-edit-mp" value="{{ x.id }}" data-mp="{{ x.manpower_id }}" disabled>
-                                                        <span class="fa fa-edit"></span>
-                                                    </button>
-                                                </td>
-                                                <td class="text-center">
-                                                    <button class="btn btn-danger btn-xs btn-del-mp" value="{{ x.id }}" data-mp="{{ x.manpower_id }}">
-                                                        <span class="fa fa-trash"></span>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="tab-pane" id="tools">
-                        <div class="panel panel-info">
-                            <div class="panel-footer">
-                                <div class="btn-group">
-                                    <button class="btn btn-sm btn-default bshowaddtool" type="button">
+                    <div class="tab-pane" id="tools" data-ng-controller="toolsCtrl">
+                        <div class="panel">
+                            <div class="card">
+                                <div class="card-action">
+                                    <button class="btn lime lighten-1 bshowaddtool" type="button">
                                         <span class="fa fa-plus"></span>
                                         <span>Herramientas</span>
                                     </button>
-                                    <button class="btn btn-sm btn-default btoolsrefresh" type="button">
+                                    <button class="btn grey lighten-5 grey-text text-darken-3 btoolsrefresh" type="button">
                                         <span class="fa fa-refresh"></span>
                                         <span>Actualizar</span>
                                     </button>
-                                    <button class="btn btn-sm btn-default bdeltools" type="button">
+                                    <button class="btn red lighten-1 bdeltools" type="button">
                                         <span>+ Eliminar Todo</span>
                                     </button>
-                                    <button class="btn btn-sm btn-default bshownewtools" type="button">
+                                    <button class="btn light-green lighten-1 bshownewtools" type="button">
                                         <span>+ Nueva Herramienta</span>
                                     </button>
-                                    <button class="btn btn-sm btn-default bcopymat" type="button">
+                                    <button class="btn  bcopymat" type="button">
                                         <span>+ Copiar Herramientas</span>
                                     </button>
                                 </div>
-                                <div class="panel-body">
+                                <div class="card addpaneltools">
                                   <!-- Add tools to list -->
-                                  <div class="row addpaneltools">
+                                  <div class="row">
                                     <div class="col-md-6">
                                       <div class="form-group">
                                         <label class="control-label">Herramienta</label>
@@ -304,7 +302,7 @@
                                         <input type="text" class="form-control input-sm" name="pricet" placeholder="0.00">
                                       </div>
                                       <div class="form-group">
-                                        <button type="button" class="btn btn-sm btn-warning baddtools">
+                                        <button type="button" class="btn lime lighten-1 baddtools">
                                           <span class="fa fa-plus"></span>
                                           <span>Agregar</span>
                                         </button>
@@ -367,6 +365,9 @@
 </div>
 {% csrf_token %}
 <!-- Loads scripts -->
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js"></script>
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>
 <script src="{{ MEDIA_URL }}js/chosen.jquery.min.js"></script>
 <script src="{{ MEDIA_URL }}js/budget/detailsAnalysis.js"></script>

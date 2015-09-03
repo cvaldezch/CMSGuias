@@ -885,10 +885,11 @@ class LoginSupplier(JSONResponseMixin, TemplateView):
                 context['status'] = False
             return  self.render_to_json_response(context)
 
+
 class SupplierCreate(CreateView):
     form_class = ProveedorForm
     model = Proveedor
-    #success_url = reverse_lazy('proveedor_list')
+    # success_url = reverse_lazy('proveedor_list')
     template_name = 'logistics/crud/supplier_form.html'
 
     @method_decorator(login_required)
@@ -896,9 +897,13 @@ class SupplierCreate(CreateView):
         return super(SupplierCreate, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        #self.instance.save()
+        # self.instance.save()
         form.save()
-        return render_to_response(self.template_name, {'msg':'success'}, context_instance=RequestContext(self.request))
+        return render_to_response(
+                self.template_name,
+                {'msg': 'success'},
+                context_instance=RequestContext(self.request))
+
 
 class CompareQuote(JSONResponseMixin, TemplateView):
     template_name = 'logistics/comparequote.html'
@@ -908,13 +913,20 @@ class CompareQuote(JSONResponseMixin, TemplateView):
         context = dict()
         try:
             print 'before quote'
-            context['quote'] = Cotizacion.objects.get(Q(cotizacion_id=kwargs['quote']), ~Q(status='CO'))
+            context['quote'] = Cotizacion.objects.get(
+                                    Q(cotizacion_id=kwargs['quote']),
+                                    ~Q(status='CO'))
             print context['quote']
-            context['supplier'] = CotKeys.objects.filter(cotizacion_id=kwargs['quote'], flag=True)
-            mats = DetCotizacion.objects.filter(cotizacion_id=kwargs['quote']).order_by('materiales__materiales_id')
+            context['supplier'] = CotKeys.objects.filter(
+                                    cotizacion_id=kwargs['quote'], flag=True)
+            mats = DetCotizacion.objects.filter(
+                    cotizacion_id=kwargs['quote']).order_by(
+                        'materiales__materiales_id')
             #.distinct('materiales__materiales_id')
-            context['client'] = CotCliente.objects.filter(cotizacion_id=kwargs['quote'])
-            context['conf'] = Configuracion.objects.get(periodo=globalVariable.get_year)
+            context['client'] = CotCliente.objects.filter(
+                                    cotizacion_id=kwargs['quote'])
+            context['conf'] = Configuracion.objects.get(
+                                periodo=globalVariable.get_year)
             arm = list()
             for x in mats:
                 arr = list()
@@ -922,36 +934,43 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                 arsu = list()
                 for j in context['supplier']:
                     try:
-                        dsup = DetCotizacion.objects.get(cotizacion_id=kwargs['quote'], proveedor_id=j.proveedor_id, materiales_id=x.materiales_id, marca=x.marca, modelo=x.modelo)
+                        dsup = DetCotizacion.objects.get(
+                                cotizacion_id=kwargs['quote'],
+                                proveedor_id=j.proveedor_id,
+                                materiales_id=x.materiales_id,
+                                marca=x.marca,
+                                modelo=x.modelo)
                         discount = (float(dsup.discount) / 100)
                         price = (dsup.precio - (float(dsup.precio) * discount))
                         amount = (price * float(x.cantidad))
-                        arsu.append(
-                            {
-                                'supplier':j.proveedor_id,
-                                'materiales_id':x.materiales_id,
-                                'price':dsup.precio,
+                        arsu.append({
+                                'supplier': j.proveedor_id,
+                                'materiales_id': x.materiales_id,
+                                'price': dsup.precio,
                                 'discount': dsup.discount,
-                                'brand':dsup.marca,
-                                'model':dsup.modelo,
-                                'amount':amount
-                            }
-                        )
+                                'brand': dsup.marca,
+                                'model': dsup.modelo,
+                                'amount': amount})
                     except ObjectDoesNotExist:
-                        arsu.append(
-                            {
-                                'supplier':j.proveedor_id,
-                                'materiales_id':x.materiales_id,
+                        arsu.append({
+                                'supplier': j.proveedor_id,
+                                'materiales_id': x.materiales_id,
                                 'price': 0,
                                 'discount': 0,
-                                'brand':'-',
+                                'brand': '-',
                                 'model': '-',
-                                'amount': '0'
-                            }
-                        )
+                                'amount': '0'})
                     #data[j.proveedor_id] = arsu #{'price':dsup.precio, 'discount': dsup.discount, 'brand':dsup.marca, 'model':dsup.modelo}
                 arr.append(data)
-                arm.append({'materials':x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'quantity':x.cantidad, 'priceold': search.getPricePurchaseInventory(x.materiales_id), 'others': arsu })
+                arm.append({
+                        'materials': x.materiales_id,
+                        'name': x.materiales.matnom,
+                        'measure': x.materiales.matmed,
+                        'unit': x.materiales.unidad.uninom,
+                        'quantity': x.cantidad,
+                        'priceold': search.getPricePurchaseInventory(
+                                        x.materiales_id),
+                        'others': arsu})
             context['details'] = arm
             context['currency'] = Moneda.objects.filter(flag=True)
             context['document'] = Documentos.objects.filter(flag=True).order_by('documento')
@@ -959,7 +978,7 @@ class CompareQuote(JSONResponseMixin, TemplateView):
             context['purchase'] = Compra.objects.filter(cotizacion_id=kwargs['quote'],flag=True)
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except ObjectDoesNotExist, e:
-            raise Http404('Error %s'%(e.__str__()))
+            raise Http404('Error %s' % (e.__str__()))
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
