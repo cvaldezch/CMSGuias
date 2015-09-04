@@ -12,14 +12,15 @@ from django.http import HttpResponse, Http404
 # from django.contrib.auth.models import User
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Sum
+from django.db.models import Sum
 from django.utils import simplejson
 from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, ListView, View
 
 from CMSGuias.apps.almacen.models import *
 from CMSGuias.apps.home.models import *
-from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto, Metradoventa
+from CMSGuias.apps.ventas.models import (
+        Proyecto, Sectore, Subproyecto, Metradoventa)
 from CMSGuias.apps.operations.models import MetProject
 from CMSGuias.apps.tools import uploadFiles, globalVariable, search, genkeys
 
@@ -72,13 +73,15 @@ def get_meter_materials(request):
         context = {}
         try:
             meter = Materiale.objects.values('materiales_id', 'matmed').filter(
-                    matnom=request.GET['matnom']
-                    ).distinct('matmed').order_by('matmed')
-            context['list'] = [{'materiales_id': x['materiales_id'],'matmed': x['matmed']} for x in meter]
+                    matnom__exact=request.GET['matnom']).order_by('matmed')
+            context['list'] = [{
+                'materiales_id': x['materiales_id'],
+                'matmed': x['matmed']}
+                for x in meter]
             context['status'] = True
         except ObjectDoesNotExist:
             context['status'] = False
-        return HttpResponse(simplejson.dumps(context), mimetype='application/json')
+        return JSONResponseMixin().render_to_json_response(context)
     # try:
     #     if request.method == 'GET':
     #         data = { "list": [] }

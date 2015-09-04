@@ -6,21 +6,9 @@ $(document).ready ->
         "showAnim" : "slide"
         "dateFormat" : "yy-mm-dd"
 
-    ###$(".btn-open > span").mouseenter (event) ->
-        event.preventDefault()
-        $(@).removeClass "glyphicon-folder-close"
-        .addClass "glyphicon-folder-open"
-        return
-    .mouseout (event) ->
-        $(@).removeClass "glyphicon-folder-open"
-        .addClass "glyphicon-folder-close"
-        return###
-    $("table").floatThead
-        useAbsolutePositioning: true
-        scrollingTop: 50
     $("h4 > a").click (event) ->
         console.log @getAttribute "data-value"
-        $("table.table-#{@getAttribute "data-value"}").floatThead "reflow"
+        # $("table.table-#{@getAttribute "data-value"}").floatThead "reflow"
         return
     tinymce.init
         selector: "textarea[name=obser]",
@@ -83,7 +71,7 @@ showaddProject = (event) ->
             .addClass "glyphicon-remove"
             $btn.find("span").eq(1).html(" Cancelar")
             $(".btn-save").show()
-        $("table").floatThead "reflow"
+        # $("table").floatThead "reflow"
     return
 
 # Show upkeep country, departament, province, district, customers
@@ -190,4 +178,51 @@ showGroup = (event) ->
 showTable = (event) ->
     $("div.panel-first").fadeOut()
     $("div.panel-second").fadeIn()
-    $("table").floatThead "reflow"
+    # $("table").floatThead "reflow"
+
+app = angular.module 'proApp', ['ngSanitize', 'ngCookies']
+    .config ($httpProvider) ->
+        $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+        $httpProvider.defaults.xsrfCookieName = 'csrftoken'
+        $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken'
+        return
+
+app.controller 'proCtrl', ($scope, $http, $cookies) ->
+    $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken
+    $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
+    $scope.customers = []
+    angular.element(document).ready ->
+        $scope.listCustomers()
+        return
+    $scope.listCustomers = ->
+        params =
+            getCustomers: true
+        $http.get '', params: params
+            .success (response) ->
+                if response.status
+                    $scope.customers = response.customers
+                    setTimeout ->
+                        $('.collapsible').collapsible()
+                        return
+                    , 400
+                    return
+                else
+                    console.log "No result. #{response.raise}"
+                    return
+        return
+    $scope.getProjects = ->
+        console.log this
+        data =
+            getProjects: true
+            customer: this.x.fields.ruccliente.pk
+        console.log data
+        $http.get '', params
+            .success (response) ->
+                if response.status
+                    $scope[data.customer] = response
+                    return
+                else
+                    console.log "No data project. #{response.raise}"
+                    return
+        return
+    return

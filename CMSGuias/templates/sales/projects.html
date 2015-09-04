@@ -2,12 +2,13 @@
 {% block title %}
     List Projects
 {% endblock title %}
+{% block alert %}{% endblock alert %}
+{# {% block bootstrap %}{% endblock bootstrap %} #}
+{% block style %}{% endblock style %}
+{% block validateForm %}{% endblock validateForm %}
+{# {% block stylebase %}{% endblock stylebase %} #}
 {% block script %}
-<script src="{{ MEDIA_URL }}js/tinymce.js"></script>
-<script src="{{ MEDIA_URL }}js/mustache.js"></script>
-<script src="{{ MEDIA_URL }}js/getCountry.js"></script>
-<script src="{{ MEDIA_URL }}js/sales/projects.js"></script>
-<script src="{{ MEDIA_URL }}js/floatThead.js"></script>
+
 <!-- block materialize -->
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}vendor/materialize/dist/css/materialize.min.css">
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/materialize/dist/js/materialize.min.js"></script>
@@ -28,8 +29,8 @@
     {% endif %}
 {% endblock menu %}
 {% block content %}
-<div class="">
-    <div class="well">
+<div data-ng-app="proApp">
+    <div class="well" data-ng-controller="proCtrl">
         <header>
             <h3>Proyectos</h3>
         </header>
@@ -213,23 +214,64 @@
               </button>
           </div>
         </div>
-        <ul class="collapsible popout" data-collapsible="accordion">
-          <li>
-            <div class="collapsible-header"><i class="fa fa-home"></i>First</div>
-            <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
-          </li>
-          <li>
-            <div class="collapsible-header"><i class="fa fa-home"></i>Second</div>
-            <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
-          </li>
-          <li>
-            <div class="collapsible-header"><i class="fa fa-home"></i>Third</div>
-            <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
-          </li>
-        </ul>
-        <div class="panel panel-default">
-
-            {% if request.user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+        <section class="section">
+          {% verbatim %}
+          <ul class="collapsible popout" data-collapsible="accordion" id="listCollapse">
+            <li data-ng-repeat="x in customers">
+              <div class="collapsible-header red lighten-1" data-ng-click="getProjects()">
+                <i class="fa fa-industry"></i>
+                <span class="grey-text text-lighten-5">{{x.fields.ruccliente.fields.razonsocial}}</span>
+              </div>
+              <div class="collapsible-body">
+                <ul class="collection" id="{{x.fields.ruccliente.pk}}">
+                  <li class="collection-item avatar">
+                    <i class="fa fa-building circle"></i>
+                    <span class="title">Title</span>
+                    <div class="row">
+                      <div class="col l12">
+                        First Line
+                      </div>
+                      <div class="col l12">
+                        Second Line
+                      </div>
+                      <div class="col l12">
+                        First Line
+                      </div>
+                    </div>
+                    <!--<a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>-->
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+          {% endverbatim %}
+        </section>
+        <div class="section center-align">
+          <div class="preloader-wrapper big" data-ng-class="{'active': !customers}" >
+            <div class="spinner-layer spinner-blue-only">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div><div class="gap-patch">
+                <div class="circle"></div>
+              </div><div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+<!-- angular -->
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js"></script>
+<script src="{{ MEDIA_URL }}js/tinymce.js"></script>
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="{{ MEDIA_URL }}js/getCountry.js"></script>
+<!-- <script src="{{ MEDIA_URL }}js/floatThead.js"></script>-->
+<script src="{{ MEDIA_URL }}js/sales/projects.js"></script>
+{% endblock content %}
+{# {% if request.user.get_profile.empdni.charge.area|lower == 'operaciones' %}
                 <div class="panel panel-success">
                   <div class="table-responsive">
                     <table class="table table-hover table-condensed">
@@ -540,8 +582,4 @@
                         </table>
                     </div>
                 </div>
-            {% endif %}
-        </div>
-    </div>
-</div>
-{% endblock content %}
+            {% endif %} #}

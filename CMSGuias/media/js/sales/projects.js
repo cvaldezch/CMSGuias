@@ -1,4 +1,4 @@
-var CreateProject, deleteProject, openUpdateProject, openWindow, showCountry, showCustomer, showDepartament, showDistrict, showGroup, showProvince, showTable, showaddProject;
+var CreateProject, app, deleteProject, openUpdateProject, openWindow, showCountry, showCustomer, showDepartament, showDistrict, showGroup, showProvince, showTable, showaddProject;
 
 $(document).ready(function() {
   $(".btn-save, .panel-pro, div.panel-second").hide();
@@ -8,24 +8,8 @@ $(document).ready(function() {
     "showAnim": "slide",
     "dateFormat": "yy-mm-dd"
   });
-
-  /*$(".btn-open > span").mouseenter (event) ->
-      event.preventDefault()
-      $(@).removeClass "glyphicon-folder-close"
-      .addClass "glyphicon-folder-open"
-      return
-  .mouseout (event) ->
-      $(@).removeClass "glyphicon-folder-open"
-      .addClass "glyphicon-folder-close"
-      return
-   */
-  $("table").floatThead({
-    useAbsolutePositioning: true,
-    scrollingTop: 50
-  });
   $("h4 > a").click(function(event) {
     console.log(this.getAttribute("data-value"));
-    $("table.table-" + (this.getAttribute("data-value"))).floatThead("reflow");
   });
   tinymce.init({
     selector: "textarea[name=obser]",
@@ -80,13 +64,12 @@ showaddProject = function(event) {
     if ($(this).is(":hidden")) {
       $btn.find("span").eq(0).removeClass("glyphicon-remove").addClass("glyphicon-plus");
       $btn.find("span").eq(1).html(" Nuevo Proyecto");
-      $(".btn-save").hide();
+      return $(".btn-save").hide();
     } else {
       $btn.find("span").eq(0).removeClass("glyphicon-plus").addClass("glyphicon-remove");
       $btn.find("span").eq(1).html(" Cancelar");
-      $(".btn-save").show();
+      return $(".btn-save").show();
     }
-    return $("table").floatThead("reflow");
   });
 };
 
@@ -221,6 +204,54 @@ showGroup = function(event) {
 
 showTable = function(event) {
   $("div.panel-first").fadeOut();
-  $("div.panel-second").fadeIn();
-  return $("table").floatThead("reflow");
+  return $("div.panel-second").fadeIn();
 };
+
+app = angular.module('proApp', ['ngSanitize', 'ngCookies']).config(function($httpProvider) {
+  $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+  $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+  $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+});
+
+app.controller('proCtrl', function($scope, $http, $cookies) {
+  $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+  $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+  $scope.customers = [];
+  angular.element(document).ready(function() {
+    $scope.listCustomers();
+  });
+  $scope.listCustomers = function() {
+    var params;
+    params = {
+      getCustomers: true
+    };
+    $http.get('', {
+      params: params
+    }).success(function(response) {
+      if (response.status) {
+        $scope.customers = response.customers;
+        setTimeout(function() {
+          $('.collapsible').collapsible();
+        }, 400);
+      } else {
+        console.log("No result. " + response.raise);
+      }
+    });
+  };
+  $scope.getProjects = function() {
+    var data;
+    console.log(this);
+    data = {
+      getProjects: true,
+      customer: this.x.fields.ruccliente.pk
+    };
+    console.log(data);
+    $http.get('', params).success(function(response) {
+      if (response.status) {
+        $scope[data.customer] = response;
+      } else {
+        console.log("No data project. " + response.raise);
+      }
+    });
+  };
+});

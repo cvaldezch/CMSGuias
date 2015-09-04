@@ -45,17 +45,17 @@ keyUpDescription = (event) ->
 getMeters = ->
     $nom = $("[name=description]")
     unless $nom.val() is ""
-        data = matnom: $nom.val().trim()
-        $.getJSON "/json/get/meter/materials/", data, (response) ->
-            template = "<option value=\"{{ materiales_id }}\">{{ matmed }}</option>"
-            $med = $("[name=meter]")
-            $med.empty()
-            for x of response.list
-                $med.append Mustache.render(template, response.list[x])
-            getSummaryMaterials()
-        return
+      data = matnom: $nom.val()
+      $.getJSON "/json/get/meter/materials/", data, (response) ->
+        template = "<option value=\"{{ materiales_id }}\">{{ matmed }}</option>"
+        $med = $("[name=meter]")
+        $med.empty()
+        for x of response.list
+            $med.append Mustache.render(template, response.list[x])
+        getSummaryMaterials()
+      return
     else
-        console.warn "The Field Name is empty!"
+      console.warn "The Field Name is empty!"
     return
 
 getSummaryMaterials = ->

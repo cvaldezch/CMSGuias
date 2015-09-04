@@ -54,7 +54,7 @@ getMeters = function() {
   $nom = $("[name=description]");
   if ($nom.val() !== "") {
     data = {
-      matnom: $nom.val().trim()
+      matnom: $nom.val()
     };
     $.getJSON("/json/get/meter/materials/", data, function(response) {
       var $med, template, x;

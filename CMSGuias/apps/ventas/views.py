@@ -7,6 +7,7 @@ import os
 from django.db.models import Q, Sum
 # from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
+from django.core import serializers
 from django.contrib import messages
 # from django.contrib.auth.mod import User
 from django.contrib.auth.decorators import login_required
@@ -72,42 +73,58 @@ class ProjectsList(JSONResponseMixin, TemplateView):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
+        area = request.user.get_profile().empdni.charge.area.lower()
+        if request.is_ajax():
+            try:
+                if 'getCustomers' in request.GET:
+                    if area == 'ventas' or area == 'administrator':
+                        proyectos = Proyecto.objects.filter(
+                                            Q(flag=True),
+                                            ~Q(status='DA')
+                                            ).order_by('-proyecto_id')
+                    elif area == 'operaciones':
+                        proyectos = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    Q(status='AC'),
+                                    empdni_id=request.user.get_profile(
+                                        ).empdni_id).order_by('-proyecto_id')
+                    elif area == 'logistica' or area == 'almacen':
+                        proyectos = Proyecto.objects.filter(
+                                            Q(flag=True),
+                                            Q(status='AC')).order_by(
+                                            '-proyecto_id')
+                    cnom = request.user.get_profile(
+                            ).empdni.charge.cargos.lower()
+                    if cnom == 'jefe de operaciones':
+                        proyectos = Proyecto.objects.filter(
+                                            Q(flag=True),
+                                            Q(status='AC')).order_by(
+                                            '-proyecto_id')
+                    cust = proyectos
+                    if area == 'operaciones':
+                        cust = cust.filter(
+                                empdni_id=request.user.get_profile().empdni_id,
+                                status='AC')
+                    elif area == 'logistica' or area == 'almacen':
+                        cust = cust.filter(status='AC')
+                    cust = cust.order_by(
+                            'ruccliente__razonsocial').distinct(
+                            'ruccliente__razonsocial')
+                    context['customers'] = simplejson.loads(
+                                            serializers.serialize(
+                                                'json',
+                                                cust,
+                                                indent=4,
+                                                relations=('ruccliente',)))
+                    context['status'] = True
+            except ObjectDoesNotExist as e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)
         try:
-            area = request.user.get_profile().empdni.charge.area.lower()
             if area == 'ventas' or area == 'administrator':
-                context['list'] = Proyecto.objects.filter(
-                                    Q(flag=True),
-                                    ~Q(status='DA')).order_by('-proyecto_id')
-
-                context['currency'] = Moneda.objects.filter(flag=True)
-                context['typep'] = globalVariable.typeProject
-
-            elif area == 'operaciones':
-                context['list'] = Proyecto.objects.filter(
-                                Q(flag=True),
-                                Q(status='AC'),
-                                empdni_id=request.user.get_profile().empdni_id
-                                ).order_by('-proyecto_id')
-            elif area == 'logistica' or area == 'almacen':
-                context['list'] = Proyecto.objects.filter(
-                                    Q(flag=True),
-                                    Q(status='AC')).order_by('-proyecto_id')
-            cnom = request.user.get_profile().empdni.charge.cargos.lower()
-            if cnom == 'jefe de operaciones':
-                context['list'] = Proyecto.objects.filter(
-                                    Q(flag=True),
-                                    Q(status='AC')).order_by('-proyecto_id')
-            cust = context['list']
-            if area == 'operaciones':
-                cust = cust.filter(
-                            empdni_id=request.user.get_profile().empdni_id,
-                            status='AC')
-            elif area == 'logistica' or area == 'almacen':
-                cust = cust.filter(status='AC')
-            cust = cust.order_by(
-                    'ruccliente__razonsocial').distinct(
-                    'ruccliente__razonsocial')
-            context['cust'] = cust
+                    context['currency'] = Moneda.objects.filter(flag=True)
+                    context['typep'] = globalVariable.typeProject
             return render_to_response(
                     self.template_name,
                     context,
