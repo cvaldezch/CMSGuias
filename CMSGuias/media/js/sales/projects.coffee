@@ -205,24 +205,51 @@ app.controller 'proCtrl', ($scope, $http, $cookies) ->
                         $('.collapsible').collapsible()
                         return
                     , 400
+                    setTimeout ->
+                        $('.collapsible').collapsible()
+                        return
+                    , 1200
                     return
                 else
                     console.log "No result. #{response.raise}"
                     return
         return
     $scope.getProjects = ->
-        console.log this
         data =
             getProjects: true
             customer: this.x.fields.ruccliente.pk
-        console.log data
-        $http.get '', params
-            .success (response) ->
-                if response.status
-                    $scope[data.customer] = response
-                    return
-                else
-                    console.log "No data project. #{response.raise}"
-                    return
+        if !$("##{data.customer}").parent().is(":visible")
+            $http.get '', params: data
+                .success (response) ->
+                    if response.status
+                        response.projects.date = ->
+                            return typeof this.registrado
+                        console.log response
+                        $("##{data.customer}").html Mustache.render """{{#projects}} <li class="collection-item avatar">
+                        <i class="fa fa-building circle"></i>
+                        <span class="title"><strong>{{pk}} - {{fields.nompro}}</strong></span>
+                        <div class="row">
+                          <div class="col l6">
+                            <strong>Contacto: </strong> {{fields.contact}}
+                          </div>
+                          <div class="col l6"><strong>Correo: </strong> {{fields.email}}</div>
+                          <div class="col l4">
+                            <strong>Registrado: </strong> {{fields.registrado}}
+                          </div>
+                          <div class="col l4">
+                            <strong>Inicio: </strong> {{fields.comienzo}}
+                          </div>
+                          <div class="col l4">
+                            <strong>Termino: </strong> {{fields.fin}}
+                          </div>
+                        </div>
+                      </li>{{/projects}}""", response
+                        return
+                    else
+                        console.log "No data project. #{response.raise}"
+                        return
+            return
+    $scope.$watch 'scustomers', ->
+        $('.collapsible').collapsible()
         return
     return

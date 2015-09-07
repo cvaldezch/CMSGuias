@@ -117,6 +117,38 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                                                 indent=4,
                                                 relations=('ruccliente',)))
                     context['status'] = True
+                if 'getProjects' in request.GET:
+                    if area == 'ventas' or area == 'administrator':
+                        projects = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    ~Q(status='DA'),
+                                    Q(ruccliente_id=request.GET['customer'])
+                                    ).order_by('-proyecto_id')
+                    elif area == 'operaciones':
+                        projects = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    Q(status='AC'),
+                                    Q(ruccliente_id=request.GET['customer']),
+                                    empdni_id=request.user.get_profile(
+                                        ).empdni_id).order_by('-proyecto_id')
+                    elif area == 'logistica' or area == 'almacen':
+                        projects = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    Q(status='AC'),
+                                    Q(ruccliente_id=request.GET['customer'])
+                                    ).order_by('-proyecto_id')
+                    cnom = request.user.get_profile(
+                            ).empdni.charge.cargos.lower()
+                    if cnom == 'jefe de operaciones':
+                        projects = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    Q(status='AC'),
+                                    Q(ruccliente_id=request.GET['customer'])
+                                    ).order_by('-proyecto_id')
+                    context['projects'] = simplejson.loads(
+                                            serializers.serialize(
+                                                'json', projects))
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

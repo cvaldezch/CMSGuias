@@ -213,34 +213,26 @@
                 <i class="fa fa-list-alt fa-lg"></i>
               </button>
           </div>
+          <div class="card-content">
+            <div class="row">
+              <div class="col l12 input-field">
+                <i class="fa fa-filter prefix"></i>
+                <input type="text" data-ng-model="scustomers">
+                <label>Buscar por clientes</label>
+              </div>
+            </div>
+          </div>
         </div>
         <section class="section">
           {% verbatim %}
           <ul class="collapsible popout" data-collapsible="accordion" id="listCollapse">
-            <li data-ng-repeat="x in customers">
+            <li data-ng-repeat="x in customers | filter:scustomers">
               <div class="collapsible-header red lighten-1" data-ng-click="getProjects()">
                 <i class="fa fa-industry"></i>
                 <span class="grey-text text-lighten-5">{{x.fields.ruccliente.fields.razonsocial}}</span>
               </div>
               <div class="collapsible-body">
-                <ul class="collection" id="{{x.fields.ruccliente.pk}}">
-                  <li class="collection-item avatar">
-                    <i class="fa fa-building circle"></i>
-                    <span class="title">Title</span>
-                    <div class="row">
-                      <div class="col l12">
-                        First Line
-                      </div>
-                      <div class="col l12">
-                        Second Line
-                      </div>
-                      <div class="col l12">
-                        First Line
-                      </div>
-                    </div>
-                    <!--<a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>-->
-                  </li>
-                </ul>
+                <ul class="collection" id="{{x.fields.ruccliente.pk}}"></ul>
               </div>
             </li>
           </ul>

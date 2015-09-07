@@ -233,6 +233,9 @@ app.controller('proCtrl', function($scope, $http, $cookies) {
         setTimeout(function() {
           $('.collapsible').collapsible();
         }, 400);
+        setTimeout(function() {
+          $('.collapsible').collapsible();
+        }, 1200);
       } else {
         console.log("No result. " + response.raise);
       }
@@ -240,18 +243,27 @@ app.controller('proCtrl', function($scope, $http, $cookies) {
   };
   $scope.getProjects = function() {
     var data;
-    console.log(this);
     data = {
       getProjects: true,
       customer: this.x.fields.ruccliente.pk
     };
-    console.log(data);
-    $http.get('', params).success(function(response) {
-      if (response.status) {
-        $scope[data.customer] = response;
-      } else {
-        console.log("No data project. " + response.raise);
-      }
-    });
+    if (!$("#" + data.customer).parent().is(":visible")) {
+      $http.get('', {
+        params: data
+      }).success(function(response) {
+        if (response.status) {
+          response.projects.date = function() {
+            return typeof this.registrado;
+          };
+          console.log(response);
+          $("#" + data.customer).html(Mustache.render("{{#projects}} <li class=\"collection-item avatar\">\n  <i class=\"fa fa-building circle\"></i>\n  <span class=\"title\"><strong>{{pk}} - {{fields.nompro}}</strong></span>\n  <div class=\"row\">\n    <div class=\"col l6\">\n      <strong>Contacto: </strong> {{fields.contact}}\n    </div>\n    <div class=\"col l6\"><strong>Correo: </strong> {{fields.email}}</div>\n    <div class=\"col l4\">\n      <strong>Registrado: </strong> {{fields.registrado}}\n    </div>\n    <div class=\"col l4\">\n      <strong>Inicio: </strong> {{fields.comienzo}}\n    </div>\n    <div class=\"col l4\">\n      <strong>Termino: </strong> {{fields.fin}}\n    </div>\n  </div>\n</li>{{/projects}}", response));
+        } else {
+          console.log("No data project. " + response.raise);
+        }
+      });
+    }
   };
+  $scope.$watch('scustomers', function() {
+    $('.collapsible').collapsible();
+  });
 });
