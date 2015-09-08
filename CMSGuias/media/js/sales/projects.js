@@ -1,4 +1,4 @@
-var CreateProject, app, deleteProject, openUpdateProject, openWindow, showCountry, showCustomer, showDepartament, showDistrict, showGroup, showProvince, showTable, showaddProject;
+var CreateProject, app, deleteProject, openUpdateProject, openWindow, showCountry, showCustomer, showDepartament, showDistrict, showProvince, showaddProject;
 
 $(document).ready(function() {
   $(".btn-save, .panel-pro, div.panel-second").hide();
@@ -53,8 +53,6 @@ $(document).ready(function() {
   }, function() {
     $(this).css("color", "#000");
   });
-  $(".btn-show-group").on("click", showGroup);
-  $(".btn-show-table").on("click", showTable);
 });
 
 showaddProject = function(event) {
@@ -197,16 +195,6 @@ deleteProject = function() {
   });
 };
 
-showGroup = function(event) {
-  $("div.panel-second").fadeOut();
-  return $("div.panel-first").fadeIn();
-};
-
-showTable = function(event) {
-  $("div.panel-first").fadeOut();
-  return $("div.panel-second").fadeIn();
-};
-
 app = angular.module('proApp', ['ngSanitize', 'ngCookies']).config(function($httpProvider) {
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
   $httpProvider.defaults.xsrfCookieName = 'csrftoken';
@@ -217,8 +205,18 @@ app.controller('proCtrl', function($scope, $http, $cookies) {
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
   $scope.customers = [];
+  $scope.sfcustomers = false;
+  $scope.sfprojects = false;
+  $scope.pcustomers = true;
+  $scope.pprojects = false;
+  $scope.tadmin = false;
   angular.element(document).ready(function() {
     $scope.listCustomers();
+    setTimeout(function() {
+      if ($scope.area === 'administrator' || $scope.area === 'ventas') {
+        $scope.tadmin = true;
+      }
+    }, 1500);
   });
   $scope.listCustomers = function() {
     var params;
@@ -233,9 +231,6 @@ app.controller('proCtrl', function($scope, $http, $cookies) {
         setTimeout(function() {
           $('.collapsible').collapsible();
         }, 400);
-        setTimeout(function() {
-          $('.collapsible').collapsible();
-        }, 1200);
       } else {
         console.log("No result. " + response.raise);
       }
@@ -248,22 +243,60 @@ app.controller('proCtrl', function($scope, $http, $cookies) {
       customer: this.x.fields.ruccliente.pk
     };
     if (!$("#" + data.customer).parent().is(":visible")) {
+      $('.collapsible').collapsible();
       $http.get('', {
         params: data
       }).success(function(response) {
         if (response.status) {
-          response.projects.date = function() {
-            return typeof this.registrado;
-          };
           console.log(response);
-          $("#" + data.customer).html(Mustache.render("{{#projects}} <li class=\"collection-item avatar\">\n  <i class=\"fa fa-building circle\"></i>\n  <span class=\"title\"><strong>{{pk}} - {{fields.nompro}}</strong></span>\n  <div class=\"row\">\n    <div class=\"col l6\">\n      <strong>Contacto: </strong> {{fields.contact}}\n    </div>\n    <div class=\"col l6\"><strong>Correo: </strong> {{fields.email}}</div>\n    <div class=\"col l4\">\n      <strong>Registrado: </strong> {{fields.registrado}}\n    </div>\n    <div class=\"col l4\">\n      <strong>Inicio: </strong> {{fields.comienzo}}\n    </div>\n    <div class=\"col l4\">\n      <strong>Termino: </strong> {{fields.fin}}\n    </div>\n  </div>\n</li>{{/projects}}", response));
+          $scope.pro = response.projects;
+          $scope[data.customer] = '<div><p ng-repeat="each in pro">{{each.pk}}</p></div>';
+          console.log($scope.pro);
+          console.log($scope);
+          if ($scope.area === 'administrator' || $scope.area === 'ventas') {
+            $scope.tadmin = true;
+            return;
+          }
         } else {
           console.log("No data project. " + response.raise);
         }
       });
     }
   };
+  $scope.ProjectsAll = function() {
+    var data;
+    data = {
+      allProjects: true
+    };
+    $http.get('', {
+      params: data
+    }).success(function(response) {
+      if (response.status) {
+        $scope.allprojects = response.projects;
+      } else {
+        console.log("error data. " + response.raise);
+      }
+    });
+  };
+  $scope.showFilter = function() {
+    if ($scope.pcustomers) {
+      $scope.sfcustomers = !$scope.sfcustomers;
+    }
+    if ($scope.pprojects) {
+      $scope.sfprojects = !$scope.sfprojects;
+    }
+  };
+  $scope.sTable = function() {
+    var row;
+    row = angular.element("#lprojects > tbody > tr");
+    if (!row.length) {
+      $scope.ProjectsAll();
+    }
+  };
   $scope.$watch('scustomers', function() {
     $('.collapsible').collapsible();
+  });
+  $scope.$watch('tadmin', function() {
+    return console.log(this);
   });
 });

@@ -149,6 +149,31 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                                             serializers.serialize(
                                                 'json', projects))
                     context['status'] = True
+                if 'allProjects' in request.GET:
+                    if area == 'ventas' or area == 'administrator':
+                        projects = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    ~Q(status='DA')).order_by('-proyecto_id')
+                    elif area == 'operaciones':
+                        projects = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    Q(status='AC'),
+                                    empdni_id=request.user.get_profile(
+                                        ).empdni_id).order_by('-proyecto_id')
+                    elif area == 'logistica' or area == 'almacen':
+                        projects = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    Q(status='AC')).order_by('-proyecto_id')
+                    cnom = request.user.get_profile(
+                            ).empdni.charge.cargos.lower()
+                    if cnom == 'jefe de operaciones':
+                        projects = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    Q(status='AC')).order_by('-proyecto_id')
+                    context['projects'] = simplejson.loads(
+                                            serializers.serialize(
+                                                'json', projects))
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

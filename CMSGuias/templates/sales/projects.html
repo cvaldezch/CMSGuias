@@ -36,166 +36,166 @@
         </header>
         <aside>
           {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
-              <div class="btn-group">
-                  <button class="btn blue darken-1 btn-add">
-                      <span class="glyphicon glyphicon-plus"></span>
-                      <span> Nuevo Proyecto</span>
-                  </button>
-                  <button class="btn btn-success text-black btn-save">
-                      <span class="glyphicon glyphicon-floppy-disk"></span> Guardar Cambios
-                  </button>
-              </div>
-              <div class="panel panel-primary panel-pro">
-                  <div class="panel-body">
-                      <div class="row">
-                          {% csrf_token %}
-                          <div class="col-md-6">
-                              <div class="form-group has-primary">
-                                  <label class="control-label">Cliente</label>
-                                  <div class="input-group input-group-sm">
-                                      <select name="ruccliente" id="ruccliente" class="form-control input-sm">
-                                          {% for x in customers %}
-                                              <option value="{{ x.ruccliente_id }}">{{ x.razonsocial }}</option>
-                                          {% empty %}
-                                              <option value="">-- Nothing --</option>
-                                          {% endfor %}
-                                      </select>
-                                      <span class="input-group-btn">
-                                          <button class="btn btn-primary btn-sm btn-add-customers"><span class="glyphicon glyphicon-plus"></span></button>
-                                          <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
-                                      </span>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="col-md-6">
-                              <div class="form-group has-primary">
-                                  <label class="control-label">Nombre Proyecto</label>
-                                  <input type="text" name="nompro" class="form-control input-sm">
-                              </div>
-                          </div>
-                          <div class="col-md-3">
-                              <div class="form-group has-primary">
-                                  <label class="control-label">Inicio Proyecto</label>
-                                  <input type="text" name="comienzo" class="form-control input-sm">
-                              </div>
-                          </div>
-                          <div class="col-md-3">
-                              <div class="form-group has-primary">
-                                  <label class="control-label">Fin Proyecto</label>
-                                  <input type="text" name="fin" class="form-control input-sm">
-                              </div>
-                          </div>
-                          <div class="col-md-3">
-                              <div class="form-group has-primary">
-                                  <label class="control-label">Pais</label>
-                                  <div class="input-group input-group-sm">
-                                      <select name="pais" id="pais" class="form-control input-sm">
-                                          {% for x in country %}
-                                              <option value="{{ x.pais_id }}">{{ x.paisnom }}</option>
-                                          {% endfor %}
-                                      </select>
-                                      <span class="input-group-btn">
-                                          <button class="btn btn-primary btn-sm btn-add-country"><span class="glyphicon glyphicon-plus"></span></button>
-                                          <button class="btn btn-primary btn-country-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
-                                      </span>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="col-md-3">
-                              <div class="form-group has-primary">
-                                  <label class="control-label">Depatamento</label>
-                                  <div class="input-group">
-                                      <select name="departamento" id="" class="form-control input-sm"></select>
-                                      <span class="input-group-btn">
-                                          <button class="btn btn-primary btn-sm btn-add-departament"><span class="glyphicon glyphicon-plus"></span></button>
-                                          <button class="btn btn-primary btn-departament-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
-                                      </span>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="col-md-3">
-                              <div class="form-group has-primary">
-                                  <label class="control-label">Provincia</label>
-                                  <div class="input-group input-group-sm">
-                                      <select name="provincia" id="provincia" class="form-control input-sm"></select>
-                                       <span class="input-group-btn">
-                                          <button class="btn btn-primary btn-sm btn-add-province"><span class="glyphicon glyphicon-plus"></span></button>
-                                          <button class="btn btn-primary btn-province-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
-                                      </span>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="col-md-3">
-                              <div class="form-group has-primary">
-                                  <label class="control-label">Distrito</label>
-                                  <div class="input-group input-group-sm">
-                                      <select name="distrito" id="" class="form-control input-sm"></select>
-                                       <span class="input-group-btn">
-                                          <button class="btn btn-primary btn-sm btn-add-district"><span class="glyphicon glyphicon-plus"></span></button>
-                                          <button class="btn btn-primary btn-district-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
-                                      </span>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="col-md-6">
-                              <div class="form-group has-primary">
-                                  <label class="control-label">Dirección</label>
-                                  <input type="text" name="direccion" class="form-control input-sm">
-                              </div>
-                          </div>
-                          <div class="col-md-3">
-                              <div class="form-group has-primary">
-                                  <label class="control-label">Moneda</label>
-                                  <select name="currency" class="form-control input-sm">
-                                  {% for x in currency %}
-                                      <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
-                                  {% endfor %}
-                                  </select>
-                              </div>
-                          </div>
-                          <div class="col-md-2">
-                              <div class="form-group has-primary">
-                                  <label class="control-label">Tipo de Proyecto</label>
-                                  <select name="typep" class="form-control input-sm">
-                                      {% for k, v in typep.iteritems %}
-                                          <option value="{{ k }}">{{ v }}</option>
-                                      {% endfor %}
-                                  </select>
-                              </div>
-                          </div>
-                          <div class="col-md-2">
-                              <div class="form-group has-primary">
-                                  <label class="control-label">Tipo Cambio</label>
-                                  <input type="text" name="exchange" class="form-control input-sm">
-                              </div>
-                          </div>
-                          <div class="col-md-5">
+            <div class="btn-group">
+                <button class="btn blue darken-1 btn-add">
+                    <span class="glyphicon glyphicon-plus"></span>
+                    <span> Nuevo Proyecto</span>
+                </button>
+                <button class="btn btn-success text-black btn-save">
+                    <span class="glyphicon glyphicon-floppy-disk"></span> Guardar Cambios
+                </button>
+            </div>
+            <div class="panel panel-primary panel-pro">
+                <div class="panel-body">
+                    <div class="row">
+                        {% csrf_token %}
+                        <div class="col-md-6">
                             <div class="form-group has-primary">
-                              <label class="control-label">Email Contacto</label>
-                              <input type="email" name="email" class="form-control input-sm">
+                                <label class="control-label">Cliente</label>
+                                <div class="input-group input-group-sm">
+                                    <select name="ruccliente" id="ruccliente" class="form-control input-sm">
+                                        {% for x in customers %}
+                                            <option value="{{ x.ruccliente_id }}">{{ x.razonsocial }}</option>
+                                        {% empty %}
+                                            <option value="">-- Nothing --</option>
+                                        {% endfor %}
+                                    </select>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary btn-sm btn-add-customers"><span class="glyphicon glyphicon-plus"></span></button>
+                                        <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
+                                    </span>
+                                </div>
                             </div>
-                          </div>
-                          <div class="col-md-2">
+                        </div>
+                        <div class="col-md-6">
                             <div class="form-group has-primary">
-                              <label class="control-label">Telefono Contacto</label>
-                              <input type="text" name="phone" class="form-control input-sm">
+                                <label class="control-label">Nombre Proyecto</label>
+                                <input type="text" name="nompro" class="form-control input-sm">
                             </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Inicio Proyecto</label>
+                                <input type="text" name="comienzo" class="form-control input-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Fin Proyecto</label>
+                                <input type="text" name="fin" class="form-control input-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Pais</label>
+                                <div class="input-group input-group-sm">
+                                    <select name="pais" id="pais" class="form-control input-sm">
+                                        {% for x in country %}
+                                            <option value="{{ x.pais_id }}">{{ x.paisnom }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary btn-sm btn-add-country"><span class="glyphicon glyphicon-plus"></span></button>
+                                        <button class="btn btn-primary btn-country-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Depatamento</label>
+                                <div class="input-group">
+                                    <select name="departamento" id="" class="form-control input-sm"></select>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary btn-sm btn-add-departament"><span class="glyphicon glyphicon-plus"></span></button>
+                                        <button class="btn btn-primary btn-departament-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Provincia</label>
+                                <div class="input-group input-group-sm">
+                                    <select name="provincia" id="provincia" class="form-control input-sm"></select>
+                                     <span class="input-group-btn">
+                                        <button class="btn btn-primary btn-sm btn-add-province"><span class="glyphicon glyphicon-plus"></span></button>
+                                        <button class="btn btn-primary btn-province-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Distrito</label>
+                                <div class="input-group input-group-sm">
+                                    <select name="distrito" id="" class="form-control input-sm"></select>
+                                     <span class="input-group-btn">
+                                        <button class="btn btn-primary btn-sm btn-add-district"><span class="glyphicon glyphicon-plus"></span></button>
+                                        <button class="btn btn-primary btn-district-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Dirección</label>
+                                <input type="text" name="direccion" class="form-control input-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Moneda</label>
+                                <select name="currency" class="form-control input-sm">
+                                {% for x in currency %}
+                                    <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
+                                {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Tipo de Proyecto</label>
+                                <select name="typep" class="form-control input-sm">
+                                    {% for k, v in typep.iteritems %}
+                                        <option value="{{ k }}">{{ v }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Tipo Cambio</label>
+                                <input type="text" name="exchange" class="form-control input-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                          <div class="form-group has-primary">
+                            <label class="control-label">Email Contacto</label>
+                            <input type="email" name="email" class="form-control input-sm">
                           </div>
-                          <div class="col-md-10">
-                              <div class="form-group has-primary">
-                                  <label class="control-label">Contacto de Proyecto</label>
-                                  <input type="text" name="contact" class="form-control input-sm">
-                              </div>
+                        </div>
+                        <div class="col-md-2">
+                          <div class="form-group has-primary">
+                            <label class="control-label">Telefono Contacto</label>
+                            <input type="text" name="phone" class="form-control input-sm">
                           </div>
-                          <div class="col-md-12">
-                              <div class="form-group has-primary">
-                                  <label class="control-label">Observación</label>
-                                  <textarea name="obser" id="obser" rows="8" class="form-control input-sm"></textarea>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Contacto de Proyecto</label>
+                                <input type="text" name="contact" class="form-control input-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group has-primary">
+                                <label class="control-label">Observación</label>
+                                <textarea name="obser" id="obser" rows="8" class="form-control input-sm"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
           {% endif %}
         </aside>
         <div class="card">
@@ -203,27 +203,32 @@
               <!-- <button class="btn left-align">
                 <i class="fa fa-refresh"></i>
               </button> -->
-              <button class="btn left-align">
+              <button type="button" class="btn waves-effect left-align grey lighten-5 grey-text text-darken-3" data-ng-click="showFilter()">
                 <i class="fa fa-search"></i>
               </button>
-              <button class="btn right btn-show-group">
-                <i class="fa fa-reorder fa-lg"></i>
-              </button>
-              <button class="btn right btn-show-table">
+              <button type="button" class="btn waves-effect right light-green lighten-5 grey-text text-darken-3" data-ng-model="pprojects" data-ng-click="pprojects=true; pcustomers=false; sfcustomers=false; sfprojects=false; sTable()">
                 <i class="fa fa-list-alt fa-lg"></i>
               </button>
+              <button type="button" class="btn waves-effect right light-green lighten-5 grey-text text-darken-3" data-ng-model="pcustomers" data-ng-click="pcustomers=true; pprojects=false; sfcustomers=false; sfprojects=false">
+                <i class="fa fa-reorder fa-lg"></i>
+              </button>
           </div>
-          <div class="card-content">
+          <div class="card-">
             <div class="row">
-              <div class="col l12 input-field">
+              <div class="col l12 input-field" data-ng-model="sfcustomers" data-ng-show="sfcustomers">
                 <i class="fa fa-filter prefix"></i>
                 <input type="text" data-ng-model="scustomers">
                 <label>Buscar por clientes</label>
               </div>
+              <div class="col l12 input-field" data-ng-model="sfprojects" data-ng-show="sfprojects">
+                <i class="fa fa-filter prefix"></i>
+                <input type="text" data-ng-model="sprojects">
+                <label>Buscar por Proyectos</label>
+              </div>
             </div>
           </div>
         </div>
-        <section class="section">
+        <section class="section" data-ng-show="pcustomers">
           {% verbatim %}
           <ul class="collapsible popout" data-collapsible="accordion" id="listCollapse">
             <li data-ng-repeat="x in customers | filter:scustomers">
@@ -232,10 +237,49 @@
                 <span class="grey-text text-lighten-5">{{x.fields.ruccliente.fields.razonsocial}}</span>
               </div>
               <div class="collapsible-body">
-                <ul class="collection" id="{{x.fields.ruccliente.pk}}"></ul>
+                <ul class="collection" id="{{x.fields.ruccliente.pk}}">
+                <li ng-model="x.fields.ruccliente.pk" ng-init="x.fields.ruccliente.pk=[]" data-ng-repeat="a in x.fields.ruccliente.pk">{{a.pk}}</li>
+                </ul>
               </div>
             </li>
           </ul>
+          {% endverbatim %}
+        </section>
+        <section class="section" data-ng-show="pprojects">
+          {% verbatim %}
+            <h4>Lista de proyectos</h4>
+            <table class="table responsive-table striped hoverable" id="lprojects">
+              <thead>
+                <tr class="red lighten-1">
+                  <th class="text-center">Item</th>
+                  <th></th>
+                  <th class="text-center">Codigo</th>
+                  <th>Nombre de Proyecto</th>
+                  <th>Contacto</th>
+                  <th class="text-center col-3">Registrado</th>
+                  <th class="text-center col-3">Fecha Inicio</th>
+                  <th class="text-center col-3">Fecha Fin</th>
+                  <th data-ng-show="tadmin">Editar</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-ng-repeat="r in allprojects | filter:sprojects">
+                  <td>{{$index+1}}</td>
+                  <td>
+                    <a href="manager/{{r.pk}}/" class="btn waves-effect waves-teal btn-flat text-black secondary-content">
+                      <i class="fa fa-building"></i>
+                    </a>
+                  </td>
+                  <td>{{r.pk}}</td>
+                  <td>{{r.fields.nompro}}</td>
+                  <td>{{r.fields.contact}}</td>
+                  <td class="text-center">{{r.fields.registrado|date:"dd-MM-y" }}</td>
+                  <td class="center-align">{{r.fields.comienzo|date:"dd-MM-y" }}</td>
+                  <td class="center-align">{{r.fields.fin|date:"dd-MM-y" }}</td>
+                  <td data-ng-show="tadmin" class="center-align"><a class="grey-text text-darken-3" href="/almacen/keep/project/{{r.pk}}/edit/" target="popup"><i class="fa fa-edit"></i></a></td>
+                </tr>
+              </tbody>
+            </table>
           {% endverbatim %}
         </section>
         <div class="section center-align">
@@ -253,6 +297,8 @@
         </div>
     </div>
 </div>
+<!-- privileges -->
+<input type="hidden" value="{{request.user.get_profile.empdni.charge.area|lower}}" data-ng-model="area">
 <!-- angular -->
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
@@ -263,315 +309,3 @@
 <!-- <script src="{{ MEDIA_URL }}js/floatThead.js"></script>-->
 <script src="{{ MEDIA_URL }}js/sales/projects.js"></script>
 {% endblock content %}
-{# {% if request.user.get_profile.empdni.charge.area|lower == 'operaciones' %}
-                <div class="panel panel-success">
-                  <div class="table-responsive">
-                    <table class="table table-hover table-condensed">
-                      <thead>
-                          <tr class="brand-danger text-white">
-                              <th class="text-center">Item</th>
-                              <th></th>
-                              <th class="text-center">Codigo</th>
-                              <th>Nombre de Proyecto</th>
-                              <th>Contacto</th>
-                              <th class="text-center col-3">Registrado</th>
-                              <th class="text-center col-3">Fecha Inicio</th>
-                              <th class="text-center col-3">Fecha Fin</th>
-                              <!-- <th>Progreso</th> -->
-                              {% if user.get_profile.empdni.charge.area|lower == "administrator" or user.get_profile.empdni.charge.area|lower == "ventas"  %}
-                                <th class="text-center">Editar</th>
-                                <th class="text-center">Eliminar</th>
-                              {% endif %}
-                          </tr>
-                      </thead>
-                      <tbody>
-                          {% for x in list %}
-                              <!-- {% if x.itemsPercent != '100.0' %}
-                                  {% if x.is_out_date %}
-                                      <tr class="tr-{{ x.proyecto_id }} danger">
-                                  {% else %}
-                                      {% ifequal x.status 'AC' %}
-                                          <tr class="tr-{{ x.proyecto_id }} warning">
-                                      {% endifequal %}
-                                      {% ifequal x.status 'PE' %}
-                                          <tr class="tr-{{ x.proyecto_id }}">
-                                      {% endifequal %}
-                                  {% endif %}
-                              {% else %}
-                                  {% ifequal x.status 'AC' %}
-                                    <tr class="tr-{{ x.proyecto_id }} warning">
-                                  {% endifequal %}
-                                  {% ifequal x.status 'PE' %}
-                                    <tr class="tr-{{ x.proyecto_id }}">
-                                  {% endifequal %}
-                              {% endif %} -->
-                              {% if x.is_out_date %}
-                                <tr class="tr-{{ x.proyecto_id }} danger">
-                              {% else %}
-                                {% ifequal x.status 'AC' %}
-                                  <tr class="tr-{{ x.proyecto_id }} warning">
-                                {% endifequal %}
-                                {% ifequal x.status 'PE' %}
-                                  <tr class="tr-{{ x.proyecto_id }}">
-                                {% endifequal %}
-                              {% endif %}
-                                  <td>{{ forloop.counter }}</td>
-                                  <td>
-                                      <a href="{% url 'managerpro_view' x.proyecto_id %}" class="btn btn-link btn-xs btn-open text-black">
-                                          <span class="fa fa-fire-extinguisher"></span>
-                                          <span class="glyphicon glyphicon-fire"></span>
-                                      </a>
-                                  </td>
-                                  <td>{{ x.proyecto_id }}</td>
-                                  <td>{{ x.nompro }}</td>
-                                  <td>{{ x.contact }}</td>
-                                  <td class="text-center">{{ x.registrado|date:"d/m/Y" }}</td>
-                                  <td>{{ x.comienzo|date:"d/m/Y" }}</td>
-                                  <td>{{ x.fin|date:"d/m/Y" }}</td>
-                                  <!-- <td>
-                                      <div class="progress">
-                                          <div class="progress-bar
-                                          {#% if x.itemsPercent == '100.0' %#}
-                                              progress-bar-success
-                                          {#% else %#}
-                                              progress-bar-warning
-                                          {#% endif %#}
-                                           text-black" role="progressbar" aria-valuenow="{#{ x.itemsPercent }#}" aria-valuemin="0" aria-valuemax="100" style="width: {#{ x.itemsPercent }#}%;">
-                                              {{ x.itemsPercent }}%
-                                          </div>
-                                      </div>
-                                  </td> -->
-                                  {% if user.get_profile.empdni.charge.area|lower == "administrator" or user.get_profile.empdni.charge.area|lower == "ventas"  %}
-                                  <td class="text-center">
-                                      <button class="btn btn-link btn-xs text-black btn-show-edit" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-edit"></span>
-                                      </button>
-                                  </td>
-                                  <td class="text-center">
-                                      <button type="Button" class="btn btn-xs btn-link text-red btn-show-delete" title="{{ x.nompro }}" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-trash"></span>
-                                      </button>
-                                  </td>
-                                  {% endif %}
-                              </tr>
-                          {% empty %}
-                              <div class="alert alert-warning">
-                                  <strong>Warning</strong>
-                                  <p>No se han encontrado <q><strong>Proyectos</strong></q> para mostrar. Presione el botón <q><strong>Nuevo Proyecto</strong></q> para agregar.<p>
-                              </div>
-                          {% endfor%}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-            {% else %}
-                <div class="panel-group panel-first" id="accordion" role="tablist" aria-multiselectable="true">
-                    {% for c in cust %}
-                        <div class="panel panel-danger">
-                            <div class="panel-heading" role="tab" id="headingOne">
-                                <h4 class="panel-title">
-                                    <a data-toggle="collapse" data-value="{{ c.ruccliente_id }}" data-parent="#accordion" href="#{{ c.ruccliente_id }}" aria-expanded="true" aria-controls="{{ c.ruccliente_id }}">
-                                        {{ c.ruccliente.razonsocial }}
-                                    </a>
-                                </h4>
-                            </div>
-                            <div id="{{ c.ruccliente_id }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-                                <div class="table-responsive">
-                                    <table class="table table-hover table-condensed table-{{ c.ruccliente_id }}">
-                                        <thead>
-                                            <tr class="brand-danger text-white">
-                                                <th class="text-center">Item</th>
-                                                <th></th>
-                                                <th class="text-center">Codigo</th>
-                                                <th>Nombre de Proyecto</th>
-                                                <th>Contacto</th>
-                                                <th class="text-center col-3">Registrado</th>
-                                                <th class="text-center col-3">Fecha Inicio</th>
-                                                <th class="text-center col-3">Fecha Fin</th>
-                                                <!-- <th class="text=center">Progreso</th> -->
-                                                {% if user.get_profile.empdni.charge.area|lower == "administrator" or user.get_profile.empdni.charge.area|lower == "ventas"  %}
-                                                  <th class="text-center">Editar</th>
-                                                  <th class="text-center">Eliminar</th>
-                                                {% endif %}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for x in list %}
-                                                {% if x.ruccliente_id == c.ruccliente_id %}
-                                                    <!-- {% if x.itemsPercent != '100.0' %}
-                                                        {% if x.is_out_date %}
-                                                            <tr class="tr-{{ x.proyecto_id }} danger">
-                                                        {% else %}
-                                                            {% ifequal x.status 'AC' %}
-                                                                <tr class="tr-{{ x.proyecto_id }} warning">
-                                                            {% endifequal %}
-                                                            {% ifequal x.status 'PE' %}
-                                                                <tr class="tr-{{ x.proyecto_id }}">
-                                                            {% endifequal %}
-                                                        {% endif %}
-                                                    {% else %}
-                                                         {% ifequal x.status 'AC' %}
-                                                                <tr class="tr-{{ x.proyecto_id }} warning">
-                                                            {% endifequal %}
-                                                            {% ifequal x.status 'PE' %}
-                                                                <tr class="tr-{{ x.proyecto_id }}">
-                                                            {% endifequal %}
-                                                    {% endif %} -->
-                                                    {% if x.is_out_date %}
-                                                      <tr class="tr-{{ x.proyecto_id }} danger">
-                                                    {% else %}
-                                                      {% ifequal x.status 'AC' %}
-                                                        <tr class="tr-{{ x.proyecto_id }} warning">
-                                                      {% endifequal %}
-                                                      {% ifequal x.status 'PE' %}
-                                                        <tr class="tr-{{ x.proyecto_id }}">
-                                                      {% endifequal %}
-                                                    {% endif %}
-                                                        <td>{{ forloop.counter }}</td>
-                                                        <td>
-                                                            <a href="{% url 'managerpro_view' x.proyecto_id %}" class="btn btn-link btn-xs btn-open text-black">
-                                                                <span class="fa fa-fire-extinguisher"></span>
-                                                                <span class="glyphicon glyphicon-fire"></span>
-                                                            </a>
-                                                        </td>
-                                                        <td>{{ x.proyecto_id }}</td>
-                                                        <td>{{ x.nompro }}</td>
-                                                        <td>{{ x.contact }}</td>
-                                                        <td class="text-center">{{ x.registrado|date:"d/m/Y" }}</td>
-                                                        <td>{{ x.comienzo|date:"d/m/Y" }}</td>
-                                                        <td>{{ x.fin|date:"d/m/Y" }}</td>
-                                                        <!-- <td>
-                                                            <div class="progress">
-                                                                <div class="progress-bar
-                                                                {#% if x.itemsPercent == '100.0' %#}
-                                                                    progress-bar-success
-                                                                {#% else %#}
-                                                                    progress-bar-warning
-                                                                {#% endif %#}
-                                                                 text-black" role="progressbar" aria-valuenow="{#{ x.itemsPercent }#}" aria-valuemin="0" aria-valuemax="100" style="width: {#{ x.itemsPercent }#}%;">
-                                                                    {#{ x.itemsPercent }#}%
-                                                                </div>
-                                                            </div>
-                                                        </td> -->
-                                                        {% if user.get_profile.empdni.charge.area|lower == "administrator" or user.get_profile.empdni.charge.area|lower == "ventas"  %}
-                                                        <td class="text-center">
-                                                            <button class="btn btn-link btn-xs text-black btn-show-edit" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-edit"></span>
-                                                            </button>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <button type="Button" class="btn btn-xs btn-link text-red btn-show-delete" title="{{ x.nompro }}" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-trash"></span>
-                                                            </button>
-                                                        </td>
-                                                        {% endif %}
-                                                    </tr>
-                                                {% endif %}
-                                            {% empty %}
-                                                <div class="alert alert-warning">
-                                                    <strong>Warning</strong>
-                                                    <p>No se han encontrado <q><strong>Proyectos</strong></q> para mostrar. Presione el botón <q><strong>Nuevo Proyecto</strong></q> para agregar.<p>
-                                                </div>
-                                            {% endfor%}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-                <div class="panel panel-success panel-second">
-                    <div class="table-responsive">
-                        <table class="table table-hover table-condensed">
-                            <thead>
-                                <tr class="brand-danger text-white">
-                                    <th class="text-center">Item</th>
-                                    <th></th>
-                                    <th class="text-center">Codigo</th>
-                                    <th>Nombre de Proyecto</th>
-                                    <th>Contacto</th>
-                                    <th class="text-center col-3">Registrado</th>
-                                    <th class="text-center col-3">Fecha Inicio</th>
-                                    <th class="text-center col-3">Fecha Fin</th>
-                                    <!-- <th>Progreso</th> -->
-                                    {% if user.get_profile.empdni.charge.area|lower == "administrator" or user.get_profile.empdni.charge.area|lower == "ventas"  %}
-                                    <th class="text-center">Editar</th>
-                                    <th class="text-center">Eliminar</th>
-                                    {% endif %}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for x in list %}
-                                    <!-- {% if x.itemsPercent != '100.0' %}
-                                        {% if x.is_out_date %}
-                                            <tr class="tr-{{ x.proyecto_id }} danger">
-                                        {% else %}
-                                            {% ifequal x.status 'AC' %}
-                                                <tr class="tr-{{ x.proyecto_id }} warning">
-                                            {% endifequal %}
-                                            {% ifequal x.status 'PE' %}
-                                                <tr class="tr-{{ x.proyecto_id }}">
-                                            {% endifequal %}
-                                        {% endif %}
-                                    {% else %}
-                                         {% ifequal x.status 'AC' %}
-                                                <tr class="tr-{{ x.proyecto_id }} warning">
-                                            {% endifequal %}
-                                            {% ifequal x.status 'PE' %}
-                                                <tr class="tr-{{ x.proyecto_id }}">
-                                            {% endifequal %}
-                                    {% endif %} -->
-                                    {% if x.is_out_date %}
-                                      <tr class="tr-{{ x.proyecto_id }} danger">
-                                    {% else %}
-                                      {% ifequal x.status 'AC' %}
-                                        <tr class="tr-{{ x.proyecto_id }} warning">
-                                      {% endifequal %}
-                                      {% ifequal x.status 'PE' %}
-                                        <tr class="tr-{{ x.proyecto_id }}">
-                                      {% endifequal %}
-                                    {% endif %}
-                                        <td>{{ forloop.counter }}</td>
-                                        <td>
-                                            <a href="{% url 'managerpro_view' x.proyecto_id %}" class="btn btn-link btn-xs btn-open text-black">
-                                                <span class="fa fa-fire-extinguisher"></span>
-                                                <span class="glyphicon glyphicon-fire"></span>
-                                            </a>
-                                        </td>
-                                        <td>{{ x.proyecto_id }}</td>
-                                        <td>{{ x.nompro }}</td>
-                                        <td>{{ x.contact }}</td>
-                                        <td class="text-center">{{ x.registrado|date:"d/m/Y" }}</td>
-                                        <td>{{ x.comienzo|date:"d/m/Y" }}</td>
-                                        <td>{{ x.fin|date:"d/m/Y" }}</td>
-                                        <!-- <td>
-                                            <div class="progress">
-                                                <div class="progress-bar
-                                                {% if x.itemsPercent == '100.0' %}
-                                                    progress-bar-success
-                                                {% else %}
-                                                    progress-bar-warning
-                                                {% endif %}
-                                                 text-black" role="progressbar" aria-valuenow="{{ x.itemsPercent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ x.itemsPercent }}%;">
-                                                    {{ x.itemsPercent }}%
-                                                </div>
-                                            </div>
-                                        </td> -->
-                                        {% if user.get_profile.empdni.charge.area|lower == "administrator" or user.get_profile.empdni.charge.area|lower == "ventas"  %}
-                                        <td class="text-center">
-                                            <button class="btn btn-link btn-xs text-black btn-show-edit" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-edit"></span>
-                                            </button>
-                                        </td>
-                                        <td class="text-center">
-                                            <button type="Button" class="btn btn-xs btn-link text-red btn-show-delete" title="{{ x.nompro }}" value="{{ x.proyecto_id }}"><span class="glyphicon glyphicon-trash"></span>
-                                            </button>
-                                        </td>
-                                        {% endif %}
-                                    </tr>
-                                {% empty %}
-                                    <div class="alert alert-warning">
-                                        <strong>Warning</strong>
-                                        <p>No se han encontrado <q><strong>Proyectos</strong></q> para mostrar. Presione el botón <q><strong>Nuevo Proyecto</strong></q> para agregar.<p>
-                                    </div>
-                                {% endfor%}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            {% endif %} #}

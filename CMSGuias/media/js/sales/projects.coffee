@@ -53,8 +53,6 @@ $(document).ready ->
     , ->
         $(@).css "color", "#000"
         return
-    $(".btn-show-group").on "click", showGroup
-    $(".btn-show-table").on "click", showTable
     return
 
 showaddProject = (event) ->
@@ -171,14 +169,6 @@ deleteProject = ->
                 return
     return
 
-showGroup = (event) ->
-    $("div.panel-second").fadeOut()
-    $("div.panel-first").fadeIn()
-
-showTable = (event) ->
-    $("div.panel-first").fadeOut()
-    $("div.panel-second").fadeIn()
-    # $("table").floatThead "reflow"
 
 app = angular.module 'proApp', ['ngSanitize', 'ngCookies']
     .config ($httpProvider) ->
@@ -191,8 +181,18 @@ app.controller 'proCtrl', ($scope, $http, $cookies) ->
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken
     $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
     $scope.customers = []
+    $scope.sfcustomers = false
+    $scope.sfprojects = false
+    $scope.pcustomers = true
+    $scope.pprojects = false
+    $scope.tadmin = false
     angular.element(document).ready ->
         $scope.listCustomers()
+        setTimeout ->
+            if $scope.area is 'administrator' or $scope.area is 'ventas'
+                $scope.tadmin = true
+                return
+        , 1500
         return
     $scope.listCustomers = ->
         params =
@@ -205,10 +205,6 @@ app.controller 'proCtrl', ($scope, $http, $cookies) ->
                         $('.collapsible').collapsible()
                         return
                     , 400
-                    setTimeout ->
-                        $('.collapsible').collapsible()
-                        return
-                    , 1200
                     return
                 else
                     console.log "No result. #{response.raise}"
@@ -219,37 +215,91 @@ app.controller 'proCtrl', ($scope, $http, $cookies) ->
             getProjects: true
             customer: this.x.fields.ruccliente.pk
         if !$("##{data.customer}").parent().is(":visible")
+            $('.collapsible').collapsible()
             $http.get '', params: data
                 .success (response) ->
                     if response.status
-                        response.projects.date = ->
-                            return typeof this.registrado
                         console.log response
-                        $("##{data.customer}").html Mustache.render """{{#projects}} <li class="collection-item avatar">
-                        <i class="fa fa-building circle"></i>
-                        <span class="title"><strong>{{pk}} - {{fields.nompro}}</strong></span>
-                        <div class="row">
-                          <div class="col l6">
-                            <strong>Contacto: </strong> {{fields.contact}}
-                          </div>
-                          <div class="col l6"><strong>Correo: </strong> {{fields.email}}</div>
-                          <div class="col l4">
-                            <strong>Registrado: </strong> {{fields.registrado}}
-                          </div>
-                          <div class="col l4">
-                            <strong>Inicio: </strong> {{fields.comienzo}}
-                          </div>
-                          <div class="col l4">
-                            <strong>Termino: </strong> {{fields.fin}}
-                          </div>
-                        </div>
-                      </li>{{/projects}}""", response
+
+                           #  .append """{{pro}}<li class="collection-item avatar" ondblclick="location.href='manager/{{pk}}/'" ng-repeat="p in pro">
+                           #   <i class="fa fa-building circle" onClick="location.href='manager/{{pk}}/'"></i>
+                           #   <span class="title"><strong>{{pk}} - {{fields.nompro}}</strong></span>
+                           #   <div class="row">
+                           #     <div class="col l6">
+                           #       <strong>Contacto: </strong> {{fields.contact}}
+                           #     </div>
+                           #     <div class="col l6"><strong>Correo: </strong> {{fields.email}}</div>
+                           #     <div class="col l4">
+                           #       <strong>Registrado: </strong> {{fields.registrado}}
+                           #     </div>
+                           #     <div class="col l4">
+                           #       <strong>Inicio: </strong> {{fields.comienzo}}
+                           #     </div>
+                           #     <div class="col l4">
+                           #       <strong>Termino: </strong> {{fields.fin}}
+                           #     </div>
+                           #   </div>
+                           #   <a href="/almacen/keep/project/{{pk}}/edit/" data-ng-show="tadmin" target="popup" class="secondary-content grey-text text-darken-3s"><i class="fa fa-edit"></i></a>
+                           # </li>"""
+                        $scope.pro = response.projects
+                        # angular.element("##{data.customer}").html '<div><p ng-repeat="each in pro">{{each.pk}}</p></div>'
+                        $scope[data.customer] = '<div><p ng-repeat="each in pro">{{each.pk}}</p></div>'
+                        console.log $scope.pro
+                        console.log $scope
+                        # $("##{data.customer}").html Mustache.render """{{#projects}} <li class="collection-item avatar" ondblclick="location.href='manager/{{pk}}/'">
+                        #     <i class="fa fa-building circle" onClick="location.href='manager/{{pk}}/'"></i>
+                        #     <span class="title"><strong>{{pk}} - {{fields.nompro}}</strong></span>
+                        #     <div class="row">
+                        #       <div class="col l6">
+                        #         <strong>Contacto: </strong> {{fields.contact}}
+                        #       </div>
+                        #       <div class="col l6"><strong>Correo: </strong> {{fields.email}}</div>
+                        #       <div class="col l4">
+                        #         <strong>Registrado: </strong> {{fields.registrado}}
+                        #       </div>
+                        #       <div class="col l4">
+                        #         <strong>Inicio: </strong> {{fields.comienzo}}
+                        #       </div>
+                        #       <div class="col l4">
+                        #         <strong>Termino: </strong> {{fields.fin}}
+                        #       </div>
+                        #     </div>
+                        #     <a href="/almacen/keep/project/{{pk}}/edit/" data-ng-show="tadmin" target="popup" class="secondary-content grey-text text-darken-3s"><i class="fa fa-edit"></i></a>
+                        #   </li>{{/projects}}""", response
+                        if $scope.area is 'administrator' or $scope.area is 'ventas'
+                            $scope.tadmin = true
+                            return
                         return
                     else
                         console.log "No data project. #{response.raise}"
                         return
             return
+    $scope.ProjectsAll = ->
+        data =
+            allProjects: true
+        $http.get '', params: data
+            .success (response) ->
+                if response.status
+                    $scope.allprojects = response.projects
+                    return
+                else
+                    console.log "error data. #{response.raise}"
+                    return
+        return
+    $scope.showFilter = ->
+        if $scope.pcustomers
+            $scope.sfcustomers = !$scope.sfcustomers
+        if $scope.pprojects
+            $scope.sfprojects = !$scope.sfprojects
+        return
+    $scope.sTable = ->
+        row = angular.element("#lprojects > tbody > tr")
+        if not row.length
+            $scope.ProjectsAll()
+        return
     $scope.$watch 'scustomers', ->
         $('.collapsible').collapsible()
         return
+    $scope.$watch 'tadmin', ->
+        console.log this
     return
