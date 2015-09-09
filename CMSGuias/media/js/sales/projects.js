@@ -212,11 +212,10 @@ app.controller('proCtrl', function($scope, $http, $cookies) {
   $scope.tadmin = false;
   angular.element(document).ready(function() {
     $scope.listCustomers();
-    setTimeout(function() {
-      if ($scope.area === 'administrator' || $scope.area === 'ventas') {
-        $scope.tadmin = true;
-      }
-    }, 1500);
+    $scope.permission = angular.element("[name=permission]").val();
+    if ($scope.permission === 'administrator' || $scope.permission === 'ventas') {
+      $scope.tadmin = true;
+    }
   });
   $scope.listCustomers = function() {
     var params;
@@ -248,15 +247,7 @@ app.controller('proCtrl', function($scope, $http, $cookies) {
         params: data
       }).success(function(response) {
         if (response.status) {
-          console.log(response);
-          $scope.pro = response.projects;
-          $scope[data.customer] = '<div><p ng-repeat="each in pro">{{each.pk}}</p></div>';
-          console.log($scope.pro);
-          console.log($scope);
-          if ($scope.area === 'administrator' || $scope.area === 'ventas') {
-            $scope.tadmin = true;
-            return;
-          }
+          $("#" + data.customer).html(Mustache.render("{{#projects}} <li class=\"collection-item avatar\" ondblclick=\"location.href='manager/{{pk}}/'\">\n  <i class=\"fa fa-building circle\" onClick=\"location.href='manager/{{pk}}/'\"></i>\n  <span class=\"title\"><strong>{{pk}} - {{fields.nompro}}</strong></span>\n  <div class=\"row\">\n    <div class=\"col l6\">\n      <strong>Contacto: </strong> {{fields.contact}}\n    </div>\n    <div class=\"col l6\"><strong>Correo: </strong> {{fields.email}}</div>\n    <div class=\"col l4\">\n      <strong>Registrado: </strong> {{fields.registrado}}\n    </div>\n    <div class=\"col l4\">\n      <strong>Inicio: </strong> {{fields.comienzo}}\n    </div>\n    <div class=\"col l4\">\n      <strong>Termino: </strong> {{fields.fin}}\n    </div>\n  </div>\n  <a href=\"/almacen/keep/project/{{pk}}/edit/\" data-ng-show=\"tadmin\" target=\"popup\" class=\"secondary-content grey-text text-darken-3s " + (!$scope.tadmin ? 'hide' : void 0) + "\"><i class=\"fa fa-edit\"></i></a>\n</li>{{/projects}}", response));
         } else {
           console.log("No data project. " + response.raise);
         }
@@ -296,7 +287,8 @@ app.controller('proCtrl', function($scope, $http, $cookies) {
   $scope.$watch('scustomers', function() {
     $('.collapsible').collapsible();
   });
-  $scope.$watch('tadmin', function() {
-    return console.log(this);
+  $scope.$watch('permission', function() {
+    console.log($scope.permission);
+    console.log($scope.tadmin);
   });
 });

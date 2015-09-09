@@ -188,11 +188,9 @@ app.controller 'proCtrl', ($scope, $http, $cookies) ->
     $scope.tadmin = false
     angular.element(document).ready ->
         $scope.listCustomers()
-        setTimeout ->
-            if $scope.area is 'administrator' or $scope.area is 'ventas'
-                $scope.tadmin = true
-                return
-        , 1500
+        $scope.permission = angular.element("[name=permission]").val()
+        if $scope.permission is 'administrator' or $scope.permission is 'ventas'
+            $scope.tadmin = true
         return
     $scope.listCustomers = ->
         params =
@@ -219,56 +217,28 @@ app.controller 'proCtrl', ($scope, $http, $cookies) ->
             $http.get '', params: data
                 .success (response) ->
                     if response.status
-                        console.log response
-
-                           #  .append """{{pro}}<li class="collection-item avatar" ondblclick="location.href='manager/{{pk}}/'" ng-repeat="p in pro">
-                           #   <i class="fa fa-building circle" onClick="location.href='manager/{{pk}}/'"></i>
-                           #   <span class="title"><strong>{{pk}} - {{fields.nompro}}</strong></span>
-                           #   <div class="row">
-                           #     <div class="col l6">
-                           #       <strong>Contacto: </strong> {{fields.contact}}
-                           #     </div>
-                           #     <div class="col l6"><strong>Correo: </strong> {{fields.email}}</div>
-                           #     <div class="col l4">
-                           #       <strong>Registrado: </strong> {{fields.registrado}}
-                           #     </div>
-                           #     <div class="col l4">
-                           #       <strong>Inicio: </strong> {{fields.comienzo}}
-                           #     </div>
-                           #     <div class="col l4">
-                           #       <strong>Termino: </strong> {{fields.fin}}
-                           #     </div>
-                           #   </div>
-                           #   <a href="/almacen/keep/project/{{pk}}/edit/" data-ng-show="tadmin" target="popup" class="secondary-content grey-text text-darken-3s"><i class="fa fa-edit"></i></a>
-                           # </li>"""
-                        $scope.pro = response.projects
-                        # angular.element("##{data.customer}").html '<div><p ng-repeat="each in pro">{{each.pk}}</p></div>'
-                        $scope[data.customer] = '<div><p ng-repeat="each in pro">{{each.pk}}</p></div>'
-                        console.log $scope.pro
-                        console.log $scope
-                        # $("##{data.customer}").html Mustache.render """{{#projects}} <li class="collection-item avatar" ondblclick="location.href='manager/{{pk}}/'">
-                        #     <i class="fa fa-building circle" onClick="location.href='manager/{{pk}}/'"></i>
-                        #     <span class="title"><strong>{{pk}} - {{fields.nompro}}</strong></span>
-                        #     <div class="row">
-                        #       <div class="col l6">
-                        #         <strong>Contacto: </strong> {{fields.contact}}
-                        #       </div>
-                        #       <div class="col l6"><strong>Correo: </strong> {{fields.email}}</div>
-                        #       <div class="col l4">
-                        #         <strong>Registrado: </strong> {{fields.registrado}}
-                        #       </div>
-                        #       <div class="col l4">
-                        #         <strong>Inicio: </strong> {{fields.comienzo}}
-                        #       </div>
-                        #       <div class="col l4">
-                        #         <strong>Termino: </strong> {{fields.fin}}
-                        #       </div>
-                        #     </div>
-                        #     <a href="/almacen/keep/project/{{pk}}/edit/" data-ng-show="tadmin" target="popup" class="secondary-content grey-text text-darken-3s"><i class="fa fa-edit"></i></a>
-                        #   </li>{{/projects}}""", response
-                        if $scope.area is 'administrator' or $scope.area is 'ventas'
-                            $scope.tadmin = true
-                            return
+                        $("##{data.customer}").html Mustache.render """{{#projects}} <li class="collection-item avatar" ondblclick="location.href='manager/{{pk}}/'">
+                            <i class="fa fa-building circle" onClick="location.href='manager/{{pk}}/'"></i>
+                            <span class="title"><strong>{{pk}} - {{fields.nompro}}</strong></span>
+                            <div class="row">
+                              <div class="col l6">
+                                <strong>Contacto: </strong> {{fields.contact}}
+                              </div>
+                              <div class="col l6"><strong>Correo: </strong> {{fields.email}}</div>
+                              <div class="col l4">
+                                <strong>Registrado: </strong> {{fields.registrado}}
+                              </div>
+                              <div class="col l4">
+                                <strong>Inicio: </strong> {{fields.comienzo}}
+                              </div>
+                              <div class="col l4">
+                                <strong>Termino: </strong> {{fields.fin}}
+                              </div>
+                            </div>
+                            <a href="/almacen/keep/project/{{pk}}/edit/" data-ng-show="tadmin" target="popup" class="secondary-content grey-text text-darken-3s #{ if not $scope.tadmin then 'hide'}"><i class="fa fa-edit"></i></a>
+                          </li>{{/projects}}""", response
+                        # if $scope.permission is 'administrator' or $scope.permission is 'ventas'
+                        #     $scope.tadmin = true
                         return
                     else
                         console.log "No data project. #{response.raise}"
@@ -300,6 +270,8 @@ app.controller 'proCtrl', ($scope, $http, $cookies) ->
     $scope.$watch 'scustomers', ->
         $('.collapsible').collapsible()
         return
-    $scope.$watch 'tadmin', ->
-        console.log this
+    $scope.$watch 'permission', ->
+        console.log $scope.permission
+        console.log $scope.tadmin
+        return
     return

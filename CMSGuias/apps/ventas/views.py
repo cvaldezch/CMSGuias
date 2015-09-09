@@ -83,7 +83,15 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                                             ~Q(status='DA')
                                             ).order_by('-proyecto_id')
                     elif area == 'operaciones':
-                        proyectos = Proyecto.objects.filter(
+                        cnom = request.user.get_profile(
+                            ).empdni.charge.cargos.lower()
+                        if cnom == 'jefe de operaciones':
+                            proyectos = Proyecto.objects.filter(
+                                            Q(flag=True),
+                                            Q(status='AC')).order_by(
+                                            '-proyecto_id')
+                        else:
+                            proyectos = Proyecto.objects.filter(
                                     Q(flag=True),
                                     Q(status='AC'),
                                     empdni_id=request.user.get_profile(
@@ -93,16 +101,12 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                                             Q(flag=True),
                                             Q(status='AC')).order_by(
                                             '-proyecto_id')
-                    cnom = request.user.get_profile(
-                            ).empdni.charge.cargos.lower()
-                    if cnom == 'jefe de operaciones':
-                        proyectos = Proyecto.objects.filter(
-                                            Q(flag=True),
-                                            Q(status='AC')).order_by(
-                                            '-proyecto_id')
                     cust = proyectos
                     if area == 'operaciones':
-                        cust = cust.filter(
+                        if cnom == 'jefe de operaciones':
+                            cust = cust.filter(status='AC')
+                        else:
+                            cust = cust.filter(
                                 empdni_id=request.user.get_profile().empdni_id,
                                 status='AC')
                     elif area == 'logistica' or area == 'almacen':

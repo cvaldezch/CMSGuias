@@ -8,7 +8,6 @@
 {% block validateForm %}{% endblock validateForm %}
 {# {% block stylebase %}{% endblock stylebase %} #}
 {% block script %}
-
 <!-- block materialize -->
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}vendor/materialize/dist/css/materialize.min.css">
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/materialize/dist/js/materialize.min.js"></script>
@@ -30,275 +29,272 @@
 {% endblock menu %}
 {% block content %}
 <div data-ng-app="proApp">
-    <div class="well" data-ng-controller="proCtrl">
-        <header>
-            <h3>Proyectos</h3>
-        </header>
-        <aside>
-          {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
-            <div class="btn-group">
-                <button class="btn blue darken-1 btn-add">
-                    <span class="glyphicon glyphicon-plus"></span>
-                    <span> Nuevo Proyecto</span>
-                </button>
-                <button class="btn btn-success text-black btn-save">
-                    <span class="glyphicon glyphicon-floppy-disk"></span> Guardar Cambios
-                </button>
-            </div>
-            <div class="panel panel-primary panel-pro">
-                <div class="panel-body">
-                    <div class="row">
-                        {% csrf_token %}
-                        <div class="col-md-6">
-                            <div class="form-group has-primary">
-                                <label class="control-label">Cliente</label>
-                                <div class="input-group input-group-sm">
-                                    <select name="ruccliente" id="ruccliente" class="form-control input-sm">
-                                        {% for x in customers %}
-                                            <option value="{{ x.ruccliente_id }}">{{ x.razonsocial }}</option>
-                                        {% empty %}
-                                            <option value="">-- Nothing --</option>
-                                        {% endfor %}
-                                    </select>
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-primary btn-sm btn-add-customers"><span class="glyphicon glyphicon-plus"></span></button>
-                                        <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group has-primary">
-                                <label class="control-label">Nombre Proyecto</label>
-                                <input type="text" name="nompro" class="form-control input-sm">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group has-primary">
-                                <label class="control-label">Inicio Proyecto</label>
-                                <input type="text" name="comienzo" class="form-control input-sm">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group has-primary">
-                                <label class="control-label">Fin Proyecto</label>
-                                <input type="text" name="fin" class="form-control input-sm">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group has-primary">
-                                <label class="control-label">Pais</label>
-                                <div class="input-group input-group-sm">
-                                    <select name="pais" id="pais" class="form-control input-sm">
-                                        {% for x in country %}
-                                            <option value="{{ x.pais_id }}">{{ x.paisnom }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-primary btn-sm btn-add-country"><span class="glyphicon glyphicon-plus"></span></button>
-                                        <button class="btn btn-primary btn-country-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group has-primary">
-                                <label class="control-label">Depatamento</label>
-                                <div class="input-group">
-                                    <select name="departamento" id="" class="form-control input-sm"></select>
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-primary btn-sm btn-add-departament"><span class="glyphicon glyphicon-plus"></span></button>
-                                        <button class="btn btn-primary btn-departament-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group has-primary">
-                                <label class="control-label">Provincia</label>
-                                <div class="input-group input-group-sm">
-                                    <select name="provincia" id="provincia" class="form-control input-sm"></select>
-                                     <span class="input-group-btn">
-                                        <button class="btn btn-primary btn-sm btn-add-province"><span class="glyphicon glyphicon-plus"></span></button>
-                                        <button class="btn btn-primary btn-province-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group has-primary">
-                                <label class="control-label">Distrito</label>
-                                <div class="input-group input-group-sm">
-                                    <select name="distrito" id="" class="form-control input-sm"></select>
-                                     <span class="input-group-btn">
-                                        <button class="btn btn-primary btn-sm btn-add-district"><span class="glyphicon glyphicon-plus"></span></button>
-                                        <button class="btn btn-primary btn-district-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group has-primary">
-                                <label class="control-label">Dirección</label>
-                                <input type="text" name="direccion" class="form-control input-sm">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group has-primary">
-                                <label class="control-label">Moneda</label>
-                                <select name="currency" class="form-control input-sm">
-                                {% for x in currency %}
-                                    <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
-                                {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-group has-primary">
-                                <label class="control-label">Tipo de Proyecto</label>
-                                <select name="typep" class="form-control input-sm">
-                                    {% for k, v in typep.iteritems %}
-                                        <option value="{{ k }}">{{ v }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-group has-primary">
-                                <label class="control-label">Tipo Cambio</label>
-                                <input type="text" name="exchange" class="form-control input-sm">
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                          <div class="form-group has-primary">
-                            <label class="control-label">Email Contacto</label>
-                            <input type="email" name="email" class="form-control input-sm">
-                          </div>
-                        </div>
-                        <div class="col-md-2">
-                          <div class="form-group has-primary">
-                            <label class="control-label">Telefono Contacto</label>
-                            <input type="text" name="phone" class="form-control input-sm">
-                          </div>
-                        </div>
-                        <div class="col-md-10">
-                            <div class="form-group has-primary">
-                                <label class="control-label">Contacto de Proyecto</label>
-                                <input type="text" name="contact" class="form-control input-sm">
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="form-group has-primary">
-                                <label class="control-label">Observación</label>
-                                <textarea name="obser" id="obser" rows="8" class="form-control input-sm"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-          {% endif %}
-        </aside>
-        <div class="card">
-          <div class="card-action">
-              <!-- <button class="btn left-align">
-                <i class="fa fa-refresh"></i>
-              </button> -->
-              <button type="button" class="btn waves-effect left-align grey lighten-5 grey-text text-darken-3" data-ng-click="showFilter()">
-                <i class="fa fa-search"></i>
+  <div class="well" data-ng-controller="proCtrl">
+    <input type="hidden" data-ng-model="permission" name="permission" value="{{request.user.get_profile.empdni.charge.area|lower}}">
+      <header>
+        <h3>Proyectos</h3>
+      </header>
+      <aside>
+        {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
+          <div class="btn-group">
+              <button class="btn blue darken-1 btn-add">
+                  <span class="glyphicon glyphicon-plus"></span>
+                  <span> Nuevo Proyecto</span>
               </button>
-              <button type="button" class="btn waves-effect right light-green lighten-5 grey-text text-darken-3" data-ng-model="pprojects" data-ng-click="pprojects=true; pcustomers=false; sfcustomers=false; sfprojects=false; sTable()">
-                <i class="fa fa-list-alt fa-lg"></i>
-              </button>
-              <button type="button" class="btn waves-effect right light-green lighten-5 grey-text text-darken-3" data-ng-model="pcustomers" data-ng-click="pcustomers=true; pprojects=false; sfcustomers=false; sfprojects=false">
-                <i class="fa fa-reorder fa-lg"></i>
+              <button class="btn btn-success text-black btn-save">
+                  <span class="glyphicon glyphicon-floppy-disk"></span> Guardar Cambios
               </button>
           </div>
-          <div class="card-">
-            <div class="row">
-              <div class="col l12 input-field" data-ng-model="sfcustomers" data-ng-show="sfcustomers">
-                <i class="fa fa-filter prefix"></i>
-                <input type="text" data-ng-model="scustomers">
-                <label>Buscar por clientes</label>
+          <div class="panel panel-primary panel-pro">
+              <div class="panel-body">
+                  <div class="row">
+                      {% csrf_token %}
+                      <div class="col-md-6">
+                          <div class="form-group has-primary">
+                              <label class="control-label">Cliente</label>
+                              <div class="input-group input-group-sm">
+                                  <select name="ruccliente" id="ruccliente" class="form-control input-sm">
+                                      {% for x in customers %}
+                                          <option value="{{ x.ruccliente_id }}">{{ x.razonsocial }}</option>
+                                      {% empty %}
+                                          <option value="">-- Nothing --</option>
+                                      {% endfor %}
+                                  </select>
+                                  <span class="input-group-btn">
+                                      <button class="btn btn-primary btn-sm btn-add-customers"><span class="glyphicon glyphicon-plus"></span></button>
+                                      <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
+                                  </span>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-md-6">
+                          <div class="form-group has-primary">
+                              <label class="control-label">Nombre Proyecto</label>
+                              <input type="text" name="nompro" class="form-control input-sm">
+                          </div>
+                      </div>
+                      <div class="col-md-3">
+                          <div class="form-group has-primary">
+                              <label class="control-label">Inicio Proyecto</label>
+                              <input type="text" name="comienzo" class="form-control input-sm">
+                          </div>
+                      </div>
+                      <div class="col-md-3">
+                          <div class="form-group has-primary">
+                              <label class="control-label">Fin Proyecto</label>
+                              <input type="text" name="fin" class="form-control input-sm">
+                          </div>
+                      </div>
+                      <div class="col-md-3">
+                          <div class="form-group has-primary">
+                              <label class="control-label">Pais</label>
+                              <div class="input-group input-group-sm">
+                                  <select name="pais" id="pais" class="form-control input-sm">
+                                      {% for x in country %}
+                                          <option value="{{ x.pais_id }}">{{ x.paisnom }}</option>
+                                      {% endfor %}
+                                  </select>
+                                  <span class="input-group-btn">
+                                      <button class="btn btn-primary btn-sm btn-add-country"><span class="glyphicon glyphicon-plus"></span></button>
+                                      <button class="btn btn-primary btn-country-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
+                                  </span>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-md-3">
+                          <div class="form-group has-primary">
+                              <label class="control-label">Depatamento</label>
+                              <div class="input-group">
+                                  <select name="departamento" id="" class="form-control input-sm"></select>
+                                  <span class="input-group-btn">
+                                      <button class="btn btn-primary btn-sm btn-add-departament"><span class="glyphicon glyphicon-plus"></span></button>
+                                      <button class="btn btn-primary btn-departament-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
+                                  </span>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-md-3">
+                          <div class="form-group has-primary">
+                              <label class="control-label">Provincia</label>
+                              <div class="input-group input-group-sm">
+                                  <select name="provincia" id="provincia" class="form-control input-sm"></select>
+                                   <span class="input-group-btn">
+                                      <button class="btn btn-primary btn-sm btn-add-province"><span class="glyphicon glyphicon-plus"></span></button>
+                                      <button class="btn btn-primary btn-province-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
+                                  </span>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-md-3">
+                          <div class="form-group has-primary">
+                              <label class="control-label">Distrito</label>
+                              <div class="input-group input-group-sm">
+                                  <select name="distrito" id="" class="form-control input-sm"></select>
+                                   <span class="input-group-btn">
+                                      <button class="btn btn-primary btn-sm btn-add-district"><span class="glyphicon glyphicon-plus"></span></button>
+                                      <button class="btn btn-primary btn-district-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
+                                  </span>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-md-6">
+                          <div class="form-group has-primary">
+                              <label class="control-label">Dirección</label>
+                              <input type="text" name="direccion" class="form-control input-sm">
+                          </div>
+                      </div>
+                      <div class="col-md-3">
+                          <div class="form-group has-primary">
+                              <label class="control-label">Moneda</label>
+                              <select name="currency" class="form-control input-sm">
+                              {% for x in currency %}
+                                  <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
+                              {% endfor %}
+                              </select>
+                          </div>
+                      </div>
+                      <div class="col-md-2">
+                          <div class="form-group has-primary">
+                              <label class="control-label">Tipo de Proyecto</label>
+                              <select name="typep" class="form-control input-sm">
+                                  {% for k, v in typep.iteritems %}
+                                      <option value="{{ k }}">{{ v }}</option>
+                                  {% endfor %}
+                              </select>
+                          </div>
+                      </div>
+                      <div class="col-md-2">
+                          <div class="form-group has-primary">
+                              <label class="control-label">Tipo Cambio</label>
+                              <input type="text" name="exchange" class="form-control input-sm">
+                          </div>
+                      </div>
+                      <div class="col-md-5">
+                        <div class="form-group has-primary">
+                          <label class="control-label">Email Contacto</label>
+                          <input type="email" name="email" class="form-control input-sm">
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group has-primary">
+                          <label class="control-label">Telefono Contacto</label>
+                          <input type="text" name="phone" class="form-control input-sm">
+                        </div>
+                      </div>
+                      <div class="col-md-10">
+                          <div class="form-group has-primary">
+                              <label class="control-label">Contacto de Proyecto</label>
+                              <input type="text" name="contact" class="form-control input-sm">
+                          </div>
+                      </div>
+                      <div class="col-md-12">
+                          <div class="form-group has-primary">
+                              <label class="control-label">Observación</label>
+                              <textarea name="obser" id="obser" rows="8" class="form-control input-sm"></textarea>
+                          </div>
+                      </div>
+                  </div>
               </div>
-              <div class="col l12 input-field" data-ng-model="sfprojects" data-ng-show="sfprojects">
-                <i class="fa fa-filter prefix"></i>
-                <input type="text" data-ng-model="sprojects">
-                <label>Buscar por Proyectos</label>
-              </div>
+          </div>
+        {% endif %}
+      </aside>
+      <div class="card">
+        <div class="card-action">
+            <!-- <button class="btn left-align">
+              <i class="fa fa-refresh"></i>
+            </button> -->
+            <button type="button" class="btn waves-effect left-align grey lighten-5 grey-text text-darken-3" data-ng-click="showFilter()">
+              <i class="fa fa-search"></i>
+            </button>
+            <button type="button" class="btn waves-effect right light-green lighten-5 grey-text text-darken-3" data-ng-model="pprojects" data-ng-click="pprojects=true; pcustomers=false; sfcustomers=false; sfprojects=false; sTable()">
+              <i class="fa fa-list-alt fa-lg"></i>
+            </button>
+            <button type="button" class="btn waves-effect right light-green lighten-5 grey-text text-darken-3" data-ng-model="pcustomers" data-ng-click="pcustomers=true; pprojects=false; sfcustomers=false; sfprojects=false">
+              <i class="fa fa-reorder fa-lg"></i>
+            </button>
+        </div>
+        <div class="card-">
+          <div class="row">
+            <div class="col l12 input-field" data-ng-model="sfcustomers" data-ng-show="sfcustomers">
+              <i class="fa fa-filter prefix"></i>
+              <input type="text" data-ng-model="scustomers">
+              <label>Buscar por clientes</label>
+            </div>
+            <div class="col l12 input-field" data-ng-model="sfprojects" data-ng-show="sfprojects">
+              <i class="fa fa-filter prefix"></i>
+              <input type="text" data-ng-model="sprojects">
+              <label>Buscar por Proyectos</label>
             </div>
           </div>
         </div>
-        <section class="section" data-ng-show="pcustomers">
-          {% verbatim %}
-          <ul class="collapsible popout" data-collapsible="accordion" id="listCollapse">
-            <li data-ng-repeat="x in customers | filter:scustomers">
-              <div class="collapsible-header red lighten-1" data-ng-click="getProjects()">
-                <i class="fa fa-industry"></i>
-                <span class="grey-text text-lighten-5">{{x.fields.ruccliente.fields.razonsocial}}</span>
-              </div>
-              <div class="collapsible-body">
-                <ul class="collection" id="{{x.fields.ruccliente.pk}}">
-                <li ng-model="x.fields.ruccliente.pk" ng-init="x.fields.ruccliente.pk=[]" data-ng-repeat="a in x.fields.ruccliente.pk">{{a.pk}}</li>
-                </ul>
-              </div>
-            </li>
-          </ul>
-          {% endverbatim %}
-        </section>
-        <section class="section" data-ng-show="pprojects">
-          {% verbatim %}
-            <h4>Lista de proyectos</h4>
-            <table class="table responsive-table striped hoverable" id="lprojects">
-              <thead>
-                <tr class="red lighten-1">
-                  <th class="text-center">Item</th>
-                  <th></th>
-                  <th class="text-center">Codigo</th>
-                  <th>Nombre de Proyecto</th>
-                  <th>Contacto</th>
-                  <th class="text-center col-3">Registrado</th>
-                  <th class="text-center col-3">Fecha Inicio</th>
-                  <th class="text-center col-3">Fecha Fin</th>
-                  <th data-ng-show="tadmin">Editar</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr data-ng-repeat="r in allprojects | filter:sprojects">
-                  <td>{{$index+1}}</td>
-                  <td>
-                    <a href="manager/{{r.pk}}/" class="btn waves-effect waves-teal btn-flat text-black secondary-content">
-                      <i class="fa fa-building"></i>
-                    </a>
-                  </td>
-                  <td>{{r.pk}}</td>
-                  <td>{{r.fields.nompro}}</td>
-                  <td>{{r.fields.contact}}</td>
-                  <td class="text-center">{{r.fields.registrado|date:"dd-MM-y" }}</td>
-                  <td class="center-align">{{r.fields.comienzo|date:"dd-MM-y" }}</td>
-                  <td class="center-align">{{r.fields.fin|date:"dd-MM-y" }}</td>
-                  <td data-ng-show="tadmin" class="center-align"><a class="grey-text text-darken-3" href="/almacen/keep/project/{{r.pk}}/edit/" target="popup"><i class="fa fa-edit"></i></a></td>
-                </tr>
-              </tbody>
-            </table>
-          {% endverbatim %}
-        </section>
-        <div class="section center-align">
-          <div class="preloader-wrapper big" data-ng-class="{'active': !customers}" >
-            <div class="spinner-layer spinner-blue-only">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
-              </div><div class="gap-patch">
-                <div class="circle"></div>
-              </div><div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
+      </div>
+      <section class="section" data-ng-show="pcustomers">
+        {% verbatim %}
+        <ul class="collapsible popout" data-collapsible="accordion" id="listCollapse">
+          <li data-ng-repeat="x in customers | filter:scustomers">
+            <div class="collapsible-header red lighten-1" data-ng-click="getProjects()">
+              <i class="fa fa-industry"></i>
+              <span class="grey-text text-lighten-5">{{x.fields.ruccliente.fields.razonsocial}}</span>
+            </div>
+            <div class="collapsible-body">
+              <ul class="collection" id="{{x.fields.ruccliente.pk}}"></ul>
+            </div>
+          </li>
+        </ul>
+        {% endverbatim %}
+      </section>
+      <section class="section" data-ng-show="pprojects">
+        {% verbatim %}
+          <h4>Lista de proyectos</h4>
+          <table class="table responsive-table striped hoverable" id="lprojects">
+            <thead>
+              <tr class="red lighten-1">
+                <th class="text-center">Item</th>
+                <th></th>
+                <th class="text-center">Codigo</th>
+                <th>Nombre de Proyecto</th>
+                <th>Contacto</th>
+                <th class="text-center col-3">Registrado</th>
+                <th class="text-center col-3">Fecha Inicio</th>
+                <th class="text-center col-3">Fecha Fin</th>
+                <th data-ng-show="tadmin">Editar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-ng-repeat="r in allprojects | filter:sprojects">
+                <td>{{$index+1}}</td>
+                <td>
+                  <a href="manager/{{r.pk}}/" class="btn waves-effect waves-teal btn-flat text-black secondary-content">
+                    <i class="fa fa-building"></i>
+                  </a>
+                </td>
+                <td>{{r.pk}}</td>
+                <td>{{r.fields.nompro}}</td>
+                <td>{{r.fields.contact}}</td>
+                <td class="text-center">{{r.fields.registrado|date:"dd-MM-y" }}</td>
+                <td class="center-align">{{r.fields.comienzo|date:"dd-MM-y" }}</td>
+                <td class="center-align">{{r.fields.fin|date:"dd-MM-y" }}</td>
+                <td data-ng-show="tadmin" class="center-align"><a class="grey-text text-darken-3" href="/almacen/keep/project/{{r.pk}}/edit/" target="popup"><i class="fa fa-edit"></i></a></td>
+              </tr>
+            </tbody>
+          </table>
+        {% endverbatim %}
+      </section>
+      <div class="section center-align">
+        <div class="preloader-wrapper big" data-ng-class="{'active': !customers}" >
+          <div class="spinner-layer spinner-blue-only">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
+            </div><div class="gap-patch">
+              <div class="circle"></div>
+            </div><div class="circle-clipper right">
+              <div class="circle"></div>
             </div>
           </div>
         </div>
-    </div>
+      </div>
+  </div>
 </div>
-<!-- privileges -->
-<input type="hidden" value="{{request.user.get_profile.empdni.charge.area|lower}}" data-ng-model="area">
 <!-- angular -->
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
