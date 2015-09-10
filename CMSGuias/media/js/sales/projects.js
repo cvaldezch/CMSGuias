@@ -115,7 +115,7 @@ CreateProject = function(event) {
       console.log(this.name);
       this.focus();
       pass = false;
-      $().toastmessage("showWarningToast", "campo vacio " + this.name + ".");
+      swal("Alerta!", "campo vacio " + this.name + ".", "warning");
       return pass;
     } else {
       data[this.name] = $(this).val();
@@ -128,12 +128,12 @@ CreateProject = function(event) {
     data['type'] = "new";
     $.post("", data, function(response) {
       if (response.status) {
-        $().toastmessage("showNoticeToast", "Se registro el proyecto " + data['nompro'] + " correctamente!");
+        swal("Felicidades!", "Se registro el proyecto " + data['nompro'] + " correctamente!", "success");
         return setTimeout(function() {
           return location.reload();
         }, 2000);
       } else {
-        return $().toastmessage("showErrorToast", "Error en la transacción " + response.raise + ".");
+        return swal("Alerta!", "Error en la transacción " + response.raise + ".", "warning");
       }
     });
     return;
@@ -204,7 +204,6 @@ app = angular.module('proApp', ['ngSanitize', 'ngCookies']).config(function($htt
 app.controller('proCtrl', function($scope, $http, $cookies) {
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-  $scope.customers = [];
   $scope.sfcustomers = false;
   $scope.sfprojects = false;
   $scope.pcustomers = true;
@@ -215,6 +214,13 @@ app.controller('proCtrl', function($scope, $http, $cookies) {
     $scope.permission = angular.element("[name=permission]").val();
     if ($scope.permission === 'administrator' || $scope.permission === 'ventas') {
       $scope.tadmin = true;
+    }
+    if ($scope.permission === 'operaciones') {
+      $scope.pprojects = true;
+      $scope.pcustomers = false;
+      $scope.sfcustomers = false;
+      $scope.sfprojects = false;
+      $scope.sTable();
     }
   });
   $scope.listCustomers = function() {

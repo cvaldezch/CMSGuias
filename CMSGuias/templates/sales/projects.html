@@ -38,111 +38,111 @@
         {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
           <div class="btn-group">
               <button class="btn blue darken-1 btn-add">
-                  <span class="glyphicon glyphicon-plus"></span>
-                  <span> Nuevo Proyecto</span>
+                <span class="glyphicon glyphicon-plus"></span>
+                <span> Nuevo Proyecto</span>
               </button>
-              <button class="btn btn-success text-black btn-save">
-                  <span class="glyphicon glyphicon-floppy-disk"></span> Guardar Cambios
+              <button class="btn text-black btn-save green lighten-1">
+                <span class="glyphicon glyphicon-floppy-disk"></span> Guardar Cambios
               </button>
           </div>
           <div class="panel panel-primary panel-pro">
-              <div class="panel-body">
-                  <div class="row">
-                      {% csrf_token %}
-                      <div class="col-md-6">
-                          <div class="form-group has-primary">
-                              <label class="control-label">Cliente</label>
-                              <div class="input-group input-group-sm">
-                                  <select name="ruccliente" id="ruccliente" class="form-control input-sm">
-                                      {% for x in customers %}
-                                          <option value="{{ x.ruccliente_id }}">{{ x.razonsocial }}</option>
-                                      {% empty %}
-                                          <option value="">-- Nothing --</option>
-                                      {% endfor %}
-                                  </select>
-                                  <span class="input-group-btn">
-                                      <button class="btn btn-primary btn-sm btn-add-customers"><span class="glyphicon glyphicon-plus"></span></button>
-                                      <button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
-                                  </span>
-                              </div>
-                          </div>
-                      </div>
-                      <div class="col-md-6">
-                          <div class="form-group has-primary">
-                              <label class="control-label">Nombre Proyecto</label>
-                              <input type="text" name="nompro" class="form-control input-sm">
-                          </div>
-                      </div>
-                      <div class="col-md-3">
-                          <div class="form-group has-primary">
-                              <label class="control-label">Inicio Proyecto</label>
-                              <input type="text" name="comienzo" class="form-control input-sm">
-                          </div>
-                      </div>
-                      <div class="col-md-3">
-                          <div class="form-group has-primary">
-                              <label class="control-label">Fin Proyecto</label>
-                              <input type="text" name="fin" class="form-control input-sm">
-                          </div>
-                      </div>
-                      <div class="col-md-3">
-                          <div class="form-group has-primary">
-                              <label class="control-label">Pais</label>
-                              <div class="input-group input-group-sm">
-                                  <select name="pais" id="pais" class="form-control input-sm">
-                                      {% for x in country %}
-                                          <option value="{{ x.pais_id }}">{{ x.paisnom }}</option>
-                                      {% endfor %}
-                                  </select>
-                                  <span class="input-group-btn">
-                                      <button class="btn btn-primary btn-sm btn-add-country"><span class="glyphicon glyphicon-plus"></span></button>
-                                      <button class="btn btn-primary btn-country-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
-                                  </span>
-                              </div>
-                          </div>
-                      </div>
-                      <div class="col-md-3">
-                          <div class="form-group has-primary">
-                              <label class="control-label">Depatamento</label>
-                              <div class="input-group">
-                                  <select name="departamento" id="" class="form-control input-sm"></select>
-                                  <span class="input-group-btn">
-                                      <button class="btn btn-primary btn-sm btn-add-departament"><span class="glyphicon glyphicon-plus"></span></button>
-                                      <button class="btn btn-primary btn-departament-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
-                                  </span>
-                              </div>
-                          </div>
-                      </div>
-                      <div class="col-md-3">
-                          <div class="form-group has-primary">
-                              <label class="control-label">Provincia</label>
-                              <div class="input-group input-group-sm">
-                                  <select name="provincia" id="provincia" class="form-control input-sm"></select>
-                                   <span class="input-group-btn">
-                                      <button class="btn btn-primary btn-sm btn-add-province"><span class="glyphicon glyphicon-plus"></span></button>
-                                      <button class="btn btn-primary btn-province-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
-                                  </span>
-                              </div>
-                          </div>
-                      </div>
-                      <div class="col-md-3">
-                          <div class="form-group has-primary">
-                              <label class="control-label">Distrito</label>
-                              <div class="input-group input-group-sm">
-                                  <select name="distrito" id="" class="form-control input-sm"></select>
-                                   <span class="input-group-btn">
-                                      <button class="btn btn-primary btn-sm btn-add-district"><span class="glyphicon glyphicon-plus"></span></button>
-                                      <button class="btn btn-primary btn-district-refresh btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>
-                                  </span>
-                              </div>
-                          </div>
-                      </div>
-                      <div class="col-md-6">
-                          <div class="form-group has-primary">
-                              <label class="control-label">Dirección</label>
-                              <input type="text" name="direccion" class="form-control input-sm">
-                          </div>
-                      </div>
+            <div class="panel-body">
+              <div class="row">
+                {% csrf_token %}
+                <div class="col-md-6">
+                  <div class="form-group has-primary">
+                    <label class="control-label">Cliente</label>
+                    <div class="input-group input-group-sm">
+                    {% verbatim %}
+                      <select name="ruccliente" id="ruccliente" class="form-control input-sm">
+                        <option ng-repeat="x in customers" value="{{x.fields.ruccliente.pk }}">{{x.fields.ruccliente.fields.razonsocial}}</option>
+                      </select>
+                    {% endverbatim %}
+                      <span class="input-group-btn">
+                        <button class="btn btn-sm btn-add-customers grey lighten-5 grey-text text-darken-3"><span class="glyphicon glyphicon-plus"></span></button>
+                        <button class="btn btn-sm grey lighten-5 grey-text text-darken-3"><span class="glyphicon glyphicon-refresh"></span></button>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group has-primary">
+                    <label class="control-label">Nombre Proyecto</label>
+                    <input type="text" name="nompro" class="form-control input-sm">
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group has-primary">
+                    <label class="control-label">Inicio Proyecto</label>
+                    <input type="text" name="comienzo" class="form-control input-sm">
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group has-primary">
+                    <label class="control-label">Fin Proyecto</label>
+                    <input type="text" name="fin" class="form-control input-sm">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group has-primary">
+                    <label class="control-label">Dirección</label>
+                    <input type="text" name="direccion" class="form-control input-sm">
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group has-primary">
+                    <label>Pais</label>
+                    <div class="input-group input-group-sm">
+                      <select name="pais" id="pais" class="form-control input-sm">
+                        {% for x in country %}
+                            <option value="{{ x.pais_id }}">{{ x.paisnom }}</option>
+                        {% endfor %}
+                      </select>
+                      <span class="input-group-btn">
+                        <button class="btn btn-sm btn-add-country grey lighten-5 grey-text text-darken-3"><span class="glyphicon glyphicon-plus"></span></button>
+                        <button class="btn btn-country-refresh btn-sm grey lighten-5 grey-text text-darken-3"><span class="glyphicon glyphicon-refresh"></span></button>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group has-primary">
+                    <label>Depatamento</label>
+                    <div class="input-group input-group-sm">
+                      <select name="departamento" id="departamento" class="form-control input-sm"></select>
+                      <span class="input-group-btn">
+                        <button class="btn btn-add-departament btn-sm grey lighten-5 grey-text text-darken-3">
+                          <span class="glyphicon glyphicon-plus"></span></button>
+                        <button class="btn btn-departament-refresh btn-sm grey lighten-5 grey-text text-darken-3">
+                          <span class="glyphicon glyphicon-refresh"></span></button>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group has-primary">
+                    <label>Provincia</label>
+                    <div class="input-group input-group-sm">
+                      <select name="provincia" id="provincia" class="form-control input-sm"></select>
+                       <span class="input-group-btn">
+                          <button class="btn btn-add-province btn-sm grey lighten-5 grey-text text-darken-3"><span class="glyphicon glyphicon-plus"></span></button>
+                          <button class="btn btn-province-refresh btn-sm grey lighten-5 grey-text text-darken-3"><span class="glyphicon glyphicon-refresh"></span></button>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group has-primary">
+                    <label class="control-label">Distrito</label>
+                    <div class="input-group input-group-sm">
+                      <select name="distrito" id="" class="form-control input-sm"></select>
+                      <span class="input-group-btn">
+                          <button class="btn btn-sm btn-add-district grey lighten-5 grey-text text-darken-3"><span class="glyphicon glyphicon-plus"></span></button>
+                          <button class="btn btn-district-refresh btn-sm grey lighten-5 grey-text text-darken-3"><span class="glyphicon glyphicon-refresh"></span></button>
+                      </span>
+                    </div>
+                  </div>
+                </div>
                       <div class="col-md-3">
                           <div class="form-group has-primary">
                               <label class="control-label">Moneda</label>
@@ -281,7 +281,18 @@
         {% endverbatim %}
       </section>
       <div class="section center-align">
-        <div class="preloader-wrapper big" data-ng-class="{'active': !customers}" >
+        <div class="preloader-wrapper big projectsclass" data-ng-class="{'active': !allprojects && pprojects}" >
+          <div class="spinner-layer spinner-blue-only">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
+            </div><div class="gap-patch">
+              <div class="circle"></div>
+            </div><div class="circle-clipper right">
+              <div class="circle"></div>
+            </div>
+          </div>
+        </div>
+        <div class="preloader-wrapper big customersclass" data-ng-class="{'active': !customers && pcustomers}" >
           <div class="spinner-layer spinner-blue-only">
             <div class="circle-clipper left">
               <div class="circle"></div>
@@ -302,6 +313,8 @@
 <script src="{{ MEDIA_URL }}js/tinymce.js"></script>
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>
 <script src="{{ MEDIA_URL }}js/getCountry.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/sweetalert/dist/sweetalert.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}vendor/sweetalert/dist/sweetalert.css">
 <!-- <script src="{{ MEDIA_URL }}js/floatThead.js"></script>-->
 <script src="{{ MEDIA_URL }}js/sales/projects.js"></script>
 {% endblock content %}

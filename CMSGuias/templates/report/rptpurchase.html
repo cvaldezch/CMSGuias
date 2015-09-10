@@ -25,6 +25,7 @@
         <div id="bedside-col1">
             <table>
                 <tr><td><strong>Proveedor :</strong></td><td> {{ bedside.proveedor_id }} - {{ bedside.proveedor.razonsocial }}</td></tr>
+                <tr><td><strong></strong></td><td> {{ bedside.proveedor.direccion }} - {{ bedside.proveedor.distrito.distnom }}</td></tr>
                 <tr><td><strong>Cotización :</strong></td><td>
                 {% if bedside.cotizacion_id %} {{ bedside.cotizacion_id }} {% else %} {{ bedside.quotation }} {% endif %}</td></tr>
                 <tr><td width="3cm"><strong>Fecha Registrado :</strong></td><td> {{ bedside.registrado }}</td></tr>
@@ -108,7 +109,7 @@
                         <th class="text-left">TOTAL</th>
                         <th class="text-right">{{ total|safe|floatformat:"2" }}</th>
                     </tr>
-                    {% if bedside.observation %}
+                    {% if bedside.observation == '' %}
                         <tr></tr>
                         <tr class="border">
                             <td colspan="8">

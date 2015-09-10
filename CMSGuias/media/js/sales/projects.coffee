@@ -107,7 +107,7 @@ CreateProject = (event) ->
             console.log @name
             @.focus()
             pass = false
-            $().toastmessage "showWarningToast", "campo vacio #{@name}."
+            swal "Alerta!", "campo vacio #{@name}.", "warning"
             return pass
         else
             data[@name] = $(@).val()
@@ -119,12 +119,12 @@ CreateProject = (event) ->
         data['type'] = "new"
         $.post "", data, (response) ->
             if response.status
-                $().toastmessage "showNoticeToast", "Se registro el proyecto #{data['nompro']} correctamente!"
+                swal "Felicidades!", "Se registro el proyecto #{data['nompro']} correctamente!", "success"
                 setTimeout ->
                     location.reload()
                 , 2000
             else
-                $().toastmessage "showErrorToast", "Error en la transacción #{response.raise}."
+                swal "Alerta!", "Error en la transacción #{response.raise}.", "warning"
         return
     return
 
@@ -180,7 +180,7 @@ app = angular.module 'proApp', ['ngSanitize', 'ngCookies']
 app.controller 'proCtrl', ($scope, $http, $cookies) ->
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken
     $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
-    $scope.customers = []
+    # $scope.customers = []
     $scope.sfcustomers = false
     $scope.sfprojects = false
     $scope.pcustomers = true
@@ -191,6 +191,12 @@ app.controller 'proCtrl', ($scope, $http, $cookies) ->
         $scope.permission = angular.element("[name=permission]").val()
         if $scope.permission is 'administrator' or $scope.permission is 'ventas'
             $scope.tadmin = true
+        if $scope.permission is 'operaciones'
+            $scope.pprojects = true
+            $scope.pcustomers = false
+            $scope.sfcustomers = false
+            $scope.sfprojects = false
+            $scope.sTable()
         return
     $scope.listCustomers = ->
         params =
