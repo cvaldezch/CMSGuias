@@ -76,7 +76,7 @@ class EmployeeView(JSONResponseMixin, TemplateView):
                                 empdni_id=request.POST['empdni_id'])
                     form = EmployeeForm(request.POST, instance=employee)
                 except ObjectDoesNotExist:
-                    form = EmployeeForm()
+                    form = EmployeeForm(request.POST)
                 if form.is_valid():
                     form.save()
                     context['status'] = True
