@@ -10,7 +10,7 @@ from .models import MetProject, Nipple, Letter, PreOrders
 class MetProjectForm(forms.ModelForm):
     class Meta:
         model = MetProject
-        exclude = {'flag','tag',}
+        exclude = {'flag', 'tag',}
 
 # class tmpnipleForm(forms.ModelForm):
 #     class Meta:
