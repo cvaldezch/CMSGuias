@@ -191,6 +191,10 @@
                         </div>
                         {% if meter %}
                             <div class="text-right">
+                                <a href="{% url 'sectorgroup_view' project.proyecto_id subproject.subproyecto_id sector.sector_id %}" class="btn btn-primary pull-left">
+                                    <span class="fa fa-object-group"></span>
+                                    Programar Sector
+                                </a>
                                 <a href="{% url 'view_list_preordersop' project.proyecto_id subproject.subproyecto_id sector.sector_id %}" class="btn btn-success" target="_blank">
                                     <span class="fa fa-list"></span>
                                     Lista de Pre Pedido a Almcén
@@ -203,6 +207,9 @@
                                     <span class="fa fa-tasks"></span>
                                     Lista de Guias Salidas
                                 </button>
+                            </div>
+                            <div class="text-left">
+
                             </div>
                             <br>
                             <div class="btn-group">

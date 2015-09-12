@@ -1,0 +1,40 @@
+{% extends "basemd.html" %}
+{% block title %}
+	Programing Sector
+{% endblock title %}
+{% block menu %}
+    {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
+        {% include "menus/salesmd.html" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'logistica' %}
+        {% include "menus/logistics.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+        {% include "menus/operations.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'almacen' %}
+        {% include "menus/storage_menu.htm" %}
+    {% endif %}
+{% endblock menu %}
+{% block content %}
+<div>
+	<div class="card-panel">
+		<div class="card-content">
+			<h4>Grupo</h4>
+		</div>
+		<div class="card-action">
+			<button type="button" class="btn blue blue-lighten-1">
+				<i class="fa fa-plus"></i> Agregar Grupo
+			</button>
+			<button type="button" class="btn blue blue-lighten-1">
+				<i class="fa fa-list"></i> Lista Grupo
+			</button>
+		</div>
+	</div>
+	<div class="card">
+		<div class="card-content">
+			<h3>{{sector}} - {{sector}}</h3>
+		</div>
+	</div>
+</div>
+{% endblock content %}

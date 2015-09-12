@@ -241,8 +241,11 @@ class DetailsPreOrders(models.Model):
 
 
 class SGroup(models.Model):
-
-    sgroup_id = models.CharField(max_length=6, default='SG0000')
+    sgroup_id = models.CharField(
+                                    primary_key=True,
+                                    max_length=6,
+                                    default='SG0000',
+                                    unique=False)
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
     sector = models.ForeignKey(Sectore, to_field='sector_id')
     name = models.CharField(max_length=255)
@@ -252,13 +255,18 @@ class SGroup(models.Model):
     observation = models.TextField(null=True, blank=True)
     flag = models.BooleanField(default=True)
 
+    audit_log = AuditLog()
+
     def __unicode__(self):
         return '%s - %s %s' % (self.sgroup_id, self.sname, self.register)
 
 
 class DSector(models.Model):
 
-    dsector_id = models.CharField(max_length=11, default='SG0000DS000')
+    dsector_id = models.CharField(
+                                    primary_key=True,
+                                    max_length=11,
+                                    default='SG0000DS000')
     sgroup = models.ForeignKey(SGroup, to_field='sgroup_id')
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
     name = models.CharField(max_length=255)
@@ -274,48 +282,56 @@ class DSector(models.Model):
     observation = models.TextField(null=True, blank=True)
     flag = models.BooleanField(default=True)
 
+    audit_log = AuditLog()
+
     def __unicode__(self):
         return '%s %s %s %s' % (self.project,
                                 self.dsector_id,
                                 self.name,
                                 self.register)
 
-# class SMetrado(models.Model):
-#     dsector_id = models.ForeignKey(DSector, to_field='dsector_id')
-#     materials = models.ForeignKey(Materiale, to_field='materiales_id')
-#     brand = models.ForeignKey(Brand, to_field='brand_id')
-#     model = models.ForeignKey(Model, to_field='model_id')
-#     quantity = models.FloatField()
-#     qorder = models.FloatField()
-#     ppurchase = models.DecimalField(max_digits=8, decimal_places=3, default=0)
-#     psales = models.DecimalField(max_length=8, decimal_places=3, default=0)
-#     comment = models.TextField()
-#     tag = models.BooleanField(default=True)
 
-#     class Meta:
-#         verbose_name = 'SMetrado'
-#         verbose_name_plural = 'SMetrados'
+class SMetrado(models.Model):
+    dsector_id = models.ForeignKey(DSector, to_field='dsector_id')
+    materials = models.ForeignKey(Materiale, to_field='materiales_id')
+    brand = models.ForeignKey(Brand, to_field='brand_id')
+    model = models.ForeignKey(Model, to_field='model_id')
+    quantity = models.FloatField()
+    qorder = models.FloatField()
+    ppurchase = models.DecimalField(max_digits=8, decimal_places=3, default=0)
+    psales = models.DecimalField(max_digits=8, decimal_places=3, default=0)
+    comment = models.TextField()
+    tag = models.BooleanField(default=True)
 
-#     def __unicode__(self):
-#         pass
+    audit_log = AuditLog()
+
+    class Meta:
+        verbose_name = 'SMetrado'
+        verbose_name_plural = 'SMetrados'
+
+    def __unicode__(self):
+        return '%s %s %f %f' % (self.dsector_id,
+                                self.materials,
+                                self.quantity,
+                                self.ppurchase)
 
 
-# class MMetrado(models.Model):
-#     qcode = models.CharField(max_length=16)
-#     dsector_id = models.ForeignKey(DSector, to_field='dsector_id')
-#     materials = models.ForeignKey(Materiale, to_field='materiales_id')
-#     brand = models.ForeignKey(Brand, to_field='brand_id')
-#     model = models.ForeignKey(Model, to_field='model_id')
-#     quantity = models.FloatField()
-#     qorder = models.FloatField()
-#     ppurchase = models.DecimalField(max_digits=8, decimal_places=3, default=0)
-#     psales = models.DecimalField(max_length=8, decimal_places=3, default=0)
-#     comment = models.TextField()
-#     tag = models.BooleanField(default=True)
+class MMetrado(models.Model):
+    qcode = models.CharField(max_length=16)
+    dsector_id = models.ForeignKey(DSector, to_field='dsector_id')
+    materials = models.ForeignKey(Materiale, to_field='materiales_id')
+    brand = models.ForeignKey(Brand, to_field='brand_id')
+    model = models.ForeignKey(Model, to_field='model_id')
+    quantity = models.FloatField()
+    qorder = models.FloatField()
+    ppurchase = models.DecimalField(max_digits=8, decimal_places=3, default=0)
+    psales = models.DecimalField(max_digits=8, decimal_places=3, default=0)
+    comment = models.TextField()
+    tag = models.BooleanField(default=True)
 
-#     class Meta:
-#         verbose_name = "MMetrado"
-#         verbose_name_plural = "MMetrados"
+    class Meta:
+        verbose_name = "MMetrado"
+        verbose_name_plural = "MMetrados"
 
-#     def __unicode__(self):
-#         return '%s %s %s' % (self.qcode, self.dsector_id, self.materiales_id)
+    def __unicode__(self):
+        return '%s %s %s' % (self.qcode, self.dsector_id, self.materiales_id)

@@ -8,25 +8,32 @@ from CMSGuias.apps.ventas.budget.urls import budget_urls
 
 
 # Sectors Ulrs
-sectore_urls = patterns('',
+sectore_urls = patterns(
+    '',
     url(r'^crud/$', SectorsView.as_view(), name='sectors_view'),
 )
-subproject_urls = patterns('',
+subproject_urls = patterns(
+    '',
     url(r'^crud/$', SubprojectsView.as_view(), name='subproject_view'),
 )
 # Urls Projects
-project_urls = patterns('',
-    url(r'^$',ProjectsList.as_view(), name='view_projects'),
-    url(r'^manager/(?P<project>\w+)/$', ProjectManager.as_view(), name='managerpro_view'),
+project_urls = patterns(
+    '',
+    url(r'^$', ProjectsList.as_view(), name='view_projects'),
+    url(r'^manager/(?P<project>\w+)/$',
+        ProjectManager.as_view(), name='managerpro_view'),
     url(r'^sectors/', include(sectore_urls)),
     url(r'^subprojects/', include(subproject_urls)),
-    url(r'^manager/sector/(?P<pro>\w+)/(?P<sub>\w+)/(?P<sec>\w+)/$', SectorManage.as_view(), name='managersec_view'),
-    url(r'guide/list/(?P<pro>\w+)/(?P<sub>\w+)/(?P<sec>\w+)/$', ListGuideByProject.as_view(), name='view_list_guide_by_projects'),
-    url(r'list/orders/(?P<pro>\w+)/(?P<sub>\w+)/(?P<sec>\w+)/$', ListOrdersByProject.as_view(), name='view_orders_by_projects'),
+    url(r'^manager/sector/(?P<pro>\w+)/(?P<sub>\w+)/(?P<sec>\w+)/$',
+        SectorManage.as_view(), name='managersec_view'),
+    url(r'guide/list/(?P<pro>\w+)/(?P<sub>\w+)/(?P<sec>\w+)/$',
+        ListGuideByProject.as_view(), name='view_list_guide_by_projects'),
+    url(r'list/orders/(?P<pro>\w+)/(?P<sub>\w+)/(?P<sec>\w+)/$',
+        ListOrdersByProject.as_view(), name='view_orders_by_projects'),
 )
 
-urlpatterns = patterns('',
-    # url to home
+urlpatterns = patterns(
+    '',
     url(r'^$', SalesHome.as_view(), name='view_sale'),
     url(r'^projects/', include(project_urls)),
     url(r'^budget/', include(budget_urls)),
