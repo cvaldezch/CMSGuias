@@ -118,13 +118,18 @@ class ProgramingProject(JSONResponseMixin, TemplateView):
                 context['raise'] = str(e)
                 context['status'] = False
             return self.render_to_json_response(context)
-        try:
-            context['sector'] = Sectore.objects.get(
-                                proyecto_id=kwargs['pro'],
-                                subproyecto_id=kwargs['sub'] if kwargs[
-                                    'sub'] is None else None,
-                                sector_id=kwargs['sec'])
-            print context
-            return render(request, 'operations/programinggroup.html', context)
-        except TemplateDoesNotExist, e:
-            raise Http404(e)
+        else:
+            try:
+                context['project'] = Proyecto.objects.get(
+                                    proyecto_id=kwargs['pro'])
+                context['sector'] = Sectore.objects.get(
+                                    proyecto_id=kwargs['pro'],
+                                    subproyecto_id=kwargs['sub'] if kwargs[
+                                        'sub'] is None else None,
+                                    sector_id=kwargs['sec'])
+                return render(
+                        request,
+                        'operations/programinggroup.html',
+                        context)
+            except TemplateDoesNotExist, e:
+                raise Http404(e)

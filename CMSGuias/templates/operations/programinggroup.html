@@ -1,6 +1,6 @@
 {% extends "basemd.html" %}
 {% block title %}
-	Programing Sector
+  Programing Sector
 {% endblock title %}
 {% block menu %}
     {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
@@ -18,23 +18,76 @@
 {% endblock menu %}
 {% block content %}
 <div>
-	<div class="card-panel">
-		<div class="card-content">
-			<h4>Grupo</h4>
-		</div>
-		<div class="card-action">
-			<button type="button" class="btn blue blue-lighten-1">
-				<i class="fa fa-plus"></i> Agregar Grupo
-			</button>
-			<button type="button" class="btn blue blue-lighten-1">
-				<i class="fa fa-list"></i> Lista Grupo
-			</button>
-		</div>
-	</div>
-	<div class="card">
-		<div class="card-content">
-			<h3>{{sector}} - {{sector}}</h3>
-		</div>
-	</div>
+  <h4 class="center-align">{{ project.proyecto_id }} {{ project.nompro }}</h4>
+  <h5 class="center-align">{{ sector.sector_id }} - {{ sector.nomsec }}</h5>
+  <div class="card-panel">
+    <div class="card-content">
+      <h5>Grupo</h5>
+    </div>
+    <div class="card-action">
+      <button type="button" class="btn blue blue-lighten-3 waves-effect waves-light modal-trigger" data-target="mgroup">
+        <i class="fa fa-plus"></i> Agregar Grupo
+      </button>
+      <button type="button" class="btn blue blue-lighten-3">
+        <i class="fa fa-list"></i> Lista Grupo
+      </button>
+    </div>
+    <div class="card-content">
+      <h5>Area</h5>
+    </div>
+    <div class="card-action">
+      <button type="button" class="btn green lighten-2">
+        <i class="fa fa-plus"></i>
+        <span>Agregar Area</span>
+      </button>
+      <button type="button" class="btn green lighten-2">
+        <i class="fa fa-refresh"></i>
+        <span>Actualizar</span>
+      </button>
+    </div>
+  </div>
+  <div class="card-panel">
+    <div class="card-content">
+      <div class="row">
+        <div class="col l3 m6 s12" >
+          <div class="card">
+            <div class="card-content">
+              <h4>Title</h4>
+              <p>Description</p>
+              <div class="row">
+                <div class="col l6">
+                  <div class="progress red lighten-4">
+                    <div class="determinate red lighten-1" style="width: 70%"></div>
+                  </div>
+                </div>
+                <div class="col l6">
+                  $
+                </div>
+              </div>
+            </div>
+            <div class="card-action">
+              <a href="#">This see details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- modal -->
+  <div class="modal bottom-sheet" id="mgroup">
+    <div class="modal-content">
+      <div class="row">
+        <div class="col l2 input-field">
+          <input type="text">
+          <label></label>
+        </div>
+        <div class="col l2">
+          <input type="color">
+          <label>Color</label>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/operations/programmingsector.js"></script>
 {% endblock content %}
