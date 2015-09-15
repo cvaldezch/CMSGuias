@@ -133,3 +133,23 @@ class ProgramingProject(JSONResponseMixin, TemplateView):
                         context)
             except TemplateDoesNotExist, e:
                 raise Http404(e)
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'saveg' in request.POST:
+                    try:
+                        sg = SGroup.objects.get(
+                                project_id=kwargs['pro'],
+                                sgroup_id=request.POST['sgroup_id'])
+                        form = SGroupForm(request.POST, instance=sg)
+                    except ObjectDoesNotExist:
+                        form = SGroupForm(request.POST)
+                    if form.is_valid():
+                        context['status'] = True
+            except ObjectDoesNotExist as e:
+                context['raise'] = e
+                context['status'] = False
+            return self.render_to_json_response(context)

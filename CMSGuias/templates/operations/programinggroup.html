@@ -17,7 +17,7 @@
     {% endif %}
 {% endblock menu %}
 {% block content %}
-<div>
+<div ng-app="programingApp" ng-controller="programingCtrl">
   <h4 class="center-align">{{ project.proyecto_id }} {{ project.nompro }}</h4>
   <h5 class="center-align">{{ sector.sector_id }} - {{ sector.nomsec }}</h5>
   <div class="card-panel">
@@ -76,18 +76,47 @@
   <!-- modal -->
   <div class="modal bottom-sheet" id="mgroup">
     <div class="modal-content">
+      <h4>Grupo Área</h4>
       <div class="row">
-        <div class="col l2 input-field">
-          <input type="text">
-          <label></label>
+        <div class="col l6 m6 s12">
+          <div class="row">
+            <div class="col l12 m12 s12 input-field">
+              <input type="text" ng-model="group.name">
+              <label>Nombre Área</label>
+            </div>
+            <div class="col l12 m12 s12">
+              <label>Color</label>
+              <br>
+              <input type="color" ng-model="group.colour" style="width: 100%;">
+            </div>
+            <div class="col l12 m12 s12 input-field">
+              <textarea class="materialize-textarea" ng-model="group.observation"></textarea>
+              <label>Observaciones</label>
+            </div>
+          </div>
         </div>
-        <div class="col l2">
-          <input type="color">
-          <label>Color</label>
+        <div class="col l6 m6 s12">
+          <div class="card" ng-style="{'background': group.colour}" >
+            <div class="card-content"></div>
+            <div class="card-action center-align">
+              {% verbatim %}
+                <span>{{group.colour}}</span>
+                <span>{{group.rgba}}</span>
+              {% endverbatim %}
+            </div>
+          </div>
+        </div>
+        <div class="col l6 m6 s12">
+          <button type="button" class="btn waves-effect blue blue-lighten-1" ng-click="saveGroup()">
+            <i class="fa fa-save"></i>
+            <span>Guardar Cambios</span>
+          </button>
         </div>
       </div>
     </div>
   </div>
 </div>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/operations/programmingsector.js"></script>
 {% endblock content %}

@@ -243,8 +243,8 @@ class DetailsPreOrders(models.Model):
 class SGroup(models.Model):
     sgroup_id = models.CharField(
                                 primary_key=True,
-                                max_length=6,
-                                default='SG0000',
+                                max_length=11,
+                                default='PRAA000SG0000',
                                 unique=False)
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
     sector = models.ForeignKey(Sectore, to_field='sector_id')
@@ -266,8 +266,8 @@ class DSector(models.Model):
 
     dsector_id = models.CharField(
                                     primary_key=True,
-                                    max_length=11,
-                                    default='SG0000DS000')
+                                    max_length=18,
+                                    default='PRAA000SG0000DS000')
     sgroup = models.ForeignKey(SGroup, to_field='sgroup_id')
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
     name = models.CharField(max_length=255)
