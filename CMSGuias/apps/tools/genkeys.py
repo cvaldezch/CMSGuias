@@ -11,14 +11,14 @@ from CMSGuias.apps.almacen.models import (
 from CMSGuias.apps.logistica.models import Cotizacion, Compra, ServiceOrder
 from CMSGuias.apps.ventas.models import Proyecto
 from CMSGuias.apps.home.models import Brand, Model, GroupMaterials, TypeGroup
-from CMSGuias.apps.operations.models import Deductive, Letter, PreOrders
+from CMSGuias.apps.operations.models import (
+    Deductive, Letter, PreOrders, SGroup)
 from CMSGuias.apps.ventas.budget.models import AnalysisGroup, Analysis, Budget
 
 
 # format date str
 __date_str = '%Y-%m-%d'
 __year_str = '%y'
-###
 
 
 def __init__():
@@ -57,8 +57,8 @@ def GenerateSerieGuideRemision():
             sr = int(id[0:3])
             num = int(id[4:])
             # print '%i %i'%(sr,num)
-            sr = sr+1 if num >= 99999999 else sr
-            num = num+1 if num <= 99999999 else 1
+            sr = sr + 1 if num >= 99999999 else sr
+            num = num + 1 if num <= 99999999 else 1
             # print '%i %i'%(sr,num)
         else:
             sr = 1
@@ -413,3 +413,18 @@ def generateBudget():
         print e
         id = '%s%i%s' % ('PROP', yn, '{:0>4d}'.format(1))
     return id
+
+
+def genSGroup(pro=None, sec=None):
+    try:
+        print pro, sec
+        row = SGroup.objects.filter(
+                project_id=pro, sector_id=sec).order_by('sgroup_id')
+        if row:
+            row = row[0]
+            code = int(row.sgroup_id[7:][2:])
+            return '%s%s' % (pro, 'SG{:0>4d}'.format(code + 1))
+        else:
+            return '%s%s' % (pro, 'SG0001')
+    except ObjectDoesNotExist:
+        return '%s%s' % (pro, 'SG0001')

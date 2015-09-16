@@ -22,7 +22,7 @@ from .models import *
 from .forms import *
 # from CMSGuias.apps.almacen.forms import addOrdersForm
 # from CMSGuias.apps.operations.forms import NippleForm
-# from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles
+from CMSGuias.apps.tools import genkeys
 
 
 # Class Bases Views Generic
@@ -121,16 +121,16 @@ class ProgramingProject(JSONResponseMixin, TemplateView):
         else:
             try:
                 context['project'] = Proyecto.objects.get(
-                                    proyecto_id=kwargs['pro'])
+                    proyecto_id=kwargs['pro'])
                 context['sector'] = Sectore.objects.get(
-                                    proyecto_id=kwargs['pro'],
-                                    subproyecto_id=kwargs['sub'] if kwargs[
-                                        'sub'] is None else None,
-                                    sector_id=kwargs['sec'])
+                    proyecto_id=kwargs['pro'],
+                    subproyecto_id=kwargs['sub'] if kwargs[
+                        'sub'] is None else None,
+                    sector_id=kwargs['sec'])
                 return render(
-                        request,
-                        'operations/programinggroup.html',
-                        context)
+                    request,
+                    'operations/programinggroup.html',
+                    context)
             except TemplateDoesNotExist, e:
                 raise Http404(e)
 
@@ -141,15 +141,35 @@ class ProgramingProject(JSONResponseMixin, TemplateView):
             try:
                 if 'saveg' in request.POST:
                     try:
-                        sg = SGroup.objects.get(
-                                project_id=kwargs['pro'],
-                                sgroup_id=request.POST['sgroup_id'])
-                        form = SGroupForm(request.POST, instance=sg)
+                        if 'sgroup_id' in request.POST:
+                            sg = SGroup.objects.get(
+                                    sgroup_id=request.POST['sgroup_id'])
+                            form = SGroupForm(request.POST, instance=sg)
+                        else:
+                            form = SGroupForm(request.POST)
                     except ObjectDoesNotExist:
                         form = SGroupForm(request.POST)
+                    print form
+                    print form.is_valid()
                     if form.is_valid():
+                        if 'edit' not in request.POST:
+                            add = form.save(commit=False)
+                            key = genkeys.genSGroup(
+                                    kwargs['pro'], kwargs['sec'])
+                            print key, len(key)
+                            add.sgroup_id = key.strip()
+                            add.project_id = kwargs['pro']
+                            add.sector_id = kwargs['sec']
+                            add.colour = request.POST['rgba']
+                            add.save()
+                        else:
+                            edit = form.save(commit=False)
+                            edit.colour = request.POST['rgba']
+                            edit.save()
                         context['status'] = True
+                    else:
+                        context['status'] = False
             except ObjectDoesNotExist as e:
-                context['raise'] = e
+                context['raise'] = str(e)
                 context['status'] = False
             return self.render_to_json_response(context)

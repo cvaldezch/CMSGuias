@@ -243,7 +243,7 @@ class DetailsPreOrders(models.Model):
 class SGroup(models.Model):
     sgroup_id = models.CharField(
                                 primary_key=True,
-                                max_length=11,
+                                max_length=13,
                                 default='PRAA000SG0000',
                                 unique=False)
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
@@ -253,7 +253,7 @@ class SGroup(models.Model):
     datestart = models.DateField(null=True, blank=True)
     dateend = models.DateField(null=True, blank=True)
     observation = models.TextField(null=True, blank=True)
-    colour = models.CharField(max_length=7, blank=True, null=True)
+    colour = models.CharField(max_length=21, blank=True, null=True)
     flag = models.BooleanField(default=True)
 
     audit_log = AuditLog()

@@ -20,17 +20,17 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
     data = $scope.group
     data.saveg = true
     console.log data
-    ###$http
+    $http
       url: ''
       method: 'post'
       data: $.param data
-    , success (response) ->
+    .success (response) ->
       if response.status
         swal "Felicidades", "se guardo los datos correctamente.", "success"
         return
       else
         swal "Error", "no se a guardado los datos. #{response.raise}", "error"
-        return###
+        return
     return
 
   return

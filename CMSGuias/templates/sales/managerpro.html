@@ -226,7 +226,7 @@
                                                 </li>
                                             {% endif %}
                                         {% endif %}
-                                        {% if project.status == 'AC' and request.user.get_profile.empdni.charge.cargos|lower == 'jefe de operaciones' or  request.user.get_profile.empdni.charge.area|lower == 'administrator' %}
+                                        {% if project.status == 'AC' and request.user.get_profile.empdni.charge.cargos|lower == 'jefe de operaciones' or  request.user.get_profile.empdni.charge.area|lower == 'administrator'or  request.user.get_profile.empdni.charge.area|lower == 'ventas' %}
                                             <li>
                                                 <button class="btn btn-link btn-xs text-black btn-responsible">
                                                     <span class="glyphicon glyphicon-user"></span>

@@ -48,6 +48,7 @@ class SGroupForm(forms.ModelForm):
     class Meta:
         model = SGroup
         exclude = {
+            'sgroup_id',
             'project',
             'sector',
             'register',
