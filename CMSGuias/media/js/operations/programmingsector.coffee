@@ -19,7 +19,6 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
   $scope.saveGroup = ->
     data = $scope.group
     data.saveg = true
-    console.log data
     $http
       url: ''
       method: 'post'
@@ -32,7 +31,19 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
         swal "Error", "no se a guardado los datos. #{response.raise}", "error"
         return
     return
-
+  $scope.listGroup = ->
+    data =
+      'listg': true
+    $http.get '', params: data
+      .success (response) ->
+        if response.status
+          $scope.glist = response.gs
+          $("#mlgroup").openModal()
+          return
+        else
+          swal "Error!", "No se han obtenido datos. #{response.raise}", "error"
+          return
+    return
   return
 
 hextorbga = (hex, alf=1) ->

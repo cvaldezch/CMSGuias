@@ -716,6 +716,7 @@ class ListPurchase(JSONResponseMixin, TemplateView):
                         context['transfer'] = globalVariable.format_date_str(p.traslado)
                         context['contact'] = p.contacto
                         context['discount'] = p.discount
+                        context['observation'] = p.observation
                         context['igv'] = search.getIGVCurrent(p.registrado.strftime('%Y'))
                         context['details'] = [
                             {

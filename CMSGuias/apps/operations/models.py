@@ -259,7 +259,7 @@ class SGroup(models.Model):
     audit_log = AuditLog()
 
     def __unicode__(self):
-        return '%s - %s %s' % (self.sgroup_id, self.sname, self.register)
+        return '%s - %s %s' % (self.sgroup_id, self.name, self.register)
 
 
 class DSector(models.Model):

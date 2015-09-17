@@ -109,12 +109,12 @@
                         <th class="text-left">TOTAL</th>
                         <th class="text-right">{{ total|safe|floatformat:"2" }}</th>
                     </tr>
-                    {% if bedside.observation == '' %}
+                    {% if bedside.observation != '<p><br data-mce-bogus="1"></p>' and bedside.observation|length > 8 and bedside.observation != None %}
                         <tr></tr>
                         <tr class="border">
                             <td colspan="8">
                                 <p><strong>Observación</strong></p>
-                                {{ bedside.observation | safe }}
+                                {{ bedside.observation|safe }}
                             </td>
                         </tr>
                     {% endif %}

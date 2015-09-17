@@ -213,7 +213,7 @@ class Alertasproyecto(models.Model):
         return '%s %s %s %s %s'%(self.proyecto, self.sector, self.charge, self.message, self.registrado)
 
 class HistoryMetProject(models.Model):
-    date = models.DateField(auto_now=True)
+    date = models.DateTimeField(auto_now=True)
     token = models.CharField(max_length=6, default=globalVariable.get_Token())
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id', default='')
     subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)

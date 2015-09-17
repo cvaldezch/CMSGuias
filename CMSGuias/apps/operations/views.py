@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import json
 # from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
+from django.core import serializers
 # from django.contrib import messages
 # from django.contrib.auth.mod import User
 from django.contrib.auth.decorators import login_required
@@ -113,7 +115,14 @@ class ProgramingProject(JSONResponseMixin, TemplateView):
         context = dict()
         if request.is_ajax():
             try:
-                pass
+                if 'listg' in request.GET:
+                    print kwargs['pro'], len(kwargs['pro']), type(kwargs['pro'])
+                    pro = str(kwargs['pro'])
+                    sg = SGroup.objects.filter(project=pro)
+                    print sg
+                    context['sg'] = json.loads(serializers.serialize(
+                                                                'json', sg))
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False
@@ -149,8 +158,6 @@ class ProgramingProject(JSONResponseMixin, TemplateView):
                             form = SGroupForm(request.POST)
                     except ObjectDoesNotExist:
                         form = SGroupForm(request.POST)
-                    print form
-                    print form.is_valid()
                     if form.is_valid():
                         if 'edit' not in request.POST:
                             add = form.save(commit=False)

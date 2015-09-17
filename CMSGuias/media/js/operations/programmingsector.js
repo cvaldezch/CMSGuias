@@ -22,7 +22,6 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
     var data;
     data = $scope.group;
     data.saveg = true;
-    console.log(data);
     $http({
       url: '',
       method: 'post',
@@ -32,6 +31,22 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
         swal("Felicidades", "se guardo los datos correctamente.", "success");
       } else {
         swal("Error", "no se a guardado los datos. " + response.raise, "error");
+      }
+    });
+  };
+  $scope.listGroup = function() {
+    var data;
+    data = {
+      'listg': true
+    };
+    $http.get('', {
+      params: data
+    }).success(function(response) {
+      if (response.status) {
+        $scope.glist = response.gs;
+        $("#mlgroup").openModal();
+      } else {
+        swal("Error!", "No se han obtenido datos. " + response.raise, "error");
       }
     });
   };

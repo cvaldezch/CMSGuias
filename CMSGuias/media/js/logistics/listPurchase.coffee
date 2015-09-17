@@ -152,6 +152,7 @@ getDataPurchase = (purchase) ->
             $("input[name=contact]").val response.contact
             $("input[name=quotation]").val response.quotation
             $("#observation_ifr").contents().find('body').html response.observation
+            console.log response.observation
             $("input.edsct").val response.discount
             $("span.eigv").text "#{response.igv}%"
             $tb = $("table.table-pod > tbody")
