@@ -247,6 +247,11 @@ class SGroup(models.Model):
                                 default='PRAA000SG0000',
                                 unique=False)
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
+    subproject = models.ForeignKey(
+                                    Subproyecto,
+                                    to_field='subproyecto_id',
+                                    blank=True,
+                                    null=True)
     sector = models.ForeignKey(Sectore, to_field='sector_id')
     name = models.CharField(max_length=255)
     register = models.DateTimeField(auto_now_add=True)

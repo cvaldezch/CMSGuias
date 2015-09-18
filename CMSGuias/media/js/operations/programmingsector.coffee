@@ -37,12 +37,32 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
     $http.get '', params: data
       .success (response) ->
         if response.status
-          $scope.glist = response.gs
+          $scope.sglist = response.sg
           $("#mlgroup").openModal()
+          setTimeout ->
+            $('.dropdown-button').dropdown()
+          , 800
           return
         else
           swal "Error!", "No se han obtenido datos. #{response.raise}", "error"
           return
+    return
+  $scope.showESG = ->
+    console.log this.$parent.x
+    console.log  rgbtohex this.$parent.x.fields.colour
+    return
+  $scope.editGroup = ->
+    data =
+      saveg: true
+    $http
+      url: ''
+      data: $.param data
+      method: 'post'
+    .success (response) ->
+      if response.status
+      else
+        swal "Error", "Error al guardar los datos. #{response.raise}", "error"
+        return
     return
   return
 
@@ -58,3 +78,16 @@ hextorbga = (hex, alf=1) ->
     return """rgba(#{r},#{g},#{b},#{alf})"""
   else
     return hex
+
+rgbtohex = (rgb) ->
+  if typeof(rgb) isnt "undefined" and rgb.length > 20
+    array = rgb.split(',')
+    r = parseInt array[0].split('(')[1]
+    g = parseInt array[1]
+    b = parseInt array[2]
+    return "##{byte2Hex(r)}#{byte2Hex(g)}#{byte2Hex(b)}"
+  return
+
+byte2Hex = (n) ->
+  nybHexString = "0123456789ABCDEF";
+  return String(nybHexString.substr((n >> 4) & 0x0F,1)) + nybHexString.substr(n & 0x0F,1)

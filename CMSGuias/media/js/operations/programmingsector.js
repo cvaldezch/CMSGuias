@@ -1,4 +1,4 @@
-var app, hextorbga;
+var app, byte2Hex, hextorbga, rgbtohex;
 
 app = angular.module('programingApp', ['ngCookies']).config(function($httpProvider) {
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -43,10 +43,34 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
       params: data
     }).success(function(response) {
       if (response.status) {
-        $scope.glist = response.gs;
+        $scope.sglist = response.sg;
         $("#mlgroup").openModal();
+        setTimeout(function() {
+          return $('.dropdown-button').dropdown();
+        }, 800);
       } else {
         swal("Error!", "No se han obtenido datos. " + response.raise, "error");
+      }
+    });
+  };
+  $scope.showESG = function() {
+    console.log(this.$parent.x);
+    console.log(rgbtohex(this.$parent.x.fields.colour));
+  };
+  $scope.editGroup = function() {
+    var data;
+    data = {
+      saveg: true
+    };
+    $http({
+      url: '',
+      data: $.param(data),
+      method: 'post'
+    }).success(function(response) {
+      if (response.status) {
+
+      } else {
+        swal("Error", "Error al guardar los datos. " + response.raise, "error");
       }
     });
   };
@@ -69,4 +93,21 @@ hextorbga = function(hex, alf) {
   } else {
     return hex;
   }
+};
+
+rgbtohex = function(rgb) {
+  var array, b, g, r;
+  if (typeof rgb !== "undefined" && rgb.length > 20) {
+    array = rgb.split(',');
+    r = parseInt(array[0].split('(')[1]);
+    g = parseInt(array[1]);
+    b = parseInt(array[2]);
+    return "#" + (byte2Hex(r)) + (byte2Hex(g)) + (byte2Hex(b));
+  }
+};
+
+byte2Hex = function(n) {
+  var nybHexString;
+  nybHexString = "0123456789ABCDEF";
+  return String(nybHexString.substr((n >> 4) & 0x0F, 1)) + nybHexString.substr(n & 0x0F, 1);
 };

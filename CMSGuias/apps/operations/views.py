@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
-# from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.core import serializers
 # from django.contrib import messages
@@ -13,17 +13,13 @@ from django.shortcuts import render_to_response, render
 from django.utils import simplejson
 from django.utils.decorators import method_decorator
 from django.template import RequestContext, TemplateDoesNotExist
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 # from django.views.generic.edit import UpdateView, CreateView
+from django.core.serializers.json import DjangoJSONEncoder
 
 from CMSGuias.apps.home.models import *
-# from CMSGuias.apps.operations.models import MetProject, Nipple
-# from CMSGuias.apps.almacen.models import
-# Inventario, tmpniple, Pedido, Detpedido, Niple
 from .models import *
 from .forms import *
-# from CMSGuias.apps.almacen.forms import addOrdersForm
-# from CMSGuias.apps.operations.forms import NippleForm
 from CMSGuias.apps.tools import genkeys
 
 
@@ -40,7 +36,9 @@ class JSONResponseMixin(object):
         )
 
     def convert_context_to_json(self, context):
-        return simplejson.dumps(context, encoding='utf-8')
+        return simplejson.dumps(context,
+                                encoding='utf-8',
+                                cls=DjangoJSONEncoder)
 
 
 # View home Operations
@@ -108,7 +106,7 @@ class ListPreOrders(JSONResponseMixin, TemplateView):
                 context_instance=RequestContext(request))
 
 
-class ProgramingProject(JSONResponseMixin, TemplateView):
+class ProgramingProject(JSONResponseMixin, View):
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
@@ -116,10 +114,12 @@ class ProgramingProject(JSONResponseMixin, TemplateView):
         if request.is_ajax():
             try:
                 if 'listg' in request.GET:
-                    print kwargs['pro'], len(kwargs['pro']), type(kwargs['pro'])
-                    pro = str(kwargs['pro'])
-                    sg = SGroup.objects.filter(project=pro)
-                    print sg
+                    sg = SGroup.objects.filter(
+                            project_id=kwargs['pro'],
+                            subproject_id=kwargs[
+                                'sub'] if unicode(kwargs[
+                                    'sub']) != '' else None,
+                            sector_id=kwargs['sec'])
                     context['sg'] = json.loads(serializers.serialize(
                                                                 'json', sg))
                     context['status'] = True
@@ -163,9 +163,12 @@ class ProgramingProject(JSONResponseMixin, TemplateView):
                             add = form.save(commit=False)
                             key = genkeys.genSGroup(
                                     kwargs['pro'], kwargs['sec'])
-                            print key, len(key)
+                            # print key, len(key)
                             add.sgroup_id = key.strip()
                             add.project_id = kwargs['pro']
+                            add.subproject_id = kwargs[
+                                'sub'] if unicode(kwargs[
+                                    'pro']) != 'None' else None
                             add.sector_id = kwargs['sec']
                             add.colour = request.POST['rgba']
                             add.save()

@@ -115,32 +115,61 @@
       </div>
     </div>
   </div>
-  <div class="modal modal-fixed-footer" id="mlgroup">
-    <div class="modal-content">
-      <table class="table responsive-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Código</th>
-            <th>Descripción</th>
-            <th>Registrado</th>
-            <th></th>
-            <th></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
+  <div class="row">
+    <div id="mlgroup" class="modal col l10 offset-l1">
+      <div class="modal-content">
+        <div class="col l12">
+          <button type="button" class="waves-effect waves-light btn grey lighten-5 grey-text text-darken-3 modal-action modal-close">
+            <i class="fa fa-times"></i> Cerrar
+          </button>
+        </div>
         {% verbatim %}
-          <tr ng-repeat="x in glist">
-            <td>{{$index+1}}</td>
-            <td>{{x.pk}}</td>
-            <td>{{x.fields.name}}</td>
-            <td>{{x.fields.register}}</td>
-            <td>{{}}</td>
-          </tr>
+        <!-- template -->
+        <script type="text/ng-template" id="sgt.html">
+          <td>{{$index+1}}</td>
+          <td>{{x.pk}}</td>
+          <td>{{x.fields.name}}</td>
+          <td>{{x.fields.register|date:"dd/MM/y"}}</td>
+          <td>{{x.fields.datestart}}</td>
+          <td>{{x.fields.dateend}}</td>
+          <td>
+            <button type="button" class="dropdown-button btn waves-effect waves-light grey lighten-5 grey-text text-darken-3" constrainwidth="200" data-activates="{{x.pk}}">
+              <i class="fa fa-cogs"></i>
+            </button>
+            <ul id="{{x.pk}}" class="dropdown-content">
+              <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="showESG()" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-edit"></i> Editar</small></a></li>
+              <li class="divider"></li>
+              <li><a href="#!" style="padding: 2px 0px 2px 3px;" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-trash"></i> Eliminar</small></a></li>
+            </ul>
+          </td>
+        </script>
         {% endverbatim %}
-        </tbody>
-      </table>
+        <table class="table responsive-table">
+          <caption>
+            <div class="input-field">
+              <i class="prefix fa fa-filter"></i>
+              <input type="text" ng-model="sesg">
+              <label>Grupo</label>
+            </div>
+          </caption>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Código</th>
+              <th>Descripción</th>
+              <th>Registrado</th>
+              <th>Inicio</th>
+              <th>Fin</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+          {% verbatim %}
+            <tr ng-include src="'sgt.html'" ng-repeat="x in sglist | filter:sesg"></tr>
+          {% endverbatim %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
