@@ -25,7 +25,11 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
       data: $.param data
     .success (response) ->
       if response.status
-        swal "Felicidades", "se guardo los datos correctamente.", "success"
+        swal
+          title: "Felicidades"
+          text: "se guardo los datos correctamente.",
+          type: "success"
+          timer: 2600
         return
       else
         swal "Error", "no se a guardado los datos. #{response.raise}", "error"
@@ -48,8 +52,14 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
           return
     return
   $scope.showESG = ->
-    console.log this.$parent.x
+    console.log this.$parent.x.fields.colour
     console.log  rgbtohex this.$parent.x.fields.colour
+    $scope.group =
+      sgroup_id: this.$parent.x.pk
+      name: this.$parent.x.fields.name
+      colour: rgbtohex this.$parent.x.fields.colour
+      observation: this.$parent.x.fields.observation
+    $("#mgroup").openModal()
     return
   $scope.editGroup = ->
     data =
@@ -80,12 +90,18 @@ hextorbga = (hex, alf=1) ->
     return hex
 
 rgbtohex = (rgb) ->
-  if typeof(rgb) isnt "undefined" and rgb.length > 20
+  # console.log typeof rgb
+  if typeof(rgb) isnt "undefined" and rgb.length > 9
     array = rgb.split(',')
     r = parseInt array[0].split('(')[1]
     g = parseInt array[1]
     b = parseInt array[2]
+    # console.log r
+    # console.log g
+    # console.log b
     return "##{byte2Hex(r)}#{byte2Hex(g)}#{byte2Hex(b)}"
+  else
+    console.log "nothing rgba"
   return
 
 byte2Hex = (n) ->

@@ -81,16 +81,17 @@
         <div class="col l6 m6 s12">
           <div class="row">
             <div class="col l12 m12 s12 input-field">
-              <input type="text" ng-model="group.name">
+              <input type="text" ng-model="group.name" ng-value="group.name">
               <label>Nombre Área</label>
+              <input type="hidden" ng-model="group.sgroup_id">
             </div>
             <div class="col l12 m12 s12">
               <label>Color</label>
               <br>
-              <input type="color" ng-model="group.colour" style="width: 100%;">
+              <input type="color" ng-model="group.colour" ng-value="group.colour" style="width: 100%;">
             </div>
             <div class="col l12 m12 s12 input-field">
-              <textarea class="materialize-textarea" ng-model="group.observation"></textarea>
+              <textarea class="materialize-textarea" ng-model="group.observation" ng-value="group.observation"></textarea>
               <label>Observaciones</label>
             </div>
           </div>

@@ -28,7 +28,12 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
       data: $.param(data)
     }).success(function(response) {
       if (response.status) {
-        swal("Felicidades", "se guardo los datos correctamente.", "success");
+        swal({
+          title: "Felicidades",
+          text: "se guardo los datos correctamente.",
+          type: "success",
+          timer: 2600
+        });
       } else {
         swal("Error", "no se a guardado los datos. " + response.raise, "error");
       }
@@ -54,8 +59,15 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
     });
   };
   $scope.showESG = function() {
-    console.log(this.$parent.x);
+    console.log(this.$parent.x.fields.colour);
     console.log(rgbtohex(this.$parent.x.fields.colour));
+    $scope.group = {
+      sgroup_id: this.$parent.x.pk,
+      name: this.$parent.x.fields.name,
+      colour: rgbtohex(this.$parent.x.fields.colour),
+      observation: this.$parent.x.fields.observation
+    };
+    $("#mgroup").openModal();
   };
   $scope.editGroup = function() {
     var data;
@@ -97,12 +109,14 @@ hextorbga = function(hex, alf) {
 
 rgbtohex = function(rgb) {
   var array, b, g, r;
-  if (typeof rgb !== "undefined" && rgb.length > 20) {
+  if (typeof rgb !== "undefined" && rgb.length > 9) {
     array = rgb.split(',');
     r = parseInt(array[0].split('(')[1]);
     g = parseInt(array[1]);
     b = parseInt(array[2]);
     return "#" + (byte2Hex(r)) + (byte2Hex(g)) + (byte2Hex(b));
+  } else {
+    console.log("nothing rgba");
   }
 };
 

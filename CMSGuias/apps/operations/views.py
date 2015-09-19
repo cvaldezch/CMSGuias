@@ -159,7 +159,7 @@ class ProgramingProject(JSONResponseMixin, View):
                     except ObjectDoesNotExist:
                         form = SGroupForm(request.POST)
                     if form.is_valid():
-                        if 'edit' not in request.POST:
+                        if 'sgroup_id' not in request.POST:
                             add = form.save(commit=False)
                             key = genkeys.genSGroup(
                                     kwargs['pro'], kwargs['sec'])
