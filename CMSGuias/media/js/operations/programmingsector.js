@@ -14,6 +14,12 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
   };
   angular.element(document).ready(function() {
     $('.modal-trigger').leanModal();
+    $(".datepicker").pickadate({
+      container: 'body',
+      format: 'yyyy-mm-dd',
+      selectMonths: true,
+      selectYears: true
+    });
   });
   $scope.$watch('group.colour', function(val, old) {
     $scope.group.rgba = hextorbga(val, 0.5);
@@ -28,12 +34,14 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
       data: $.param(data)
     }).success(function(response) {
       if (response.status) {
+        $scope.listGroup();
         swal({
           title: "Felicidades",
           text: "se guardo los datos correctamente.",
           type: "success",
           timer: 2600
         });
+        $("#mgroup").closeModal();
       } else {
         swal("Error", "no se a guardado los datos. " + response.raise, "error");
       }
@@ -59,8 +67,6 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
     });
   };
   $scope.showESG = function() {
-    console.log(this.$parent.x.fields.colour);
-    console.log(rgbtohex(this.$parent.x.fields.colour));
     $scope.group = {
       sgroup_id: this.$parent.x.pk,
       name: this.$parent.x.fields.name,
@@ -69,22 +75,32 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
     };
     $("#mgroup").openModal();
   };
-  $scope.editGroup = function() {
+  $scope.saveArea = function() {
     var data;
     data = {
-      saveg: true
+      saveds: true
     };
-    $http({
+    $http.post({
       url: '',
-      data: $.param(data),
-      method: 'post'
+      method: 'post',
+      data: $.param(data)
     }).success(function(response) {
       if (response.status) {
-
+        return $("#mdsector").closeModal();
       } else {
-        swal("Error", "Error al guardar los datos. " + response.raise, "error");
+        return swal("Error!", "No se guardo los datos.", "error");
       }
     });
+  };
+  $scope.datechk = function() {
+    var end, start;
+    start = $scope.dsector.datestart.split("-");
+    end = $scope.dsector.dateend.split("-");
+    start = new Date(start[0], start[1], start[2]);
+    end(new Date(end[0], end[1], end[2]));
+    if (end < start) {
+      console.log("fecha de termino menor a la de inicio");
+    }
   };
 });
 

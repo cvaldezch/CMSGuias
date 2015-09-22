@@ -36,7 +36,7 @@
       <h5>Area</h5>
     </div>
     <div class="card-action">
-      <button type="button" class="btn green lighten-2">
+      <button type="button" class="btn green lighten-2 waves-effect waves-light modal-trigger" data-target="mdsector">
         <i class="fa fa-plus"></i>
         <span>Agregar Area</span>
       </button>
@@ -82,17 +82,17 @@
           <div class="row">
             <div class="col l12 m12 s12 input-field">
               <input type="text" ng-model="group.name" ng-value="group.name">
-              <label>Nombre Área</label>
+              <label ng-class="{'active':group.name}">Nombre Área</label>
               <input type="hidden" ng-model="group.sgroup_id">
             </div>
             <div class="col l12 m12 s12">
-              <label>Color</label>
+              <label ng-class="{'active':group.colour}">Color</label>
               <br>
               <input type="color" ng-model="group.colour" ng-value="group.colour" style="width: 100%;">
             </div>
             <div class="col l12 m12 s12 input-field">
               <textarea class="materialize-textarea" ng-model="group.observation" ng-value="group.observation"></textarea>
-              <label>Observaciones</label>
+              <label ng-class="{'active':group.observation}">Observaciones</label>
             </div>
           </div>
         </div>
@@ -108,6 +108,10 @@
           </div>
         </div>
         <div class="col l6 m6 s12">
+        <button type="button" class="btn modal-action modal-close grey lighten-5 grey-text text-darken-3">
+          <i class="fa fa-times"></i>
+          Cerrar
+        </button>
           <button type="button" class="btn waves-effect blue blue-lighten-1" ng-click="saveGroup()">
             <i class="fa fa-save"></i>
             <span>Guardar Cambios</span>
@@ -170,6 +174,46 @@
           {% endverbatim %}
           </tbody>
         </table>
+      </div>
+    </div>
+    <div class="modal bottom-sheet" id="mdsector">
+      <div class="modal-content">
+        <h4>
+          Detalla de Área
+        </h4>
+        <button type="button" class="btn grey lighten-5 grey-text text-darken-3 modal-action modal-close">
+          <i class="fa fa-times"></i>
+          <span>Cerrar</span>
+        </button>
+        <button type="button" class="btn green lighten-1">
+          <i class="fa fa-save"></i>
+          <span>Guardar Cambios</span>
+        </button>
+        <div class="row">
+          <div class="col l6 m6 s12 input-field">
+            <input type="text" ng-model="dsector.name" ng-value="dsector.name">
+            <label ng-class="{'active':dsector.name}">Nombre</label>
+          </div>
+          <div class="col l3 m3 s12 input-field">
+            <input type="text" class="datepicker" ng-model="dsector.datestart">
+            <label ng-class="{'active':dsector.datestart}">Fecha Inicio</label>
+          </div>
+          <div class="col l3 m3 s12 input-field">
+            <input type="text" class="datepicker" ng-model="dsector.dateend" ng-change="datechk()">
+            <label ng-class="{'active':dsector.dateend}">Fecha Termino</label>
+          </div>
+          <div class="col l6 m6 s12 input-field">
+            <textarea rows="4" class="materialize-textarea" ng-model="dsector.description"></textarea>
+            <label for="{'active':dsector.description}">Descripción</label>
+          </div>
+          <div class="col l6 m6 s12 input-field file-field">
+            <div class="btn light-blue darken-3">
+              <span>Plano</span>
+              <input type="file" ng-model="dsector.plane" accept="application/pdf">
+            </div>
+            <input type="text" class="file-path validate">
+          </div>
+        </div>
       </div>
     </div>
   </div>

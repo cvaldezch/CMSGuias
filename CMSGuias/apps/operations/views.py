@@ -119,13 +119,15 @@ class ProgramingProject(JSONResponseMixin, View):
                             subproject_id=kwargs[
                                 'sub'] if unicode(kwargs[
                                     'sub']) != '' else None,
-                            sector_id=kwargs['sec'])
+                            sector_id=kwargs['sec']).order_by('name')
                     context['sg'] = json.loads(serializers.serialize(
                                                                 'json', sg))
                     context['status'] = True
+                # if '':
+                #     pass
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
-                context['status'] = False
+                context['status'] = Falses
             return self.render_to_json_response(context)
         else:
             try:
@@ -163,7 +165,6 @@ class ProgramingProject(JSONResponseMixin, View):
                             add = form.save(commit=False)
                             key = genkeys.genSGroup(
                                     kwargs['pro'], kwargs['sec'])
-                            # print key, len(key)
                             add.sgroup_id = key.strip()
                             add.project_id = kwargs['pro']
                             add.subproject_id = kwargs[

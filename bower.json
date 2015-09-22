@@ -24,13 +24,14 @@
     "jquery": "~2.1.4"
   },
   "dependencies": {
-    "angularjs": "~1.4.2",
-    "jquery": "~2.1.4",
-    "materialize": "~0.97.0",
-    "font-awesome": "~4.4.0",
-    "normalize-css": "~3.0.3",
-    "sweetalert": "~1.0.1",
+    "Materialize": "materialize#~0.97.1",
     "angular-cookies": "~1.4.3",
-    "angular-sanitize": "~1.4.3"
+    "angular-sanitize": "~1.4.3",
+    "angularjs": "~1.4.2",
+    "font-awesome": "~4.4.0",
+    "jquery": "~2.1.4",
+    "materialize": "~0.97.1",
+    "normalize-css": "~3.0.3",
+    "sweetalert": "~1.0.1"
   }
 }

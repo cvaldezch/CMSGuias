@@ -12,6 +12,11 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
     rgba: ""
   angular.element(document).ready ->
     $('.modal-trigger').leanModal()
+    $(".datepicker").pickadate
+      container: 'body'
+      format: 'yyyy-mm-dd'
+      selectMonths: true
+      selectYears: true
     return
   $scope.$watch 'group.colour', (val, old) ->
     $scope.group.rgba = hextorbga(val, 0.5)
@@ -25,11 +30,13 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
       data: $.param data
     .success (response) ->
       if response.status
+        $scope.listGroup()
         swal
           title: "Felicidades"
           text: "se guardo los datos correctamente.",
           type: "success"
           timer: 2600
+        $("#mgroup").closeModal()
         return
       else
         swal "Error", "no se a guardado los datos. #{response.raise}", "error"
@@ -52,8 +59,6 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
           return
     return
   $scope.showESG = ->
-    console.log this.$parent.x.fields.colour
-    console.log  rgbtohex this.$parent.x.fields.colour
     $scope.group =
       sgroup_id: this.$parent.x.pk
       name: this.$parent.x.fields.name
@@ -61,19 +66,27 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
       observation: this.$parent.x.fields.observation
     $("#mgroup").openModal()
     return
-  $scope.editGroup = ->
+  $scope.saveArea = ->
     data =
-      saveg: true
-    $http
+      saveds: true
+    $http.post
       url: ''
-      data: $.param data
       method: 'post'
+      data: $.param data
     .success (response) ->
       if response.status
+        $("#mdsector").closeModal()
       else
-        swal "Error", "Error al guardar los datos. #{response.raise}", "error"
-        return
+        swal "Error!", "No se guardo los datos.", "error"
     return
+  $scope.datechk = ->
+    start = $scope.dsector.datestart.split("-")
+    end = $scope.dsector.dateend.split("-")
+    start = new Date start[0], start[1], start[2]
+    end new Date end[0], end[1], end[2]
+    if end < start
+      console.log "fecha de termino menor a la de inicio"
+      return
   return
 
 hextorbga = (hex, alf=1) ->

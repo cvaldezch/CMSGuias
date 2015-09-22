@@ -56,3 +56,15 @@ class SGroupForm(forms.ModelForm):
             'dateend',
             'flag'
         }
+
+
+class DSectorForm(forms.ModelForm):
+    class Meta:
+        model = DSector
+        exclude = {
+            'dsector_id',
+            'project',
+            'register',
+            'observation',
+            'flag',
+        }
