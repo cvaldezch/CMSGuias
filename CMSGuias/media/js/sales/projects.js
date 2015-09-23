@@ -210,6 +210,7 @@ app.controller('proCtrl', function($scope, $http, $cookies) {
   $scope.pprojects = false;
   $scope.tadmin = false;
   angular.element(document).ready(function() {
+    $scope.lCustomersCbox();
     $scope.listCustomers();
     $scope.permission = angular.element("[name=permission]").val();
     if ($scope.permission === 'administrator' || $scope.permission === 'ventas') {
@@ -238,6 +239,21 @@ app.controller('proCtrl', function($scope, $http, $cookies) {
         }, 400);
       } else {
         console.log("No result. " + response.raise);
+      }
+    });
+  };
+  $scope.lCustomersCbox = function() {
+    var params;
+    params = {
+      lCustomers: 'true'
+    };
+    $http.get('', {
+      params: params
+    }).success(function(response) {
+      if (response.status) {
+        $scope.ccustomers = response.customers;
+      } else {
+        swal("Error", "No hay clientes para cargar.", "error");
       }
     });
   };

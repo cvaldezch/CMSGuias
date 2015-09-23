@@ -76,6 +76,13 @@ class ProjectsList(JSONResponseMixin, TemplateView):
         area = request.user.get_profile().empdni.charge.area.lower()
         if request.is_ajax():
             try:
+                if 'lCustomers' in request.GET:
+                    context['customers'] = simplejson.loads(
+                                            serializers.serialize(
+                                                'json',
+                                                Cliente.objects.filter(
+                                                    flag=True)))
+                    context['status'] = True
                 if 'getCustomers' in request.GET:
                     if area == 'ventas' or area == 'administrator':
                         proyectos = Proyecto.objects.filter(

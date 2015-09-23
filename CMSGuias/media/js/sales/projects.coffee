@@ -187,6 +187,7 @@ app.controller 'proCtrl', ($scope, $http, $cookies) ->
     $scope.pprojects = false
     $scope.tadmin = false
     angular.element(document).ready ->
+        $scope.lCustomersCbox()
         $scope.listCustomers()
         $scope.permission = angular.element("[name=permission]").val()
         if $scope.permission is 'administrator' or $scope.permission is 'ventas'
@@ -212,6 +213,18 @@ app.controller 'proCtrl', ($scope, $http, $cookies) ->
                     return
                 else
                     console.log "No result. #{response.raise}"
+                    return
+        return
+    $scope.lCustomersCbox = ->
+        params =
+            lCustomers: 'true'
+        $http.get '', params: params
+            .success (response) ->
+                if response.status
+                    $scope.ccustomers = response.customers
+                    return
+                else
+                    swal "Error", "No hay clientes para cargar.", "error"
                     return
         return
     $scope.getProjects = ->

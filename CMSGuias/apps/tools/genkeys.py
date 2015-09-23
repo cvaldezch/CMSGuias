@@ -12,7 +12,7 @@ from CMSGuias.apps.logistica.models import Cotizacion, Compra, ServiceOrder
 from CMSGuias.apps.ventas.models import Proyecto
 from CMSGuias.apps.home.models import Brand, Model, GroupMaterials, TypeGroup
 from CMSGuias.apps.operations.models import (
-    Deductive, Letter, PreOrders, SGroup)
+    Deductive, Letter, PreOrders, SGroup, DSector)
 from CMSGuias.apps.ventas.budget.models import AnalysisGroup, Analysis, Budget
 
 
@@ -417,7 +417,6 @@ def generateBudget():
 
 def genSGroup(pro=None, sec=None):
     try:
-        print pro, sec
         row = SGroup.objects.filter(
                 project_id=pro, sector_id=sec).order_by('sgroup_id')
         if row:
@@ -428,3 +427,17 @@ def genSGroup(pro=None, sec=None):
             return '%s%s' % (pro, 'SG0001')
     except ObjectDoesNotExist:
         return '%s%s' % (pro, 'SG0001')
+
+
+def genDSector(pro, group=None):
+    try:
+        raw = DSector.objects.filter(
+                sgroup_id=group).order_by('-register')
+        if raw:
+            raw = raw[0]
+            code = int(raw.dsector_id[7:][8:])
+            return '%s%s%s' % (pro, group, 'DS{:0>3d}'.format(code + 1))
+        else:
+            return '%s%s%s' % (pro, group, 'DS001')
+    except ObjectDoesNotExist:
+        return '%s%s%s' % (pro, group, 'DS001')

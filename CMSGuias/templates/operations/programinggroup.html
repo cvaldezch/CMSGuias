@@ -188,11 +188,12 @@
         <button type="button" class="btn green lighten-1">
           <i class="fa fa-save"></i>
           <span>Guardar Cambios</span>
-        </button>
+        </button>=
         <div class="row">
           <div class="col l6 m6 s12 input-field">
             <input type="text" ng-model="dsector.name" ng-value="dsector.name">
             <label ng-class="{'active':dsector.name}">Nombre</label>
+            <input type="hidden" ng-model="dsector.dsector_id">
           </div>
           <div class="col l3 m3 s12 input-field">
             <input type="text" class="datepicker" ng-model="dsector.datestart">
@@ -201,6 +202,14 @@
           <div class="col l3 m3 s12 input-field">
             <input type="text" class="datepicker" ng-model="dsector.dateend" ng-change="datechk()">
             <label ng-class="{'active':dsector.dateend}">Fecha Termino</label>
+          </div>
+          <div class="col l6 m6 s12 input-field">
+            <label ng-class="{'active':dsector.sgroup_id}">Grupo</label>
+            {% verbatim %}
+              <select class="browser-default" ng-model="dsector.sgroup_id">
+                <option ng-repeat="x in sglist" ng-value="{{x.pk}}">{{x.fields.name}}</option>
+              </select>
+            {% endverbatim %}
           </div>
           <div class="col l6 m6 s12 input-field">
             <textarea rows="4" class="materialize-textarea" ng-model="dsector.description"></textarea>

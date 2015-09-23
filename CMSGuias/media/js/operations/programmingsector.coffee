@@ -17,9 +17,23 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
       format: 'yyyy-mm-dd'
       selectMonths: true
       selectYears: true
+    $scope.lgroup()
+    $(".modal").css "max-height", "80%"
     return
   $scope.$watch 'group.colour', (val, old) ->
     $scope.group.rgba = hextorbga(val, 0.5)
+    return
+  $scope.lgroup = ->
+    data =
+      'listg': true
+    $http.get '', params: data
+      .success (response) ->
+        if response.status
+          $scope.sglist = response.sg
+          return
+        else
+          swal "Error!", "No se han obtenido datos. #{response.raise}", "error"
+          return
     return
   $scope.saveGroup = ->
     data = $scope.group
@@ -52,6 +66,7 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
           $("#mlgroup").openModal()
           setTimeout ->
             $('.dropdown-button').dropdown()
+            return
           , 800
           return
         else
@@ -67,8 +82,8 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
     $("#mgroup").openModal()
     return
   $scope.saveArea = ->
-    data =
-      saveds: true
+    data = $scope.dsector
+    data.saveds = true
     $http.post
       url: ''
       method: 'post'
@@ -83,7 +98,7 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
     start = $scope.dsector.datestart.split("-")
     end = $scope.dsector.dateend.split("-")
     start = new Date start[0], start[1], start[2]
-    end new Date end[0], end[1], end[2]
+    end = new Date end[0], end[1], end[2]
     if end < start
       console.log "fecha de termino menor a la de inicio"
       return

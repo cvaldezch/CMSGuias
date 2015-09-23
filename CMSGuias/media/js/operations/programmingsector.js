@@ -20,10 +20,27 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
       selectMonths: true,
       selectYears: true
     });
+    $scope.lgroup();
+    $(".modal").css("max-height", "80%");
   });
   $scope.$watch('group.colour', function(val, old) {
     $scope.group.rgba = hextorbga(val, 0.5);
   });
+  $scope.lgroup = function() {
+    var data;
+    data = {
+      'listg': true
+    };
+    $http.get('', {
+      params: data
+    }).success(function(response) {
+      if (response.status) {
+        $scope.sglist = response.sg;
+      } else {
+        swal("Error!", "No se han obtenido datos. " + response.raise, "error");
+      }
+    });
+  };
   $scope.saveGroup = function() {
     var data;
     data = $scope.group;
@@ -59,7 +76,7 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
         $scope.sglist = response.sg;
         $("#mlgroup").openModal();
         setTimeout(function() {
-          return $('.dropdown-button').dropdown();
+          $('.dropdown-button').dropdown();
         }, 800);
       } else {
         swal("Error!", "No se han obtenido datos. " + response.raise, "error");
@@ -77,9 +94,8 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
   };
   $scope.saveArea = function() {
     var data;
-    data = {
-      saveds: true
-    };
+    data = $scope.dsector;
+    data.saveds = true;
     $http.post({
       url: '',
       method: 'post',
@@ -97,7 +113,7 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
     start = $scope.dsector.datestart.split("-");
     end = $scope.dsector.dateend.split("-");
     start = new Date(start[0], start[1], start[2]);
-    end(new Date(end[0], end[1], end[2]));
+    end = new Date(end[0], end[1], end[2]);
     if (end < start) {
       console.log("fecha de termino menor a la de inicio");
     }

@@ -180,6 +180,29 @@ class ProgramingProject(JSONResponseMixin, View):
                         context['status'] = True
                     else:
                         context['status'] = False
+                if 'saveds' in request.POST:
+                    # print request.POST
+                    try:
+                        if 'dsector_id' in request.POST:
+                            ds = DSector.objects.get(
+                                    dsector_id=request.POST['dsector_id'])
+                            form = DSectorForm(request.POST, instance=ds)
+                        else:
+                            form = DSectorForm(request.POST)
+                    except ObjectDoesNotExist as e:
+                        form = DSectorForm(request.POST)
+                    if form.is_valid():
+                        if 'dsector_id' not in request.POST:
+                            add = form.save(commit=False)
+                            key = genkeys.genDSector(
+                                    kwargs['pro'],
+                                    request.POST['sgroup_id'])
+                            add.project_id = kwargs['pro']
+                            add.save()
+                        else:
+                            form.save()
+                    else:
+                        context['status'] = False
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

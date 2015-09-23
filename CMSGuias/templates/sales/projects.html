@@ -55,12 +55,16 @@
                     <div class="input-group input-group-sm">
                     {% verbatim %}
                       <select name="ruccliente" id="ruccliente" class="form-control input-sm">
-                        <option ng-repeat="x in customers" value="{{x.fields.ruccliente.pk }}">{{x.fields.ruccliente.fields.razonsocial}}</option>
+                        <option ng-repeat="x in ccustomers" value="{{x.pk }}">{{x.fields.razonsocial}}</option>
                       </select>
                     {% endverbatim %}
                       <span class="input-group-btn">
-                        <button class="btn btn-sm btn-add-customers grey lighten-5 grey-text text-darken-3"><span class="glyphicon glyphicon-plus"></span></button>
-                        <button class="btn btn-sm grey lighten-5 grey-text text-darken-3"><span class="glyphicon glyphicon-refresh"></span></button>
+                        <button type="button" class="btn btn-sm btn-add-customers grey lighten-5 grey-text text-darken-3">
+                          <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+                        <button type="button" class="btn btn-sm grey lighten-5 grey-text text-darken-3" ng-click="lCustomersCbox()">
+                          <span class="glyphicon glyphicon-refresh"></span>
+                        </button>
                       </span>
                     </div>
                   </div>
@@ -261,7 +265,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr data-ng-repeat="r in allprojects | filter:sprojects">
+              <tr data-ng-repeat="r in allprojects | filter:sprojects" ng-class="{'amber lighten-5': r.fields.status == 'AC'}">
                 <td>{{$index+1}}</td>
                 <td>
                   <a href="manager/{{r.pk}}/" class="btn waves-effect waves-teal btn-flat text-black secondary-content">
