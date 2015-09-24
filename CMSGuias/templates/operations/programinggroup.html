@@ -185,10 +185,10 @@
           <i class="fa fa-times"></i>
           <span>Cerrar</span>
         </button>
-        <button type="button" class="btn green lighten-1">
+        <button type="button" class="btn green lighten-1" ng-click="saveArea()">
           <i class="fa fa-save"></i>
           <span>Guardar Cambios</span>
-        </button>=
+        </button>
         <div class="row">
           <div class="col l6 m6 s12 input-field">
             <input type="text" ng-model="dsector.name" ng-value="dsector.name">
@@ -204,10 +204,10 @@
             <label ng-class="{'active':dsector.dateend}">Fecha Termino</label>
           </div>
           <div class="col l6 m6 s12 input-field">
-            <label ng-class="{'active':dsector.sgroup_id}">Grupo</label>
+            <label ng-class="{'active':dsector.sgroup}">Grupo</label>
             {% verbatim %}
-              <select class="browser-default" ng-model="dsector.sgroup_id">
-                <option ng-repeat="x in sglist" ng-value="{{x.pk}}">{{x.fields.name}}</option>
+              <select class="browser-default" ng-model="dsector.sgroup" name="sgroup">
+                <option ng-repeat="x in sglist" value="{{x.pk}}">{{x.fields.name}}</option>
               </select>
             {% endverbatim %}
           </div>
@@ -218,7 +218,7 @@
           <div class="col l6 m6 s12 input-field file-field">
             <div class="btn light-blue darken-3">
               <span>Plano</span>
-              <input type="file" ng-model="dsector.plane" accept="application/pdf">
+              <input type="file" ng-model="dsector.plane" name="plane" accept="application/pdf">
             </div>
             <input type="text" class="file-path validate">
           </div>
@@ -227,6 +227,7 @@
     </div>
   </div>
 </div>
+{% csrf_token %}
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/operations/programmingsector.js"></script>

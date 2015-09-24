@@ -92,7 +92,10 @@ emails = [
     'ssoma1@icrperusa.com',
     'jesus.esteban@icrperusa.com',
     'operaciones1@icrperusa.com',
-]
+    'operaciones2@icrperusa.com',
+    'operaciones3@icrperusa.com',
+    'calidad@icrperusa.com',
+    'mauromartinezicr@gmail.com']
 
 # Type of project
 typeProject = {

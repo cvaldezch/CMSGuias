@@ -186,23 +186,30 @@ class ProgramingProject(JSONResponseMixin, View):
                         if 'dsector_id' in request.POST:
                             ds = DSector.objects.get(
                                     dsector_id=request.POST['dsector_id'])
-                            form = DSectorForm(request.POST, instance=ds)
+                            form = DSectorForm(
+                                    request.POST, request.FILES, instance=ds)
                         else:
-                            form = DSectorForm(request.POST)
+                            form = DSectorForm(request.POST, request.FILES)
                     except ObjectDoesNotExist as e:
-                        form = DSectorForm(request.POST)
+                        form = DSectorForm(request.POST, request.FILES)
+                    print form
+                    print form.is_valid()
                     if form.is_valid():
                         if 'dsector_id' not in request.POST:
                             add = form.save(commit=False)
                             key = genkeys.genDSector(
                                     kwargs['pro'],
-                                    request.POST['sgroup_id'])
+                                    request.POST['sgroup'])
+                            print key, len(key)
+                            add.dsector_id = key.strip()
                             add.project_id = kwargs['pro']
                             add.save()
                         else:
                             form.save()
+                        context['status'] = True
                     else:
                         context['status'] = False
+                        context['raise'] = 'Fields empty'
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

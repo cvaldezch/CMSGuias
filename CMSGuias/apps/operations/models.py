@@ -268,6 +268,12 @@ class SGroup(models.Model):
 
 
 class DSector(models.Model):
+    def url(self, filename):
+        return 'storage/projects/%s/%s/%s/%s.pdf' % (
+                self.project.registrado.strftime('%Y'),
+                self.project_id,
+                self.sgroup_id,
+                self.dsector_id)
 
     dsector_id = models.CharField(
                                     primary_key=True,
@@ -277,9 +283,7 @@ class DSector(models.Model):
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
     name = models.CharField(max_length=255)
     plane = models.FileField(
-                            upload_to='storage/projects/%s/%s.pdf' % (
-                                project,
-                                dsector_id),
+                            upload_to=url,
                             max_length=200)
     register = models.DateTimeField(auto_now_add=True)
     datestart = models.DateField(null=True, blank=True)

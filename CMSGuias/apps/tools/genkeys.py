@@ -436,8 +436,8 @@ def genDSector(pro, group=None):
         if raw:
             raw = raw[0]
             code = int(raw.dsector_id[7:][8:])
-            return '%s%s%s' % (pro, group, 'DS{:0>3d}'.format(code + 1))
+            return '%s%s' % (group, 'DS{:0>3d}'.format(code + 1))
         else:
-            return '%s%s%s' % (pro, group, 'DS001')
+            return '%s%s' % (group, 'DS001')
     except ObjectDoesNotExist:
-        return '%s%s%s' % (pro, group, 'DS001')
+        return '%s%s' % (group, 'DS001')

@@ -84,15 +84,28 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
   $scope.saveArea = ->
     data = $scope.dsector
     data.saveds = true
-    $http.post
+    form = new FormData()
+    for k, v of data
+      console.log "#{k} #{v}"
+      form.append k, v
+    if $("[name=plane]").get(0).files.length > 0
+      form.append "plane", $("[name=plane]").get(0).files[0]
+    form.append "csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val()
+    $.ajax
       url: ''
-      method: 'post'
-      data: $.param data
-    .success (response) ->
-      if response.status
-        $("#mdsector").closeModal()
-      else
-        swal "Error!", "No se guardo los datos.", "error"
+      data: form
+      type: 'post'
+      dataType: 'json'
+      contentType: false
+      cache: false
+      processData: false
+      success: (response) ->
+        if response.status
+          $("#mdsector").closeModal()
+          return
+        else
+          swal "Error!", "No se guardo los datos. #{response.raise}", "error"
+          return
     return
   $scope.datechk = ->
     start = $scope.dsector.datestart.split("-")
