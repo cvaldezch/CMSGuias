@@ -930,6 +930,7 @@ class SectorManage(JSONResponseMixin, View):
                             ))
                             context['status'] = True
                         else:
+                            context['details'] = list()
                             context['status'] = False
                             context['raise'] = ('No se han encontrado '
                                                 'materiales sin precios')

@@ -2049,40 +2049,57 @@ approvedModify = function(event) {
   
   console.table tblb
    */
-  var data;
+  var context, data;
   data = new Object;
   data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken").val();
   data.approvedModifyFinal = true;
-  $().toastmessage("showToast", {
-    text: "Seguro(a) que desea aprobar las modificaciones de los materiales?",
-    sticky: true,
-    type: "confirm",
-    buttons: [
-      {
-        value: "Si"
-      }, {
-        value: "No"
-      }
-    ],
-    success: function(result) {
-      if (result === "Si") {
-        $.post("", data, function(response) {
-          if (response.status) {
-            swal({
-              title: "Felicidades!",
-              text: "Se han realizado los cambios solicitados.",
-              type: "success",
-              timer: 2600,
-              showConfirmButton: false
-            });
-            setTimeout(function() {
-              location.reload();
-            }, 2600);
-          } else {
-            $().toastmessage("showErrorToast", "Error al guardar los cambios solicitados. " + response.raise);
+  context = new Object;
+  context.withoutprices = true;
+  $.getJSON("", context, function(response) {
+    var approved;
+    approved = false;
+    console.log("materials witout prices");
+    console.log(response.details.length);
+    if (response.details.length) {
+      approved = false;
+    } else {
+      approved = true;
+    }
+    if (approved) {
+      $().toastmessage("showToast", {
+        text: "Seguro(a) que desea aprobar las modificaciones de los materiales?",
+        sticky: true,
+        type: "confirm",
+        buttons: [
+          {
+            value: "Si"
+          }, {
+            value: "No"
           }
-        });
-      }
+        ],
+        success: function(result) {
+          if (result === "Si") {
+            $.post("", data, function(response) {
+              if (response.status) {
+                swal({
+                  title: "Felicidades!",
+                  text: "Se han realizado los cambios solicitados.",
+                  type: "success",
+                  timer: 2600,
+                  showConfirmButton: false
+                });
+                setTimeout(function() {
+                  location.reload();
+                }, 2600);
+              } else {
+                $().toastmessage("showErrorToast", "Error al guardar los cambios solicitados. " + response.raise);
+              }
+            });
+          }
+        }
+      });
+    } else {
+      swal("Alerta!", "existen materiales sin precio, solicite su ingreso para ser aprobado. " + response.raise, "warning");
     }
   });
 };

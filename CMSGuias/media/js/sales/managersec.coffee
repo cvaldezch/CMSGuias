@@ -1918,32 +1918,46 @@ approvedModify = (event) ->
     data.approvedModifyFinal = true
     # data.meter = JSON.stringify tblb
     # data.history = JSON.stringify tbla
-
-    $().toastmessage "showToast",
-        text: "Seguro(a) que desea aprobar las modificaciones de los materiales?"
-        sticky: true
-        type: "confirm"
-        buttons: [{value: "Si"}, {value: "No"}]
-        success: (result) ->
-            if result is "Si"
-                $.post "", data, (response) ->
-                    if response.status
-                        # $().toastmessage "showNoticeToast", "Se a realizado los cambios"
-                        swal
-                            title: "Felicidades!"
-                            text: "Se han realizado los cambios solicitados."
-                            type: "success"
-                            timer: 2600
-                            showConfirmButton: false
-                        setTimeout ->
-                            location.reload()
-                            return
-                        , 2600
+    context = new Object
+    context.withoutprices = true
+    $.getJSON "", context, (response) ->
+        approved = false
+        console.log "materials witout prices"
+        console.log response.details.length
+        if response.details.length
+            approved = false
+        else
+            approved = true
+        if approved
+            $().toastmessage "showToast",
+                text: "Seguro(a) que desea aprobar las modificaciones de los materiales?"
+                sticky: true
+                type: "confirm"
+                buttons: [{value: "Si"}, {value: "No"}]
+                success: (result) ->
+                    if result is "Si"
+                        $.post "", data, (response) ->
+                            if response.status
+                                # $().toastmessage "showNoticeToast", "Se a realizado los cambios"
+                                swal
+                                    title: "Felicidades!"
+                                    text: "Se han realizado los cambios solicitados."
+                                    type: "success"
+                                    timer: 2600
+                                    showConfirmButton: false
+                                setTimeout ->
+                                    location.reload()
+                                    return
+                                , 2600
+                                return
+                            else
+                                $().toastmessage "showErrorToast", "Error al guardar los cambios solicitados. #{response.raise}"
+                                return
                         return
-                    else
-                        $().toastmessage "showErrorToast", "Error al guardar los cambios solicitados. #{response.raise}"
-                        return
-                return
+            return
+        else
+            swal "Alerta!", "existen materiales sin precio, solicite su ingreso para ser aprobado. #{response.raise}", "warning"
+            return
     return
 
 # this part is for generate deductive global
