@@ -18,6 +18,7 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
       selectMonths: true
       selectYears: true
     $scope.lgroup()
+    $scope.getDSectorList()
     $(".modal").css "max-height", "80%"
     return
   $scope.$watch 'group.colour', (val, old) ->
@@ -115,6 +116,18 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
     if end < start
       console.log "fecha de termino menor a la de inicio"
       return
+  $scope.getDSectorList = ->
+    data =
+      'listds': true
+    $http.get '', params: data
+      .success (response) ->
+        if response.status
+          $scope.dslist = response.ds
+          return
+        else
+          swal "Error!", "No se han obtenidos datos. #{response.raise}", "error"
+          return
+    return
   return
 
 hextorbga = (hex, alf=1) ->

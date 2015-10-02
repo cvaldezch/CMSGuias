@@ -21,6 +21,7 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
       selectYears: true
     });
     $scope.lgroup();
+    $scope.getDSectorList();
     $(".modal").css("max-height", "80%");
   });
   $scope.$watch('group.colour', function(val, old) {
@@ -132,6 +133,21 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
     if (end < start) {
       console.log("fecha de termino menor a la de inicio");
     }
+  };
+  $scope.getDSectorList = function() {
+    var data;
+    data = {
+      'listds': true
+    };
+    $http.get('', {
+      params: data
+    }).success(function(response) {
+      if (response.status) {
+        $scope.dslist = response.ds;
+      } else {
+        swal("Error!", "No se han obtenidos datos. " + response.raise, "error");
+      }
+    });
   };
 });
 

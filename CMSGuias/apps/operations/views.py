@@ -123,8 +123,16 @@ class ProgramingProject(JSONResponseMixin, View):
                     context['sg'] = json.loads(serializers.serialize(
                                                                 'json', sg))
                     context['status'] = True
-                # if '':
-                #     pass
+                if 'listds' in request.GET:
+                    ds = DSector.objects.filter(
+                            project_id=kwargs['pro'],
+                            sgroup__subproject_id=kwargs[
+                                'sub'] if unicode(kwargs[
+                                    'sub']) != '' else None,
+                            sgroup__sector_id=kwargs['sec']).order_by('name')
+                    context['ds'] = json.loads(serializers.serialize(
+                                        'json', ds))
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = Falses
@@ -181,7 +189,6 @@ class ProgramingProject(JSONResponseMixin, View):
                     else:
                         context['status'] = False
                 if 'saveds' in request.POST:
-                    # print request.POST
                     try:
                         if 'dsector_id' in request.POST:
                             ds = DSector.objects.get(

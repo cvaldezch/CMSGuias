@@ -286,8 +286,8 @@ class DSector(models.Model):
                             upload_to=url,
                             max_length=200)
     register = models.DateTimeField(auto_now_add=True)
-    datestart = models.DateField(null=True, blank=True)
-    dateend = models.DateField(null=True, blank=True)
+    datestart = models.DateField()
+    dateend = models.DateField()
     description = models.TextField(null=True, blank=True)
     observation = models.TextField(null=True, blank=True)
     flag = models.BooleanField(default=True)

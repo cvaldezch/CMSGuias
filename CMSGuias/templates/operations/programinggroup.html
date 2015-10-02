@@ -49,11 +49,12 @@
   <div class="card-panel">
     <div class="card-content">
       <div class="row">
-        <div class="col l3 m6 s12" >
+      {% verbatim %}
+        <div class="col l3 m6 s12" ng-repeat="x in dslist">
           <div class="card">
             <div class="card-content">
-              <h4>Title</h4>
-              <p>Description</p>
+              <strong>{{x.fields.name}}</strong>
+              <p>{{x.fields.description}}</p>
               <div class="row">
                 <div class="col l6">
                   <div class="progress red lighten-4">
@@ -61,15 +62,19 @@
                   </div>
                 </div>
                 <div class="col l6">
-                  $
+                  <span>$</span>
                 </div>
               </div>
-            </div>
-            <div class="card-action">
-              <a href="#">This see details</a>
+              <div class="divider"></div>
+              <p>
+                <a class="red-text text-lighten-1"><i class="fa fa-trash"></i></a>
+                <a class="" href="#"><i class="fa fa-pencil"></i> EDITAR</a>
+                <a class="light-blue-text text-darken-1 right" href="#"><i class="fa fa-eye"></i> VER</a>
+              </p>
             </div>
           </div>
         </div>
+      {% endverbatim %}
       </div>
     </div>
   </div>
