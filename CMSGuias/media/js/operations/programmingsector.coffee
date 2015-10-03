@@ -37,6 +37,7 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
           return
     return
   $scope.saveGroup = ->
+    $("#mlgroup").closeModal()
     data = $scope.group
     data.saveg = true
     $http
@@ -45,13 +46,13 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
       data: $.param data
     .success (response) ->
       if response.status
-        $scope.listGroup()
         swal
           title: "Felicidades"
           text: "se guardo los datos correctamente.",
           type: "success"
           timer: 2600
         $("#mgroup").closeModal()
+        $scope.listGroup()
         return
       else
         swal "Error", "no se a guardado los datos. #{response.raise}", "error"
@@ -102,6 +103,7 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
       processData: false
       success: (response) ->
         if response.status
+          $scope.getDSectorList()
           $("#mdsector").closeModal()
           return
         else

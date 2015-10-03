@@ -40,37 +40,48 @@
         <i class="fa fa-plus"></i>
         <span>Agregar Area</span>
       </button>
-      <button type="button" class="btn green lighten-2">
+      <button type="button" class="btn green lighten-2" ng-model="dsfshow" ng-click="dsfshow=!dsfshow">
+        <i class="fa fa-search"></i>
+        <span>Buscar</span>
+      </button>
+      <button type="button" class="btn green lighten-2" ng-click="getDSectorList()">
         <i class="fa fa-refresh"></i>
         <span>Actualizar</span>
       </button>
+    </div>
+  </div>
+  <div class="card" ng-show="dsfshow">
+    <div class="card-content">
+      <i class="right fa fa-times" ng-click="dsfshow=false"></i>
+      <div class="input-field">
+        <i class="prefix fa fa-filter"></i>
+        <input type="text" ng-model="dsfilter">
+        <label>Buscar areas</label>
+      </div>
     </div>
   </div>
   <div class="card-panel">
     <div class="card-content">
       <div class="row">
       {% verbatim %}
-        <div class="col l3 m6 s12" ng-repeat="x in dslist">
+        <div class="col l3 m6 s12" ng-repeat="x in dslist | filter: dsfilter">
           <div class="card">
-            <div class="card-content">
+            <div class="card-content" style="background: {{x.fields.sgroup.fields.colour}}">
               <strong>{{x.fields.name}}</strong>
               <p>{{x.fields.description}}</p>
-              <div class="row">
-                <div class="col l6">
-                  <div class="progress red lighten-4">
-                    <div class="determinate red lighten-1" style="width: 70%"></div>
-                  </div>
-                </div>
-                <div class="col l6">
-                  <span>$</span>
-                </div>
-              </div>
-              <div class="divider"></div>
               <p>
-                <a class="red-text text-lighten-1"><i class="fa fa-trash"></i></a>
-                <a class="" href="#"><i class="fa fa-pencil"></i> EDITAR</a>
-                <a class="light-blue-text text-darken-1 right" href="#"><i class="fa fa-eye"></i> VER</a>
+                <div class="progress red lighten-4">
+                  <div class="determinate red lighten-1" style="width: 70%"></div>
+                </div>
               </p>
+              <p class="right-align">
+                <span class="right-align">$</span>
+              </p>
+            </div>
+            <div class="card-action">
+              <a class="red-text text-lighten-1" href="#"><i class="fa fa-trash"></i></a>
+              <a class="amber-text text-darken-1" href="#"><i class="fa fa-pencil"></i> EDITAR</a>
+              <a class="light-blue-text text-darken-1 right" href="#"><i class="fa fa-eye"></i> VER</a>
             </div>
           </div>
         </div>
@@ -137,6 +148,7 @@
         <!-- template -->
         <script type="text/ng-template" id="sgt.html">
           <td>{{$index+1}}</td>
+          <td><i style="background: {{x.fields.colour}}">&nbsp;&nbsp;&nbsp;&nbsp;</i></td>
           <td>{{x.pk}}</td>
           <td>{{x.fields.name}}</td>
           <td>{{x.fields.register|date:"dd/MM/y"}}</td>
@@ -165,6 +177,7 @@
           <thead>
             <tr>
               <th>#</th>
+              <th></th>
               <th>Código</th>
               <th>Descripción</th>
               <th>Registrado</th>
@@ -210,9 +223,11 @@
           </div>
           <div class="col l6 m6 s12 input-field">
             <label ng-class="{'active':dsector.sgroup}">Grupo</label>
+            <br>
+            <br>
             {% verbatim %}
               <select class="browser-default" ng-model="dsector.sgroup" name="sgroup">
-                <option ng-repeat="x in sglist" value="{{x.pk}}">{{x.fields.name}}</option>
+                <option ng-repeat="x in sglist" value="{{x.pk}}" style="background: {{x.fields.colour}}">{{x.fields.name}}</option>
               </select>
             {% endverbatim %}
           </div>

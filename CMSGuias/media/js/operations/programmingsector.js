@@ -44,6 +44,7 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
   };
   $scope.saveGroup = function() {
     var data;
+    $("#mlgroup").closeModal();
     data = $scope.group;
     data.saveg = true;
     $http({
@@ -52,7 +53,6 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
       data: $.param(data)
     }).success(function(response) {
       if (response.status) {
-        $scope.listGroup();
         swal({
           title: "Felicidades",
           text: "se guardo los datos correctamente.",
@@ -60,6 +60,7 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
           timer: 2600
         });
         $("#mgroup").closeModal();
+        $scope.listGroup();
       } else {
         swal("Error", "no se a guardado los datos. " + response.raise, "error");
       }
@@ -117,6 +118,7 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
       processData: false,
       success: function(response) {
         if (response.status) {
+          $scope.getDSectorList();
           $("#mdsector").closeModal();
         } else {
           swal("Error!", "No se guardo los datos. " + response.raise, "error");

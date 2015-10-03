@@ -131,7 +131,9 @@ class ProgramingProject(JSONResponseMixin, View):
                                     'sub']) != '' else None,
                             sgroup__sector_id=kwargs['sec']).order_by('name')
                     context['ds'] = json.loads(serializers.serialize(
-                                        'json', ds))
+                                        'json',
+                                        ds,
+                                        relations=('sgroup',)))
                     context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
