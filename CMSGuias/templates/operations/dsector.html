@@ -1,0 +1,37 @@
+{% extends "basemd.html" %}
+{% block title %}
+  Área Sector
+{% endblock title %}
+{% block menu %}
+    {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
+        {% include "menus/salesmd.html" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'logistica' %}
+        {% include "menus/logistics.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+        {% include "menus/operations.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'almacen' %}
+        {% include "menus/storage_menu.htm" %}
+    {% endif %}
+{% endblock menu %}
+{% block content %}
+<div ng-app="dsApp" ng-controller="dsCtrl">
+    <div class="card-panel">
+        <div class="card-content">
+            <h5>Area</h5>
+            <h5>
+                <small>{{ dsector.dsector_id }} {{ dsector.name }}</small>
+                <br>
+                <small>Fecha Inicio: {{ dsector.datestart }} al {{ dsector.dateend }}</small>
+            </h5>
+
+        </div>
+    </div>
+</div>
+{% csrf_token %}
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/operations/dsector.js"></script>
+{% endblock %}

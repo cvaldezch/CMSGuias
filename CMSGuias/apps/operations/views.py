@@ -223,3 +223,24 @@ class ProgramingProject(JSONResponseMixin, View):
                 context['raise'] = str(e)
                 context['status'] = False
             return self.render_to_json_response(context)
+
+
+class AreaProjectView(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                pass
+            except ObjectDoesNotExist as e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)
+        else:
+            try:
+                context['dsector'] = DSector.objects.get(
+                                        dsector_id=kwargs['area'])
+                return render(request, 'operations/dsector.html', context)
+            except TemplateDoesNotExist as e:
+                raise Http404(e)
