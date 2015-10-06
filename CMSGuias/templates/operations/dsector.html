@@ -23,13 +23,19 @@
             <h5>Area</h5>
             <h5>
                 <small>{{ dsector.dsector_id }} {{ dsector.name }}</small>
-                <br>
-                <small>Fecha Inicio: {{ dsector.datestart }} al {{ dsector.dateend }}</small>
             </h5>
-
+            <iframe class="materialboxed" src="{{ MEDIA_URL }}storage/projects/2015/PR15062/PR15062SG0001/PR15062SG0001DS001.pdf#zoom=50">
+                <i class="fa fa-zoom"></i>
+            </iframe>
         </div>
     </div>
 </div>
+<style type="text/css">
+    iframe{
+        background: rgba(80,80,80,.9);
+        padding-bottom: 20px;
+    }
+</style>
 {% csrf_token %}
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
