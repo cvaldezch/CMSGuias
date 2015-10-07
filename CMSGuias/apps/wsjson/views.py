@@ -52,20 +52,6 @@ def get_description_materials(request):
         return HttpResponse(
                 simplejson.dumps(context),
                 mimetype='application/json')
-    # try:
-    #     if request.method == 'GET':
-    #         try:
-    #             data = {'name':[]}
-    #             name = Materiale.objects.values('matnom').filter(matnom__icontains=request.GET['nom']).distinct('matnom').order_by('matnom')
-    #             i = 0
-    #             for x in name:
-    #                 data['name'].append({'matnom':x['matnom'],'id':i})
-    #                 i += 1
-    #         except ObjectDoesNotExist, e:
-    #             raise e
-    #         return HttpResponse(simplejson.dumps(data), mimetype='application/json')
-    # except ObjectDoesNotExist:
-    #     raise Http404
 
 
 def get_meter_materials(request):
@@ -82,15 +68,6 @@ def get_meter_materials(request):
         except ObjectDoesNotExist:
             context['status'] = False
         return JSONResponseMixin().render_to_json_response(context)
-    # try:
-    #     if request.method == 'GET':
-    #         data = { "list": [] }
-    #         meter = Materiale.objects.values('matmed').filter(matnom__contains=request.GET['matnom']).distinct('matnom','matmed').order_by('matmed')
-    #         for x in meter:
-    #             data["list"].append({ "matmed": x["matmed"] })
-    #         return HttpResponse(simplejson.dumps(data), mimetype="application/json")
-    # except ObjectDoesNotExist:
-    #     raise Http404
 
 
 def get_resumen_details_materiales(request):
@@ -119,22 +96,32 @@ def get_resumen_details_materiales(request):
                                                             p['purchase'], 2)
                                                 sale = round(p['sale'], 2)
                                                 quantity = p['quantity']
-                            else:
-                                try:
-                                    getprices = MetProject.objects.filter(materiales_id=x.materiales_id).distinct('proyecto__proyecto_id').order_by('proyecto__proyecto_id').reverse()
-                                    if getprices:
-                                        getprices = getprices[0]
-                                        purchase = getprices.precio
-                                        # max([p.precio for p in getprices])
-                                        sale = getprices.sales
-                                        # max([p.sales for p in getprices])
-                                    else:
-                                        purchase = 0
-                                        sale = 0
-                                except ObjectDoesNotExist, e:
+
+                        if purchase == 0 and sale == 0:
+                            try:
+                                getprices = MetProject.objects.filter(
+                                            materiales_id=x.materiales_id
+                                            ).distinct(
+                                                'proyecto__proyecto_id'
+                                                ).order_by(
+                                                    'proyecto__proyecto_id'
+                                                    ).reverse()
+                                if getprices:
+                                    getprices = getprices[0]
+                                    purchase = getprices.precio
+                                    # max([p.precio for p in getprices])
+                                    sale = getprices.sales
+                                    # max([p.sales for p in getprices])
+                                else:
                                     purchase = 0
                                     sale = 0
+                            except ObjectDoesNotExist, e:
+                                purchase = 0
+                                sale = 0
 
+                        # get list prices suggest
+                        # pp = MetProject.objects.filter(
+                        #         materiales_id=x.materiales_id).order_by('proyecto__registrado')
                         context['list'] = [
                             {
                                 'materialesid': x.materiales_id,

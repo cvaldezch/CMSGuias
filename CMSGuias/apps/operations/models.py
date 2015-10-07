@@ -290,6 +290,7 @@ class DSector(models.Model):
     dateend = models.DateField(null=True)
     description = models.TextField(null=True, blank=True)
     observation = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=2, default='PE', blank=True)
     flag = models.BooleanField(default=True)
 
     audit_log = AuditLog()
@@ -308,35 +309,12 @@ class DSMetrado(models.Model):
     model = models.ForeignKey(Model, to_field='model_id')
     quantity = models.FloatField()
     qorder = models.FloatField()
+    qguide = models.FloatField()
     ppurchase = models.DecimalField(max_digits=8, decimal_places=3, default=0)
     psales = models.DecimalField(max_digits=8, decimal_places=3, default=0)
     comment = models.TextField()
-    tag = models.BooleanField(default=True)
-
-    audit_log = AuditLog()
-
-    class Meta:
-        verbose_name = 'SMetrado'
-        verbose_name_plural = 'SMetrados'
-
-    def __unicode__(self):
-        return '%s %s %f %f' % (self.dsector_id,
-                                self.materials,
-                                self.quantity,
-                                self.ppurchase)
-
-
-class DSAMetrado(models.Model):
-    dsector_id = models.ForeignKey(DSector, to_field='dsector_id')
-    materials = models.ForeignKey(Materiale, to_field='materiales_id')
-    brand = models.ForeignKey(Brand, to_field='brand_id')
-    model = models.ForeignKey(Model, to_field='model_id')
-    quantity = models.FloatField()
-    qorder = models.FloatField()
-    ppurchase = models.DecimalField(max_digits=8, decimal_places=3, default=0)
-    psales = models.DecimalField(max_digits=8, decimal_places=3, default=0)
-    comment = models.TextField()
-    tag = models.BooleanField(default=True)
+    tag = models.CharField(max_length=1, default='0')
+    flag = models.BooleanField(default=True)
 
     audit_log = AuditLog()
 
@@ -359,10 +337,12 @@ class MMetrado(models.Model):
     model = models.ForeignKey(Model, to_field='model_id')
     quantity = models.FloatField()
     qorder = models.FloatField()
+    qguide = models.FloatField()
     ppurchase = models.DecimalField(max_digits=8, decimal_places=3, default=0)
     psales = models.DecimalField(max_digits=8, decimal_places=3, default=0)
     comment = models.TextField()
-    tag = models.BooleanField(default=True)
+    tag = models.CharField(max_length=1, default='0')
+    flag = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "MMetrado"

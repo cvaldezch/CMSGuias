@@ -118,7 +118,8 @@ class ProgramingProject(JSONResponseMixin, View):
                             project_id=kwargs['pro'],
                             subproject_id=kwargs[
                                 'sub'] if unicode(kwargs[
-                                    'sub']) != '' else None,
+                                    'sub']) != 'None' and unicode(kwargs[
+                                        'sub']) != '' else None,
                             sector_id=kwargs['sec']).order_by('name')
                     context['sg'] = json.loads(serializers.serialize(
                                                                 'json', sg))
@@ -128,7 +129,8 @@ class ProgramingProject(JSONResponseMixin, View):
                             project_id=kwargs['pro'],
                             sgroup__subproject_id=kwargs[
                                 'sub'] if unicode(kwargs[
-                                    'sub']) != '' else None,
+                                    'sub']) != 'None' and unicode(kwargs[
+                                        'sub']) != '' else None,
                             sgroup__sector_id=kwargs['sec']).order_by('name')
                     context['ds'] = json.loads(serializers.serialize(
                                         'json',

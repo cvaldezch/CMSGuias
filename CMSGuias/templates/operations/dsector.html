@@ -18,19 +18,193 @@
 {% endblock menu %}
 {% block content %}
 <div ng-app="dsApp" ng-controller="dsCtrl">
-    <div class="card-panel">
+    <div class="card-panel" style="background: {{ dsector.sgroup.colour }};">
         <div class="card-content">
-            <h5>Area</h5>
-            <h5>
-                <small>{{ dsector.dsector_id }} {{ dsector.name }}</small>
-            </h5>
-            <iframe class="materialboxed" src="{{ MEDIA_URL }}storage/projects/2015/PR15062/PR15062SG0001/PR15062SG0001DS001.pdf#zoom=50">
-                <i class="fa fa-zoom"></i>
-            </iframe>
+            <a  href="{% url 'sectorgroup_view' dsector.sgroup.project_id dsector.sgroup.subproject_id dsector.sgroup.sector_id %}" class="btn grey lighten-5 grey-text text-darken-3"><i class="fa fa-chevron-left"></i> REGRESAR</a>
+            <h4>
+                ÁREA {{ dsector.name }} {{ dsector.dsector_id }}
+                <br>
+                <small>
+                    GRUPO {{ dsector.sgroup.name }} {{ dsector.sgroup_id }}
+                </small>
+            </h4>
+            <div class="card-content">
+                <h5>
+                    <small><strong>Tiempo Estimado:</strong> {{ dsector.datestart }} <strong>al </strong> {{ dsector.dateend }}</small>
+                    <small>
+                        <p>
+                        <strong>Descripción: </strong>
+                            {{ dsector.description }}
+                        </p>
+                    </small>
+                </h5>
+                <iframe class="materialboxed" src="{{ MEDIA_URL }}storage/projects/2015/PR15062/PR15062SG0001/PR15062SG0001DS001.pdf#zoom=0&toolbar=1&navpanes=0" type="application/pdf">
+                    <i class="fa fa-zoom"></i>
+                </iframe>
+            </div>
+            <div class="card-action">
+                <div class="center-align">
+                    <span>85%</span>
+                    <div class="progress light-blue accent-2">
+                        <div class="determinate light-blue accent-4" style="width: 75%;"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+    <div class="card">
+        <div class="card-action">
+            {% if dsector.status == 'PE' %}
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3" ng-click="gui.smat=!gui.smat">
+                    <i class="fa fa-plus"></i>
+                    <span class="hide-on-med-and-down">Agregar</span>
+                </button>
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3">
+                    <i class="fa fa-clone"></i>
+                    <span class="hide-on-med-and-down">Copiar Lista</span>
+                </button>
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3">
+                    <i class="fa fa-trash"></i>
+                    <span class="hide-on-med-and-down">Eliminar Todo</span>
+                </button>
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3">
+                    <i class="fa fa-file-excel-o"></i>
+                    <span class="hide-on-med-and-down">Cargar Archivo</span>
+                </button>
+            {% endif %}
+        </div>
+        <div class="card-content" ng-model="gui.pac" ng-init="gui.pac=false" ng-show="gui.pac">
+
+        </div>
+        <div class="card-content" ng-model="gui.smat" ng-init="gui.smat=false" ng-show="gui.smat">
+            <div class="row">
+                <div class="col l12">
+                    <div class="col l6 m6 s12 input-field">
+                        <input type="text" name="description">
+                        <label>Descripción</label>
+                        <ul id="matname-global" class="matname-global"></ul>
+                    </div>
+                    <div class="col l6 m6 s12 input-field">
+                        <label ng-class="{'active': mat.measure != ''}">Medida</label>
+                        <select name="meter" class="browser-default" ng-model="mat.measure">
+                            <option value="" disabled selected></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col l6 m6 s12">
+                    <div class="col l6 m6 s12 input-field">
+                        <input type="text" maxlength="15" name="code" ng-model="mat.code">
+                        <label ng-class="{'active': mat.code}">Código</label>
+                    </div>
+                    <div class="input-field col l6 m6 s12">
+                        <input ng-value="" type="number" min="0" id="cantidad" name="cantidad" ng-model="mat.quantity" ng-init="mat.quantity=0">
+                        <label class="active" for="cantidad">Cantidad/Metrado</label>
+                    </div>
+                    <div class="input-field col l6 m6 s12">
+                        <input ng-value="" type="number" min="0" id="precio" name="precio" ng-model="mat.ppurchase" ng-init="mat.ppurchase=0">
+                        <label class="active" for="precio">Precio Compra</label>
+                    </div>
+                    <div class="input-field col l6 m6 s12">
+                        <input ng-value="" type="number" min="0" id="sales" name="sales" ng-model="mat.psales" ng-init="mat.psales=0">
+                        <label class="active" for="sales">Precio Venta</label>
+                    </div>
+                    <div class="col l6 m6 s12 input-field">
+                        <label class="active">Marca</label>
+                        <select class="browser-default" name="brand" ng-model="mat.brand">
+                            <option value="" disabled selected></option>
+                        </select>
+                    </div>
+                    <div class="col l6 m6 s12 input-field">
+                        <label class="active">Modelo</label>
+                        <select class="browser-default" name="model" ng-model="mat.model">
+                            <option value="" disabled selected></option>
+                        </select>
+                    </div>
+                    <div class="col l12 m12 s12 right-align">
+                        <br>
+                        <button type="button" class="btn light-blue darken-2" ng-click="saveMateial()">
+                            <i class="fa fa-floppy-o"></i>
+                            <span class="hide-on-med-and-down">GUARDAR</span>
+                        </button>
+                    </div>
+                    {# <div class="col l6 m6 s6"></div> #}
+                </div>
+                <div class="col l6 m6 s12">
+                    <table class="table responsive-table tb-details">
+                        <caption><strong>Resumén</strong></caption>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <table class="table responsive-table floatThead">
+        <thead class="amber lighten-4">
+            <tr>
+                <th class="center-align"></th>
+                <th class="center-align">Código</th>
+                <th>Descripción</th>
+                <th class="center-align">Marca</th>
+                <th class="center-align">Modelo</th>
+                <th class="center-align">Unidad</th>
+                <th class="right-align">Cantidad Vendida</th>
+                <th class="right-align">Pendiente</th>
+                <th class="right-align">Enviada</th>
+                <th class="right-align">Compra</th>
+                <th class="right-align">Venta</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 </div>
 <style type="text/css">
+    .matname-global {
+      border-radius: 4px;
+      max-height: 22em;
+      padding-left: 0;
+      margin-bottom: 0;
+      margin-top: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      z-index: 0;
+    }
+    .matname-global li {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      display: block;
+      margin-bottom: -1px;
+      padding: 2px 2px;
+      position: relative;
+    }
+    .matname-global li a {
+      cursor: pointer;
+      font-family: Arial sans-serif Helvetica;
+      font-size: 12px;
+      text-decoration: none;
+      width: 100%;
+    }
+    .matname-global li a:hover {
+      color: #000;
+    }
+    .matname-global li:first-child {
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+    }
+    .matname-global li:last-child {
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 4px;
+    }
+    .matname-global .item-selected {
+      background-color: #ddd;
+      color: #000;
+    }
+    .matname-global li:hover,
+    .matname-global li:hover a {
+      background-color: #ddd;
+      color: #000;
+    }
     iframe{
         background: rgba(80,80,80,.9);
         padding-bottom: 20px;
@@ -39,5 +213,8 @@
 {% csrf_token %}
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/jquery.floatThead/dist/jquery.floatThead.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/getMaterials.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/operations/dsector.js"></script>
 {% endblock %}
