@@ -22,6 +22,7 @@ from CMSGuias.apps.home.models import *
 from CMSGuias.apps.ventas.models import (
         Proyecto, Sectore, Subproyecto, Metradoventa)
 from CMSGuias.apps.operations.models import MetProject
+from CMSGuias.apps.logistica.models import DetCompra
 from CMSGuias.apps.tools import uploadFiles, globalVariable, search, genkeys
 
 
@@ -120,8 +121,20 @@ def get_resumen_details_materiales(request):
                                 sale = 0
 
                         # get list prices suggest
-                        # pp = MetProject.objects.filter(
-                        #         materiales_id=x.materiales_id).order_by('proyecto__registrado')
+                        pc = MetProject.objects.filter(
+                                materiales_id=x.materiales_id).order_by(
+                                    '-proyecto__registrado')[:5]
+
+                        if not pc:
+                            pp = DetCompra.objects.filter(
+                                    materiales_id=x.materiales_id).order_by(
+                                        '-compra__registrado')[:5]
+                            context['sales'] = [
+                                {'compra': s.precio} for s in pp]
+                        else:
+                            context['purchase'] = [
+                                {'purchase': p.precio, 'sales': float(p.sales)}
+                                for p in pc]
                         context['list'] = [
                             {
                                 'materialesid': x.materiales_id,
@@ -146,23 +159,29 @@ class SearchBrand(JSONResponseMixin, DetailView):
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
-            context['brand'] = [{'brand_id': x.brand_id, 'brand': x.brand} for x in Brand.objects.filter(flag=True).order_by('brand')]
+            context['brand'] = [
+                {'brand_id': x.brand_id, 'brand': x.brand}
+                for x in Brand.objects.filter(flag=True).order_by('brand')]
             context['status'] = True
         except ObjectDoesNotExist, e:
             context['raise'] = e.__str__()
             context['status'] = False
         return self.render_to_json_response(context)
 
+
 class SearchModel(JSONResponseMixin, DetailView):
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
-            context['model'] = [{'model_id': x.model_id, 'model': x.model} for x in Model.objects.filter(flag=True).order_by('model')]
+            context['model'] = [
+                {'model_id': x.model_id, 'model': x.model}
+                for x in Model.objects.filter(flag=True).order_by('model')]
             context['status'] = True
         except ObjectDoesNotExist, e:
             context['raise'] = e.__str__()
             context['status'] = False
         return self.render_to_json_response(context)
+
 
 class GetDetailsMaterialesByCode(DetailView):
     def get(self, request, *args, **kwargs):
@@ -186,7 +205,12 @@ class GetDetailsMaterialesByCode(DetailView):
                                         quantity = p['quantity']
                     else:
                         try:
-                            getprices = MetProject.objects.filter(materiales_id=mat['materiales_id']).distinct('proyecto__proyecto_id').order_by('proyecto__proyecto_id').reverse()
+                            getprices = MetProject.objects.filter(
+                                            materiales_id=mat['materiales_id']
+                                        ).distinct(
+                                            'proyecto__proyecto_id'
+                                        ).order_by(
+                                            'proyecto__proyecto_id').reverse()
                             if getprices:
                                 getprices = getprices[0]
                                 purchase = getprices.precio
@@ -199,6 +223,19 @@ class GetDetailsMaterialesByCode(DetailView):
                         except ObjectDoesNotExist, e:
                             purchase = 0
                             sale = 0
+                pc = MetProject.objects.filter(
+                        materiales_id=mat['materiales_id']).order_by(
+                            '-proyecto__registrado')[:5]
+                if not pc:
+                    ps = DetCompra.objects.filter(
+                            materiales_id=mat['materiales_id']).order_by(
+                                '-compra__registrado')[:5]
+                    context['sales'] = [
+                        {'compra': s.precio, 'currency': s.compra.moneda.moneda} for s in ps]
+                else:
+                    context['purchase'] = [
+                        {'purchase': p.precio, 'sales': float(p.sales), 'currency': p.proyecto.currency.moneda}
+                        for p in pc]
                 context['list'] = {
                     'materialesid': mat['materiales_id'],
                     'matnom': mat['matnom'],

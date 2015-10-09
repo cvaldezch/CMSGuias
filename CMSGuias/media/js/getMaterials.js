@@ -86,7 +86,7 @@ getSummaryMaterials = function() {
       sec: $sec.val()
     };
     $.getJSON("/json/get/resumen/details/materiales/", data, function(response) {
-      var $tb, template, x;
+      var $lstp, $lsts, $tb, template, x;
       template = "<tr> <th>Codigo :</th><td class='id-mat'>{{materialesid}}</td> </tr> <tr> <th>Descripción :</th><td>{{matnom}}</td> </tr> <tr> <th>Medida :</th><td>{{matmed}}</td> </tr> <tr> <th>Unidad :</th><td>{{unidad}}</td> </tr>";
       $tb = $(".tb-details > tbody");
       $tb.empty();
@@ -99,6 +99,14 @@ getSummaryMaterials = function() {
       $("input[name=precio]").val(response.list[0].purchase);
       $("input[name=sales]").val(response.list[0].sale);
       $("input[name=sale]").val(response.list[0].sale);
+      $lstp = $("#lstpurchase");
+      if ($lstp.length > 0 && response.purchase) {
+        $lstp.append(Mustache.render("[[#purchase]]<option label=\"{{currency}}\" value=\"{{purchase}}\">[[/purchase]]", response));
+      }
+      $lsts = $("#lstsales");
+      if ($lsts.length > 0 && response.purchase) {
+        $lsts.append(Mustache.render("[[#purchase]]<option label=\"{{currency}}\" value=\"{{purchase}}\">[[/purchase]]", response));
+      }
     });
   }
 };

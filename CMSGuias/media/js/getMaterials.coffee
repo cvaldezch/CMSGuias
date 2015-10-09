@@ -94,6 +94,12 @@ getSummaryMaterials = ->
       $("input[name=precio]").val response.list[0].purchase
       $("input[name=sales]").val response.list[0].sale
       $("input[name=sale]").val response.list[0].sale
+      $lstp = $("#lstpurchase")
+      if $lstp.length > 0 and response.purchase
+        $lstp.append Mustache.render """[[#purchase]]<option label="{{currency}}" value="{{purchase}}">[[/purchase]]""", response
+      $lsts = $("#lstsales")
+      if $lsts.length > 0 and response.purchase
+        $lsts.append Mustache.render """[[#purchase]]<option label="{{currency}}" value="{{purchase}}">[[/purchase]]""", response
       return
   return
 

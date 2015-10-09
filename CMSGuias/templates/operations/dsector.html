@@ -101,11 +101,15 @@
                         <label class="active" for="cantidad">Cantidad/Metrado</label>
                     </div>
                     <div class="input-field col l6 m6 s12">
-                        <input ng-value="" type="number" min="0" id="precio" name="precio" ng-model="mat.ppurchase" ng-init="mat.ppurchase=0">
+                        <input ng-value="" type="number" min="0" id="precio" name="precio" ng-model="mat.ppurchase" ng-init="mat.ppurchase=0" list="lstpurchase">
+                        <datalist id="lstpurchase">
+
+                        </datalist>
                         <label class="active" for="precio">Precio Compra</label>
                     </div>
                     <div class="input-field col l6 m6 s12">
-                        <input ng-value="" type="number" min="0" id="sales" name="sales" ng-model="mat.psales" ng-init="mat.psales=0">
+                        <input ng-value="" type="number" min="0" id="sales" name="sales" ng-model="mat.psales" ng-init="mat.psales=0" list="lstsales">
+                        <datalist id="lstsales"></datalist>
                         <label class="active" for="sales">Precio Venta</label>
                     </div>
                     <div class="col l6 m6 s12 input-field">
@@ -122,6 +126,9 @@
                     </div>
                     <div class="col l12 m12 s12 right-align">
                         <br>
+                        <span class="left-align">
+                            El precio del proyecto esta expresado en {{ dsector.sgroup.project.currency.moneda }}
+                        </span>
                         <button type="button" class="btn light-blue darken-2" ng-click="saveMateial()">
                             <i class="fa fa-floppy-o"></i>
                             <span class="hide-on-med-and-down">GUARDAR</span>
