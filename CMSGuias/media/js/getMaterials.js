@@ -101,11 +101,12 @@ getSummaryMaterials = function() {
       $("input[name=sale]").val(response.list[0].sale);
       $lstp = $("#lstpurchase");
       if ($lstp.length > 0 && response.purchase) {
-        $lstp.append(Mustache.render("[[#purchase]]<option label=\"{{currency}}\" value=\"{{purchase}}\">[[/purchase]]", response));
+        console.log(response);
+        $lstp.append(Mustache.render("{{#purchase}}<option label=\"{{currency}}\" value=\"{{purchase}}\" />{{/purchase}}", response));
       }
       $lsts = $("#lstsales");
       if ($lsts.length > 0 && response.purchase) {
-        $lsts.append(Mustache.render("[[#purchase]]<option label=\"{{currency}}\" value=\"{{purchase}}\">[[/purchase]]", response));
+        $lsts.append(Mustache.render("{{#purchase}}<option label=\"{{currency}}\" value=\"{{sales}}\" />{{/purchase}}", response));
       }
     });
   }

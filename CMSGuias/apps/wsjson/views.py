@@ -130,10 +130,10 @@ def get_resumen_details_materiales(request):
                                     materiales_id=x.materiales_id).order_by(
                                         '-compra__registrado')[:5]
                             context['sales'] = [
-                                {'compra': s.precio} for s in pp]
+                                {'compra': s.precio, 'currency': s.compra.moneda.moneda} for s in pp]
                         else:
                             context['purchase'] = [
-                                {'purchase': p.precio, 'sales': float(p.sales)}
+                                {'purchase': p.precio, 'sales': float(p.sales), 'currency': p.proyecto.currency.moneda}
                                 for p in pc]
                         context['list'] = [
                             {
