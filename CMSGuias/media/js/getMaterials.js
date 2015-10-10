@@ -87,7 +87,7 @@ getSummaryMaterials = function() {
     };
     $.getJSON("/json/get/resumen/details/materiales/", data, function(response) {
       var $lstp, $lsts, $tb, template, x;
-      template = "<tr> <th>Codigo :</th><td class='id-mat'>{{materialesid}}</td> </tr> <tr> <th>Descripción :</th><td>{{matnom}}</td> </tr> <tr> <th>Medida :</th><td>{{matmed}}</td> </tr> <tr> <th>Unidad :</th><td>{{unidad}}</td> </tr>";
+      template = "<tr><th>Codigo :</th><td class='id-mat'>{{materialesid}}</td></tr><tr><th>Descripción :</th><td>{{matnom}}</td></tr><tr><th>Medida :</th><td>{{matmed}}</td></tr><tr><th>Unidad :</th><td>{{unidad}}</td></tr>";
       $tb = $(".tb-details > tbody");
       $tb.empty();
       for (x in response.list) {
@@ -100,11 +100,12 @@ getSummaryMaterials = function() {
       $("input[name=sales]").val(response.list[0].sale);
       $("input[name=sale]").val(response.list[0].sale);
       $lstp = $("#lstpurchase");
+      $lstp.empty();
       if ($lstp.length > 0 && response.purchase) {
-        console.log(response);
         $lstp.append(Mustache.render("{{#purchase}}<option label=\"{{currency}}\" value=\"{{purchase}}\" />{{/purchase}}", response));
       }
       $lsts = $("#lstsales");
+      $lsts.empty();
       if ($lsts.length > 0 && response.purchase) {
         $lsts.append(Mustache.render("{{#purchase}}<option label=\"{{currency}}\" value=\"{{sales}}\" />{{/purchase}}", response));
       }

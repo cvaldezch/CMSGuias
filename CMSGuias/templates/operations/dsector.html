@@ -38,15 +38,17 @@
                         </p>
                     </small>
                 </h5>
-                <iframe class="materialboxed" src="{{ MEDIA_URL }}storage/projects/2015/PR15062/PR15062SG0001/PR15062SG0001DS001.pdf#zoom=0&toolbar=1&navpanes=0" type="application/pdf">
-                    <i class="fa fa-zoom"></i>
-                </iframe>
+                {% if dsector.plane %}
+                    <iframe class="materialboxed" src="{{ MEDIA_URL }}{{dsector.plane}}#zoom=0&toolbar=1&navpanes=0" type="application/pdf">
+                        <i class="fa fa-zoom"></i>
+                    </iframe>
+                {% endif %}
             </div>
             <div class="card-action">
                 <div class="center-align">
-                    <span>85%</span>
+                    <span class="label-progress">%</span>
                     <div class="progress light-blue accent-2">
-                        <div class="determinate light-blue accent-4" style="width: 75%;"></div>
+                        <div class="determinate light-blue accent-4 percent-progress"></div>
                     </div>
                 </div>
             </div>
@@ -98,7 +100,7 @@
                     </div>
                     <div class="input-field col l6 m6 s12">
                         <input ng-value="" type="number" min="0" id="cantidad" name="cantidad" ng-model="mat.quantity" ng-init="mat.quantity=0">
-                        <label class="active" for="cantidad">Cantidad/Metrado</label>
+                        <label class="active" for="cantidad">Cantidad / Metrado</label>
                     </div>
                     <div class="input-field col l6 m6 s12">
                         <input ng-value="" type="number" step="0.001" min="0" id="precio" name="precio" ng-model="mat.ppurchase" ng-init="mat.ppurchase=0" list="lstpurchase">
