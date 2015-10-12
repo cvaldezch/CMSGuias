@@ -5,12 +5,13 @@ app = angular.module 'dsApp', ['ngCookies']
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken'
         return
 
-app.controller 'dsCtrl', ($scope, $http, $cookies) ->
+app.controller 'DSCtrl', ($scope, $http, $cookies) ->
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
   angular.element(document).ready ->
-    # $scope.gui =
-    #   pac: false
+    $scope.mat =
+      ppurchase: 0
+      psales: 0
     $(".floatThead").floatThead
       zIndex: 998
     return
@@ -26,11 +27,16 @@ app.controller 'dsCtrl', ($scope, $http, $cookies) ->
         return
     return
   $scope.saveMateial = ->
-    data =
-      save: true
-    console.log $scope.mat
+    data = $scope.mat
+    data.savepmat = true
+    data.ppurchase = $("[name=precio]").val()
+    data.psales = $("[name=sales]").val()
+    data.brand = $("[name=brand]").val()
+    data.model = $("[name=model]").val()
+    data.code = $(".id-mat").text()
+    console.log data
     return
   $scope.$watch 'gui.smat', ->
-      $(".floatThead").floatThead('reflow');
+    $(".floatThead").floatThead('reflow');
     return
   return

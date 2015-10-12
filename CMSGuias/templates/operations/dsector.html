@@ -17,7 +17,7 @@
     {% endif %}
 {% endblock menu %}
 {% block content %}
-<div ng-app="dsApp" ng-controller="dsCtrl">
+<div ng-app="dsApp" ng-controller="DSCtrl">
     <div class="card-panel" style="background: {{ dsector.sgroup.colour }};">
         <div class="card-content">
             <a  href="{% url 'sectorgroup_view' dsector.sgroup.project_id dsector.sgroup.subproject_id dsector.sgroup.sector_id %}" class="btn grey lighten-5 grey-text text-darken-3"><i class="fa fa-chevron-left"></i> REGRESAR</a>
@@ -102,28 +102,30 @@
                         <input ng-value="" type="number" min="0" id="cantidad" name="cantidad" ng-model="mat.quantity" ng-init="mat.quantity=0">
                         <label class="active" for="cantidad">Cantidad / Metrado</label>
                     </div>
-                    <div class="input-field col l6 m6 s12">
-                        <input ng-value="" type="number" step="0.001" min="0" id="precio" name="precio" ng-model="mat.ppurchase" ng-init="mat.ppurchase=0" list="lstpurchase">
-                        <datalist id="lstpurchase"></datalist>
-                        <label class="active" for="precio">Precio Compra</label>
-                    </div>
-                    <div class="input-field col l6 m6 s12">
-                        <input ng-value="" type="number" step="0.001" min="0" id="sales" name="sales" ng-model="mat.psales" ng-init="mat.psales=0" list="lstsales">
-                        <datalist id="lstsales"></datalist>
-                        <label class="active" for="sales">Precio Venta</label>
-                    </div>
-                    <div class="col l6 m6 s12 input-field">
-                        <label class="active">Marca</label>
-                        <select class="browser-default" name="brand" ng-model="mat.brand">
-                            <option value="" disabled selected></option>
-                        </select>
-                    </div>
-                    <div class="col l6 m6 s12 input-field">
-                        <label class="active">Modelo</label>
-                        <select class="browser-default" name="model" ng-model="mat.model">
-                            <option value="" disabled selected></option>
-                        </select>
-                    </div>
+                    {% verbatim %}
+                        <div class="input-field col l6 m6 s12">
+                            <input type="number" ng-model="mat.ppurchase" ng-pattern="/^[0-9]+(\.[0-9]{1,3})?$/" step="0.001" min="0" id="precio" name="precio" list="lstpurchase">
+                            <datalist id="lstpurchase"></datalist>
+                            <label class="active" for="precio">Precio Compra</label>
+                        </div>
+                        <div class="input-field col l6 m6 s12">
+                            <input type="number" ng-model="mat.psales" ng-pattern="/^[0-9]+(\.[0-9]{1,3})?$/" step="0.001" min="0" id="sales" name="sales" list="lstsales">
+                            <datalist id="lstsales"></datalist>
+                            <label class="active" for="sales">Precio Venta</label>
+                        </div>
+                        <div class="col l6 m6 s12 input-field">
+                            <label class="active">Marca</label>
+                            <select class="browser-default" name="brand" ng-model="mat.brand">
+                                <option value="" disabled selected></option>
+                            </select>
+                        </div>
+                        <div class="col l6 m6 s12 input-field">
+                            <label class="active">Modelo</label>
+                            <select class="browser-default" name="model" ng-model="mat.model">
+                                <option value="" disabled selected></option>
+                            </select>
+                        </div>
+                    {% endverbatim %}
                     <div class="col l12 m12 s12 right-align">
                         <br>
                         <span class="left-align">
