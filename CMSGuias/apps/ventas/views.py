@@ -1090,7 +1090,8 @@ class SectorManage(JSONResponseMixin, View):
                                     add.save()
                                 if not 'edit' in request.POST and 'details' in request.POST:
                                     # save Details Material Group
-                                    for x in json.loads(request.POST.get('details')):
+                                    for x in json.loads(
+                                            request.POST.get('details')):
                                         try:
                                             obj = Metradoventa.objects.get(
                                                 proyecto_id=kwargs['pro'],
@@ -1258,26 +1259,35 @@ class SectorManage(JSONResponseMixin, View):
                         context['nro'] = id
                         context['status'] = True
                 if 'approvedadditional' in request.POST:
-                    details = json.loads(request.POST.get('details'))
-                    for x in details:
-                        # save Metprojet addtional
-                        obj = MetProject()
-                        obj.proyecto_id = kwargs['pro']
-                        obj.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
-                        obj.sector_id = kwargs['sec']
-                        obj.materiales_id = x['materials']
-                        obj.cantidad = x['quantity']
-                        obj.quantityorder = x['quantity']
-                        obj.precio = x['price']
-                        obj.brand_id = x['brand'] if x['brand'] == '' else 'BR000'
-                        obj.model_id = x['model'] if x['model'] == '' else 'MO000'
-                        obj.flag = True
-                        obj.save()
+                    # details = json.loads(request.POST.get('details'))
+                    details = Metradoventa.objects.filter(
+                                proyecto_id=kwargs['pro'],
+                                subproyecto_id=kwargs['sub'] if kwargs[
+                                    'sub'] != unicode(None) else None,
+                                sector_id=kwargs['sec'])
+                    if details:
+                        for x in details:
+                            # save Metprojet addtional
+                            obj = MetProject()
+                            obj.proyecto_id = kwargs['pro']
+                            obj.subproyecto_id = kwargs['sub'] if kwargs[
+                                'sub'] != unicode(None) else ''
+                            obj.sector_id = kwargs['sec']
+                            obj.materiales_id = x.materiales_id
+                            obj.cantidad = x.cantidad
+                            obj.quantityorder = x.cantidad
+                            obj.precio = x.precio
+                            obj.brand_id = x.brand_id
+                            obj.model_id = x.model_id
+                            obj.sales = x.sales
+                            obj.flag = True
+                            obj.save()
                     context['status'] = True
                 if 'modifystart' in request.POST:
                     update = UpdateMetProject.objects.filter(
                             proyecto_id=kwargs['pro'],
-                            subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None,
+                            subproyecto_id=kwargs['sub'] if kwargs[
+                                'sub'] != unicode(None) else None,
                             sector_id=kwargs['sec'],
                             flag=True
                         ).order_by('materials__matnom')
@@ -1292,7 +1302,8 @@ class SectorManage(JSONResponseMixin, View):
                                 'materiales__matnom'):
                             obj = UpdateMetProject()
                             obj.proyecto_id = kwargs['pro']
-                            obj.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
+                            obj.subproyecto_id = kwargs['sub'] if kwargs[
+                                'sub'] != unicode(None) else ''
                             obj.sector_id = kwargs['sec']
                             obj.materials_id = x.materiales_id
                             obj.brand_id = x.brand_id

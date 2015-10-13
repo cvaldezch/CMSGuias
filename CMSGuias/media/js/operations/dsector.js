@@ -3,17 +3,25 @@ var app;
 app = angular.module('dsApp', ['ngCookies']).config(function($httpProvider) {
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
   $httpProvider.defaults.xsrfCookieName = 'csrftoken';
-  $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+  return $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+}).directive('stringToNumber', function() {
+  return {
+    require: 'ngModel',
+    link: function(scope, element, attrs, ngModel) {
+      ngModel.$parsers.push(function(value) {
+        return '' + value;
+      });
+      ngModel.$formatters.push(function(value) {
+        return parseFloat(value, 10);
+      });
+    }
+  };
 });
 
 app.controller('DSCtrl', function($scope, $http, $cookies) {
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
   angular.element(document).ready(function() {
-    $scope.mat = {
-      ppurchase: 0,
-      psales: 0
-    };
     $(".floatThead").floatThead({
       zIndex: 998
     });
@@ -33,6 +41,17 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
       }
     });
   };
+  $scope.unitList = function() {
+    $http.get('/unit/list', {
+      list: true
+    }).success(function(response) {
+      if (response.status) {
+        return $scope.unit = response.unit;
+      } else {
+        swal("Error", "no hay datos para mostrar, Unidad", "error");
+      }
+    });
+  };
   $scope.saveMateial = function() {
     var data;
     data = $scope.mat;
@@ -42,6 +61,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
     data.brand = $("[name=brand]").val();
     data.model = $("[name=model]").val();
     data.code = $(".id-mat").text();
+    data.unid = '';
     console.log(data);
   };
   $scope.$watch('gui.smat', function() {

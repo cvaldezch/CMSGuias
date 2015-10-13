@@ -794,6 +794,7 @@ class MaterialsKeep(JSONResponseMixin, TemplateView):
                 context['status'] = False
             return self.render_to_json_response(context)
 
+
 class UnitAdd(CreateView):
     model = Unidade
     form_class = addUnidadeForm
@@ -801,21 +802,25 @@ class UnitAdd(CreateView):
     success_url = reverse_lazy('unit_add')
 
     def form_valid(self, form):
-        if not self.model.objects.filter(unidad_id__istartswith=form.instance.uninom.upper()).count():
+        if not self.model.objects.filter(
+                unidad_id__istartswith=form.instance.uninom.upper()).count():
             form.instance.unidad_id = form.instance.uninom
             form.instance.uninom = form.instance.uninom.upper()
         else:
             context = dict()
             context['status'] = False
             context['raise'] = 'Error ya existe.'
-            return render(self.request ,self.template_name, context)
+            return render(self.request, self.template_name, context)
         return super(UnitAdd, self).form_valid(form)
 
     def form_invalid(self, form):
         context = dict()
         context['status'] = False
-        context['raise'] = 'Error al Guardar cambios, %s'%form
-        return HttpResponse(simplejson.dumps(context), mimetype='application/json')
+        context['raise'] = 'Error al Guardar cambios, %s' % form
+        return HttpResponse(
+                simplejson.dumps(context),
+                mimetype='application/json')
+
 
 class Unit(JSONResponseMixin, TemplateView):
 
@@ -823,13 +828,19 @@ class Unit(JSONResponseMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
-            if 'list' in request.GET:
-                context['unit'] = list(Unidade.objects.filter(flag=True).values('unidad_id', 'uninom').order_by('uninom'))
-                context['status'] = True
+            if request.is_ajax():
+                pass
+            else:
+                if 'list' in request.GET:
+                    context['unit'] = list(
+                        Unidade.objects.filter(flag=True).values(
+                            'unidad_id', 'uninom').order_by('uninom'))
+                    context['status'] = True
         except ObjectDoesNotExist, e:
             context['raise'] = str(e)
             context['status'] = False
         return self.render_to_json_response(context)
+
 
 class ManPower(JSONResponseMixin, TemplateView):
 
@@ -840,7 +851,10 @@ class ManPower(JSONResponseMixin, TemplateView):
             if request.is_ajax():
                 try:
                     if 'listcbo' in request.GET:
-                        context['list'] = list(Cargo.objects.values('cargo_id','cargos').filter(flag=True).order_by('cargos'))
+                        context['list'] = list(
+                            Cargo.objects.values(
+                                'cargo_id', 'cargos').filter(
+                                    flag=True).order_by('cargos'))
                         context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)
