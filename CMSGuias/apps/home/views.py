@@ -561,6 +561,7 @@ class GMaterialsUpdate(TemplateView):
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         #return super(GMaterialsUpdate, self).dispatch(request, *args, **kwargs)
 
+
 class GMaterialsDelete(DeleteView):
     model = GroupMaterials
     slug_field = 'mgroup_id'
@@ -572,6 +573,7 @@ class GMaterialsDelete(DeleteView):
     def dispatch(self, request, *args, **kwargs):
         return super(GMaterialsDelete, self).dispatch(request, *args, **kwargs)
 
+
 class DetailsGMaterials(JSONResponseMixin, View):
     def get(self, request, *args, **kwargs):
         context = dict()
@@ -579,51 +581,56 @@ class DetailsGMaterials(JSONResponseMixin, View):
             if request.is_ajax():
                 try:
                     if 'listMaterials' in request.GET:
-                        context['details'] = [
-                                            {
-                                            'code': x.materials_id,
-                                            'name': x.materials.matnom,
-                                            'meter': x.materials.matmed,
-                                            'unit': x.materials.unidad.uninom,
-                                            'quantity': x.quantity
-                                            }
-                                            for x in DetailsGroup.objects.filter(mgroup_id=kwargs['mgroup']).order_by('materials__matnom')]
+                        context['details'] = [{
+                            'code': x.materials_id,
+                            'name': x.materials.matnom,
+                            'meter': x.materials.matmed,
+                            'unit': x.materials.unidad.uninom,
+                            'quantity': x.quantity}
+                            for x in DetailsGroup.objects.filter(
+                                mgroup_id=kwargs['mgroup']).order_by(
+                                    'materials__matnom')]
                         context['status'] = True
                     if 'searchGruop' in request.GET:
                         if request.GET.get('name') == 'gcode':
-                            details = GroupMaterials.objects.filter(pk=request.GET.get('val'))
+                            details = GroupMaterials.objects.filter(
+                                        pk=request.GET.get('val'))
                         elif request.GET.get('name') == 'gdesc':
-                            details = GroupMaterials.objects.filter(description__icontains=request.GET.get('val'))
-                        context['details'] =[
-                                            {
-                                            'mgroup_id': x.mgroup_id,
-                                            'desc': x.description,
-                                            'materials': '%s %s'%(x.materials.matnom, x.materials.matmed),
-                                            'parent': x.parent,
-                                            'tgroup': x.tgroup.typeg
-                                            }
-                                            for x in details]
+                            details = GroupMaterials.objects.filter(
+                                description__icontains=request.GET.get('val'))
+                        context['details'] = [{
+                            'mgroup_id': x.mgroup_id,
+                            'desc': x.description,
+                            'materials': '%s %s' % (
+                                    x.materials.matnom, x.materials.matmed),
+                            'parent': x.parent,
+                            'tgroup': x.tgroup.typeg}
+                            for x in details]
                         # print details, 'details'
                         context['status'] = True
                     if 'listDetails' in request.GET:
-                        context['details'] = [
-                                            {
-                                            'code': x.materials_id,
-                                            'name': x.materials.matnom,
-                                            'meter': x.materials.matmed,
-                                            'unit': x.materials.unidad.uninom,
-                                            'quantity': x.quantity
-                                            }
-                                            for x in DetailsGroup.objects.filter(mgroup_id=request.GET.get('code')).order_by('materials__matnom')]
+                        context['details'] = [{
+                            'code': x.materials_id,
+                            'name': x.materials.matnom,
+                            'meter': x.materials.matmed,
+                            'unit': x.materials.unidad.uninom,
+                            'quantity': x.quantity}
+                            for x in DetailsGroup.objects.filter(
+                                mgroup_id=request.GET.get('code')).order_by(
+                                    'materials__matnom')]
                         context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = e.__str__()
                     context['status'] = False
                 return self.render_to_json_response(context)
-            context['mgroup'] = get_object_or_404(GroupMaterials, mgroup_id=kwargs['mgroup'])
-            context['gmaterials'] = DetailsGroup.objects.filter(mgroup_id=kwargs['mgroup']).order_by('materials__matnom')
+            context['mgroup'] = get_object_or_404(
+                                GroupMaterials, mgroup_id=kwargs['mgroup'])
+            context['gmaterials'] = DetailsGroup.objects.filter(
+                mgroup_id=kwargs['mgroup']).order_by('materials__matnom')
             # print kwargs['mgroup']
-            return render_to_response('home/crud/detailsgmaterials.html', context, context_instance=RequestContext(request))
+            return render_to_response(
+                'home/crud/detailsgmaterials.html',
+                context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404('Template Does Not Exist')
 

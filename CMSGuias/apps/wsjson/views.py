@@ -129,23 +129,24 @@ def get_resumen_details_materiales(request):
                             pp = DetCompra.objects.filter(
                                     materiales_id=x.materiales_id).order_by(
                                         '-compra__registrado')[:5]
-                            context['sales'] = [
-                                {'compra': s.precio, 'currency': s.compra.moneda.moneda} for s in pp]
+                            context['sales'] = [{
+                                'compra': s.precio,
+                                'currency': s.compra.moneda.moneda}
+                                for s in pp]
                         else:
-                            context['purchase'] = [
-                                {'purchase': p.precio, 'sales': float(p.sales), 'currency': p.proyecto.currency.moneda}
+                            context['purchase'] = [{
+                                'purchase': p.precio,
+                                'sales': float(p.sales),
+                                'currency': p.proyecto.currency.moneda}
                                 for p in pc]
-                        context['list'] = [
-                            {
-                                'materialesid': x.materiales_id,
-                                'matnom': x.matnom,
-                                'matmed': x.matmed,
-                                'unidad': x.unidad.uninom,
-                                'purchase': purchase,
-                                'sale': float(sale),
-                                'quantity': quantity
-                            }
-                        ]
+                        context['list'] = [{
+                            'materialesid': x.materiales_id,
+                            'matnom': x.matnom,
+                            'matmed': x.matmed,
+                            'unidad': x.unidad.uninom,
+                            'purchase': purchase,
+                            'sale': float(sale),
+                            'quantity': quantity}]
                         break
                 context['status'] = True
             except ObjectDoesNotExist:
@@ -203,26 +204,29 @@ class GetDetailsMaterialesByCode(DetailView):
                                         purchase = round(p['purchase'], 2)
                                         sale = round(p['sale'], 2)
                                         quantity = p['quantity']
-                    else:
-                        try:
-                            getprices = MetProject.objects.filter(
-                                            materiales_id=mat['materiales_id']
-                                        ).distinct(
-                                            'proyecto__proyecto_id'
+
+                if purchase == 0 and sale == 0:
+                    try:
+                        getprices = MetProject.objects.filter(
+                                    materiales_id=mat['materiales_id']
+                                    ).distinct(
+                                        'proyecto__proyecto_id'
                                         ).order_by(
-                                            'proyecto__proyecto_id').reverse()
-                            if getprices:
-                                getprices = getprices[0]
-                                purchase = getprices.precio
-                                # max([p.precio for p in getprices])
-                                sale = getprices.sales
-                                # max([p.sales for p in getprices])
-                            else:
-                                purchase = 0
-                                sale = 0
-                        except ObjectDoesNotExist, e:
+                                            'proyecto__proyecto_id'
+                                            ).reverse()
+                        if getprices:
+                            getprices = getprices[0]
+                            purchase = getprices.precio
+                            # max([p.precio for p in getprices])
+                            sale = getprices.sales
+                            # max([p.sales for p in getprices])
+                        else:
                             purchase = 0
                             sale = 0
+                    except ObjectDoesNotExist, e:
+                        purchase = 0
+                        sale = 0
+
                 pc = MetProject.objects.filter(
                         materiales_id=mat['materiales_id']).order_by(
                             '-proyecto__registrado')[:5]
@@ -230,11 +234,15 @@ class GetDetailsMaterialesByCode(DetailView):
                     ps = DetCompra.objects.filter(
                             materiales_id=mat['materiales_id']).order_by(
                                 '-compra__registrado')[:5]
-                    context['sales'] = [
-                        {'compra': s.precio, 'currency': s.compra.moneda.moneda} for s in ps]
+                    context['sales'] = [{
+                        'compra': s.precio,
+                        'currency': s.compra.moneda.moneda}
+                        for s in ps]
                 else:
-                    context['purchase'] = [
-                        {'purchase': p.precio, 'sales': float(p.sales), 'currency': p.proyecto.currency.moneda}
+                    context['purchase'] = [{
+                        'purchase': p.precio,
+                        'sales': float(p.sales),
+                        'currency': p.proyecto.currency.moneda}
                         for p in pc]
                 context['list'] = {
                     'materialesid': mat['materiales_id'],
@@ -243,8 +251,7 @@ class GetDetailsMaterialesByCode(DetailView):
                     'unidad': mat['unidad'],
                     'purchase': purchase,
                     'sale': float(sale),
-                    'quantity': quantity
-                }
+                    'quantity': quantity}
                 context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = str(e)
@@ -252,11 +259,14 @@ class GetDetailsMaterialesByCode(DetailView):
             return HttpResponse(simplejson.dumps(context),
                                 mimetype='application/json')
 
+
 def save_order_temp_materials(request):
     data = dict()
     if request.method == 'POST':
         try:
-            c = tmppedido.objects.get(empdni__exact=request.user.get_profile().empdni_id,materiales_id__exact=request.POST['mid'])
+            c = tmppedido.objects.get(
+                empdni__exact=request.user.get_profile().empdni_id,
+                materiales_id__exact=request.POST['mid'])
             c.cantidad += float(request.POST.get('cant'))
             c.brand_id = request.POST.get('brand')
             c.model_id = request.POST.get('model')
@@ -272,25 +282,32 @@ def save_order_temp_materials(request):
         if 'details' in request.POST:
             for x in json.loads(request.POST.get('details')):
                 try:
-                    c = tmppedido.objects.get(empdni__exact=request.user.get_profile().empdni_id,materiales_id__exact=x['materials'])
-                    c.cantidad += (float(x['quantity']) * float(request.POST.get('cant')))
+                    c = tmppedido.objects.get(
+                        empdni__exact=request.user.get_profile().empdni_id,
+                        materiales_id__exact=x['materials'])
+                    c.cantidad += (
+                        float(x['quantity']) * float(request.POST.get('cant')))
                     c.save()
                 except ObjectDoesNotExist:
                     obj = tmppedido()
                     obj.empdni = request.user.get_profile().empdni_id
                     obj.materiales_id = x['materials']
-                    obj.cantidad = (float(x['quantity']) * float(request.POST.get('cant')))
+                    obj.cantidad = (
+                        float(x['quantity']) * float(request.POST.get('cant')))
                     obj.brand_id = 'BR000'
                     obj.model_id = 'MO000'
                     obj.save()
         data['status'] = True
-    return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+    return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+
 
 def update_order_temp_materials(request):
     try:
         data = dict()
-        if request.method == "POST":
-            obj = tmppedido.objects.get(empdni__exact=request.user.get_profile().empdni_id,materiales_id__exact=request.POST['mid'])
+        if request.method == 'POST':
+            obj = tmppedido.objects.get(
+                empdni__exact=request.user.get_profile().empdni_id,
+                materiales_id__exact=request.POST['mid'])
             obj.cantidad = request.POST.get('cantidad')
             obj.brand_id = request.POST.get('brand')
             obj.model_id = request.POST.get('model')
@@ -299,105 +316,142 @@ def update_order_temp_materials(request):
     except ObjectDoesNotExist, e:
         data['status'] = False
         data['raise'] = e.__str__()
-    return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+    return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+
 
 def delete_order_temp_material(request):
     try:
         data = {}
-        if request.method == "POST":
-            obj = tmppedido.objects.get(empdni__exact=request.POST['dni'],materiales_id__exact=request.POST['mid'])
+        if request.method == 'POST':
+            obj = tmppedido.objects.get(
+                empdni__exact=request.POST['dni'],
+                materiales_id__exact=request.POST['mid'])
             obj.delete()
             data['status'] = True
         else:
             data['status'] = False
-        return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+        return HttpResponse(
+            simplejson.dumps(data), mimetype='application/json')
     except ObjectDoesNotExist, e:
         raise e
+
 
 def delete_all_temp_order(request):
     try:
         data = {}
-        if request.method == "POST":
+        if request.method == 'POST':
             # get objects to delete; these are of table bedside
             obj = tmppedido.objects.filter(empdni__exact=request.POST['dni'])
             obj.delete()
-            # here get object "Niples" tambien deberan ser eliminadas
-            tmp = tmpniple.objects.filter(empdni__exact=request.POST.get('dni'))
+            # here get object 'Niples' tambien deberan ser eliminadas
+            tmp = tmpniple.objects.filter(
+                    empdni__exact=request.POST.get('dni'))
             tmp.delete()
             data['status'] = True
         else:
             data['status'] = False
-        return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+        return HttpResponse(
+                simplejson.dumps(data), mimetype='application/json')
     except ObjectDoesNotExist, e:
         raise e
+
 
 def get_list_order_temp(request):
     try:
-        data = {'list':[]}
+        data = {'list': []}
         if request.method == 'GET':
-            ls = tmppedido.objects.filter(empdni__startswith=request.user.get_profile().empdni_id).order_by('materiales__matnom')
-            #lista = [ {"cant": x.cantidad, "materiales_id": x.materiales_id, "matnom": x.materiales.matnom } for x in ls ]
+            ls = tmppedido.objects.filter(
+                    empdni__startswith=request.user.get_profile().empdni_id
+                    ).order_by('materiales__matnom')
             counter = 1
             for x in ls:
-                data['list'].append(
-                    {
-                        'item': counter,
-                        'materiales_id': x.materiales_id,
-                        'matnom': x.materiales.matnom,
-                        'matmed': x.materiales.matmed,
-                        'brand': x.brand.brand,
-                        'model': x.model.model,
-                        'unidad': x.materiales.unidad.uninom,
-                        'cantidad': x.cantidad
-                    }
-                )
-                counter+=1
+                data['list'].append({
+                    'item': counter,
+                    'materiales_id': x.materiales_id,
+                    'matnom': x.materiales.matnom,
+                    'matmed': x.materiales.matmed,
+                    'brand': x.brand.brand,
+                    'model': x.model.model,
+                    'unidad': x.materiales.unidad.uninom,
+                    'cantidad': x.cantidad})
+                counter += 1
             data['status'] = True
         else:
             data['status'] = False
-        return HttpResponse(simplejson.dumps(data),mimetype='application/json')
+        return HttpResponse(
+                simplejson.dumps(data), mimetype='application/json')
     except ObjectDoesNotExist, e:
         raise e
 
+
 def get_details_materials_by_id(request):
     try:
-        data = {}
         if request.method == 'GET':
-            mat = Materiale.objects.values('materiales_id','matnom','matmed','unidad_id').get(pk=request.GET.get('mid'))
+            mat = Materiale.objects.values(
+                'materiales_id',
+                'matnom',
+                'matmed',
+                'unidad_id').get(pk=request.GET.get('mid'))
             if len(mat) > 0:
                 mat['status'] = True
-            return HttpResponse(simplejson.dumps(mat),mimetype='application/json')
+            return HttpResponse(
+                simplejson.dumps(mat),
+                mimetype='application/json')
     except ObjectDoesNotExist, e:
         raise e
+
+
 # sending list of nipples
 def get_list_beside_nipples_temp_orders(request):
     try:
         data = {}
         if request.method == 'GET':
-            ls = tmppedido.objects.filter(materiales__materiales_id__startswith='115').order_by("materiales")
+            ls = tmppedido.objects.filter(
+                    materiales__materiales_id__startswith='115').order_by(
+                    'materiales')
             if len(ls) > 0:
                 data['status'] = True
-                data['nipples'] = [ {"materiales_id":x.materiales.materiales_id,"matnom":x.materiales.matnom,"matmed":x.materiales.matmed,"unidad":x.materiales.unidad_id, "cantidad": x.cantidad } for x in ls]
+                data['nipples'] = [{
+                    'materiales_id': x.materiales.materiales_id,
+                    'matnom': x.materiales.matnom,
+                    'matmed': x.materiales.matmed,
+                    'unidad': x.materiales.unidad_id,
+                    'cantidad': x.cantidad} for x in ls]
             else:
                 data['status'] = False
-                data['niples'] = "Nothing"
-            return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+                data['niples'] = 'Nothing'
+            return HttpResponse(
+                simplejson.dumps(data), mimetype='application/json')
     except ObjectDoesNotExist, e:
         raise e
+
+
 # list temp nipples
 def get_list_temp_nipples(request):
     try:
         data = {}
         if request.method == 'GET':
-            tipo = {'A':"Roscado","B":"Ranurado", "C":"Roscado - Ranurado" }
-            ls = tmpniple.objects.filter(empdni__exact=request.GET['dni'],materiales_id__exact=request.GET['mid']).order_by('metrado')
-            data['list'] = [ { "id": x.id,"cantidad":x.cantidad,"materiales_id":x.materiales.materiales_id,"matnom": 'Niple '+tipo[x.tipo],"matmed":x.materiales.matmed, "metrado": x.metrado, "tipo": x.tipo } for x in ls]
+            tipo = {'A': 'Roscado', 'B': 'Ranurado', 'C': 'Roscado - Ranurado'}
+            ls = tmpniple.objects.filter(
+                empdni__exact=request.GET['dni'],
+                materiales_id__exact=request.GET['mid']).order_by('metrado')
+            data['list'] = [{
+                'id': x.id,
+                'cantidad': x.cantidad,
+                'materiales_id': x.materiales.materiales_id,
+                'matnom': 'Niple '+tipo[x.tipo],
+                'matmed': x.materiales.matmed,
+                'metrado': x.metrado,
+                'tipo': x.tipo} for x in ls]
             data['status'] = True
         else:
             data['status'] = False
-        return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+        return HttpResponse(
+            simplejson.dumps(data), mimetype="application/json")
     except ObjectDoesNotExist:
         raise Http404
+
+
 # saved or update templates nipples
 def post_saved_update_temp_nipples(request):
     data = {}
@@ -417,7 +471,8 @@ def post_saved_update_temp_nipples(request):
         except ObjectDoesNotExist, e:
             raise e
             data['status'] = False
-        return HttpResponse(simplejson.dumps(data), mimetype="application/json")
+        return HttpResponse(
+            simplejson.dumps(data), mimetype="application/json")
 # delete item nipple template
 def post_delete_temp_item_nipple(request):
     data = {}

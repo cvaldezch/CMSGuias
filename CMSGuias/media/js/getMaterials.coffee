@@ -149,10 +149,17 @@ searchMaterialCode = (code) ->
         $("input[name=precio]").val response.list.purchase
         $("input[name=sale]").val response.list.sale
         $("input[name=sales]").val response.list.sale
+        $lstp = $("#lstpurchase")
+        $lstp.empty()
+        if $lstp.length > 0 and response.purchase
+          $lstp.append Mustache.render """{{#purchase}}<option label="{{currency}}" value="{{purchase}}" />{{/purchase}}""", response
+        $lsts = $("#lstsales")
+        $lsts.empty()
+        if $lsts.length > 0 and response.purchase
+          $lsts.append Mustache.render """{{#purchase}}<option label="{{currency}}" value="{{sales}}" />{{/purchase}}""", response
       else
         $().toastmessage "showWarningToast", "The material not found."
       return
-
   return
 
 # Search Group materials

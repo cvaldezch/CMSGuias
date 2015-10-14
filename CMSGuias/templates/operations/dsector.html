@@ -99,17 +99,17 @@
                         <label ng-class="{'active': mat.code}">Código</label>
                     </div>
                     <div class="input-field col l6 m6 s12">
-                        <input ng-value="" type="number" min="0" id="cantidad" name="cantidad" ng-model="mat.quantity" ng-init="mat.quantity=0">
+                        <input ng-value="" type="number" min="0" id="cantidad" name="cantidad" ng-model="mat.quantity" ng-init="mat.quantity=0" class="validate">
                         <label class="active" for="cantidad">Cantidad / Metrado</label>
                     </div>
                     {% verbatim %}
                         <div class="input-field col l6 m6 s12">
-                            <input type="number" ng-model="mat.ppurchase" stringToNumber ng-pattern="/^[0-9]+(\.[0-9]{1,3})?$/" step="0.001" min="0" id="precio" name="precio" list="lstpurchase">
+                            <input type="number" ng-model="mat.ppurchase" stringToNumber ng-pattern="/^[0-9]+(\.[0-9]{1,3})?$/" step="0.001" min="0" id="precio" name="precio" list="lstpurchase" class="validate">
                             <datalist id="lstpurchase"></datalist>
                             <label class="active" for="precio">Precio Compra</label>
                         </div>
                         <div class="input-field col l6 m6 s12">
-                            <input type="number" ng-model="mat.psales" stringToNumber ng-pattern="/^[0-9]+(\.[0-9]{1,3})?$/" step="0.001" min="0" id="sales" name="sales" list="lstsales">
+                            <input type="number" ng-model="mat.psales" stringToNumber ng-pattern="/^[0-9]+(\.[0-9]{1,3})?$/" step="0.001" min="0" id="sales" name="sales" list="lstsales" class="validate">
                             <datalist id="lstsales"></datalist>
                             <label class="active" for="sales">Precio Venta</label>
                         </div>
@@ -162,7 +162,22 @@
                 <th></th>
             </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+            <tr>
+                <th class="center-align"></th>
+                <th class="center-align">Código</th>
+                <th>Descripción</th>
+                <th class="center-align">Marca</th>
+                <th class="center-align">Modelo</th>
+                <th class="center-align">Unidad</th>
+                <th class="right-align">Cantidad Vendida</th>
+                <th class="right-align">Pendiente</th>
+                <th class="right-align">Enviada</th>
+                <th class="right-align">Compra</th>
+                <th class="right-align">Venta</th>
+                <th></th>
+            </tr>
+        </tbody>
     </table>
 </div>
 <style type="text/css">

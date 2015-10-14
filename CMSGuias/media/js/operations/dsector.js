@@ -18,14 +18,10 @@ app = angular.module('dsApp', ['ngCookies']).config(function($httpProvider) {
   };
 });
 
-app.controller('DSCtrl', function($scope, $http, $cookies) {
+app.controller('DSCtrl', function($scope, $http, $cookies, $window) {
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-  angular.element(document).ready(function() {
-    $(".floatThead").floatThead({
-      zIndex: 998
-    });
-  });
+  angular.element(document).ready(function() {});
   $scope.getListArea = function() {
     var data;
     data = {
@@ -61,10 +57,31 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
     data.brand = $("[name=brand]").val();
     data.model = $("[name=model]").val();
     data.code = $(".id-mat").text();
-    data.unid = '';
+    if (data.quantity <= 0) {
+      swal("Alerta!", "Debe de ingresar una cantidad!", "warning");
+      data.savepmat = false;
+    }
+    if (data.ppurchase <= 0) {
+      swal("Alerta!", "Debe de ingresar un precio de Compra!", "warning");
+      data.savepmat = false;
+    }
+    if (data.psales <= 0) {
+      swal("Alerta!", "Debe de ingresar un precio de Venta!", "warning");
+      data.savepmat = false;
+    }
+    if (data.savepmat) {
+      $http({
+        url: "",
+        data: $.param(data),
+        method: "post"
+      }).success(function(response) {
+        if (response.status) {
+
+        } else {
+          swal("Error", " No se guardado los datos", "error");
+        }
+      });
+    }
     console.log(data);
   };
-  $scope.$watch('gui.smat', function() {
-    $(".floatThead").floatThead('reflow');
-  });
 });

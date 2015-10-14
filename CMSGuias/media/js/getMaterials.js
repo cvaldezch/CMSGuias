@@ -163,7 +163,7 @@ searchMaterialCode = function(code) {
     data.pro = $("input[name=pro]").val();
     data.sec = $("input[name=sec]").val();
     $.getJSON("/json/get/materials/code/", data, function(response) {
-      var $met, $tb, mats, template;
+      var $lstp, $lsts, $met, $tb, mats, template;
       mats = response;
       if (response.status) {
         $met = $("[name=meter]");
@@ -179,6 +179,16 @@ searchMaterialCode = function(code) {
         $("input[name=precio]").val(response.list.purchase);
         $("input[name=sale]").val(response.list.sale);
         $("input[name=sales]").val(response.list.sale);
+        $lstp = $("#lstpurchase");
+        $lstp.empty();
+        if ($lstp.length > 0 && response.purchase) {
+          $lstp.append(Mustache.render("{{#purchase}}<option label=\"{{currency}}\" value=\"{{purchase}}\" />{{/purchase}}", response));
+        }
+        $lsts = $("#lstsales");
+        $lsts.empty();
+        if ($lsts.length > 0 && response.purchase) {
+          $lsts.append(Mustache.render("{{#purchase}}<option label=\"{{currency}}\" value=\"{{sales}}\" />{{/purchase}}", response));
+        }
       } else {
         $().toastmessage("showWarningToast", "The material not found.");
       }
