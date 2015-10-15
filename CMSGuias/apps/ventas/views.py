@@ -185,6 +185,14 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                                             serializers.serialize(
                                                 'json', projects))
                     context['status'] = True
+                if 'ascAllProjects' in request.GET:
+                    context['projects'] = json.loads(serializers.serialize(
+                        'json',
+                        Proyecto.objects.filter(
+                            Q(flag=True),
+                            ~Q(status='DA')
+                            ).order_by('-proyecto_id')))
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False
@@ -249,19 +257,30 @@ class SectorsView(JSONResponseMixin, View):
         context['pro'] = request.GET.get('pro')
         context['sub'] = request.GET.get('sub')
         if request.GET.get('type') == 'update':
-            obj = Sectore.objects.get(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'))
+            obj = Sectore.objects.get(
+                    proyecto_id=request.GET.get('pro'),
+                    subproyecto_id=request.GET.get('sub') if request.GET.get(
+                        'sub') != '' else None,
+                    sector_id=request.GET.get('sec'))
             context['form'] = SectoreForm(instance=obj)
             context['type'] = 'update'
         elif request.GET.get('type') == 'new':
             context['form'] = SectoreForm
             context['type'] = 'new'
-        return render_to_response(self.template_name, context, context_instance = RequestContext(request))
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
 
     def post(self, request, *args, **kwargs):
         context = dict()
         try:
             if request.POST.get('type') == 'update':
-                obj = Sectore.objects.get(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('sub') if request.POST.get('subproyecto') != '' else None, sector_id=request.POST.get('sector_id'))
+                obj = Sectore.objects.get(
+                    proyecto_id=request.POST.get('proyecto'),
+                    subproyecto_id=request.POST.get('sub') if request.POST.get(
+                        'subproyecto') != '' else None,
+                    sector_id=request.POST.get('sector_id'))
                 form = SectoreForm(request.POST, instance=obj)
                 # print form, form.is_valid()
                 if form.is_valid():
@@ -276,7 +295,7 @@ class SectorsView(JSONResponseMixin, View):
                 # print form, form.is_valid()
                 if form.is_valid():
                     add = form.save(commit=False)
-                    id = '%s%s'%(add.proyecto_id, add.sector_id)
+                    id = '%s%s' % (add.proyecto_id, add.sector_id)
                     # print id, len(id)
                     add.sector_id = id
                     add.save()
@@ -288,7 +307,11 @@ class SectorsView(JSONResponseMixin, View):
         except ObjectDoesNotExist, e:
             context['raise'] = e.__str__()
             context['status'] = False
-        return render_to_response(self.template_name, context, context_instance = RequestContext(request))
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
+
 
 # Add Subproject
 class SubprojectsView(JSONResponseMixin, View):

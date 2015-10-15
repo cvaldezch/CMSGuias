@@ -18,33 +18,28 @@ app = angular.module('dsApp', ['ngCookies']).config(function($httpProvider) {
   };
 });
 
-app.controller('DSCtrl', function($scope, $http, $cookies, $window) {
+app.controller('DSCtrl', function($scope, $http, $cookies) {
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-  angular.element(document).ready(function() {});
-  $scope.getListArea = function() {
+  angular.element(document).ready(function() {
+    $scope.getListAreaMaterials();
+    $scope.getProject();
+    $('.modal-trigger').leanModal();
+  });
+  $scope.getListAreaMaterials = function() {
     var data;
     data = {
-      glist: true
+      dslist: true
     };
     $http.get("", {
       params: data
-    }, function(response) {
-      if (response.status) {
-        $scope.dsmaterials = response.list;
-      } else {
-        swal("Error!", "al obtener la lista de materiales del área", "error");
-      }
-    });
-  };
-  $scope.unitList = function() {
-    $http.get('/unit/list', {
-      list: true
     }).success(function(response) {
       if (response.status) {
-        return $scope.unit = response.unit;
+        console.log(response);
+        $scope.dsmaterials = response.list;
+        console.log($scope.dsmaterials);
       } else {
-        swal("Error", "no hay datos para mostrar, Unidad", "error");
+        swal("Error!", "al obtener la lista de materiales del área", "error");
       }
     });
   };
@@ -76,12 +71,39 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $window) {
         method: "post"
       }).success(function(response) {
         if (response.status) {
-
+          $scope.getListAreaMaterials();
         } else {
           swal("Error", " No se guardado los datos", "error");
         }
       });
     }
     console.log(data);
+  };
+  $scope.getProject = function() {
+    $http.get("/sales/projects/", {
+      params: {
+        'ascAllProjects': true
+      }
+    }).success(function(response) {
+      if (response.status) {
+        $scope.ascprojects = response.projects;
+      } else {
+        swal("Error", "No se a cargado los proyectos", "error");
+      }
+    });
+  };
+  $scope.getsector = function(project) {
+    $http.get("/sales/projects/sectors/crud/", {
+      params: {
+        'pro': project,
+        'sub': ''
+      }
+    }).success(function(response) {
+      if (response.status) {
+        $scope.ascsector = response.sector;
+      } else {
+        swal("Error", "No se pudo cargar los datos del sector", "error");
+      }
+    });
   };
 });

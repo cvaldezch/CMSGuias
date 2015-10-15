@@ -12,10 +12,13 @@ app = angular.module 'dsApp', ['ngCookies']
               return parseFloat value, 10
             return
 
-app.controller 'DSCtrl', ($scope, $http, $cookies, $window) ->
+app.controller 'DSCtrl', ($scope, $http, $cookies) ->
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
   angular.element(document).ready ->
+    $scope.getListAreaMaterials()
+    $scope.getProject()
+    $('.modal-trigger').leanModal()
     # $table = $(".floatThead")
     # $table.floatThead
     #   zIndex: 998
@@ -26,27 +29,31 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $window) ->
     #     $(".floatThead").floatThead 'reflow'
     #     return
     return
-  $scope.getListArea = ->
+  $scope.getListAreaMaterials = ->
     data =
-      glist: true
-    $http.get "", params: data, (response) ->
+      dslist: true
+    $http.get "", params: data
+    .success (response) ->
       if response.status
+        console.log response
         $scope.dsmaterials = response.list
+        console.log $scope.dsmaterials
         return
       else
         swal "Error!", "al obtener la lista de materiales del área", "error"
         return
     return
-  $scope.unitList = ->
-    $http.get '/unit/list',
-      list: true
-    .success (response) ->
-      if response.status
-        $scope.unit = response.unit
-      else
-        swal "Error", "no hay datos para mostrar, Unidad", "error"
-        return
-    return
+  # $scope.unitList = ->
+  #   $http.get '/unit/list',
+  #     list: true
+  #   .success (response) ->
+  #     if response.status
+  #       $scope.unit = response.unit
+  #       return
+  #     else
+  #       swal "Error", "no hay datos para mostrar, Unidad", "error"
+  #       return
+  #   return
   $scope.saveMateial = ->
     data = $scope.mat
     data.savepmat = true
@@ -71,11 +78,34 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $window) ->
         method: "post"
       .success (response) ->
         if response.status
-
+          $scope.getListAreaMaterials()
+          return
         else
           swal "Error", " No se guardado los datos", "error"
           return
     console.log data
+    return
+  $scope.getProject = ->
+    $http.get "/sales/projects/",
+    params: 'ascAllProjects': true
+    .success (response) ->
+      if response.status
+        $scope.ascprojects = response.projects
+        return
+      else
+        swal "Error", "No se a cargado los proyectos", "error"
+        return
+    return
+  $scope.getsector = (project) ->
+    $http.get "/sales/projects/sectors/crud/",
+    params: 'pro': project, 'sub': ''
+    .success (response) ->
+      if response.status
+        $scope.ascsector = response.sector
+        return
+      else
+        swal "Error", "No se pudo cargar los datos del sector", "error"
+        return
     return
   # $scope.$watch 'gui.smat', ->
   #   $(".floatThead").floatThead 'reflow'

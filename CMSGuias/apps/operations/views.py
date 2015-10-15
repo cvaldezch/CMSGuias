@@ -234,7 +234,14 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
         context = dict()
         if request.is_ajax():
             try:
-                pass
+                if 'dslist' in request.GET:
+                    context['list'] = json.loads(serializers.serialize(
+                        'json',
+                        DSMetrado.objects.filter(
+                            dsector_id=kwargs['area']).order_by(
+                            'materials__matnom'), relations=(
+                            'materials', 'brand', 'model',)))
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False
@@ -246,3 +253,26 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                 return render(request, 'operations/dsector.html', context)
             except TemplateDoesNotExist as e:
                 raise Http404(e)
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'savepmat' in request.POST:
+                    dsm = DSMetrado()
+                    dsm.dsector_id = kwargs['area']
+                    dsm.materials_id = request.POST['code']
+                    dsm.brand_id = request.POST['brand']
+                    dsm.model_id = request.POST['model']
+                    dsm.quantity = request.POST['quantity']
+                    dsm.qorder = request.POST['quantity']
+                    dsm.qguide = 0
+                    dsm.ppurchase = request.POST['ppurchase']
+                    dsm.psales = request.POST['psales']
+                    dsm.save()
+                    context['status'] = True
+            except ObjectDoesNotExist as e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)

@@ -303,7 +303,7 @@ class DSector(models.Model):
 
 
 class DSMetrado(models.Model):
-    dsector_id = models.ForeignKey(DSector, to_field='dsector_id')
+    dsector = models.ForeignKey(DSector, to_field='dsector_id')
     materials = models.ForeignKey(Materiale, to_field='materiales_id')
     brand = models.ForeignKey(Brand, to_field='brand_id')
     model = models.ForeignKey(Model, to_field='model_id')
@@ -312,7 +312,7 @@ class DSMetrado(models.Model):
     qguide = models.FloatField()
     ppurchase = models.DecimalField(max_digits=8, decimal_places=3, default=0)
     psales = models.DecimalField(max_digits=8, decimal_places=3, default=0)
-    comment = models.TextField()
+    comment = models.TextField(null=True, blank=True)
     tag = models.CharField(max_length=1, default='0')
     flag = models.BooleanField(default=True)
 
@@ -331,7 +331,7 @@ class DSMetrado(models.Model):
 
 class MMetrado(models.Model):
     qcode = models.CharField(max_length=16)
-    dsector_id = models.ForeignKey(DSector, to_field='dsector_id')
+    dsector = models.ForeignKey(DSector, to_field='dsector_id')
     materials = models.ForeignKey(Materiale, to_field='materiales_id')
     brand = models.ForeignKey(Brand, to_field='brand_id')
     model = models.ForeignKey(Model, to_field='model_id')
@@ -340,7 +340,7 @@ class MMetrado(models.Model):
     qguide = models.FloatField()
     ppurchase = models.DecimalField(max_digits=8, decimal_places=3, default=0)
     psales = models.DecimalField(max_digits=8, decimal_places=3, default=0)
-    comment = models.TextField()
+    comment = models.TextField(null=True, blank=True)
     tag = models.CharField(max_length=1, default='0')
     flag = models.BooleanField(default=True)
 

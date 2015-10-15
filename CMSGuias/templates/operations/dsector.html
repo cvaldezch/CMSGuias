@@ -61,7 +61,7 @@
                     <i class="fa fa-plus"></i>
                     <span class="hide-on-med-and-down">Agregar</span>
                 </button>
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3">
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect modal-trigger" data-target="mpcopy">
                     <i class="fa fa-clone"></i>
                     <span class="hide-on-med-and-down">Copiar Lista</span>
                 </button>
@@ -104,12 +104,12 @@
                     </div>
                     {% verbatim %}
                         <div class="input-field col l6 m6 s12">
-                            <input type="number" ng-model="mat.ppurchase" stringToNumber ng-pattern="/^[0-9]+(\.[0-9]{1,3})?$/" step="0.001" min="0" id="precio" name="precio" list="lstpurchase" class="validate">
+                            <input type="number" ng-model="mat.ppurchase" ng-pattern="/^[0-9]+(\.[0-9]{1,3})?$/" step="0.001" min="0" id="precio" name="precio" list="lstpurchase" class="validate">
                             <datalist id="lstpurchase"></datalist>
                             <label class="active" for="precio">Precio Compra</label>
                         </div>
                         <div class="input-field col l6 m6 s12">
-                            <input type="number" ng-model="mat.psales" stringToNumber ng-pattern="/^[0-9]+(\.[0-9]{1,3})?$/" step="0.001" min="0" id="sales" name="sales" list="lstsales" class="validate">
+                            <input type="number" ng-model="mat.psales" ng-pattern="/^[0-9]+(\.[0-9]{1,3})?$/" step="0.001" min="0" id="sales" name="sales" list="lstsales" class="validate">
                             <datalist id="lstsales"></datalist>
                             <label class="active" for="sales">Precio Venta</label>
                         </div>
@@ -154,7 +154,7 @@
                 <th class="center-align">Marca</th>
                 <th class="center-align">Modelo</th>
                 <th class="center-align">Unidad</th>
-                <th class="right-align">Cantidad Vendida</th>
+                <th class="right-align">Vendido</th>
                 <th class="right-align">Pendiente</th>
                 <th class="right-align">Enviada</th>
                 <th class="right-align">Compra</th>
@@ -163,22 +163,68 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <th class="center-align"></th>
-                <th class="center-align">Código</th>
-                <th>Descripción</th>
-                <th class="center-align">Marca</th>
-                <th class="center-align">Modelo</th>
-                <th class="center-align">Unidad</th>
-                <th class="right-align">Cantidad Vendida</th>
-                <th class="right-align">Pendiente</th>
-                <th class="right-align">Enviada</th>
-                <th class="right-align">Compra</th>
-                <th class="right-align">Venta</th>
-                <th></th>
+        {% verbatim %}
+            <tr ng-repeat="x in dsmaterials" class="text-12">
+                <td class="center-align">{{$index + 1}}</td>
+                <td class="center-align text-9">{{x.fields.materials.pk}}</td>
+                <td>{{x.fields.materials.fields.matnom}}</td>
+                <td class="center-align">{{x.fields.brand.fields.brand}}</td>
+                <td class="center-align">{{x.fields.model.fields.model}}</td>
+                <td class="center-align">{{x.fields.materials.fields.unidad}}</td>
+                <td class="right-align">{{x.fields.quantity}}</td>
+                <td class="right-align">{{x.fields.qorder}}</td>
+                <td class="right-align">{{x.fields.qguide}}</td>
+                <td class="right-align">{{x.fields.ppurchase}}</td>
+                <td class="right-align">{{x.fields.psales}}</td>
+                <td></td>
             </tr>
+        {% endverbatim %}
         </tbody>
     </table>
+    <!-- modal  -->
+    <div class="modal" id="mpcopy">
+        <div class="modal-content">
+            <h4>Copiar Lista de Proyectos</h4>
+            <ul class="collection with-header" ng-model="fpl" ng-hide="fpl">
+                <li class="collection-header">
+                    <div class="input-field">
+                        <i class="prefix fa fa-filter"></i>
+                        <input type="text" ng-model="ccpf">
+                        <label>Buscar</label>
+                    </div>
+                </li>
+            {% verbatim %}
+                <li class="collection-item" ng-repeat="x in ascprojects | filter: ccpf |orderBy:'-pk'" data-value="{{x.pk}}">
+                    <div>
+                        {{x.pk}} - {{x.fields.nompro}}
+                        <a href="#" class="secondary-content" ng-click="getsector(x.pk)">
+                            <i class="fa fa-send"></i>
+                        </a>
+                    </div>
+                </li>
+            {% endverbatim %}
+            </ul>
+            <ul class="collection with-header" ng-model="fsl" ng-show="fsl">
+                <li class="collection-header">
+                    <div class="input-field">
+                        <i class="prefix fa fa-filter"></i>
+                        <input type="text" ng-model="ccsf">
+                        <label>Buscar</label>
+                    </div>
+                </li>
+            {% verbatim %}
+                <li class="collection-item" ng-repeat="x in ascsector | filter: ccsf |orderBy:'-pk'" data-value="{{x.pk}}">
+                    <div>
+                        {{x.pk}} - {{x.fields.nompro}}
+                        <a href="#" class="secondary-content" ng-click="getsector(x.pk)">
+                            <i class="fa fa-send"></i>
+                        </a>
+                    </div>
+                </li>
+            {% endverbatim %}
+            </ul>
+        </div>
+    </div>
 </div>
 <style type="text/css">
     .matname-global {
