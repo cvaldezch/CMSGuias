@@ -54,7 +54,7 @@
             </div>
         </div>
     </div>
-    <div class="card">
+    <div class="card" id="card">
         <div class="card-action">
             {% if dsector.status == 'PE' %}
                 <button type="button" class="btn amber accent-2 grey-text text-darken-3" ng-click="gui.smat=!gui.smat">
@@ -65,11 +65,11 @@
                     <i class="fa fa-clone"></i>
                     <span class="hide-on-med-and-down">Copiar Lista</span>
                 </button>
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3">
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3" ng-click="delAreaMA()">
                     <i class="fa fa-trash"></i>
                     <span class="hide-on-med-and-down">Eliminar Todo</span>
                 </button>
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3">
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 modal-trigger" data-target="mfileup">
                     <i class="fa fa-file-excel-o"></i>
                     <span class="hide-on-med-and-down">Cargar Archivo</span>
                 </button>
@@ -145,29 +145,13 @@
             </div>
         </div>
     </div>
-    <table class="table responsive-table floatThead">
-        <thead class="amber lighten-4">
-            <tr>
-                <th class="center-align"></th>
-                <th class="center-align">Código</th>
-                <th>Descripción</th>
-                <th class="center-align">Marca</th>
-                <th class="center-align">Modelo</th>
-                <th class="center-align">Unidad</th>
-                <th class="right-align">Vendido</th>
-                <th class="right-align">Pendiente</th>
-                <th class="right-align">Enviada</th>
-                <th class="right-align">Compra</th>
-                <th class="right-align">Venta</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="row">
+    <div class="col l12">
         {% verbatim %}
-            <tr ng-repeat="x in dsmaterials" class="text-12">
+            <script type="text/ng-template" id="areatmp.html">
                 <td class="center-align">{{$index + 1}}</td>
                 <td class="center-align text-9">{{x.fields.materials.pk}}</td>
-                <td>{{x.fields.materials.fields.matnom}}</td>
+                <td>{{x.fields.materials.fields.matnom}} {{x.fields.materials.fields.matmed}}</td>
                 <td class="center-align">{{x.fields.brand.fields.brand}}</td>
                 <td class="center-align">{{x.fields.model.fields.model}}</td>
                 <td class="center-align">{{x.fields.materials.fields.unidad}}</td>
@@ -176,11 +160,54 @@
                 <td class="right-align">{{x.fields.qguide}}</td>
                 <td class="right-align">{{x.fields.ppurchase}}</td>
                 <td class="right-align">{{x.fields.psales}}</td>
-                <td></td>
-            </tr>
+                <td class="right-align">{{x.fields.quantity * x.fields.ppurchase | number:2}}</td>
+                <td class="center-align">
+                    <a href="#" class="dropdown-button btn waves-effect waves-light grey lighten-5 grey-text text-darken-3" data-constrainwidth="200" data-activates="ba{{x.fields.materials.pk}}">
+                      <i class="fa fa-cog"></i>
+                    </a>
+                    <ul id="ba{{x.fields.materials.pk}}" class="dropdown-content">
+                      <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="" class="waves-effect waves-light light-blue-text text-darken-3"><small><i class="fa fa-edit"></i> Editar</small></a></li>
+                      <li class="divider"></li>
+                      <li><a href="#!" style="padding: 2px 0px 2px 3px;" class="waves-effect waves-light red-text text-darken-1"><small><i class="fa fa-trash"></i> Eliminar</small></a></li>
+                    </ul>
+                </td>
+            </script>
         {% endverbatim %}
-        </tbody>
-    </table>
+        <table class="table responsive-table floatThead table-withoutApproved">
+            <caption ng-show="fmatwoa">
+                <div class="input-field">
+                    <i class="prefix fa fa-filter"></i>
+                    <input type="text" ng-model="finmwoa">
+                    <label>Buscar material</label>
+                </div>
+            </caption>
+            <thead class="amber lighten-4">
+                <tr>
+                    <th class="center-align">
+                        <i class="fa fa-angle-double-up cursor-hand" onClick="$('html,body').animate({scrollTop:500},400);"></i>
+                    </th>
+                    <th class="center-align">Código</th>
+                    <th>Descripción</th>
+                    <th class="center-align">Marca</th>
+                    <th class="center-align">Modelo</th>
+                    <th class="center-align">Unidad</th>
+                    <th class="right-align">Vendido</th>
+                    <th class="right-align">Pendiente</th>
+                    <th class="right-align">Enviada</th>
+                    <th class="right-align">Compra</th>
+                    <th class="right-align">Venta</th>
+                    <th>Importe</th>
+                    <th class="center-align"><i class="fa fa-search cursor-hand" ng-model="fmatwoa" ng-click="fmatwoa=!fmatwoa"></i></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% verbatim %}
+                <tr ng-include src="'areatmp.html'" ng-repeat="x in dsmaterials | filter: finmwoa" class="text-12"></tr>
+            {% endverbatim %}
+            </tbody>
+        </table>
+    </div>
+    </div>
     <!-- modal  -->
     <div class="modal" id="mpcopy">
         <div class="modal-content">
@@ -198,12 +225,16 @@
                     <div>
                         {{x.pk}} - {{x.fields.nompro}}
                         <a href="#" class="secondary-content" ng-click="getsector(x.pk)">
-                            <i class="fa fa-send"></i>
+                            <i class="fa fa-chevron-right"></i>
                         </a>
                     </div>
                 </li>
             {% endverbatim %}
             </ul>
+            <button type="button" class="btn waves-effect grey lighten-4 grey-text text-darken-3" ng-show="fsl" ng-click="fsl=false;fpl=false">
+                <i class="fa fa-chevron-left"></i>
+                <span>regresar</span>
+            </button>
             <ul class="collection with-header" ng-model="fsl" ng-show="fsl">
                 <li class="collection-header">
                     <div class="input-field">
@@ -215,14 +246,38 @@
             {% verbatim %}
                 <li class="collection-item" ng-repeat="x in ascsector | filter: ccsf |orderBy:'-pk'" data-value="{{x.pk}}">
                     <div>
-                        {{x.pk}} - {{x.fields.nompro}}
-                        <a href="#" class="secondary-content" ng-click="getsector(x.pk)">
-                            <i class="fa fa-send"></i>
+                        {{x.sector_id}} - {{x.nomsec}}
+                        <a href="#" class="secondary-content" ng-click="ccopyps(x.sector_id)">
+                            <i class="fa fa-clone"></i>
                         </a>
                     </div>
                 </li>
             {% endverbatim %}
             </ul>
+        </div>
+    </div>
+    <div class="modal" id="mfileup">
+        <div class="modal-content">
+            <h4>Cargar Archivo</h4>
+            <div class="file-field input-field">
+                <div class="btn red darken-1">
+                    <span>Archivo</span>
+                    <input type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                </div>
+                <div class="file-path-wrapper">
+                    <input type="text" class="file-path validate">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn grey lighten-4 grey-text text-darken-3 left modal-action modal-close">
+                <i class="fa fa-times"></i>
+                Cancelar
+            </button>
+            <button type="button" class="btn red darken-1">
+                <i class="fa fa-upload"></i>
+                Cargar
+            </button>
         </div>
     </div>
 </div>

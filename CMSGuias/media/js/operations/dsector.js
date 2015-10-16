@@ -22,9 +22,18 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
   angular.element(document).ready(function() {
+    var $table;
+    $('.modal-trigger').leanModal();
     $scope.getListAreaMaterials();
     $scope.getProject();
-    $('.modal-trigger').leanModal();
+    $table = $(".floatThead");
+    $table.floatThead({
+      position: 'absolute',
+      top: 65,
+      scrollContainer: function($table) {
+        return $table.closest('.wrapper');
+      }
+    });
   });
   $scope.getListAreaMaterials = function() {
     var data;
@@ -35,13 +44,24 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
       params: data
     }).success(function(response) {
       if (response.status) {
-        console.log(response);
         $scope.dsmaterials = response.list;
-        console.log($scope.dsmaterials);
+        $(".floatThead").floatThead('reflow');
+        $scope.inDropdownTable(".table-withoutApproved");
       } else {
         swal("Error!", "al obtener la lista de materiales del área", "error");
       }
     });
+  };
+  $scope.inDropdownTable = function(table) {
+    console.log($(table + " > tbody > tr").length);
+    if ($(table + " > tbody > tr").length > 0) {
+      $('.dropdown-button').dropdown();
+      return false;
+    } else {
+      setTimeout(function() {
+        return $scope.inDropdownTable(table);
+      }, 1400);
+    }
   };
   $scope.saveMateial = function() {
     var data;
@@ -77,7 +97,6 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
         }
       });
     }
-    console.log(data);
   };
   $scope.getProject = function() {
     $http.get("/sales/projects/", {
@@ -100,10 +119,80 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
       }
     }).success(function(response) {
       if (response.status) {
-        $scope.ascsector = response.sector;
+        $scope.ascsector = response.list;
       } else {
         swal("Error", "No se pudo cargar los datos del sector", "error");
       }
     });
   };
+  $scope.ccopyps = function(sector) {
+    swal({
+      title: 'Copiar lista de Sector?',
+      text: 'Realmente desea realizar la copia.',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dd6b55',
+      confirmButtonText: 'Si, Copiar',
+      cancelButtonText: 'No, Cancelar',
+      closeOnConfirm: true,
+      closeOnCancel: true
+    }, function(isConfirm) {
+      var data;
+      if (isConfirm) {
+        if (sector) {
+          data = {
+            project: sector.substring(0, 7),
+            sector: sector,
+            copysector: true
+          };
+          $http({
+            url: "",
+            method: "post",
+            data: $.param(data)
+          }).success(function(response) {
+            if (response.status) {
+              location.reload();
+            } else {
+              swal("Error", "No se a guardado los datos.", "error");
+            }
+          });
+        } else {
+          swal("Alerta!", "El código de sector no es valido.", "warning");
+        }
+      }
+    });
+  };
+  $scope.delAreaMA = function() {
+    swal({
+      title: 'Realmente desea eliminar?',
+      text: 'toda la lista de materiales de esta area.',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dd6b55',
+      confirmButtonText: 'Si, Eliminar',
+      cancelButtonText: 'No, Cancelar'
+    }, function(isConfirm) {
+      if (isConfirm) {
+        $http({
+          url: "",
+          data: $.param({
+            'delAreaMA': true
+          }),
+          method: 'post'
+        }).success(function(response) {
+          if (response.status) {
+            location.reload();
+          } else {
+            swal("Alerta", "no se elimino los materiales del área", "warning");
+          }
+        });
+      }
+    });
+  };
+  $scope.$watch('ascsector', function() {
+    if ($scope.ascsector) {
+      $scope.fsl = true;
+      $scope.fpl = true;
+    }
+  });
 });

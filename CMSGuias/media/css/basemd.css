@@ -80,3 +80,6 @@ select:focus:not([readonly]) + label {
 .text-9 {
   font-size: 9px;
 }
+.cursor-hand {
+  cursor: pointer;
+}

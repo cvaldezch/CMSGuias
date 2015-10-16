@@ -16,10 +16,15 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
   angular.element(document).ready ->
+    $('.modal-trigger').leanModal()
     $scope.getListAreaMaterials()
     $scope.getProject()
-    $('.modal-trigger').leanModal()
-    # $table = $(".floatThead")
+    $table = $(".floatThead")
+    $table.floatThead
+      position: 'absolute'
+      top: 65
+      scrollContainer: ($table) ->
+        return $table.closest('.wrapper')
     # $table.floatThead
     #   zIndex: 998
     # angular.element($window).bind 'resize', ->
@@ -35,25 +40,24 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
     $http.get "", params: data
     .success (response) ->
       if response.status
-        console.log response
         $scope.dsmaterials = response.list
-        console.log $scope.dsmaterials
+        $(".floatThead").floatThead 'reflow'
+        $scope.inDropdownTable ".table-withoutApproved"
         return
       else
         swal "Error!", "al obtener la lista de materiales del área", "error"
         return
     return
-  # $scope.unitList = ->
-  #   $http.get '/unit/list',
-  #     list: true
-  #   .success (response) ->
-  #     if response.status
-  #       $scope.unit = response.unit
-  #       return
-  #     else
-  #       swal "Error", "no hay datos para mostrar, Unidad", "error"
-  #       return
-  #   return
+  $scope.inDropdownTable = (table) ->
+    console.log $("#{table} > tbody > tr").length
+    if $("#{table} > tbody > tr").length > 0
+      $('.dropdown-button').dropdown()
+      return false
+    else
+      setTimeout ->
+        $scope.inDropdownTable table
+      , 1400
+    return
   $scope.saveMateial = ->
     data = $scope.mat
     data.savepmat = true
@@ -83,7 +87,6 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
         else
           swal "Error", " No se guardado los datos", "error"
           return
-    console.log data
     return
   $scope.getProject = ->
     $http.get "/sales/projects/",
@@ -101,12 +104,75 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
     params: 'pro': project, 'sub': ''
     .success (response) ->
       if response.status
-        $scope.ascsector = response.sector
+        $scope.ascsector = response.list
         return
       else
         swal "Error", "No se pudo cargar los datos del sector", "error"
         return
     return
+  $scope.ccopyps = (sector) ->
+    swal
+      title: 'Copiar lista de Sector?'
+      text: 'Realmente desea realizar la copia.'
+      type: 'warning'
+      showCancelButton: true
+      confirmButtonColor: '#dd6b55'
+      confirmButtonText: 'Si, Copiar'
+      cancelButtonText: 'No, Cancelar'
+      closeOnConfirm: true
+      closeOnCancel: true
+    , (isConfirm) ->
+      if isConfirm
+        if sector
+          data =
+            project: sector.substring(0, 7)
+            sector: sector
+            copysector: true
+          $http
+            url: ""
+            method: "post"
+            data: $.param data
+          .success (response) ->
+            if response.status
+              location.reload()
+              return
+            else
+              swal "Error", "No se a guardado los datos.", "error"
+              return
+          return
+        else
+          swal "Alerta!", "El código de sector no es valido.", "warning"
+          return
+    return
+  $scope.delAreaMA = ->
+    swal
+      title: 'Realmente desea eliminar?'
+      text: 'toda la lista de materiales de esta area.'
+      type: 'warning'
+      showCancelButton: true
+      confirmButtonColor: '#dd6b55'
+      confirmButtonText: 'Si, Eliminar'
+      cancelButtonText: 'No, Cancelar'
+    , (isConfirm) ->
+      if isConfirm
+        $http
+          url: ""
+          data: $.param 'delAreaMA':true
+          method: 'post'
+        .success (response) ->
+          if response.status
+            location.reload()
+            return
+          else
+            swal "Alerta", "no se elimino los materiales del área", "warning"
+            return
+        return
+    return
+  $scope.$watch 'ascsector', ->
+    if $scope.ascsector
+      $scope.fsl = true
+      $scope.fpl = true
+      return
   # $scope.$watch 'gui.smat', ->
   #   $(".floatThead").floatThead 'reflow'
   #   return

@@ -20,6 +20,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from CMSGuias.apps.home.models import *
 from .models import *
 from .forms import *
+from CMSGuias.apps.ventas.models import Metradoventa
 from CMSGuias.apps.tools import genkeys
 
 
@@ -271,6 +272,39 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                     dsm.ppurchase = request.POST['ppurchase']
                     dsm.psales = request.POST['psales']
                     dsm.save()
+                    context['status'] = True
+                if 'copysector' in request.POST:
+                    sec = MetProject.objects.filter(
+                        proyecto_id=request.POST['project'],
+                        sector_id=request.POST['sector'])
+                    if not sec:
+                        sec = Metradoventa.objects.filter(
+                            proyecto_id=request.POST['project'],
+                            sector_id=request.POST['sector'])
+                    if sec:
+                        for x in sec:
+                            try:
+                                ds = DSMetrado.objects.get(
+                                        dsector_id=kwargs['area'],
+                                        materials_id=x.materiales_id)
+                            except DSMetrado.DoesNotExist:
+                                ds = DSMetrado()
+                            ds.dsector_id = kwargs['area']
+                            ds.materials_id = x.materiales_id
+                            ds.brand_id = x.brand_id
+                            ds.model_id = x.model_id
+                            ds.quantity = x.cantidad
+                            ds.qorder = x.cantidad
+                            ds.qguide = 0
+                            ds.ppurchase = x.precio
+                            ds.psales = x.sales
+                            ds.save()
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+                if 'delAreaMA' in request.POST:
+                    DSMetrado.objects.filter(
+                        dsector_id=kwargs['area']).delete()
                     context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
