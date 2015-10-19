@@ -52,6 +52,14 @@
         <i class="fa fa-refresh"></i>
         <span>Actualizar</span>
       </button>
+      <button type="button" class="btn green lighten-2" ng-click="filexls()">
+        <i class="fa fa-file-excel-o"></i>
+        <span>Archivo</span>
+      </button>
+      <button type="button" class="btn green lighten-2" ng-click="getPrices()">
+        <i class="fa fa-dollar"></i>
+        <span>Validar Precios</span>
+      </button>
       <button type="button" class="btn red darken-1 right" ng-click="">
         <i class="fa fa-thumbs-o-up"></i>
         <span>Aprobar</span>
@@ -251,6 +259,38 @@
             <input type="text" class="file-path validate">
           </div>
         </div>
+      </div>
+    </div>
+    <div class="modal col l10 offset-l1" id="mwithoutprices">
+      <div class="modal-content">
+        <table class="table responsive-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Código</th>
+            <th>Descripción</th>
+            <th>Cantidad</th>
+            <th class="right-align">P. Compra</th>
+            <th class="right-align">P. Venta</th>
+          </tr>
+        </thead>
+          <tbody>
+          {% verbatim %}
+            <tr class="text-12" ng-repeat="x in withoutPrices">
+              <td>{{$index+1}}</td>
+              <td>{{x.fields.materials.pk}}</td>
+              <td>{{x.fields.materials.fields.matnom}} {{x.fields.materials.fields.matmed}}</td>
+              <td class="center-align">{{x.fields.quantity}}</td>
+              <td><input class="right-align" data-field="purchase" data-materials="{{x.fields.materials.pk}}" ng-disabled="x.fields.ppurchase != 0?true:false" type="number" step="0.01" value="{{x.fields.ppurchase}}" ng-blur="savePricewithout()"></td>
+              <td><input class="right-align" data-field="sales" data-materials="{{x.fields.materials.pk}}" ng-disabled="x.fields.psales != 0?true:false" type="number" step="0.01" value="{{x.fields.psales}}" ng-blur="savePricewithout($event)"></td>
+            </tr>
+          {% endverbatim %}
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn waves-effect waves-green modal-action modal-close left grey lighten-5 grey-text text-darken-3"><i class="fa fa-times"></i> Cerrar</button>
+        <a href="#" class="waves-effect waves-green btn-flat modal-action modal-close"><i class="fa fa-check"></i> Listo</a>
       </div>
     </div>
   </div>

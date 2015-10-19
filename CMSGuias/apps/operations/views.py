@@ -9,6 +9,7 @@ from django.core import serializers
 # from django.contrib.auth.mod import User
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
+from django.db.models import Q
 from django.shortcuts import render_to_response, render
 from django.utils import simplejson
 from django.utils.decorators import method_decorator
@@ -138,6 +139,31 @@ class ProgramingProject(JSONResponseMixin, View):
                                         ds,
                                         relations=('sgroup',)))
                     context['status'] = True
+                if 'valPrices' in request.GET:
+                    # get sgroup
+                    sg = [x[0] for x in SGroup.objects.filter(
+                            project_id=kwargs['pro'],
+                            subproject_id=kwargs[
+                                'sub'] if unicode(kwargs[
+                                    'sub']) != 'None' and unicode(kwargs[
+                                        'sub']) != '' else None,
+                            sector_id=kwargs['sec']).values_list('sgroup_id',)]
+                    sec = [x[0] for x in DSector.objects.filter(
+                            sgroup_id__in=sg).values_list('dsector_id')]
+                    without = DSMetrado.objects.filter(
+                        Q(dsector_id__in=sec),
+                        Q(ppurchase=0) | Q(psales=0) | Q(quantity=0)
+                        ).order_by('materials__matnom')
+                    if without:
+                        context['list'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                without,
+                                relations=('materials',),
+                                indent=4))
+                        context['status'] = True
+                    else:
+                        context['status'] = False
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = Falses
@@ -204,8 +230,6 @@ class ProgramingProject(JSONResponseMixin, View):
                             form = DSectorForm(request.POST, request.FILES)
                     except ObjectDoesNotExist as e:
                         form = DSectorForm(request.POST, request.FILES)
-                    print form
-                    print form.is_valid()
                     if form.is_valid():
                         if 'dsector_id' not in request.POST:
                             add = form.save(commit=False)
@@ -222,6 +246,25 @@ class ProgramingProject(JSONResponseMixin, View):
                     else:
                         context['status'] = False
                         context['raise'] = 'Fields empty'
+                if 'savePricewithout' in request.POST:
+                    print request.POST
+                    sg = [x[0] for x in SGroup.objects.filter(
+                            project_id=kwargs['pro'],
+                            subproject_id=kwargs[
+                                'sub'] if unicode(kwargs[
+                                    'sub']) != 'None' and unicode(kwargs[
+                                        'sub']) != '' else None,
+                            sector_id=kwargs['sec']).values_list('sgroup_id',)]
+                    sec = [x[0] for x in DSector.objects.filter(
+                            sgroup_id__in=sg).values_list('dsector_id')]
+                    dsm = DSMetrado.objects.filter(
+                        dsector_id__in=sec,
+                        materials_id=request.POST['materials'])
+                    if request.POST['field'] == 'purchase':
+                        dsm.update(ppurchase=request.POST['value'])
+                    if request.POST['field'] == 'sales':
+                        dsm.update(psales=request.POST['value'])
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

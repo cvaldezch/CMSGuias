@@ -130,6 +130,36 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
           swal "Error!", "No se han obtenidos datos. #{response.raise}", "error"
           return
     return
+  $scope.getPrices = ->
+    $http.get "", params: 'valPrices': true
+    .success (response) ->
+      if response.status
+        $scope.withoutPrices = response.list
+        console.log $scope.withoutPrices
+        console.log response.list
+        $("#mwithoutprices").openModal()
+        console.log "Se encontraron materielas sin precio"
+        return
+      else
+        swal "Alerta", "No se han encontrado materiales sin precios.", "warning"
+        return
+    return
+  $scope.savePricewithout = ($event)->
+    console.log $event
+    data =
+      savePricewithout: true
+      value: $event.target.value
+      materials: $event.target.dataset.materials
+      field: $event.target.dataset.field
+    $http
+      url: ''
+      method: 'post'
+      data: $.param data
+    .success (response) ->
+      if not response.status
+        swal "Error", "No se guardo el precio, Intentelo nuevamente.", "warning"
+        return
+    return
   return
 
 hextorbga = (hex, alf=1) ->

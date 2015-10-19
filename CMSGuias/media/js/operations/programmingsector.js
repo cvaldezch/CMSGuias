@@ -151,6 +151,42 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
       }
     });
   };
+  $scope.getPrices = function() {
+    $http.get("", {
+      params: {
+        'valPrices': true
+      }
+    }).success(function(response) {
+      if (response.status) {
+        $scope.withoutPrices = response.list;
+        console.log($scope.withoutPrices);
+        console.log(response.list);
+        $("#mwithoutprices").openModal();
+        console.log("Se encontraron materielas sin precio");
+      } else {
+        swal("Alerta", "No se han encontrado materiales sin precios.", "warning");
+      }
+    });
+  };
+  $scope.savePricewithout = function($event) {
+    var data;
+    console.log($event);
+    data = {
+      savePricewithout: true,
+      value: $event.target.value,
+      materials: $event.target.dataset.materials,
+      field: $event.target.dataset.field
+    };
+    $http({
+      url: '',
+      method: 'post',
+      data: $.param(data)
+    }).success(function(response) {
+      if (!response.status) {
+        swal("Error", "No se guardo el precio, Intentelo nuevamente.", "warning");
+      }
+    });
+  };
 });
 
 hextorbga = function(hex, alf) {
