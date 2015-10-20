@@ -349,6 +349,19 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                     DSMetrado.objects.filter(
                         dsector_id=kwargs['area']).delete()
                     context['status'] = True
+                if 'availableNipple' in request.POST:
+                    dsm = DSMetrado.objects.get(
+                        dsector_id=kwargs['area'],
+                        materials_id=request.POST['materials'],
+                        brand_id=request.POST['brand'],
+                        model_id=request.POST['model'])
+                    if dsm.nipple:
+                        dsm.nipple = False
+                        dsm.save()
+                    else:
+                        dsm.nipple = True
+                        dsm.save()
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

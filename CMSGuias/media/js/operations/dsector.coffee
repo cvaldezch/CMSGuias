@@ -157,7 +157,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
       if isConfirm
         $http
           url: ""
-          data: $.param 'delAreaMA':true
+          data: $.param 'delAreaMA': true
           method: 'post'
         .success (response) ->
           if response.status
@@ -167,6 +167,34 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
             swal "Alerta", "no se elimino los materiales del área", "warning"
             return
         return
+    return
+  $scope.availableNipple = ->
+    mat = this
+    # console.log mat
+    swal
+      title: "Desea generar Niples de este materiales?"
+      text: "#{mat.$parent.x.fields.materials.fields.matnom} #{mat.$parent.x.fields.materials.fields.matmed}"
+      type: "warning"
+      showCancelButton: true
+      confirmButtonColor: "#dd6b55"
+      confirmButtonText: "Si, habilitar Niple"
+      cancelButtonText: "No"
+      (isConfirm) ->
+        if isConfirm
+          $http
+            url: ""
+            data:
+              $.param
+                'availableNipple': true
+                'materials': mat.$parent.x.fields.materials.pk
+                'brand': mat.$parent.x.fields.brand.pk
+                'model': mat.$parent.x.fields.model.pk
+            method: "post"
+          .success (response) ->
+            if response.status
+              swal "Información", "Nipple habilitado para el material", "info"
+              return
+          return
     return
   $scope.$watch 'ascsector', ->
     if $scope.ascsector

@@ -189,6 +189,36 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
       }
     });
   };
+  $scope.availableNipple = function() {
+    var mat;
+    mat = this;
+    swal({
+      title: "Desea generar Niples de este materiales?",
+      text: mat.$parent.x.fields.materials.fields.matnom + " " + mat.$parent.x.fields.materials.fields.matmed,
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dd6b55",
+      confirmButtonText: "Si, habilitar Niple",
+      cancelButtonText: "No"
+    }, function(isConfirm) {
+      if (isConfirm) {
+        $http({
+          url: "",
+          data: $.param({
+            'availableNipple': true,
+            'materials': mat.$parent.x.fields.materials.pk,
+            'brand': mat.$parent.x.fields.brand.pk,
+            'model': mat.$parent.x.fields.model.pk
+          }),
+          method: "post"
+        }).success(function(response) {
+          if (response.status) {
+            swal("Información", "Nipple habilitado para el material", "info");
+          }
+        });
+      }
+    });
+  };
   $scope.$watch('ascsector', function() {
     if ($scope.ascsector) {
       $scope.fsl = true;

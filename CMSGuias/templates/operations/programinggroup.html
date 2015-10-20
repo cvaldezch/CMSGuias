@@ -44,23 +44,23 @@
         <i class="fa fa-plus"></i>
         <span>Agregar Area</span>
       </button>
-      <button type="button" class="btn green lighten-2" ng-model="dsfshow" ng-click="dsfshow=!dsfshow">
+      <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-model="dsfshow" ng-click="dsfshow=!dsfshow">
         <i class="fa fa-search"></i>
         <span>Buscar</span>
       </button>
-      <button type="button" class="btn green lighten-2" ng-click="getDSectorList()">
+      <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-click="getDSectorList()">
         <i class="fa fa-refresh"></i>
         <span>Actualizar</span>
       </button>
-      <button type="button" class="btn green lighten-2" ng-click="filexls()">
+      <button type="button" class="btn green lighten-2 waves-effect waves-light modal-trigger" data-target="mexcel">
         <i class="fa fa-file-excel-o"></i>
         <span>Archivo</span>
       </button>
-      <button type="button" class="btn green lighten-2" ng-click="getPrices()">
+      <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-click="getPrices()">
         <i class="fa fa-dollar"></i>
         <span>Validar Precios</span>
       </button>
-      <button type="button" class="btn red darken-1 right" ng-click="">
+      <button type="button" class="btn red darken-1 waves-effect waves-light right" ng-click="">
         <i class="fa fa-thumbs-o-up"></i>
         <span>Aprobar</span>
       </button>
@@ -291,6 +291,20 @@
       <div class="modal-footer">
         <button type="button" class="btn waves-effect waves-green modal-action modal-close left grey lighten-5 grey-text text-darken-3"><i class="fa fa-times"></i> Cerrar</button>
         <a href="#" class="waves-effect waves-green btn-flat modal-action modal-close"><i class="fa fa-check"></i> Listo</a>
+      </div>
+    </div>
+    <div id="mexcel" class="modal col l4 offset-l4">
+      <div class="modal-content">
+        <h5>Cargar Archivo</h5>
+        <div class="file-field input-field">
+          <div class="btn">
+            <span>Archivo</span>
+            <input type="file">
+          </div>
+          <div class="file-path-wrapper">
+            <input type="text" class="file-path validate">
+          </div>
+        </div>
       </div>
     </div>
   </div>

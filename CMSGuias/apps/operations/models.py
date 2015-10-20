@@ -314,6 +314,7 @@ class DSMetrado(models.Model):
     psales = models.DecimalField(max_digits=8, decimal_places=3, default=0)
     comment = models.TextField(null=True, blank=True)
     tag = models.CharField(max_length=1, default='0')
+    nipple = models.BooleanField(default=False, blank=True)
     flag = models.BooleanField(default=True)
 
     audit_log = AuditLog()
@@ -342,6 +343,7 @@ class MMetrado(models.Model):
     psales = models.DecimalField(max_digits=8, decimal_places=3, default=0)
     comment = models.TextField(null=True, blank=True)
     tag = models.CharField(max_length=1, default='0')
+    nipple = models.BooleanField(default=False, blank=True)
     flag = models.BooleanField(default=True)
 
     class Meta:
@@ -350,3 +352,31 @@ class MMetrado(models.Model):
 
     def __unicode__(self):
         return '%s %s %s' % (self.qcode, self.dsector_id, self.materiales_id)
+
+
+class HistoryDSMetrado(models.Model):
+    qcode = models.CharField(max_length=16)
+    register = models.DateTimeField(auto_now=True)
+    dsector = models.ForeignKey(DSector, to_field='dsector_id')
+    materials = models.ForeignKey(Materiale, to_field='materiales_id')
+    brand = models.ForeignKey(Brand, to_field='brand_id')
+    model = models.ForeignKey(Model, to_field='model_id')
+    quantity = models.FloatField()
+    qorder = models.FloatField()
+    qguide = models.FloatField()
+    ppurchase = models.DecimalField(max_digits=8, decimal_places=3, default=0)
+    psales = models.DecimalField(max_digits=8, decimal_places=3, default=0)
+    comment = models.TextField(null=True, blank=True)
+    tag = models.CharField(max_length=1, default='0')
+    nipple = models.BooleanField(default=False, blank=True)
+    flag = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = 'SMetrado'
+        verbose_name_plural = 'SMetrados'
+
+    def __unicode__(self):
+        return '%s %s %f %f' % (self.dsector_id,
+                                self.materials,
+                                self.quantity,
+                                self.ppurchase)
