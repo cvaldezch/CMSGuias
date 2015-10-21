@@ -53,7 +53,6 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
     });
   };
   $scope.inDropdownTable = function(table) {
-    console.log($(table + " > tbody > tr").length);
     if ($(table + " > tbody > tr").length > 0) {
       $('.dropdown-button').dropdown();
       return false;
@@ -199,7 +198,8 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
       showCancelButton: true,
       confirmButtonColor: "#dd6b55",
       confirmButtonText: "Si, habilitar Niple",
-      cancelButtonText: "No"
+      cancelButtonText: "No",
+      timer: 2000
     }, function(isConfirm) {
       if (isConfirm) {
         $http({
@@ -223,6 +223,22 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
     if ($scope.ascsector) {
       $scope.fsl = true;
       $scope.fpl = true;
+    }
+  });
+  $scope.$watch('dsmaterials', function() {
+    var count, k;
+    count = 0;
+    for (k in $scope.dsmaterials) {
+      if ($scope.dsmaterials[k].fields.nipple) {
+        count++;
+      }
+    }
+    console.log(count);
+    if (count) {
+      $scope.snipple = true;
+      setTimeout(function() {
+        $('.collapsible').collapsible();
+      }, 800);
     }
   });
 });

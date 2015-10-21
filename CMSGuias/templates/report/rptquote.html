@@ -26,8 +26,8 @@
                 <tr><td><strong>Almacén :</strong></td><td> {{ bedside.almacen.nombre }}</td></tr>
                 <tr><td width="3cm"><strong>Fecha Registrado :</strong></td><td> {{ bedside.registrado }}</td></tr>
                 <tr><td><strong>Fecha Traslado :</strong></td><td> {{ bedside.traslado }}</td></tr>
-                <tr><td><strong>RUC:</strong></td><td> {{ details.0.proveedor_id }}</td></tr>
-                <tr><td><strong>Razón Social:</strong></td><td> {{ details.0.proveedor.razonsocial }}</td></tr>
+                <tr><td><strong>RUC:</strong></td><td> {{ details.0.0.supplier_id }}</td></tr>
+                <tr><td><strong>Razón Social:</strong></td><td> {{ details.0.0.reason }}</td></tr>
                 <tr><td><strong>Observación :</strong></td><td> {{ bedside.obser|safe }}</td></tr>
             </table>
         </div>
@@ -48,6 +48,7 @@
     </header>
     <section>
         <div class="details">
+        {% for s in details %}
             <table>
                 <thead>
                     <tr>
@@ -59,27 +60,30 @@
                         <th>Cantidad</th>
                         <th>Precio</th>
                         <th>Marca</th>
+                        <th>Modelo</th>
                         <th>Entrega</th>
                     </tr>
                 </thead>
                 <tbody>
-                {% for x in details %}
+                {% for x in s %}
                     <tr>
-                        <td class="text-center item">{{ forloop.counter }}</td>
-                        <td class="text-center cod">{{ x.materiales_id }}</td>
-                        <td>{{ x.materiales.matnom }}
-                        <!-- </td>
-                        <td> -->
-                        {{ x.materiales.matmed }}</td>
-                        <td class="text-center">{{ x.materiales.unidad.uninom }}</td>
-                        <td class="text-center">{{ x.cantidad|safe }}</td>
-                        <td class="text-center">{{ x.precio|floatformat:"2" }}</td>
-                        <td class="text-center">{{ x.marca }}</td>
-                        <td class="text-center">{{ x.entrega|date:"d/m/Y" }}</td>
+                        <td class="text-center item">{{ x.item }}</td>
+                        <td class="text-center cod">{{ x.materials }}</td>
+                        <td>{{ x.name }}</td>
+                        <td class="text-center">{{ x.unit }}</td>
+                        <td class="text-center">{{ x.quantity|safe }}</td>
+                        <td class="text-center">{{ x.price|floatformat:"2" }}</td>
+                        <td class="text-center">{{ x.brand }}</td>
+                        <td class="text-center">{{ x.model }}</td>
+                        <td class="text-center">{{ x.delivery|date:"d/m/Y" }}</td>
                     </tr>
                 {% endfor%}
                 </tbody>
             </table>
+            {% if not forloop.last %}
+                <div><pdf:nextpage /></div>
+            {% endif %}
+        {% endfor %}
         </div>
         <p>
             {% if customers.obser %}

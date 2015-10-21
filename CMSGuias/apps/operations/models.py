@@ -56,38 +56,6 @@ class MetProject(models.Model):
                                     self.precio)
 
 
-class Nipple(models.Model):
-    proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
-    subproyecto = models.ForeignKey(
-                                    Subproyecto,
-                                    to_field='subproyecto_id',
-                                    blank=True,
-                                    null=True)
-    sector = models.ForeignKey(
-                                Sectore,
-                                to_field='sector_id',
-                                blank=True,
-                                null=True)
-    materiales = models.ForeignKey(Materiale, to_field='materiales_id')
-    cantidad = models.FloatField(null=True, default=1)
-    metrado = models.FloatField(null=False, default=0)
-    cantshop = models.FloatField(null=True, default=0)
-    tipo = models.CharField(max_length=1)
-    comment = models.CharField(
-                                max_length=250,
-                                default='',
-                                null=True,
-                                blank=True)
-    tag = models.CharField(max_length=1, default='0')
-    flag = models.BooleanField(default=True)
-
-    class Meta:
-        ordering = ['proyecto']
-
-    def __unicode__(self):
-        return ''
-
-
 class Deductive(models.Model):
     REL = (
             ('NN', 'Nothing'),
@@ -380,3 +348,45 @@ class HistoryDSMetrado(models.Model):
                                 self.materials,
                                 self.quantity,
                                 self.ppurchase)
+
+
+class Nipple(models.Model):
+    proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id', blank=True)
+    subproyecto = models.ForeignKey(
+                                    Subproyecto,
+                                    to_field='subproyecto_id',
+                                    blank=True,
+                                    null=True)
+    sector = models.ForeignKey(
+                                Sectore,
+                                to_field='sector_id',
+                                blank=True,
+                                null=True)
+    area = models.ForeignKey(
+            DSector,
+            to_field='dsector_id',
+            null=True,
+            blank=True)
+    materiales = models.ForeignKey(Materiale, to_field='materiales_id')
+    cantidad = models.FloatField(null=True, default=1)
+    metrado = models.FloatField(null=False, default=0)
+    cantshop = models.FloatField(null=True, default=0)
+    tipo = models.CharField(max_length=1)
+    comment = models.CharField(
+                                max_length=250,
+                                default='',
+                                null=True,
+                                blank=True)
+    tag = models.CharField(max_length=1, default='0')
+    flag = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['proyecto']
+
+    def __unicode__(self):
+        return '%s %s %f %f %s' % (
+            self.proyecto_id,
+            self.materiales_id,
+            self.cantidad,
+            self.metrado,
+            self.tipo)

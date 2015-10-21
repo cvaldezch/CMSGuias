@@ -14,9 +14,9 @@ from CMSGuias.apps import operations
 
 
 class Proyecto(models.Model):
-    STATUS_PROJECT = (('PE', 'PEDIENTE'), ('AC', 'ACTIVO'), ('CO', 'COMPLETO'),)
     proyecto_id = models.CharField(primary_key=True, max_length=7, null=False)
-    ruccliente = models.ForeignKey(Cliente, to_field='ruccliente_id', null=True)
+    ruccliente = models.ForeignKey(
+                    Cliente, to_field='ruccliente_id', null=True)
     nompro = models.CharField(max_length=200)
     registrado = models.DateTimeField(auto_now=True, null=False)
     comienzo = models.DateField(null=True)
@@ -28,12 +28,16 @@ class Proyecto(models.Model):
     direccion = models.CharField(max_length=200, null=False)
     obser = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=2, null=False, default='00')
-    empdni = models.ForeignKey(Employee, related_name='proyectoAsEmployee', null=True, blank=True)
-    approved = models.ForeignKey(Employee, related_name='approvedAsEmployee', null=True, blank=True)
-    currency = models.ForeignKey(Moneda, to_field='moneda_id', null=True, blank=True)
+    empdni = models.ForeignKey(
+            Employee, related_name='proyectoAsEmployee', null=True, blank=True)
+    approved = models.ForeignKey(
+            Employee, related_name='approvedAsEmployee', null=True, blank=True)
+    currency = models.ForeignKey(
+                Moneda, to_field='moneda_id', null=True, blank=True)
     exchange = models.FloatField(null=True, blank=True)
     typep = models.CharField(max_length=3, default='ACI')
-    contact = models.CharField(max_length=254, null=True, blank=True, default='')
+    contact = models.CharField(
+                max_length=254, null=True, blank=True, default='')
     phone = models.CharField(max_length=16, blank=True, null=True)
     email = models.EmailField(max_length=254, blank=True, null=True)
     flag = models.BooleanField(default=True, null=False)
@@ -67,9 +71,12 @@ class Proyecto(models.Model):
 
 class CloseProject(models.Model):
     def url(self, filename):
-        return 'storage/projects/%s/%s/closure/%s'%(self.project.registrado.strftime('%Y'),self.project_id,filename)
+        return 'storage/projects/%s/%s/closure/%s' % (
+            self.project.registrado.strftime('%Y'), self.project_id, filename)
+
     def uriaco(self, filename):
-        return 'storage/projects/%s/%s/closure/accounting/%s'%(self.project.registrado.strftime('%Y'),self.project_id,filename)
+        return 'storage/projects/%s/%s/closure/accounting/%s' % (
+            self.project.registrado.strftime('%Y'), self.project_id, filename)
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
     storageclose = models.BooleanField(default=False, blank=True)
     datestorage = models.DateField(auto_now=True)
@@ -82,25 +89,33 @@ class CloseProject(models.Model):
     otherin = models.FloatField(blank=True, default=0)
     otherout = models.FloatField(default=0, blank=True)
     retention = models.FloatField(default=0, blank=True)
-    fileaccounting = models.FileField(upload_to=uriaco,null=True,max_length=250)
+    fileaccounting = models.FileField(
+                        upload_to=uriaco, null=True, max_length=250)
     closeconfirm = models.CharField(default='', max_length=6, blank=True)
-    #close = models.BooleanField(default=False)
+    # close = models.BooleanField(default=False)
     status = models.CharField(default='PE', blank=True, max_length=2)
-    performedstorage = models.ForeignKey(Employee, related_name='storage', null=True, blank=True)
-    performedoperations = models.ForeignKey(Employee, related_name='operations', null=True, blank=True)
-    performeddocument = models.ForeignKey(Employee, related_name='documents', null=True, blank=True)
-    performedaccounting = models.ForeignKey(Employee, related_name='accounting', null=True, blank=True)
-    performedclose = models.ForeignKey(Employee, related_name='closeasproject', null=True, blank=True)
+    performedstorage = models.ForeignKey(
+                    Employee, related_name='storage', null=True, blank=True)
+    performedoperations = models.ForeignKey(
+                    Employee, related_name='operations', null=True, blank=True)
+    performeddocument = models.ForeignKey(
+                    Employee, related_name='documents', null=True, blank=True)
+    performedaccounting = models.ForeignKey(
+                    Employee, related_name='accounting', null=True, blank=True)
+    performedclose = models.ForeignKey(
+                Employee, related_name='closeasproject', null=True, blank=True)
+
 
 class Subproyecto(models.Model):
-    subproyecto_id = models.CharField(primary_key=True,max_length=7,null=False)
+    subproyecto_id = models.CharField(
+                        primary_key=True, max_length=7, null=False)
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
     nomsub = models.CharField(max_length=200)
     registrado = models.DateTimeField(auto_now=True)
-    comienzo = models.DateField(null=True,blank=True)
-    fin = models.DateField(null=True,blank=True)
-    obser = models.TextField(null=True,blank=True)
-    status = models.CharField(max_length=2,null=False,default='AC')
+    comienzo = models.DateField(null=True, blank=True)
+    fin = models.DateField(null=True, blank=True)
+    obser = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=2, null=False, default='AC')
     additional = models.BooleanField(blank=True, default=False)
     flag = models.BooleanField(default=True)
 
@@ -110,23 +125,26 @@ class Subproyecto(models.Model):
         ordering = ['nomsub']
 
     def __unicode__(self):
-        return '%s - %s %s'%(self.proyecto,self.subproyecto_id,self.nomsub)
+        return '%s - %s %s' % (self.proyecto, self.subproyecto_id, self.nomsub)
+
 
 class Sectore(models.Model):
-    sector_id = models.CharField(primary_key=True,max_length=20,null=False,unique=True)
+    sector_id = models.CharField(
+        primary_key=True, max_length=20, null=False, unique=True)
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
-    subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id',null=True, blank=True)
-    planoid = models.CharField(max_length=16,null=True,default='')
+    subproyecto = models.ForeignKey(
+                Subproyecto, to_field='subproyecto_id', null=True, blank=True)
+    planoid = models.CharField(max_length=16, null=True, default='')
     nomsec = models.CharField(max_length=200)
     registrado = models.DateTimeField(auto_now=True)
-    comienzo = models.DateField(null=True,blank=True)
-    fin = models.DateField(null=True,blank=True)
-    obser = models.TextField(null=True,blank=True)
+    comienzo = models.DateField(null=True, blank=True)
+    fin = models.DateField(null=True, blank=True)
+    obser = models.TextField(null=True, blank=True)
     amount = models.FloatField(default=0, blank=True, null=True)
     amountsales = models.FloatField(default=0, blank=True, null=True)
     atype = models.CharField(max_length=2, default='NN', blank=True)
     link = models.TextField(default='', blank=True)
-    status = models.CharField(max_length=2,null=False,default='AC')
+    status = models.CharField(max_length=2, null=False, default='AC')
     flag = models.BooleanField(default=True, null=False)
 
     audit_log = AuditLog()
@@ -135,11 +153,12 @@ class Sectore(models.Model):
         ordering = ['sector_id']
 
     def __unicode__(self):
-        return '%s'%(self.sector_id)
+        return '%s' % (self.sector_id)
 
     # @property
     # def itemsPercent(self):
-    #     obj = operations.models.MetProject.objects.filter(proyecto_id=self.proyecto_id, sector_id=self.sector_id)
+    #     obj = operations.models.MetProject.objects.filter(
+    #       proyecto_id=self.proyecto_id, sector_id=self.sector_id)
     #     items = obj.count()
     #     attend = obj.filter(tag='2').count()
     #     percent = ((attend * 100) / items)
@@ -148,36 +167,50 @@ class Sectore(models.Model):
     @property
     def stadistics(self):
         context = dict()
-        obj = operations.models.MetProject.objects.filter(proyecto_id=self.proyecto_id, sector_id=self.sector_id)
+        obj = operations.models.MetProject.objects.filter(
+                proyecto_id=self.proyecto_id, sector_id=self.sector_id)
         context['total'] = obj.count()
         context['attend'] = obj.filter(tag='2').count()
         context['semi'] = obj.filter(tag='1').count()
         context['pending'] = obj.filter(tag='0').count()
         return context
 
+
 class SectorFiles(models.Model):
     def url(self, filename):
         if self.subproyecto is None:
-            ruta = 'storage/projects/%s/%s/%s/%s'%(self.proyecto.registrado.strftime('%Y'),self.proyecto_id,self.sector_id,filename)
+            ruta = 'storage/projects/%s/%s/%s/%s' % (
+                    self.proyecto.registrado.strftime('%Y'),
+                    self.proyecto_id,
+                    self.sector_id,
+                    filename)
         else:
-            ruta = 'storage/projects/%s/%s/%s/%s/%s'%(self.proyecto.registrado.strftime('%Y'),self.proyecto_id, self.subproyecto_id,self.sector_id,filename)
+            ruta = 'storage/projects/%s/%s/%s/%s/%s' % (
+                    self.proyecto.registrado.strftime('%Y'),
+                    self.proyecto_id,
+                    self.subproyecto_id,
+                    self.sector_id,
+                    filename)
         return ruta
 
     sector = models.ForeignKey(Sectore, to_field='sector_id')
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
-    subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id',null=True, blank=True)
+    subproyecto = models.ForeignKey(
+                Subproyecto, to_field='subproyecto_id', null=True, blank=True)
     files = models.FileField(upload_to=url, max_length=200)
     note = models.TextField(default='', blank=True)
-    date = models.DateField(auto_now=True, default=globalVariable.getToday.date())
-    time = models.TimeField(auto_now=True, default=globalVariable.getToday.time())
+    date = models.DateField(auto_now=True)
+    time = models.TimeField(auto_now=True)
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return '%s - %s'%(self.sector, self.files)
+        return '%s - %s' % (self.sector, self.files)
+
 
 class Metradoventa(models.Model):
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
-    subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
+    subproyecto = models.ForeignKey(
+                Subproyecto, to_field='subproyecto_id', null=True, blank=True)
     sector = models.ForeignKey(Sectore, to_field='sector_id')
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     brand = models.ForeignKey(Brand, to_field='brand_id', default='BR000')
@@ -193,12 +226,15 @@ class Metradoventa(models.Model):
         ordering = ['proyecto']
 
     def __unicode__(self):
-        return '%s %f %f'%(self.materiales, self.cantidad, self.precio)
+        return '%s %f %f' % (self.materiales, self.cantidad, self.precio)
+
 
 class Alertasproyecto(models.Model):
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
-    subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
-    sector = models.ForeignKey(Sectore, to_field='sector_id', null=True, blank=True)
+    subproyecto = models.ForeignKey(
+                Subproyecto, to_field='subproyecto_id', null=True, blank=True)
+    sector = models.ForeignKey(
+                Sectore, to_field='sector_id', null=True, blank=True)
     registrado = models.DateTimeField(auto_now_add=True)
     empdni = models.ForeignKey(Employee, to_field='empdni_id')
     charge = models.ForeignKey(Cargo, to_field='cargo_id')
@@ -210,21 +246,30 @@ class Alertasproyecto(models.Model):
         ordering = ['proyecto']
 
     def __unicode__(self):
-        return '%s %s %s %s %s'%(self.proyecto, self.sector, self.charge, self.message, self.registrado)
+        return '%s %s %s %s %s' % (
+                                    self.proyecto,
+                                    self.sector,
+                                    self.charge,
+                                    self.message,
+                                    self.registrado)
+
 
 class HistoryMetProject(models.Model):
     date = models.DateTimeField(auto_now=True)
     token = models.CharField(max_length=6, default=globalVariable.get_Token())
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id', default='')
-    subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
+    subproyecto = models.ForeignKey(
+                Subproyecto, to_field='subproyecto_id', null=True, blank=True)
     sector = models.ForeignKey(Sectore, to_field='sector_id')
-    materials = models.ForeignKey(Materiale, to_field='materiales_id', default='')
+    materials = models.ForeignKey(
+                    Materiale, to_field='materiales_id', default='')
     brand = models.ForeignKey(Brand, to_field='brand_id', default='BR000')
     model = models.ForeignKey(Model, to_field='model_id', default='MO000')
     quantity = models.FloatField()
     price = models.FloatField()
     sales = models.DecimalField(max_digits=9, decimal_places=3, default=0)
-    comment = models.CharField(max_length=250,default='',null=True, blank=True)
+    comment = models.CharField(
+                max_length=250, default='', null=True, blank=True)
     quantityorders = models.FloatField(default=0)
     tag = models.CharField(max_length=1, default='0')
     flag = models.BooleanField(default=True)
@@ -233,20 +278,29 @@ class HistoryMetProject(models.Model):
         ordering = ['proyecto']
 
     def __unicode__(self):
-        return '%s %s %s %f %f'%(self.proyecto, self.sector, self.materials_id, self.quantity, self.price)
+        return '%s %s %s %f %f' % (
+                                    self.proyecto,
+                                    self.sector,
+                                    self.materials_id,
+                                    self.quantity,
+                                    self.price)
+
 
 class RestoreStorage(models.Model):
     date = models.DateField(auto_now=True)
     token = models.CharField(max_length=6, default=globalVariable.get_Token())
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id', default='')
-    subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
+    subproyecto = models.ForeignKey(
+                Subproyecto, to_field='subproyecto_id', null=True, blank=True)
     sector = models.ForeignKey(Sectore, to_field='sector_id')
-    materials = models.ForeignKey(Materiale, to_field='materiales_id', default='')
+    materials = models.ForeignKey(
+                    Materiale, to_field='materiales_id', default='')
     brand = models.ForeignKey(Brand, to_field='brand_id', default='BR000')
     model = models.ForeignKey(Model, to_field='model_id', default='MO000')
     quantity = models.FloatField()
     price = models.FloatField()
-    sales = models.DecimalField(max_digits=9, decimal_places=3, default=0, null=True, blank=True)
+    sales = models.DecimalField(
+            max_digits=9, decimal_places=3, default=0, null=True, blank=True)
     tag = models.CharField(max_length=1, default='0')
     flag = models.BooleanField(default=True)
 
@@ -254,19 +308,29 @@ class RestoreStorage(models.Model):
         ordering = ['proyecto']
 
     def __unicode__(self):
-        return '%s %s %s %f %f'%(self.proyecto, self.sector, self.materials_id, self.quantity, self.price)
+        return '%s %s %s %f %f' % (
+                    self.proyecto,
+                    self.sector,
+                    self.materials_id,
+                    self.quantity,
+                    self.price)
+
 
 class UpdateMetProject(models.Model):
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id', default='')
-    subproyecto = models.ForeignKey(Subproyecto, to_field='subproyecto_id', null=True, blank=True)
+    subproyecto = models.ForeignKey(
+                Subproyecto, to_field='subproyecto_id', null=True, blank=True)
     sector = models.ForeignKey(Sectore, to_field='sector_id')
-    materials = models.ForeignKey(Materiale, to_field='materiales_id', default='')
+    materials = models.ForeignKey(
+                    Materiale, to_field='materiales_id', default='')
     brand = models.ForeignKey(Brand, to_field='brand_id', default='BR000')
     model = models.ForeignKey(Model, to_field='model_id', default='MO000')
     quantity = models.FloatField()
     price = models.FloatField()
-    sales = models.DecimalField(max_digits=9, decimal_places=3, default=0, blank=True)
-    comment = models.CharField(max_length=250, default='',null=True, blank=True)
+    sales = models.DecimalField(
+                max_digits=9, decimal_places=3, default=0, blank=True)
+    comment = models.CharField(
+                max_length=250, default='', null=True, blank=True)
     quantityorders = models.FloatField(default=0, blank=True)
     tag = models.CharField(max_length=1, default='0')
     flag = models.BooleanField(default=True)
@@ -281,15 +345,25 @@ class UpdateMetProject(models.Model):
         ordering = ['proyecto']
 
     def __unicode__(self):
-        return '%s %s %s %f %f'%(self.proyecto, self.sector, self.materials_id, self.quantity, self.price)
+        return '%s %s %s %f %f' % (
+                                    self.proyecto,
+                                    self.sector,
+                                    self.materials_id,
+                                    self.quantity,
+                                    self.price)
+
 
 class PurchaseOrder(models.Model):
     def url(self, filename):
-        ruta = "storage/projects/%s/%s/purchase_order_customers/%s.pdf"%(search.searchPeriodProject(self.project_id),self.project_id,self.nropurchase)
+        ruta = 'storage/projects/%s/%s/purchase_order_customers/%s.pdf' % (
+            search.searchPeriodProject(self.project_id),
+            self.project_id,
+            self.nropurchase)
         return ruta
 
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
-    #subproject = models.ForeignKey(Subproyecto, to_field='subproyecto_id',null=True, blank=True)
+    # subproject = models.ForeignKey(
+    #   Subproyecto, to_field='subproyecto_id',null=True, blank=True)
     register = models.DateTimeField(auto_now_add=True)
     nropurchase = models.CharField(max_length=14)
     issued = models.DateField()
@@ -299,7 +373,8 @@ class PurchaseOrder(models.Model):
     observation = models.TextField(null=True, blank=True)
     dsct = models.FloatField(default=0, blank=True)
     igv = models.FloatField(default=0, blank=True)
-    order = models.FileField(upload_to=url,null=True, blank=True, max_length=200)
+    order = models.FileField(
+            upload_to=url, null=True, blank=True, max_length=200)
     flag = models.BooleanField(default=True)
 
     audit_log = AuditLog()
@@ -308,7 +383,8 @@ class PurchaseOrder(models.Model):
         ordering = ['project']
 
     def __unicode__(self):
-        return '%s - %s'%(self.project, self.purchase_id)
+        return '%s - %s' % (self.project, self.purchase_id)
+
 
 class DetailsPurchaseOrder(models.Model):
     purchase = models.ForeignKey(PurchaseOrder, to_field='id')

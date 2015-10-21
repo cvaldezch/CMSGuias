@@ -49,7 +49,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
         return
     return
   $scope.inDropdownTable = (table) ->
-    console.log $("#{table} > tbody > tr").length
+    # console.log $("#{table} > tbody > tr").length
     if $("#{table} > tbody > tr").length > 0
       $('.dropdown-button').dropdown()
       return false
@@ -170,7 +170,6 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
     return
   $scope.availableNipple = ->
     mat = this
-    # console.log mat
     swal
       title: "Desea generar Niples de este materiales?"
       text: "#{mat.$parent.x.fields.materials.fields.matnom} #{mat.$parent.x.fields.materials.fields.matmed}"
@@ -179,6 +178,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
       confirmButtonColor: "#dd6b55"
       confirmButtonText: "Si, habilitar Niple"
       cancelButtonText: "No"
+      timer: 2000
       (isConfirm) ->
         if isConfirm
           $http
@@ -201,6 +201,19 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
       $scope.fsl = true
       $scope.fpl = true
       return
+  $scope.$watch 'dsmaterials', ->
+    count = 0
+    for k of $scope.dsmaterials
+      if $scope.dsmaterials[k].fields.nipple
+        count++
+    console.log count
+    if count
+      $scope.snipple = true
+      setTimeout ->
+        $('.collapsible').collapsible()
+        return
+      , 800
+    return
   # $scope.$watch 'gui.smat', ->
   #   $(".floatThead").floatThead 'reflow'
   #   return

@@ -20,7 +20,13 @@ from django.utils.decorators import method_decorator
 
 from CMSGuias.apps.almacen import models
 from CMSGuias.apps.tools import globalVariable, search, number_to_char
-from CMSGuias.apps.logistica.models import Cotizacion, CotCliente, DetCotizacion, Compra, DetCompra, ServiceOrder, DetailsServiceOrder
+from CMSGuias.apps.logistica.models import (Cotizacion,
+                                            CotCliente,
+                                            DetCotizacion,
+                                            Compra,
+                                            DetCompra,
+                                            ServiceOrder,
+                                            DetailsServiceOrder)
 from CMSGuias.apps.ventas.models import Proyecto
 from CMSGuias.apps.home.models import Configuracion, Conductore
 from CMSGuias.apps.operations.models import PreOrders, DetailsPreOrders
@@ -37,9 +43,14 @@ def generate_pdf(html):
     # functions for generate the file PDF and return HttpResponse
     # pisa.showLogging(debug=True)
     result = StringIO.StringIO()
-    # links = lambda uri, rel: os.path.join(settings.MEDIA_ROOT,uri.replace(settings.MEDIA_URL, ''))
+    # links = lambda uri, rel: os.path.join(
+    #   settings.MEDIA_ROOT,uri.replace(settings.MEDIA_URL, ''))
     # print links
-    pdf = pisa.pisaDocument(StringIO.StringIO(html.encode('UTF-8')), dest=result, link_callback=fetch_resources)
+    pdf = pisa.pisaDocument(
+            StringIO.StringIO(
+                html.encode('UTF-8')),
+            dest=result,
+            link_callback=fetch_resources)
     if not pdf.err:
         return HttpResponse(result.getvalue(), mimetype='application/pdf')
     return HttpResponse('error al generar el PDF: %s' % cgi.escape(html))
@@ -51,7 +62,10 @@ def generate_pdf(html):
 
 def view_test_pdf(request):
     # view of poseable result pdf
-    html = render_to_string('report/test.html', {'pagesize':'A4'}, context_instance=RequestContext(request))
+    html = render_to_string(
+            'report/test.html',
+            {'pagesize': 'A4'},
+            context_instance=RequestContext(request))
     return generate_pdf(html)
 
 """
@@ -82,17 +96,16 @@ def rpt_orders_details(request, pid, sts):
                 dataset = lista[counter:counter+30]
                 tmp = list()
                 for x in dataset:
-                    tmp.append(
-                        {
-                            'item': counter + 1,
-                            'materials': x.materiales_id,
-                            'name': '%s - %s' % (x.materiales.matnom, x.materiales.matmed),
-                            'unit': x.materiales.unidad.uninom,
-                            'brand': x.brand.brand,
-                            'model': x.model.model,
-                            'quantity': x.cantidad
-                        }
-                    )
+                    tmp.append({
+                        'item': counter + 1,
+                        'materials': x.materiales_id,
+                        'name': '%s - %s' % (
+                                x.materiales.matnom,
+                                x.materiales.matmed),
+                        'unit': x.materiales.unidad.uninom,
+                        'brand': x.brand.brand,
+                        'model': x.model.model,
+                        'quantity': x.cantidad})
                     counter += 1
                 section.append(tmp)
             context['lista'] = section
@@ -106,12 +119,12 @@ def rpt_orders_details(request, pid, sts):
                     sheet += 1
             else:
                 sheet = 1
-            print sheet, 'sheet'
-            print nipples.count(), 'nipples'
+            # print sheet, 'sheet'
+            # print nipples.count(), 'nipples'
             for c in range(sheet):
                 datset = nipples[count:count+35]
                 tmp = list()
-                print datset, 'datset'
+                # print datset, 'datset'
                 for x in datset:
                     tmp.append({
                         'item': (count + 1),
@@ -127,7 +140,10 @@ def rpt_orders_details(request, pid, sts):
                 secn.append(tmp)
             context['nipples'] = secn
             context['tipo'] = globalVariable.tipo_nipples
-            html = render_to_string('report/rptordersstore.html', context, context_instance=RequestContext(request))
+            html = render_to_string(
+                    'report/rptordersstore.html',
+                    context,
+                    context_instance=RequestContext(request))
             return generate_pdf(html)
     except TemplateDoesNotExist, e:
         raise Http404(e)
@@ -148,6 +164,7 @@ def rpt_guide_referral_format(request, gid, pg):
             return generate_pdf(html)
     except TemplateDoesNotExist, e:
         raise Http404(e)
+
 
 # Report Supply
 class RptSupply(TemplateView):
@@ -211,25 +228,68 @@ class RptSupply(TemplateView):
             # print section
             # print len(section)
             context['section'] = section
-            context['project'] = Proyecto.objects.filter(proyecto_id__in=bedside.orders.split(','))
+            context['project'] = Proyecto.objects.filter(
+                                    proyecto_id__in=bedside.orders.split(','))
             context['status'] = globalVariable.status
-            html = render_to_string(self.template_name, context, context_instance=RequestContext(request))
+            html = render_to_string(
+                    self.template_name,
+                    context,
+                    context_instance=RequestContext(request))
             return generate_pdf(html)
         except TemplateDoesNotExist, e:
             raise Http404(e)
 
+
 # Report Quote
 class RptQuote(TemplateView):
-    template_name = "report/rptquote.html"
+    template_name = 'report/rptquote.html'
 
     def get(self, request, *args, **kwargs):
         context = super(RptQuote, self).get_context_data(**kwargs)
         context['bedside'] = get_object_or_404(Cotizacion, pk=kwargs['qid'])
-        context['customers'] = CotCliente.objects.filter(cotizacion_id=kwargs['qid'], proveedor_id=kwargs['pid'])
-        context['details'] = DetCotizacion.objects.filter(cotizacion_id=kwargs['qid'],proveedor_id=kwargs['pid'])
+        context['customers'] = CotCliente.objects.filter(
+                                cotizacion_id=kwargs['qid'],
+                                proveedor_id=kwargs['pid'])
+        details = DetCotizacion.objects.filter(
+                                cotizacion_id=kwargs['qid'],
+                                proveedor_id=kwargs['pid'])
+        lcount = float(details.count())
+        if lcount > 30:
+            sheet = int(float('%.0f' % (lcount)) / 30)
+            if float(float('%.3f' % (float(lcount))) / 30) > sheet:
+                sheet += 1
+        else:
+            sheet = 1
+        counter = 0
+        section = list()
+        for c in range(sheet):
+            dataset = details[counter:counter+30]
+            tmp = list()
+            for x in dataset:
+                tmp.append({
+                    'supplier_id': x.proveedor_id,
+                    'reason': x.proveedor.razonsocial,
+                    'item': counter + 1,
+                    'materials': x.materiales_id,
+                    'name': '%s - %s' % (
+                            x.materiales.matnom,
+                            x.materiales.matmed),
+                    'unit': x.materiales.unidad.uninom,
+                    'brand': x.marca,
+                    'model': x.modelo,
+                    'quantity': x.cantidad,
+                    'price': x.precio,
+                    'delivery': x.entrega})
+                counter += 1
+            section.append(tmp)
+        context['details'] = section
         context['status'] = globalVariable.status
-        html = render_to_string(self.template_name, context, context_instance=RequestContext(request))
+        html = render_to_string(
+                self.template_name,
+                context,
+                context_instance=RequestContext(request))
         return generate_pdf(html)
+
 
 # Report Order Purchase
 class RptPurchase(TemplateView):

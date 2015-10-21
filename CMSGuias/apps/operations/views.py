@@ -286,6 +286,12 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                             'materials__matnom'), relations=(
                             'materials', 'brand', 'model',)))
                     context['status'] = True
+                if 'lstnipp' in request.GET:
+                    context[''] = json.loads(
+                                    Nipple.objects.filter(
+                                        area_id=kwargs['area'],
+                                        materials_id=request.GET['materials']))
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False
@@ -361,6 +367,28 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                     else:
                         dsm.nipple = True
                         dsm.save()
+                    context['status'] = True
+                if 'nipple' in request.POST:
+                    if 'edit' in request.POST:
+                        Np = Nipple.objects.get(
+                                id=request.POST['id'],
+                                area_id=kwargs['area'],
+                                materiales_id=request.POST['materials'])
+                        nip = NippleForm(request.POST, instance=Np)
+                    else:
+                        nip = NippleForm(request.POST)
+                        nip.proyecto_id = kwargs['area'][:7]
+                        nip.area = kwargs['area']
+                    if nip.is_valid():
+                        nip.save()
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+                if 'delnipp' in request.POST:
+                    Nipple.objects.get(
+                        id=request.POST['id'],
+                        area_id=kwargs['area'],
+                        materiales_id=request.POST['materials']).delete()
                     context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
