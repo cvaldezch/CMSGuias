@@ -19,6 +19,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
     $('.modal-trigger').leanModal()
     $scope.getListAreaMaterials()
     $scope.getProject()
+    $scope.listTypeNip()
     $table = $(".floatThead")
     $table.floatThead
       position: 'absolute'
@@ -195,6 +196,35 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
               swal "Información", "Nipple habilitado para el material", "info"
               return
           return
+    return
+  $scope.listNipple = ->
+    data =
+      'lstnipp': true
+      'materials': this.$parent.x.fields.materials.pk
+    $http.get "", params: data
+    .success (response) ->
+      if response.status
+        # """<script type="text/ng-template" id="nip#{data.materials}"></script>"""
+        script = """{{#nip}}<tr><td></td><td>{{cantidad}}</td><td></td><td>{{}}</td><td></td><td>{{metrado}}</td><td>{{comment}}</td><td></td></tr>{{/nip}}"""
+        $det = $(".nip#{data.materials}")
+        $det.empty()
+        $det.append Mustache.render script, response
+        $ori = $("#typenip > option").clone()
+        $dest = $(".t#{data.materials}")
+        $dest.empty()
+        $dest.append $ori
+        # $scope["np#{data.materials}"] = response.nip
+        return
+      else
+        console.log "nothing data"
+        return
+    return
+  $scope.listTypeNip = ->
+    $http.get "", params: 'typeNipple': true
+    .success (response) ->
+      if response.status
+        $scope.tnipple = response.type
+        return
     return
   $scope.$watch 'ascsector', ->
     if $scope.ascsector

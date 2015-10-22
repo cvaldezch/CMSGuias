@@ -215,10 +215,33 @@
             <ul class="collapsible popout" data-collapsible="accordion">
             {% verbatim %}
                 <li ng-repeat="x in dsmaterials" ng-if="x.fields.nipple == true">
-                    <div class="collapsible-header">
+                    <div class="collapsible-header" ng-click="listNipple()">
                         <i class="fa fa-pause fa-rotate-90"></i> {{x.fields.materials.fields.matnom}} {{x.fields.materials.fields.matmed}}
                     </div>
                     <div class="collapsible-body">
+                        <div class="card">
+                            <div class="card-action">
+                                <div class="row">
+                                    <div class="col l2 input-field">
+                                        <input type="text">
+                                        <label class="active">Medida cm</label>
+                                    </div>
+                                    <div class="col l2 input-field">
+                                        <label class="active">Tipo</label>
+                                        <select class="browser-default t{{x.fields.materials.pk}}"></select>
+                                    </div>
+                                    <div class="col l2 input-field">
+                                        <input type="text">
+                                        <label class="active">Cantidad</label>
+                                    </div>
+                                    <div class="col l4 input-field">
+                                        <input type="text">
+                                        <label class="active">Observación</label>
+                                    </div>
+                                    <div class="col l2 input-field"></div>
+                                </div>
+                            </div>
+                        </div>
                         <table class="table responsive-table">
                             <thead>
                                 <tr>
@@ -232,7 +255,7 @@
                                     <th></th>
                                 </tr>
                             </thead>
-                            <tbody></tbody>
+                            <tbody class="nip{{x.fields.materials.pk}}"></tbody>
                         </table>
                     </div>
                 </li>
@@ -240,6 +263,12 @@
             </ul>
         </div>
     </div>
+    <!-- utils -->
+    <select id="typenip" class="hide">
+        {% verbatim %}
+            <option ng-repeat="(k, v) in tnipple" value="{{k}}">{{v}}</option>
+        {% endverbatim %}
+    </select>
     <!-- modal  -->
     <div class="modal" id="mpcopy">
         <div class="modal-content">
@@ -371,5 +400,6 @@
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/jquery.floatThead/dist/jquery.floatThead.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/mustache.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/getMaterials.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/mustache.js/mustache.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/operations/dsector.js"></script>
 {% endblock %}

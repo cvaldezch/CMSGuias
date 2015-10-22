@@ -26,6 +26,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
     $('.modal-trigger').leanModal();
     $scope.getListAreaMaterials();
     $scope.getProject();
+    $scope.listTypeNip();
     $table = $(".floatThead");
     $table.floatThead({
       position: 'absolute',
@@ -216,6 +217,41 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
             swal("Información", "Nipple habilitado para el material", "info");
           }
         });
+      }
+    });
+  };
+  $scope.listNipple = function() {
+    var data;
+    data = {
+      'lstnipp': true,
+      'materials': this.$parent.x.fields.materials.pk
+    };
+    $http.get("", {
+      params: data
+    }).success(function(response) {
+      var $dest, $det, $ori, script;
+      if (response.status) {
+        script = "{{#nip}}<tr><td></td><td>{{cantidad}}</td><td></td><td>{{}}</td><td></td><td>{{metrado}}</td><td>{{comment}}</td><td></td></tr>{{/nip}}";
+        $det = $(".nip" + data.materials);
+        $det.empty();
+        $det.append(Mustache.render(script, response));
+        $ori = $("#typenip > option").clone();
+        $dest = $(".t" + data.materials);
+        $dest.empty();
+        $dest.append($ori);
+      } else {
+        console.log("nothing data");
+      }
+    });
+  };
+  $scope.listTypeNip = function() {
+    $http.get("", {
+      params: {
+        'typeNipple': true
+      }
+    }).success(function(response) {
+      if (response.status) {
+        $scope.tnipple = response.type;
       }
     });
   };

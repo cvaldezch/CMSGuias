@@ -42,8 +42,7 @@ tipo_nipples = {
     'H': 'Bisel - Bisel',
     'I': 'Bisel - Rosca',
     'J': 'BridaHechizo',
-    '-': ''
-}
+    '-': ''}
 
 # name month
 months_name = {

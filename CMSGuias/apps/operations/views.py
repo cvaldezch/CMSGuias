@@ -287,10 +287,15 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                             'materials', 'brand', 'model',)))
                     context['status'] = True
                 if 'lstnipp' in request.GET:
-                    context[''] = json.loads(
-                                    Nipple.objects.filter(
-                                        area_id=kwargs['area'],
-                                        materials_id=request.GET['materials']))
+                    context['nip'] = json.loads(
+                        serializers.serialize(
+                            'json',
+                            Nipple.objects.filter(
+                                area_id=kwargs['area'],
+                                materiales_id=request.GET['materials'])))
+                    context['status'] = True
+                if 'typeNipple' in request.GET:
+                    context['type'] = globalVariable.tipo_nipples
                     context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
