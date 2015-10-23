@@ -414,15 +414,19 @@ class RptServiceOrder(TemplateView):
             amount = 0
             for x in details:
                 amount += float(x.amount)
-            context['amount'] = '%.2f'%amount
+            context['amount'] = '%.2f' % amount
             amount = (amount - (amount * (context['bedside'].dsct / 100)))
-            context['dsct'] = '%.3f'%(amount * (context['bedside'].dsct / 100))
-            context['igv'] = search.getIGVCurrent(context['bedside'].register.strftime('%Y'))
-            context['qigv'] = '%.3f'%(amount * (float(context['igv']) / 100))
-            context['total'] = '%.2f'%(amount + float(context['qigv']))
-            context['literal'] = number_to_char.numero_a_letras(float(context['total']))
+            context['dsct'] = '%.3f' % (
+                                amount * (context['bedside'].dsct / 100))
+            context['igv'] = search.getIGVCurrent(
+                                context['bedside'].register.strftime('%Y'))
+            context['qigv'] = '%.3f' % (amount * (float(context['igv']) / 100))
+            context['total'] = '%.2f' % (amount + float(context['qigv']))
+            context['literal'] = number_to_char.numero_a_letras(
+                                    float(context['total']))
             context['status'] = globalVariable.status
             context['pagesize'] = 'A4'
+            print context
             html = render_to_string(
                     'report/rptserviceorders.html',
                     context,

@@ -292,7 +292,9 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                             'json',
                             Nipple.objects.filter(
                                 area_id=kwargs['area'],
-                                materiales_id=request.GET['materials'])))
+                                materiales_id=request.GET['materials']),
+                            relations=('materiales')))
+                    context['dnip'] = globalVariable.tipo_nipples
                     context['status'] = True
                 if 'typeNipple' in request.GET:
                     context['type'] = globalVariable.tipo_nipples
@@ -373,7 +375,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                         dsm.nipple = True
                         dsm.save()
                     context['status'] = True
-                if 'nipple' in request.POST:
+                if 'nipplesav' in request.POST:
                     if 'edit' in request.POST:
                         Np = Nipple.objects.get(
                                 id=request.POST['id'],
@@ -381,9 +383,18 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                                 materiales_id=request.POST['materials'])
                         nip = NippleForm(request.POST, instance=Np)
                     else:
+                        try:
+                            area = DSector.objects.get(
+                                    dsector_id=kwargs['area'])
+                        except DSector.DoesNotExist:
+                            area = {'sector_id': ''}
+                        # kw = request.POST
+                        request.POST._mutable = True
+                        request.POST['proyecto'] = kwargs['area'][:7]
+                        request.POST['area'] = kwargs['area']
+                        request.POST['sector'] = area.sgroup.sector_id
+                        request.POST._mutable = False
                         nip = NippleForm(request.POST)
-                        nip.proyecto_id = kwargs['area'][:7]
-                        nip.area = kwargs['area']
                     if nip.is_valid():
                         nip.save()
                         context['status'] = True

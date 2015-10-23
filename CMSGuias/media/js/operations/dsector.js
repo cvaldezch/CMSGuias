@@ -231,7 +231,20 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
     }).success(function(response) {
       var $dest, $det, $ori, script;
       if (response.status) {
-        script = "{{#nip}}<tr><td></td><td>{{cantidad}}</td><td></td><td>{{}}</td><td></td><td>{{metrado}}</td><td>{{comment}}</td><td></td></tr>{{/nip}}";
+        console.log(response);
+        response.desc = function(type) {
+          var k, ref, v;
+          console.log(type);
+          ref = response.dnip;
+          for (k in ref) {
+            v = ref[k];
+            console.log(k, v);
+            if (k === type) {
+              return v;
+            }
+          }
+        };
+        script = "{{#nip}}<tr><td></td><td>{{fields.cantidad}}</td><td>{{desc(fields.tipo)}}</td><td>x</td><td>{{fields.materiales.fields.matmed}}</td><td>{{fields.metrado}}</td><td>{{fields.comment}}</td><td></td></tr>{{/nip}}";
         $det = $(".nip" + data.materials);
         $det.empty();
         $det.append(Mustache.render(script, response));
@@ -251,9 +264,45 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
       }
     }).success(function(response) {
       if (response.status) {
-        $scope.tnipple = response.type;
+
       }
     });
+  };
+  $scope.saveNipple = function() {
+    var data, row;
+    row = this;
+    console.log(row);
+    data = {
+      metrado: $("#nipple" + row.$parent.x.fields.materials.pk + "measure").val(),
+      tipo: $("#nipple" + row.$parent.x.fields.materials.pk + "type").val(),
+      cantidad: $("#nipple" + row.$parent.x.fields.materials.pk + "quantity").val(),
+      cantshop: $("#nipple" + row.$parent.x.fields.materials.pk + "quantity").val(),
+      comment: $("#nipple" + row.$parent.x.fields.materials.pk + "observation").val(),
+      materiales: row.$parent.x.fields.materials.pk,
+      nipplesav: true
+    };
+    console.log(data);
+    if (data.measure === "") {
+      swal("Alerta!", "No se ha ingresado una medida para este niple.", "warning");
+      data.nipplesav = false;
+    }
+    if (data.quantity === "") {
+      swal("Alerta!", "No se ha ingresado una cantidad para este niple.", "warning");
+      data.nipplesav = false;
+    }
+    if (data.nipplesav) {
+      $http({
+        url: "",
+        method: "post",
+        data: $.param(data)
+      }).success(function(response) {
+        if (response.status) {
+          $scope.listNipple();
+        } else {
+          swal("Error", "No se a guardado el niple.", "error");
+        }
+      });
+    }
   };
   $scope.$watch('ascsector', function() {
     if ($scope.ascsector) {

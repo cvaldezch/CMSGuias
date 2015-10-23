@@ -204,8 +204,15 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
     $http.get "", params: data
     .success (response) ->
       if response.status
+        console.log response
+        response.desc = (type) ->
+          console.log type
+          for k, v of response.dnip
+            console.log k, v
+            if k is type
+              return v
         # """<script type="text/ng-template" id="nip#{data.materials}"></script>"""
-        script = """{{#nip}}<tr><td></td><td>{{cantidad}}</td><td></td><td>{{}}</td><td></td><td>{{metrado}}</td><td>{{comment}}</td><td></td></tr>{{/nip}}"""
+        script = """{{#nip}}<tr><td></td><td>{{fields.cantidad}}</td><td>{{desc(fields.tipo)}}</td><td>x</td><td>{{fields.materiales.fields.matmed}}</td><td>{{fields.metrado}}</td><td>{{fields.comment}}</td><td></td></tr>{{/nip}}"""
         $det = $(".nip#{data.materials}")
         $det.empty()
         $det.append Mustache.render script, response
@@ -223,8 +230,39 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
     $http.get "", params: 'typeNipple': true
     .success (response) ->
       if response.status
-        $scope.tnipple = response.type
+
         return
+    return
+  $scope.saveNipple = ->
+    row = this
+    console.log row
+    data =
+      metrado: $("#nipple#{row.$parent.x.fields.materials.pk}measure").val()
+      tipo: $("#nipple#{row.$parent.x.fields.materials.pk}type").val()
+      cantidad: $("#nipple#{row.$parent.x.fields.materials.pk}quantity").val()
+      cantshop: $("#nipple#{row.$parent.x.fields.materials.pk}quantity").val()
+      comment: $("#nipple#{row.$parent.x.fields.materials.pk}observation").val()
+      materiales: row.$parent.x.fields.materials.pk
+      nipplesav: true
+    console.log data
+    if data.measure is ""
+      swal "Alerta!", "No se ha ingresado una medida para este niple.", "warning"
+      data.nipplesav = false
+    if data.quantity is ""
+      swal "Alerta!", "No se ha ingresado una cantidad para este niple.", "warning"
+      data.nipplesav = false
+    if data.nipplesav
+      $http
+        url: ""
+        method: "post"
+        data: $.param data
+      .success (response) ->
+        if response.status
+          $scope.listNipple()
+          return
+        else
+          swal "Error", "No se a guardado el niple.", "error"
+          return
     return
   $scope.$watch 'ascsector', ->
     if $scope.ascsector

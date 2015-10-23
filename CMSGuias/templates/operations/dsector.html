@@ -220,25 +220,39 @@
                     </div>
                     <div class="collapsible-body">
                         <div class="card">
-                            <div class="card-action">
+                            <div class="card-actiona">
                                 <div class="row">
-                                    <div class="col l2 input-field">
-                                        <input type="text">
+                                    <div class="col l2">
+                                        <br>
+                                        <button type="button" class="btn waves-effect grey lighten-5 grey-text text-darken-3" ng-model="sdnip[x.fields.materials.pk]" ng-click="sdnip[x.fields.materials.pk]=!sdnip[x.fields.materials.pk]">
+                                            <i class="fa fa-plus"></i>
+                                        </button>
+                                        <button type="button" class="btn waves-effect grey lighten-5 grey-text text-darken-3" ng-click="listNipple()">
+                                            <i class="fa fa-refresh"></i>
+                                        </button>
+                                    </div>
+                                    <div class="col l2 input-field" ng-show="sdnip[x.fields.materials.pk]">
+                                        <input type="number" class="right-align" id="nipple{{x.fields.materials.pk}}measure">
                                         <label class="active">Medida cm</label>
                                     </div>
-                                    <div class="col l2 input-field">
+                                    <div class="col l2 input-field" ng-show="sdnip[x.fields.materials.pk]">
                                         <label class="active">Tipo</label>
-                                        <select class="browser-default t{{x.fields.materials.pk}}"></select>
+                                        <select class="browser-default t{{x.fields.materials.pk}}" id="nipple{{x.fields.materials.pk}}type"></select>
                                     </div>
-                                    <div class="col l2 input-field">
-                                        <input type="text">
+                                    <div class="col l2 input-field" ng-show="sdnip[x.fields.materials.pk]">
+                                        <input type="number" class="right-align" id="nipple{{x.fields.materials.pk}}quantity">
                                         <label class="active">Cantidad</label>
                                     </div>
-                                    <div class="col l4 input-field">
-                                        <input type="text">
+                                    <div class="col l3 input-field" ng-show="sdnip[x.fields.materials.pk]">
+                                        <input type="text" id="nipple{{x.fields.materials.pk}}observation">
                                         <label class="active">Observación</label>
                                     </div>
-                                    <div class="col l2 input-field"></div>
+                                    <div class="col l1" ng-show="sdnip[x.fields.materials.pk]">
+                                        <br>
+                                        <button type="button" class="btn waves-effect light-blue darken-1" ng-click="saveNipple()">
+                                            <i class="fa fa-plus"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
