@@ -231,20 +231,19 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
     }).success(function(response) {
       var $dest, $det, $ori, script;
       if (response.status) {
-        console.log(response);
-        response.desc = function(type) {
-          var k, ref, v;
-          console.log(type);
-          ref = response.dnip;
-          for (k in ref) {
-            v = ref[k];
-            console.log(k, v);
-            if (k === type) {
-              return v;
+        response.desc = function() {
+          return function(type, render) {
+            var k, ref, v;
+            ref = response.dnip;
+            for (k in ref) {
+              v = ref[k];
+              if (k === this.fields.tipo) {
+                return render(v);
+              }
             }
-          }
+          };
         };
-        script = "{{#nip}}<tr><td></td><td>{{fields.cantidad}}</td><td>{{desc(fields.tipo)}}</td><td>x</td><td>{{fields.materiales.fields.matmed}}</td><td>{{fields.metrado}}</td><td>{{fields.comment}}</td><td></td></tr>{{/nip}}";
+        script = "{{#nip}}<tr><td>{{@index+1}}</td><td>{{fields.cantidad}}</td><td>{{#desc}}{{>fields.tipo}}{{/desc}}</td><td>{{fields.materiales.fields.matmed}}</td><td>x</td><td>{{fields.metrado}}</td><td>{{fields.comment}}</td><td><a><i class=\"fa fa-edit\"></i></a></td><td><a class=\"red-text text-darken-1\"><i class=\"fa fa-trash\"></i></a></td></tr>{{/nip}}";
         $det = $(".nip" + data.materials);
         $det.empty();
         $det.append(Mustache.render(script, response));
@@ -264,14 +263,13 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
       }
     }).success(function(response) {
       if (response.status) {
-
+        $scope.tnipple = response.type;
       }
     });
   };
   $scope.saveNipple = function() {
     var data, row;
     row = this;
-    console.log(row);
     data = {
       metrado: $("#nipple" + row.$parent.x.fields.materials.pk + "measure").val(),
       tipo: $("#nipple" + row.$parent.x.fields.materials.pk + "type").val(),

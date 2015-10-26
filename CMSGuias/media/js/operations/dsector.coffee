@@ -204,15 +204,16 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
     $http.get "", params: data
     .success (response) ->
       if response.status
-        console.log response
-        response.desc = (type) ->
-          console.log type
-          for k, v of response.dnip
-            console.log k, v
-            if k is type
-              return v
-        # """<script type="text/ng-template" id="nip#{data.materials}"></script>"""
-        script = """{{#nip}}<tr><td></td><td>{{fields.cantidad}}</td><td>{{desc(fields.tipo)}}</td><td>x</td><td>{{fields.materiales.fields.matmed}}</td><td>{{fields.metrado}}</td><td>{{fields.comment}}</td><td></td></tr>{{/nip}}"""
+        response.desc = ->
+          return (type, render) ->
+            # console.log type
+            # console.log this
+            for k, v of response.dnip
+              if k is this.fields.tipo
+                # console.log v
+                return render v
+
+        script = """{{#nip}}<tr><td>{{@index+1}}</td><td>{{fields.cantidad}}</td><td>{{#desc}}{{>fields.tipo}}{{/desc}}</td><td>{{fields.materiales.fields.matmed}}</td><td>x</td><td>{{fields.metrado}}</td><td>{{fields.comment}}</td><td><a><i class="fa fa-edit"></i></a></td><td><a class="red-text text-darken-1"><i class="fa fa-trash"></i></a></td></tr>{{/nip}}"""
         $det = $(".nip#{data.materials}")
         $det.empty()
         $det.append Mustache.render script, response
@@ -230,12 +231,12 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
     $http.get "", params: 'typeNipple': true
     .success (response) ->
       if response.status
-
+        $scope.tnipple = response.type
         return
     return
   $scope.saveNipple = ->
     row = this
-    console.log row
+    # console.log row
     data =
       metrado: $("#nipple#{row.$parent.x.fields.materials.pk}measure").val()
       tipo: $("#nipple#{row.$parent.x.fields.materials.pk}type").val()
