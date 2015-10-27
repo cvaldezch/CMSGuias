@@ -1,4 +1,4 @@
-app = angular.module 'dsApp', ['ngCookies']
+app = angular.module 'dsApp', ['ngCookies', 'ngSanitize']
       .config ($httpProvider) ->
         $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
         $httpProvider.defaults.xsrfCookieName = 'csrftoken'
@@ -12,7 +12,7 @@ app = angular.module 'dsApp', ['ngCookies']
               return parseFloat value, 10
             return
 
-app.controller 'DSCtrl', ($scope, $http, $cookies) ->
+app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
   angular.element(document).ready ->
@@ -204,6 +204,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
     $http.get "", params: data
     .success (response) ->
       if response.status
+        count = 1
         response.desc = ->
           return (type, render) ->
             # console.log type
@@ -212,11 +213,15 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
               if k is this.fields.tipo
                 # console.log v
                 return render v
-
-        script = """{{#nip}}<tr><td>{{@index+1}}</td><td>{{fields.cantidad}}</td><td>{{#desc}}{{>fields.tipo}}{{/desc}}</td><td>{{fields.materiales.fields.matmed}}</td><td>x</td><td>{{fields.metrado}}</td><td>{{fields.comment}}</td><td><a><i class="fa fa-edit"></i></a></td><td><a class="red-text text-darken-1"><i class="fa fa-trash"></i></a></td></tr>{{/nip}}"""
+        response.index = -> return count++
+        script = """{{#nip}}<tr><td>{{index}}</td><td>{{fields.cantidad}}</td><td>{{#desc}}{{>fields.tipo}}{{/desc}}</td><td>{{fields.materiales.fields.matmed}}</td><td>x</td><td>{{fields.metrado}}</td><td>{{fields.comment}}</td><td><a href="#" ng-click="ndel()"><i class="fa fa-edit"></i></a></td><td><a href="#" class="deln red-text text-darken-1" data-materiales="{{fields.materiales.pk}}" data-pk="{{pk}}"><i class="fa fa-trash"></i></a></td></tr>{{/nip}}"""
         $det = $(".nip#{data.materials}")
         $det.empty()
-        $det.append Mustache.render script, response
+        tbs = Mustache.render script, response
+        #$det.append tbs
+        el = $compile(tbs)($scope)
+        console.log el
+        $det.html el
         $ori = $("#typenip > option").clone()
         $dest = $(".t#{data.materials}")
         $dest.empty()
@@ -226,6 +231,9 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
       else
         console.log "nothing data"
         return
+    return
+  $scope.ndel = ->
+    console.log "ngclick here"
     return
   $scope.listTypeNip = ->
     $http.get "", params: 'typeNipple': true
@@ -286,4 +294,10 @@ app.controller 'DSCtrl', ($scope, $http, $cookies) ->
   # $scope.$watch 'gui.smat', ->
   #   $(".floatThead").floatThead 'reflow'
   #   return
+  return
+
+$(document).ready ->
+  $(document).on "click", ".deln", ->
+    console.log "here del nip"
+    return
   return

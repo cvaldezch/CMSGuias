@@ -269,7 +269,7 @@
                                     <th></th>
                                 </tr>
                             </thead>
-                            <tbody class="nip{{x.fields.materials.pk}}"></tbody>
+                            <tbody class="nip{{x.fields.materials.pk}}" ng-model="tb[x.fields.materials.pk]" ng-bind-html="tb[x.fields.materials.pk]"></tbody>
                         </table>
                     </div>
                 </li>
@@ -411,6 +411,7 @@
 {% csrf_token %}
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/jquery.floatThead/dist/jquery.floatThead.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/mustache.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/getMaterials.js"></script>

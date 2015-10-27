@@ -1,6 +1,6 @@
 var app;
 
-app = angular.module('dsApp', ['ngCookies']).config(function($httpProvider) {
+app = angular.module('dsApp', ['ngCookies', 'ngSanitize']).config(function($httpProvider) {
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
   $httpProvider.defaults.xsrfCookieName = 'csrftoken';
   return $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
@@ -18,7 +18,7 @@ app = angular.module('dsApp', ['ngCookies']).config(function($httpProvider) {
   };
 });
 
-app.controller('DSCtrl', function($scope, $http, $cookies) {
+app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
   angular.element(document).ready(function() {
@@ -229,8 +229,9 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
     $http.get("", {
       params: data
     }).success(function(response) {
-      var $dest, $det, $ori, script;
+      var $dest, $det, $ori, count, el, script, tbs;
       if (response.status) {
+        count = 1;
         response.desc = function() {
           return function(type, render) {
             var k, ref, v;
@@ -243,10 +244,16 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
             }
           };
         };
-        script = "{{#nip}}<tr><td>{{@index+1}}</td><td>{{fields.cantidad}}</td><td>{{#desc}}{{>fields.tipo}}{{/desc}}</td><td>{{fields.materiales.fields.matmed}}</td><td>x</td><td>{{fields.metrado}}</td><td>{{fields.comment}}</td><td><a><i class=\"fa fa-edit\"></i></a></td><td><a class=\"red-text text-darken-1\"><i class=\"fa fa-trash\"></i></a></td></tr>{{/nip}}";
+        response.index = function() {
+          return count++;
+        };
+        script = "{{#nip}}<tr><td>{{index}}</td><td>{{fields.cantidad}}</td><td>{{#desc}}{{>fields.tipo}}{{/desc}}</td><td>{{fields.materiales.fields.matmed}}</td><td>x</td><td>{{fields.metrado}}</td><td>{{fields.comment}}</td><td><a href=\"#\" ng-click=\"ndel()\"><i class=\"fa fa-edit\"></i></a></td><td><a href=\"#\" class=\"deln red-text text-darken-1\" data-materiales=\"{{fields.materiales.pk}}\" data-pk=\"{{pk}}\"><i class=\"fa fa-trash\"></i></a></td></tr>{{/nip}}";
         $det = $(".nip" + data.materials);
         $det.empty();
-        $det.append(Mustache.render(script, response));
+        tbs = Mustache.render(script, response);
+        el = $compile(tbs)($scope);
+        console.log(el);
+        $det.html(el);
         $ori = $("#typenip > option").clone();
         $dest = $(".t" + data.materials);
         $dest.empty();
@@ -255,6 +262,9 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
         console.log("nothing data");
       }
     });
+  };
+  $scope.ndel = function() {
+    console.log("ngclick here");
   };
   $scope.listTypeNip = function() {
     $http.get("", {
@@ -323,5 +333,11 @@ app.controller('DSCtrl', function($scope, $http, $cookies) {
         $('.collapsible').collapsible();
       }, 800);
     }
+  });
+});
+
+$(document).ready(function() {
+  $(document).on("click", ".deln", function() {
+    console.log("here del nip");
   });
 });
