@@ -1,4 +1,4 @@
-app = angular.module 'dsApp', ['ngCookies', 'ngSanitize']
+app = angular.module 'dsApp', ['ngCookies']
       .config ($httpProvider) ->
         $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
         $httpProvider.defaults.xsrfCookieName = 'csrftoken'
@@ -198,6 +198,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
           return
     return
   $scope.listNipple = ->
+    # console.log this
     data =
       'lstnipp': true
       'materials': this.$parent.x.fields.materials.pk
@@ -207,33 +208,86 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
         count = 1
         response.desc = ->
           return (type, render) ->
-            # console.log type
-            # console.log this
             for k, v of response.dnip
               if k is this.fields.tipo
-                # console.log v
                 return render v
         response.index = -> return count++
-        script = """{{#nip}}<tr><td>{{index}}</td><td>{{fields.cantidad}}</td><td>{{#desc}}{{>fields.tipo}}{{/desc}}</td><td>{{fields.materiales.fields.matmed}}</td><td>x</td><td>{{fields.metrado}}</td><td>{{fields.comment}}</td><td><a href="#" ng-click="ndel()"><i class="fa fa-edit"></i></a></td><td><a href="#" class="deln red-text text-darken-1" data-materiales="{{fields.materiales.pk}}" data-pk="{{pk}}"><i class="fa fa-trash"></i></a></td></tr>{{/nip}}"""
+        script = """{{#nip}}<tr class="text-12"><td class="center-align">{{index}}</td><td class="center-align">{{fields.cantidad}}</td><td class="center-align">{{fields.cantshop}}</td><td class="center-align">{{fields.tipo}}</td><td>Niple {{#desc}}{{>fields.tipo}}{{/desc}}</td><td>{{fields.materiales.fields.matmed}}</td><td>x</td><td>{{fields.metrado}} cm</td><td>{{fields.comment}}</td><td><a href="#" ng-click="nedit($event)" data-pk="{{pk}}" data-materials="{{fields.materiales.pk}}"><i class="fa fa-edit"></i></a></td><td><a href="#" ng-click="ndel($event)" data-pk="{{pk}}" data-materials="{{fields.materiales.pk}}" class="red-text text-darken-1"><i class="fa fa-trash"></i></a></td></tr>{{/nip}}"""
         $det = $(".nip#{data.materials}")
         $det.empty()
         tbs = Mustache.render script, response
-        #$det.append tbs
         el = $compile(tbs)($scope)
-        console.log el
         $det.html el
         $ori = $("#typenip > option").clone()
         $dest = $(".t#{data.materials}")
         $dest.empty()
         $dest.append $ori
-        # $scope["np#{data.materials}"] = response.nip
+        $scope.calNipple data.materials
         return
       else
         console.log "nothing data"
         return
     return
-  $scope.ndel = ->
-    console.log "ngclick here"
+  $scope.calNipple = (materials) ->
+    tot = parseFloat($(".to#{materials}").text() * 100)
+    ing = 0
+    $(".nip#{materials} > tr").each ->
+      $td = $(this).find("td")
+      ing += (parseFloat($td.eq(1).text()) * parseFloat($td.eq(7).text().split(" cm")))
+      return
+    dis = (tot - ing)
+    console.log tot
+    console.log ing
+    console.log dis
+    $(".co#{materials}").html ing
+    $(".dis#{materials}").html dis
+    return
+  $scope.ndel = ($event) ->
+    swal
+      title: "Eliminar Niple?"
+      text: "#{$event.target.offsetParent.parentElement.childNodes[1].innerText} #{$event.target.offsetParent.parentElement.childNodes[4].innerText} #{$event.target.offsetParent.parentElement.childNodes[7].innerText}"
+      type: "warning"
+      showCancelButton: true
+      confirmButtonColor: "#dd6b55"
+      confirmButtonText: "Si, eliminar!"
+      cancelButtonText: "No!"
+      closeOnCancel: true
+      closeOnConfirm: true
+    , (isConfirm) ->
+      if isConfirm
+        data =
+          delnipp: true
+          id: $event.currentTarget.dataset.pk
+          materials: $event.currentTarget.dataset.materials
+        $http
+          url: ""
+          method: "post"
+          data: $.param data
+        .success (response) ->
+          if response.status
+            setTimeout ->
+              # console.log $(".rf#{data.materials}")
+              $(".rf#{data.materials}").trigger 'click'
+              return
+            , 800
+            return
+          else
+            swal "Error", "No se a eliminado el niple", "error"
+            return
+        return
+    return
+  $scope.nedit = ($event) ->
+    materials = $event.currentTarget.dataset.materials
+    $("#nipple#{materials}measure").val $event.target.offsetParent.parentElement.childNodes[7].innerText.split(" cm")[0]
+    $("#nipple#{materials}type").val $event.target.offsetParent.parentElement.childNodes[3].innerText
+    $("#nipple#{materials}quantity").val $event.target.offsetParent.parentElement.childNodes[1].innerText
+    $("#nipple#{materials}observation").val $event.target.offsetParent.parentElement.childNodes[8].innerText
+    $("#nipple#{materials}edit").val $event.currentTarget.dataset.pk
+      .attr "data-materials", materials
+    setTimeout ->
+      $(".sdnip#{materials}").click()
+      return
+    , 100
     return
   $scope.listTypeNip = ->
     $http.get "", params: 'typeNipple': true
@@ -244,7 +298,6 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
     return
   $scope.saveNipple = ->
     row = this
-    # console.log row
     data =
       metrado: $("#nipple#{row.$parent.x.fields.materials.pk}measure").val()
       tipo: $("#nipple#{row.$parent.x.fields.materials.pk}type").val()
@@ -253,7 +306,6 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
       comment: $("#nipple#{row.$parent.x.fields.materials.pk}observation").val()
       materiales: row.$parent.x.fields.materials.pk
       nipplesav: true
-    console.log data
     if data.measure is ""
       swal "Alerta!", "No se ha ingresado una medida para este niple.", "warning"
       data.nipplesav = false
@@ -261,13 +313,23 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
       swal "Alerta!", "No se ha ingresado una cantidad para este niple.", "warning"
       data.nipplesav = false
     if data.nipplesav
+      $edit = $("#nipple#{data.materiales}edit")
+      if $edit.val() isnt ""
+        data.edit = true
+        data.id = $edit.val()
+        data.materiales = $edit.attr "data-materials"
       $http
         url: ""
         method: "post"
         data: $.param data
       .success (response) ->
         if response.status
-          $scope.listNipple()
+          $edit.val ""
+          .attr "data-materials"
+          setTimeout ->
+            $(".rf#{data.materiales}").trigger 'click'
+            return
+          , 800
           return
         else
           swal "Error", "No se a guardado el niple.", "error"
@@ -283,7 +345,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
     for k of $scope.dsmaterials
       if $scope.dsmaterials[k].fields.nipple
         count++
-    console.log count
+    # console.log count
     if count
       $scope.snipple = true
       setTimeout ->
@@ -294,10 +356,4 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
   # $scope.$watch 'gui.smat', ->
   #   $(".floatThead").floatThead 'reflow'
   #   return
-  return
-
-$(document).ready ->
-  $(document).on "click", ".deln", ->
-    console.log "here del nip"
-    return
   return

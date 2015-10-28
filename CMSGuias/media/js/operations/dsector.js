@@ -1,6 +1,6 @@
 var app;
 
-app = angular.module('dsApp', ['ngCookies', 'ngSanitize']).config(function($httpProvider) {
+app = angular.module('dsApp', ['ngCookies']).config(function($httpProvider) {
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
   $httpProvider.defaults.xsrfCookieName = 'csrftoken';
   return $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
@@ -247,24 +247,84 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
         response.index = function() {
           return count++;
         };
-        script = "{{#nip}}<tr><td>{{index}}</td><td>{{fields.cantidad}}</td><td>{{#desc}}{{>fields.tipo}}{{/desc}}</td><td>{{fields.materiales.fields.matmed}}</td><td>x</td><td>{{fields.metrado}}</td><td>{{fields.comment}}</td><td><a href=\"#\" ng-click=\"ndel()\"><i class=\"fa fa-edit\"></i></a></td><td><a href=\"#\" class=\"deln red-text text-darken-1\" data-materiales=\"{{fields.materiales.pk}}\" data-pk=\"{{pk}}\"><i class=\"fa fa-trash\"></i></a></td></tr>{{/nip}}";
+        script = "{{#nip}}<tr class=\"text-12\"><td class=\"center-align\">{{index}}</td><td class=\"center-align\">{{fields.cantidad}}</td><td class=\"center-align\">{{fields.cantshop}}</td><td class=\"center-align\">{{fields.tipo}}</td><td>Niple {{#desc}}{{>fields.tipo}}{{/desc}}</td><td>{{fields.materiales.fields.matmed}}</td><td>x</td><td>{{fields.metrado}} cm</td><td>{{fields.comment}}</td><td><a href=\"#\" ng-click=\"nedit($event)\" data-pk=\"{{pk}}\" data-materials=\"{{fields.materiales.pk}}\"><i class=\"fa fa-edit\"></i></a></td><td><a href=\"#\" ng-click=\"ndel($event)\" data-pk=\"{{pk}}\" data-materials=\"{{fields.materiales.pk}}\" class=\"red-text text-darken-1\"><i class=\"fa fa-trash\"></i></a></td></tr>{{/nip}}";
         $det = $(".nip" + data.materials);
         $det.empty();
         tbs = Mustache.render(script, response);
         el = $compile(tbs)($scope);
-        console.log(el);
         $det.html(el);
         $ori = $("#typenip > option").clone();
         $dest = $(".t" + data.materials);
         $dest.empty();
         $dest.append($ori);
+        $scope.calNipple(data.materials);
       } else {
         console.log("nothing data");
       }
     });
   };
-  $scope.ndel = function() {
-    console.log("ngclick here");
+  $scope.calNipple = function(materials) {
+    var dis, ing, tot;
+    tot = parseFloat($(".to" + materials).text() * 100);
+    ing = 0;
+    $(".nip" + materials + " > tr").each(function() {
+      var $td;
+      $td = $(this).find("td");
+      ing += parseFloat($td.eq(1).text()) * parseFloat($td.eq(7).text().split(" cm"));
+    });
+    dis = tot - ing;
+    console.log(tot);
+    console.log(ing);
+    console.log(dis);
+    $(".co" + materials).html(ing);
+    $(".dis" + materials).html(dis);
+  };
+  $scope.ndel = function($event) {
+    swal({
+      title: "Eliminar Niple?",
+      text: $event.target.offsetParent.parentElement.childNodes[1].innerText + " " + $event.target.offsetParent.parentElement.childNodes[4].innerText + " " + $event.target.offsetParent.parentElement.childNodes[7].innerText,
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dd6b55",
+      confirmButtonText: "Si, eliminar!",
+      cancelButtonText: "No!",
+      closeOnCancel: true,
+      closeOnConfirm: true
+    }, function(isConfirm) {
+      var data;
+      if (isConfirm) {
+        data = {
+          delnipp: true,
+          id: $event.currentTarget.dataset.pk,
+          materials: $event.currentTarget.dataset.materials
+        };
+        $http({
+          url: "",
+          method: "post",
+          data: $.param(data)
+        }).success(function(response) {
+          if (response.status) {
+            setTimeout(function() {
+              $(".rf" + data.materials).trigger('click');
+            }, 800);
+          } else {
+            swal("Error", "No se a eliminado el niple", "error");
+          }
+        });
+      }
+    });
+  };
+  $scope.nedit = function($event) {
+    var materials;
+    materials = $event.currentTarget.dataset.materials;
+    $("#nipple" + materials + "measure").val($event.target.offsetParent.parentElement.childNodes[7].innerText.split(" cm")[0]);
+    $("#nipple" + materials + "type").val($event.target.offsetParent.parentElement.childNodes[3].innerText);
+    $("#nipple" + materials + "quantity").val($event.target.offsetParent.parentElement.childNodes[1].innerText);
+    $("#nipple" + materials + "observation").val($event.target.offsetParent.parentElement.childNodes[8].innerText);
+    $("#nipple" + materials + "edit").val($event.currentTarget.dataset.pk).attr("data-materials", materials);
+    setTimeout(function() {
+      $(".sdnip" + materials).click();
+    }, 100);
   };
   $scope.listTypeNip = function() {
     $http.get("", {
@@ -278,7 +338,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
     });
   };
   $scope.saveNipple = function() {
-    var data, row;
+    var $edit, data, row;
     row = this;
     data = {
       metrado: $("#nipple" + row.$parent.x.fields.materials.pk + "measure").val(),
@@ -289,7 +349,6 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
       materiales: row.$parent.x.fields.materials.pk,
       nipplesav: true
     };
-    console.log(data);
     if (data.measure === "") {
       swal("Alerta!", "No se ha ingresado una medida para este niple.", "warning");
       data.nipplesav = false;
@@ -299,13 +358,22 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
       data.nipplesav = false;
     }
     if (data.nipplesav) {
+      $edit = $("#nipple" + data.materiales + "edit");
+      if ($edit.val() !== "") {
+        data.edit = true;
+        data.id = $edit.val();
+        data.materiales = $edit.attr("data-materials");
+      }
       $http({
         url: "",
         method: "post",
         data: $.param(data)
       }).success(function(response) {
         if (response.status) {
-          $scope.listNipple();
+          $edit.val("").attr("data-materials");
+          setTimeout(function() {
+            $(".rf" + data.materiales).trigger('click');
+          }, 800);
         } else {
           swal("Error", "No se a guardado el niple.", "error");
         }
@@ -326,18 +394,11 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
         count++;
       }
     }
-    console.log(count);
     if (count) {
       $scope.snipple = true;
       setTimeout(function() {
         $('.collapsible').collapsible();
       }, 800);
     }
-  });
-});
-
-$(document).ready(function() {
-  $(document).on("click", ".deln", function() {
-    console.log("here del nip");
   });
 });

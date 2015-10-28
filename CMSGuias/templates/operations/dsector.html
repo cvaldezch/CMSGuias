@@ -200,7 +200,7 @@
                         <th class="right-align">Enviada</th>
                         <th class="right-align">Compra</th>
                         <th class="right-align">Venta</th>
-                        <th>Importe</th>
+                        <th>C. Importe</th>
                         <th class="center-align"><i class="fa fa-search cursor-hand" ng-model="fmatwoa" ng-click="fmatwoa=!fmatwoa"></i></th>
                     </tr>
                 </thead>
@@ -210,13 +210,23 @@
                 {% endverbatim %}
                 </tbody>
             </table>
-
             <h4 ng-show="snipple">Niple</h4>
             <ul class="collapsible popout" data-collapsible="accordion">
             {% verbatim %}
                 <li ng-repeat="x in dsmaterials" ng-if="x.fields.nipple == true">
                     <div class="collapsible-header" ng-click="listNipple()">
                         <i class="fa fa-pause fa-rotate-90"></i> {{x.fields.materials.fields.matnom}} {{x.fields.materials.fields.matmed}}
+                        <div class="chip right yellow accent-1">
+                            Total <span class="to{{x.fields.materials.pk}}">{{x.fields.quantity}}</span> {{x.fields.materials.fields.unidad}}
+                        </div>
+                        <div class="chip right yellow accent-1">
+                            Ingresado
+                            <span class="co{{x.fields.materials.pk}}"></span> cm
+                        </div>
+                        <div class="chip right yellow accent-1">
+                            Disponible
+                            <span class="dis{{x.fields.materials.pk}}"></span> cm
+                        </div>
                     </div>
                     <div class="collapsible-body">
                         <div class="card">
@@ -224,16 +234,17 @@
                                 <div class="row">
                                     <div class="col l2">
                                         <br>
-                                        <button type="button" class="btn waves-effect grey lighten-5 grey-text text-darken-3" ng-model="sdnip[x.fields.materials.pk]" ng-click="sdnip[x.fields.materials.pk]=!sdnip[x.fields.materials.pk]">
+                                        <button type="button" class="btn waves-effect grey lighten-5 grey-text text-darken-3 sdnip{{x.fields.materials.pk}}" ng-model="sdnip[x.fields.materials.pk]" ng-click="sdnip[x.fields.materials.pk]=!sdnip[x.fields.materials.pk]">
                                             <i class="fa fa-plus"></i>
                                         </button>
-                                        <button type="button" class="btn waves-effect grey lighten-5 grey-text text-darken-3" ng-click="listNipple()">
+                                        <button type="button" class="btn waves-effect grey lighten-5 grey-text text-darken-3 rf{{x.fields.materials.pk}}" ng-click="listNipple()" data-materials="{{x.fields.materials.pk}}">
                                             <i class="fa fa-refresh"></i>
                                         </button>
                                     </div>
                                     <div class="col l2 input-field" ng-show="sdnip[x.fields.materials.pk]">
-                                        <input type="number" class="right-align" id="nipple{{x.fields.materials.pk}}measure">
+                                        <input type="number" class="right-align" id="nipple{{x.fields.materials.pk}}measure" ng-model="nipple[x.fields.materials.pk].measure">
                                         <label class="active">Medida cm</label>
+                                        <input type="hidden" id="nipple{{x.fields.materials.pk}}edit">
                                     </div>
                                     <div class="col l2 input-field" ng-show="sdnip[x.fields.materials.pk]">
                                         <label class="active">Tipo</label>
@@ -261,6 +272,8 @@
                                 <tr>
                                     <th></th>
                                     <th>Cantidad</th>
+                                    <th>C. Pendiente</th>
+                                    <th>Tipo</th>
                                     <th>Descripción</th>
                                     <th>Diametro</th>
                                     <th></th>
@@ -269,7 +282,7 @@
                                     <th></th>
                                 </tr>
                             </thead>
-                            <tbody class="nip{{x.fields.materials.pk}}" ng-model="tb[x.fields.materials.pk]" ng-bind-html="tb[x.fields.materials.pk]"></tbody>
+                            <tbody class="nip{{x.fields.materials.pk}}"></tbody>
                         </table>
                     </div>
                 </li>
@@ -411,7 +424,7 @@
 {% csrf_token %}
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js"></script>
+<!-- <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js"></script> -->
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/jquery.floatThead/dist/jquery.floatThead.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/mustache.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/getMaterials.js"></script>

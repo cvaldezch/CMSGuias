@@ -376,24 +376,25 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                         dsm.save()
                     context['status'] = True
                 if 'nipplesav' in request.POST:
+                    try:
+                        area = DSector.objects.get(
+                                dsector_id=kwargs['area'])
+                    except DSector.DoesNotExist:
+                        area = {'sector_id': ''}
+                    # kw = request.POST
+                    request.POST._mutable = True
+                    request.POST['proyecto'] = kwargs['area'][:7]
+                    request.POST['area'] = kwargs['area']
+                    request.POST['sector'] = area.sgroup.sector_id
+                    request.POST._mutable = False
                     if 'edit' in request.POST:
+                        print 'edit'
                         Np = Nipple.objects.get(
                                 id=request.POST['id'],
                                 area_id=kwargs['area'],
-                                materiales_id=request.POST['materials'])
+                                materiales_id=request.POST['materiales'])
                         nip = NippleForm(request.POST, instance=Np)
                     else:
-                        try:
-                            area = DSector.objects.get(
-                                    dsector_id=kwargs['area'])
-                        except DSector.DoesNotExist:
-                            area = {'sector_id': ''}
-                        # kw = request.POST
-                        request.POST._mutable = True
-                        request.POST['proyecto'] = kwargs['area'][:7]
-                        request.POST['area'] = kwargs['area']
-                        request.POST['sector'] = area.sgroup.sector_id
-                        request.POST._mutable = False
                         nip = NippleForm(request.POST)
                     if nip.is_valid():
                         nip.save()
