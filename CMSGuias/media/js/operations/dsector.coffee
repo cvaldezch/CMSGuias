@@ -223,6 +223,11 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
         $dest.empty()
         $dest.append $ori
         $scope.calNipple data.materials
+        $edit = $("#nipple#{data.materials}edit")
+        $edit.val ""
+        $edit.removeAttr "data-materials"
+        $edit.removeAttr "data-meter"
+        $edit.removeAttr "data-quantity"
         return
       else
         console.log "nothing data"
@@ -265,6 +270,11 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
           data: $.param data
         .success (response) ->
           if response.status
+            $edit = $("#nipple#{data.materials}edit")
+            $edit.val ""
+            $edit.removeAttr "data-materials"
+            $edit.removeAttr "data-meter"
+            $edit.removeAttr "data-quantity"
             setTimeout ->
               # console.log $(".rf#{data.materials}")
               $(".rf#{data.materials}").trigger 'click'
@@ -284,6 +294,8 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
     $("#nipple#{materials}observation").val $event.target.offsetParent.parentElement.childNodes[8].innerText
     $("#nipple#{materials}edit").val $event.currentTarget.dataset.pk
       .attr "data-materials", materials
+      .attr "data-quantity", $event.target.offsetParent.parentElement.childNodes[1].innerText
+      .attr "data-meter", $event.target.offsetParent.parentElement.childNodes[7].innerText.split(" cm")[0]
     setTimeout ->
       $(".sdnip#{materials}").click()
       return
@@ -312,12 +324,25 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
     if data.quantity is ""
       swal "Alerta!", "No se ha ingresado una cantidad para este niple.", "warning"
       data.nipplesav = false
+    $edit = $("#nipple#{data.materiales}edit")
+    dis = parseFloat $(".dis#{data.materiales}").text()
+    nw = (parseFloat(data.cantidad) * parseFloat(data.metrado))
+    if $edit.val() isnt ""
+      data.edit = true
+      data.id = $edit.val()
+      data.materiales = $edit.attr "data-materials"
+      meter = parseFloat $edit.attr "data-meter"
+      quantity = parseFloat $edit.attr "data-quantity"
+      if (nw < (meter * quantity))
+        dis += ((meter * quantity) - nw)
+    console.log dis
+    console.log nw
+    cl = (dis - nw)
+    console.log cl
+    if cl < 0
+      swal "Alerta!", "La cantidad ingresada es mayor a la cantidad disponible de la tuberia.", "warning"
+      data.nipplesav = false
     if data.nipplesav
-      $edit = $("#nipple#{data.materiales}edit")
-      if $edit.val() isnt ""
-        data.edit = true
-        data.id = $edit.val()
-        data.materiales = $edit.attr "data-materials"
       $http
         url: ""
         method: "post"
@@ -325,7 +350,9 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
       .success (response) ->
         if response.status
           $edit.val ""
-          .attr "data-materials"
+          .attr "data-materials", ""
+          .attr "data-quantity", ""
+          .attr "data-meter", ""
           setTimeout ->
             $(".rf#{data.materiales}").trigger 'click'
             return

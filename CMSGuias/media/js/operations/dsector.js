@@ -229,7 +229,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
     $http.get("", {
       params: data
     }).success(function(response) {
-      var $dest, $det, $ori, count, el, script, tbs;
+      var $dest, $det, $edit, $ori, count, el, script, tbs;
       if (response.status) {
         count = 1;
         response.desc = function() {
@@ -258,6 +258,11 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
         $dest.empty();
         $dest.append($ori);
         $scope.calNipple(data.materials);
+        $edit = $("#nipple" + data.materials + "edit");
+        $edit.val("");
+        $edit.removeAttr("data-materials");
+        $edit.removeAttr("data-meter");
+        $edit.removeAttr("data-quantity");
       } else {
         console.log("nothing data");
       }
@@ -303,7 +308,13 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
           method: "post",
           data: $.param(data)
         }).success(function(response) {
+          var $edit;
           if (response.status) {
+            $edit = $("#nipple" + data.materials + "edit");
+            $edit.val("");
+            $edit.removeAttr("data-materials");
+            $edit.removeAttr("data-meter");
+            $edit.removeAttr("data-quantity");
             setTimeout(function() {
               $(".rf" + data.materials).trigger('click');
             }, 800);
@@ -321,7 +332,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
     $("#nipple" + materials + "type").val($event.target.offsetParent.parentElement.childNodes[3].innerText);
     $("#nipple" + materials + "quantity").val($event.target.offsetParent.parentElement.childNodes[1].innerText);
     $("#nipple" + materials + "observation").val($event.target.offsetParent.parentElement.childNodes[8].innerText);
-    $("#nipple" + materials + "edit").val($event.currentTarget.dataset.pk).attr("data-materials", materials);
+    $("#nipple" + materials + "edit").val($event.currentTarget.dataset.pk).attr("data-materials", materials).attr("data-quantity", $event.target.offsetParent.parentElement.childNodes[1].innerText).attr("data-meter", $event.target.offsetParent.parentElement.childNodes[7].innerText.split(" cm")[0]);
     setTimeout(function() {
       $(".sdnip" + materials).click();
     }, 100);
@@ -338,7 +349,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
     });
   };
   $scope.saveNipple = function() {
-    var $edit, data, row;
+    var $edit, cl, data, dis, meter, nw, quantity, row;
     row = this;
     data = {
       metrado: $("#nipple" + row.$parent.x.fields.materials.pk + "measure").val(),
@@ -357,20 +368,35 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
       swal("Alerta!", "No se ha ingresado una cantidad para este niple.", "warning");
       data.nipplesav = false;
     }
-    if (data.nipplesav) {
-      $edit = $("#nipple" + data.materiales + "edit");
-      if ($edit.val() !== "") {
-        data.edit = true;
-        data.id = $edit.val();
-        data.materiales = $edit.attr("data-materials");
+    $edit = $("#nipple" + data.materiales + "edit");
+    dis = parseFloat($(".dis" + data.materiales).text());
+    nw = parseFloat(data.cantidad) * parseFloat(data.metrado);
+    if ($edit.val() !== "") {
+      data.edit = true;
+      data.id = $edit.val();
+      data.materiales = $edit.attr("data-materials");
+      meter = parseFloat($edit.attr("data-meter"));
+      quantity = parseFloat($edit.attr("data-quantity"));
+      if (nw < (meter * quantity)) {
+        dis += (meter * quantity) - nw;
       }
+    }
+    console.log(dis);
+    console.log(nw);
+    cl = dis - nw;
+    console.log(cl);
+    if (cl < 0) {
+      swal("Alerta!", "La cantidad ingresada es mayor a la cantidad disponible de la tuberia.", "warning");
+      data.nipplesav = false;
+    }
+    if (data.nipplesav) {
       $http({
         url: "",
         method: "post",
         data: $.param(data)
       }).success(function(response) {
         if (response.status) {
-          $edit.val("").attr("data-materials");
+          $edit.val("").attr("data-materials", "").attr("data-quantity", "").attr("data-meter", "");
           setTimeout(function() {
             $(".rf" + data.materiales).trigger('click');
           }, 800);
