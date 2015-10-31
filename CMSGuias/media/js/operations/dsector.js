@@ -317,7 +317,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
             $edit.removeAttr("data-quantity");
             setTimeout(function() {
               $(".rf" + data.materials).trigger('click');
-            }, 800);
+            }, 100);
           } else {
             swal("Error", "No se a eliminado el niple", "error");
           }
@@ -377,7 +377,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
       data.materiales = $edit.attr("data-materials");
       meter = parseFloat($edit.attr("data-meter"));
       quantity = parseFloat($edit.attr("data-quantity"));
-      if (nw < (meter * quantity)) {
+      if (nw <= (meter * quantity)) {
         dis += (meter * quantity) - nw;
       }
     }
@@ -396,10 +396,15 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
         data: $.param(data)
       }).success(function(response) {
         if (response.status) {
-          $edit.val("").attr("data-materials", "").attr("data-quantity", "").attr("data-meter", "");
+          $edit.val("").removeAttr("data-materials", "").removeAttr("data-quantity", "").removeAttr("data-meter", "");
+          $("#nipple" + data.materiales + "measure").val("");
+          $("#nipple" + data.materiales + "type").val("");
+          $("#nipple" + data.materiales + "quantity").val("");
+          $("#nipple" + data.materiales + "quantity").val("");
+          $("#nipple" + data.materiales + "observation").val("");
           setTimeout(function() {
             $(".rf" + data.materiales).trigger('click');
-          }, 800);
+          }, 100);
         } else {
           swal("Error", "No se a guardado el niple.", "error");
         }

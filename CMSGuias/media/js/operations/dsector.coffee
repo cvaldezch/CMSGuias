@@ -279,7 +279,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
               # console.log $(".rf#{data.materials}")
               $(".rf#{data.materials}").trigger 'click'
               return
-            , 800
+            , 100
             return
           else
             swal "Error", "No se a eliminado el niple", "error"
@@ -333,7 +333,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
       data.materiales = $edit.attr "data-materials"
       meter = parseFloat $edit.attr "data-meter"
       quantity = parseFloat $edit.attr "data-quantity"
-      if (nw < (meter * quantity))
+      if (nw <= (meter * quantity))
         dis += ((meter * quantity) - nw)
     console.log dis
     console.log nw
@@ -350,13 +350,18 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
       .success (response) ->
         if response.status
           $edit.val ""
-          .attr "data-materials", ""
-          .attr "data-quantity", ""
-          .attr "data-meter", ""
+          .removeAttr "data-materials", ""
+          .removeAttr "data-quantity", ""
+          .removeAttr "data-meter", ""
+          $("#nipple#{data.materiales}measure").val ""
+          $("#nipple#{data.materiales}type").val ""
+          $("#nipple#{data.materiales}quantity").val ""
+          $("#nipple#{data.materiales}quantity").val ""
+          $("#nipple#{data.materiales}observation").val ""
           setTimeout ->
             $(".rf#{data.materiales}").trigger 'click'
             return
-          , 800
+          , 100
           return
         else
           swal "Error", "No se a guardado el niple.", "error"
