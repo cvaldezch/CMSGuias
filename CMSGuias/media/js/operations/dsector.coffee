@@ -333,8 +333,10 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
       data.materiales = $edit.attr "data-materials"
       meter = parseFloat $edit.attr "data-meter"
       quantity = parseFloat $edit.attr "data-quantity"
-      if (nw <= (meter * quantity))
-        dis += ((meter * quantity) - nw)
+      if (nw < (meter * quantity)) or nw > ((meter * quantity))
+        dis += Math.abs ((meter * quantity) - nw)
+      else if (nw == (meter * quantity))
+        dis += (meter * quantity)
     console.log dis
     console.log nw
     cl = (dis - nw)
@@ -359,13 +361,27 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
           $("#nipple#{data.materiales}quantity").val ""
           $("#nipple#{data.materiales}observation").val ""
           setTimeout ->
-            $(".rf#{data.materiales}").trigger 'click'
+            $(".rf#{data.materiales}").trigger "click"
             return
           , 100
           return
         else
           swal "Error", "No se a guardado el niple.", "error"
           return
+    return
+  $scope.showModify = ->
+    $scope.btnmodify = true
+    $http
+      url: ''
+      method: 'post'
+      data: $.param data
+    .success (response) ->
+      if response.status
+        location.reload()
+        return
+      else
+        swal "Error", "No se a podido iniciar la modificación.", "error"
+        return
     return
   $scope.$watch 'ascsector', ->
     if $scope.ascsector

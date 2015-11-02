@@ -299,7 +299,7 @@ class DSMetrado(models.Model):
 
 
 class MMetrado(models.Model):
-    qcode = models.CharField(max_length=16)
+    register = models.DateTimeField(auto_now=True, null=True)
     dsector = models.ForeignKey(DSector, to_field='dsector_id')
     materials = models.ForeignKey(Materiale, to_field='materiales_id')
     brand = models.ForeignKey(Brand, to_field='brand_id')
@@ -315,11 +315,11 @@ class MMetrado(models.Model):
     flag = models.BooleanField(default=True)
 
     class Meta:
-        verbose_name = "MMetrado"
-        verbose_name_plural = "MMetrados"
+        verbose_name = 'MMetrado'
+        verbose_name_plural = 'MMetrados'
 
     def __unicode__(self):
-        return '%s %s %s' % (self.qcode, self.dsector_id, self.materiales_id)
+        return '%s %s %s' % (self.qcode, self.dsector_id)
 
 
 class HistoryDSMetrado(models.Model):

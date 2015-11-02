@@ -57,23 +57,36 @@
     <div class="card" id="card">
         <div class="card-action">
             {% if dsector.status == 'PE' %}
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3" ng-click="gui.smat=!gui.smat">
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="gui.smat=!gui.smat">
                     <i class="fa fa-plus"></i>
                     <span class="hide-on-med-and-down">Agregar</span>
                 </button>
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect modal-trigger" data-target="mpcopy">
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effects modal-trigger" data-target="mpcopy">
                     <i class="fa fa-clone"></i>
                     <span class="hide-on-med-and-down">Copiar Lista</span>
                 </button>
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3" ng-click="delAreaMA()">
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="delAreaMA()">
                     <i class="fa fa-trash"></i>
                     <span class="hide-on-med-and-down">Eliminar Todo</span>
                 </button>
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3 modal-trigger" data-target="mfileup">
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect modal-trigger" data-target="mfileup">
                     <i class="fa fa-file-excel-o"></i>
                     <span class="hide-on-med-and-down">Cargar Archivo</span>
                 </button>
             {% endif %}
+            <br>
+            <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect">
+                <i class="fa fa-pencil"></i>
+                <span class="hide-on-med-and-down"> Modificar Área</span>
+            </button>
+            <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect">
+                <i class="fa fa-pencil"></i>
+                <span class="hide-on-med-and-down"> Modificar Área</span>
+            </button>
+            <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect">
+                <i class="fa fa-pencil"></i>
+                <span class="hide-on-med-and-down"> Modificar Área</span>
+            </button>
         </div>
         <div class="card-content" ng-model="gui.pac" ng-init="gui.pac=false" ng-show="gui.pac">
 
@@ -146,149 +159,155 @@
         </div>
     </div>
     <div class="row">
-        <div class="col l12">
-            {% verbatim %}
-                <script type="text/ng-template" id="areatmp.html">
-                    <td class="center-align">{{$index + 1}}</td>
-                    <td class="center-align text-9">{{x.fields.materials.pk}}</td>
-                    <td>{{x.fields.materials.fields.matnom}} {{x.fields.materials.fields.matmed}}</td>
-                    <td class="center-align">{{x.fields.brand.fields.brand}}</td>
-                    <td class="center-align">{{x.fields.model.fields.model}}</td>
-                    <td class="center-align">{{x.fields.materials.fields.unidad}}</td>
-                    <td class="right-align">{{x.fields.quantity}}</td>
-                    <td class="right-align">{{x.fields.qorder}}</td>
-                    <td class="right-align">{{x.fields.qguide}}</td>
-                    <td class="right-align">{{x.fields.ppurchase}}</td>
-                    <td class="right-align">{{x.fields.psales}}</td>
-                    <td class="right-align">{{x.fields.quantity * x.fields.ppurchase | number:2}}</td>
-                    <td class="center-align">
-                        <a href="#" class="dropdown-button btn waves-effect waves-light grey lighten-5 grey-text text-darken-3" data-constrainwidth="200" data-activates="ba{{x.fields.materials.pk}}">
-                          <i class="fa fa-cog"></i>
-                        </a>
-                        <ul id="ba{{x.fields.materials.pk}}" class="dropdown-content">
-                          <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="" class="waves-effect waves-light light-blue-text text-darken-3"><small><i class="fa fa-edit"></i> Editar</small></a></li>
-                          <li class="divider"></li>
-                          <li><a href="#!" style="padding: 2px 0px 2px 3px;" class="waves-effect waves-light red-text text-darken-1"><small><i class="fa fa-trash"></i> Eliminar</small></a></li>
-                          <li class="divider"></li>
-                          <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-i-cursor"></i> Observación</small></a></li>
-                          <li class="divider"></li>
-                          <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="availableNipple()" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-pause fa-rotate-90"></i> Niple</small></a></li>
-                        </ul>
-                    </td>
-                </script>
-            {% endverbatim %}
-            <table class="table responsive-table floatThead table-withoutApproved">
-                <caption ng-show="fmatwoa">
-                    <div class="input-field">
-                        <i class="prefix fa fa-filter"></i>
-                        <input type="text" ng-model="finmwoa">
-                        <label>Buscar material</label>
-                    </div>
-                </caption>
-                <thead class="amber lighten-4">
-                    <tr>
-                        <th class="center-align">
-                            <i class="fa fa-angle-double-up cursor-hand" onClick="$('html,body').animate({scrollTop:500},400);"></i>
-                        </th>
-                        <th class="center-align">Código</th>
-                        <th>Descripción</th>
-                        <th class="center-align">Marca</th>
-                        <th class="center-align">Modelo</th>
-                        <th class="center-align">Unidad</th>
-                        <th class="right-align">Vendido</th>
-                        <th class="right-align">Pendiente</th>
-                        <th class="right-align">Enviada</th>
-                        <th class="right-align">Compra</th>
-                        <th class="right-align">Venta</th>
-                        <th>C. Importe</th>
-                        <th class="center-align"><i class="fa fa-search cursor-hand" ng-model="fmatwoa" ng-click="fmatwoa=!fmatwoa"></i></th>
-                    </tr>
-                </thead>
-                <tbody>
+        {% if modify|length == 0 %}
+            <div class="col l12">
                 {% verbatim %}
-                    <tr ng-include src="'areatmp.html'" ng-repeat="x in dsmaterials | filter: finmwoa" class="text-12"></tr>
+                    <script type="text/ng-template" id="areatmp.html">
+                        <td class="center-align">{{$index + 1}}</td>
+                        <td class="center-align text-9">{{x.fields.materials.pk}}</td>
+                        <td>{{x.fields.materials.fields.matnom}} {{x.fields.materials.fields.matmed}}</td>
+                        <td class="center-align">{{x.fields.brand.fields.brand}}</td>
+                        <td class="center-align">{{x.fields.model.fields.model}}</td>
+                        <td class="center-align">{{x.fields.materials.fields.unidad}}</td>
+                        <td class="right-align">{{x.fields.quantity}}</td>
+                        <td class="right-align">{{x.fields.qorder}}</td>
+                        <td class="right-align">{{x.fields.qguide}}</td>
+                        <td class="right-align">{{x.fields.ppurchase}}</td>
+                        <td class="right-align">{{x.fields.psales}}</td>
+                        <td class="right-align">{{x.fields.quantity * x.fields.ppurchase | number:2}}</td>
+                        <td class="center-align">
+                            <a href="#" class="dropdown-button btn waves-effect waves-light grey lighten-5 grey-text text-darken-3" data-constrainwidth="200" data-activates="ba{{x.fields.materials.pk}}">
+                              <i class="fa fa-cog"></i>
+                            </a>
+                            <ul id="ba{{x.fields.materials.pk}}" class="dropdown-content">
+                              <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="" class="waves-effect waves-light light-blue-text text-darken-3"><small><i class="fa fa-edit"></i> Editar</small></a></li>
+                              <li class="divider"></li>
+                              <li><a href="#!" style="padding: 2px 0px 2px 3px;" class="waves-effect waves-light red-text text-darken-1"><small><i class="fa fa-trash"></i> Eliminar</small></a></li>
+                              <li class="divider"></li>
+                              <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-i-cursor"></i> Observación</small></a></li>
+                              <li class="divider"></li>
+                              <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="availableNipple()" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-pause fa-rotate-90"></i> Niple</small></a></li>
+                            </ul>
+                        </td>
+                    </script>
                 {% endverbatim %}
-                </tbody>
-            </table>
-            <h4 ng-show="snipple">Niple</h4>
-            <ul class="collapsible popout" data-collapsible="accordion">
-            {% verbatim %}
-                <li ng-repeat="x in dsmaterials" ng-if="x.fields.nipple == true">
-                    <div class="collapsible-header" ng-click="listNipple()">
-                        <i class="fa fa-pause fa-rotate-90"></i> {{x.fields.materials.fields.matnom}} {{x.fields.materials.fields.matmed}}
-                        <div class="chip right yellow accent-1">
-                            Total <span class="to{{x.fields.materials.pk}}">{{x.fields.quantity}}</span> {{x.fields.materials.fields.unidad}}
+                <table class="table responsive-table floatThead table-withoutApproved">
+                    <caption ng-show="fmatwoa">
+                        <div class="input-field">
+                            <i class="prefix fa fa-filter"></i>
+                            <input type="text" ng-model="finmwoa">
+                            <label>Buscar material</label>
                         </div>
-                        <div class="chip right yellow accent-1">
-                            Ingresado
-                            <span class="co{{x.fields.materials.pk}}"></span> cm
+                    </caption>
+                    <thead class="amber lighten-4">
+                        <tr>
+                            <th class="center-align">
+                                <i class="fa fa-angle-double-up cursor-hand" onClick="$('html,body').animate({scrollTop:500},400);"></i>
+                            </th>
+                            <th class="center-align">Código</th>
+                            <th>Descripción</th>
+                            <th class="center-align">Marca</th>
+                            <th class="center-align">Modelo</th>
+                            <th class="center-align">Unidad</th>
+                            <th class="right-align">Vendido</th>
+                            <th class="right-align">Pendiente</th>
+                            <th class="right-align">Enviada</th>
+                            <th class="right-align">Compra</th>
+                            <th class="right-align">Venta</th>
+                            <th>C. Importe</th>
+                            <th class="center-align"><i class="fa fa-search cursor-hand" ng-model="fmatwoa" ng-click="fmatwoa=!fmatwoa"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% verbatim %}
+                        <tr ng-include src="'areatmp.html'" ng-repeat="x in dsmaterials | filter: finmwoa" class="text-12"></tr>
+                    {% endverbatim %}
+                    </tbody>
+                </table>
+                <h4 ng-show="snipple">Niple</h4>
+                <ul class="collapsible popout" data-collapsible="accordion">
+                {% verbatim %}
+                    <li ng-repeat="x in dsmaterials" ng-if="x.fields.nipple == true">
+                        <div class="collapsible-header" ng-click="listNipple()">
+                            <i class="fa fa-pause fa-rotate-90"></i> {{x.fields.materials.fields.matnom}} {{x.fields.materials.fields.matmed}}
+                            <div class="chip right yellow accent-1">
+                                Total <span class="to{{x.fields.materials.pk}}">{{x.fields.quantity}}</span> {{x.fields.materials.fields.unidad}}
+                            </div>
+                            <div class="chip right yellow accent-1">
+                                Ingresado
+                                <span class="co{{x.fields.materials.pk}}"></span> cm
+                            </div>
+                            <div class="chip right yellow accent-1">
+                                Disponible
+                                <span class="dis{{x.fields.materials.pk}}"></span> cm
+                            </div>
                         </div>
-                        <div class="chip right yellow accent-1">
-                            Disponible
-                            <span class="dis{{x.fields.materials.pk}}"></span> cm
-                        </div>
-                    </div>
-                    <div class="collapsible-body">
-                        <div class="card">
-                            <div class="card-actiona">
-                                <div class="row">
-                                    <div class="col l2">
-                                        <br>
-                                        <button type="button" class="btn waves-effect grey lighten-5 grey-text text-darken-3 sdnip{{x.fields.materials.pk}}" ng-model="sdnip[x.fields.materials.pk]" ng-click="sdnip[x.fields.materials.pk]=!sdnip[x.fields.materials.pk]">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                        <button type="button" class="btn waves-effect grey lighten-5 grey-text text-darken-3 rf{{x.fields.materials.pk}}" ng-click="listNipple()" data-materials="{{x.fields.materials.pk}}">
-                                            <i class="fa fa-refresh"></i>
-                                        </button>
-                                    </div>
-                                    <div class="col l2 input-field" ng-show="sdnip[x.fields.materials.pk]">
-                                        <input type="number" class="right-align" id="nipple{{x.fields.materials.pk}}measure" ng-model="nipple[x.fields.materials.pk].measure">
-                                        <label class="active">Medida cm</label>
-                                        <input type="hidden" id="nipple{{x.fields.materials.pk}}edit">
-                                    </div>
-                                    <div class="col l2 input-field" ng-show="sdnip[x.fields.materials.pk]">
-                                        <label class="active">Tipo</label>
-                                        <select class="browser-default t{{x.fields.materials.pk}}" id="nipple{{x.fields.materials.pk}}type"></select>
-                                    </div>
-                                    <div class="col l2 input-field" ng-show="sdnip[x.fields.materials.pk]">
-                                        <input type="number" class="right-align" id="nipple{{x.fields.materials.pk}}quantity">
-                                        <label class="active">Cantidad</label>
-                                    </div>
-                                    <div class="col l3 input-field" ng-show="sdnip[x.fields.materials.pk]">
-                                        <input type="text" id="nipple{{x.fields.materials.pk}}observation">
-                                        <label class="active">Observación</label>
-                                    </div>
-                                    <div class="col l1" ng-show="sdnip[x.fields.materials.pk]">
-                                        <br>
-                                        <button type="button" class="btn waves-effect light-blue darken-1" ng-click="saveNipple()">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
+                        <div class="collapsible-body">
+                            <div class="card">
+                                <div class="card-actiona">
+                                    <div class="row">
+                                        <div class="col l2">
+                                            <br>
+                                            <button type="button" class="btn waves-effect grey lighten-5 grey-text text-darken-3 sdnip{{x.fields.materials.pk}}" ng-model="sdnip[x.fields.materials.pk]" ng-click="sdnip[x.fields.materials.pk]=!sdnip[x.fields.materials.pk]">
+                                                <i class="fa fa-plus"></i>
+                                            </button>
+                                            <button type="button" class="btn waves-effect grey lighten-5 grey-text text-darken-3 rf{{x.fields.materials.pk}}" ng-click="listNipple()" data-materials="{{x.fields.materials.pk}}">
+                                                <i class="fa fa-refresh"></i>
+                                            </button>
+                                        </div>
+                                        <div class="col l2 input-field" ng-show="sdnip[x.fields.materials.pk]">
+                                            <input type="number" class="right-align" id="nipple{{x.fields.materials.pk}}measure" ng-model="nipple[x.fields.materials.pk].measure">
+                                            <label class="active">Medida cm</label>
+                                            <input type="hidden" id="nipple{{x.fields.materials.pk}}edit">
+                                        </div>
+                                        <div class="col l2 input-field" ng-show="sdnip[x.fields.materials.pk]">
+                                            <label class="active">Tipo</label>
+                                            <select class="browser-default t{{x.fields.materials.pk}}" id="nipple{{x.fields.materials.pk}}type"></select>
+                                        </div>
+                                        <div class="col l2 input-field" ng-show="sdnip[x.fields.materials.pk]">
+                                            <input type="number" class="right-align" id="nipple{{x.fields.materials.pk}}quantity">
+                                            <label class="active">Cantidad</label>
+                                        </div>
+                                        <div class="col l3 input-field" ng-show="sdnip[x.fields.materials.pk]">
+                                            <input type="text" id="nipple{{x.fields.materials.pk}}observation">
+                                            <label class="active">Observación</label>
+                                        </div>
+                                        <div class="col l1" ng-show="sdnip[x.fields.materials.pk]">
+                                            <br>
+                                            <button type="button" class="btn waves-effect light-blue darken-1" ng-click="saveNipple()">
+                                                <i class="fa fa-plus"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            <table class="table responsive-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Cantidad</th>
+                                        <th>C. Pendiente</th>
+                                        <th>Tipo</th>
+                                        <th>Descripción</th>
+                                        <th>Diametro</th>
+                                        <th></th>
+                                        <th>Medida</th>
+                                        <th>Observación</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="nip{{x.fields.materials.pk}}"></tbody>
+                            </table>
                         </div>
-                        <table class="table responsive-table">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Cantidad</th>
-                                    <th>C. Pendiente</th>
-                                    <th>Tipo</th>
-                                    <th>Descripción</th>
-                                    <th>Diametro</th>
-                                    <th></th>
-                                    <th>Medida</th>
-                                    <th>Observación</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody class="nip{{x.fields.materials.pk}}"></tbody>
-                        </table>
-                    </div>
-                </li>
-            {% endverbatim %}
-            </ul>
-        </div>
+                    </li>
+                {% endverbatim %}
+                </ul>
+            </div>
+        {% else %}
+            <div class="col l12">
+                <h4>Estamos modificando esta área</h4>
+            </div>
+        {% endif %}
     </div>
     <!-- utils -->
     <select id="typenip" class="hide">

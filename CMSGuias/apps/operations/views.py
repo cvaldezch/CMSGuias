@@ -307,6 +307,10 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
             try:
                 context['dsector'] = DSector.objects.get(
                                         dsector_id=kwargs['area'])
+                context['modify'] = MMetrado.objects.filter(
+                                        dsector_id=kwargs['area']).order_by(
+                                            '-register')
+                print context
                 return render(request, 'operations/dsector.html', context)
             except TemplateDoesNotExist as e:
                 raise Http404(e)
@@ -317,6 +321,14 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
         if request.is_ajax():
             try:
                 if 'savepmat' in request.POST:
+                    try:
+                        DSMetrado.objects.get(
+                            dsector_id=kwargs['area'],
+                            materials_id=request.POST['code'],
+                            brand_id=request.POST['brand'],
+                            model_id=request.POST['model'])
+                    except DSMetrado.DoesNotExist:
+                        raise e
                     dsm = DSMetrado()
                     dsm.dsector_id = kwargs['area']
                     dsm.materials_id = request.POST['code']
@@ -407,6 +419,29 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                         area_id=kwargs['area'],
                         materiales_id=request.POST['materials']).delete()
                     context['status'] = True
+                if 'modify' in request.POST:
+                    clipboard = DSMetrado.objects.filter(
+                                    dsector_id=kwargs['area'])
+                    if clipboard:
+                        for x in clipboard:
+                            add = MMetrado()
+                            add.dsector = kwargs['area']
+                            add.materials = x.materials_id
+                            add.brand = x.brand_id
+                            add.model = x.model_id
+                            add.quantity = x.quantity
+                            add.qorder = x.qorder
+                            add.qguide = x.qguide
+                            add.ppurchase = x.ppurchase
+                            add.psales = x.psales
+                            add.comment = x.comment
+                            add.tag = x.tag
+                            add.nipple = x.nipple
+                            add.flag = x.flag
+                            add.save()
+                        context['status'] = True
+                    else:
+                        context['status'] = False
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

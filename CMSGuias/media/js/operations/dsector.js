@@ -377,8 +377,10 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
       data.materiales = $edit.attr("data-materials");
       meter = parseFloat($edit.attr("data-meter"));
       quantity = parseFloat($edit.attr("data-quantity"));
-      if (nw <= (meter * quantity)) {
-        dis += (meter * quantity) - nw;
+      if ((nw < (meter * quantity)) || nw > (meter * quantity)) {
+        dis += Math.abs((meter * quantity) - nw);
+      } else if (nw === (meter * quantity)) {
+        dis += meter * quantity;
       }
     }
     console.log(dis);
@@ -403,13 +405,27 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
           $("#nipple" + data.materiales + "quantity").val("");
           $("#nipple" + data.materiales + "observation").val("");
           setTimeout(function() {
-            $(".rf" + data.materiales).trigger('click');
+            $(".rf" + data.materiales).trigger("click");
           }, 100);
         } else {
           swal("Error", "No se a guardado el niple.", "error");
         }
       });
     }
+  };
+  $scope.showModify = function() {
+    $scope.btnmodify = true;
+    $http({
+      url: '',
+      method: 'post',
+      data: $.param(data)
+    }).success(function(response) {
+      if (response.status) {
+        location.reload();
+      } else {
+        swal("Error", "No se a podido iniciar la modificación.", "error");
+      }
+    });
   };
   $scope.$watch('ascsector', function() {
     if ($scope.ascsector) {
