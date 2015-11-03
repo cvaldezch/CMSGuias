@@ -299,6 +299,15 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                 if 'typeNipple' in request.GET:
                     context['type'] = globalVariable.tipo_nipples
                     context['status'] = True
+                if 'modifyList' in request.GET:
+                    context['modify'] = json.loads(
+                        serializers.serialize(
+                            'json',
+                            MMetrado.objects.filter(
+                                dsector_id=kwargs['area']).order_by(
+                                'materials__matnom'),
+                            relations=('materials', 'brand', 'model')))
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False
@@ -309,8 +318,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                                         dsector_id=kwargs['area'])
                 context['modify'] = MMetrado.objects.filter(
                                         dsector_id=kwargs['area']).order_by(
-                                            '-register')
-                print context
+                                            '-register')[:5]
                 return render(request, 'operations/dsector.html', context)
             except TemplateDoesNotExist as e:
                 raise Http404(e)
@@ -419,27 +427,31 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                         area_id=kwargs['area'],
                         materiales_id=request.POST['materials']).delete()
                     context['status'] = True
-                if 'modify' in request.POST:
-                    clipboard = DSMetrado.objects.filter(
-                                    dsector_id=kwargs['area'])
-                    if clipboard:
-                        for x in clipboard:
-                            add = MMetrado()
-                            add.dsector = kwargs['area']
-                            add.materials = x.materials_id
-                            add.brand = x.brand_id
-                            add.model = x.model_id
-                            add.quantity = x.quantity
-                            add.qorder = x.qorder
-                            add.qguide = x.qguide
-                            add.ppurchase = x.ppurchase
-                            add.psales = x.psales
-                            add.comment = x.comment
-                            add.tag = x.tag
-                            add.nipple = x.nipple
-                            add.flag = x.flag
-                            add.save()
-                        context['status'] = True
+                if 'modifyArea' in request.POST:
+                    valid = MMetrado.objects.filter(dsector_id=kwargs['area'])
+                    if not valid:
+                        clipboard = DSMetrado.objects.filter(
+                                        dsector_id=kwargs['area'])
+                        if clipboard:
+                            for x in clipboard:
+                                add = MMetrado()
+                                add.dsector_id = kwargs['area']
+                                add.materials_id = x.materials_id
+                                add.brand_id = x.brand_id
+                                add.model_id = x.model_id
+                                add.quantity = x.quantity
+                                add.qorder = x.qorder
+                                add.qguide = x.qguide
+                                add.ppurchase = x.ppurchase
+                                add.psales = x.psales
+                                add.comment = x.comment
+                                add.tag = x.tag
+                                add.nipple = x.nipple
+                                add.flag = x.flag
+                                add.save()
+                            context['status'] = True
+                        else:
+                            context['status'] = False
                     else:
                         context['status'] = False
             except ObjectDoesNotExist as e:

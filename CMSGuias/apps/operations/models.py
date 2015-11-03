@@ -319,7 +319,7 @@ class MMetrado(models.Model):
         verbose_name_plural = 'MMetrados'
 
     def __unicode__(self):
-        return '%s %s %s' % (self.qcode, self.dsector_id)
+        return '%s %s %f' % (self.dsector_id, self.materials, self.quantity)
 
 
 class HistoryDSMetrado(models.Model):

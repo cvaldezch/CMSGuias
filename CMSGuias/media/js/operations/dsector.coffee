@@ -17,23 +17,22 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
   angular.element(document).ready ->
     $('.modal-trigger').leanModal()
-    $scope.getListAreaMaterials()
-    $scope.getProject()
-    $scope.listTypeNip()
     $table = $(".floatThead")
     $table.floatThead
       position: 'absolute'
       top: 65
       scrollContainer: ($table) ->
         return $table.closest('.wrapper')
-    # $table.floatThead
-    #   zIndex: 998
-    # angular.element($window).bind 'resize', ->
-    #   if $window.innerWidth < 980
-    #     $(".floatThead").floatThead 'destroy'
-    #   if $window.innerWidth > 981
-    #     $(".floatThead").floatThead 'reflow'
-    #     return
+    if $scope.modify > 0
+      $scope.modifyList()
+    else
+      $scope.getListAreaMaterials()
+      $scope.getProject()
+      $scope.listTypeNip()
+    # setTimeout ->
+    #   console.log $scope.modify
+    #   return
+    # , 100
     return
   $scope.getListAreaMaterials = ->
     data =
@@ -371,6 +370,8 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
     return
   $scope.showModify = ->
     $scope.btnmodify = true
+    data =
+      modifyArea: true
     $http
       url: ''
       method: 'post'
@@ -381,6 +382,18 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
         return
       else
         swal "Error", "No se a podido iniciar la modificación.", "error"
+        return
+    return
+  $scope.modifyList = ->
+    data =
+      modifyList: true
+    $http.get '', params: data
+    .success (response) ->
+      if response.status
+        $scope.lmodify = response.modify
+        return
+      else
+        swal 'Error', 'no se a encontrado datos', 'error'
         return
     return
   $scope.$watch 'ascsector', ->

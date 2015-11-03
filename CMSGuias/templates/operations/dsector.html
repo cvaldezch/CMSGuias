@@ -75,13 +75,13 @@
                 </button>
             {% endif %}
             <br>
-            <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect">
+            <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-model="btnmodify" ng-init="btnmodify={% if modify|length > 0 %} true {% else %} false {% endif %}" ng-click="showModify()" ng-disabled="btnmodify">
                 <i class="fa fa-pencil"></i>
                 <span class="hide-on-med-and-down"> Modificar Área</span>
             </button>
-            <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect">
-                <i class="fa fa-pencil"></i>
-                <span class="hide-on-med-and-down"> Modificar Área</span>
+            <button type="button" class="btn red lighten-2 grey-text text-darken-3 waves-effect">
+                <i class="fa fa-trash"></i>
+                <span class="hide-on-med-and-down"> Eliminar Modificación</span>
             </button>
             <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect">
                 <i class="fa fa-pencil"></i>
@@ -305,7 +305,69 @@
             </div>
         {% else %}
             <div class="col l12">
-                <h4>Estamos modificando esta área</h4>
+                <h5>
+                    Estamos modificando esta área
+                    <br>
+                    <small>Tienes modificaciones pendientes.</small>
+                </h5>
+                <input type="hidden" ng-model="modify" ng-init="modify={{ modify|length }}">
+                {% verbatim %}
+                    <script type="text/ng-template" id="modifytmp.html">
+                        <td class="center-align">{{$index + 1}}</td>
+                        <td class="center-align text-9">{{x.fields.materials.pk}}</td>
+                        <td>{{x.fields.materials.fields.matnom}} {{x.fields.materials.fields.matmed}}</td>
+                        <td class="center-align">{{x.fields.brand.fields.brand}}</td>
+                        <td class="center-align">{{x.fields.model.fields.model}}</td>
+                        <td class="center-align">{{x.fields.materials.fields.unidad}}</td>
+                        <td class="right-align">{{x.fields.qorder}}</td>
+                        <td class="right-align">{{x.fields.quantity}}</td>
+                        <td class="right-align">{{x.fields.ppurchase}}</td>
+                        <td class="right-align">{{x.fields.psales}}</td>
+                        <td class="right-align">{{x.fields.quantity * x.fields.ppurchase | number:2}}</td>
+                        <td class="center-align">
+                            <a href="#" class="dropdown-button btn waves-effect waves-light grey lighten-5 grey-text text-darken-3" data-constrainwidth="200" data-activates="ba{{x.fields.materials.pk}}">
+                              <i class="fa fa-cog"></i>
+                            </a>
+                            <ul id="ba{{x.fields.materials.pk}}" class="dropdown-content">
+                              <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="" class="waves-effect waves-light light-blue-text text-darken-3"><small><i class="fa fa-edit"></i> Editar</small></a></li>
+                              <li class="divider"></li>
+                              <li><a href="#!" style="padding: 2px 0px 2px 3px;" class="waves-effect waves-light red-text text-darken-1"><small><i class="fa fa-trash"></i> Eliminar</small></a></li>
+                            </ul>
+                        </td>
+                    </script>
+                {% endverbatim %}
+                <table class="table responsive-table floatThead">
+                    <caption ng-show="fme">
+                        <div class="input-field">
+                            <i class="prefix fa fa-filter"></i>
+                            <input type="text" ng-model="finme">
+                            <label>Buscar material</label>
+                        </div>
+                    </caption>
+                    <thead class="amber lighten-4">
+                        <tr>
+                            <th class="center-align">
+                                <i class="fa fa-angle-double-up cursor-hand" onClick="$('html,body').animate({scrollTop:500},400);"></i>
+                            </th>
+                            <th class="center-align">Código</th>
+                            <th>Descripción</th>
+                            <th class="center-align">Marca</th>
+                            <th class="center-align">Modelo</th>
+                            <th class="center-align">Unidad</th>
+                            <th class="right-align">Pendiente</th>
+                            <th class="right-align">Vendido</th>
+                            <th class="right-align">Compra</th>
+                            <th class="right-align">Venta</th>
+                            <th class="right-align">Importe</th>
+                            <th class="center-align"><i class="fa fa-search cursor-hand" ng-model="fme" ng-click="fme=!fme"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% verbatim %}
+                        <tr ng-include src="'modifytmp.html'" ng-repeat="x in lmodify | filter: finme" class="text-12"></tr>
+                    {% endverbatim %}
+                    </tbody>
+                </table>
             </div>
         {% endif %}
     </div>

@@ -24,9 +24,6 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
   angular.element(document).ready(function() {
     var $table;
     $('.modal-trigger').leanModal();
-    $scope.getListAreaMaterials();
-    $scope.getProject();
-    $scope.listTypeNip();
     $table = $(".floatThead");
     $table.floatThead({
       position: 'absolute',
@@ -35,6 +32,13 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
         return $table.closest('.wrapper');
       }
     });
+    if ($scope.modify > 0) {
+      $scope.modifyList();
+    } else {
+      $scope.getListAreaMaterials();
+      $scope.getProject();
+      $scope.listTypeNip();
+    }
   });
   $scope.getListAreaMaterials = function() {
     var data;
@@ -414,7 +418,11 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
     }
   };
   $scope.showModify = function() {
+    var data;
     $scope.btnmodify = true;
+    data = {
+      modifyArea: true
+    };
     $http({
       url: '',
       method: 'post',
@@ -424,6 +432,21 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
         location.reload();
       } else {
         swal("Error", "No se a podido iniciar la modificación.", "error");
+      }
+    });
+  };
+  $scope.modifyList = function() {
+    var data;
+    data = {
+      modifyList: true
+    };
+    $http.get('', {
+      params: data
+    }).success(function(response) {
+      if (response.status) {
+        $scope.lmodify = response.modify;
+      } else {
+        swal('Error', 'no se a encontrado datos', 'error');
       }
     });
   };
