@@ -319,11 +319,11 @@
                         <td class="center-align">{{x.fields.brand.fields.brand}}</td>
                         <td class="center-align">{{x.fields.model.fields.model}}</td>
                         <td class="center-align">{{x.fields.materials.fields.unidad}}</td>
-                        <td class="right-align">{{x.fields.qorder}}</td>
-                        <td class="right-align">{{x.fields.quantity}}</td>
-                        <td class="right-align">{{x.fields.ppurchase}}</td>
-                        <td class="right-align">{{x.fields.psales}}</td>
-                        <td class="right-align">{{x.fields.quantity * x.fields.ppurchase | number:2}}</td>
+                        <td class="right-align col-2">{{x.fields.qorder}}</td>
+                        <td class="right-align col-2">{{x.fields.quantity}}</td>
+                        <td class="right-align col-2">{{x.fields.ppurchase}}</td>
+                        <td class="right-align col-2">{{x.fields.psales}}</td>
+                        <td class="right-align col-2">{{x.fields.quantity * x.fields.ppurchase | number:2}}</td>
                         <td class="center-align">
                             <a href="#" class="dropdown-button btn waves-effect waves-light grey lighten-5 grey-text text-darken-3" data-constrainwidth="200" data-activates="ba{{x.fields.materials.pk}}">
                               <i class="fa fa-cog"></i>
@@ -364,7 +364,7 @@
                     </thead>
                     <tbody>
                     {% verbatim %}
-                        <tr ng-include src="'modifytmp.html'" ng-repeat="x in lmodify | filter: finme" class="text-12"></tr>
+                        <tr ng-include src="'modifytmp.html'" ng-repeat="x in lmodify | filter: finme" ng-dblclick="showEditM($event)" class="text-12"></tr>
                     {% endverbatim %}
                     </tbody>
                 </table>

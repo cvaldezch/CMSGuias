@@ -450,6 +450,25 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
       }
     });
   };
+  $scope.showEditM = function($event) {
+    $http.get('/brand/list/', {
+      params: {
+        'brandandmodel': true
+      }
+    }).success(function(response) {
+      var btmp, mtmp;
+      if (response.status) {
+        $scope.brand = response;
+        $scope.model = response;
+        btmp = "<select class=\"brower-default\">{{#brand}}<option value=\"{{pk}}\">{{fields.brand}}</option>{{/brand}}</select>";
+        mtmp = "<select class=\"brower-default\">{{#model}}<option value=\"{{pk}}\">{{fields.model}}</option>{{/model}}</select>";
+        $event.currentTarget.children[3].innerHTML = $compile(Mustache.render(btmp, response))($scope);
+        $event.currentTarget.children[4].innerHTML = $compile(Mustache.render(mtmp, response))($scope);
+      }
+    });
+    console.log($event);
+    console.log(this);
+  };
   $scope.$watch('ascsector', function() {
     if ($scope.ascsector) {
       $scope.fsl = true;

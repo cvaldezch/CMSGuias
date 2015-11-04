@@ -83,3 +83,33 @@ select:focus:not([readonly]) + label {
 .cursor-hand {
   cursor: pointer;
 }
+.col-1 {
+/*max-width 40px*/
+  min-width: 40px;
+  width: 40px;
+}
+.col-2 {
+/*max-width 70px*/
+  min-width: 70px;
+  width: 70px;
+}
+.col-3 {
+/*max-width 130px*/
+  min-width: 130px;
+  width: 130px;
+}
+.col-4 {
+/*max-width 164px*/
+  min-width: 164px;
+  width: 164px;
+}
+.col-5 {
+/*max-width 270px*/
+  min-width: 235px;
+  width: 235px;
+}
+.col-6 {
+/*max-width 290px*/
+  min-width: 280px;
+  width: 280px;
+}

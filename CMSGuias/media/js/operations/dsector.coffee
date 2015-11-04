@@ -396,6 +396,21 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
         swal 'Error', 'no se a encontrado datos', 'error'
         return
     return
+  $scope.showEditM = ($event) ->
+    # get brand and model
+    $http.get '/brand/list/', params: 'brandandmodel': true
+    .success (response) ->
+      if response.status
+        $scope.brand = response
+        $scope.model = response
+        btmp = """<select class="brower-default">{{#brand}}<option value="{{pk}}">{{fields.brand}}</option>{{/brand}}</select>"""
+        mtmp = """<select class="brower-default">{{#model}}<option value="{{pk}}">{{fields.model}}</option>{{/model}}</select>"""
+        $event.currentTarget.children[3].innerHTML =  $compile(Mustache.render(btmp, response))($scope)
+        $event.currentTarget.children[4].innerHTML = $compile(Mustache.render(mtmp, response))($scope)
+        return
+    console.log $event
+    console.log this
+    return
   $scope.$watch 'ascsector', ->
     if $scope.ascsector
       $scope.fsl = true

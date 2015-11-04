@@ -5,12 +5,10 @@ import json
 
 from django.shortcuts import render_to_response, get_object_or_404, render
 from django.template import RequestContext, TemplateDoesNotExist
-from django.http import (
-    HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound)
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core import serializers
-from django.db.models import Count
 # necesario para el login y autenticacion
 from django.contrib.auth import login, logout, authenticate
 from django.core.urlresolvers import reverse_lazy
@@ -20,10 +18,10 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, TemplateView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-#from CMSGuias.apps.home.forms import signupForm, logininForm
+# from CMSGuias.apps.home.forms import signupForm, logininForm
 from CMSGuias.apps.tools.redirectHome import RedirectModule
 from CMSGuias.apps.tools import genkeys
-from CMSGuias.apps.logistica.models import Compra, DetCompra
+# from CMSGuias.apps.logistica.models import Compra, DetCompra
 from .models import *
 from .forms import *
 
@@ -40,6 +38,7 @@ class JSONResponseMixin(object):
     def convert_context_to_json(self, context):
         return simplejson.dumps(context, encoding='utf-8')
 
+
 class HomeManager(ListView):
     template_name = 'home/home.html'
 
@@ -54,10 +53,15 @@ class HomeManager(ListView):
                 'address': com.address,
                 'phone': com.phone
             }
-            self.template_name = RedirectModule(request.user.get_profile().empdni.charge.area)
-            return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+            self.template_name = RedirectModule(
+                request.user.get_profile().empdni.charge.area)
+            return render_to_response(
+                self.template_name,
+                context,
+                context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
-            raise e
+            raise Http404(e)
+
 
 class LoginView(View):
 
@@ -66,8 +70,10 @@ class LoginView(View):
             return HttpResponseRedirect('/')
         else:
             form = logininForm()
-        return render_to_response('home/login.html', {'form':form} ,context_instance=RequestContext(request))
-        #return HttpResponseRedirect(reverse_lazy('vista_home'))
+        return render_to_response(
+            'home/login.html',
+            {'form': form},
+            context_instance=RequestContext(request))
 
     def post(self, request, *args, **kwargs):
         message = ''
@@ -75,7 +81,7 @@ class LoginView(View):
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            usuario = authenticate(username=username,password=password)
+            usuario = authenticate(username=username, password=password)
             if usuario is not None and usuario.is_active:
                 login(request, usuario)
                 return HttpResponseRedirect(reverse_lazy('vista_home'))
@@ -85,8 +91,12 @@ class LoginView(View):
             message = "Usuario o Password no son validos!"
 
         form = logininForm()
-        ctx = { 'form': form, 'msg': message }
-        return render_to_response('home/login.html', ctx, context_instance=RequestContext(request))
+        ctx = {'form': form, 'msg': message}
+        return render_to_response(
+            'home/login.html',
+            ctx,
+            context_instance=RequestContext(request))
+
 
 class LogoutView(View):
 
@@ -96,9 +106,10 @@ class LogoutView(View):
             logout(request)
             del request.session
             return HttpResponseRedirect(reverse_lazy('vista_login'))
-        except TemplateDoesNotExist, e:
+        except TemplateDoesNotExist:
             messages.error(request, 'No se a encontrado esta pagina!')
             raise Http404('Template Does Not Exist')
+
 
 # CRUD Customers
 class CustomersList(ListView):
@@ -110,7 +121,11 @@ class CustomersList(ListView):
         if request.GET.get('menu'):
             context['menu'] = request.GET.get('menu')
         context['object_list'] = Cliente.objects.filter(flag=True)
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
+
 
 class CustomersCreate(CreateView):
     form_class = CustomersForm
@@ -122,6 +137,7 @@ class CustomersCreate(CreateView):
     def dispatch(self, request, *args, **kwargs):
         return super(CustomersCreate, self).dispatch(request, *args, **kwargs)
 
+
 class CustomersUpdate(UpdateView):
     form_class = CustomersForm
     model = Cliente
@@ -132,6 +148,7 @@ class CustomersUpdate(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         return super(CustomersUpdate, self).dispatch(request, *args, **kwargs)
 
+
 class CustomersDelete(DeleteView):
     model = Cliente
     success_url = reverse_lazy('customers_list')
@@ -140,6 +157,7 @@ class CustomersDelete(DeleteView):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(CustomersDelete, self).dispatch(request, *args, **kwargs)
+
 
 # CRUD Country
 class CountryList(ListView):
@@ -151,7 +169,11 @@ class CountryList(ListView):
         if request.GET.get('menu'):
             context['menu'] = request.GET.get('menu')
         context['country'] = Pais.objects.filter(flag=True)
-        return render_to_response(self.template_name, context, context_instance= RequestContext(request))
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
+
 
 class CountryCreate(CreateView):
     form_class = CountryForm
@@ -162,6 +184,7 @@ class CountryCreate(CreateView):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(CountryCreate, self).dispatch(request, *args, **kwargs)
+
 
 class CountryUpdate(UpdateView):
     form_class = CountryForm
@@ -175,6 +198,7 @@ class CountryUpdate(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         return super(CountryUpdate, self).dispatch(request, *args, **kwargs)
 
+
 class CountryDelete(DeleteView):
     model = Pais
     slug_field = 'pais_id'
@@ -186,6 +210,7 @@ class CountryDelete(DeleteView):
     def dispatch(self, request, *args, **kwargs):
         return super(CountryDelete, self).dispatch(request, *args, **kwargs)
 
+
 # CRUD Departament
 class DepartamentList(ListView):
     template_name = "home/crud/departament.html"
@@ -196,7 +221,11 @@ class DepartamentList(ListView):
         if request.GET.get('menu'):
             context['country'] = request.GET.get('menu')
         context['departament'] = Departamento.objects.filter(flag=True)
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
+
 
 class DepartamentCreate(CreateView):
     form_class = DepartamentForm
@@ -206,7 +235,9 @@ class DepartamentCreate(CreateView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(DepartamentCreate, self).dispatch(request, *args, **kwargs)
+        return super(DepartamentCreate, self).dispatch(
+            request, *args, **kwargs)
+
 
 class DepartamentUpdate(UpdateView):
     form_class = DepartamentForm
@@ -218,7 +249,9 @@ class DepartamentUpdate(UpdateView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(DepartamentUpdate, self).dispatch(request, *args, **kwargs)
+        return super(DepartamentUpdate, self).dispatch(
+            request, *args, **kwargs)
+
 
 class DepartamentDelete(DeleteView):
     model = Departamento
@@ -229,7 +262,9 @@ class DepartamentDelete(DeleteView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(DepartamentDelete, self).dispatch(request, *args, **kwargs)
+        return super(DepartamentDelete, self).dispatch(
+            request, *args, **kwargs)
+
 
 # CRUD Province
 class ProvinceList(ListView):
@@ -241,7 +276,11 @@ class ProvinceList(ListView):
         if request.GET.get('menu'):
             context['country'] = request.GET.get('menu')
         context['province'] = Provincia.objects.filter(flag=True)
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
+
 
 class ProvinceCreate(CreateView):
     form_class = ProvinceForm
@@ -252,6 +291,7 @@ class ProvinceCreate(CreateView):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(ProvinceCreate, self).dispatch(request, *args, **kwargs)
+
 
 class ProvinceUpdate(UpdateView):
     form_class = ProvinceForm
@@ -265,6 +305,7 @@ class ProvinceUpdate(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         return super(ProvinceUpdate, self).dispatch(request, *args, **kwargs)
 
+
 class ProvinceDelete(DeleteView):
     model = Provincia
     slug_field = 'provincia_id'
@@ -276,6 +317,7 @@ class ProvinceDelete(DeleteView):
     def dispatch(self, request, *args, **kwargs):
         return super(ProvinceDelete, self).dispatch(request, *args, **kwargs)
 
+
 # CRUD District
 class DistrictList(ListView):
     template_name = "home/crud/district.html"
@@ -286,7 +328,11 @@ class DistrictList(ListView):
         if request.GET.get('menu'):
             context['menu'] = request.GET.get('get')
         context['district'] = Distrito.objects.filter(flag=True)
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
+
 
 class DistrictCreate(CreateView):
     form_class = DistrictForm
@@ -297,6 +343,7 @@ class DistrictCreate(CreateView):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(DistrictCreate, self).dispatch(request, *args, **kwargs)
+
 
 class DistrictUpdate(UpdateView):
     form_class = DistrictForm
@@ -310,6 +357,7 @@ class DistrictUpdate(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         return super(DistrictUpdate, self).dispatch(request, *args, **kwargs)
 
+
 class DistrictDelete(DeleteView):
     model = Distrito
     slug_field = 'distrito_id'
@@ -321,17 +369,38 @@ class DistrictDelete(DeleteView):
     def dispatch(self, request, *args, **kwargs):
         return super(DistrictDelete, self).dispatch(request, *args, **kwargs)
 
+
 # CRUD Brand
-class BrandList(ListView):
+class BrandList(JSONResponseMixin, ListView):
     template_name = 'home/crud/brand.html'
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
+        if request.is_ajax():
+            try:
+                if 'brandandmodel' in request.GET:
+                    context['brand'] = json.loads(
+                        serializers.serialize(
+                            'json',
+                            Brand.objects.filter(flag=True)))
+                    context['model'] = json.loads(
+                        serializers.serialize(
+                            'json',
+                            Model.objects.filter(flag=True)))
+                    context['status'] = True
+            except Brand.DoesNotExist, e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)
         if request.GET.get('menu'):
             context['menu'] = request.GET.get('get')
         context['brand'] = Brand.objects.filter(flag=True)
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
+
 
 class BrandCreate(CreateView):
     form_class = BrandForm
@@ -349,10 +418,11 @@ class BrandCreate(CreateView):
             brand = Brand.objects.get(brand__icontains=self.object.brand)
             if brand:
                 return HttpResponseRedirect(self.success_url)
-        except ObjectDoesNotExist, e:
+        except ObjectDoesNotExist:
             self.object.brand_id = genkeys.GenerateIdBrand()
             self.object.save()
             return super(BrandCreate, self).form_valid(form)
+
 
 class BrandUpdate(UpdateView):
     form_class = BrandForm
@@ -366,6 +436,7 @@ class BrandUpdate(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         return super(BrandUpdate, self).dispatch(request, *args, **kwargs)
 
+
 class BrandDelete(DeleteView):
     model = Brand
     slug_field = 'brand_id'
@@ -377,6 +448,7 @@ class BrandDelete(DeleteView):
     def dispatch(self, request, *args, **kwargs):
         return super(BrandDelete, self).dispatch(request, *args, **kwargs)
 
+
 # CRUD Model
 class ModelList(ListView):
     template_name = 'home/crud/model.html'
@@ -387,7 +459,11 @@ class ModelList(ListView):
         if request.GET.get('menu'):
             context['menu'] = request.GET.get('get')
         context['model'] = Model.objects.filter(flag=True)
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
+
 
 class ModelCreate(CreateView):
     form_class = ModelForm
@@ -405,10 +481,11 @@ class ModelCreate(CreateView):
             model = Model.objects.get(model__icontains=self.object.model)
             if model:
                 return HttpResponseRedirect(self.success_url)
-        except Exception, e:
+        except Model.DoesNotExist:
             self.object.model_id = genkeys.GenerateIdModel()
             self.object.save()
             return super(ModelCreate, self).form_valid(form)
+
 
 class ModelUpdate(UpdateView):
     form_class = ModelForm
@@ -422,6 +499,7 @@ class ModelUpdate(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         return super(ModelUpdate, self).dispatch(request, *args, **kwargs)
 
+
 class ModelDelete(DeleteView):
     model = Model
     slug_field = 'model_id'
@@ -433,6 +511,7 @@ class ModelDelete(DeleteView):
     def dispatch(self, request, *args, **kwargs):
         return super(ModelDelete, self).dispatch(request, *args, **kwargs)
 
+
 class TGroupList(ListView):
     template_name = 'home/crud/tgroup.html'
 
@@ -442,7 +521,11 @@ class TGroupList(ListView):
         if request.GET.get('menu'):
             context['menu'] = request.GET.get('get')
         context['tgroup'] = TypeGroup.objects.filter(flag=True)
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
+
 
 class TGroupCreate(CreateView):
     form_class = TGroupForm
@@ -460,10 +543,11 @@ class TGroupCreate(CreateView):
             tgroup = TypeGroup.objects.get(typeg__icontains=self.object.typeg)
             if tgroup:
                 return HttpResponseRedirect(self.success_url)
-        except Exception, e:
+        except TypeGroup.DoesNotExist:
             self.object.tgroup_id = genkeys.GenerateIdTypeGroupMaterials()
             self.object.save()
             return super(TGroupCreate, self).form_valid(form)
+
 
 class TGroupUpdate(UpdateView):
     form_class = TGroupForm
@@ -477,6 +561,7 @@ class TGroupUpdate(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         return super(TGroupUpdate, self).dispatch(request, *args, **kwargs)
 
+
 class TGroupDelete(DeleteView):
     model = TypeGroup
     slug_field = 'tgroup_id'
@@ -488,6 +573,7 @@ class TGroupDelete(DeleteView):
     def dispatch(self, request, *args, **kwargs):
         return super(TGroupDelete, self).dispatch(request, *args, **kwargs)
 
+
 class GMaterialsList(ListView):
     template_name = 'home/crud/gmaterials.html'
 
@@ -497,7 +583,11 @@ class GMaterialsList(ListView):
         if request.GET.get('menu'):
             context['menu'] = request.GET.get('get')
         context['gmaterials'] = GroupMaterials.objects.filter(flag=True)
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
+
 
 class GMaterialsCreate(CreateView):
     form_class = GMaterialsForm
@@ -512,18 +602,21 @@ class GMaterialsCreate(CreateView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
         try:
-            tgroup = GroupMaterials.objects.get(materials_id=self.object.materials, tgroup_id=self.object.tgroup)
-            #print tgroup, 'tgroup question'
+            tgroup = GroupMaterials.objects.get(
+                        materials_id=self.object.materials,
+                        tgroup_id=self.object.tgroup)
+            # print tgroup, 'tgroup question'
             if tgroup:
                 return HttpResponseRedirect(self.success_url)
             else:
                 self.object.mgroup_id = genkeys.GenerateIdGroupMaterials()
                 self.object.save()
                 return super(GMaterialsCreate, self).form_valid(form)
-        except Exception, e:
+        except GroupMaterials.DoesNotExist:
             self.object.mgroup_id = genkeys.GenerateIdGroupMaterials()
             self.object.save()
             return super(GMaterialsCreate, self).form_valid(form)
+
 
 class GMaterialsUpdateSave(UpdateView):
     form_class = GMaterialsForm
@@ -541,25 +634,28 @@ class GMaterialsUpdateSave(UpdateView):
         if form.is_valid():
             form.save()
         else:
-            return HttpResponseRedirect('/gmaterials/edit/%s/'%request.POST.get('mgroup_id'))
+            return HttpResponseRedirect(
+                '/gmaterials/edit/%s/' % request.POST.get('mgroup_id'))
         return HttpResponseRedirect(self.success_url)
-    # def dispatch(self, request, *args, **kwargs):
-    #     return super(GMaterialsUpdateSave, self).dispatch(request, *args, **kwargs)
+
 
 class GMaterialsUpdate(TemplateView):
-    #model = GroupMaterials
+    # model = GroupMaterials
     # slug_field = 'mgroup_id'
     # slug_url_kwarg = 'mgroup_id'
     template_name = 'home/crud/gmaterials_form.html'
 
-    #@method_decorator(login_required)
+    # @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
-        context['value'] = get_object_or_404(GroupMaterials, pk=kwargs['mgroup_id'])
+        context['value'] = get_object_or_404(
+                            GroupMaterials, pk=kwargs['mgroup_id'])
         context['form'] = GMaterialsForm(instance=context['value'])
         context['update'] = True
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
-        #return super(GMaterialsUpdate, self).dispatch(request, *args, **kwargs)
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
 
 
 class GMaterialsDelete(DeleteView):
@@ -640,8 +736,11 @@ class DetailsGMaterials(JSONResponseMixin, View):
             try:
                 if 'addMaterials' in request.POST:
                     try:
-                        dt = DetailsGroup.objects.get(mgroup_id=kwargs['mgroup'], materials_id=request.POST.get('code'))
-                        dt.quantity = (dt.quantity + float(request.POST.get('quantity')))
+                        dt = DetailsGroup.objects.get(
+                            mgroup_id=kwargs['mgroup'],
+                            materials_id=request.POST.get('code'))
+                        dt.quantity = (
+                            dt.quantity + float(request.POST.get('quantity')))
                         dt.save()
                     except ObjectDoesNotExist:
                         nw = DetailsGroup()
@@ -651,22 +750,30 @@ class DetailsGMaterials(JSONResponseMixin, View):
                         nw.save()
                     context['status'] = True
                 if 'eMaterials' in request.POST:
-                    dt = DetailsGroup.objects.get(mgroup_id=kwargs['mgroup'], materials_id=request.POST.get('code'))
+                    dt = DetailsGroup.objects.get(
+                        mgroup_id=kwargs['mgroup'],
+                        materials_id=request.POST.get('code'))
                     dt.quantity = float(request.POST.get('quantity'))
                     dt.save()
                     context['status'] = True
                 if 'delMaterial' in request.POST:
-                    DetailsGroup.objects.get(mgroup_id=kwargs['mgroup'],materials_id=request.POST.get('materials')).delete()
+                    DetailsGroup.objects.get(
+                        mgroup_id=kwargs['mgroup'],
+                        materials_id=request.POST.get('materials')).delete()
                     context['status'] = True
                 if 'delall' in request.POST:
-                    DetailsGroup.objects.filter(mgroup_id=kwargs['mgroup']).delete()
+                    DetailsGroup.objects.filter(
+                        mgroup_id=kwargs['mgroup']).delete()
                     context['status'] = True
                 if 'copyClipboard' in request.POST:
                     if json.loads(request.POST.get('replace')):
-                        DetailsGroup.objects.filter(mgroup_id=kwargs['mgroup']).delete()
+                        DetailsGroup.objects.filter(
+                            mgroup_id=kwargs['mgroup']).delete()
                     for x in json.loads(request.POST.get('details')):
                         try:
-                            dt = DetailsGroup.objects.get(mgroup_id=kwargs['mgroup'], materials_id=x['materials'])
+                            dt = DetailsGroup.objects.get(
+                                mgroup_id=kwargs['mgroup'],
+                                materials_id=x['materials'])
                             dt.quantity = (dt.quantity + float(x['quantity']))
                             dt.save()
                         except ObjectDoesNotExist:
@@ -681,6 +788,7 @@ class DetailsGMaterials(JSONResponseMixin, View):
                 context['status'] = False
             return self.render_to_json_response(context)
 
+
 class MaterialsKeep(JSONResponseMixin, TemplateView):
 
     @method_decorator(login_required)
@@ -689,69 +797,64 @@ class MaterialsKeep(JSONResponseMixin, TemplateView):
         if request.is_ajax():
             try:
                 if 'code' in request.GET:
-                    context['list'] = [
-                    {
+                    context['list'] = [{
                         'materials': x.materiales_id,
                         'name': x.matnom,
                         'measure': x.matmed,
                         'unit': x.unidad.uninom,
                         'finished': x.matacb,
-                        'area': x.matare
-                    }
-                    for x in Materiale.objects.filter(materiales_id__startswith=request.GET.get('code'))
-                    ]
+                        'area': x.matare}
+                        for x in Materiale.objects.filter(
+                            materiales_id__startswith=request.GET.get('code'))]
                     context['status'] = True
                 if 'desc' in request.GET:
-                    context['list'] = [
-                    {
+                    context['list'] = [{
                         'materials': x.materiales_id,
                         'name': x.matnom,
                         'measure': x.matmed,
                         'unit': x.unidad.uninom,
                         'finished': x.matacb,
-                        'area': x.matare
-                    }
-                    for x in Materiale.objects.filter(matnom__icontains=request.GET.get('desc'))
-                    ]
+                        'area': x.matare}
+                        for x in Materiale.objects.filter(
+                        matnom__icontains=request.GET.get('desc'))]
                     context['status'] = True
                 # Ajax method for json
                 if 'searchName' in request.GET:
-                    name = Materiale.objects.filter(matnom__icontains=request.GET['name']).distinct('matnom').order_by('matnom')
-                    context['names'] = [
-                        {
-                            'name': x.matnom
-                        }
-                        for x in name
-                    ]
+                    name = Materiale.objects.filter(
+                        matnom__icontains=request.GET['name']).distinct(
+                        'matnom').order_by('matnom')
+                    context['names'] = [{
+                            'name': x.matnom}
+                            for x in name]
                     context['status'] = True
                 if 'searchNamebyCode' in request.GET:
-                    name = Materiale.objects.filter(materiales_id=request.GET['scode'])
-                    context['names'] = [
-                        {
-                            'name': x.matnom
-                        }
-                        for x in name
-                    ]
+                    name = Materiale.objects.filter(
+                            materiales_id=request.GET['scode'])
+                    context['names'] = [{
+                            'name': x.matnom}
+                            for x in name]
                     context['status'] = True
                 if 'searchMeter' in request.GET:
-                    meter = Materiale.objects.filter(matnom__icontains=request.GET['name']).distinct('matmed').order_by('matmed')
-                    context['meter'] = [
-                        {
+                    meter = Materiale.objects.filter(
+                        matnom__icontains=request.GET['name']).distinct(
+                        'matmed').order_by('matmed')
+                    context['meter'] = [{
                             'measure': x.matmed,
-                            'code': x.materiales_id
-                        }
-                        for x in meter
-                    ]
+                            'code': x.materiales_id}
+                            for x in meter]
                     context['status'] = True
                 if 'summary' in request.GET:
-                    material = Materiale.objects.get(materiales_id=request.GET['scode'])
+                    material = Materiale.objects.get(
+                                materiales_id=request.GET['scode'])
                     price = None
                     try:
-                        price = DetCompra.objects.filter(materiales_id=material.materiales_id).latest('compra__registrado').precio
+                        price = DetCompra.objects.filter(
+                            materiales_id=material.materiales_id).latest(
+                            'compra__registrado').precio
                     except ObjectDoesNotExist, e:
                         price = 0
                     context['summary'] = {
-                        'materials' : material.materiales_id,
+                        'materials': material.materiales_id,
                         'name': material.matnom,
                         'measure': material.matmed,
                         'unit': material.unidad.uninom,
@@ -764,9 +867,13 @@ class MaterialsKeep(JSONResponseMixin, TemplateView):
             return self.render_to_json_response(context)
         else:
             try:
-                context['materials'] = Materiale.objects.all().order_by('matnom')[:50]
+                context['materials'] = Materiale.objects.all().order_by(
+                                        'matnom')[:50]
                 context['unidad'] = Unidade.objects.all()
-                return render_to_response('home/crud/materials.html', context, context_instance=RequestContext(request))
+                return render_to_response(
+                    'home/crud/materials.html',
+                    context,
+                    context_instance=RequestContext(request))
             except TemplateDoesNotExist, e:
                 raise Http404(e)
 
@@ -776,14 +883,16 @@ class MaterialsKeep(JSONResponseMixin, TemplateView):
             context = dict()
             try:
                 if 'exists' in request.POST:
-                    obj = Materiale.objects.get(pk=request.POST.get('materiales_id'))
+                    obj = Materiale.objects.get(
+                            pk=request.POST.get('materiales_id'))
                     if obj:
                         context['status'] = True
                     else:
                         context['status'] = False
                 if 'saveMaterial' in request.POST:
                     if 'edit' in request.POST:
-                        obj = Materiale.objects.get(pk=request.POST.get('materiales_id'))
+                        obj = Materiale.objects.get(
+                                pk=request.POST.get('materiales_id'))
                         form = MaterialsForm(request.POST, instance=obj)
                     else:
                         form = MaterialsForm(request.POST)
@@ -793,7 +902,8 @@ class MaterialsKeep(JSONResponseMixin, TemplateView):
                     else:
                         context['status'] = False
                 if 'delete' in request.POST:
-                    obj = Materiale.objects.get(pk=request.POST.get('materials'))
+                    obj = Materiale.objects.get(
+                            pk=request.POST.get('materials'))
                     obj.delete()
                     context['status'] = True
             except ObjectDoesNotExist, e:
@@ -876,14 +986,6 @@ class ManPower(JSONResponseMixin, TemplateView):
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
-        context = dict()
-        #if request.is_ajax():
-        #try:
-        #    pass
-        #except ObjectDoesNotExist, e:
-        #    context['raise'] = str(e)
-            #context['status'] = False
-        #return self.render_to_json_response(context)
         if kwargs['add']:
             try:
                 ob = Cargo()
@@ -893,7 +995,7 @@ class ManPower(JSONResponseMixin, TemplateView):
                 ob.flag = True
                 ob.save()
             except ObjectDoesNotExist, e:
-                raise
+                raise e
             return render(request, 'home/crud/manpower.html')
 
 
@@ -927,13 +1029,24 @@ class ToolsView(JSONResponseMixin, TemplateView):
         if request.is_ajax():
             try:
                 if 'listName' in request.GET:
-                    context['tools'] = list(Tools.objects.values('name').filter(flag=True).distinct('name').order_by('name'))
+                    context['tools'] = list(
+                        Tools.objects.values('name').filter(
+                            flag=True).distinct('name').order_by('name'))
                     context['status'] = True
                 if 'searchMeasure' in request.GET:
-                    context['measure'] = list(Tools.objects.values('tools_id', 'measure').filter(name__icontains=request.GET['name']).distinct('measure').order_by('measure'))
+                    context['measure'] = list(
+                        Tools.objects.values('tools_id', 'measure').filter(
+                            name__icontains=request.GET['name']).distinct(
+                            'measure').order_by('measure'))
                     context['status'] = True
                 if 'getSummary' in request.GET:
-                    context['summary'] = list(Tools.objects.values('tools_id', 'name', 'measure', 'unit__uninom').filter(tools_id=request.GET['tools']))[0]
+                    context['summary'] = list(
+                        Tools.objects.values(
+                            'tools_id',
+                            'name',
+                            'measure',
+                            'unit__uninom').filter(
+                            tools_id=request.GET['tools']))[0]
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = str(e)
@@ -943,7 +1056,8 @@ class ToolsView(JSONResponseMixin, TemplateView):
             try:
                 if kwargs['add']:
                     context['units'] = Unidade.objects.all()
-                    return render(request, 'home/crud/tools_form.html', context)
+                    return render(
+                        request, 'home/crud/tools_form.html', context)
             except Exception as e:
                 raise Http404(e)
 
@@ -959,4 +1073,4 @@ class ToolsView(JSONResponseMixin, TemplateView):
                 else:
                     raise Http404('Fail Add Tools')
         except ObjectDoesNotExist as e:
-            raise
+            raise e
