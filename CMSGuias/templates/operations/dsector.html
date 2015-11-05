@@ -324,15 +324,9 @@
                         <td class="right-align col-2">{{x.fields.ppurchase}}</td>
                         <td class="right-align col-2">{{x.fields.psales}}</td>
                         <td class="right-align col-2">{{x.fields.quantity * x.fields.ppurchase | number:2}}</td>
-                        <td class="center-align">
-                            <a href="#" class="dropdown-button btn waves-effect waves-light grey lighten-5 grey-text text-darken-3" data-constrainwidth="200" data-activates="ba{{x.fields.materials.pk}}">
-                              <i class="fa fa-cog"></i>
-                            </a>
-                            <ul id="ba{{x.fields.materials.pk}}" class="dropdown-content">
-                              <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="" class="waves-effect waves-light light-blue-text text-darken-3"><small><i class="fa fa-edit"></i> Editar</small></a></li>
-                              <li class="divider"></li>
-                              <li><a href="#!" style="padding: 2px 0px 2px 3px;" class="waves-effect waves-light red-text text-darken-1"><small><i class="fa fa-trash"></i> Eliminar</small></a></li>
-                            </ul>
+                        <td class="center-align text-13">
+                            <a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="" class="waves-effect waves-light light-blue-text text-darken-3"><i class="fa fa-edit"></i></a>
+                            <a href="#!" style="padding: 2px 0px 2px 3px;" class="waves-effect waves-light red-text text-darken-1"><i class="fa fa-trash"></i></a>
                         </td>
                     </script>
                 {% endverbatim %}

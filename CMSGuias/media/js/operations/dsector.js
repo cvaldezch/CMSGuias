@@ -451,23 +451,76 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
     });
   };
   $scope.showEditM = function($event) {
+    var elem;
+    elem = this;
     $http.get('/brand/list/', {
       params: {
         'brandandmodel': true
       }
     }).success(function(response) {
-      var btmp, mtmp;
+      var bel, btmp, mel, mtmp;
       if (response.status) {
         $scope.brand = response;
         $scope.model = response;
-        btmp = "<select class=\"brower-default\">{{#brand}}<option value=\"{{pk}}\">{{fields.brand}}</option>{{/brand}}</select>";
-        mtmp = "<select class=\"brower-default\">{{#model}}<option value=\"{{pk}}\">{{fields.model}}</option>{{/model}}</select>";
-        $event.currentTarget.children[3].innerHTML = $compile(Mustache.render(btmp, response))($scope);
-        $event.currentTarget.children[4].innerHTML = $compile(Mustache.render(mtmp, response))($scope);
+        response.ifbrand = function() {
+          if (this.pk === elem.$parent.x.fields.brand.pk) {
+            return "selected";
+          }
+        };
+        response.ifmodel = function() {
+          if (this.pk === elem.$parent.x.fields.model.pk) {
+            return "selected";
+          }
+        };
+        btmp = "<select class=\"browser-default\" ng-blur=\"saveEditM($event)\" name=\"brand\" data-old=\"" + elem.$parent.x.fields.brand.pk + "\">{{#brand}}<option value=\"{{pk}}\" {{ifbrand}}>{{fields.brand}}</option>{{/brand}}</select>";
+        mtmp = "<select class=\"browser-default\" ng-blur=\"saveEditM($event)\" name=\"model\" data-old=\"" + elem.$parent.x.fields.model.pk + "\">{{#model}}<option value=\"{{pk}}\" {{ifmodel}}>{{fields.model}}</option>{{/model}}</select>";
+        bel = Mustache.render(btmp, response);
+        mel = Mustache.render(mtmp, response);
+        $($event.currentTarget.children[3]).html($compile(bel)($scope));
+        $($event.currentTarget.children[4]).html($compile(mel)($scope));
+        $($event.currentTarget.children[7]).html($compile("<input type=\"number\" ng-blur=\"saveEditM($event)\" name=\"quantity\" min=\"1\" value=\"" + elem.$parent.x.fields.quantity + "\" class=\"right-align\">")($scope));
+        $($event.currentTarget.children[8]).html($compile("<input type=\"number\" ng-blur=\"saveEditM($event)\" name=\"ppurchase\" min=\"0\" value=\"" + elem.$parent.x.fields.ppurchase + "\" class=\"right-align\">")($scope));
+        $($event.currentTarget.children[9]).html($compile("<input type=\"number\" ng-blur=\"saveEditM($event)\" name=\"psales\" min=\"0\" value=\"" + elem.$parent.x.fields.psales + "\" class=\"right-align\">")($scope));
       }
     });
+  };
+  $scope.saveEditM = function($event) {
+    var data, x;
+    data = {
+      materials: $event.currentTarget.parentElement.parentElement.children[1].innerText,
+      name: $event.currentTarget.name,
+      value: $event.currentTarget.value
+    };
     console.log($event);
-    console.log(this);
+    if (data.name === "brand") {
+      data.brand = $event.currentTarget.dataset.old;
+    } else {
+      data.brand = $event.currentTarget.parentElement.parentElement.children[3].children[0].value;
+    }
+    if (data.name === "model") {
+      data.model = $event.currentTarget.dataset.old;
+    } else {
+      data.model = $event.currentTarget.parentElement.parentElement.children[4].children[0].value;
+    }
+    console.log(data);
+    for (x in $scope.lmodify) {
+      if ($scope.lmodify[x].fields.materials.pk === $event.currentTarget.parentElement.parentElement.children[1].innerText) {
+        if (data.name === "brand") {
+          $scope.lmodify[x].fields.brand.pk = $event.currentTarget.parentElement.parentElement.children[3].children[0].selectedOptions[0].value;
+          $scope.lmodify[x].fields.brand.fields.brand = $event.currentTarget.parentElement.parentElement.children[3].children[0].selectedOptions[0].innerText;
+        }
+        if (data.name === "model") {
+          $scope.lmodify[x].fields.brand.pk = $event.currentTarget.parentElement.parentElement.children[4].children[0].selectedOptions[0].value;
+          $scope.lmodify[x].fields.brand.fields.brand = $event.currentTarget.parentElement.parentElement.children[4].children[0].selectedOptions[0].innerText;
+        }
+        if (data.name === "quantity") {
+          $scope.lmodify[x].fields.quantity = data.value;
+        }
+        if (data.name === "ppurchase") {
+          $scope.lmodify[x].fields.ppurchase = data.value;
+        }
+      }
+    }
   };
   $scope.$watch('ascsector', function() {
     if ($scope.ascsector) {
