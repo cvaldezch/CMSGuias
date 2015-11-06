@@ -9,7 +9,7 @@ from django.core import serializers
 # from django.contrib.auth.mod import User
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.shortcuts import render_to_response, render
 from django.utils import simplejson
 from django.utils.decorators import method_decorator
@@ -308,6 +308,13 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                                 'materials__matnom'),
                             relations=('materials', 'brand', 'model')))
                     context['status'] = True
+                if 'calMM' in request.GET:
+                    context['samountp'] = MMetrado.objects.filter(
+                        dsector_id=kwargs['area']).order_by(
+                        'materials__matnom').aggregate(
+                        amount=Sum(
+                            'quantity', field='quantity*ppurchase'))['amount']
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False
@@ -454,6 +461,35 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                             context['status'] = False
                     else:
                         context['status'] = False
+                if 'editMM' in request.POST:
+                    update = MMetrado.objects.filter(
+                        dsector_id=kwargs['area'],
+                        materials_id=request.POST['materials'],
+                        brand_id=request.POST['brand'],
+                        model_id=request.POST['model'])
+                    if update:
+                        if request.POST['name'] == 'brand':
+                            update[0].brand_id = request.POST['value']
+                        if request.POST['name'] == 'model':
+                            update[0].model_id = request.POST['value']
+                        if request.POST['name'] == 'quantity':
+                            update[0].quantity = request.POST['value']
+                        if request.POST['name'] == 'ppurchase':
+                            update[0].ppurchase == request.POST['value']
+                        if request.POST['name'] == 'psales':
+                            update[0].psales = request.POST['value']
+                        update[0].save()
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+                        context['raise'] = 'Data not found'
+                if 'delMM' in request.POST:
+                    MMetrado.objects.get(
+                        dsector_id=kwargs['area'],
+                        materials_id=request.POST['materials'],
+                        brand_id=request.POST['brand'],
+                        model_id=request.POST['model']).delete()
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

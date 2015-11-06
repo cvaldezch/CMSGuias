@@ -418,9 +418,9 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
         mel = Mustache.render mtmp, response
         $($event.currentTarget.children[3]).html $compile(bel)($scope)
         $($event.currentTarget.children[4]).html $compile(mel)($scope)
-        $($event.currentTarget.children[7]).html $compile("""<input type="number" ng-blur="saveEditM($event)" name="quantity" min="1" value="#{elem.$parent.x.fields.quantity}" class="right-align">""")($scope)
-        $($event.currentTarget.children[8]).html $compile("""<input type="number" ng-blur="saveEditM($event)" name="ppurchase" min="0" value="#{elem.$parent.x.fields.ppurchase}" class="right-align">""")($scope)
-        $($event.currentTarget.children[9]).html $compile("""<input type="number" ng-blur="saveEditM($event)" name="psales" min="0" value="#{elem.$parent.x.fields.psales}" class="right-align">""")($scope)
+        $($event.currentTarget.children[7]).html $compile("""<input type="number" ng-blur="saveEditM($event)" name="quantity" min="1" value="#{elem.$parent.x.fields.quantity}" data-old="#{elem.$parent.x.fields.quantity}" class="right-align">""")($scope)
+        $($event.currentTarget.children[8]).html $compile("""<input type="number" ng-blur="saveEditM($event)" name="ppurchase" min="0" value="#{elem.$parent.x.fields.ppurchase}" data-old="#{elem.$parent.x.fields.ppurchase}" class="right-align">""")($scope)
+        $($event.currentTarget.children[9]).html $compile("""<input type="number" ng-blur="saveEditM($event)" name="psales" min="0" value="#{elem.$parent.x.fields.psales}" data-old="#{elem.$parent.x.fields.psales}" class="right-align">""")($scope)
         return
     return
   $scope.saveEditM = ($event) ->
@@ -428,30 +428,93 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
       materials: $event.currentTarget.parentElement.parentElement.children[1].innerText
       name: $event.currentTarget.name
       value: $event.currentTarget.value
-    console.log $event
     if data.name is "brand"
       data.brand = $event.currentTarget.dataset.old
+      if data.value is data.brand
+        return false
     else
       data.brand = $event.currentTarget.parentElement.parentElement.children[3].children[0].value
     if data.name is "model"
       data.model = $event.currentTarget.dataset.old
+      if data.value is data.model
+        return false
     else
       data.model = $event.currentTarget.parentElement.parentElement.children[4].children[0].value
-    console.log data
+    if data.name is 'quantity' or data.name is 'ppurchase' or data.name is 'psales'
+      if parseFloat(data.value) is parseFloat ($event.currentTarget.dataset.old)
+        return false
+    data.editMM = true
+    $http
+      url: ''
+      method: 'post'
+      data: $.param data
+    .success (response) ->
+      if response.status
+        for x of $scope.lmodify
+          if $scope.lmodify[x].fields.materials.pk is $event.currentTarget.parentElement.parentElement.children[1].innerText and $scope.lmodify[x].fields.brand.pk is data.brand and $scope.lmodify[x].fields.model.pk is data.model
+            if data.name is "brand"
+              $scope.lmodify[x].fields.brand.pk = $event.currentTarget.parentElement.parentElement.children[3].children[0].selectedOptions[0].value
+              $scope.lmodify[x].fields.brand.fields.brand = $event.currentTarget.parentElement.parentElement.children[3].children[0].selectedOptions[0].innerText
+              $event.currentTarget.dataset.old = $scope.lmodify[x].fields.brand.pk
+            if data.name is "model"
+              $scope.lmodify[x].fields.brand.pk = $event.currentTarget.parentElement.parentElement.children[4].children[0].selectedOptions[0].value
+              $scope.lmodify[x].fields.brand.fields.brand = $event.currentTarget.parentElement.parentElement.children[4].children[0].selectedOptions[0].innerText
+              $event.currentTarget.dataset.old = $scope.lmodify[x].fields.model.pk
+            if data.name is "quantity"
+               $scope.lmodify[x].fields.quantity = data.value
+               $event.currentTarget.dataset.old = $scope.lmodify[x].fields.quantity
+            if data.name is "ppurchase"
+              $scope.lmodify[x].fields.ppurchase = data.value
+              $event.currentTarget.dataset.old = $scope.lmodify[x].fields.ppurchase
+            if data.name is "psales"
+              $scope.lmodify[x].fields.psales = data.value
+              $event.currentTarget.dataset.old = $scope.lmodify[x].fields.psales
+            break
+        Materialize.toast 'Guardado OK', 1500, 'rounded'
+        return
+      else
+        Materialize.toast "Error, no se guardo, #{response.raise}", 1500
+        return
+    return
+  $scope.closeEditM = ($event) ->
     for x of $scope.lmodify
-      # console.log $scope.lmodify[x]
-      if $scope.lmodify[x].fields.materials.pk is $event.currentTarget.parentElement.parentElement.children[1].innerText
-        if data.name is "brand"
-          $scope.lmodify[x].fields.brand.pk = $event.currentTarget.parentElement.parentElement.children[3].children[0].selectedOptions[0].value
-          $scope.lmodify[x].fields.brand.fields.brand = $event.currentTarget.parentElement.parentElement.children[3].children[0].selectedOptions[0].innerText
-        if data.name is "model"
-          $scope.lmodify[x].fields.brand.pk = $event.currentTarget.parentElement.parentElement.children[4].children[0].selectedOptions[0].value
-          $scope.lmodify[x].fields.brand.fields.brand = $event.currentTarget.parentElement.parentElement.children[4].children[0].selectedOptions[0].innerText
-        if data.name is "quantity"
-           $scope.lmodify[x].fields.quantity = data.value
-           #$event.currentTarget.parentElement.parentElement.children[10].innerText =
-        if data.name is "ppurchase"
-          $scope.lmodify[x].fields.ppurchase = data.value
+      if $scope.lmodify[x].fields.materials.pk is $event.currentTarget.parentElement.parentElement.children[1].innerText and $scope.lmodify[x].fields.brand.pk is $event.currentTarget.parentElement.parentElement.children[3].children[0].selectedOptions[0].value and $scope.lmodify[x].fields.model.pk is $event.currentTarget.parentElement.parentElement.children[4].children[0].selectedOptions[0].value
+        $event.currentTarget.parentElement.parentElement.children[3].innerHTML = $scope.lmodify[x].fields.brand.fields.brand
+        $event.currentTarget.parentElement.parentElement.children[4].innerHTML = $scope.lmodify[x].fields.model.fields.model
+        $event.currentTarget.parentElement.parentElement.children[7].innerHTML = $scope.lmodify[x].fields.quantity
+        $event.currentTarget.parentElement.parentElement.children[8].innerHTML = $scope.lmodify[x].fields.ppurchase
+        $event.currentTarget.parentElement.parentElement.children[9].innerHTML = $scope.lmodify[x].fields.psales
+        break
+    return
+  $scope.delEditM = ($event) ->
+    swal
+      title: "Eliminar Material?"
+      text: "#{$event.currentTarget.parentElement.parentElement.children[2].innerText}"
+      type: "warning"
+      showCancelButton: true
+      confirmButtonText: "Si!, eliminar"
+      confirmButtonColor: "#dd6b55"
+      cancelButtonText: "No!"
+      closeOnConfirm: true
+    , (isConfirm) ->
+      if isConfirm
+        data =
+          materials: $event.currentTarget.parentElement.parentElement.children[1].innerText
+          brand: $event.currentTarget.dataset.brand
+          model:$event.currentTarget.dataset.model
+          delMM: true
+        $http
+          url: ""
+          method: "post"
+          data: $.param data
+        .success (response) ->
+          if response.status
+            Materialize.toast "Se elimino correctamente", 1500
+            $scope.modifyList()
+            return
+          else
+            swal "Error", "No se a podido eliminar el material, intentelo otra vez.", "error"
+            return
     return
   $scope.$watch 'ascsector', ->
     if $scope.ascsector

@@ -321,6 +321,10 @@ class MMetrado(models.Model):
     def __unicode__(self):
         return '%s %s %f' % (self.dsector_id, self.materials, self.quantity)
 
+    @property
+    def apurchase(self):
+        return (self.quantity * float(self.ppurchase))
+
 
 class HistoryDSMetrado(models.Model):
     qcode = models.CharField(max_length=16)
