@@ -222,7 +222,7 @@ class SGroup(models.Model):
                                     null=True)
     sector = models.ForeignKey(Sectore, to_field='sector_id')
     name = models.CharField(max_length=255)
-    register = models.DateTimeField(auto_now_add=True)
+    register = models.DateTimeField(auto_now=True)
     datestart = models.DateField(null=True, blank=True)
     dateend = models.DateField(null=True, blank=True)
     observation = models.TextField(null=True, blank=True)

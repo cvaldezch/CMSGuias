@@ -53,12 +53,7 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
       data: $.param(data)
     }).success(function(response) {
       if (response.status) {
-        swal({
-          title: "Felicidades",
-          text: "se guardo los datos correctamente.",
-          type: "success",
-          timer: 2600
-        });
+        Materialize.toast('Se guardado correctamente', 1800);
         $("#mgroup").closeModal();
         $scope.listGroup();
       } else {

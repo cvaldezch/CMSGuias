@@ -418,7 +418,7 @@ def generateBudget():
 def genSGroup(pro=None, sec=None):
     try:
         row = SGroup.objects.filter(
-                project_id=pro, sector_id=sec).order_by('sgroup_id')
+                project_id=pro, sector_id=sec).order_by('-register')
         if row:
             row = row[0]
             code = int(row.sgroup_id[7:][2:])

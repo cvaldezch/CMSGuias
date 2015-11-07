@@ -46,11 +46,7 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
       data: $.param data
     .success (response) ->
       if response.status
-        swal
-          title: "Felicidades"
-          text: "se guardo los datos correctamente.",
-          type: "success"
-          timer: 2600
+        Materialize.toast 'Se guardado correctamente', 1800
         $("#mgroup").closeModal()
         $scope.listGroup()
         return

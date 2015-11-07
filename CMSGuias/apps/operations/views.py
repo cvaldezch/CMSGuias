@@ -199,6 +199,7 @@ class ProgramingProject(JSONResponseMixin, View):
                             form = SGroupForm(request.POST)
                     except ObjectDoesNotExist:
                         form = SGroupForm(request.POST)
+                    print form.is_valid()
                     if form.is_valid():
                         if 'sgroup_id' not in request.POST:
                             add = form.save(commit=False)
@@ -206,9 +207,8 @@ class ProgramingProject(JSONResponseMixin, View):
                                     kwargs['pro'], kwargs['sec'])
                             add.sgroup_id = key.strip()
                             add.project_id = kwargs['pro']
-                            add.subproject_id = kwargs[
-                                'sub'] if unicode(kwargs[
-                                    'pro']) != 'None' else None
+                            if unicode(kwargs['sub']) != 'None':
+                                add.subproject_id = kwargs['sub']
                             add.sector_id = kwargs['sec']
                             add.colour = request.POST['rgba']
                             add.save()
@@ -236,7 +236,6 @@ class ProgramingProject(JSONResponseMixin, View):
                             key = genkeys.genDSector(
                                     kwargs['pro'],
                                     request.POST['sgroup'])
-                            print key, len(key)
                             add.dsector_id = key.strip()
                             add.project_id = kwargs['pro']
                             add.save()
@@ -247,7 +246,6 @@ class ProgramingProject(JSONResponseMixin, View):
                         context['status'] = False
                         context['raise'] = 'Fields empty'
                 if 'savePricewithout' in request.POST:
-                    print request.POST
                     sg = [x[0] for x in SGroup.objects.filter(
                             project_id=kwargs['pro'],
                             subproject_id=kwargs[
@@ -309,6 +307,15 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                             relations=('materials', 'brand', 'model')))
                     context['status'] = True
                 if 'calMM' in request.GET:
+                    sg = [x[0] for x in SGroup.objects.filter(
+                            project_id=kwargs['pro'],
+                            sector_id=kwargs['sec']).values_list('sgroup_id',)]
+                    sec = [x[0] for x in DSector.objects.filter(
+                            sgroup_id__in=sg).values_list('dsector_id')]
+                    dsal = DSMetrado.objects.filter(dsector_id__in=sec)
+                    rds = DSMetrado.objects.filter(dsector_id=kwargs['area']
+                        ).aggregate(total=Sum('quantity', field=''))
+
                     context['samountp'] = MMetrado.objects.filter(
                         dsector_id=kwargs['area']).order_by(
                         'materials__matnom').aggregate(
@@ -415,7 +422,6 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                     request.POST['sector'] = area.sgroup.sector_id
                     request.POST._mutable = False
                     if 'edit' in request.POST:
-                        print 'edit'
                         Np = Nipple.objects.get(
                                 id=request.POST['id'],
                                 area_id=kwargs['area'],

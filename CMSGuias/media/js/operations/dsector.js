@@ -600,6 +600,13 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
       }
     });
   };
+  $scope.calcMM = function() {
+    $http.get("", {
+      params: {
+        samountp: true
+      }
+    }).success(function(response) {});
+  };
   $scope.$watch('ascsector', function() {
     if ($scope.ascsector) {
       $scope.fsl = true;

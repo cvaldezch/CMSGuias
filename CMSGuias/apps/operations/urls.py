@@ -15,6 +15,6 @@ urlpatterns = patterns(
         name='view_list_preordersop'),
     url(r'sector/group/(?P<pro>\w{7})/(?P<sub>\w+|)/(?P<sec>\w+)/$',
         ProgramingProject.as_view(), name='sectorgroup_view'),
-    url(r'area/(?P<sgroup>\w+)/(?P<area>\w+)/$',
+    url(r'area/(?P<sgroup>\w+)/(?P<area>\w+)/(?P<pro>\w+)/(?P<sec>\w+)/(?P<sub>\w+)/$',
         AreaProjectView.as_view(), name='dsector_view'),
 )

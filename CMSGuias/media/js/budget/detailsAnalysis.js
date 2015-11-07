@@ -192,7 +192,7 @@ showEditMaterials = function() {
 };
 
 editMaterials = function(event) {
-  var context, e;
+  var context, e, error;
   context = new Object;
   context.quantity = $(".edit-tmp-quantity").val();
   context.price = $(".edit-tmp-price").val();
@@ -218,8 +218,8 @@ editMaterials = function(event) {
         swal("Alerta!", "No se a podido editar. " + response.raise + ".", "warning");
       }
     }, "json");
-  } catch (_error) {
-    e = _error;
+  } catch (error) {
+    e = error;
     swal("Alerta", "No se habilito la edición.", "warning");
   }
 };

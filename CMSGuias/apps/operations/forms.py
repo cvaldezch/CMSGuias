@@ -50,6 +50,7 @@ class SGroupForm(forms.ModelForm):
         exclude = {
             'sgroup_id',
             'project',
+            'subproject',
             'sector',
             'register',
             'datestart',

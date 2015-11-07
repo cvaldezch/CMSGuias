@@ -516,6 +516,10 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
             swal "Error", "No se a podido eliminar el material, intentelo otra vez.", "error"
             return
     return
+  $scope.calcMM = ->
+    $http.get "", params: samountp: true
+    .success (response) ->
+    return
   $scope.$watch 'ascsector', ->
     if $scope.ascsector
       $scope.fsl = true
