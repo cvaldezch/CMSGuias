@@ -8,3 +8,4 @@ projects/
 pedido/
 vendor/
 storage/
+node_modules/
