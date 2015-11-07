@@ -1,0 +1,317 @@
+{% extends "basemd.html" %}
+{% block title %}
+  Programing Sector
+{% endblock title %}
+{% block menu %}
+    {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
+        {% include "menus/salesmd.html" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'logistica' %}
+        {% include "menus/logistics.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+        {% include "menus/operations.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'almacen' %}
+        {% include "menus/storage_menu.htm" %}
+    {% endif %}
+{% endblock menu %}
+{% block content %}
+<div ng-app="programingApp" ng-controller="programingCtrl">
+  <h4 class="center-align">{{ project.proyecto_id }} {{ project.nompro }}</h4>
+  <h5 class="center-align">{{ sector.sector_id }} - {{ sector.nomsec }}</h5>
+  <a href="{% url 'managersec_view' project.proyecto_id sector.subproyecto_id sector.sector_id %}" class="btn grey lighten-5 grey-text text-darken-3">
+    <i class="fa fa-chevron-left"></i>
+    REGRESAR
+  </a>
+  <div class="card-panel">
+    <div class="card-content">
+      <h5>Grupo</h5>
+    </div>
+    <div class="card-action">
+      <button type="button" class="btn blue blue-lighten-3 waves-effect waves-light modal-trigger" data-target="mgroup">
+        <i class="fa fa-plus"></i> Agregar Grupo
+      </button>
+      <button type="button" class="btn blue blue-lighten-3" ng-click="listGroup()">
+        <i class="fa fa-list"></i> Lista Grupo
+      </button>
+    </div>
+    <div class="card-content">
+      <h5>Area</h5>
+    </div>
+    <div class="card-action">
+      <button type="button" class="btn green lighten-2 waves-effect waves-light modal-trigger" data-target="mdsector">
+        <i class="fa fa-plus"></i>
+        <span>Agregar Area</span>
+      </button>
+      <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-model="dsfshow" ng-click="dsfshow=!dsfshow">
+        <i class="fa fa-search"></i>
+        <span>Buscar</span>
+      </button>
+      <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-click="getDSectorList()">
+        <i class="fa fa-refresh"></i>
+        <span>Actualizar</span>
+      </button>
+      <button type="button" class="btn green lighten-2 waves-effect waves-light modal-trigger" data-target="mexcel">
+        <i class="fa fa-file-excel-o"></i>
+        <span>Archivo</span>
+      </button>
+      <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-click="getPrices()">
+        <i class="fa fa-dollar"></i>
+        <span>Validar Precios</span>
+      </button>
+      <button type="button" class="btn red darken-1 waves-effect waves-light right" ng-click="">
+        <i class="fa fa-thumbs-o-up"></i>
+        <span>Aprobar</span>
+      </button>
+    </div>
+  </div>
+  <div class="card" ng-show="dsfshow">
+    <div class="card-content">
+      <i class="right fa fa-times" ng-click="dsfshow=false"></i>
+      <div class="input-field">
+        <i class="prefix fa fa-filter"></i>
+        <input type="text" ng-model="dsfilter">
+        <label>Buscar areas</label>
+      </div>
+    </div>
+  </div>
+  <div class="card-panel">
+    <div class="card-content">
+      <div class="row">
+      {% verbatim %}
+        <div class="col l3 m6 s12" ng-repeat="x in dslist | filter: dsfilter">
+          <div class="card">
+            <div class="card-content" style="background: {{x.fields.sgroup.fields.colour}}">
+              <strong>{{x.fields.name}}</strong>
+              <p>{{x.fields.description}}</p>
+              <p>
+                <div class="progress red lighten-4">
+                  <div class="determinate red lighten-1" style="width: 70%"></div>
+                </div>
+              </p>
+              <p class="right-align">
+                <span class="right-align">$</span>
+              </p>
+            </div>
+            <div class="card-action">
+              <a class="red-text text-lighten-1" href="#"><i class="fa fa-trash"></i></a>
+              <a class="amber-text text-darken-1" href="#"><i class="fa fa-pencil"></i> EDITAR</a>
+              <a class="light-blue-text text-darken-1 right" href="/operations/area/{{x.fields.sgroup.pk}}/{{x.pk}}/"><i class="fa fa-eye"></i> VER</a>
+            </div>
+          </div>
+        </div>
+      {% endverbatim %}
+      </div>
+    </div>
+  </div>
+  <!-- modal -->
+  <div class="modal bottom-sheet" id="mgroup">
+    <div class="modal-content">
+      <h4>Grupo Área</h4>
+      <div class="row">
+        <div class="col l6 m6 s12">
+          <div class="row">
+            <div class="col l12 m12 s12 input-field">
+              <input type="text" ng-model="group.name" ng-value="group.name">
+              <label ng-class="{'active':group.name}">Nombre Área</label>
+              <input type="hidden" ng-model="group.sgroup_id">
+            </div>
+            <div class="col l12 m12 s12">
+              <label ng-class="{'active':group.colour}">Color</label>
+              <br>
+              <input type="color" ng-model="group.colour" ng-value="group.colour" style="width: 100%;">
+            </div>
+            <div class="col l12 m12 s12 input-field">
+              <textarea class="materialize-textarea" ng-model="group.observation" ng-value="group.observation"></textarea>
+              <label ng-class="{'active':group.observation}">Observaciones</label>
+            </div>
+          </div>
+        </div>
+        <div class="col l6 m6 s12">
+          <div class="card" ng-style="{'background': group.colour}" >
+            <div class="card-content"></div>
+            <div class="card-action center-align">
+              {% verbatim %}
+                <span>{{group.colour}}</span>
+                <span>{{group.rgba}}</span>
+              {% endverbatim %}
+            </div>
+          </div>
+        </div>
+        <div class="col l6 m6 s12">
+        <button type="button" class="btn modal-action modal-close grey lighten-5 grey-text text-darken-3">
+          <i class="fa fa-times"></i>
+          Cerrar
+        </button>
+          <button type="button" class="btn waves-effect blue blue-lighten-1" ng-click="saveGroup()">
+            <i class="fa fa-save"></i>
+            <span>Guardar Cambios</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div id="mlgroup" class="modal col l10 offset-l1">
+      <div class="modal-content">
+        <div class="col l12">
+          <button type="button" class="waves-effect waves-light btn grey lighten-5 grey-text text-darken-3 modal-action modal-close">
+            <i class="fa fa-times"></i> Cerrar
+          </button>
+        </div>
+        {% verbatim %}
+        <!-- template -->
+        <script type="text/ng-template" id="sgt.html">
+          <td>{{$index+1}}</td>
+          <td><i style="background: {{x.fields.colour}}">&nbsp;&nbsp;&nbsp;&nbsp;</i></td>
+          <td>{{x.pk}}</td>
+          <td>{{x.fields.name}}</td>
+          <td>{{x.fields.register|date:"dd/MM/y"}}</td>
+          <td>{{x.fields.datestart}}</td>
+          <td>{{x.fields.dateend}}</td>
+          <td>
+            <button type="button" class="dropdown-button btn waves-effect waves-light grey lighten-5 grey-text text-darken-3" constrainwidth="200" data-activates="{{x.pk}}">
+              <i class="fa fa-cogs"></i>
+            </button>
+            <ul id="{{x.pk}}" class="dropdown-content">
+              <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="showESG()" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-edit"></i> Editar</small></a></li>
+              <li class="divider"></li>
+              <li><a href="#!" style="padding: 2px 0px 2px 3px;" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-trash"></i> Eliminar</small></a></li>
+            </ul>
+          </td>
+        </script>
+        {% endverbatim %}
+        <table class="table responsive-table">
+          <caption>
+            <div class="input-field">
+              <i class="prefix fa fa-filter"></i>
+              <input type="text" ng-model="sesg">
+              <label>Grupo</label>
+            </div>
+          </caption>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th></th>
+              <th>Código</th>
+              <th>Descripción</th>
+              <th>Registrado</th>
+              <th>Inicio</th>
+              <th>Fin</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+          {% verbatim %}
+            <tr ng-include src="'sgt.html'" ng-repeat="x in sglist | filter:sesg"></tr>
+          {% endverbatim %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal bottom-sheet" id="mdsector">
+      <div class="modal-content">
+        <h4>
+          Detalla de Área
+        </h4>
+        <button type="button" class="btn grey lighten-5 grey-text text-darken-3 modal-action modal-close">
+          <i class="fa fa-times"></i>
+          <span>Cerrar</span>
+        </button>
+        <button type="button" class="btn green lighten-1" ng-click="saveArea()">
+          <i class="fa fa-save"></i>
+          <span>Guardar Cambios</span>
+        </button>
+        <div class="row">
+          <div class="col l6 m6 s12 input-field">
+            <input type="text" ng-model="dsector.name" ng-value="dsector.name">
+            <label ng-class="{'active':dsector.name}">Nombre</label>
+            <input type="hidden" ng-model="dsector.dsector_id">
+          </div>
+          <div class="col l3 m3 s12 input-field">
+            <input type="text" class="datepicker" ng-model="dsector.datestart">
+            <label ng-class="{'active':dsector.datestart}">Fecha Inicio</label>
+          </div>
+          <div class="col l3 m3 s12 input-field">
+            <input type="text" class="datepicker" ng-model="dsector.dateend" ng-change="datechk()">
+            <label ng-class="{'active':dsector.dateend}">Fecha Termino</label>
+          </div>
+          <div class="col l6 m6 s12 input-field">
+            <label ng-class="{'active':dsector.sgroup}">Grupo</label>
+            <br>
+            <br>
+            {% verbatim %}
+              <select class="browser-default" ng-model="dsector.sgroup" name="sgroup">
+                <option ng-repeat="x in sglist" value="{{x.pk}}" style="background: {{x.fields.colour}}">{{x.fields.name}}</option>
+              </select>
+            {% endverbatim %}
+          </div>
+          <div class="col l6 m6 s12 input-field">
+            <textarea rows="4" class="materialize-textarea" ng-model="dsector.description"></textarea>
+            <label for="{'active':dsector.description}">Descripción</label>
+          </div>
+          <div class="col l6 m6 s12 input-field file-field">
+            <div class="btn light-blue darken-3">
+              <span>Plano</span>
+              <input type="file" ng-model="dsector.plane" name="plane" accept="application/pdf">
+            </div>
+            <input type="text" class="file-path validate">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal col l10 offset-l1" id="mwithoutprices">
+      <div class="modal-content">
+        <table class="table responsive-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Código</th>
+            <th>Descripción</th>
+            <th>Cantidad</th>
+            <th class="right-align">P. Compra</th>
+            <th class="right-align">P. Venta</th>
+          </tr>
+        </thead>
+          <tbody>
+          {% verbatim %}
+            <tr class="text-12" ng-repeat="x in withoutPrices">
+              <td>{{$index+1}}</td>
+              <td>{{x.fields.materials.pk}}</td>
+              <td>{{x.fields.materials.fields.matnom}} {{x.fields.materials.fields.matmed}}</td>
+              <td class="center-align">{{x.fields.quantity}}</td>
+              <td><input class="right-align" data-field="purchase" data-materials="{{x.fields.materials.pk}}" ng-disabled="x.fields.ppurchase != 0?true:false" type="number" step="0.01" value="{{x.fields.ppurchase}}" ng-blur="savePricewithout()"></td>
+              <td><input class="right-align" data-field="sales" data-materials="{{x.fields.materials.pk}}" ng-disabled="x.fields.psales != 0?true:false" type="number" step="0.01" value="{{x.fields.psales}}" ng-blur="savePricewithout($event)"></td>
+            </tr>
+          {% endverbatim %}
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn waves-effect waves-green modal-action modal-close left grey lighten-5 grey-text text-darken-3"><i class="fa fa-times"></i> Cerrar</button>
+        <a href="#" class="waves-effect waves-green btn-flat modal-action modal-close"><i class="fa fa-check"></i> Listo</a>
+      </div>
+    </div>
+    <div id="mexcel" class="modal col l4 offset-l4">
+      <div class="modal-content">
+        <h5>Cargar Archivo</h5>
+        <div class="file-field input-field">
+          <div class="btn">
+            <span>Archivo</span>
+            <input type="file">
+          </div>
+          <div class="file-path-wrapper">
+            <input type="text" class="file-path validate">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% csrf_token %}
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/operations/programmingsector.js"></script>
+{% endblock content %}
+

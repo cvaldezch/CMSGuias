@@ -25,7 +25,9 @@
         <div id="bedside-col1">
             <table>
                 <tr><td><strong>Proveedor :</strong></td><td> {{ bedside.proveedor_id }} - {{ bedside.proveedor.razonsocial }}</td></tr>
-                <tr><td><strong>Cotización :</strong></td><td> {{ bedside.cotizacion_id }}</td></tr>
+                <tr><td><strong></strong></td><td> {{ bedside.proveedor.direccion }} - {{ bedside.proveedor.distrito.distnom }}</td></tr>
+                <tr><td><strong>Cotización :</strong></td><td>
+                {% if bedside.cotizacion_id %} {{ bedside.cotizacion_id }} {% else %} {{ bedside.quotation }} {% endif %}</td></tr>
                 <tr><td width="3cm"><strong>Fecha Registrado :</strong></td><td> {{ bedside.registrado }}</td></tr>
                 <tr><td><strong>Fecha Traslado :</strong></td><td> {{ bedside.traslado }}</td></tr>
                 <tr><td><strong>Entrega:</strong></td><td> {{ bedside.lugent }}</td></tr>
@@ -68,7 +70,7 @@
                             <tr>
                                 <td class="text-center item font-small">{{ x.item|floatformat:"2" }}</td>
                                 <td class="text-center font-small">{{ x.materials_id }}</td>
-                                <td>{{ x.matname }} {{ x.measure }} - {{ x.brand }}</td>
+                                <td>{{ x.matname }} {{ x.measure }} - {{ x.brand }} - {{ x.model }}</td>
                                 <td class="text-center">{{ x.unit }}</td>
                                 <td class="text-center">{{ x.quantity|safe }}</td>
                                 <td class="text-center">{{ x.price|safe }}</td>
@@ -107,6 +109,15 @@
                         <th class="text-left">TOTAL</th>
                         <th class="text-right">{{ total|safe|floatformat:"2" }}</th>
                     </tr>
+                    {% if bedside.observation != '<p><br data-mce-bogus="1"></p>' and bedside.observation|length > 8 and bedside.observation != None %}
+                        <tr></tr>
+                        <tr class="border">
+                            <td colspan="8">
+                                <p><strong>Observación</strong></p>
+                                {{ bedside.observation|safe }}
+                            </td>
+                        </tr>
+                    {% endif %}
                 </tfoot>
             </table>
         </div>

@@ -18,15 +18,15 @@ from CMSGuias.apps.tools import number_to_char
     Status Models
 """
 status = {
-    'AC' : 'ACTIVO', # Activo
-    'AN' : 'ANULADO', # Anular
-    'AP' : 'APROBADO', # Approved
-    'CO' : 'COMPLETO', # Completo
-    'DL' : 'ELIMINADO', # Delete
-    'IN' : 'INCOMPLETO', # Incompleto
-    'NN' : 'Nothing', # Nothing
-    'PE' : 'PENDIENTE', # Pendiente
-    'EN' : 'ENVIADO', # send
+    'AC': 'ACTIVO',
+    'AN': 'ANULADO',
+    'AP': 'APROBADO',
+    'CO': 'COMPLETO',
+    'DL': 'ELIMINADO',
+    'IN': 'INCOMPLETO',
+    'NN': 'Nothing',
+    'PE': 'PENDIENTE',
+    'EN': 'ENVIADO',
     'UP': 'CARGADO',
 }
 
@@ -39,38 +39,40 @@ tipo_nipples = {
     'E': 'Brida - Brida',
     'F': 'Brida - Rosca',
     'G': 'Brida - Ranura',
-    '-': ''
-}
+    'H': 'Bisel - Bisel',
+    'I': 'Bisel - Rosca',
+    'J': 'BridaHechizo',
+    '-': ''}
 
 # name month
 months_name = {
-    'January' : 'Enero',
-    'February' : 'Febrero',
-    'March' : 'Marzo',
-    'April' : 'Abril',
-    'May' : 'Mayo',
-    'June' : 'Junio',
-    'July' : 'Julio',
-    'August' : 'Agosto',
-    'September' : 'Setiembre',
-    'Octuber' : 'Octubre',
-    'November' : 'Noviembre',
-    'Decemcer' : 'Diciembre'
+    'January': 'Enero',
+    'February': 'Febrero',
+    'March': 'Marzo',
+    'April': 'Abril',
+    'May': 'Mayo',
+    'June': 'Junio',
+    'July': 'Julio',
+    'August': 'Agosto',
+    'September': 'Setiembre',
+    'Octuber': 'Octubre',
+    'November': 'Noviembre',
+    'Decemcer': 'Diciembre'
 }
 # munber month
 months_name = {
-    '01' : 'Enero',
-    '02' : 'Febrero',
-    '03' : 'Marzo',
-    '04' : 'Abril',
-    '05' : 'Mayo',
-    '06' : 'Junio',
-    '07' : 'Julio',
-    '08' : 'Agosto',
-    '09' : 'Setiembre',
-    '10' : 'Octubre',
-    '11' : 'Noviembre',
-    '12' : 'Diciembre'
+    '01': 'Enero',
+    '02': 'Febrero',
+    '03': 'Marzo',
+    '04': 'Abril',
+    '05': 'Mayo',
+    '06': 'Junio',
+    '07': 'Julio',
+    '08': 'Agosto',
+    '09': 'Setiembre',
+    '10': 'Octubre',
+    '11': 'Noviembre',
+    '12': 'Diciembre'
 }
 
 # List of emails
@@ -86,8 +88,13 @@ emails = [
     'luis.martinez@icrperusa.com',
     'sandra.atencio@icrperusa.com',
     'steven.paredes@icrperusa.com',
-    'ssoma1@icrperusa.com'
-]
+    'ssoma1@icrperusa.com',
+    'jesus.esteban@icrperusa.com',
+    'operaciones1@icrperusa.com',
+    'operaciones2@icrperusa.com',
+    'operaciones3@icrperusa.com',
+    'calidad@icrperusa.com',
+    'mauromartinezicr@gmail.com']
 
 # Type of project
 typeProject = {
@@ -97,10 +104,12 @@ typeProject = {
 }
 
 # date now format str
-def date_now(type='date',format='%Y-%m-%d'):
+
+
+def date_now(type='date', format='%Y-%m-%d'):
     date = datetime.datetime.today()
     if type == 'str':
-        return '%s'%(date.strftime(format))
+        return '%s' % (date.strftime(format))
     elif type == 'date':
         return date.date()
     elif type == 'time':
@@ -109,7 +118,9 @@ def date_now(type='date',format='%Y-%m-%d'):
         return date
 
 # Convert Date str to Date and date to str
-def format_date_str(_date=None, format='%Y-%m-%d',options={}):
+
+
+def format_date_str(_date=None, format='%Y-%m-%d', options={}):
     date_str = ''
     try:
         if _date is not None:
@@ -122,8 +133,9 @@ def format_date_str(_date=None, format='%Y-%m-%d',options={}):
         else:
             date_str = 'date invalid!'
     except Exception, e:
-        messages.add_message('%s'%str(e))
+        messages.add_message('%s' % str(e))
     return date_str
+
 
 def format_time_str(_date=None, format='%H:%M:%S', options={}):
     time_str = ''
@@ -139,9 +151,10 @@ def format_time_str(_date=None, format='%H:%M:%S', options={}):
         else:
             time_str = 'date invalid!'
     except Exception, e:
-        messages.add_message('%s'%e)
+        messages.add_message('%s' % e)
         raise Http404
     return time_str
+
 
 def format_str_date(_str=None, format='%Y-%m-%d'):
     str_date = ''
@@ -151,10 +164,8 @@ def format_str_date(_str=None, format='%Y-%m-%d'):
         else:
             str_date = 'str invalid!'
     except Exception, e:
-        #print 'Error'
         str_date = 'date invalid!'
-        #messages.add_message(e)
-        #raise Http404('Method Error')
+        messages.add_message(e)
     return str_date
 # Block Dates and Times
 # get year current str
@@ -165,21 +176,23 @@ getToday = datetime.datetime.today()
 # get Relative path
 relative_path = settings.MEDIA_ROOT
 
+
 def get_Token():
     token = ''
     try:
         chars = '1C3A5E7B9H2D46FI80GJZXYPRTKL'
-        for x in xrange(0,6):
+        for x in xrange(0, 6):
             index = randint(0, (chars.__len__() - 1))
-            token = '%s%s'%(token, chars[index])
+            token = '%s%s' % (token, chars[index])
     except Exception, e:
         raise e
     return token
+
 
 def convertNumberLiteral(number=0):
     literal = ''
     try:
         literal = number_to_char.numero_a_letras(number)
-    except Exception, e:
+    except Exception:
         literal = 'Nothing'
     return literal

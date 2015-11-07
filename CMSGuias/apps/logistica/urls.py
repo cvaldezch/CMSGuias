@@ -22,4 +22,5 @@ urlpatterns = patterns('',
     url(r'^crud/', include(urlcrud)),
     url(r'^materials/(?P<pro>\w{7})/compressed/$', ListCompressed.as_view(), name='compressed_list'),
     url(r'^services/orders/$', ServiceOrders.as_view(), name='orders_service'),
+    url(r'^price/materials/$', PriceMaterialsViews.as_view(), name='materials_price_views'),
 )

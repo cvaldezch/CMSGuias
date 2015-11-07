@@ -17,9 +17,11 @@
     <script src="{{ MEDIA_URL }}js/jquery-ui.js"></script>
     {% endblock %}
     <!-- Part toastMessage -->
-    {% block toastmessage %}
+    {% block alert %}
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/toastmessage-min.css">
     <script src="{{ MEDIA_URL }}js/toastmessage-min.js"></script>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/sweetalert.css">
+    <script src="{{ MEDIA_URL }}js/sweetalert.min.js"></script>
     {% endblock %}
     <!-- Part BootStrap -->
     {% block bootstrap %}
@@ -28,7 +30,7 @@
     <script src="{{ MEDIA_URL }}bootstrap/js/bootstrap.js"></script>
     {% endblock %}
     {% block fontawesome %}
-        <link rel="stylesheet" href="{{ MEDIA_URL }}font-awesome-4/css/font-awesome.css">
+        <link rel="stylesheet" href="{{ MEDIA_URL }}vendor/font-awesome/css/font-awesome.min.css">
     {% endblock fontawesome %}
     <!-- Part Styles -->
     {% block style %}{% endblock %}

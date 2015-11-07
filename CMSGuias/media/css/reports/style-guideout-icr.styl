@@ -37,9 +37,27 @@ vendor-prefixes = webkit moz o ms
 
   @frame header_frame
     -pdf-frame-content transfer
-    right 2cm
+    right 10cm
     top 10.1cm
     width 6.2cm
+
+  @frame header_frame
+    -pdf-frame-content day
+    right 5cm
+    top 10.1cm
+    width 2cm
+
+  @frame header_frame
+    -pdf-frame-content month
+    right 3.5cm
+    top 10.1cm
+    width 2cm
+
+  @frame header_frame
+    -pdf-frame-content year
+    right 1cm
+    top 10.1cm
+    width 2cm
 
   @frame header_frame
     -pdf-frame-content transport-brand
@@ -81,41 +99,68 @@ vendor-prefixes = webkit moz o ms
     top 32cm
     margin 0 1cm 0 1cm
 
-@font-face
-  font-family ubuntu
-  src url(/media/fonts/2086.ttf)
+// @font-face
+//   font-family ubuntu
+//   src url(/media/fonts/2086.ttf)
 
 @font-face
-  font-family: courier;
-  src: url(/media/fonts/courier.ttf)
+  font-family 'dot'
+  src url('/media/fonts/Tahoma.eot')
+  src url('/media/fonts/Tahoma.woff')
+  src url('/media/fonts/Tahoma.ttf')
+
+// @font-face
+//   font-family: dot;
+//   src: url(/media/fonts/2086.ttf)
 
 *
-  font-family ubuntu
+  font-family: 'dot' !important
+  font-size: 14px
 
 .text-center
   text-align center
 
 .text-normal
+  font-family: 'dot' !important
   font-size 13px
+
+.text-number
+  font-family: 'dot' !important
+  font-size 15px
 
 #delivery, #arrival
   text-indent 3cm
 
 #nro
-  font-size 14px
-  font-weight bold
+  font-size 16px //14
+  font-weight 600
+
+#transfer
+  border 1px solid #000
 
 .details
   table
-    & > thead
-      & > tr
-        padding-top 0.15cm
-        padding-bottom 0.1cm
+    // & > thead
+    //   & > tr
+    //     padding-top 0.15cm
+    //     padding-bottom 0.1cm
     & > tbody
       & > tr
-        padding-top 0.05cm
-        padding-bottom 0.01cm
+        & > td
+          //padding-top 0.1cm
+          padding-bottom 0.08cm
+          font-family 'dot' !important
+          font-size 13px // 11px
+        .text-quantity
+          font-size 15px
+          font-weight bold
 
 .text-up
   font-size 13px
   vertical-align top
+
+.xfont
+  font-family: 'dot' !important
+  padding: 2px 0 2px 0
+
+

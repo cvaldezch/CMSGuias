@@ -14,10 +14,12 @@ from django.db.models import Count, Max, Sum, Q
 from django.utils import simplejson
 from django.core.paginator import EmptyPage, Paginator, PageNotAnInteger
 from django.views.generic import TemplateView, ListView, View
-from django.core import serializers
+# from django.core import serializers
 
 from CMSGuias.apps.almacen import models
-from CMSGuias.apps.home.models import Cliente, Almacene, Transportista, Conductore, Transporte, userProfile, Employee
+from CMSGuias.apps.home.models import (
+    Cliente, Almacene, Transportista,
+    Conductore, Transporte, userProfile, Employee)
 from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
 from CMSGuias.apps.almacen import forms
 from CMSGuias.apps.tools import genkeys, globalVariable
@@ -48,14 +50,16 @@ class StorageHome(View):
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
-        return render_to_response(self.template_name,context_instance=RequestContext(request))
+        return render_to_response(
+            self.template_name, context_instance=RequestContext(request))
 
 @login_required(login_url='/SignUp/')
 def view_pedido(request):
     try:
         if request.method == 'GET':
-            #print request.user.get_profile().empdni
-            return render_to_response('almacen/pedido.html',context_instance=RequestContext(request))
+            return render_to_response(
+                                    'almacen/pedido.html',
+                                    context_instance=RequestContext(request))
         if request.method == 'POST':
             data = {}
             form = forms.addOrdersForm(request.POST, request.FILES)
@@ -68,7 +72,8 @@ def view_pedido(request):
                 add.flag = True
                 add.save()
                 # detail Orders Details
-                tmpd = models.tmppedido.objects.filter(empdni__exact=request.user.get_profile().empdni_id)
+                tmpd = models.tmppedido.objects.filter(
+                        empdni__exact=request.user.get_profile().empdni_id)
                 for x in tmpd:
                     det = models.Detpedido()
                     det.pedido_id = id
@@ -725,9 +730,14 @@ def view_conductor_edit(request,cid,tid):
 def view_orders_pending(request):
     try:
         if request.method == 'GET':
-            lst= models.Pedido.objects.filter(flag=True,status='PE').order_by('-pedido_id')
-            ctx= { 'lista': lst }
-            return render_to_response('almacen/slopeorders.html',ctx,context_instance=RequestContext(request))
+            lst = models.Pedido.objects.filter(
+                    flag=True,
+                    status='PE').order_by('-pedido_id')
+            ctx = {'lista': lst}
+            return render_to_response(
+                            'almacen/slopeorders.html',
+                            ctx,
+                            context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
         messages('Error template not found')
         raise Http404('Process Error')
@@ -861,10 +871,10 @@ def view_generate_document_out(request,oid):
                         det = models.Detpedido.objects.filter(pedido_id__exact=request.POST.get('pedido'),tag='1',flag=True)
                         for x in det:
                             obj = models.DetGuiaRemision()
-                            obj.guia_id= guidekeys
-                            obj.materiales_id= x.materiales_id
-                            obj.cantguide= x.cantguide
-                            obj.flag= True
+                            obj.guia_id = guidekeys
+                            obj.materiales_id = x.materiales_id
+                            obj.cantguide = x.cantguide
+                            obj.flag = True
                             obj.save()
                             ob = models.Detpedido.objects.get(pk__exact=x.id)
                             ob.tag= '2' if x.cantshop <= 0 else '0'
@@ -888,25 +898,28 @@ def view_generate_document_out(request,oid):
                             # brands = models.InventoryBrand.objects.filter(materiales_id=x.materiales_id, periodo=globalVariable.get_year)
 
                         # recover details nipples
-                        nip= models.Niple.objects.filter(pedido_id__exact=request.POST.get('pedido'),tag='1',flag=True)
+                        nip = models.Niple.objects.filter(pedido_id__exact=request.POST.get('pedido'), tag='1',flag=True)
                         for x in nip:
                             obj= models.NipleGuiaRemision()
-                            obj.guia_id= guidekeys
-                            obj.materiales_id= x.materiales_id
-                            obj.metrado= x.metrado
-                            obj.cantguide= x.cantguide
-                            obj.tipo= x.tipo
-                            obj.flag= True
+                            obj.guia_id = guidekeys
+                            obj.materiales_id = x.materiales_id
+                            obj.metrado = x.metrado
+                            obj.cantguide = x.cantguide
+                            obj.tipo = x.tipo
+                            obj.flag = True
                             # save details niples for guide referral
                             obj.save()
-                            ob= models.Niple.objects.get(pk__exact=x.id)
+                            ob = models.Niple.objects.get(pk__exact=x.id)
                             ob.tag= '2' if x.cantshop <= 0 else '0'
                             ob.save()
-                        data['status']= True
-                        data['guide']= guidekeys
+                        data['status'] = True
+                        data['guide'] = guidekeys
                     except ObjectDoesNotExist, e:
-                        data['status']= False
-                    return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+                        data['status'] = False
+                else:
+                    data['status'] = False
+                    data['raise'] = 'Form invalid'
+                return HttpResponse(simplejson.dumps(data), mimetype='application/json')
     except TemplateDoesNotExist, e:
         message('Error: Template not found')
         raise Http404
@@ -917,8 +930,8 @@ def view_list_guide_referral_success(request):
     try:
         if request.method == 'GET':
             if request.is_ajax():
-                data= {}
-                ls= []
+                data = {}
+                ls = []
                 try:
                     if request.GET.get('tra') == 'series':
                         lst= models.GuiaRemision.objects.get(pk=request.GET.get('series'),status='GE',flag=True)
@@ -1173,7 +1186,8 @@ class SupplyView(ListView):
                     proj = obj.values('orders__proyecto__proyecto_id')
                     proj = proj.distinct('orders__proyecto__proyecto_id').order_by('orders__proyecto__proyecto_id')
                     #print ','.join([x['orders__proyecto__proyecto_id'] for x in proj])
-                    bed.orders = ','.join([x['orders__proyecto__proyecto_id'] for x in proj])
+                    print proj
+                    bed.orders = ','.join([x['orders__proyecto__proyecto_id'] for x in proj]) if proj[0]['orders__proyecto__proyecto_id'] is not None else ''
                     bed.save()
                     for x in obj:
                         det = models.DetSuministro()
@@ -1201,22 +1215,29 @@ class ListOrdersSummary(TemplateView):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
-        context[self.context_object_name] = models.Pedido.objects.filter(Q(flag=True) & Q(status='AP') | Q(status='IN'))
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        context[self.context_object_name] = models.Pedido.objects.filter(
+                                Q(flag=True),
+                                Q(status='AP') |
+                                Q(status='IN')).order_by('-registrado')
+        return render_to_response(
+                self.template_name,
+                context,
+                context_instance=RequestContext(request))
 
+    @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             data = {}
             try:
                 obj = models.tmpsuministro()
-                arr = json.loads(request.POST.get('add-oid'))
-                for x in arr.__len__():
-                    obj.empdni = request.user.get_profile().empdni_id
-                    obj.materiales_id = request.POST.get('id-add')
-                    obj.cantidad = (request.POST.get('cant-add') / arr.__len__())
-                    obj.origin_id = arr[x]
-                    obj.origin = request.POST.get('add-ori')
-                    obj.save()
+                #arr = json.loads(request.POST.get('add-oid'))
+                #for x in arr.__len__():
+                obj.empdni = request.user.get_profile().empdni_id
+                obj.materiales_id = request.POST.get('id-add')
+                obj.cantidad = (request.POST.get('cant-add'))
+                #obj.origin_id = arr[x]
+                obj.origin_id = request.POST.get('add-ori')
+                obj.save()
                 arr = json.loads(request.POST.get('orders'))
                 models.Detpedido.objects.filter(Q(flag=True) & Q(pedido_id__in=arr) & Q(materiales_id=request.POST.get('id-add'))).update(spptag=True)
                 data['status'] = True

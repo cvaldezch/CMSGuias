@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="well">
+        <h3>
+            Unidad
+        </h3>
+        {% if raise %}
+            <div class="alert alert-block alert-warning">
+                <strong>Alerta!</strong>
+                <p>
+                    {{ raise }}
+                </p>
+            </div>
+        {% endif %}
+        <section>
+            <form action="{% url 'unit_add' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="control-label">Nombre Unidad</label>
+                    <input type="text" class="form-control" name="uninom" required>
+                </div>
+                <div class="form-group">
+                    <button  type="reset" class="btn btn-default">
+                        <span class="fa fa-thrash"></span> Limpiar
+                    </button>
+                    <button  type="submit" class="btn btn-warning">
+                        <span class="fa fa-save"></span> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+{% endblock content %}

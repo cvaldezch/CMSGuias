@@ -12,6 +12,7 @@ getCountryOption = function() {
       for (x in response.country) {
         $country.append(Mustache.render(template, response.country[x]));
       }
+      $country.material_select('destroy');
     }
   });
 };
@@ -31,6 +32,7 @@ getDepartamentOption = function() {
       for (x in response.departament) {
         $departament.append(Mustache.render(template, response.departament[x]));
       }
+      $departament.material_select('destroy');
     }
   });
 };
@@ -51,6 +53,7 @@ getProvinceOption = function() {
       for (x in response.province) {
         $province.append(Mustache.render(template, response.province[x]));
       }
+      $province.material_select('destroy');
     }
   });
 };
@@ -72,6 +75,14 @@ getDistrictOption = function() {
       for (x in response.district) {
         $district.append(Mustache.render(template, response.district[x]));
       }
+      $district.material_select('destroy');
     }
   });
 };
+
+$(function() {
+  getCountryOption();
+  $("[name=pais]").on("click", getDepartamentOption);
+  $("[name=departamento]").on("click", getProvinceOption);
+  $("[name=provincia]").on("click", getDistrictOption);
+});

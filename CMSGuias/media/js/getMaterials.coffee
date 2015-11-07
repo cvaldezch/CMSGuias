@@ -45,17 +45,17 @@ keyUpDescription = (event) ->
 getMeters = ->
     $nom = $("[name=description]")
     unless $nom.val() is ""
-        data = matnom: $nom.val().trim()
-        $.getJSON "/json/get/meter/materials/", data, (response) ->
-            template = "<option value='{{ matmed }}'>{{ matmed }}</option>"
-            $med = $("[name=meter]")
-            $med.empty()
-            for x of response.list
-                $med.append Mustache.render(template, response.list[x])
-            getSummaryMaterials()
-        return
+      data = matnom: $nom.val()
+      $.getJSON "/json/get/meter/materials/", data, (response) ->
+        template = "<option value=\"{{ materiales_id }}\">{{ matmed }}</option>"
+        $med = $("[name=meter]")
+        $med.empty()
+        for x of response.list
+            $med.append Mustache.render(template, response.list[x])
+        getSummaryMaterials()
+      return
     else
-        console.warn "The Field Name is empty!"
+      console.warn "The Field Name is empty!"
     return
 
 getSummaryMaterials = ->
@@ -66,23 +66,13 @@ getSummaryMaterials = ->
   if $nom.val().trim() isnt "" and $med.val() isnt ""
     data =
       matnom: $nom.val()
-      matmed: $med.val()
+      # matmed: $med.val()
+      matid: $med.val()
       pro: $pro.val()
       sec: $sec.val()
     $.getJSON "/json/get/resumen/details/materiales/", data, (response) ->
       #console.log(response);
-      template = "<tr>
-                    <th>Codigo :</th><td class='id-mat'>{{materialesid}}</td>
-                </tr>
-                <tr>
-                    <th>Descripción :</th><td>{{matnom}}</td>
-                </tr>
-                <tr>
-                    <th>Medida :</th><td>{{matmed}}</td>
-                </tr>
-                <tr>
-                    <th>Unidad :</th><td>{{unidad}}</td>
-                </tr>"
+      template = """<tr><th>Codigo :</th><td class='id-mat'>{{materialesid}}</td></tr><tr><th>Descripción :</th><td>{{matnom}}</td></tr><tr><th>Medida :</th><td>{{matmed}}</td></tr><tr><th>Unidad :</th><td>{{unidad}}</td></tr>"""
       $tb = $(".tb-details > tbody")
       $tb.empty()
       for x of response.list
@@ -93,6 +83,14 @@ getSummaryMaterials = ->
       $("input[name=precio]").val response.list[0].purchase
       $("input[name=sales]").val response.list[0].sale
       $("input[name=sale]").val response.list[0].sale
+      $lstp = $("#lstpurchase")
+      $lstp.empty()
+      if $lstp.length > 0 and response.purchase
+        $lstp.append Mustache.render """{{#purchase}}<option label="{{currency}}" value="{{purchase}}" />{{/purchase}}""", response
+      $lsts = $("#lstsales")
+      $lsts.empty()
+      if $lsts.length > 0 and response.purchase
+        $lsts.append Mustache.render """{{#purchase}}<option label="{{currency}}" value="{{sales}}" />{{/purchase}}""", response
       return
   return
 
@@ -151,10 +149,17 @@ searchMaterialCode = (code) ->
         $("input[name=precio]").val response.list.purchase
         $("input[name=sale]").val response.list.sale
         $("input[name=sales]").val response.list.sale
+        $lstp = $("#lstpurchase")
+        $lstp.empty()
+        if $lstp.length > 0 and response.purchase
+          $lstp.append Mustache.render """{{#purchase}}<option label="{{currency}}" value="{{purchase}}" />{{/purchase}}""", response
+        $lsts = $("#lstsales")
+        $lsts.empty()
+        if $lsts.length > 0 and response.purchase
+          $lsts.append Mustache.render """{{#purchase}}<option label="{{currency}}" value="{{sales}}" />{{/purchase}}""", response
       else
         $().toastmessage "showWarningToast", "The material not found."
       return
-
   return
 
 # Search Group materials
@@ -288,11 +293,14 @@ bgModalAddMaterials = (event) ->
 searchBrandOption = ->
   $.getJSON "/json/brand/list/option/", (response) ->
     if response.status
-      template = "<option value=\"{{ brand_id }}\">{{ brand }}</option>"
+      template = "<option value=\"{{ brand_id }}\" {{ select }}>{{ brand }}</option>"
       $brand = $("select[name=brand]")
       $brand.empty()
       for x of response.brand
+        if response.brand[x].brand_id is "BR000"
+          response.brand[x].select = "selected"
         $brand.append Mustache.render(template, response.brand[x])
+      $brand.click()
     else
       $().toastmessage "showWarningToast", "No se a podido obtener la lista de marcas."
     return
@@ -309,7 +317,7 @@ searchModelOption = ->
         $model.empty()
         for x of response.model
             tmp = template
-            if brand is "BR000"
+            if response.model[x].model_id is "MO000"
                 tmp = tmp.replace "{{!sel}}", "selected"
             $model.append Mustache.render(tmp, response.model[x])
       else

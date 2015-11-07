@@ -1,0 +1,267 @@
+{% extends "basemd.html" %}
+{% block content %}
+<div data-ng-app="EmpApp" data-ng-controller="empCtrl">
+  <div class="card-panel">
+    <div class="row">
+      <div class="col l12">
+        <a href="{% url 'diaryview' %}" class="btn waves-effect green lighten-1 grey-text text-darken-3">
+          <i class="fa fa-home"></i>
+          <span>Principal</span>
+        </a>
+      </div>
+    </div>
+    <h3 class="card-title">Empleados</h3>
+    <div class="card-content">
+      <div class="row">
+        <div class="col m2 s12">
+          <button type="button" data-target="madd" class="btn modal-trigger waves-effect grey lighten-5 grey-text text-darken-3">
+            <i class="fa fa-plus"></i>
+            <span>Nuevo</span>
+          </button>
+        </div>
+        <div class="col m2 s12">
+          <button type="button" class="btn waves-effect light-green lighten-5 grey-text text-darken-3" data-ng-click="predicate='fields.firstname'">
+            <i class="fa fa-sort"></i>
+            <span>Nombres</span>
+          </button>
+        </div>
+        <div class="col m2 s12">
+          <button type="button" class="btn waves-effect lime lighten-5 grey-text text-darken-3" data-ng-click="predicate='fields.charge.fields.cargos'">
+            <i class="fa fa-sort"></i>
+            <span>Cargos</span>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col l12 m12 s12">
+          <div class="input-field">
+            <i class="prefix fa fa-filter"></i>
+            <input type="text" data-ng-model="search">
+            <label>Buscar Empleado</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <table class="table responsive-table bordered">
+      <thead>
+        <tr class="cyan darken-3">
+          <th>#</th>
+          <th>DNI</th>
+          <th>Nombres</th>
+          <th>Cargo</th>
+          <th>Tel. Trabajo</th>
+          <th>Teléfono</th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% verbatim %}
+          <tr data-ng-repeat="x in list | filter:search | orderBy:predicate:reverse">
+            <td>{{$index+1}}</td>
+            <td>{{x.pk}}</td>
+            <td>{{x.fields.firstname}} {{x.fields.lastname}}</td>
+            <td>{{x.fields.charge.fields.cargos}}</td>
+            <td>{{x.fields.phonejob}}</td>
+            <td>{{x.fields.phone}}</td>
+            <td class="center-align">
+              <button type="button" class="btn-flat waves-effect" data-ng-click="showDetails()">
+                <i class="fa fa-list-alt"></i>
+              </button>
+            </td>
+            <td class="center-align">
+              <button type="button" class="btn-flat waves-effect blue-text" data-ng-click="edit()">
+                <i class="fa fa-edit"></i>
+              </button>
+            </td>
+            <td class="center-align">
+              <button type="button" class="btn-flat waves-effect red-text" data-ng-click="showDelete()">
+                <i class="fa fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        {% endverbatim %}
+      </tbody>
+    </table>
+  </div>
+  <!-- modal keep employee -->
+  <div class="modal bottom-sheet" id="madd">
+    <div class="modal-content">
+      <h4>Empleado</h4>
+      <div class="row">
+        <div class="col l12">
+          <button type="button" class="btn waves-effect grey lighten-5 grey-text text-darken-3 modal-action modal-close">
+            <i class="fa fa-times"></i>
+            <span>Cancelar</span>
+          </button>
+          <button type="button" class="btn waves-effect blue darken-3 right" data-ng-click="saveEmployee()">
+            <i class="fa fa-save"></i>
+            <span>Guardar</span>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col l2 input-field">
+          <i class="prefix">#</i>
+          <input type="text" data-ng-model="employee.empdni_id" maxlength="8" value="employee.empdni_id">
+          <label data-ng-class="{'active':employee.empdni_id}">DNI</label>
+        </div>
+        <div class="col l5 input-field">
+          <i class="prefix fa fa-font"></i>
+          <input type="text" data-ng-model="employee.firstname" value="employee.firstname">
+          <label data-ng-class="{'active':employee.firstname}">Nombres</label>
+        </div>
+        <div class="col l5 input-field">
+          <i class="prefix fa fa-font"></i>
+          <input type="text" data-ng-model="employee.lastname" value="employee.lastname">
+          <label data-ng-class="{'active':employee.lastname}">Apellidos</label>
+        </div>
+        <div class="col l3 input-field">
+          <i class="prefix fa fa-calendar"></i>
+          <input type="text" class="datepicker" data-ng-model="employee.birth" value="employee.birth">
+          <label data-ng-class="{'active':employee.birth}">Nacimiento</label>
+        </div>
+        <div class="col l5 input-field">
+          <i class="prefix">@</i>
+          <input type="text" data-ng-model="employee.email" value="employee.email">
+          <label data-ng-class="{'active':employee.email}" for="">Email</label>
+        </div>
+        <div class="col l4">
+          <div class="row">
+            <div class="col l2 valign-wrapper">
+              <i class="fa fa-users fa-2x valign"></i>
+            </div>
+            <div class="col l10">
+              <label data-ng-class="{'active':employee.charge}">Cargo</label>
+              {% verbatim %}
+                <select class="browser-default ng-valid ng-dirty" data-ng-model="employee.charge" name="charge">
+                  <option ng-repeat="x in charge" value="{{x.pk}}">{{x.fields.cargos}}</option>
+                </select>
+              {% endverbatim %}
+            </div>
+          </div>
+        </div>
+        <div class="col l12 input-field">
+          <i class="prefix fa fa-map-marker"></i>
+          <input type="text" data-ng-model="employee.address" value="employee.address">
+          <label data-ng-class="{'active':employee.address}" for="">Dirección</label>
+        </div>
+        <div class="col l12 m12 s12 divider">
+        </div>
+        <div class="col l4 input-field">
+          <i class="prefix fa fa-mobile"></i>
+          <input type="text" data-ng-model="employee.phone" value="employee.phone">
+          <label data-ng-class="{'active':employee.phone}" for="">Tel. Personal</label>
+        </div>
+        <div class="col l4 input-field">
+          <i class="prefix fa fa-phone"></i>
+          <input type="text" data-ng-model="employee.phonejob" value="employee.phonejob">
+          <label data-ng-class="{'active':employee.phonejob}" for="">Tel. Trabajo</label>
+        </div>
+        <div class="col l4 input-field">
+          <i class="prefix fa fa-phone-square"></i>
+          <input type="text" data-ng-model="employee.fixed" value="employee.fixed">
+          <label data-ng-class="{'active':employee.fixed}" for="">Tel Fijo</label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- modal details -->
+  <div class="modal" id="mdetails" style="width: 30%">
+    <div class="modal-content">
+      <h4>Datos de Empleado</h4>
+    {% verbatim %}
+      <div class="row">
+        <div class="col l12">
+          <div class="row">
+            <div class="col l4 m4 s4 right-align"><strong>DNI</strong></div>
+            <div class="col l8 m8 s8">{{employee.empdni_id}}</div>
+          </div>
+        </div>
+        <div class="col l12">
+          <div class="row">
+            <div class="col l4 m4 s4 right-align"><strong>Nombres</strong></div>
+            <div class="col l8 m8 s8">{{employee.firstname}}</div>
+          </div>
+        </div>
+        <div class="col l12">
+          <div class="row">
+            <div class="col l4 m4 s4 right-align"><strong>Apellidos</strong></div>
+            <div class="col l8 m8 s8">{{employee.lastname}}</div>
+          </div>
+        </div>
+        <div class="col l12">
+          <div class="row">
+            <div class="col l4 m4 s4 right-align"><strong>Correos</strong></div>
+            <div class="col l8 m8 s8">{{employee.email}}</div>
+          </div>
+        </div>
+        <div class="col l12">
+          <div class="row">
+            <div class="col l4 m4 s4 right-align"><strong>Cargos</strong></div>
+            <div class="col l8 m8 s8">{{employee.charge}}</div>
+          </div>
+        </div>
+        <div class="col l12">
+          <div class="row">
+            <div class="col l4 m4 s4 right-align"><strong>Teléfono</strong></div>
+            <div class="col l8 m8 s8">{{employee.phonejob}}</div>
+          </div>
+        </div>
+        <div class="col l12">
+          <div class="row">
+            <div class="col l4 m4 s4 right-align"><strong>Personal</strong></div>
+            <div class="col l8 m8 s8">{{employee.phone}}</div>
+          </div>
+        </div>
+        <div class="col l12">
+          <div class="row">
+            <div class="col l4 m4 s4 right-align"><strong>Telefono Fijo</strong></div>
+            <div class="col l8 m8 s8">{{employee.fixed}}</div>
+          </div>
+        </div>
+      </div>
+    {% endverbatim %}
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="modal-action modal-close btn waves-effect grey lighten-5 grey-text text-darken-3">
+        <i class="fa fa-times"></i>
+        <span>Cerrar</span>
+      </button>
+    </div>
+  </div>
+  <!-- modal change status employee -->
+  {% verbatim %}
+  <div class="modal" id="delemp">
+    <div class="modal-content">
+      <h4>Dar de baja a Empleado {{employee.firstname}} {{employee.lastname}}?</h4>
+      <p>
+        Esta seguro que sea dar de baja el empleado {{employee.firstname}} {{employee.lastname}}.
+      </p>
+      <p>
+        <div class="input-field">
+          <textarea class="materialize-textarea" data-ng-model="employee.observation"></textarea>
+          <label>Observaciones</label>
+        </div>
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="modal-action modal-close btn waves-effect grey lighten-5 grey-text text-darken-3 left">
+        <i class="fa fa-times"></i>
+        <span>Cancelar</span>
+      </button>
+      <button type="button" class="btn waves-effect red lighten-1" data-ng-click="employeeDown()">
+        <i class="fa fa-trash"></i>
+        <span>De Baja!</span>
+      </button>
+    </div>
+  </div>
+</div>
+{% endverbatim %}
+<!-- tools utils -->
+<script src="{{ MEDIA_URL }}vendor/angularjs/angular.min.js"></script>
+<script src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js"></script>
+<script src="{{ MEDIA_URL }}js/diary/employee.js"></script>
+{% endblock content %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block menu %}
+  {% include "menus/logistics.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+  <div class="well">
+    <header>
+      <h3>
+        Buscar Precio Materiales en las ordenes de Compra
+        <span class="fa fa-cubes"></span>
+      </h3>
+    </header>
+    <section>
+      <div class="panel panel-primary">
+        <!-- <strong>Buscar Material</strong> -->
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-md-2">
+              <div class="form-group">
+                <label for="" class="control-label">Código</label>
+                <input type="text" maxlength="15" name="code" class="form-control input-sm">
+              </div>
+            </div>
+            <div class="col-md-9">
+              <div class="form-group">
+                <label for="" class="control-label">Nombre/Descripción</label>
+                <input type="text" class="form-control input-sm" name="name">
+              </div>
+            </div>
+            <div class="col-md-1">
+              <div class="form-group">
+                <label for="" class="control-label">Buscar</label>
+                <button class="btn btn-sm btn-primary" type="button" name="search"><span class="fa fa-search"></span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-danger">
+        <div class="table-responsive">
+          <table class="table table-condensed table-hover tdetails">
+            <thead>
+              <tr class="brand-danger">
+                <th>Item</th>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Medida</th>
+                <th>Detalle</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+<!-- block modals -->
+<div class="modal fade" id="mprices">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal">&times;</a>
+        <h4>Detalle de Precios</h4>
+      </div>
+      <div class="modal-body dprices">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+{% block footer %}
+<!-- scripts -->
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="{{ MEDIA_URL }}js/logistics/searchprice.js"></script>
+{% endblock footer%}

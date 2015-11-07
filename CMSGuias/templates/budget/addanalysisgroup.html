@@ -1,0 +1,40 @@
+{% extends "basemd.html" %}
+{% block menu %}
+    {% include "menus/budget.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+    <div class="card-panel hoverable">
+        <h3>
+            Grupo de Analisis
+        </h3>
+        <br>
+        <div class="panel panel-warning">
+            {% if raise %}
+                <div class="panel-footer">
+                    {{ raise }}
+                </div>
+            {% endif %}
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div class="panel-body">
+                    <div class="form">
+                        <div class="input-field">
+                            <input type="text" name="name" REQUIRED>
+                            <label>Nombre de Grupo</label>
+                        </div>
+                        <div class="form-group">
+                            <button type="reset" class="btn waves-effect grey lighten-5 grey-text text-darken-3">
+                                <span class="fa fa-trash"></span> Limpiar
+                            </button>
+                            <button type="submit" class="btn waves-effect light-blue accent-4">
+                                <span class="fa fa-save"></span> Guardar Cambios
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

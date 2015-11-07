@@ -1,0 +1,197 @@
+{% extends "basemd.html" %}
+{% block title %}
+  Details Budget
+{% endblock title %}
+{% block menu %}
+  {% include "menus/budget.htm" %}
+{% endblock menu %}
+{% block content %}
+<section data-ng-app="bidApp">
+  <div class="container" data-ng-controller="bidCtrl">
+    <div class="card-panel">
+      <div class="card-content">
+        <h3 class="card-title">Detalle de Item - Presupuesto</h3>
+        <a href="{% url 'items_view' budget  version %}" class="btn grey darken-3">
+          <i class="fa fa-chevron-left"></i>
+          regresar
+        </a>
+        {% verbatim %}
+        <div class="row">
+          <div class="col m6 l6">
+            <p>
+              <strong>Items :</strong> {{ item.fields.item | number:2 }}
+            </p>
+            <p>
+              <strong>Descripción :</strong> {{ item.fields.name }}
+            </p>
+          </div>
+          <div class="col m6 l6">
+            <p>
+              <strong>Precio Base :</strong> {{ item.fields.base }}
+            </p>
+            <p>
+              <strong>Precio Oferta :</strong> {{ item.fields.offer }}
+            </p>
+          </div>
+        </div>
+        {% endverbatim %}
+      </div>
+    </div>
+    <!-- tool bar -->
+    <div class="card">
+      <div class="card-action">
+        <a href="#manalysis" class="btn modal-trigger waves-effect grey lighten-4 grey-text text-darken-4">
+          <i class="fa fa-file"></i>
+          <span>Nuevo</span>
+        </a>
+        <button type="button" class="btn waves-effect light-green lighten-2" data-ng-click="listDetails()">
+          <i class="fa fa-refresh"></i>
+          <span>Actualizar</span>
+        </button>
+        <button type="button" class="btn waves-effect red lighten-1">
+          <i class="fa fa-trash"></i>
+          <span>Eliminar</span>
+        </button>
+      </div>
+      {% verbatim %}
+        <div class="card-content lime lighten-5" data-ng-show="ashow">
+          <div class="row">
+            <div class="col l12">
+              <button type="button" data-ng-click="ashow=!ashow" class="btn-floating right transparent">
+                <i class="fa fa-times grey-text text-darken-4"></i>
+              </button>
+            </div>
+            <div class="col l9">
+              <p>
+                <strong>Descripción:</strong>
+                <input type="text" class="grey-text text-darken-4" value="{{adda.name}}" disabled>
+              </p>
+            </div>
+            <div class="col l2">
+              <p>
+                <strong>Código:</strong>
+                <input type="text" class="grey-text text-darken-4" value="{{adda.analysis}}" disabled>
+              </p>
+            </div>
+            <div class="col l2">
+              <strong>Rendimiento:</strong>
+              <i class="prefix">x día</i>
+              <input type="text" class="grey-text text-darken-4" value="{{adda.performance}}" disabled>
+            </div>
+            <div class="col l2">
+              <strong>Unidad:</strong>
+              <input type="text" class="grey-text text-darken-4" value="{{adda.unit}}" disabled>
+            </div>
+            <div class="col l2">
+              <strong>Importe:</strong>
+              <input type="text" class="grey-text text-darken-4" value="{{adda.amount}}" disabled>
+            </div>
+            <div class="col l2 input-field">
+              <input type="number" min="0" data-ng-model="adda.quantity">
+              <label>Cantidad</label>
+            </div>
+            <!-- <div class="col l2 input-field">
+              <input type="number" min="0" max="100" data-ng-model="adda.discount" data-ng-value="0" value="0">
+              <label>Descuento</label>
+            </div> -->
+            <div class="col l1">
+              <strong>&nbsp;</strong>
+              <button type="button" class="btn waves-effect amber lighten-1 grey-text text-darken-4" data-ng-click="addAnalysis()">
+                <i class="fa fa-plus"></i>
+                <span>Agregar</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      {% endverbatim %}
+    </div>
+    <div class="modal bottom-sheet" id="manalysis">
+      <div class="modal-content">
+        <strong class="card-title">
+          Busqueda de Analisis de Precio
+        </strong>
+        <div class="row">
+          <div class="col l8 m8 s12">
+            <div class="input-field">
+              <i class="fa fa-angle-right prefix"></i>
+              <input type="text" name="APDesc" data-ng-keyup="searchAnalysis($event)">
+              <label for="">Descripción o Nombre Analisis de Precio</label>
+            </div>
+          </div>
+          <div class="col l4 m4 s12">
+            <div class="input-field">
+              <i class="fa fa-angle-right prefix"></i>
+              <input type="text" name="APCode" data-ng-keyup="searchAnalysis($event)">
+              <label>Código Analisis</label>
+            </div>
+          </div>
+          <div class="col l12">
+            <table class="responsive-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Código</th>
+                  <th>Descripción</th>
+                  <th>Unidad</th>
+                  <th>Rendimiento</th>
+                  <th>Importe</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% verbatim %}
+                  <tr data-ng-repeat="x in listAnalysis" data-ng-dblClick="showAnalysis()">
+                    <td>{{$index + 1}}</td>
+                    <td>{{x.analysis}}</td>
+                    <td>{{x.name}}</td>
+                    <td>{{x.unit}}</td>
+                    <td>{{x.performance}}</td>
+                    <td>{{x.amount}}</td>
+                    <td>
+                      <button type="button" class="btn-floating waves-effect green lighten-1" data-ng-click="showAnalysis()">
+                        <i class="fa fa-plus"></i>
+                      </button>
+                    </td>
+                  </tr>
+                {% endverbatim %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card hoverable">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Descripción</th>
+            <th>Unidad</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Importe</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% verbatim %}
+            <tr data-ng-repeat="x in details">
+              <td>{{$index + 1}}</td>
+              <td>{{x.fields.adetails.fields.name}}</td>
+              <td>{{x.fields.adetails.fields.unit}}</td>
+              <td>{{x.fields.adetails.extras.total}}</td>
+              <td>{{x.fields.quantity}}</td>
+              <td>{{x.fields.adetails.extras.total * x.fields.quantity | number:2}}</td>
+            </tr>
+          {% endverbatim %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- scripts -->
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angularjs/angular.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/budget/budgetdetails.js"></script>
+{% endblock content %}

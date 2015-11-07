@@ -6,25 +6,14 @@ $(document).ready ->
         "showAnim" : "slide"
         "dateFormat" : "yy-mm-dd"
 
-    ###$(".btn-open > span").mouseenter (event) ->
-        event.preventDefault()
-        $(@).removeClass "glyphicon-folder-close"
-        .addClass "glyphicon-folder-open"
-        return
-    .mouseout (event) ->
-        $(@).removeClass "glyphicon-folder-open"
-        .addClass "glyphicon-folder-close"
-        return###
-    $("table").floatThead
-        useAbsolutePositioning: true
-        scrollingTop: 50
     $("h4 > a").click (event) ->
         console.log @getAttribute "data-value"
-        $("table.table-#{@getAttribute "data-value"}").floatThead "reflow"
+        # $("table.table-#{@getAttribute "data-value"}").floatThead "reflow"
         return
     tinymce.init
         selector: "textarea[name=obser]",
         theme: "modern",
+        height: 500,
         menubar: false,
         statusbar: false,
         plugins: "link contextmenu fullscreen",
@@ -64,8 +53,6 @@ $(document).ready ->
     , ->
         $(@).css "color", "#000"
         return
-    $(".btn-show-group").on "click", showGroup
-    $(".btn-show-table").on "click", showTable
     return
 
 showaddProject = (event) ->
@@ -82,7 +69,7 @@ showaddProject = (event) ->
             .addClass "glyphicon-remove"
             $btn.find("span").eq(1).html(" Cancelar")
             $(".btn-save").show()
-        $("table").floatThead "reflow"
+        # $("table").floatThead "reflow"
     return
 
 # Show upkeep country, departament, province, district, customers
@@ -120,24 +107,24 @@ CreateProject = (event) ->
             console.log @name
             @.focus()
             pass = false
-            $().toastmessage "showWarningToast", "campo vacio #{@name}."
+            swal "Alerta!", "campo vacio #{@name}.", "warning"
             return pass
         else
             data[@name] = $(@).val()
             pass = true
             return
-    # console.log data
+    console.log data
     if pass
         data['obser'] = $("#obser_ifr").contents().find("body").html()
         data['type'] = "new"
         $.post "", data, (response) ->
             if response.status
-                $().toastmessage "showNoticeToast", "Se registro el proyecto #{data['nompro']} correctamente!"
+                swal "Felicidades!", "Se registro el proyecto #{data['nompro']} correctamente!", "success"
                 setTimeout ->
                     location.reload()
                 , 2000
             else
-                $().toastmessage "showErrorToast", "Error en la transacción #{response.raise}."
+                swal "Alerta!", "Error en la transacción #{response.raise}.", "warning"
         return
     return
 
@@ -182,11 +169,128 @@ deleteProject = ->
                 return
     return
 
-showGroup = (event) ->
-    $("div.panel-second").fadeOut()
-    $("div.panel-first").fadeIn()
 
-showTable = (event) ->
-    $("div.panel-first").fadeOut()
-    $("div.panel-second").fadeIn()
-    $("table").floatThead "reflow"
+app = angular.module 'proApp', ['ngSanitize', 'ngCookies']
+    .config ($httpProvider) ->
+        $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+        $httpProvider.defaults.xsrfCookieName = 'csrftoken'
+        $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken'
+        return
+
+app.controller 'proCtrl', ($scope, $http, $cookies) ->
+    $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken
+    $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
+    # $scope.customers = []
+    $scope.sfcustomers = false
+    $scope.sfprojects = false
+    $scope.pcustomers = true
+    $scope.pprojects = false
+    $scope.tadmin = false
+    angular.element(document).ready ->
+        $scope.lCustomersCbox()
+        $scope.listCustomers()
+        $scope.permission = angular.element("[name=permission]").val()
+        if $scope.permission is 'administrator' or $scope.permission is 'ventas'
+            $scope.tadmin = true
+        if $scope.permission is 'operaciones'
+            $scope.pprojects = true
+            $scope.pcustomers = false
+            $scope.sfcustomers = false
+            $scope.sfprojects = false
+            $scope.sTable()
+        return
+    $scope.listCustomers = ->
+        params =
+            getCustomers: true
+        $http.get '', params: params
+            .success (response) ->
+                if response.status
+                    $scope.customers = response.customers
+                    setTimeout ->
+                        $('.collapsible').collapsible()
+                        return
+                    , 400
+                    return
+                else
+                    console.log "No result. #{response.raise}"
+                    return
+        return
+    $scope.lCustomersCbox = ->
+        params =
+            lCustomers: 'true'
+        $http.get '', params: params
+            .success (response) ->
+                if response.status
+                    $scope.ccustomers = response.customers
+                    return
+                else
+                    swal "Error", "No hay clientes para cargar.", "error"
+                    return
+        return
+    $scope.getProjects = ->
+        data =
+            getProjects: true
+            customer: this.x.fields.ruccliente.pk
+        if !$("##{data.customer}").parent().is(":visible")
+            $('.collapsible').collapsible()
+            $http.get '', params: data
+                .success (response) ->
+                    if response.status
+                        $("##{data.customer}").html Mustache.render """{{#projects}} <li class="collection-item avatar" ondblclick="location.href='manager/{{pk}}/'">
+                            <i class="fa fa-building circle" onClick="location.href='manager/{{pk}}/'"></i>
+                            <span class="title"><strong>{{pk}} - {{fields.nompro}}</strong></span>
+                            <div class="row">
+                              <div class="col l6">
+                                <strong>Contacto: </strong> {{fields.contact}}
+                              </div>
+                              <div class="col l6"><strong>Correo: </strong> {{fields.email}}</div>
+                              <div class="col l4">
+                                <strong>Registrado: </strong> {{fields.registrado}}
+                              </div>
+                              <div class="col l4">
+                                <strong>Inicio: </strong> {{fields.comienzo}}
+                              </div>
+                              <div class="col l4">
+                                <strong>Termino: </strong> {{fields.fin}}
+                              </div>
+                            </div>
+                            <a href="/almacen/keep/project/{{pk}}/edit/" data-ng-show="tadmin" target="popup" class="secondary-content grey-text text-darken-3s #{ if not $scope.tadmin then 'hide'}"><i class="fa fa-edit"></i></a>
+                          </li>{{/projects}}""", response
+                        # if $scope.permission is 'administrator' or $scope.permission is 'ventas'
+                        #     $scope.tadmin = true
+                        return
+                    else
+                        console.log "No data project. #{response.raise}"
+                        return
+            return
+    $scope.ProjectsAll = ->
+        data =
+            allProjects: true
+        $http.get '', params: data
+            .success (response) ->
+                if response.status
+                    $scope.allprojects = response.projects
+                    return
+                else
+                    console.log "error data. #{response.raise}"
+                    return
+        return
+    $scope.showFilter = ->
+        if $scope.pcustomers
+            $scope.sfcustomers = !$scope.sfcustomers
+        if $scope.pprojects
+            $scope.sfprojects = !$scope.sfprojects
+        return
+    $scope.sTable = ->
+        row = angular.element("#lprojects > tbody > tr")
+        if not row.length
+            $scope.ProjectsAll()
+        return
+    $scope.$watch 'scustomers', ->
+        $('.collapsible').collapsible()
+        return
+    $scope.$watch 'permission', ->
+        console.log $scope.permission
+        console.log $scope.tadmin
+        return
+    return

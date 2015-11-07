@@ -1,0 +1,195 @@
+{% extends "basemd.html" %}
+{% block title %}
+    Analysis
+{% endblock title %}
+{% block menu %}
+    {% include "menus/budget.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container">
+  <div class="well">
+    <h3>Ánalisis de Precio Unitario</h3>
+      <div class="card-panel">
+        <div class="card-action">
+          <div class="row">
+            <div class="col l12 m12 s12">
+              <button type="button" class="btn light-green lighten-1 grey-text text-darken-3 modal-trigger" data-target="manalysis">
+                <span class="fa fa-plus"></span>
+                Nuevo Analisis
+              </button>
+            </div>
+            <div class="col l12 m12 s12">
+              <p>
+                <input type="radio" class="with-gap" name="ssearch" id="s1" value="0">
+                <label for="s1">Código</label>
+                <input type="radio" class="with-gap" name="ssearch" id="s2" value="1">
+                <label for="s2">Nombre</label>
+                <input type="radio" class="with-gap" name="ssearch" id="s3" value="2">
+                <label for="s3">Grupo</label>
+              </p>
+            </div>
+            <div class="col l2 m6 s12">
+              <div class="input-field">
+                <input type="text" name="scode" disabled>
+                <label>Código</label>
+              </div>
+            </div>
+            <div class="col l6 m6 s12">
+              <div class="input-field">
+                <input type="text" name="sname" disabled>
+                <label>Nombre</label>
+              </div>
+            </div>
+            <div class="col l3 m3 s12">
+                <label>Grupo</label>
+                <select name="sgroup" class="browser-default" disabled>
+                  {% for x in group %}
+                    <option value="{{ x.agroup_id }}">{{ x.name }}</option>
+                  {% endfor %}
+                </select>
+            </div>
+            <div class="col l1 m2 s12">
+              <label>Buscar</label>
+              <button type="button" class="btn lime lighten-1 btn-search">
+                <span class="fa fa-search"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <table class="table responsive-table">
+          <thead>
+              <tr class="brand-warning">
+                  <th>Item</th>
+                  <th>Código</th>
+                  <th>Nombre</th>
+                  <th>Unidad</th>
+                  <th>Grupo</th>
+                  <th>Rendimiento</th>
+                  <th>P. Unitario</th>
+                  <th>Acciones</th>
+              </tr>
+          </thead>
+          <tbody>
+            {% for x in analysis %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ x.analysis_id }}</td>
+                <td>{{ x.name }}</td>
+                <td>{{ x.unit.uninom }}</td>
+                <td>{{ x.group.name }}</td>
+                <td class="center-align">{{ x.performance|safe }}</td>
+                <td>{{ x.total|safe }}</td>
+                <td class="text-center">
+                    <a href="#!" class="dropdown-button btn yellow darken-2 grey-text text-darken-3" data-activates="dropdown{{x.analysis_id}}">
+                      <i class="fa fa-gears"></i>
+                      <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-content" id="dropdown{{x.analysis_id}}">
+                      <li class="text-left">
+                        <a class="grey-text text-darken-3" href="{% url 'detailsamalysis' x.analysis_id %}"><span class="fa fa-list-alt"></span> Detalle</a>
+                      </li>
+                      <li class="text-left">
+                        <a class="grey-text text-darken-3 bedit" data-value="{{ x.analysis_id }}" data-group="{{ x.group_id }}" data-name="{{ x.name }}" data-unit="{{ x.unit.uninom }}" data-performance="{{ x.performance|safe }}"><span class="fa fa-edit"></span> Editar</a>
+                      </li>
+                      <li class="text-left">
+                        <a class="bdel grey-text text-darken-3" data-value="{{ x.analysis_id }}"><span class="fa fa-trash"></span> Eliminar</a>
+                      </li>
+                    </ul>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <th colspan="6">
+                    No se han encontrado analisis de precios.
+                </th>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+  </div>
+</div>
+<!-- block modals -->
+<div class="modal bottom-sheet" id="manalysis">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Analisis de Precio</h3>
+      </div>
+      <form action="#" name="registration" method="post">
+          <div class="row">
+            <div class="col l12">
+              <button type="reset" class="btn analysisClose modal-action modal-close grey lighten-5 grey-text text-darken-3">
+                <span class="fa fa-times"></span>
+                Salir
+              </button>
+              <button type="submit" class="btn btn-saveAnalysis green lighten-1 right">
+                <span class="fa fa-save"></span>
+                Guardar Analisis
+              </button>
+            </div>
+            <div class="col l5">
+              <div class="row">
+                <div class="col l10">
+                  <label>Tipo</label>
+                  <select name="group" class="browser-default" data-validation="required" data-validation-error-msg="Debe de seleccionar un grupo.">
+                    <option value="">-- Select --</option>
+                    {% for x in group %}
+                      <option value="{{ x.agroup_id }}">{{ x.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col l2">
+                  <label></label>
+                  <button type="button" data-href="{% url 'addanalysisgroup' %}" class="btn grey grey-lighten-4 agroup">
+                    <span class="fa fa-plus"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col l12">
+              <div class="input-field">
+                <textarea name="name" id="" rows="3" class="materialize-textarea input-sm" rows="1" data-validation="required" data-validation-error-msg="Ingrese una Descripción"></textarea>
+                <label>Descripción <small>(<span id="pres-max-length">255</span> caracteres restantes.)</small></label>
+              </div>
+            </div>
+            <div class="col l3">
+              <div class="row">
+                <div class="col l9">
+                  <div class="input-group">
+                    <label>Unidad</label>
+                    <select name="unit" class="browser-default" data-validation="required" data-validation-error-msg="Debe de seleccionar una Unidad.">
+                      <option value="">--Select--</option>
+                      {% for x in unit %}
+                          <option value="{{ x.unidad_id }}">{{ x.uninom }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <div class="col l3">
+                  <label></label>
+                  <button type="button" data-href="{% url 'unit_add' %}" class="btn grey grey-lighten-4 btn-default btn-sm ounit">
+                    <span class="fa fa-plus"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col l4">
+              <div class="input-field">
+                <input type="number" name="performance" class="form-control input-sm" step="0.10" min="0" data-validation="number" data-validation-allowing="float" data-validation-error-msg="Debe de ingresar un rendimiento.">
+                <label>Rendimiento</label>
+              </div>
+              <span class="prefix right">x día.</span>
+            </div>
+            <!-- form utils -->
+            {% csrf_token %}
+            <input type="hidden" name="edit">
+          </div>
+      </form>
+    </div>
+</div>
+<!-- endblock -->
+<!-- script -->
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="{{ MEDIA_URL }}js/form-validator.min.js"></script>
+<script src="{{ MEDIA_URL }}js/budget/analysis.js"></script>
+{% endblock content %}

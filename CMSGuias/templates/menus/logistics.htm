@@ -32,6 +32,8 @@
             <li class="dropdown-header">Order de Compra</li>
             <li><a href="{% url 'view_purchase_single' %}">Compra Materiales</a></li>
             <li><a href="{% url 'view_purchase_list' %}">Ordenes de Compra</a></li>
+            <li class="divider"></li>
+            <li><a href="{% url 'materials_price_views' %}">Precios</a></li>
           </ul>
         </li>
         <li class="dropdown">
@@ -53,9 +55,10 @@
             <li><a href="{% url 'view_login_suppler' %}">Crear Usuario</a></li>
             <li><a href="{% url 'view_create_supplier' %}">Nuevo Proveedor</a></li>
             <li class="divider"></li>
+            <li><a href="{% url 'materials_price_views' %}">Precios</a></li>
           </ul>
         </li>
-        <li><a href="#">About</a></li>
+        <!-- <li><a href="#">About</a></li> -->
       </ul>
 
       <ul class="nav navbar-nav navbar-right">

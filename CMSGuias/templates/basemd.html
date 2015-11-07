@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title> {% block title %}CMS Guias {% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=10; IE=9; IE=8; IE=7; IE=EDGE" />
+    <!--<link rel="shortcut icon" href="/media/resource/ico/icrperu.ico" type="image/x-icon">-->
+    <link rel="stylesheet" href="{{ MEDIA_URL }}vendor/normalize-css/normalize.css">
+    <script src="{{ MEDIA_URL }}js/html5.js"></script>
+    <!-- Part JQuery -->
+    {% block jquery %}
+        <script type="text/javascript" src="{{ MEDIA_URL }}vendor/jquery/dist/jquery.min.js"></script>
+    <!-- <link rel="stylesheet" href="{{ MEDIA_URL }}css/jquery-ui.css">
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/jquery-ui.theme.css">
+    <script src="{{ MEDIA_URL }}js/jquery.js"></script>
+    <script src="{{ MEDIA_URL }}js/jquery-ui.js"></script> -->
+    {% endblock %}
+    <!-- block Materialize -->
+    {% block materialize %}
+        <!-- <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/basemd.css">-->
+        <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}vendor/materialize/dist/css/materialize.min.css">
+    {% endblock materialize %}
+    <!-- Part BootStrap -->
+    {% block fontawesome %}
+        <link rel="stylesheet" href="{{ MEDIA_URL }}vendor/font-awesome/css/font-awesome.min.css">
+    {% endblock fontawesome %}
+    {% block sweetalert %}
+        <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}vendor/sweetalert/dist/sweetalert.css">
+        <script type="text/javascript" src="{{ MEDIA_URL }}vendor/sweetalert/dist/sweetalert.min.js"></script>
+    {% endblock sweetalert %}
+    <!-- Part Styles -->
+    {% block style %}{% endblock %}
+    <!-- <script type="text/javascript" src="{{ MEDIA_URL }}js/validateFields.js"></script> -->
+    <!-- <script type="text/javascript" src="{{ MEDIA_URL }}js/annimated.js"></script> -->
+    <!-- Part Scripts -->
+    {% block scripts %}{% endblock %}
+    <!-- Part Style-Basic -->
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/basemd.css">
+    <!--[if IE]><script type="text/javascript">
+        var e = ("abbr,article,spam,aside,audio,canvas,datalist,details,figure,
+        footer,header,hgroup,mark,menu,meter,nav,output,progress,
+        section,time,video").split(',');
+        for (var i=0; i<e.length; i++) {
+        document.createElement(e[i]);}</script><![endif]-->
+</head>
+<body>
+    <!-- import materialize -->
+    {% block materializejs %}
+        <script type="text/javascript" src="{{ MEDIA_URL }}vendor/materialize/dist/js/materialize.min.js"></script>
+    {% endblock materializejs %}
+    <!-- end block -->
+    <header>
+        {% block header %}
+        {% endblock %}
+        {% block menu %}
+        {% endblock %}
+    </header>
+    <section>
+    {% block content %}
+    {% endblock %}
+    </section>
+    <footer>{% block footer %}{% endblock %}</footer>
+    <!-- analitics -->
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-39863675-4', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
+</html>

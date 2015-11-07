@@ -235,11 +235,37 @@ assignedResponsible = ->
         # console.info data
         $.post "", data, (response) ->
             if response.status
-                location.reload()
+                $pro = $("input[name=pro]")
+                param =
+                    'getfors': true
+                    'name': $pro.attr "data-name"
+                $.get "/json/get/emails/starts/", param, (rmail) ->
+                    if rmail.status
+                        data = new Object
+                        data.forsb = rmail.fors #$("input[name=user-email]").val()
+                        data.issue = "Responsable de Proyecto #{$pro.attr "data-name"}"
+                        data.body = """<p><span style="color: rgb(33, 33, 33); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; line-height: 19.7999992370605px;" data-mce-style="color: rgb(33, 33, 33); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; line-height: 19.7999992370605px;">Proyecto #{$pro.val()} - #{$pro.attr "data-name"} se asigno al responsable: <strong>#{$("#responsible option:selected").text()}</strong>.&nbsp;</span></p><p>Proyecto:&nbsp; <strong>#{$pro.attr "data-name"}</strong></p><p>Fecha y hora: #{new Date().toString()}</p><p><span data-mce-style="color: rgb(33, 33, 33); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; line-height: 19.7999992370605px;" style="color: rgb(33, 33, 33); font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; line-height: 19.7999992370605px;">Si no has realizado esta operación o tienes cualquier duda, puedes comunicarte con nosotros +51 1 371-0443.</span></p>"""
+                        console.log data
+                        $.ajax
+                            url: "http://190.41.246.91:3000/mailer/"
+                            type: "GET"
+                            crossDomain: true
+                            data: $.param data
+                            dataType: "jsonp",
+                            success: (response) ->
+                                if response.status
+                                    # $().toastmessage "showNoticeToast", "Se a enviado el código de confirmación."
+                                    location.reload()
+                                    return
+                                else
+                                    $().toastmessage "showErrorToast", "No se podido enviar el correo."
+                                    return
+                        return
+                return
             else
                 $().toastmessage "showErrorToast", "El código ingresado es incorrecto: #{response.raise}"
+                return
         return
-    return
 
 publisherCommnet = ->
     data = new Object()

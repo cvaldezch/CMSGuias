@@ -160,7 +160,7 @@
                                     <strong>Dirección: </strong> {{ project.direccion }} - {{ project.distrito.distnom }}  - {{ project.provincia.pronom }} - {{ project.departamento.depnom }} - {{ project.pais.paisnom }}
                                 </p>
                                 <p class="contact-project">
-                                    <strong>Contacto:</strong> {{ project.contact }}
+                                    <strong>Contacto:</strong> {{ project.contact }} <br><strong>Correo:</strong> {{ project.email }} <br><strong>Teléfono:</strong> {{ project.phone }}
                                 </p>
                                 {% if project.empdni_id %}
                                     <p>
@@ -226,7 +226,7 @@
                                                 </li>
                                             {% endif %}
                                         {% endif %}
-                                        {% if project.status == 'AC' and request.user.get_profile.empdni.charge.cargos|lower == 'jefe de operaciones' or  request.user.get_profile.empdni.charge.area|lower == 'administrator' %}
+                                        {% if project.status == 'AC' and request.user.get_profile.empdni.charge.cargos|lower == 'jefe de operaciones' or  request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'ventas' %}
                                             <li>
                                                 <button class="btn btn-link btn-xs text-black btn-responsible">
                                                     <span class="glyphicon glyphicon-user"></span>
@@ -375,7 +375,7 @@
                 </div>
                 <div class="col-md-12">
                     <div class="row">
-                        {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' or user.get_profile.empdni.charge.cargos|lower == 'jefe de operaciones' %}
+                        {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
                         <div class="col-md-6">
                             <div class="panel panel-primary">
                                 <div class="panel-footer">

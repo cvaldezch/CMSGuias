@@ -1,0 +1,217 @@
+{% extends "basemd.html" %}
+{% block menu %}
+  {% include "menus/budget.htm" %}
+{% endblock menu %}
+{% block content %}
+<div class="container" ng-app="BudgetApp">
+  <header>
+    <h3>Presupuestos</h3>
+  </header>
+  <section ng-controller="BudgetCtrl">
+    <div class="card" ng-hide="bgbedside">
+      <div class="card-action">
+        <button class="btn waves-effect grey lighten-5 grey-text text-darken-4" type="button" name="showBudget">
+          <span class="fa fa-file"></span>
+          Nuevo
+        </button>
+        <button class="btn waves-effect light-green darken-1" type="button" ng-model="ssearch" ng-click="ssearch =! ssearch">
+          <span class="fa fa-search"></span>
+          Buscar
+        </button>
+      </div>
+    </div>
+    <div class="card panel-sbudget blue-grey lighten-5" ng-show="ssearch">
+      <div class="card-content">
+        <div class="row">
+          <div class="col s12 m3 l3">
+            <div class="input-field">
+              <input type="text" class="" maxlength="11">
+              <label>Código PROPAA0000</label>
+            </div>
+          </div>
+          <div class="col s12 m9 l9">
+            <div class="input-field">
+              <input type="text" class="">
+              <label>Nombre Presupuesto</label>
+            </div>
+          </div>
+          <div class="col s12 m1 l1">
+            <label class="black-text">Buscar</label>
+            <button class="btn btn-sm light-green darken-1">
+              <span class="fa fa-search"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <table class="table table-condensed responsive-table hoverable bordered" ng-hide="bgbedside">
+      <thead>
+        <tr class="brand-danger">
+          <th class="col-2 text-center">Item</th>
+          <th class="col-3 text-center">Código</th>
+          <th>Nombre/Descripción</th>
+          <th class="col-2 text-center">Registrado</th>
+          <th class="col-2 text-center">Estado</th>
+          <th class="col-3 text-center">Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for x in budget %}
+          <tr>
+            <td class="text-center">{{ forloop.counter }}</td>
+            <td class="text-center">{{ x.budget_id }}</td>
+            <td>{{ x.name }}</td>
+            <td class="text-center">{{ x.register|date:"d/m/Y" }}</td>
+            <td class="text-center">{{ x.status }}</td>
+            <td class="text-center">
+              <button class="dropdown-button btn amber lighten-2 grey-text text-darken-3" type="button" data-activates="dropdown-{{ x.budget_id }}" data-hover="true" data-constrainwidth="200" data-beloworigin="false">
+                <span class="fa fa-cogs"></span>
+              </button>
+              <ul class="dropdown-content" id="dropdown-{{ x.budget_id }}">
+                <li>
+                  <a href="{% url 'items_view' x.budget_id x.version %}" class="grey-text text-darken-3" ng-model="bgbedside" tabindex="-1"><span class="fa fa-list-alt"></span> Detalle</a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                  <a href="#" class="showbudgetedit grey-text text-darken-3" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-edit"></span> Editar</a>
+                </li>
+                <li>
+                  <a href="#" class="budgetdelete grey-text text-darken-3" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-trash"></span> Eliminar</a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                  <a href="#" class="budgetcopy grey-text text-darken-3" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-copy"></span> Copiar</a>
+                </li>
+                <li>
+                  <a href="#" class="bdugetrevision grey-text text-darken-3" data-value="{{ x.budget_id }}" tabindex="-1"><span class="fa fa-tasks"></span> Revision</a>
+                </li>
+              </ul>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</div>
+<!-- block modals -->
+<div class="modal bottom-sheet" id="nbudget">
+  <div class="modal-content">
+    <form action="#" method="post" id="newBudget">
+      <div class="modal-content">
+        <h4 class="modal-title">Presupuesto</h4>
+        <div class="row">
+          <div class="col s12">
+            <button type="button" class="btn grey lighten-4 modal-close black-text">
+              <span class="fa fa-times"></span>
+              <span class="fa-class">Salir</span>
+            </button>
+            <button type="submit" name="saveBudget" class="btn right light-blue darken-3">
+              <span class="fa fa-save"></span>
+              <span class="fa-class">Guardar Cambios</span>
+            </button>
+          </div>
+          <div class="col s12 m12 l12">
+            <hr>
+          </div>
+        <!-- </div>
+        <div class="row"> -->
+          <div class="col s12 m6 l6">
+            <div class="input-field">
+              <input type="text" name="name" id="name" data-validation="required" placeholder="Ingrese Nombre y/o descripción del presupuesto" data-validation-error-msg="Ingrese una Descripción" class="form-control input-sm">
+              <label>Nombre Presupuesto</label>
+            </div>
+          </div>
+          <div class="col s12 m6 l6">
+            <div class="input-field">
+              <select name="customers" id="customers" data-validation="required" data-validation-error-msg="Seleccione un Cliente">
+                {% for x in customer %}
+                  <option value="{{ x.ruccliente_id }}" class="grey-text">{{ x.razonsocial }}</option>
+                {% endfor %}
+              </select>
+              <label>Razón Social Cliente</label>
+            </div>
+          </div>
+          <div class="col s12 m12 l12">
+            <div class="input-field">
+              <input type="text" class="form-control input-sm" name="address" placeholder="Ingrese la dirección donde se ejecutara el proyecto" data-validation="required" data-validation-error-msg="Ingrese una Dirección">
+              <label>Dirección</label>
+            </div>
+          </div>
+          <div class="col s12 m3 l3">
+            <label>Pais</label>
+            <select name="pais" class="browser-default" data-validation="required"></select>
+          </div>
+          <div class="col s12 m3 l3">
+            <label>Departamento</label>
+            <select name="departamento" class="browser-default" placeholder="Departamento" data-validation="required"></select>
+          </div>
+          <div class="col s12 m3 l3">
+            <label>Provincia</label>
+            <select name="provincia" class="browser-default" placeholder="Provincia" data-validation="required"></select>
+          </div>
+          <div class="col s12 m3 l3">
+            <label>Distrito</label>
+            <select name="distrito" class="browser-default" placeholder="Distrito" data-validation="required"></select>
+          </div>
+          <div class="col s12 m4 l2">
+            <div class="input-field">
+              <input type="number" min="1" max="24" name="hours" value="8" data-validation="required" data-validataion-error-msg="Ingrese la Jornada Diaria en horas.">
+              <label>Jornada Diaria</label>
+            </div>
+          </div>
+          <div class="col s12 m4 l2">
+            <div class="input-field">
+              <input type="text" placeholder="dd-mm-yyyy" name="finish" data-validation="required" data-validation-error-msg="Plazo estimado del proyecto.">
+              <label>Plazo</label>
+            </div>
+          </div>
+          <div class="col s12 m4 l2">
+            <div class="input-field">
+              <input type="text" value="0" name="base">
+              <label>Precio Base</label>
+            </div>
+          </div>
+          <div class="col s12 m4 l2">
+            <div class="input-field">
+              <input type="text" class="form-control input-sm" value="0" name="offer">
+              <label>Precio Oferta</label>
+            </div>
+          </div>
+          <div class="col s12 m4 l2">
+            <div class="input-field">
+              <select name="currency" id="" class="validate" data-validation="required" data-validation-error-msg="Debe de seleccionar una moneda.">
+                {% for x in currency %}
+                  <option value="{{ x.moneda_id }}">{{ x.moneda }}</option>
+                {% endfor %}
+              </select>
+              <label>Moneda</label>
+            </div>
+          </div>
+          <div class="col s12 m4 l2">
+            <div class="input-field">
+              <input type="text" name="exchange" class="validate" value="0" placeholder="0.0">
+              <label>T. Cambio</label>
+            </div>
+          </div>
+          <div class="col s12 m12 l12">
+            <label>Observación</label>
+            <div class="input-field">
+              <textarea name="observation" class="materialize-textarea" rows="4"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% csrf_token %}
+<!-- import scripts -->
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="{{ MEDIA_URL }}js/tinymce.js"></script>
+<script src="{{ MEDIA_URL }}js/form-validator.min.js"></script>
+<script src="{{ MEDIA_URL }}js/getCountry.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angularjs/angular.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js"></script>
+<script src="{{ MEDIA_URL }}js/budget/budget.js"></script>
+{% endblock content %}

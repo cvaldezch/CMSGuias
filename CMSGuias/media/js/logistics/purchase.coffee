@@ -28,8 +28,13 @@ $(document).ready ->
     $("[name=selproject]").chosen({width: "100%"})
     listTmpBuy()
     $("table.table-list").floatThead
-        useAbsolutePositioning: false
+        useAbsolutePositioning: true
         scrollingTop: 50
+    tinymce.init
+        selector: "textarea[name=observation]"
+        menubar: false
+        toolbar: "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify"
+        toolbar_items_size: 'small'
     return
 
 showMaterials = (event) ->
@@ -328,7 +333,11 @@ saveOrderPurchase = ->
                     $("table.table-list > tbody > tr").each (index, elements) ->
                         $td = $(elements).find("td")
                         discount = parseInt $td.eq(7).text().split("%")[0]
-                        arr.push {"materials":$td.eq(1).text(), "quantity": parseFloat($td.eq(5).text()), "price":parseFloat($td.eq(6).text()), "discount": discount}
+                        arr.push
+                            "materials": $td.eq(1).text()
+                            "quantity": parseFloat($td.eq(5).text())
+                            "price": parseFloat($td.eq(6).text())
+                            "discount": discount
                         return
                     discount = $("input[name=pdiscount]").val()
                     if discount is ""
@@ -344,6 +353,8 @@ saveOrderPurchase = ->
                     prm.append "discount", discount
                     prm.append "projects", $("select[name=selproject]").val().toString()
                     prm.append "savePurchase", true
+                    prm.append 'quotation', $("[name=quotation]").val()
+                    prm.append 'observation', $("#observation_ifr").contents().find('body').html()
                     prm.append "details", JSON.stringify arr
                     if $("input[name=deposito]").get(0).files.length
                         prm.append "deposito", $("input[name=deposito]").get(0).files[0]
@@ -365,6 +376,7 @@ saveOrderPurchase = ->
                                 return
                             else
                                 $().toastmessage "showWarningToast", "No se a podido generar la <q>Orden de Compra</q>. #{response.raise}"
+                                return
                     return
     else
         $().toastmessage "showWarningToast", "Alerta!<br>Campo vacio, #{data.element}"

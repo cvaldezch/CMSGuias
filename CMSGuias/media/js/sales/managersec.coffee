@@ -173,11 +173,14 @@ $(document).ready ->
     $("button.btn-show-orders-do").on "click", showOrdersByProyect
     $(".btn-generate-pre-orders").on "click", showPreOrders
     $(".btn-save-pre-orders").on "click", savePreOrders
+    $(".bshowprices").on "click", showModalSetPrices
+    $(".saveWithoutPrice").on "click", saveWithoutPrice
     $("table.table-float").floatThead
         useAbsolutePositioning: true
         scrollingTop: 50
     .mouseenter ->
         $(@).floatThead "reflow"
+    getPercentAttend()
     return
 
 tableUp = (event) ->
@@ -1068,8 +1071,8 @@ valMax = ->
     mat = $input.attr "data-mat"
     if val > max
         $input.val max
-    else if val < 1
-        $input.val 1
+    else if val < 0
+        $input.val 0.1
         id = $input.attr "data-id"
         #$input.val max
         $("tr.#{mat}nip#{id} > td").eq(0).find("input").attr "checked", false
@@ -1308,7 +1311,7 @@ showModify = ->
     $(".table-details, .table-niple, .btn-update-meter").fadeOut 200
     $(".panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter").fadeIn 680
     $(".panel-price-two").fadeIn 600
-    $(".panel-price-one").fadeOut 200
+    $(".panel-price-one, .table-calc-first").fadeOut 200
     $("table.table-modify").floatThead "reflow"
     return
 
@@ -1316,7 +1319,7 @@ backModify = ->
     $(".panel-modify, .btn-update-meter-cancel, .btn-show-materials-meter, .btn-deductivo-meter, .btn-upload-plane-meter, .btn-save-modify-meter").fadeOut 200
     $(".table-details, .table-niple, .btn-update-meter").fadeIn 680
     $(".panel-price-two").fadeOut 200
-    $(".panel-price-one").fadeIn 600
+    $(".panel-price-one, .table-calc-first").fadeIn 600
     return
 
 startModidfy = ->
@@ -1386,6 +1389,8 @@ startModidfy = ->
                 statusprice = ""
                 if response.details[x].price <= 0 or response.details[x].quantity <= 0
                     statusprice = "danger"
+                else
+                    statusprice = "active" # class default
                 tmp = tmp.replace "{{!class}}", statusprice
                 $tb.append Mustache.render tmp, response.details[x]
                 $sel = $("#brand-#{response.details[x].materials}-#{response.details[x].brand_id}")
@@ -1405,6 +1410,7 @@ startModidfy = ->
                     if response.listModel[b].model_id is response.details[x].model_id
                         selectModel = selectModel.replace "{{!sel}}", "selected"
                     $sel.append Mustache.render selectModel, response.listModel[b]
+            $(".amountpurchasecalcmodify").val response.apurchase
             # calcDiffModify()
             calcAmountModifySector()
         else
@@ -1912,26 +1918,46 @@ approvedModify = (event) ->
     data.approvedModifyFinal = true
     # data.meter = JSON.stringify tblb
     # data.history = JSON.stringify tbla
-
-    $().toastmessage "showToast",
-        text: "Seguro(a) que desea aprobar las modificaciones de los materiales?"
-        sticky: true
-        type: "confirm"
-        buttons: [{value: "Si"}, {value: "No"}]
-        success: (result) ->
-            if result is "Si"
-                $.post "", data, (response) ->
-                    if response.status
-                        $().toastmessage "showNoticeToast", "Se a realizado los cambios"
-                        setTimeout ->
-                            location.reload()
-                            return
-                        , 2600
+    context = new Object
+    context.withoutprices = true
+    $.getJSON "", context, (response) ->
+        approved = false
+        console.log "materials witout prices"
+        console.log response.details.length
+        if response.details.length
+            approved = false
+        else
+            approved = true
+        if approved
+            $().toastmessage "showToast",
+                text: "Seguro(a) que desea aprobar las modificaciones de los materiales?"
+                sticky: true
+                type: "confirm"
+                buttons: [{value: "Si"}, {value: "No"}]
+                success: (result) ->
+                    if result is "Si"
+                        $.post "", data, (response) ->
+                            if response.status
+                                # $().toastmessage "showNoticeToast", "Se a realizado los cambios"
+                                swal
+                                    title: "Felicidades!"
+                                    text: "Se han realizado los cambios solicitados."
+                                    type: "success"
+                                    timer: 2600
+                                    showConfirmButton: false
+                                setTimeout ->
+                                    location.reload()
+                                    return
+                                , 2600
+                                return
+                            else
+                                $().toastmessage "showErrorToast", "Error al guardar los cambios solicitados. #{response.raise}"
+                                return
                         return
-                    else
-                        $().toastmessage "showErrorToast", ""
-                        return
-                return
+            return
+        else
+            swal "Alerta!", "existen materiales sin precio, solicite su ingreso para ser aprobado. #{response.raise}", "warning"
+            return
     return
 
 # this part is for generate deductive global
@@ -2254,7 +2280,6 @@ readerPrices = (event) ->
     data = new Object()
     data.readerPrices = true
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
-    console.log data
     $.post "", data, (response) ->
         if response.status
             $().toastmessage "showNoticeToast", "Se a leido correctamente el archivo."
@@ -2316,13 +2341,47 @@ calcAmountModifySector = (event) ->
         apurchase += (quantity * purchase)
         asales += (quantity * sales)
         return
-    $(".amodifynowpurchase").text apurchase.toFixed 2
-    $(".amsalesmodifynow").text asales.toFixed 2
+    $(".amodifynowpurchase").text apurchase.toFixed 3
+    $(".amsalesmodifynow").text asales.toFixed 3
     #if purchaseamount > amodifynowpurchase
-    $(".adiffpurchase").text (purchaseamount - apurchase).toFixed 3
-    $(".aimppurchase").text (parseFloat($(".amountmeterestimated").text()) - apurchase).toFixed 2
-    $(".amsalesdifftot").text (salesamount - asales).toFixed 3
-    $(".amountsalestot").text (parseFloat($(".amountmeterestimatedsales").text()) - asales).toFixed 2
+    $(".adiffpurchase").text (apurchase - purchaseamount).toFixed 3
+    $(".aimppurchase").text (parseFloat($(".amountmeterestimated").text()) - apurchase).toFixed 3
+    $(".amsalesdifftot").text (asales - salesamount).toFixed 3
+    $(".amountsalestot").text (parseFloat($(".amountmeterestimatedsales").text()) - asales).toFixed 3
+    # Permisse storage approved
+    ipa = parseFloat $(".amountmeterestimated").text()
+    ipm = parseFloat apurchase.toFixed 3
+    percent = (((ipm * 100) / ipa))
+    console.log ipa
+    console.log ipm
+    console.log percent
+    $cargo = $("[name=area]").attr("data-cargo")
+    if $cargo is "jefe de operaciones"
+        ipa = parseFloat $(".amountpurchaseestimated").val()
+        ipm = parseFloat $(".amountpurchasecalcmodify").val()
+        percent = (((ipm * 100) / ipa))
+        console.log ipa
+        console.log ipm
+        console.log percent
+        $(".btn-save-modify-meter").addClass "hide"
+        if percent < 100
+            $(".btn-save-modify-meter").removeClass "hide"
+        else
+            swal
+                title: "Alerta!"
+                text: "Has alcanzado el maximo monto para realizar modificaciones. <br> Te recomendamos contactarte con el area de <q>Ventas</q> si se requiere seguir realizando modificaciones."
+                type: "warning"
+                html: true
+                showConfirmButton: true
+                confirmButtonColor: "#DD6B55"
+    else
+        if percent >= 100
+            swal
+                title: "Alerta!"
+                text: "Has alcanzado el porcentaje maximo para realizar modificaciones."
+                type: "warning",
+                showConfirmButton: true
+                confirmButtonColor: "#DD6B55"
     return
 
 showGuideByProyect = (event) ->
@@ -2446,3 +2505,116 @@ showListPreOrders = (event) ->
         sec = "None"
     href = "/sales/projects/guide/list/#{pro}/#{sub}/#{sec}"
     return
+
+## update 02-06-2015
+# rest get precent items attend
+getPercentAttend = (event) ->
+  $.getJSON "",
+    "percentsec": true
+  , (response) ->
+    if response.status
+      $bar = $(".progress-sec")
+      if response.percent == "100.0"
+          $bar.addClass "progress-bar-success"
+      $bar.attr "aria-valuenow", response.percent
+      $bar.css "width": "#{response.percent}%"
+      $bar.text "#{response.percent} % Completo."
+      return
+    else
+      swal
+          title: "Error!"
+          text: "al obtener el porcentaje de materiales atendidos. #{response.raise}"
+          showConfirmButton: false
+          timer: 2800
+          type: "error"
+      return
+  return
+
+showModalSetPrices = (event) ->
+  context = new Object
+  context.withoutprices = true
+  $.getJSON "", context, (response) ->
+    if response.status
+      counter = 1
+      response.index = -> counter++
+      template = """
+      {{#details}}
+      <tr>
+        <td>{{ index }}</td>
+        <td>{{ materials_id }}</td>
+        <td>{{ materials__matnom }} - {{ materials__matmed }}</td>
+        <td>{{ brand__brand }}</td>
+        <td>{{ materials__unidad__uninom }}</td>
+        <td>
+          <input type="text" class="form-control input-sm col-2" data-brand="{{ brand_id }}" data-model="{{ model_id }}" value="{{ price }}">
+        </td>
+        <td>
+          <input type="text" class="form-control input-sm col-2" value="{{ sales }}">
+        </td>
+      </tr>
+      {{/details}}
+      """
+      $tb = $(".twithoutp > tbody")
+      $tb.empty()
+      $tb.html Mustache.render template, response
+      $("#withoutPrice").modal "show"
+      return
+    else
+      swal
+        title: "Error"
+        text: "No ha podido traer los materiales sin precios. #{response.raise}"
+        type: "error",
+        showConfirmButton: false
+        timer: 2600
+      return
+  return
+
+saveWithoutPrice = (event) ->
+  context = new Object
+  context.savewithoutprice = true
+  list = new Array
+  zero = 0
+  $(".twithoutp > tbody > tr").each ->
+    $td = $(this).find "td"
+    purchase = parseFloat $td.eq(5).find("input").eq(0).val()
+    sales = parseFloat $td.eq(6).find("input").eq(0).val()
+    if purchase is 0 or sales is 0
+      zero++
+      swal
+        title: "Alerta!"
+        text: "Debe de ingresar un precio valido y mayor a cero!"
+        type: "warning"
+        showConfirmButton: false
+        timer: 2600
+      return false
+    list.push
+      'materials': $td.eq(1).text()
+      'brand': $td.eq(5).find("input").eq(0).attr "data-brand"
+      'model': $td.eq(5).find("input").eq(0).attr "data-model"
+      'purchase': purchase
+      'sales': sales
+    return
+  if zero is 0
+    context.list = JSON.stringify list
+    context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val()
+    $.post "", context, (response) ->
+      if response.status
+        setTimeout ->
+          location.reload()
+        , 3000
+        swal
+          title: "Felicidades!"
+          text: "Se a guardado los cambios correctamente."
+          type: "success"
+          showConfirmButton: false
+          timer: 3000
+        return
+      else
+        swal
+          title: "Error!"
+          text: "No se a guardado los cambios. #{response.raise}"
+          type: "error"
+          showConfirmButton: false
+          timer: 2600
+        return
+  return

@@ -1,0 +1,39 @@
+{
+  "name": "CMSGuias",
+  "version": "0.0.0",
+  "homepage": "https://github.com/christian6/CMSGuias",
+  "description": "Libraries",
+  "main": "bower.js",
+  "moduleType": [
+    "amd",
+    "globals"
+  ],
+  "authors": [
+    "Christian Valdez"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "angularjs": "~1.4.2",
+    "jquery": "~2.1.4"
+  },
+  "dependencies": {
+    "Materialize": "materialize#~0.97.1",
+    "angular-cookies": "~1.4.3",
+    "angular-sanitize": "~1.4.3",
+    "angularjs": "~1.4.2",
+    "font-awesome": "~4.4.0",
+    "jquery": "~2.1.4",
+    "jquery.floatThead": "floatThead#~1.3.1",
+    "materialize": "~0.97.1",
+    "normalize-css": "~3.0.3",
+    "sweetalert": "~1.0.1",
+    "mustache.js": "mustache#~2.2.0"
+  }
+}

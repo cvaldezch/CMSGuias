@@ -1,6 +1,8 @@
-vendor-prefixes ?= moz webkit o ms official
+// out: base.css, sourcemap: false, compress: false
 
-@import 'nib'
+//vendor-prefixes ?= moz webkit o ms official
+
+//@import 'nib'
 
 @font-face
   font-family 'Roboto'
@@ -102,20 +104,28 @@ body
   font-size 12px
   width 26em
 
-.text-red
+.text-danger, .text-red
   color #f00
   &:hover
     color #900
 
-.text-green
+.text-success
   color #5cb85c
   &:hover
     color #357935
 
-.text-blue
+.text-primary, .text-blue
   color #428bca
   &:hover
     color #245682
+
+.text-info
+  color #5bc0de
+  &:hover
+    color #5bc0de
+
+.text-warning
+  color #f0ad4e
 
 .matname-global
   border-radius 4px
@@ -213,3 +223,18 @@ body
 /*table > tbody > tr > td.content-details
   padding 0px
   margin-bottom 0px*/
+
+.font-9
+  font-size 9px
+
+.font-10
+  font-size 10px
+
+.font-11
+  font-size 11px
+
+.font-12
+  font-size 12px
+
+.font-14
+  font-size 14px

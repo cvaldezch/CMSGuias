@@ -3,15 +3,15 @@
     Manager Sector
 {% endblock title %}
 {% block script %}
+    <script src="{{ MEDIA_URL }}js/floatThead.js"></script>
     <script src="{{ MEDIA_URL }}js/mustache.js"></script>
+    <script src="{{ MEDIA_URL }}js/tinymce.js"></script>
+    <script src="{{ MEDIA_URL }}js/checkbox.min.js"></script>
+    <script src="{{ MEDIA_URL }}js/chosen.jquery.min.js"></script>
     <script src="{{ MEDIA_URL }}js/scrollTo.js"></script>
     <script src="{{ MEDIA_URL }}js/getMaterials.js"></script>
     <script src="{{ MEDIA_URL }}js/sales/managersec.js"></script>
-    <script src="{{ MEDIA_URL }}js/tinymce.js"></script>
-    <script src="{{ MEDIA_URL }}js/checkbox.min.js"></script>
     <script src="{{ MEDIA_URL }}js/mailer.js"></script>
-    <script src="{{ MEDIA_URL }}js/chosen.jquery.min.js"></script>
-    <script src="{{ MEDIA_URL }}js/floatThead.js"></script>
     <script src="{{ MEDIA_URL }}js/annimated.js"></script>
 {% endblock script %}
 {% block style %}
@@ -20,16 +20,16 @@
 {% endblock style %}
 {% block menu %}
     {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
-        {% include "menus/sale.htm" %}
+      {% include "menus/sale.htm" %}
     {% endif %}
     {% if user.get_profile.empdni.charge.area|lower == 'logistica' %}
-        {% include "menus/logistics.htm" %}
+      {% include "menus/logistics.htm" %}
     {% endif %}
     {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
-        {% include "menus/operations.htm" %}
+      {% include "menus/operations.htm" %}
     {% endif %}
     {% if user.get_profile.empdni.charge.area|lower == 'almacen' %}
-        {% include "menus/storage_menu.htm" %}
+      {% include "menus/storage_menu.htm" %}
     {% endif %}
 {% endblock menu %}
 {% block content %}
@@ -63,64 +63,59 @@
                 <div class="panel panel-success">
                     <div class="panel-body">
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="control-label">Porcentaje Pedido</label>
-                                    <br><br>
-                                    <div class="progress">
-                                        <div class="progress-bar
-                                        {% if sector.itemsPercent == '100.0' %}
-                                            progress-bar-success
-                                        {% endif %}
-                                        " role="progressbar" aria-valuenow="{{ sector.itemsPercent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ sector.itemsPercent }}%">
-                                        {{ sector.itemsPercent }}% Complete
-                                        </div>
-                                    </div>
-                                </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="control-label">Porcentaje Pedido</label>
+                              <br><br>
+                              <div class="progress">
+                                  <div class="progress-bar progress-sec" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                                  0% Complete
+                                  </div>
+                              </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="control-label">Estadisticas</label>
-                                    <div class="table-responsive">
-                                        <table class="table table-condensed">
-                                            <thead>
-                                                <tr>
-                                                    <th class="text-center">Atendidos</th>
-                                                    <th class="text-center">Parcial Atendidos</th>
-                                                    <th class="text-center">Pendientes</th>
-                                                    <th class="text-center">Total</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td class="text-center">{{ sector.stadistics.attend }}</td>
-                                                    <td class="text-center">{{ sector.stadistics.semi }}</td>
-                                                    <td class="text-center">{{ sector.stadistics.pending }}</td>
-                                                    <td class="text-center">{{ sector.stadistics.total }}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="control-label">Estadisticas</label>
+                              <div class="table-responsive">
+                                <table class="table table-condensed">
+                                  <thead>
+                                    <tr>
+                                      <th class="text-center">Atendidos</th>
+                                      <th class="text-center">Parcial Atendidos</th>
+                                      <th class="text-center">Pendientes</th>
+                                      <th class="text-center">Total</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td class="text-center">{{ sector.stadistics.attend }}</td>
+                                      <td class="text-center">{{ sector.stadistics.semi }}</td>
+                                      <td class="text-center">{{ sector.stadistics.pending }}</td>
+                                      <td class="text-center">{{ sector.stadistics.total }}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                              </div>
                             </div>
                         </div>
+                      </div>
                     </div>
                 </div>
             {% endif %}
             <div class="panel panel-primary panel-planes">
-                <div class="panel-footer">
-                    <h4>Plano(s) del Sector</h4>
-                    {% if not planes %}
-                        <div class="alert alert-inverse alert-inverse-border text-center">
-                            <h4>CLICK AQUI <button name="show-plane" class="btn text-white upload-green"><strong>BROWSE</strong></button>
-                            </h4>
-                        </div>
-                    {% else %}
-                        <button class="btn btn-sm btn-link close btn-show-planes">
-                            <span class="glyphicon glyphicon-chevron-up"></span>
-                        </button>
-                    {% endif %}
-                </div>
+              <div class="panel-footer">
+                <h4>Plano(s) del Sector</h4>
+                {% if not planes %}
+                  <div class="alert alert-inverse alert-inverse-border text-center">
+                    <h4>CLICK AQUI <button name="show-plane" class="btn text-white upload-green"><strong>BROWSE</strong></button></h4>
+                  </div>
+                {% else %}
+                  <button class="btn btn-sm btn-link close btn-show-planes">
+                      <span class="glyphicon glyphicon-chevron-up"></span>
+                  </button>
+                {% endif %}
+              </div>
                 {% if planes %}
                     <div class="panel-body">
                         <div class="row">
@@ -196,6 +191,10 @@
                         </div>
                         {% if meter %}
                             <div class="text-right">
+                                <a href="{% url 'sectorgroup_view' project.proyecto_id subproject.subproyecto_id sector.sector_id %}" class="btn btn-primary pull-left">
+                                    <span class="fa fa-object-group"></span>
+                                    Programar Sector
+                                </a>
                                 <a href="{% url 'view_list_preordersop' project.proyecto_id subproject.subproyecto_id sector.sector_id %}" class="btn btn-success" target="_blank">
                                     <span class="fa fa-list"></span>
                                     Lista de Pre Pedido a Almcén
@@ -209,9 +208,12 @@
                                     Lista de Guias Salidas
                                 </button>
                             </div>
+                            <div class="text-left">
+
+                            </div>
                             <br>
                             <div class="btn-group">
-                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'operaciones' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
                                     <button class="btn btn-default btn-update-meter-cancel">
                                         <span class="glyphicon glyphicon-remove"></span>
                                         Cancelar
@@ -236,11 +238,11 @@
                                         Deductivo
                                     </button>
                                 {% endif %}
-                                {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
-                                    <button class="btn btn-danger text-black btn-save-modify-meter">
-                                        <span class="glyphicon glyphicon-saved"></span>
-                                        Aprobar Modificación
-                                    </button>
+                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.cargos|lower == 'jefe de operaciones' %}
+                                  <button class="btn btn-danger text-black btn-save-modify-meter">
+                                    <span class="glyphicon glyphicon-saved"></span>
+                                      Aprobar Modificación
+                                  </button>
                                 {% endif %}
                             </div>
                         {% endif %}
@@ -403,6 +405,13 @@
                         </div>
                         {% endif %}
                     {% endif %}
+                    <div class="alert alert-block alert-danger alert-percent-fifteen hide">
+                        a
+                        <strong>Alerta! Ten encuenta que:</strong>
+                        <p>
+                            El porcentaje para realizar las modificaciones se encuentra en negativo. Recuerda que si se agregan más articulos a la lista el procentaje de ganancias estara siendo afectado.
+                        </p>
+                    </div>
                     <div class="panel panel-primary">
                         {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' %}
                             <div class="panel-footer">
@@ -454,13 +463,13 @@
                                    </div>
                                </div> -->
                                 <div class="table-responsive">
-                                    <table class="table table-condensed">
+                                    <table class="table table-hover table-condensed table-responsive table-calc-first">
                                         <tbody>
                                             <tr>
                                                 <td rowspan="1" width="200px"></td>
-                                                <th>Importe Aprox.</th>
-                                                <th>Importe de Compra</th>
-                                                <th>Diferencia</th>
+                                                <th>IMPORTE VENTA PRESUPUESTO</th>
+                                                <th>ACTUAL IMPORTE VENTA</th>
+                                                <th>QUEDA</th>
                                                 <th colspan="2" class="text-center">
                                                     <span class="glyphicon glyphicon-thumbs-up"></span>
                                                     %
@@ -469,6 +478,12 @@
                                                     <span class="glyphicon glyphicon-thumbs-down"></span>
                                                     %
                                                 </th>
+                                            </tr>
+                                            <tr>
+                                                <th colspan="4"></th>
+                                                <th class="text-center"><small>% CONSUMIDO</small></th>
+                                                <th class="text-center"><small>% RESTA</small></th>
+                                                <th class="text-center"><small>% PERDIDA</small></th>
                                             </tr>
                                             <tr>
                                                 <th>PRECIO DE COMPRA</th>
@@ -492,17 +507,24 @@
                                                 <td class="text-center percentsalesres"></td>
                                                 <td class="text-center percentsalesdiff"></td>
                                             </tr>
+                                            <tr>
+                                                <td colspan="7"></td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
+                        {% endif %}
+                        {% if user.get_profile.empdni.charge.cargos|lower == 'jefe de operaciones'  %}
+                          <input type="hidden" class="amountpurchaseestimated" value="{% if not sector.amount %} 0 {% else %} {{ sector.amount|safe }} {% endif %}">
+                          <input type="hidden" class="amountpurchasecalcmodify">
                         {% endif %}
                         <div class="table-responsive">
                             {% if not meter %}
                                 {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
                                     <input type="hidden" id="calcAmountSectorFirst">
                                 {% endif %}
-                                <table class="table table-hover table-condensed table-details table-float">
+                                <table class="table table-hover table-condensed table-details table-float table-responsive">
                                     <thead>
                                         <tr class="brand-primary text-white">
                                             <th></th>
@@ -571,7 +593,7 @@
                                 </table>
                             {% endif %}
                             {% if meter %}
-                                <table class="table table-hover table-condensed table-details table-float">
+                                <table class="table table-hover table-condensed table-details table-float table-responsive">
                                     {% ifequal project.status 'AC' %}
                                         <caption>
                                             {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas'  %}
@@ -965,14 +987,14 @@
                                     <div class="panel panel-warning">
                                         <table class="table table-condensed">
                                             <tbody>
-                                                <tr>
+                                                <tr class="active">
                                                     <td></td>
-                                                    <th class="text-center">IMPORTE INGRESADO</th>
-                                                    <th class="text-center" colspan="2">IMPORTE VENTA</th>
-                                                    <th class="text-center">IMPORTE MODIFICADO</th>
+                                                    <th class="text-center">IMPORTE VENTA APROX.</th>
+                                                    <th class="text-center" colspan="2">ACTUAL IMPORTE VENTA</th>
+                                                    <th class="text-center">IMPORTE VENTA MODIFICADO</th>
                                                     <th class="text-center" colspan="2">DIFERENCIA</th>
                                                 </tr>
-                                                <tr>
+                                                <tr class="active">
                                                     <td></td>
                                                     <td></td>
                                                     <th class="text-center">CALCULADO</th>
@@ -980,6 +1002,27 @@
                                                     <td></td>
                                                     <th class="text-center">CALC. DIF.</th>
                                                     <th class="text-center">TOTAL</th>
+                                                </tr>
+                                                <tr class="active">
+                                                  <td></td>
+                                                  <td class="text-center">
+                                                    <span class="fa fa-square text-success"></span>
+                                                    </td>
+                                                  <td class="text-center">
+                                                    <span class="fa fa-square text-info"></span>
+                                                  </td>
+                                                  <td class="text-center">
+                                                    ( <span class="fa fa-square text-success"></span> - <span class="fa fa-square text-info"></span> )
+                                                  </td>
+                                                  <td class="text-center">
+                                                    <span class="fa fa-square text-warning"></span>
+                                                  </td>
+                                                  <td class="text-center">
+                                                    ( <span class="fa fa-square text-warning"></span> - <span class="fa fa-square text-info"></span> )
+                                                  </td>
+                                                  <td class="text-center">
+                                                    ( <span class="fa fa-square text-success"></span> - <span class="fa fa-square text-warning"></span> )
+                                                  </td>
                                                 </tr>
                                                 <tr>
                                                     <th>
@@ -1021,6 +1064,12 @@
                                         Recargar
                                     </button>
                                 </div>
+                                {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'ventas' or request.user.get_profile.empdni.charge.area|lower == 'logistica' %}
+                                  <button type="button" class="btn btn-warning btn-sm bshowprices">
+                                    <span class="glyphicon glyphicon-list-alt text-black"></span>
+                                    <span class="glyphicon-class">Materiales sin Precios</span>
+                                  </button>
+                                {% endif %}
                                 <div class="pull-right">
                                     {% if request.user.get_profile.empdni.charge.area|lower == 'operaciones' %}
                                         <button class="btn btn-sm btn-default btn-alert-modified">
@@ -1028,17 +1077,17 @@
                                             Avisar, Termine de Modificar
                                         </button>
                                     {% endif %}
-                                    <button class="btn btn-danger btn-sm btn-del-all-modify">
+                                    <!--<button class="btn btn-danger btn-sm btn-del-all-modify">
                                         <span class="fa fa-trash-o"></span>
                                         Eliminar Todo
-                                    </button>
+                                    </button>-->
                                 </div>
                             </caption>
-                            <table class="table table-bordered table-condensed table-hover table-modify table-float">
+                            <table class="table table-bordered table-condensed table-hover table-modify table-float table-responsive">
                                 <caption>
                                     <div class="alert alert-block alert-warning text-left">
                                         <strong>Ten en cuenta!</strong>
-                                        <p>Que en el campo <strong><q>Cantidad</q></strong> debes de colocar el metrado total del material para este sector.</p>
+                                        <p>Que en el campo <strong><q>Cantidad</q></strong> se debe de colocar el metrado total del material para este sector.</p>
                                     </div>
                                 </caption>
                                 <thead>
@@ -1693,6 +1742,37 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="withoutPrice">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a class="close" data-dismiss="modal">&times;</a>
+        <h3 class="modal-title">Lista de materiales sin Precios</h3>
+      </div>
+      <div class="modal-body">
+        <button type="button" class="btn btn-sm btn-warning text-black saveWithoutPrice">
+          <span class="fa fa-dollar"></span>
+          <span class="fa fa-terminal"></span>
+          Guardar Precios
+        </button>
+        <table class="table table-condensed table-responsive table-hover twithoutp">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Código</th>
+              <th>Descripción</th>
+              <th>Marca</th>
+              <th>Unidad</th>
+              <th>P. Compra</th>
+              <th>P. Venta</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Data Project -->
 {% csrf_token %}
 <input type="hidden" name="pro" value="{{ project.proyecto_id }}" data-name="{{ project.nompro }}">
@@ -1710,7 +1790,7 @@
     <input type="hidden" name="exchangep" value="{{ project.exchange|safe }}">
 {% endif %}
 <input type="hidden" name="user-email" value="{{ user.email }}" data-name="{{ user.get_profile.empdni.firstname }} {{ user.get_profile.empdni.lastname }}">
-<input type="hidden" name="area" value="{{ user.get_profile.empdni.charge.area|lower }}">
+<input type="hidden" name="area" value="{{ user.get_profile.empdni.charge.area|lower }}" data-cargo="{{ user.get_profile.empdni.charge.cargos|lower }}">
 <!-- block files -->
 <input type="file" name="plane" class="hide" accept="application/pdf">
 {% endblock content %}

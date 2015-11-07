@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+
 from django.conf.urls import patterns, include, url
 import settings
 
@@ -6,7 +9,6 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Examples:
     url(r'', include('CMSGuias.apps.home.urls')),
     url(r'^almacen/', include('CMSGuias.apps.almacen.urls')),
     url(r'^logistics/', include('CMSGuias.apps.logistica.urls')),
@@ -15,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^sales/', include('CMSGuias.apps.ventas.urls')),
     url(r'^operations/', include('CMSGuias.apps.operations.urls')),
     url(r'^proveedor/', include('CMSGuias.apps.suppliers.urls')),
+    url(r'^agenda/', include('CMSGuias.apps.agenda.urls')),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

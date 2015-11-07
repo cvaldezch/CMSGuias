@@ -1,0 +1,376 @@
+{% extends "basemd.html" %}
+{% block title %}
+    Analysis Details
+{% endblock title %}
+{% block menu %}
+    {% include "menus/budget.htm" %}
+{% endblock menu %}
+{% block content %}
+<div data-ng-app="andApp">
+    <div class="card-panel">
+        <h3>
+            Detalle de Analisis de Precio
+        </h3>
+        <div class="card">
+            <div class="card-action">
+                <a href="{% url 'analysisprice_view' %}" class="btn waves-effect grey lighten-5 grey-text text-darken-3">
+                    <i class="fa fa-chevron-left"></i>
+                    <span>Regresar</span>
+                </a>
+            </div>
+            <div class="card-content">
+                <p>
+                    <strong>Código: </strong> {{ analysis.analysis_id }}
+                </p>
+                <p>
+                    <strong>Descripción: </strong> {{ analysis.name }}
+                </p>
+                <p>
+                    <strong>Rendimiento</strong>
+                    <span class="performance">{{ analysis.performance|safe }}</span>
+                    <span>x 8h.</span>
+                </p>
+                <p>
+                    <strong>Unidad: </strong> {{ analysis.unit.uninom }}
+                </p>
+                <p>
+                    <strong>Precio Unitario: </strong>
+                    <span class="tanalysis">{{ analysis.total|safe }}</span>
+                </p>
+            </div>
+            <div role="row">
+                <!-- Nav tabs -->
+                <ul class="tabs">
+                    <li class="tab col4 blue lighten-1">
+                        <a href="#materials" class="grey-text text-lighten-5">MATERIALES</a>
+                    </li>
+                    <li class="tab col4 orange lighten-1">
+                        <a href="#manpower" class="grey-text text-lighten-5">MANO DE OBRA</a>
+                    </li>
+                    <li class="tab col4 lime lighten-1">
+                        <a href="#tools" class="grey-text text-lighten-5">HERRAMIENTAS</a>
+                    </li>
+                </ul>
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div class="tab-pane" id="materials">
+                        <div class="panel panel-info">
+                            <div class="card">
+                                <div class="card-action">
+                                    <button class="btn bshowaddmat blue darken-1" type="button">
+                                        <span class="fa fa-plus"></span>
+                                        <span>Material</span>
+                                    </button>
+                                    <button class="btn bmrefresh grey lighten-4 grey-text text-darken-3" type="button">
+                                        <span class="fa fa-refresh"></span>
+                                        <span>Actualizar</span>
+                                    </button>
+                                    <button class="btn red darken-1 bdelmatall" type="button">
+                                        <span>+ Eliminar Todo</span>
+                                    </button>
+                                    <button class="btn light-green lighten-1 bshownewmat" type="button">
+                                        <span>+ Nuevo Material</span>
+                                    </button>
+                                    <button class="btn btn-sm btn-default bcopymat" type="button">
+                                        <span>+ Copiar Materiales</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <!-- div add materials -->
+                                <div class="materialsadd card-content blue lighten-5">
+                                    <div class="row">
+                                        <div class="col l6">
+                                            <div class="">
+                                                <label>Materiales</label>
+                                                <select name="materials" id="materials" class="form-control chosen-select"></select>
+                                            </div>
+                                        </div>
+                                        <div class="col l6">
+                                            <div class="form-group">
+                                                <label>Medida</label>
+                                                <select name="measure" id="" class="form-control chosen-select"></select>
+                                            </div>
+                                        </div>
+                                        <div class="col l6">
+                                            <div class="alert alert-block alert-warning" name="summary"></div>
+                                        </div>
+                                        <div class="col l6">
+                                            <div class="input-field">
+                                                <label>Cantidad</label>
+                                                <input type="number" name="mquantity" step="0.10" min="0">
+                                            </div>
+                                            <div class="input-field">
+                                                <input type="number" name="mprice" step="0.10" min="0" value="0">
+                                                <label>Precio</label>
+                                            </div>
+                                            <button type="button" class="btn blue lighten-1 btnaddmat">
+                                                <span class="fa fa-plus"></span>
+                                                Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- List mateirals -->
+                            <div class="table-responsive">
+                                <table class="table table-condensed table-hover tmaterials">
+                                    <thead>
+                                        <tr class="brand-warning">
+                                            <th class="text-center">Item</th>
+                                            <th class="text-center">Código</th>
+                                            <th class="text-center">Nombre</th>
+                                            <th class="text-center">Und</th>
+                                            <th class="text-center">Cantidad</th>
+                                            <th class="text-center">Precio</th>
+                                            <th class="text-center">Parcial</th>
+                                            <th class="text-center">Editar</th>
+                                            <th class="text-center">Eliminar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for x in materials %}
+                                            <tr class="editm" data-edit="{{ x.pk }}">
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ x.materials_id }}</td>
+                                                <td>{{ x.materials.matnom }} - {{ x.materials.matmed }}</td>
+                                                <td>{{ x.materials.unidad.uninom }}</td>
+                                                <td>{{ x.quantity|safe }}</td>
+                                                <td>{{ x.price|safe }}</td>
+                                                <td>{{ x.partial|safe }}</td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-xs btn-warning btn-edit-materials" value="{{ x.pk }}" data-materials="{{ x.materials_id }}" disabled>
+                                                        <span class="fa fa-edit"></span>
+                                                    </button>
+                                                </td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-xs btn-danger btn-del-materials" value="{{ x.pk }}" data-materials="{{ x.materials_id }}">
+                                                        <span class="fa fa-trash"></span>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="9"></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="manpower">
+                        <div class="panel panel-warning">
+                            <div class="card">
+                                <div class="card-action">
+                                    <button class="btn orange lighten-1 bshowaddmp" type="button">
+                                        <span class="fa fa-plus"></span>
+                                        <span>Mano de Obra</span>
+                                    </button>
+                                    <button class="btn grey lighten-5 grey-text text-darken-3 bmprefresh" type="button">
+                                        <span class="fa fa-refresh"></span>
+                                        <span>Actualizar</span>
+                                    </button>
+                                    <button class="btn red lighten-1 bdelmp" type="button">
+                                        <span>+ Eliminar Todo</span>
+                                    </button>
+                                    <button class="btn light-green lighten-2 grey-text text-darken-3 bshownewmp" type="button">
+                                        <span>+ Nuevo Mano de Obra</span>
+                                    </button>
+                                    <button class="btn  bcopymp" type="button">
+                                        <span>+ Copiar Mano de Obra</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card addmanpower">
+                                <div class="card-action">
+                                    <!-- div for add man power -->
+                                    <div class="row">
+                                        <div class="col l6">
+                                            <label class="control-label">Mano de Obra</label>
+                                            <select name="manpower" class="form-control input-sm"></select>
+                                        </div>
+                                        <div class="col l2">
+                                            <label class="control-label">Cuadrilla</label>
+                                            <input type="text" class="form-control input-sm" placeholder="0.00" name="mpgang">
+                                        </div>
+                                        <div class="col l2">
+                                            <label class="control-label">Precio</label>
+                                            <input type="text" class="form-control input-sm" name="mpprice">
+                                        </div>
+                                        <div class="col l1">
+                                            <label class="control-label">Agregar</label>
+                                            <button class="btn btnaddmp orange lighten-1">
+                                                <span class="fa fa-plus"></span>
+                                                <span>Agregar</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div class="panel-body"></div> -->
+                            <!-- List ManPower -->
+                            <table class="table responsive-table tmanpower">
+                                <thead>
+                                    <tr class="brand-warning">
+                                        <th class="text-center">Item</th>
+                                        <th class="text-center">Código</th>
+                                        <th class="text-center">Nombre</th>
+                                        <th class="text-center">Und</th>
+                                        <th class="text-center">Cuadrilla</th>
+                                        <th class="text-center">Cantidad</th>
+                                        <th class="text-center">Precio</th>
+                                        <th class="text-center">Parcial</th>
+                                        <th class="text-center">Editar</th>
+                                        <th class="text-center">Eliminar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for x in manpower %}
+                                        <tr class="editmp">
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ x.manpower_id }}</td>
+                                            <td>{{ x.manpower.cargos }}</td>
+                                            <td>{{ x.manpower.unit.uninom }}</td>
+                                            <td>{{ x.gang|safe }}</td>
+                                            <td>{{ x.quantity|safe }}</td>
+                                            <td>{{ x.price|safe }}</td>
+                                            <td>{{ x.partial|safe }}</td>
+                                            <td class="text-center">
+                                                <button class="btn btn-xs btn-warning btn-edit-mp" value="{{ x.id }}" data-mp="{{ x.manpower_id }}" disabled>
+                                                    <span class="fa fa-edit"></span>
+                                                </button>
+                                            </td>
+                                            <td class="text-center">
+                                                <button class="btn btn-danger btn-xs btn-del-mp" value="{{ x.id }}" data-mp="{{ x.manpower_id }}">
+                                                    <span class="fa fa-trash"></span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tools" data-ng-controller="toolsCtrl">
+                        <div class="panel">
+                            <div class="card">
+                                <div class="card-action">
+                                    <button class="btn lime lighten-1 bshowaddtool" type="button">
+                                        <span class="fa fa-plus"></span>
+                                        <span>Herramientas</span>
+                                    </button>
+                                    <button class="btn grey lighten-5 grey-text text-darken-3 btoolsrefresh" type="button">
+                                        <span class="fa fa-refresh"></span>
+                                        <span>Actualizar</span>
+                                    </button>
+                                    <button class="btn red lighten-1 bdeltools" type="button">
+                                        <span>+ Eliminar Todo</span>
+                                    </button>
+                                    <button class="btn light-green lighten-1 bshownewtools" type="button">
+                                        <span>+ Nueva Herramienta</span>
+                                    </button>
+                                    <button class="btn  bcopymat" type="button">
+                                        <span>+ Copiar Herramientas</span>
+                                    </button>
+                                </div>
+                                <div class="card addpaneltools">
+                                  <!-- Add tools to list -->
+                                  <div class="row">
+                                    <div class="col-md-6">
+                                      <div class="form-group">
+                                        <label class="control-label">Herramienta</label>
+                                        <select name="tools" class="form-control input-sm"></select>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                      <div class="form-group">
+                                        <label for="" class="control-label">Medida</label>
+                                        <select name="measuret"  class="form-control input-sm"></select>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                      <div class="alert alert-warning summarytools"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                      <div class="form-group">
+                                        <label  class="control-label">Cuadrilla</label>
+                                        <input type="text" class="form-control input-sm" name="gangt" placeholder="0.00">
+                                      </div>
+                                      <div class="form-group">
+                                        <label for="" class="control-label">Precio</label>
+                                        <input type="text" class="form-control input-sm" name="pricet" placeholder="0.00">
+                                      </div>
+                                      <div class="form-group">
+                                        <button type="button" class="btn lime lighten-1 baddtools">
+                                          <span class="fa fa-plus"></span>
+                                          <span>Agregar</span>
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+                            <!-- List Tools -->
+                            <div class="table-responsive">
+                                <table class="table table-hover table-condensed ttools">
+                                    <thead>
+                                        <tr class="brand-warning">
+                                            <th class="text-center">Item</th>
+                                            <th class="text-center">Código</th>
+                                            <th class="text-center">Nombre</th>
+                                            <th class="text-center">Und</th>
+                                            <th class="text-center">Cuadrilla</th>
+                                            <th class="text-center">Cantidad</th>
+                                            <th class="text-center">Precio</th>
+                                            <th class="text-center">Parcial</th>
+                                            <th class="text-center">Editar</th>
+                                            <th class="text-center">Eliminar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                      {% for x in tools %}
+                                        <tr class="edittools">
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ x.tools_id }}</td>
+                                            <td>{{ x.tools.name }}</td>
+                                            <td>{{ x.tools.unit.uninom }}</td>
+                                            <td>{{ x.gang|safe }}</td>
+                                            <td>{{ x.quantity|safe }}</td>
+                                            <td>{{ x.price|safe }}</td>
+                                            <td>{{ x.partial|safe }}</td>
+                                            <td>
+                                              <button type="button" class="btn btn-xs btn-warning btnedittool" value="{{ x.tools_id }}" data-id="{{ x.id }}" disabled>
+                                                <span class="fa fa-edit"></span>
+                                              </button>
+                                            </td>
+                                            <td>
+                                              <button type="button" class="btn btn-xs btn-danger btndeltool" value="{{ x.tools_id }}" data-id=" {{ x.id }}">
+                                                <span class="fa fa-trash"></span>
+                                              </button>
+                                            </td>
+                                        </tr>
+                                      {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="panel-body">
+            </div> -->
+        </div>
+    </div>
+</div>
+{% csrf_token %}
+<!-- Loads scripts -->
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js"></script>
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script src="{{ MEDIA_URL }}js/chosen.jquery.min.js"></script>
+<script src="{{ MEDIA_URL }}js/budget/detailsAnalysis.js"></script>
+<!-- Lodas styles -->
+<link rel="stylesheet" href="{{ MEDIA_URL }}css/chosen.css">
+{% endblock content %}

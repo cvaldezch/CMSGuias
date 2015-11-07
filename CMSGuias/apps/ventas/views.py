@@ -2,35 +2,47 @@
 # -*- coding: utf-8 -*-
 
 import json
-import datetime
 import os
 
-from django.db.models import Q, Count, Sum
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.db.models import Q, Sum
+# from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
+from django.core import serializers
 from django.contrib import messages
 # from django.contrib.auth.mod import User
 from django.contrib.auth.decorators import login_required
-from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response, get_list_or_404,get_object_or_404
-from django.utils import simplejson, timezone
+from django.http import Http404, HttpResponse
+from django.shortcuts import render_to_response
+from django.utils import simplejson
 from django.utils.decorators import method_decorator
 from django.template import RequestContext, TemplateDoesNotExist
-from django.views.generic import ListView, TemplateView, View
-from django.views.generic.edit import UpdateView, CreateView
-from decimal import Decimal
+from django.views.generic import TemplateView, View
+# from django.views.generic.edit import UpdateView, CreateView
+# from decimal import Decimal
+from django.core.serializers.json import DjangoJSONEncoder
 
 from CMSGuias.apps.home.models import *
-from CMSGuias.apps.operations.models import MetProject, Nipple, Deductive, DeductiveInputs, DeductiveOutputs, Letter, LetterAnexo, PreOrders, DetailsPreOrders
-from CMSGuias.apps.almacen.models import Inventario, tmpniple, Pedido, Detpedido, Niple, GuiaRemision, DetGuiaRemision, NipleGuiaRemision
+from CMSGuias.apps.operations.models import (
+                                            MetProject, Nipple, Deductive,
+                                            DeductiveInputs, DeductiveOutputs,
+                                            Letter, LetterAnexo)
+from CMSGuias.apps.almacen.models import (
+    Inventario,
+    Pedido,
+    Detpedido,
+    Niple,
+    GuiaRemision,
+    DetGuiaRemision,
+    NipleGuiaRemision)
 from .models import *
 from .forms import *
 from CMSGuias.apps.almacen.forms import addOrdersForm
-from CMSGuias.apps.operations.forms import NippleForm, LetterForm, PreOrdersForm
+from CMSGuias.apps.operations.forms import (NippleForm, LetterForm,
+                                            PreOrdersForm)
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles, search
 
 
-## Class Bases Views Generic
+# Class Bases Views Generic
 
 class JSONResponseMixin(object):
     def render_to_json_response(self, context, **response_kwargs):
@@ -42,9 +54,11 @@ class JSONResponseMixin(object):
         )
 
     def convert_context_to_json(self, context):
-        return simplejson.dumps(context, encoding='utf-8')
+        return simplejson.dumps(context,
+                                encoding='utf-8',
+                                cls=DjangoJSONEncoder)
 
-# View home Sales
+
 class SalesHome(TemplateView):
     template_name = 'sales/home.html'
 
@@ -52,44 +66,148 @@ class SalesHome(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         return super(SalesHome, self).dispatch(request, *args, **kwargs)
 
-# View list project
+
 class ProjectsList(JSONResponseMixin, TemplateView):
     template_name = 'sales/projects.html'
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
-        context = super(ProjectsList, self).get_context_data(**kwargs)
+        context = dict()
+        area = request.user.get_profile().empdni.charge.area.lower()
+        if request.is_ajax():
+            try:
+                if 'lCustomers' in request.GET:
+                    context['customers'] = simplejson.loads(
+                                            serializers.serialize(
+                                                'json',
+                                                Cliente.objects.filter(
+                                                    flag=True)))
+                    context['status'] = True
+                if 'getCustomers' in request.GET:
+                    if area == 'ventas' or area == 'administrator':
+                        proyectos = Proyecto.objects.filter(
+                                            Q(flag=True),
+                                            ~Q(status='DA')
+                                            ).order_by('-proyecto_id')
+                    elif area == 'operaciones':
+                        cnom = request.user.get_profile(
+                            ).empdni.charge.cargos.lower()
+                        if cnom == 'jefe de operaciones':
+                            proyectos = Proyecto.objects.filter(
+                                            Q(flag=True),
+                                            Q(status='AC')).order_by(
+                                            '-proyecto_id')
+                        else:
+                            proyectos = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    Q(status='AC'),
+                                    empdni_id=request.user.get_profile(
+                                        ).empdni_id).order_by('-proyecto_id')
+                    elif area == 'logistica' or area == 'almacen':
+                        proyectos = Proyecto.objects.filter(
+                                            Q(flag=True),
+                                            Q(status='AC')).order_by(
+                                            '-proyecto_id')
+                    cust = proyectos
+                    if area == 'operaciones':
+                        if cnom == 'jefe de operaciones':
+                            cust = cust.filter(status='AC')
+                        else:
+                            cust = cust.filter(
+                                empdni_id=request.user.get_profile().empdni_id,
+                                status='AC')
+                    elif area == 'logistica' or area == 'almacen':
+                        cust = cust.filter(status='AC')
+                    cust = cust.order_by(
+                            'ruccliente__razonsocial').distinct(
+                            'ruccliente__razonsocial')
+                    context['customers'] = simplejson.loads(
+                                            serializers.serialize(
+                                                'json',
+                                                cust,
+                                                indent=4,
+                                                relations=('ruccliente',)))
+                    context['status'] = True
+                if 'getProjects' in request.GET:
+                    if area == 'ventas' or area == 'administrator':
+                        projects = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    ~Q(status='DA'),
+                                    Q(ruccliente_id=request.GET['customer'])
+                                    ).order_by('-proyecto_id')
+                    elif area == 'operaciones':
+                        projects = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    Q(status='AC'),
+                                    Q(ruccliente_id=request.GET['customer']),
+                                    empdni_id=request.user.get_profile(
+                                        ).empdni_id).order_by('-proyecto_id')
+                    elif area == 'logistica' or area == 'almacen':
+                        projects = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    Q(status='AC'),
+                                    Q(ruccliente_id=request.GET['customer'])
+                                    ).order_by('-proyecto_id')
+                    cnom = request.user.get_profile(
+                            ).empdni.charge.cargos.lower()
+                    if cnom == 'jefe de operaciones':
+                        projects = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    Q(status='AC'),
+                                    Q(ruccliente_id=request.GET['customer'])
+                                    ).order_by('-proyecto_id')
+                    context['projects'] = simplejson.loads(
+                                            serializers.serialize(
+                                                'json', projects))
+                    context['status'] = True
+                if 'allProjects' in request.GET:
+                    if area == 'ventas' or area == 'administrator':
+                        projects = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    ~Q(status='DA')).order_by('-proyecto_id')
+                    elif area == 'operaciones':
+                        projects = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    Q(status='AC'),
+                                    empdni_id=request.user.get_profile(
+                                        ).empdni_id).order_by('-proyecto_id')
+                    elif area == 'logistica' or area == 'almacen':
+                        projects = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    Q(status='AC')).order_by('-proyecto_id')
+                    cnom = request.user.get_profile(
+                            ).empdni.charge.cargos.lower()
+                    if cnom == 'jefe de operaciones':
+                        projects = Proyecto.objects.filter(
+                                    Q(flag=True),
+                                    Q(status='AC')).order_by('-proyecto_id')
+                    context['projects'] = simplejson.loads(
+                                            serializers.serialize(
+                                                'json', projects))
+                    context['status'] = True
+                if 'ascAllProjects' in request.GET:
+                    context['projects'] = json.loads(serializers.serialize(
+                        'json',
+                        Proyecto.objects.filter(
+                            Q(flag=True),
+                            ~Q(status='DA')
+                            ).order_by('-proyecto_id')))
+                    context['status'] = True
+            except ObjectDoesNotExist as e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)
         try:
-            if request.user.get_profile().empdni.charge.area.lower() == 'ventas' or request.user.get_profile().empdni.charge.area.lower() == 'administrator':
-                context['list'] = Proyecto.objects.filter(Q(flag=True), ~Q(status='DA')).order_by('-proyecto_id')
-                context['country'] = Pais.objects.filter(flag=True)
-                context['customers'] = Cliente.objects.filter(flag=True)
-                context['currency'] = Moneda.objects.filter(flag=True)
-                context['typep'] = globalVariable.typeProject
-                # cust = Proyecto.objects.filter(flag=True)
-                # cust = cust.order_by('ruccliente__razonsocial').distinct('ruccliente__razonsocial')
-                # context['cust'] = cust
-            elif request.user.get_profile().empdni.charge.area.lower() == 'operaciones':
-                context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC'), empdni_id=request.user.get_profile().empdni_id).order_by('-proyecto_id')
-                # cust = Proyecto.objects.filter(flag=True)
-                # cust = cust.order_by('ruccliente__razonsocial').distinct('ruccliente__razonsocial')
-                # context['cust'] = cust
-            elif request.user.get_profile().empdni.charge.area.lower() == 'logistica' or 'Almacen':
-                context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC')).order_by('-proyecto_id')
-            if request.user.get_profile().empdni.charge.cargos.lower() == 'jefe de operaciones':
-                context['list'] = Proyecto.objects.filter(Q(flag=True), Q(status='AC')).order_by('-proyecto_id')
-
-            cust = Proyecto.objects.filter(Q(flag=True), ~Q(status='DA'))
-            if request.user.get_profile().empdni.charge.area.lower() == 'operaciones':
-                cust = cust.filter(empdni_id=request.user.get_profile().empdni_id, status='AC')
-            elif request.user.get_profile().empdni.charge.area.lower() == 'logistica' or 'Almacen':
-                cust = cust.filter(status='AC')
-            cust = cust.order_by('ruccliente__razonsocial').distinct('ruccliente__razonsocial')
-            context['cust'] = cust #.order_by('ruccliente__razonsocial')
-            return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+            if area == 'ventas' or area == 'administrator':
+                    context['currency'] = Moneda.objects.filter(flag=True)
+                    context['typep'] = globalVariable.typeProject
+            return render_to_response(
+                    self.template_name,
+                    context,
+                    context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
-            messages.error(request, 'Template Does Not Exist %s'%e)
-            raise Http404('Template Does Not Exist %s'%e)
+            messages.error(request, 'Template Does Not Exist %s' % e)
+            raise Http404('Template Does Not Exist %s' % e)
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
@@ -99,7 +217,6 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                 if request.POST.get('type') == 'new':
                     form = ProjectForm(request.POST)
                     key = genkeys.GenerateIdPorject()
-                    #print form, form.is_valid(), request.user.get_profile().empdni_id, key
                     if form.is_valid():
                         add = form.save(commit=False)
                         add.proyecto_id = key
@@ -114,6 +231,7 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                 context['status'] = False
             return self.render_to_json_response(context)
 
+
 # add sectors
 class SectorsView(JSONResponseMixin, View):
     template_name = 'sales/crud/sectors_form.html'
@@ -122,8 +240,15 @@ class SectorsView(JSONResponseMixin, View):
         context = dict()
         if request.is_ajax():
             try:
-                obj = Sectore.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, flag=True).order_by('subproyecto','planoid')
-                context['list'] =[{'sector_id': x.sector_id, 'nomsec': x.nomsec, 'planoid' : x.planoid} for x in obj]
+                obj = Sectore.objects.filter(
+                        proyecto_id=request.GET.get('pro'),
+                        subproyecto_id=request.GET.get(
+                            'sub') if request.GET.get('sub') != '' else None,
+                        flag=True).order_by('subproyecto', 'planoid')
+                context['list'] = [{
+                    'sector_id': x.sector_id,
+                    'nomsec': x.nomsec,
+                    'planoid': x.planoid} for x in obj]
                 context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
@@ -132,19 +257,30 @@ class SectorsView(JSONResponseMixin, View):
         context['pro'] = request.GET.get('pro')
         context['sub'] = request.GET.get('sub')
         if request.GET.get('type') == 'update':
-            obj = Sectore.objects.get(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'))
+            obj = Sectore.objects.get(
+                    proyecto_id=request.GET.get('pro'),
+                    subproyecto_id=request.GET.get('sub') if request.GET.get(
+                        'sub') != '' else None,
+                    sector_id=request.GET.get('sec'))
             context['form'] = SectoreForm(instance=obj)
             context['type'] = 'update'
         elif request.GET.get('type') == 'new':
             context['form'] = SectoreForm
             context['type'] = 'new'
-        return render_to_response(self.template_name, context, context_instance = RequestContext(request))
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
 
     def post(self, request, *args, **kwargs):
         context = dict()
         try:
             if request.POST.get('type') == 'update':
-                obj = Sectore.objects.get(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('sub') if request.POST.get('subproyecto') != '' else None, sector_id=request.POST.get('sector_id'))
+                obj = Sectore.objects.get(
+                    proyecto_id=request.POST.get('proyecto'),
+                    subproyecto_id=request.POST.get('sub') if request.POST.get(
+                        'subproyecto') != '' else None,
+                    sector_id=request.POST.get('sector_id'))
                 form = SectoreForm(request.POST, instance=obj)
                 # print form, form.is_valid()
                 if form.is_valid():
@@ -159,7 +295,7 @@ class SectorsView(JSONResponseMixin, View):
                 # print form, form.is_valid()
                 if form.is_valid():
                     add = form.save(commit=False)
-                    id = '%s%s'%(add.proyecto_id, add.sector_id)
+                    id = '%s%s' % (add.proyecto_id, add.sector_id)
                     # print id, len(id)
                     add.sector_id = id
                     add.save()
@@ -171,7 +307,11 @@ class SectorsView(JSONResponseMixin, View):
         except ObjectDoesNotExist, e:
             context['raise'] = e.__str__()
             context['status'] = False
-        return render_to_response(self.template_name, context, context_instance = RequestContext(request))
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
+
 
 # Add Subproject
 class SubprojectsView(JSONResponseMixin, View):
@@ -216,7 +356,11 @@ class SubprojectsView(JSONResponseMixin, View):
         except ObjectDoesNotExist, e:
             context['raise'] = e.__str__()
             context['status'] = False
-        return render_to_response(self.template_name, context, context_instance = RequestContext(request))
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
+
 
 # Manager View Project
 class ProjectManager(JSONResponseMixin, View):
@@ -230,58 +374,62 @@ class ProjectManager(JSONResponseMixin, View):
                 try:
                     if 'listPurchase' in request.GET:
                         context['list'] = [{
-                                            'nro': x.nropurchase,
-                                            'issued': globalVariable.format_date_str(x.issued),
-                                            'document': x.document.documento,
-                                            'order': str(x.order),
-                                            'id': x.id
-                                            }
-                                            for x in PurchaseOrder.objects.filter(flag=True, project_id=kwargs['project']).order_by('register')
-                                            ]
+                            'nro': x.nropurchase,
+                            'issued': globalVariable.format_date_str(x.issued),
+                            'document': x.document.documento,
+                            'order': str(x.order),
+                            'id': x.id}
+                            for x in PurchaseOrder.objects.filter(
+                                        flag=True,
+                                        project_id=kwargs['project']
+                                        ).order_by('register')]
                         context['status'] = True
                     if 'editPurchase' in request.GET:
-                        obj = PurchaseOrder.objects.get(pk=request.GET.get('pk'))
+                        obj = PurchaseOrder.objects.get(
+                                pk=request.GET.get('pk'))
                         context['nropurchase'] = obj.nropurchase
-                        context['issued'] = globalVariable.format_date_str(obj.issued)
+                        context['issued'] = globalVariable.format_date_str(
+                                                obj.issued)
                         context['currency'] = obj.currency_id
                         context['document'] = obj.document_id
                         context['method'] = obj.method_id
                         context['observation'] = obj.observation
                         context['dsct'] = obj.dsct
                         context['igv'] = obj.igv
-                        context['details'] = [
-                                            {
-                                            'description': x.description,
-                                            'unit': x.unit.uninom,
-                                            'delivery': globalVariable.format_date_str(x.delivery),
-                                            'quantity': x.quantity,
-                                            'price': x.price,
-                                            'amount': (x.quantity * x.price)
-                                            }
-                                            for x in DetailsPurchaseOrder.objects.filter(purchase_id=request.GET.get('pk'))
-                                            ]
+                        context['details'] = [{
+                            'description': x.description,
+                            'unit': x.unit.uninom,
+                            'delivery': globalVariable.format_date_str(
+                                            x.delivery),
+                            'quantity': x.quantity,
+                            'price': x.price,
+                            'amount': (x.quantity * x.price)}
+                            for x in DetailsPurchaseOrder.objects.filter(
+                                        purchase_id=request.GET.get('pk'))]
                         context['status'] = True
                     if 'letterlist' in request.GET:
-                        context['list'] = [
-                            {
-                                'letter': x.letter_id,
-                                'register': x.register.strftime('%d-%m-%Y'),
-                                'froms': x.froms,
-                                'fors': x.fors,
-                                'file': str(x.letter),
-                                'status': x.status,
-                                'observation': x.observation
-                            }
-                            for x in Letter.objects.filter(Q(project_id=kwargs['project']), ~Q(status='AN')).order_by('-register')
-                        ]
+                        context['list'] = [{
+                            'letter': x.letter_id,
+                            'register': x.register.strftime('%d-%m-%Y'),
+                            'froms': x.froms,
+                            'fors': x.fors,
+                            'file': str(x.letter),
+                            'status': x.status,
+                            'observation': x.observation}
+                            for x in Letter.objects.filter(
+                                        Q(project_id=kwargs['project']),
+                                        ~Q(status='AN')).order_by('-register')]
                         context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = e.__str__()
                     context['status'] = False
                 return self.render_to_json_response(context)
-            context['project'] = Proyecto.objects.get(pk=kwargs['project'], flag=True)
+            context['project'] = Proyecto.objects.get(
+                                    pk=kwargs['project'], flag=True)
             try:
-                context['subpro'] = Subproyecto.objects.filter(proyecto_id=kwargs['project'], flag=True)
+                context['subpro'] = Subproyecto.objects.filter(
+                                        proyecto_id=kwargs['project'],
+                                        flag=True)
             except ObjectDoesNotExist, e:
                 context['subpro'] = list()
             context['sectors'] = Sectore.objects.filter(proyecto_id=kwargs['project'], flag=True).order_by('subproyecto','planoid')
@@ -293,7 +441,10 @@ class ProjectManager(JSONResponseMixin, View):
             context['method'] = FormaPago.objects.filter(flag=True)
             context['unit'] = Unidade.objects.filter(flag=True)
             context['conf'] = Configuracion.objects.get(periodo=globalVariable.get_year)
-            context['closure'] = CloseProject.objects.get(project_id=kwargs['project'])
+            try:
+                context['closure'] = CloseProject.objects.get(project_id=kwargs['project'])
+            except ObjectDoesNotExist, e:
+                pass
             return render_to_response(self.template_name, context, context_instance = RequestContext(request))
         except TemplateDoesNotExist, e:
             messages.error(request, 'Template not Exist %s',e)
@@ -372,19 +523,22 @@ class ProjectManager(JSONResponseMixin, View):
                         #user = userProfile.objects.get(empdni_id=request.POST.get('admin'))
                         # authenticate password admin
                         if search.validKey(request.POST.get('passwd'),kwargs['project'],'approved',request.user.get_profile().empdni_id):
-                            #if user.user.is_superuser:
+                            # if user.user.is_superuser:
                             pro = Proyecto.objects.get(pk=kwargs['project'])
-                            pro.approved_id = request.POST.get('admin')
+                            pro.approved_id = request.user.get_profile().empdni_id
                             pro.status = 'AC'
                             pro.save()
-                            sub = Subproyecto.objects.filter(proyecto_id=kwargs['project'])
+                            sub = Subproyecto.objects.filter(
+                                    proyecto_id=kwargs['project'])
                             if sub:
                                 sub.update(status='AC')
-                            sec = Sectore.objects.filter(proyecto_id=kwargs['project'])
+                            sec = Sectore.objects.filter(
+                                    proyecto_id=kwargs['project'])
                             if sec:
                                 sec.update(status='AC')
                             # paste all list of materials to 'MetProject'
-                            for x in Metradoventa.objects.filter(proyecto_id=kwargs['project']):
+                            for x in Metradoventa.objects.filter(
+                                        proyecto_id=kwargs['project']):
                                 obj = MetProject()
                                 obj.proyecto_id = x.proyecto_id
                                 obj.subproyecto_id = x.subproyecto_id
@@ -698,9 +852,30 @@ class SectorManage(JSONResponseMixin, View):
         try:
             if request.is_ajax():
                 try:
+                    if 'percentsec' in request.GET:
+                        items = MetProject.objects.filter(
+                            proyecto_id=kwargs['pro'],
+                            subproyecto_id=kwargs['sub']
+                            if kwargs['sub'] != unicode(None) else None,
+                            sector_id=kwargs['sec'])
+                        titem = items.count()
+                        attend = items.filter(tag='2').count()
+                        partital = items.filter(tag='1').count()
+                        attend = (attend + (partital/2))
+                        if attend > 0:
+                            percent = ((attend * 100) / titem)
+                        else:
+                            percent = 0
+                        context['percent'] = '%.1f' % percent
+                        context['status'] = True
                     if 'type' in request.GET:
                         if request.GET.get('type') == 'list':
-                            obj = Metradoventa.objects.filter(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), flag=True).order_by('materiales__matnom')
+                            obj = Metradoventa.objects.filter(
+                                    proyecto_id=request.GET.get('pro'),
+                                    subproyecto_id=request.GET.get('sub')
+                                    if request.GET.get('sub') != '' else None,
+                                    sector_id=request.GET.get('sec'),
+                                    flag=True).order_by('materiales__matnom')
                             context['list'] = [
                                 {
                                     'id': x.id,
@@ -710,7 +885,7 @@ class SectorManage(JSONResponseMixin, View):
                                     'unit': x.materiales.unidad.uninom,
                                     'brand': x.brand.brand,
                                     'model': x.model.model,
-                                    'quantity':x.cantidad,
+                                    'quantity': x.cantidad,
                                     'price': x.precio,
                                     'sales': float(x.sales)
                                 }
@@ -720,57 +895,116 @@ class SectorManage(JSONResponseMixin, View):
                     if 'list-nip' in request.GET:
                         obj = Nipple.objects.filter(
                             proyecto_id=request.GET.get('pro'),
-                            subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None,
+                            subproyecto_id=request.GET.get('sub')
+                            if request.GET.get('sub') != '' else None,
                             sector_id=request.GET.get('sec'),
                             materiales_id=request.GET.get('mat'),
                             flag=True).order_by('metrado')
-                        mat = MetProject.objects.get(proyecto_id=request.GET.get('pro'), subproyecto_id=request.GET.get('sub') if request.GET.get('sub') != '' else None, sector_id=request.GET.get('sec'), materiales_id=request.GET.get('mat'))
+                        mat = MetProject.objects.get(
+                                proyecto_id=request.GET.get('pro'),
+                                subproyecto_id=request.GET.get('sub')
+                                if request.GET.get('sub') != '' else None,
+                                sector_id=request.GET.get('sec'),
+                                materiales_id=request.GET.get('mat'))
                         if mat.quantityorder > 0:
                             attend = 'show'
                         else:
                             attend = 'hide'
                         context['list'] = [
                             {
-                                'id':x.id,
+                                'id': x.id,
                                 'quantity': x.cantshop,
                                 'diameter': x.materiales.matmed,
                                 'measure': x.metrado,
                                 'unit': 'cm',
-                                'name': 'Niple%s %s, %s'%('s' if x.cantshop > 1 else '',globalVariable.tipo_nipples[x.tipo], x.tipo),
+                                'name': 'Niple%s %s, %s' % (
+                                        's' if x.cantshop > 1 else '',
+                                        globalVariable.tipo_nipples[x.tipo],
+                                        x.tipo),
                                 'comment': x.comment,
                                 'materials': x.materiales_id,
                                 'view': attend,
                                 'tag': x.tag
                             } for x in obj
-                        ] #if x.cantshop > 0]
+                        ]
                         ingress = 0
                         for x in obj:
                             ingress += (x.cantshop * x.metrado)
                         context['ingress'] = ingress
                         context['status'] = True
+                    if 'withoutprices' in request.GET:
+                        wprices = UpdateMetProject.objects.filter(
+                            Q(proyecto_id=kwargs['pro']),
+                            Q(subproyecto_id=kwargs['sub']
+                                if kwargs['sub'] != unicode(None) else None),
+                            Q(sector_id=kwargs['sec']), Q(price__lte=0) |
+                            Q(sales__lte=0))
+                        if wprices:
+                            context['details'] = list(wprices.values(
+                                'materials_id',
+                                'materials__matnom',
+                                'materials__matmed',
+                                'brand_id',
+                                'brand__brand',
+                                'model_id',
+                                'materials__unidad__uninom',
+                                'price',
+                                'sales'
+                            ))
+                            context['status'] = True
+                        else:
+                            context['details'] = list()
+                            context['status'] = False
+                            context['raise'] = ('No se han encontrado '
+                                                'materiales sin precios')
                 except ObjectDoesNotExist, e:
-                    context['raise'] = e.__str__()
+                    context['raise'] = str(e)
                     context['status'] = False
                 return self.render_to_json_response(context)
-            ### block manager sector global
+            # block manager sector global
             context['project'] = Proyecto.objects.get(pk=kwargs['pro'])
             if kwargs['sub'] != unicode(None):
-                context['subproject'] = Subproyecto.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'])
-            context['sector'] = Sectore.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])
-            context['planes'] = SectorFiles.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])
-            context['system'] = Configuracion.objects.get(periodo=globalVariable.get_year)
-            context['currency'] = Moneda.objects.filter(flag=True).order_by('moneda')
-            context['exchange'] = TipoCambio.objects.filter(fecha=globalVariable.date_now())
-            context['alerts'] = Alertasproyecto.objects.filter(Q(proyecto_id=kwargs['pro']), Q(subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None), Q(sector_id=kwargs['sec']), Q(flag=True)).order_by('-registrado')
-            ### end block global
-
-            ##
-            #   Deductive
-            ##
-            context['dsectors'] = Sectore.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=None)
-            #
-            materials = Metradoventa.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom')
-            met = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom')
+                context['subproject'] = Subproyecto.objects.get(
+                                        proyecto_id=kwargs['pro'],
+                                        subproyecto_id=kwargs['sub'])
+            context['sector'] = Sectore.objects.get(
+                                proyecto_id=kwargs['pro'],
+                                subproyecto_id=kwargs['sub']
+                                if kwargs['sub'] != unicode(None) else None,
+                                sector_id=kwargs['sec'])
+            context['planes'] = SectorFiles.objects.filter(
+                                proyecto_id=kwargs['pro'],
+                                subproyecto_id=kwargs['sub']
+                                if kwargs['sub'] != unicode(None) else None,
+                                sector_id=kwargs['sec'])
+            context['system'] = Configuracion.objects.get(
+                                    periodo=globalVariable.get_year)
+            context['currency'] = Moneda.objects.filter(
+                                    flag=True).order_by('moneda')
+            context['exchange'] = TipoCambio.objects.filter(
+                                    fecha=globalVariable.date_now())
+            context['alerts'] = Alertasproyecto.objects.filter(
+                                Q(proyecto_id=kwargs['pro']),
+                                Q(subproyecto_id=kwargs['sub']
+                                    if kwargs['sub'] != unicode(None)
+                                    else None), Q(sector_id=kwargs['sec']),
+                                Q(flag=True)).order_by('-registrado')
+            # end block global
+            # Deductive
+            context['dsectors'] = Sectore.objects.filter(
+                                    proyecto_id=kwargs['pro'],
+                                    subproyecto_id=None)
+            materials = Metradoventa.objects.filter(
+                            proyecto_id=kwargs['pro'],
+                            subproyecto_id=kwargs['sub']
+                            if kwargs['sub'] != unicode(None) else None,
+                            sector_id=kwargs['sec']
+                            ).order_by('materiales__matnom')
+            met = MetProject.objects.filter(
+                    proyecto_id=kwargs['pro'],
+                    subproyecto_id=kwargs['sub']
+                    if kwargs['sub'] != unicode(None) else None,
+                    sector_id=kwargs['sec']).order_by('materiales__matnom')
             if materials:
                     context['materials'] = materials
             if context['project'].status == 'AC' and met:
@@ -778,7 +1012,9 @@ class SectorManage(JSONResponseMixin, View):
                 data = list()
                 for x in met:
                     stock = None
-                    stock = Inventario.objects.filter(materiales_id=x.materiales_id, periodo=globalVariable.get_year)
+                    stock = Inventario.objects.filter(
+                            materiales_id=x.materiales_id,
+                            periodo=globalVariable.get_year)
                     if not stock:
                         stock = '-'
                     else:
@@ -804,11 +1040,13 @@ class SectorManage(JSONResponseMixin, View):
                     )
                 context['meter'] = data
                 context['niple'] = globalVariable.tipo_nipples
-                context['store'] = Almacene.objects.filter(flag=True).order_by('nombre')
-            # print context
-            return render_to_response(self.template_name, context, context_instance = RequestContext(request))
+                context['store'] = Almacene.objects.filter(
+                                    flag=True).order_by('nombre')
+            return render_to_response(self.template_name,
+                                      context,
+                                      context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
-            messages.error(request, 'Template not Exist %s',e)
+            messages.error(request, 'Template not Exist %s' % e)
             raise Http404('Page Not Found')
 
     @method_decorator(login_required)
@@ -823,43 +1061,60 @@ class SectorManage(JSONResponseMixin, View):
                             form.save()
                         context['status'] = True
                     if request.POST.get('type') == 'delplane':
-                        obj = SectorFiles.objects.get(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') else None, sector_id=request.POST.get('sec'), files=request.POST.get('files'))
+                        obj = SectorFiles.objects.get(
+                                proyecto_id=request.POST.get('pro'),
+                                subproyecto_id=request.POST.get('sub')
+                                if request.POST.get('sub') else None,
+                                sector_id=request.POST.get('sec'),
+                                files=request.POST.get('files'))
                         obj.delete()
-                        uploadFiles.removeTmp('%s/%s'%(globalVariable.relative_path, request.POST.get('files')))
+                        uploadFiles.removeTmp('%s/%s' % (
+                            globalVariable.relative_path,
+                            request.POST.get('files')))
                         context['status'] = True
                     if request.POST.get('type') == 'add':
-                        #print type(request.POST.get('sales'))
                         if 'edit' in request.POST:
-                            obj = Metradoventa.objects.get(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') else None, sector_id=request.POST.get('sector'), materiales_id=request.POST.get('materiales'))
+                            obj = Metradoventa.objects.get(
+                                proyecto_id=request.POST.get('proyecto'),
+                                subproyecto_id=request.POST.get('subproyecto')
+                                if request.POST.get('subproyecto') else None,
+                                sector_id=request.POST.get('sector'),
+                                materiales_id=request.POST.get('materiales'))
                             form = MetradoventaForm(request.POST, instance=obj)
                         else:
                             form = MetradoventaForm(request.POST)
-                        #print form
                         if form.is_valid():
                             if 'edit' in request.POST:
-                                edit = form.save(commit = False)
+                                edit = form.save(commit=False)
                                 edit.sales = float(request.POST.get('sales'))
                                 edit.save()
                             else:
                                 obj = Metradoventa.objects.filter(
                                     proyecto_id=kwargs['pro'],
-                                    subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') else None,
-                                    sector_id = kwargs['sec'],
-                                    materiales_id=request.POST.get('materiales')
-                                )
+                                    subproyecto_id=request.POST.get(
+                                                                'subproyecto')
+                                    if request.POST.get('subproyecto')
+                                    else None, sector_id=kwargs['sec'],
+                                    materiales_id=request.POST.get(
+                                                                'materiales'))
                                 if obj:
-                                    obj[0].cantidad = obj[0].cantidad + float(request.POST.get('cantidad'))
+                                    obj[0].cantidad = (
+                                        obj[0].cantidad + float(
+                                            request.POST.get('cantidad')))
                                     obj[0].precio = request.POST.get('precio')
-                                    obj[0].sales = float(request.POST.get('sales'))
+                                    obj[0].sales = float(
+                                                    request.POST.get('sales'))
                                     obj[0].save()
                                 else:
-                                    add = form.save(commit = False)
-                                    add.sales = float(request.POST.get('sales'))
+                                    add = form.save(commit=False)
+                                    add.sales = float(
+                                                    request.POST.get('sales'))
                                     # print request.POST.get('sales')
                                     add.save()
                                 if not 'edit' in request.POST and 'details' in request.POST:
                                     # save Details Material Group
-                                    for x in json.loads(request.POST.get('details')):
+                                    for x in json.loads(
+                                            request.POST.get('details')):
                                         try:
                                             obj = Metradoventa.objects.get(
                                                 proyecto_id=kwargs['pro'],
@@ -872,10 +1127,17 @@ class SectorManage(JSONResponseMixin, View):
                                         except ObjectDoesNotExist:
                                             obj = Metradoventa()
                                             obj.proyecto_id = kwargs['pro']
-                                            obj.subproyecto_id = request.POST.get('subproyecto') if request.POST.get('subproyecto') else ''
+                                            obj.subproyecto_id = (
+                                                request.POST.get('subproyecto')
+                                                if request.POST.get(
+                                                    'subproyecto') else '')
                                             obj.sector_id = kwargs['sec']
                                             obj.materiales_id = x['materials']
-                                            obj.cantidad = (float(x['quantity']) * float(request.POST.get('cantidad')))
+                                            obj.cantidad = (
+                                                float(
+                                                    x['quantity']) * float(
+                                                    request.POST.get(
+                                                                'cantidad')))
                                             obj.precio = 0
                                             obj.sales = 0
                                             obj.brand_id = 'BR000'
@@ -886,15 +1148,24 @@ class SectorManage(JSONResponseMixin, View):
                         else:
                             context['status'] = False
                     if request.POST.get('type') == 'del':
-                        obj = Metradoventa.objects.filter(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') else None, sector_id=request.POST.get('sec'), materiales_id=request.POST.get('materials'))
+                        obj = Metradoventa.objects.filter(
+                                proyecto_id=request.POST.get('pro'),
+                                subproyecto_id=request.POST.get('sub')
+                                if request.POST.get('sub') else None,
+                                sector_id=request.POST.get('sec'),
+                                materiales_id=request.POST.get('materials'))
                         obj.delete()
                         context['status'] = True
                     if request.POST.get('type') == 'killdata':
-                        obj = Metradoventa.objects.filter(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') else None, sector_id=request.POST.get('sec'))
+                        obj = Metradoventa.objects.filter(
+                                proyecto_id=request.POST.get('pro'),
+                                subproyecto_id=request.POST.get('sub')
+                                if request.POST.get('sub') else None,
+                                sector_id=request.POST.get('sec'))
                         obj.delete()
                         context['status'] = True
-                else:
-                    context['status'] = False
+                # else:
+                #     context['status'] = False
                 if 'addnip' in request.POST:
                     if 'id' in request.POST:
                         obj = Nipple.objects.get(pk=request.POST.get('id'))
@@ -909,18 +1180,26 @@ class SectorManage(JSONResponseMixin, View):
                     obj.delete()
                     context['status'] = True
                 if 'delnipall' in request.POST:
-                    Nipple.objects.filter(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') != '' else None, sector_id=request.POST.get('sector'), materiales_id=request.POST.get('materiales')).delete()
+                    Nipple.objects.filter(
+                        proyecto_id=request.POST.get('proyecto'),
+                        subproyecto_id=request.POST.get('subproyecto')
+                        if request.POST.get('subproyecto') != '' else None,
+                        sector_id=request.POST.get('sector'),
+                        materiales_id=request.POST.get('materiales')).delete()
                     context['status'] = True
                 if 'upcomment' in request.POST:
-                    obj = MetProject.objects.get(proyecto_id=request.POST.get('pro'), subproyecto_id=request.POST.get('sub') if request.POST.get('sub') != '' else None, sector_id=request.POST.get('sec'), materiales_id=request.POST.get('mat'))
+                    obj = MetProject.objects.get(
+                        proyecto_id=request.POST.get('pro'),
+                        subproyecto_id=request.POST.get('sub')
+                        if request.POST.get('sub') != '' else None,
+                        sector_id=request.POST.get('sec'),
+                        materiales_id=request.POST.get('mat'))
                     if obj:
                         obj.comment = request.POST.get('comment')
                         obj.save()
                         context['status'] = True
                 if 'saveorders' in request.POST:
                     form = addOrdersForm(request.POST, request.FILES)
-                    # print form
-                    # print 'form valid', form.is_valid()
                     if form.is_valid():
                         # save bedside Orders
                         add = form.save(commit=False)
@@ -946,27 +1225,35 @@ class SectorManage(JSONResponseMixin, View):
                             obj.comment = x['comment']
                             obj.save()
                             # update quantity in Metproject
-                            pro = MetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(kwargs['sub']) else None, sector_id=kwargs['sec'], materiales_id=x['idmat'])
+                            pro = MetProject.objects.get(
+                                    proyecto_id=kwargs['pro'],
+                                    subproyecto_id=kwargs['sub']
+                                    if kwargs['sub'] != unicode(kwargs['sub'])
+                                    else None, sector_id=kwargs['sec'],
+                                    materiales_id=x['idmat'])
                             if pro.quantityorder == pro.cantidad:
-                                pro.quantityorder = (pro.cantidad - x['quantity'])
+                                pro.quantityorder = (
+                                                pro.cantidad - x['quantity'])
                             else:
-                                pro.quantityorder = (pro.quantityorder - x['quantity'])
-                            if pro.quantityorder > 0 and pro.quantityorder < pro.cantidad:
+                                pro.quantityorder = (
+                                    pro.quantityorder - x['quantity'])
+                            if pro.quantityorder > 0 and (
+                                    pro.quantityorder < pro.cantidad):
                                 pro.tag = '1'
                             else:
                                 pro.tag = '2'
                             pro.save()
                         # save to nipples
                         nipples = json.loads(request.POST.get('nipples'))
-                        #print nipples
                         for x in nipples:
-                            obj = Niple() # Niple for Almacen
+                            obj = Niple()
                             obj.pedido_id = id
                             obj.proyecto_id = request.POST.get('proyecto')
-                            obj.subproyecto_id = request.POST.get('subproyecto')
+                            obj.subproyecto_id = request.POST.get(
+                                                                'subproyecto')
                             obj.sector_id = request.POST.get('sector')
                             obj.empdni = request.user.get_profile().empdni_id
-                            obj.materiales_id= x['idmat']
+                            obj.materiales_id = x['idmat']
                             obj.cantidad = x['quantity']
                             obj.cantshop = x['quantity']
                             obj.metrado = x['meter']
@@ -974,12 +1261,20 @@ class SectorManage(JSONResponseMixin, View):
                             obj.comment = x['comment'].strip()
                             obj.save()
                             # update table od nipples - operations
-                            nip = Nipple.objects.get(proyecto_id=request.POST.get('proyecto'), subproyecto_id=request.POST.get('subproyecto') if request.POST.get('subproyecto') != '' else None, sector_id=request.POST.get('sector'), materiales_id=x['idmat'], id=x['idnip'])
+                            nip = Nipple.objects.get(
+                                    proyecto_id=request.POST.get('proyecto'),
+                                    subproyecto_id=request.POST.get(
+                                                                'subproyecto')
+                                    if request.POST.get('subproyecto') != ''
+                                    else None, sector_id=request.POST.get(
+                                                                    'sector'),
+                                    materiales_id=x['idmat'], id=x['idnip'])
                             if nip.cantshop == nip.cantidad:
                                 nip.cantshop = (nip.cantidad - x['quantity'])
                             else:
                                 nip.cantshop = (nip.cantshop - x['quantity'])
-                            if nip.cantshop > 0 and nip.cantshop < nip.cantidad:
+                            if nip.cantshop > 0 and(
+                                    nip.cantshop < nip.cantidad):
                                 nip.tag = '1'
                             else:
                                 nip.tag = '2'
@@ -987,35 +1282,51 @@ class SectorManage(JSONResponseMixin, View):
                         context['nro'] = id
                         context['status'] = True
                 if 'approvedadditional' in request.POST:
-                    details = json.loads(request.POST.get('details'))
-                    for x in details:
-                        # save Metprojet addtional
-                        obj = MetProject()
-                        obj.proyecto_id = kwargs['pro']
-                        obj.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
-                        obj.sector_id = kwargs['sec']
-                        obj.materiales_id = x['materials']
-                        obj.cantidad = x['quantity']
-                        obj.quantityorder = x['quantity']
-                        obj.precio = x['price']
-                        obj.brand_id = x['brand']
-                        obj.model_id = x['model']
-                        obj.flag = True
-                        obj.save()
+                    # details = json.loads(request.POST.get('details'))
+                    details = Metradoventa.objects.filter(
+                                proyecto_id=kwargs['pro'],
+                                subproyecto_id=kwargs['sub'] if kwargs[
+                                    'sub'] != unicode(None) else None,
+                                sector_id=kwargs['sec'])
+                    if details:
+                        for x in details:
+                            # save Metprojet addtional
+                            obj = MetProject()
+                            obj.proyecto_id = kwargs['pro']
+                            obj.subproyecto_id = kwargs['sub'] if kwargs[
+                                'sub'] != unicode(None) else ''
+                            obj.sector_id = kwargs['sec']
+                            obj.materiales_id = x.materiales_id
+                            obj.cantidad = x.cantidad
+                            obj.quantityorder = x.cantidad
+                            obj.precio = x.precio
+                            obj.brand_id = x.brand_id
+                            obj.model_id = x.model_id
+                            obj.sales = x.sales
+                            obj.flag = True
+                            obj.save()
                     context['status'] = True
                 if 'modifystart' in request.POST:
                     update = UpdateMetProject.objects.filter(
                             proyecto_id=kwargs['pro'],
-                            subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None,
+                            subproyecto_id=kwargs['sub'] if kwargs[
+                                'sub'] != unicode(None) else None,
                             sector_id=kwargs['sec'],
                             flag=True
                         ).order_by('materials__matnom')
+                    amountp = 0
                     list_ = list()
                     if not update:
-                        for x in MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec']).order_by('materiales__matnom'):
+                        for x in MetProject.objects.filter(
+                            proyecto_id=kwargs['pro'],
+                            subproyecto_id=kwargs['sub']
+                            if kwargs['sub'] != unicode(None)
+                            else None, sector_id=kwargs['sec']).order_by(
+                                'materiales__matnom'):
                             obj = UpdateMetProject()
                             obj.proyecto_id = kwargs['pro']
-                            obj.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else ''
+                            obj.subproyecto_id = kwargs['sub'] if kwargs[
+                                'sub'] != unicode(None) else ''
                             obj.sector_id = kwargs['sec']
                             obj.materials_id = x.materiales_id
                             obj.brand_id = x.brand_id
@@ -1041,10 +1352,11 @@ class SectorManage(JSONResponseMixin, View):
                                     'orders': x.quantityorder,
                                     'price': x.precio,
                                     'sales': float(x.sales),
-                                    'amount': '{0:.3f}'.format((x.cantidad * x.precio)),
+                                    'amount': x.amountPurchase,
                                     'tag': x.tag
                                 }
                             )
+                            amountp += x.amountPurchase
                     else:
                         for x in update:
                             list_.append(
@@ -1065,34 +1377,36 @@ class SectorManage(JSONResponseMixin, View):
                                     'tag': x.tag
                                 }
                             )
+                            amountp += x.amount
                     context['details'] = list_
+                    context['apurchase'] = amountp
                     context['listBrand'] = [
                         {
                             'brand_id': x.brand_id,
                             'brand': x.brand
                         }
-                        for x in Brand.objects.filter(flag=True).order_by('brand')
+                        for x in Brand.objects.filter(
+                                            flag=True).order_by('brand')
                     ]
                     context['listModel'] = [
                         {
                             'model_id': x.model_id,
                             'model': x.model
                         }
-                        for x in Model.objects.filter(flag=True).order_by('model')
+                        for x in Model.objects.filter(
+                                                flag=True).order_by('model')
                     ]
                     context['status'] = True
-                    #print context
                 if 'updatematerialMeter' in request.POST:
                     obj = UpdateMetProject.objects.get(
                             proyecto_id=kwargs['pro'],
-                            subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None,
+                            subproyecto_id=kwargs['sub']
+                            if kwargs['sub'] != unicode(None) else None,
                             sector_id=kwargs['sec'],
                             materials_id=request.POST.get('materials'),
                             brand_id=request.POST.get('brands'),
                             model_id=request.POST.get('models'),
-                            flag=True
-                        )
-
+                            flag=True)
                     obj.brand_id = request.POST.get('brand')
                     obj.model_id = request.POST.get('model')
                     pending = 0
@@ -1100,13 +1414,12 @@ class SectorManage(JSONResponseMixin, View):
                     try:
                         meter = MetProject.objects.get(
                             proyecto_id=kwargs['pro'],
-                            subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None,
+                            subproyecto_id=kwargs['sub']
+                            if kwargs['sub'] != unicode(None) else None,
                             sector_id=kwargs['sec'],
                             materiales_id=request.POST.get('materials'),
                             brand_id=request.POST.get('brands'),
-                            model_id=request.POST.get('models')
-                        )
-
+                            model_id=request.POST.get('models'))
                         pending = float(meter.quantityorder)
                         metrado = meter.cantidad
                     except ObjectDoesNotExist:
@@ -1121,7 +1434,8 @@ class SectorManage(JSONResponseMixin, View):
                                 obj.tag = '0'
                             else:
                                 obj.tag = '1'
-                            obj.quantityorders = (pending + (quantity - meter.cantidad))
+                            obj.quantityorders = (
+                                pending + (quantity - metrado))
                         if pending == quantity:
                             obj.quantityorders = quantity
                             obj.tag = '0'
@@ -1133,7 +1447,8 @@ class SectorManage(JSONResponseMixin, View):
                             obj.quantityorders = quantity
                             obj.tag = '0'
                         if pending > 0 and pending <= quantity:
-                            obj.quantityorders = (pending - (obj.quantity - quantity))
+                            obj.quantityorders = (
+                                    pending - (obj.quantity - quantity))
                             if (pending - (obj.quantity - quantity)) == 0:
                                 obj.tag = '2'
                             else:
@@ -1234,34 +1549,9 @@ class SectorManage(JSONResponseMixin, View):
                                 model=request.POST.get('model'),
                                 flag=True
                             )
-                        quantity = (obj.quantity + float(request.POST.get('quantity')))
-                        # if obj.tag != '0':
-                        #     if obj.quantity < quantity:
-                        #         if obj.tag == '1':
-                        #             obj.quantityorders = (obj.quantityorders + (quantity - obj.quantity))
-                        #             obj.tag = '1'
-                        #         elif obj.tag == '2':
-                        #             obj.quantityorders = (quantity - obj.quantity)
-                        #             obj.tag = '1'
-                        #     elif obj.quantity > quantity:
-                        #         if obj.tag == '1':
-                        #             o = (obj.quantityorders - (obj.quantity - quantity))
-                        #             if o <= 0:
-                        #                 obj.quantityorders = 0
-                        #                 obj.tag = '2'
-                        #             else:
-                        #                 obj.quantityorders = o
-                        #                 obj.tag = '1'
-                        #         elif obj.tag == '2':
-                        #             obj.quantityorders = 0
-                        #             obj.tag = '2'
-                        # else:
-                        #     obj.tag = '0'
-                        # obj.quantity = quantity
-                        # obj.save()
-                        context['raise'] = 'El Material ya se encuentra ingresado editelo.'
-
                         context['status'] = False
+                        # quantity = (obj.quantity + float(request.POST.get('quantity')))
+                        context['raise'] = 'El Material ya se encuentra ingresado editelo.'
                     except ObjectDoesNotExist, e:
                         obj = UpdateMetProject()
                         obj.proyecto_id = kwargs['pro']
@@ -1271,26 +1561,29 @@ class SectorManage(JSONResponseMixin, View):
                         obj.brand_id = request.POST.get('brand')
                         obj.model_id = request.POST.get('model')
                         obj.quantity = float(request.POST.get('quantity'))
-                        if request.user.get_profile().empdni.charge.area.lower() != 'operaciones':
-                            obj.price = float(request.POST.get('price'))
-                            obj.sales = float(request.POST.get('sales'))
-                        else:
-                            obj.price = 0
-                            obj.sales = 0
+                        obj.price = float(request.POST.get('price'))
+                        obj.sales = float(request.POST.get('sales'))
                         obj.comment = ''
                         obj.quantityorders = request.POST.get('quantity')
                         obj.tag = '0'
                         obj.flag = True
                         obj.save()
                         context['status'] = True
-
                     # save details materail group
                     if 'details' in request.POST:
                         # print request.POST.get('details')
                         for x in json.loads(request.POST.get('details')):
                             try:
-                                obj = UpdateMetProject.objects.get(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'], materials_id=x['materials'], flag=True)
-                                quantity = (obj.quantity + (float(x['quantity']) * float(request.POST.get('quantity'))))
+                                obj = UpdateMetProject.objects.get(
+                                    proyecto_id=kwargs['pro'],
+                                    subproyecto_id=kwargs['sub']
+                                    if kwargs['sub'] != unicode(None)
+                                    else None, sector_id=kwargs['sec'],
+                                    materials_id=x['materials'], flag=True)
+                                quantity = (
+                                        obj.quantity + (
+                                            float(x['quantity']) * float(
+                                                request.POST.get('quantity'))))
                                 if obj.tag != '0':
                                     if obj.tag == '1':
                                         if obj.quantity > quantity:
@@ -1312,8 +1605,10 @@ class SectorManage(JSONResponseMixin, View):
                                 obj.model_id = 'MO000'
                                 obj.quantity = (float(x['quantity']) * float(request.POST.get('quantity')))
                                 if request.user.get_profile().empdni.charge.area.lower() != 'operaciones':
-                                    obj.price = float(request.POST.get('price'))
-                                    obj.sales = float(request.POST.get('sales'))
+                                    obj.price = float(
+                                                    request.POST.get('price'))
+                                    obj.sales = float(
+                                                    request.POST.get('sales'))
                                 else:
                                     obj.price = 0
                                     obj.sales = 0
@@ -1369,7 +1664,11 @@ class SectorManage(JSONResponseMixin, View):
                     # history = json.loads(request.POST.get('history'))
                     # delete details sector of the meter
 
-                    sec = MetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])
+                    sec = MetProject.objects.filter(
+                            proyecto_id=kwargs['pro'],
+                            subproyecto_id=kwargs['sub']
+                            if kwargs['sub'] != unicode(None)
+                            else None, sector_id=kwargs['sec'])
                     token = globalVariable.get_Token()
                     meter = sec
                     for x in sec:
@@ -1395,7 +1694,11 @@ class SectorManage(JSONResponseMixin, View):
                         #         n.save()
                         x.delete()
                     # save new details sector of the meter
-                    update = UpdateMetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])
+                    update = UpdateMetProject.objects.filter(
+                                proyecto_id=kwargs['pro'],
+                                subproyecto_id=kwargs['sub']
+                                if kwargs['sub'] != unicode(None)
+                                else None, sector_id=kwargs['sec'])
                     for x in update:
                         s = MetProject()
                         s.proyecto_id = kwargs['pro']
@@ -1426,7 +1729,11 @@ class SectorManage(JSONResponseMixin, View):
                                 d.price = x.price
                                 d.save()
                         s.save()
-                    up = UpdateMetProject.objects.filter(proyecto_id=kwargs['pro'], subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None, sector_id=kwargs['sec'])
+                    up = UpdateMetProject.objects.filter(
+                            proyecto_id=kwargs['pro'],
+                            subproyecto_id=kwargs['sub']
+                            if kwargs['sub'] != unicode(None)
+                            else None, sector_id=kwargs['sec'])
                     for x in up:
                         x.delete()
                     context['status'] = True
@@ -1732,8 +2039,8 @@ class SectorManage(JSONResponseMixin, View):
                             context['mdelete'] = [
                                 {
                                     'materials': x.materiales_id,
-                                    'name': x.materialss.matnom,
-                                    'meter': x.materialss.matmed,
+                                    'name': x.materials.matnom,
+                                    'meter': x.materials.matmed,
                                     'unit': x.materialss.unidad.uninom,
                                     'brand': x.brand.brand,
                                     'model': x.model.model,
@@ -1774,6 +2081,21 @@ class SectorManage(JSONResponseMixin, View):
                     else:
                         context['status'] = False
                         context['raise'] = 'Forms invalid.'
+                if 'savewithoutprice' in request.POST:
+                    lst = json.loads(request.POST['list'])
+                    for x in lst:
+                        prices = UpdateMetProject.objects.get(
+                            proyecto_id=kwargs['pro'],
+                            subproyecto_id=kwargs['sub']
+                            if kwargs['sub'] != unicode(None)
+                            else None, sector_id=kwargs['sec'],
+                            materials_id=x['materials'],
+                            brand_id=x['brand'],
+                            model_id=x['model'])
+                        prices.price = x['purchase']
+                        prices.sales = x['sales']
+                        prices.save()
+                    context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
@@ -1860,7 +2182,7 @@ class ListOrdersByProject(JSONResponseMixin, TemplateView):
                                 'quantity': x.cantidad,
                                 'nipple': [
                                     {
-                                        'type': [ globalVariable.tipo_nipples[k] for k in globalVariable.tipo_nipples if n.tipo == k],
+                                        'type': [globalVariable.tipo_nipples[k] for k in globalVariable.tipo_nipples if n.tipo == k],
                                         'meter': n.metrado,
                                         'quantity': n.cantguide
                                     }

@@ -1,16 +1,16 @@
- # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import json
 import hashlib
 
 from django.db.models import Q, Count, Sum
-from django.core import serializers
+# from django.core import serializers
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response, get_list_or_404,get_object_or_404
+from django.shortcuts import render_to_response, render
 from django.utils import simplejson
 from django.utils.decorators import method_decorator
 from django.template import RequestContext, TemplateDoesNotExist
@@ -18,16 +18,25 @@ from django.views.generic import TemplateView, View, ListView
 from django.views.generic.edit import CreateView
 from xlrd import open_workbook, XL_CELL_EMPTY
 
-from CMSGuias.apps.almacen.models import Suministro, Inventario
-from CMSGuias.apps.home.models import Proveedor, Documentos, FormaPago, Almacene, Moneda, Configuracion, LoginProveedor, Brand, Model, Employee, Unidade
-from .models import Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion, DetCompra, tmpcotizacion, tmpcompra, ServiceOrder, DetailsServiceOrder
+from CMSGuias.apps.almacen.models import Suministro
+from CMSGuias.apps.home.models import (
+                                        Proveedor, Documentos, FormaPago,
+                                        Almacene, Moneda, Configuracion,
+                                        LoginProveedor, Brand, Model,
+                                        Employee, Unidade)
+from .models import (
+                        Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion,
+                        DetCompra, tmpcotizacion, tmpcompra, ServiceOrder,
+                        DetailsServiceOrder)
 from CMSGuias.apps.ventas.models import Proyecto, Subproyecto
 from CMSGuias.apps.operations.models import MetProject
 from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles, search
-from .forms import addTmpCotizacionForm, addTmpCompraForm, CompraForm, ProveedorForm, ServiceOrderForm
+from .forms import (
+                    addTmpCotizacionForm, addTmpCompraForm, CompraForm,
+                    ProveedorForm, ServiceOrderForm)
 
 
-### Class Bases Views generic
+# Class Bases Views generic
 
 class JSONResponseMixin(object):
     def render_to_json_response(self, context, **response_kwargs):
@@ -41,7 +50,7 @@ class JSONResponseMixin(object):
     def convert_context_to_json(self, context):
         return simplejson.dumps(context, encoding='utf-8')
 
-# view home logistics
+
 class LogisticsHome(TemplateView):
     template_name = 'logistics/home.html'
 
@@ -49,7 +58,7 @@ class LogisticsHome(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         return super(LogisticsHome, self).dispatch(request, *args, **kwargs)
 
-# Class view Supply
+
 class SupplyPending(TemplateView):
     template_name = 'logistics/supplypending.html'
 
@@ -58,7 +67,8 @@ class SupplyPending(TemplateView):
         context = super(SupplyPending, self).get_context_data(**kwargs)
         if request.GET.get('rdo') is not None:
             if request.GET.get('rdo') == 'code':
-                model = Suministro.objects.filter(pk=request.GET.get('id-su'),flag=True, status='PE')
+                model = Suministro.objects.filter(
+                        pk=request.GET.get('id-su'), flag=True, status='PE')
             elif request.GET.get('rdo') == 'date':
                 if request.GET.get('fi-su') != '' and request.GET.get('ff-su') == '':
                     messages.error(request, 'Ha ocurrido un error miestras se realizaba la consulta %s'%(str(request)))
@@ -79,7 +89,10 @@ class SupplyPending(TemplateView):
 
         context['supply'] = supply
         context['status'] = globalVariable.status
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        return render_to_response(
+                self.template_name,
+                context,
+                context_instance=RequestContext(request))
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
@@ -703,6 +716,7 @@ class ListPurchase(JSONResponseMixin, TemplateView):
                         context['transfer'] = globalVariable.format_date_str(p.traslado)
                         context['contact'] = p.contacto
                         context['discount'] = p.discount
+                        context['observation'] = p.observation
                         context['igv'] = search.getIGVCurrent(p.registrado.strftime('%Y'))
                         context['details'] = [
                             {
@@ -816,7 +830,12 @@ class ListPurchase(JSONResponseMixin, TemplateView):
                     ob.traslado = globalVariable.format_str_date(request.POST.get('transfer'))
                     ob.contacto = request.POST.get('contact')
                     ob.discount = float(request.POST.get('discount'))
-                    ob.deposito = request.FILES['deposit']
+                    if request.POST['quotation']:
+                        ob.quotation = request.POST['quotation']
+                    if request.POST['observation']:
+                        ob.observation = request.POST['observation']
+                    if 'deposit' in request.FILES:
+                        ob.deposito = request.FILES['deposit']
                     ob.save()
                     context['status'] = True
                 if 'annularPurchase' in request.POST:
@@ -867,10 +886,11 @@ class LoginSupplier(JSONResponseMixin, TemplateView):
                 context['status'] = False
             return  self.render_to_json_response(context)
 
+
 class SupplierCreate(CreateView):
     form_class = ProveedorForm
     model = Proveedor
-    #success_url = reverse_lazy('proveedor_list')
+    # success_url = reverse_lazy('proveedor_list')
     template_name = 'logistics/crud/supplier_form.html'
 
     @method_decorator(login_required)
@@ -878,9 +898,13 @@ class SupplierCreate(CreateView):
         return super(SupplierCreate, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        #self.instance.save()
+        # self.instance.save()
         form.save()
-        return render_to_response(self.template_name, {'msg':'success'}, context_instance=RequestContext(self.request))
+        return render_to_response(
+                self.template_name,
+                {'msg': 'success'},
+                context_instance=RequestContext(self.request))
+
 
 class CompareQuote(JSONResponseMixin, TemplateView):
     template_name = 'logistics/comparequote.html'
@@ -890,13 +914,20 @@ class CompareQuote(JSONResponseMixin, TemplateView):
         context = dict()
         try:
             print 'before quote'
-            context['quote'] = Cotizacion.objects.get(Q(cotizacion_id=kwargs['quote']), ~Q(status='CO'))
+            context['quote'] = Cotizacion.objects.get(
+                                    Q(cotizacion_id=kwargs['quote']),
+                                    ~Q(status='CO'))
             print context['quote']
-            context['supplier'] = CotKeys.objects.filter(cotizacion_id=kwargs['quote'], flag=True)
-            mats = DetCotizacion.objects.filter(cotizacion_id=kwargs['quote']).order_by('materiales__materiales_id')
+            context['supplier'] = CotKeys.objects.filter(
+                                    cotizacion_id=kwargs['quote'], flag=True)
+            mats = DetCotizacion.objects.filter(
+                    cotizacion_id=kwargs['quote']).order_by(
+                        'materiales__materiales_id')
             #.distinct('materiales__materiales_id')
-            context['client'] = CotCliente.objects.filter(cotizacion_id=kwargs['quote'])
-            context['conf'] = Configuracion.objects.get(periodo=globalVariable.get_year)
+            context['client'] = CotCliente.objects.filter(
+                                    cotizacion_id=kwargs['quote'])
+            context['conf'] = Configuracion.objects.get(
+                                periodo=globalVariable.get_year)
             arm = list()
             for x in mats:
                 arr = list()
@@ -904,36 +935,43 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                 arsu = list()
                 for j in context['supplier']:
                     try:
-                        dsup = DetCotizacion.objects.get(cotizacion_id=kwargs['quote'], proveedor_id=j.proveedor_id, materiales_id=x.materiales_id, marca=x.marca, modelo=x.modelo)
+                        dsup = DetCotizacion.objects.get(
+                                cotizacion_id=kwargs['quote'],
+                                proveedor_id=j.proveedor_id,
+                                materiales_id=x.materiales_id,
+                                marca=x.marca,
+                                modelo=x.modelo)
                         discount = (float(dsup.discount) / 100)
                         price = (dsup.precio - (float(dsup.precio) * discount))
                         amount = (price * float(x.cantidad))
-                        arsu.append(
-                            {
-                                'supplier':j.proveedor_id,
-                                'materiales_id':x.materiales_id,
-                                'price':dsup.precio,
+                        arsu.append({
+                                'supplier': j.proveedor_id,
+                                'materiales_id': x.materiales_id,
+                                'price': dsup.precio,
                                 'discount': dsup.discount,
-                                'brand':dsup.marca,
-                                'model':dsup.modelo,
-                                'amount':amount
-                            }
-                        )
+                                'brand': dsup.marca,
+                                'model': dsup.modelo,
+                                'amount': amount})
                     except ObjectDoesNotExist:
-                        arsu.append(
-                            {
-                                'supplier':j.proveedor_id,
-                                'materiales_id':x.materiales_id,
+                        arsu.append({
+                                'supplier': j.proveedor_id,
+                                'materiales_id': x.materiales_id,
                                 'price': 0,
                                 'discount': 0,
-                                'brand':'-',
+                                'brand': '-',
                                 'model': '-',
-                                'amount': '0'
-                            }
-                        )
+                                'amount': '0'})
                     #data[j.proveedor_id] = arsu #{'price':dsup.precio, 'discount': dsup.discount, 'brand':dsup.marca, 'model':dsup.modelo}
                 arr.append(data)
-                arm.append({'materials':x.materiales_id, 'name': x.materiales.matnom, 'measure':x.materiales.matmed, 'unit': x.materiales.unidad.uninom, 'quantity':x.cantidad, 'priceold': search.getPricePurchaseInventory(x.materiales_id), 'others': arsu })
+                arm.append({
+                        'materials': x.materiales_id,
+                        'name': x.materiales.matnom,
+                        'measure': x.materiales.matmed,
+                        'unit': x.materiales.unidad.uninom,
+                        'quantity': x.cantidad,
+                        'priceold': search.getPricePurchaseInventory(
+                                        x.materiales_id),
+                        'others': arsu})
             context['details'] = arm
             context['currency'] = Moneda.objects.filter(flag=True)
             context['document'] = Documentos.objects.filter(flag=True).order_by('documento')
@@ -941,7 +979,7 @@ class CompareQuote(JSONResponseMixin, TemplateView):
             context['purchase'] = Compra.objects.filter(cotizacion_id=kwargs['quote'],flag=True)
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except ObjectDoesNotExist, e:
-            raise Http404('Error %s'%(e.__str__()))
+            raise Http404('Error %s' % (e.__str__()))
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
@@ -1316,6 +1354,7 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
                 raise Http404(e)
 
     @method_decorator(login_required)
+
     def post(self, request, *args, **kwargs):
         context = dict()
         if request.is_ajax():
@@ -1370,11 +1409,12 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
                     request.session['serorddet'] = tmp
                     for x in request.session['serorddet']:
                         x['item'] = item
-                        item+= 1
+                        item += 1
                     context['list'] = request.session['serorddet']
                     context['status'] = True
                 if 'generateService' in request.POST:
                     form = ServiceOrderForm(request.POST, request.FILES)
+                    print form
                     if form.is_valid():
                         add = form.save(commit=False)
                         service = genkeys.GenerateIdServiceOrder()
@@ -1399,3 +1439,63 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
+
+class PriceMaterialsViews(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'searchCode' in request.GET:
+                    det = DetCompra.objects.filter(materiales_id=request.GET['code']).distinct('materiales__materiales_id').order_by('materiales__materiales_id')
+                    print det.count()
+                    context['details'] = [
+                        {
+                            'code': det[0].materiales_id,
+                            'name': det[0].materiales.matnom,
+                            'metering': det[0].materiales.matmed,
+                        }
+                    ]
+                    context['status'] = True
+                if 'searchName' in request.GET:
+                    det = DetCompra.objects.filter(materiales__matnom__icontains=request.GET['name'])
+                    det = det.distinct('materiales__matnom', 'materiales__matmed')
+                    # print DetCompra.objects.all().count()
+                    context['details'] = [
+                        {
+                            'code': x.materiales_id,
+                            'name': x.materiales.matnom,
+                            'metering': x.materiales.matmed,
+                        }
+                        for x in det
+                    ]
+                    context['status'] = True
+                if 'prices' in request.GET:
+                    det = DetCompra.objects.filter(materiales_id=request.GET['code']).order_by('-compra__registrado')[:5]
+                    context['data'] = {
+                        'code': det[0].materiales_id,
+                        'name': det[0].materiales.matnom,
+                        'metering': det[0].materiales.matmed,
+                        'unit': det[0].materiales.unidad.uninom
+                    }
+                    context['prices'] = [
+                        {
+                            'purchase': x.compra_id,
+                            'supplier': x.compra.proveedor.razonsocial,
+                            'currency': x.compra.moneda.moneda,
+                            'date': x.compra.registrado.strftime('%d-%m-%Y'),
+                            'price': x.precio
+                        }
+                        for x in det
+                    ]
+                    context['status'] = True
+            except ObjectDoesNotExist as e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)
+        else:
+            try:
+                return render(request, 'logistics/searchprices.html', context)
+            except TemplateDoesNotExist as e:
+                raise Http404(e)
