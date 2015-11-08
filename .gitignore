@@ -9,3 +9,4 @@ pedido/
 vendor/
 storage/
 node_modules/
+npm-debug.log
