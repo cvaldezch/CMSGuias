@@ -1,0 +1,116 @@
+{% extends "basemd.html" %}
+{% block title %}
+    Simple Guia Remision
+{% endblock title %}
+{% block content %}
+    <div ng-app="SGuideApp" ng-controller="SGuideCtrl">
+        <h3>Guia de Remision</h3>
+        <a href="/almacen/" class="btn grey lighten-5 grey-text text-darken-3">
+            <i class="fa fa-chevron-left"></i> REgresar
+        </a>
+        <div class="card-panel">
+            <h5>Datos Generales</h5>
+            <dvi class="row">
+                <div class="input-field col l2">
+                    <input type="text" maxlength="12">
+                    <label for="">Nro Guia</label>
+                </div>
+                <div class="input-field col l2">
+                    <input type="date" maxlength="10" class="datepicker">
+                    <label for="">Fecha Traslado</label>
+                </div>
+                <div class="col l8">
+                    <div class="row">
+                        <div class="col l12">
+                            <label for="">Cliente</label>
+                            <select name="" id="" class="browser-default">
+                                {% verbatim %}
+                                    <option ng-repeat="x in customers" value="{{x.pk}}">{{x.fields.razonsocial}}</option>
+                                {% endverbatim %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-field col l6">
+                    <input type="text">
+                    <label for="">Punto de Salida</label>
+                </div>
+                <div class="input-field col l6">
+                    <input type="text">
+                    <label for="">Punto de Llegada</label>
+                </div>
+                <div class="col l4">
+                    <label for="">Transportista</label>
+                    <select name="" id="" class="browser-default" ng-click="detCarriers($event)">
+                        {% verbatim %}
+                            <option ng-repeat="x in carriers" value="{{x.pk}}">{{x.fields.tranom}}</option>
+                        {% endverbatim %}
+                    </select>
+                </div>
+                <div class="col l4">
+                    <label for="">Conductor</label>
+                    <select name="" id="" class="browser-default">
+                        {% verbatim %}
+                            <option ng-repeat="x in drivers" value="{{x.pk}}">{{x.fields.connom}}</option>
+                        {% endverbatim %}
+                    </select>
+                </div>
+                <div class="col l4">
+                    <label for="">Transporte</label>
+                    <select name="" id="" class="browser-default">
+                        {% verbatim %}
+                            <option ng-repeat="x in transports" value="{{x.pk}}">{{x.fields.marca}} {{x.pk}}</option>
+                        {% endverbatim %}
+                    </select>
+                </div>
+                <div class="input-field col l2">
+                    <input type="text">
+                    <label for="">Motivo</label>
+                </div>
+                <div class="input-field col l5">
+                    <input type="text">
+                    <label for="">Observaciones</label>
+                </div>
+                <div class="input-field col l5">
+                    <input type="text">
+                    <label for="">Nota</label>
+                </div>
+            </dvi>
+        </div>
+        <div class="card">
+
+            <h5><small>Detalle</small></h5>
+            <div class="card-action">
+                <button type="button" class="btn grey lighten-5 grey-text text-darken-3">
+                    <i class="fa fa-plus"></i>
+                    Agregar
+                </button>
+            </div>
+        </div>
+        <table class="table reponsive-table">
+            <thead>
+                <tr class="blue accent-3">
+                    <th></th>
+                    <th>Codigo</th>
+                    <th>Descripcion</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Cantidad</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% verbatim %}
+                    <tr ng-repeat="x in dataset"></tr>
+                {% endverbatim %}
+            </tbody>
+        </table>
+    </div>
+{% endblock content %}
+{% block footer %}
+    <!-- tools utils -->
+    <script src="{{ MEDIA_URL }}vendor/angularjs/angular.min.js"></script>
+    <script src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+    <script src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js"></script>
+    <script src="{{ MEDIA_URL }}js/almacen/guideSingle.js"></script>
+{% endblock footer %}

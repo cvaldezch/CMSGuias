@@ -57,4 +57,5 @@ urlpatterns = patterns('CMSGuias.apps.almacen.views',
     url(r'^orders/details/supply/$', ListDetOrders.as_view(), name='vista_orders_details'),
     url(r'purchase/input/$', InputOrderPurchase.as_view(), name='view_purchase_input'),
     url(r'note/ingress/list/$', NoteIngressView.as_view(), name='view_note_ingress'),
+    url(r'guide/single/$', GuideSingle.as_view(), name='view_guide_single'),
 )

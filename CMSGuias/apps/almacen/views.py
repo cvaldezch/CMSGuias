@@ -2,19 +2,19 @@
 import datetime
 import json
 
-from django.shortcuts import render_to_response, get_object_or_404, get_list_or_404
+from django.shortcuts import render_to_response, render
 from django.template import RequestContext, TemplateDoesNotExist
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.contrib import messages
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.db.models import Count, Max, Sum, Q
 from django.utils import simplejson
 from django.core.paginator import EmptyPage, Paginator, PageNotAnInteger
 from django.views.generic import TemplateView, ListView, View
-# from django.core import serializers
+from django.core import serializers
 
 from CMSGuias.apps.almacen import models
 from CMSGuias.apps.home.models import (
@@ -52,6 +52,7 @@ class StorageHome(View):
     def get(self, request, *args, **kwargs):
         return render_to_response(
             self.template_name, context_instance=RequestContext(request))
+
 
 @login_required(login_url='/SignUp/')
 def view_pedido(request):
@@ -92,7 +93,7 @@ def view_pedido(request):
                     nip.subproyecto_id = request.POST.get('subproyecto')
                     nip.sector_id = request.POST.get('sector')
                     nip.empdni = request.user.get_profile().empdni_id
-                    nip.materiales_id= x.materiales_id
+                    nip.materiales_id = x.materiales_id
                     nip.cantidad = x.cantidad
                     nip.cantshop = x.cantidad
                     nip.metrado = x.metrado
@@ -1459,6 +1460,7 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                 context['status'] = False
             return self.render_to_json_response(context)
 
+
 class NoteIngressView(JSONResponseMixin, TemplateView):
     template_name = 'almacen/listnoteingress.html'
 
@@ -1470,15 +1472,28 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
                 try:
                     if 'search' in request.GET:
                         if 'nro' in request.GET:
-                            obj = models.NoteIngress.objects.filter(pk=request.GET.get('nro'), status='CO')
+                            obj = models.NoteIngress.objects.filter(
+                                    pk=request.GET.get('nro'), status='CO')
                         if 'status' in request.GET:
-                            obj = models.NoteIngress.objects.filter(status=request.GET.get('status'))
+                            obj = models.NoteIngress.objects.filter(
+                                    status=request.GET.get('status'))
                         if 'sdate' in request.GET:
                             if 'edate' in request.GET:
-                                obj = models.NoteIngress.objects.filter(register__range=(globalVariable.format_str_date(request.GET.get('sdate'),'%d-%m-%Y'), globalVariable.format_str_date(request.GET.get('edate'),'%d-%m-%Y')))
+                                obj = models.NoteIngress.objects.filter(
+                                        register__range=(
+                                            globalVariable.format_str_date(
+                                                request.GET.get(
+                                                    'sdate'),'%d-%m-%Y'),
+                                            globalVariable.format_str_date(
+                                                request.GET.get('edate'),
+                                                '%d-%m-%Y')))
                             else:
-                                print globalVariable.format_str_date(request.GET.get('sdate'),'%d-%m-%Y')
-                                obj = models.NoteIngress.objects.filter(register__startswith=globalVariable.format_str_date(request.GET.get('sdate'),'%d-%m-%Y'))
+                                #print globalVariable.format_str_date(
+                                #        request.GET.get('sdate'),'%d-%m-%Y')
+                                date = globalVariable.format_str_date(
+                                        request.GET.get('sdate'),'%d-%m-%Y')
+                                obj = models.NoteIngress.objects.filter(
+                                register__startswith=date)
                         if obj:
                             context['list'] = [
                                 {
@@ -1493,7 +1508,8 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
                         else:
                             context['status'] = False
                     if 'details' in request.GET:
-                        bedside = models.NoteIngress.objects.get(pk=request.GET['ingress'])
+                        bedside = models.NoteIngress.objects.get(
+                                    pk=request.GET['ingress'])
                         context['ingress'] = bedside.ingress_id
                         context['storage'] = bedside.storage.nombre
                         context['purchase'] = bedside.purchase_id
@@ -1511,17 +1527,22 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
                                 'model': x.model.model,
                                 'quantity': x.quantity
                             }
-                            for x in models.DetIngress.objects.filter(ingress_id=request.GET.get('ingress'))
+                            for x in models.DetIngress.objects.filter(
+                                ingress_id=request.GET.get('ingress'))
                         ]
                         context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)
                     context['status'] = False
                 return self.render_to_json_response(context)
-            context['note'] = models.NoteIngress.objects.filter(status='CO').order_by('-register')[:10]
-            return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+            context['note'] = models.NoteIngress.objects.filter(
+                                status='CO').order_by('-register')[:10]
+            return render_to_response(
+                self.template_name,
+                context,
+                context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
-            raise Http404()
+            raise Http404(e)
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
@@ -1559,7 +1580,8 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
                         inv.save()
                     ingress.status = 'AN'
                     ingress.save()
-                    purchase = Compra.objects.get(compra_id=ingress.purchase_id)
+                    purchase = Compra.objects.get(
+                                compra_id=ingress.purchase_id)
                     purchase.status = 'AN'
                     purchase.save()
                     context['status'] = True
@@ -1567,3 +1589,46 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
                 context['raise'] = str(e)
                 context['status'] = True
             return self.render_to_json_response(context)
+
+
+class GuideSingle(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if request.is_ajax():
+                try:
+                    if 'customers' in request.GET:
+                        context['customers'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                Cliente.objects.filter(flag=True)))
+                        context['status'] = True
+                    if 'carrier' in request.GET:
+                        context['carrier'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                Transportista.objects.filter(flag=True)))
+                        context['status'] = True
+                    if 'detCarrier' in request.GET:
+                        context['transport'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                Transporte.objects.filter(
+                                    traruc_id=request.GET['tra'],
+                                    flag=True)))
+                        context['driver'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                Conductore.objects.filter(
+                                    traruc_id=request.GET['tra'],
+                                    flag=True)))
+                        context['status'] = True
+                except ObjectDoesNotExist as e:
+                    context['raise'] = str(e)
+                    context['status'] = False
+                return self.render_to_json_response(context)
+            return render(request, 'almacen/GuideSingle.html', context)
+        except TemplateDoesNotExist, e:
+            raise Http404(e)

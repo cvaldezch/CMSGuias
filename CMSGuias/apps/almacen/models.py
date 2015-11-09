@@ -141,6 +141,9 @@ class GuiaRemision(models.Model):
     status = models.CharField(max_length=2, default='46')
     motive = models.CharField(max_length=2, default='VE', blank=True)
     comment = models.TextField(default='')
+    observation = models.CharField(max_length=250, null=True, blank=True)
+    nota = models.CharField(max_length=250, null=True, blank=True)
+    dotoutput = models.CharField(max_length=250, null=True, blank=True)
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):
@@ -152,6 +155,9 @@ class DetGuiaRemision(models.Model):
     guia = models.ForeignKey(GuiaRemision, to_field='guia_id')
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     cantguide = models.FloatField(default=0, null=True, blank=True)
+    brand = models.ForeignKey(Brand, to_field='brand_id', null=True, blank=True)
+    model = models.ForeignKey(Model, to_field='model_id', null=True, blank=True)
+    observation = models.CharField(max_length=250, null=True, blank=True)
     flag = models.BooleanField(default=True)
 
     class Meta:
