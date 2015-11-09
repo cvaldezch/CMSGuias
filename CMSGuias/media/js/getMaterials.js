@@ -190,6 +190,7 @@ searchMaterialCode = function(code) {
           $lsts.append(Mustache.render("{{#purchase}}<option label=\"{{currency}}\" value=\"{{sales}}\" />{{/purchase}}", response));
         }
       } else {
+        console.log("materials not found");
         $().toastmessage("showWarningToast", "The material not found.");
       }
     });

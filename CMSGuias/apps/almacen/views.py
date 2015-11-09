@@ -1483,27 +1483,25 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
                                         register__range=(
                                             globalVariable.format_str_date(
                                                 request.GET.get(
-                                                    'sdate'),'%d-%m-%Y'),
+                                                    'sdate'), '%d-%m-%Y'),
                                             globalVariable.format_str_date(
                                                 request.GET.get('edate'),
                                                 '%d-%m-%Y')))
                             else:
-                                #print globalVariable.format_str_date(
+                                # print globalVariable.format_str_date(
                                 #        request.GET.get('sdate'),'%d-%m-%Y')
                                 date = globalVariable.format_str_date(
-                                        request.GET.get('sdate'),'%d-%m-%Y')
+                                        request.GET.get('sdate'), '%d-%m-%Y')
                                 obj = models.NoteIngress.objects.filter(
-                                register__startswith=date)
+                                    register__startswith=date)
                         if obj:
-                            context['list'] = [
-                                {
-                                    'ingress': x.ingress_id,
-                                    'purchase': x.purchase_id,
-                                    'invoice': x.invoice,
-                                    'register': x.register.strftime('%d-%m-%Y'),
-                                    'status': x.status
-                                } for x in obj
-                            ]
+                            context['list'] = [{
+                                'ingress': x.ingress_id,
+                                'purchase': x.purchase_id,
+                                'invoice': x.invoice,
+                                'register': x.register.strftime('%d-%m-%Y'),
+                                'status': x.status}
+                                for x in obj]
                             context['status'] = True
                         else:
                             context['status'] = False
@@ -1550,7 +1548,8 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
         if request.is_ajax():
             try:
                 if 'editingress' in request.POST:
-                    obj = models.NoteIngress.objects.get(pk=request.POST.get('ingress'))
+                    obj = models.NoteIngress.objects.get(
+                            pk=request.POST.get('ingress'))
                     obj.guide = request.POST.get('guide')
                     obj.invoice = request.POST.get('invoice')
                     obj.motive = request.POST.get('motive')
@@ -1558,17 +1557,25 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
                     obj.save()
                     context['status'] = True
                 if 'annularNI' in request.POST:
-                    ingress = models.NoteIngress.objects.get(pk=request.POST.get('ingress'))
-                    details = models.DetIngress.objects.filter(ingress_id=request.POST.get('ingress'))
+                    ingress = models.NoteIngress.objects.get(
+                                pk=request.POST.get('ingress'))
+                    details = models.DetIngress.objects.filter(
+                                ingress_id=request.POST.get('ingress'))
                     for x in details:
-                        inv = models.Inventario.objects.get(materiales_id=x.materials_id, periodo=ingress.register.strftime('%Y'))
+                        inv = models.Inventario.objects.get(
+                                materiales_id=x.materials_id,
+                                periodo=ingress.register.strftime('%Y'))
                         stock = (inv.stock - x.quantity)
                         if stock >= 0:
                             inv.stock = stock
                         else:
                             inv.stock = 0
                         try:
-                            brand = models.InventoryBrand.objects.get(materials_id=x.materials_id, period=ingress.register.strftime('%Y'), brand_id=x.brand_id, model_id=x.model_id)
+                            brand = models.InventoryBrand.objects.get(
+                                        materials_id=x.materials_id,
+                                        period=ingress.register.strftime('%Y'),
+                                        brand_id=x.brand_id,
+                                        model_id=x.model_id)
                             stock = (brand.stock - x.quantity)
                             if stock >= 0:
                                 brand.stock = stock
@@ -1625,10 +1632,48 @@ class GuideSingle(JSONResponseMixin, TemplateView):
                                     traruc_id=request.GET['tra'],
                                     flag=True)))
                         context['status'] = True
+                    if 'listTemp' in request.GET:
+                        context['list'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                models.TmpDetGuia.objects.filter(flag=True),
+                                relations=('materials', 'brand', 'model')))
+                        context['status'] = True
                 except ObjectDoesNotExist as e:
                     context['raise'] = str(e)
                     context['status'] = False
                 return self.render_to_json_response(context)
-            return render(request, 'almacen/GuideSingle.html', context)
+            context['address'] = request.session['company']['address']
+            return render(request, 'almacen/guideSingle.html', context)
         except TemplateDoesNotExist, e:
             raise Http404(e)
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'saveMaterial' in request.POST:
+                    try:
+                        obj = models.TmpDetGuia.objects.get(
+                                materials_id=request.POST['materials'],
+                                brand_id=request.POST['brand'],
+                                model_id=request.POST['model'])
+                        form = forms.addTempGuide(request.POST, instance=obj)
+                    except models.TmpDetGuia.DoesNotExist:
+                        form = forms.addTempGuide(request.POST)
+                    if form.is_valid():
+                        form.save()
+                        context['status'] = True
+                    else:
+                        context['status'] = False
+                if 'delItem' in request.POST:
+                    models.TmpDetGuia.objects.get(
+                        materials_id=request.POST['materials'],
+                        brand_id=request.POST['brand'],
+                        model_id=request.POST['model']).delete()
+                    context['status'] = True
+            except ObjectDoesNotExist as e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)

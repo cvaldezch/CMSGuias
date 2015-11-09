@@ -158,6 +158,7 @@ searchMaterialCode = (code) ->
         if $lsts.length > 0 and response.purchase
           $lsts.append Mustache.render """{{#purchase}}<option label="{{currency}}" value="{{sales}}" />{{/purchase}}""", response
       else
+        console.log "materials not found"
         $().toastmessage "showWarningToast", "The material not found."
       return
   return

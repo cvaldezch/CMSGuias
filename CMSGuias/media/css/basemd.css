@@ -2,14 +2,14 @@
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
-  src: url("/media/vendor/materialize/dist/font/material-design-icons/Material-Design-Icons.eot");
+  src: url("/media/vendor/materialize/dist/font/material-design-icons/Material-Design-Icons.eot") /* For IE6-8 */;
   src: local('Material Icons'), local('Material-Design-Icons'), url("/media/vendor/materialize/dist/font/material-design-icons/Material-Design-Icons.woff2") format('woff2'), url("/media/vendor/materialize/dist/font/material-design-icons/Material-Design-Icons.woff") format('woff'), url("/media/vendor/materialize/dist/font/material-design-icons/Material-Design-Icons.ttf") format('truetype'), url("/media/vendor/materialize/dist/font/material-design-icons/Material-Design-Icons.svg") format('svg');
 }
 .material-icons {
   font-family: 'Material Icons';
   font-weight: normal;
   font-style: normal;
-  font-size: 24px;
+  font-size: 24px /* Preferred icon size */;
   display: inline-block;
   width: 1em;
   height: 1em;

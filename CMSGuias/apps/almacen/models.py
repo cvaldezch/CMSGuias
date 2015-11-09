@@ -155,8 +155,16 @@ class DetGuiaRemision(models.Model):
     guia = models.ForeignKey(GuiaRemision, to_field='guia_id')
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     cantguide = models.FloatField(default=0, null=True, blank=True)
-    brand = models.ForeignKey(Brand, to_field='brand_id', null=True, blank=True)
-    model = models.ForeignKey(Model, to_field='model_id', null=True, blank=True)
+    brand = models.ForeignKey(
+                Brand,
+                to_field='brand_id',
+                null=True,
+                blank=True)
+    model = models.ForeignKey(
+                Model,
+                to_field='model_id',
+                null=True,
+                blank=True)
     observation = models.CharField(max_length=250, null=True, blank=True)
     flag = models.BooleanField(default=True)
 
@@ -166,6 +174,21 @@ class DetGuiaRemision(models.Model):
     def __unicode__(self):
         return '%s %s %f' % (
             self.guia.guia_id, self.materiales.materiales_id, self.cantguide)
+
+
+class TmpDetGuia(models.Model):
+    materials = models.ForeignKey(Materiale, to_field='materiales_id')
+    quantity = models.FloatField(default=0, null=True, blank=True)
+    brand = models.ForeignKey(Brand, to_field='brand_id')
+    model = models.ForeignKey(Model, to_field='model_id')
+    observation = models.CharField(max_length=250, null=True, blank=True)
+    flag = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['materials']
+
+    def __unicode__(self):
+        return '%s %f' % (self.materiales.materiales_id, self.quantity)
 
 
 class NipleGuiaRemision(models.Model):

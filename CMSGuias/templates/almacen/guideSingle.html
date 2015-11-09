@@ -32,7 +32,7 @@
                     </div>
                 </div>
                 <div class="input-field col l6">
-                    <input type="text">
+                    <input type="text" value="{{ address }}">
                     <label for="">Punto de Salida</label>
                 </div>
                 <div class="input-field col l6">
@@ -64,7 +64,7 @@
                     </select>
                 </div>
                 <div class="input-field col l2">
-                    <input type="text">
+                    <input type="text" value="VENTA">
                     <label for="">Motivo</label>
                 </div>
                 <div class="input-field col l5">
@@ -78,15 +78,110 @@
             </dvi>
         </div>
         <div class="card">
-
             <h5><small>Detalle</small></h5>
             <div class="card-action">
-                <button type="button" class="btn grey lighten-5 grey-text text-darken-3">
+                <button type="button" class="btn grey lighten-5 grey-text text-darken-3" ng-model="shwaddm" ng-init="shwaddm=false" ng-click="shwaddm=!shwaddm">
                     <i class="fa fa-plus"></i>
                     Agregar
                 </button>
+                <button type="button" class="btn grey lighten-5 grey-text text-darken-3" ng-click="listTemp()">
+                    <i class="fa fa-refresh"></i>
+                    ACtualizar
+                </button>
+                <button type="button" class="btn grey lighten-5 grey-text text-darken-3">
+                    <i class="fa fa-trash"></i>
+                    Eliminar
+                </button>
+            </div>
+            <div class="card-content" ng-show="shwaddm">
+                <button type="button" class="btn-flat right" ng-click="shwaddm=!shwaddm">
+                    <i class="fa fa-times"></i>
+                </button>
+                <div class="row">
+                    <div class="col l12">
+                        <div class="col l6 m6 s12 input-field">
+                            <input type="text" name="description">
+                            <label>Descripción</label>
+                            <ul id="matname-global" class="matname-global"></ul>
+                        </div>
+                        <div class="col l6 m6 s12 input-field">
+                            <label ng-class="{'active': mat.measure != ''}">Medida</label>
+                            <select name="meter" class="browser-default" ng-model="mat.measure">
+                                <option value="" disabled selected></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col l6 m6 s12">
+                        {% verbatim %}
+                            <div class="col l6 m6 s12 input-field">
+                                <input type="text" maxlength="15" name="code" ng-model="mat.code" value="{{mat.code}}">
+                                <label>Código</label>
+                            </div>
+                            <div class="input-field col l6 m6 s12">
+                                <input type="number" min="0" step="0.1" name="cantidad" ng-model="mat.quantity" value="{{mat.quantity}}">
+                                <label class="active" for="cantidad">Cantidad / Metrado</label>
+                            </div>
+                            <div class="col l6 m6 s12">
+                                <label>Marca</label>
+                                <select class="browser-default" ng-model="mat.brand" ng-init="mat.brand=$('[name=brand]').val()" name="brand"></select>
+                            </div>
+                            <div class="col l6 m6 s12">
+                                <label>Modelo</label>
+                                <select class="browser-default" ng-model="mat.model" ng-init="mat.model=$('[name=model]').val()" name="model"></select>
+                            </div>
+                        {% endverbatim %}
+                        <div class="col l12 m12 s12 right-align">
+                            <br>
+                            <button type="button" class="btn light-blue darken-2" ng-click="saveDetalle()">
+                                <i class="fa fa-floppy-o"></i>
+                                <span class="hide-on-med-and-down">GUARDAR</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col l6 m6 s12">
+                        <table class="table responsive-table tb-details">
+                            <caption><strong>Resumén</strong></caption>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
+        {% verbatim %}
+        <script type="text/ng-template" id="tmp.html">
+            <td>{{$index+1}}</td>
+            <td>{{x.fields.materials.pk}}</td>
+            <td>{{x.fields.materials.fields.matnom}} {{x.fields.materials.fields.matmed}}</td>
+            <td>{{x.fields.brand.fields.brand}}</td>
+            <td>{{x.fields.model.fields.model}}</td>
+            <td>{{x.fields.materials.fields.unidad}}</td>
+            <td>{{x.fields.quantity}}</td>
+            <td>
+                <a class='dropdown-button btn-flat' href='#' data-activates="{{x.fields.materials.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}">
+                    <i class="fa fa-cog"></i>
+                </a>
+                <!-- Dropdown Structure -->
+                <ul id="{{x.fields.materials.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" class='dropdown-content'>
+                    <li>
+                        <a style="padding: 2px 0px 2px 3px;" class="grey-text text-darken-3" href="#!" ng-click="showEdit($event)" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}">
+                            <small><i class="fa fa-edit"></i> Editar</small>
+                        </a>
+                    </li>
+                    <li>
+                        <a style="padding: 2px 0px 2px 3px;" class="grey-text text-darken-3" href="#!" ng-click="delItem($event)" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}">
+                            <small><i class="fa fa-trash"></i> Eliminar</small>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a style="padding: 2px 0px 2px 3px;" class="grey-text text-darken-3" href="#!">
+                            <small><i class="fa fa-font"></i> Comentario</small>
+                        </a>
+                    </li>
+                </ul>
+            </td>
+        </script>
+        {% endverbatim %}
         <table class="table reponsive-table">
             <thead>
                 <tr class="blue accent-3">
@@ -95,22 +190,27 @@
                     <th>Descripcion</th>
                     <th>Marca</th>
                     <th>Modelo</th>
+                    <th>Unidad</th>
                     <th>Cantidad</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% verbatim %}
-                    <tr ng-repeat="x in dataset"></tr>
+                    <tr ng-include src="'tmp.html'" ng-repeat="x in list"></tr>
                 {% endverbatim %}
             </tbody>
         </table>
     </div>
 {% endblock content %}
 {% block footer %}
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/getMaterials.css">
     <!-- tools utils -->
     <script src="{{ MEDIA_URL }}vendor/angularjs/angular.min.js"></script>
     <script src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
     <script src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/mustache.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/getMaterials.js"></script>
     <script src="{{ MEDIA_URL }}js/almacen/guideSingle.js"></script>
 {% endblock footer %}
