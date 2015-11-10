@@ -5,9 +5,10 @@ app = angular.module 'SGuideApp', ['ngCookies']
             $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken'
             return
 
-app.controller 'SGuideCtrl', ($scope, $http, $cookies) ->
+app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken
     $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
+    $scope.mat = {}
     angular.element(document).ready ->
         # pickdate
         $('.datepicker').pickadate
@@ -17,6 +18,7 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies) ->
         $scope.customersList()
         $scope.carrierList()
         $scope.listTemp()
+        $scope.brandmodel()
         return
     $scope.customersList = ->
         $http.get '', params: customers: true
@@ -52,6 +54,19 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies) ->
                 swal "Error", "datos de los Transportista. #{response.raise}", "error"
                 return
         return
+    $scope.brandmodel = ->
+        $http.get '', params: brandandmodel: true
+        .success (response) ->
+            if response.status
+                $scope.brand = response.brand
+                $scope.model = response.model
+                $scope.mat.brand = 'BR000'
+                $scope.mat.model = 'MO000'
+                return
+            else
+                console.log "No loads brand and model"
+                return
+        return
     $scope.saveDetalle = ->
         data =
             saveMaterial: true
@@ -59,6 +74,11 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies) ->
             quantity: $scope.mat.quantity
             brand: $scope.mat.brand
             model: $scope.mat.model
+
+        if $scope.mat.obrand isnt ""
+            data.obrand = $scope.mat.obrand
+        if $scope.mat.omodel isnt ""
+            data.omodel = $scope.mat.omodel
         if $scope.mat.quantity <= 0
             Materialize.toast "Cantidad Invalida", 3600
             data.saveMaterial = false
@@ -70,6 +90,10 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies) ->
                 method: 'post'
             .success (response) ->
                 if response.status
+                    if $scope.mat.hasOwnProperty 'obrand'
+                        $scope.mat.obrand = ''
+                    if $scope.mat.hasOwnProperty 'omodel'
+                        $scope.mat.omodel = ''
                     $scope.listTemp()
                     Materialize.toast 'Guardado OK', 2600
                     return
@@ -82,7 +106,7 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies) ->
         .success (response) ->
             if response.status
                 $scope.list = response.list
-                setTimeout ->
+                $timeout ->
                     $('.dropdown-button').dropdown()
                 , 800
                 return
@@ -91,23 +115,23 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies) ->
                 return
         return
     $scope.showEdit = ($event) ->
-        $scope.shwaddm = true
-        #$("[name=code]").val $event.currentTarget.parentElement.parentElement.parentElement.parentElement.children[1].innerText
         $scope.mat.code = $event.currentTarget.parentElement.parentElement.parentElement.parentElement.children[1].innerText
-        setTimeout ->
+        $timeout ->
             e = $.Event 'keypress', keyCode: 13
             $("[name=code]").trigger e
             return
         , 100
-        setTimeout ->
-            # $("[name=cantidad]").val $event.currentTarget.parentElement.parentElement.parentElement.parentElement.children[6].innerText
-            $scope.mat.quantity = parseFloat $event.currentTarget.parentElement.parentElement.parentElement.parentElement.children[6].innerText
-            $scope.mat.brand = $event.currentTarget.dataset.brand
-            $scope.mat.model = $event.currentTarget.dataset.model
-            # $("[name=brand]").val $event.currentTarget.dataset.brand
-            # $("[name=model]").val $event.currentTarget.dataset.model
+        $timeout ->
+            quantity = parseFloat $event.currentTarget.parentElement.parentElement.parentElement.parentElement.children[6].innerText
+            $scope.shwaddm = true
+            $scope.mat =
+                quantity: parseFloat quantity
+                brand: $event.currentTarget.dataset.brand
+                model: $event.currentTarget.dataset.model
+                obrand: $event.currentTarget.dataset.brand
+                omodel: $event.currentTarget.dataset.model
             return
-        , 600
+        , 300
         return
     $scope.delItem = ($event) ->
         text = "#{$event.currentTarget.parentElement.parentElement.parentElement.parentElement.children[2].innerText} #{$event.currentTarget.parentElement.parentElement.parentElement.parentElement.children[3].innerText} #{$event.currentTarget.parentElement.parentElement.parentElement.parentElement.children[4].innerText}"
@@ -139,5 +163,16 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies) ->
                         swal "Error", "No se a eliminad", "error"
                         return
                 return
+        return
+    $scope.$watch 'shwaddm', (old, nw) ->
+        # if !nw
+            # if $scope.mat.hasOwnProperty 'obrand'
+            #    $scope.mat.obrand = ''
+            # if $scope.mat.hasOwnProperty 'omodel'
+            #    $scope.mat.omodel = ''
+        return
+    $scope.$watch 'mat.brand', (old, nw) ->
+        console.log old, nw
+        console.log $scope.mat, "object"
         return
     return

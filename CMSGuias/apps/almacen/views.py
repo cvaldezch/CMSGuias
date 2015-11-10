@@ -16,10 +16,8 @@ from django.core.paginator import EmptyPage, Paginator, PageNotAnInteger
 from django.views.generic import TemplateView, ListView, View
 from django.core import serializers
 
-from CMSGuias.apps.almacen import models
-from CMSGuias.apps.home.models import (
-    Cliente, Almacene, Transportista,
-    Conductore, Transporte, userProfile, Employee)
+from CMSGuias.apps.almacen.models import *
+from CMSGuias.apps.home.models import *
 from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
 from CMSGuias.apps.almacen import forms
 from CMSGuias.apps.tools import genkeys, globalVariable
@@ -73,10 +71,10 @@ def view_pedido(request):
                 add.flag = True
                 add.save()
                 # detail Orders Details
-                tmpd = models.tmppedido.objects.filter(
+                tmpd = tmppedido.objects.filter(
                         empdni__exact=request.user.get_profile().empdni_id)
                 for x in tmpd:
-                    det = models.Detpedido()
+                    det = Detpedido()
                     det.pedido_id = id
                     det.materiales_id = x.materiales_id
                     det.cantidad = x.cantidad
@@ -85,9 +83,9 @@ def view_pedido(request):
                     det.model_id = x.model_id
                     det.save()
                 # saved niples of tmpniple
-                tmpn = models.tmpniple.objects.filter(empdni__exact=request.user.get_profile().empdni_id)
+                tmpn = tmpniple.objects.filter(empdni__exact=request.user.get_profile().empdni_id)
                 for x in tmpn:
-                    nip = models.Niple()
+                    nip = Niple()
                     nip.pedido_id = id
                     nip.proyecto_id = request.POST.get('proyecto')
                     nip.subproyecto_id = request.POST.get('subproyecto')
@@ -100,9 +98,9 @@ def view_pedido(request):
                     nip.tipo = x.tipo.strip()
                     nip.save()
                 # deleting tmps
-                tmp = models.tmppedido.objects.filter(empdni__exact=request.user.get_profile().empdni_id)
+                tmp = tmppedido.objects.filter(empdni__exact=request.user.get_profile().empdni_id)
                 tmp.delete()
-                tmp = models.tmpniple.objects.filter(empdni__exact=request.user.get_profile().empdni_id)
+                tmp = tmpniple.objects.filter(empdni__exact=request.user.get_profile().empdni_id)
                 tmp.delete()
                 data['status']= True
             else:
@@ -731,7 +729,7 @@ def view_conductor_edit(request,cid,tid):
 def view_orders_pending(request):
     try:
         if request.method == 'GET':
-            lst = models.Pedido.objects.filter(
+            lst = Pedido.objects.filter(
                     flag=True,
                     status='PE').order_by('-pedido_id')
             ctx = {'lista': lst}
@@ -748,7 +746,7 @@ def view_orders_pending(request):
 def view_orders_list_approved(request):
     try:
         if request.method == 'GET':
-            lst= models.Pedido.objects.filter(flag=True).exclude(Q(status='PE')|Q(status='AN')|Q(status='CO')).order_by('-pedido_id')
+            lst= Pedido.objects.filter(flag=True).exclude(Q(status='PE')|Q(status='AN')|Q(status='CO')).order_by('-pedido_id')
             ctx= { 'lista': lst }
             return render_to_response('almacen/listorderattend.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
@@ -759,17 +757,17 @@ def view_orders_list_approved(request):
 def view_attend_order(request,oid):
     try:
         if request.method == 'GET':
-            obj= get_object_or_404(models.Pedido,pk=oid,flag=True)
-            # det= get_list_or_404(models.Detpedido, pedido_id__exact=oid,flag=True)
+            obj= get_object_or_404(Pedido,pk=oid,flag=True)
+            # det= get_list_or_404(Detpedido, pedido_id__exact=oid,flag=True)
             # use sintaxis sql for PostgreSQL
-            det = models.Detpedido.objects.filter(pedido_id__exact=oid,flag=True).extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},)
+            det = Detpedido.objects.filter(pedido_id__exact=oid,flag=True).extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},)
             radio= ''
             for x in det:
                 if x.cantshop <= 0:
                     radio= 'disabled'
                     break
-            # nipples= get_list_or_404(models.Niple.objects.order_by('metrado'),pedido_id__exact=oid,flag=True)
-            nipples = models.Niple.objects.filter(pedido_id__exact=oid, flag=True).order_by('metrado')
+            # nipples= get_list_or_404(Niple.objects.order_by('metrado'),pedido_id__exact=oid,flag=True)
+            nipples = Niple.objects.filter(pedido_id__exact=oid, flag=True).order_by('metrado')
             usr= userProfile.objects.get(empdni__exact=obj.empdni)
             tipo= {'A':'Roscado','B':'Ranurado','C':'Rosca-Ranura'}
             ctx= { 'orders': obj, 'det': det, 'nipples': nipples, 'usr': usr,'tipo':tipo,'radio':radio }
@@ -792,7 +790,7 @@ def view_attend_order(request,oid):
                         if mat[c]['matid'] == nip[x]['matid']:
                             cs+= (float(nip[x]['quantityshop']) * float(nip[x]['meter']) )
                     ctn+= cs
-                    obj= models.Detpedido.objects.get(pedido_id__exact=request.POST.get('oid'),materiales_id__exact=mat[c]['matid'])
+                    obj= Detpedido.objects.get(pedido_id__exact=request.POST.get('oid'),materiales_id__exact=mat[c]['matid'])
                     # aqui hacer otro if
                     obj.cantshop=  (float(mat[c]['quantity']) - float(mat[c]['quantityshop'])) if (cs / 100 ) == float(mat[c]['quantity']) else (cs/100) if mat[c]['matid'][0:3] == '115' else (float(mat[c]['quantity']) - float(mat[c]['quantityshop']))
                     #print (cs / 100 ) if mat[c]['matid'][0:3] == '115' else (float(mat[c]['quantity']) - float(mat[c]['quantityshop']))
@@ -802,7 +800,7 @@ def view_attend_order(request,oid):
                     cnm+= 1
                 # we walk the list nipples and update tag of tables nipples
                 for n in range(len(nip)):
-                    obj= models.Niple.objects.get(pk=nip[n]['nid'])
+                    obj= Niple.objects.get(pk=nip[n]['nid'])
                     obj.cantshop= int( float(nip[n]['quantity']) - float(nip[n]['quantityshop']) )
                     obj.cantguide= int(float(nip[n]['quantityshop']))
                     obj.tag= '1'
@@ -811,13 +809,13 @@ def view_attend_order(request,oid):
                 # evaluation status orders
                 # recover number of materials
                 status= ''
-                onm= models.Detpedido.objects.filter(pedido_id__exact=request.POST.get('oid'),cantshop__gt=0).exclude(tag='2').count()
+                onm= Detpedido.objects.filter(pedido_id__exact=request.POST.get('oid'),cantshop__gt=0).exclude(tag='2').count()
                 if onm > 0:
                     status= 'IN'
                 else:
                     status= 'CO'
                 # update status Bedside Orders
-                obj = models.Pedido.objects.get(pk=request.POST.get('oid'))
+                obj = Pedido.objects.get(pk=request.POST.get('oid'))
                 obj.status= status
                 obj.save()
                 data['sts']= status
@@ -838,8 +836,8 @@ def view_attend_order(request,oid):
 def view_generate_guide_orders(request):
     try:
         if request.method == 'GET':
-            #lst= get_list_or_404(models.Pedido.objects.exclude(Q(status='PE')|Q(status='AN')).order_by('-pedido_id'), flag=True )
-            lst= models.Detpedido.objects.filter(tag='1').order_by('-pedido').distinct('pedido')
+            #lst= get_list_or_404(Pedido.objects.exclude(Q(status='PE')|Q(status='AN')).order_by('-pedido_id'), flag=True )
+            lst= Detpedido.objects.filter(tag='1').order_by('-pedido').distinct('pedido')
             ctx= { 'orders': lst }
             return render_to_response('almacen/generateGuide.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
@@ -850,7 +848,7 @@ def view_generate_guide_orders(request):
 def view_generate_document_out(request,oid):
     try:
         if request.method == 'GET':
-            orders= get_object_or_404(models.Pedido,flag=True,pedido_id__exact=oid)
+            orders= get_object_or_404(Pedido,flag=True,pedido_id__exact=oid)
             trans= get_list_or_404(Transportista.objects.values('traruc_id','tranom'),flag=True)
             ctx= { 'oid': oid, 'trans': trans, 'orders': orders }
             return render_to_response('almacen/documentout.html',ctx,context_instance=RequestContext(request))
@@ -869,39 +867,39 @@ def view_generate_document_out(request,oid):
                         add.save()
                         # save details guide referral
                         # recover details orders
-                        det = models.Detpedido.objects.filter(pedido_id__exact=request.POST.get('pedido'),tag='1',flag=True)
+                        det = Detpedido.objects.filter(pedido_id__exact=request.POST.get('pedido'),tag='1',flag=True)
                         for x in det:
-                            obj = models.DetGuiaRemision()
+                            obj = DetGuiaRemision()
                             obj.guia_id = guidekeys
                             obj.materiales_id = x.materiales_id
                             obj.cantguide = x.cantguide
                             obj.flag = True
                             obj.save()
-                            ob = models.Detpedido.objects.get(pk__exact=x.id)
+                            ob = Detpedido.objects.get(pk__exact=x.id)
                             ob.tag= '2' if x.cantshop <= 0 else '0'
                             ob.save()
                             # here discount inventory
                             #get nro orders
                             store = ''
                             try:
-                                store = models.Pedido.objects.get(pk=request.POST.get('pedido'))
+                                store = Pedido.objects.get(pk=request.POST.get('pedido'))
                                 store = store.almacen_id
                             except ObjectDoesNotExist, e:
                                 print e
                                 store = 'AL01'
                             try:
-                                inv = models.Inventario.objects.get(materiales_id=x.materiales_id, periodo=globalVariable.get_year, almacen_id=store)
+                                inv = Inventario.objects.get(materiales_id=x.materiales_id, periodo=globalVariable.get_year, almacen_id=store)
                                 stock = inv.stock
                                 inv.stock = (stock - float(x.cantguide))
                                 inv.save()
                             except ObjectDoesNotExist, e:
                                 print e
-                            # brands = models.InventoryBrand.objects.filter(materiales_id=x.materiales_id, periodo=globalVariable.get_year)
+                            # brands = InventoryBrand.objects.filter(materiales_id=x.materiales_id, periodo=globalVariable.get_year)
 
                         # recover details nipples
-                        nip = models.Niple.objects.filter(pedido_id__exact=request.POST.get('pedido'), tag='1',flag=True)
+                        nip = Niple.objects.filter(pedido_id__exact=request.POST.get('pedido'), tag='1',flag=True)
                         for x in nip:
-                            obj= models.NipleGuiaRemision()
+                            obj= NipleGuiaRemision()
                             obj.guia_id = guidekeys
                             obj.materiales_id = x.materiales_id
                             obj.metrado = x.metrado
@@ -910,7 +908,7 @@ def view_generate_document_out(request,oid):
                             obj.flag = True
                             # save details niples for guide referral
                             obj.save()
-                            ob = models.Niple.objects.get(pk__exact=x.id)
+                            ob = Niple.objects.get(pk__exact=x.id)
                             ob.tag= '2' if x.cantshop <= 0 else '0'
                             ob.save()
                         data['status'] = True
@@ -935,17 +933,17 @@ def view_list_guide_referral_success(request):
                 ls = []
                 try:
                     if request.GET.get('tra') == 'series':
-                        lst= models.GuiaRemision.objects.get(pk=request.GET.get('series'),status='GE',flag=True)
+                        lst= GuiaRemision.objects.get(pk=request.GET.get('series'),status='GE',flag=True)
                         ls= [{'item':1,'guia_id':lst.guia_id,'nompro':lst.pedido.proyecto.nompro,'traslado':lst.traslado.strftime(FORMAT_DATE_STR),'connom':lst.condni.connom}]
                         data['status']= True
                     elif request.GET.get('tra') == 'dates':
                         if request.GET.get('fecf') == '' and request.GET.get('feci') != '':
                             star= datetime.datetime.strptime(request.GET.get('feci'), FORMAT_DATE_STR ).date()
-                            lst= models.GuiaRemision.objects.filter(traslado=star,status='GE',flag=True)
+                            lst= GuiaRemision.objects.filter(traslado=star,status='GE',flag=True)
                         elif request.GET.get('fecf') != '' and request.GET.get('feci') != '':
                             star= datetime.datetime.strptime(request.GET.get('feci'), FORMAT_DATE_STR ).date()
                             end= datetime.datetime.strptime(request.GET.get('fecf'), FORMAT_DATE_STR ).date()
-                            lst= models.GuiaRemision.objects.filter(traslado__range=[star,end],status='GE',flag=True)
+                            lst= GuiaRemision.objects.filter(traslado__range=[star,end],status='GE',flag=True)
                         i= 1
                         for x in lst:
                             ls.append({'item':i,'guia_id':x.guia_id,'nompro':x.pedido.proyecto.nompro,'traslado':x.traslado.strftime(FORMAT_DATE_STR),'connom':x.condni.connom})
@@ -955,18 +953,18 @@ def view_list_guide_referral_success(request):
                     data['status']= False
                 data['list']= ls
                 return HttpResponse(simplejson.dumps(data),mimetype='application/json')
-            lst= models.GuiaRemision.objects.filter(status='GE',flag=True).order_by('-guia_id')[:10]
+            lst= GuiaRemision.objects.filter(status='GE',flag=True).order_by('-guia_id')[:10]
             ctx= {'guide':lst}
             return render_to_response('almacen/listguide.html',ctx,context_instance=RequestContext(request))
         if request.method == 'POST':
             data= {}
             try:
-                obj= models.GuiaRemision.objects.get(pk=request.POST.get('series'),status='GE',flag=True)
+                obj= GuiaRemision.objects.get(pk=request.POST.get('series'),status='GE',flag=True)
                 obj.status= 'AN'
                 obj.flag= False
                 obj.save()
-                det= models.DetGuiaRemision.objects.filter(guia_id__exact=request.POST.get('series')).update(flag=False)
-                nip= models.NipleGuiaRemision.objects.filter(guia_id__exact=request.POST.get('series')).update(flag=False)
+                det= DetGuiaRemision.objects.filter(guia_id__exact=request.POST.get('series')).update(flag=False)
+                nip= NipleGuiaRemision.objects.filter(guia_id__exact=request.POST.get('series')).update(flag=False)
                 data['status']= True
             except ObjectDoesNotExist, e:
                 data['status']= False
@@ -984,17 +982,17 @@ def view_list_guide_referral_canceled(request):
                 ls= []
                 try:
                     if request.GET.get('tra') == 'series':
-                        lst= models.GuiaRemision.objects.get(pk=request.GET.get('series'),status='AN',flag=False)
+                        lst= GuiaRemision.objects.get(pk=request.GET.get('series'),status='AN',flag=False)
                         ls= [{'item':1,'guia_id':lst.guia_id,'nompro':lst.pedido.proyecto.nompro,'traslado':lst.traslado.strftime(FORMAT_DATE_STR),'connom':lst.condni.connom}]
                         data['status']= True
                     elif request.GET.get('tra') == 'dates':
                         if request.GET.get('fecf') == '' and request.GET.get('feci') != '':
                             star= datetime.datetime.strptime(request.GET.get('feci'), FORMAT_DATE_STR ).date()
-                            lst= models.GuiaRemision.objects.filter(traslado=star,status='AN',flag=False)
+                            lst= GuiaRemision.objects.filter(traslado=star,status='AN',flag=False)
                         elif request.GET.get('fecf') != '' and request.GET.get('feci') != '':
                             star= datetime.datetime.strptime(request.GET.get('feci'), FORMAT_DATE_STR ).date()
                             end= datetime.datetime.strptime(request.GET.get('fecf'), FORMAT_DATE_STR ).date()
-                            lst= models.GuiaRemision.objects.filter(traslado__range=[star,end],status='AN',flag=False)
+                            lst= GuiaRemision.objects.filter(traslado__range=[star,end],status='AN',flag=False)
                         i= 1
                         for x in lst:
                             ls.append({'item':i,'guia_id':x.guia_id,'nompro':x.pedido.proyecto.nompro,'traslado':x.traslado.strftime(FORMAT_DATE_STR),'connom':x.condni.connom})
@@ -1004,7 +1002,7 @@ def view_list_guide_referral_canceled(request):
                     data['status']= False
                 data['list']= ls
                 return HttpResponse(simplejson.dumps(data),mimetype='application/json')
-            lst= models.GuiaRemision.objects.filter(status='AN',flag=False).order_by('-guia_id')[:10]
+            lst= GuiaRemision.objects.filter(status='AN',flag=False).order_by('-guia_id')[:10]
             ctx= {'guide':lst}
             return render_to_response('almacen/listguidecanceled.html',ctx,context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
@@ -1021,22 +1019,22 @@ class InventoryView(ListView, JSONResponseMixin):
         if request.is_ajax():
             if request.GET.get('tipo') == 'desc':
                 if bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') == 'None':
-                    model = models.Inventario.objects.filter(materiales__matnom__icontains=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'), stock__lte=0)
+                    model = Inventario.objects.filter(materiales__matnom__icontains=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'), stock__lte=0)
                 elif bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') != 'None':
-                    model = models.Inventario.objects.filter(materiales__matnom__icontains=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'), stock__lte=0, stkmin=request.GET.get('stkmin'))
+                    model = Inventario.objects.filter(materiales__matnom__icontains=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'), stock__lte=0, stkmin=request.GET.get('stkmin'))
                 elif not bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') != 'None':
-                    model = models.Inventario.objects.filter(materiales__matnom__icontains=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'))
+                    model = Inventario.objects.filter(materiales__matnom__icontains=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'))
                 else:
-                    model = models.Inventario.objects.filter(materiales__matnom__icontains=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'))
+                    model = Inventario.objects.filter(materiales__matnom__icontains=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'))
             elif request.GET.get('tipo') == 'cod':
                 if bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') == 'None':
-                    model = models.Inventario.objects.filter(materiales__materiales_id__startswith=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'), stock__lte=0)
+                    model = Inventario.objects.filter(materiales__materiales_id__startswith=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'), stock__lte=0)
                 elif bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') != 'None':
-                    model = models.Inventario.objects.filter(materiales__materiales_id__startswith=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'), stock__lte=0, stkmin=request.GET.get('stkmin'))
+                    model = Inventario.objects.filter(materiales__materiales_id__startswith=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'), stock__lte=0, stkmin=request.GET.get('stkmin'))
                 elif not bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') != 'None':
-                    model = models.Inventario.objects.filter(materiales__materiales_id__startswith=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'))
+                    model = Inventario.objects.filter(materiales__materiales_id__startswith=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'))
                 else:
-                    model = models.Inventario.objects.filter(materiales__materiales_id__startswith=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'))
+                    model = Inventario.objects.filter(materiales__materiales_id__startswith=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'))
             counter = 0
             paginator = Paginator(model, 20)
             page = request.GET.get('page')
@@ -1059,9 +1057,9 @@ class InventoryView(ListView, JSONResponseMixin):
                 data['next_page_number'] = materials.next_page_number()
             return HttpResponse(simplejson.dumps(data), mimetype='application/json')
         else:
-            model = models.Inventario.objects.filter(periodo=datetime.datetime.today().date().year.__str__(),flag=True).order_by('materiales')
+            model = Inventario.objects.filter(periodo=datetime.datetime.today().date().year.__str__(),flag=True).order_by('materiales')
         context = {}
-        context['periodo'] = [x['periodo'] for x in models.Inventario.objects.values('periodo').order_by('periodo').distinct('periodo')]
+        context['periodo'] = [x['periodo'] for x in Inventario.objects.values('periodo').order_by('periodo').distinct('periodo')]
         context['almacen'] = [{'alid':x.almacen_id, 'nom': x.nombre} for x in Almacene.objects.filter(flag=True)]
         paginator = Paginator(model, 20) # Show 25 materials per page
         page = request.GET.get('page')
@@ -1082,23 +1080,23 @@ class InventoryView(ListView, JSONResponseMixin):
         try:
             tipo = request.POST.get('tipo')
             if tipo == 'save-tmp':
-                obj = models.tmpsuministro()
+                obj = tmpsuministro()
                 obj.empdni = request.user.get_profile().empdni_id
                 obj.materiales_id = request.POST.get('add-id')
                 obj.cantidad = request.POST.get('add-cant')
                 obj.origin_id = request.POST.get('add-oid')
                 obj.origin = request.POST.get('add-ori')
                 obj.save()
-                obj = models.Inventario.objects.get(materiales_id=request.POST.get('add-id'),almacen_id=request.POST.get('add-oid'),periodo=datetime.datetime.today().date().strftime('%Y'))
+                obj = Inventario.objects.get(materiales_id=request.POST.get('add-id'),almacen_id=request.POST.get('add-oid'),periodo=datetime.datetime.today().date().strftime('%Y'))
                 obj.spptag = True
                 obj.save()
                 data['status'] = True
             if tipo == 'all':
-                sts = models.Inventario.register_all_list_materilas(request.POST.get('alid'), request.POST.get('quantity'))
+                sts = Inventario.register_all_list_materilas(request.POST.get('alid'), request.POST.get('quantity'))
                 data['status'] = sts
             if tipo == 'per':
                 print 'ingress step'
-                sts = models.Inventario.register_period_past(
+                sts = Inventario.register_period_past(
                     request.POST.get('alcp'),
                     request.POST.get('pewh'),
                     request.POST.get('alwh')
@@ -1120,7 +1118,7 @@ class SupplyView(ListView):
             data = dict()
             try:
                 arr = json.loads(request.GET.get('mats'))
-                queryset = models.tmpsuministro.objects.extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_tmpsuministro.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},).filter(empdni__exact=request.user.get_profile().empdni_id, materiales_id__in=arr)
+                queryset = tmpsuministro.objects.extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_tmpsuministro.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},).filter(empdni__exact=request.user.get_profile().empdni_id, materiales_id__in=arr)
                 queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id', 'brand__brand','model__model','stock')
                 queryset = queryset.annotate(cantidad=Sum('cantidad')).order_by('materiales__matnom')
                 data['list'] = [
@@ -1142,7 +1140,7 @@ class SupplyView(ListView):
             data = simplejson.dumps(data)
             return HttpResponse(data, mimetype='application/json', content_type='application/json')
         context = {}
-        context['tmp'] = models.tmpsuministro.objects.filter(empdni__exact=request.user.get_profile().empdni_id).order_by('materiales__matnom')
+        context['tmp'] = tmpsuministro.objects.filter(empdni__exact=request.user.get_profile().empdni_id).order_by('materiales__matnom')
         context['almacen'] = Almacene.objects.filter(flag=True)
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
@@ -1152,14 +1150,14 @@ class SupplyView(ListView):
             data = {}
             try:
                 if request.POST.get('tipo') == 'deltmp':
-                    obj = models.tmpsuministro.objects.filter(empdni__exact=request.user.get_profile().empdni_id)
+                    obj = tmpsuministro.objects.filter(empdni__exact=request.user.get_profile().empdni_id)
                     if obj:
                         for x in obj:
                             det = None
                             if x.origin == 'PE':
-                                det = models.Detpedido.objects.get(pedido_id__exact=x.origin_id, materiales_id=x.materiales_id)
+                                det = Detpedido.objects.get(pedido_id__exact=x.origin_id, materiales_id=x.materiales_id)
                             elif x.origin == 'AL':
-                                det = models.Inventario.objects.get(almacen_id=x.origin_id, materiales_id=x.materiales_id, periodo=globalVariable.date_now(type='str',format='%Y'))
+                                det = Inventario.objects.get(almacen_id=x.origin_id, materiales_id=x.materiales_id, periodo=globalVariable.date_now(type='str',format='%Y'))
                             else:
                                 continue
                             det.spptag = False
@@ -1173,7 +1171,7 @@ class SupplyView(ListView):
                 if 'generateSupply' in request.POST:
                     # save bedside of supply
                     idsp = genkeys.GenerateKeySupply()
-                    bed = models.Suministro()
+                    bed = Suministro()
                     bed.suministro_id = idsp
                     bed.almacen_id = request.POST.get('almacen')
                     bed.empdni = request.user.get_profile().empdni_id
@@ -1183,7 +1181,7 @@ class SupplyView(ListView):
                     bed.asunto = request.POST.get('asunto')
                     bed.status = 'PE'
                     # details supply
-                    obj = models.tmpsuministro.objects.filter(empdni=request.user.get_profile().empdni_id)
+                    obj = tmpsuministro.objects.filter(empdni=request.user.get_profile().empdni_id)
                     proj = obj.values('orders__proyecto__proyecto_id')
                     proj = proj.distinct('orders__proyecto__proyecto_id').order_by('orders__proyecto__proyecto_id')
                     #print ','.join([x['orders__proyecto__proyecto_id'] for x in proj])
@@ -1191,7 +1189,7 @@ class SupplyView(ListView):
                     bed.orders = ','.join([x['orders__proyecto__proyecto_id'] for x in proj]) if proj[0]['orders__proyecto__proyecto_id'] is not None else ''
                     bed.save()
                     for x in obj:
-                        det = models.DetSuministro()
+                        det = DetSuministro()
                         det.suministro_id = idsp
                         det.materiales_id = x.materiales_id
                         det.cantidad = float(x.cantidad)
@@ -1216,7 +1214,7 @@ class ListOrdersSummary(TemplateView):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
-        context[self.context_object_name] = models.Pedido.objects.filter(
+        context[self.context_object_name] = Pedido.objects.filter(
                                 Q(flag=True),
                                 Q(status='AP') |
                                 Q(status='IN')).order_by('-registrado')
@@ -1230,7 +1228,7 @@ class ListOrdersSummary(TemplateView):
         if request.is_ajax():
             data = {}
             try:
-                obj = models.tmpsuministro()
+                obj = tmpsuministro()
                 #arr = json.loads(request.POST.get('add-oid'))
                 #for x in arr.__len__():
                 obj.empdni = request.user.get_profile().empdni_id
@@ -1240,7 +1238,7 @@ class ListOrdersSummary(TemplateView):
                 obj.origin_id = request.POST.get('add-ori')
                 obj.save()
                 arr = json.loads(request.POST.get('orders'))
-                models.Detpedido.objects.filter(Q(flag=True) & Q(pedido_id__in=arr) & Q(materiales_id=request.POST.get('id-add'))).update(spptag=True)
+                Detpedido.objects.filter(Q(flag=True) & Q(pedido_id__in=arr) & Q(materiales_id=request.POST.get('id-add'))).update(spptag=True)
                 data['status'] = True
             except ObjectDoesNotExist:
                 data['status'] = False
@@ -1252,12 +1250,12 @@ class ListDetOrders(JSONResponseMixin, TemplateView):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
-        context['orders'] = models.Pedido.objects.filter(Q(flag=True) & Q(status='AP') | Q(status='IN')).order_by('-pedido_id')
+        context['orders'] = Pedido.objects.filter(Q(flag=True) & Q(status='AP') | Q(status='IN')).order_by('-pedido_id')
         orders = [
             x.pedido_id
             for x in context['orders']
         ]
-        context['details'] = models.Detpedido.objects.filter(pedido_id__in=orders).extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"}).order_by('materiales__matnom')
+        context['details'] = Detpedido.objects.filter(pedido_id__in=orders).extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"}).order_by('materiales__matnom')
         return render_to_response(self.template_name, context, context_instance=RequestContext(request))
 
     @method_decorator(login_required)
@@ -1267,14 +1265,14 @@ class ListDetOrders(JSONResponseMixin, TemplateView):
             try:
                 mats = json.loads(request.POST.get('mats'))
                 for x in range(mats.__len__()):
-                    obj = models.tmpsuministro()
+                    obj = tmpsuministro()
                     obj.empdni = request.user.get_profile().empdni_id
                     obj.materiales_id = mats[x]['mid']
                     obj.cantidad = float(mats[x]['cant'].__str__())
                     obj.origin = request.POST.get('addori')
                     obj.orders_id = mats[x]['oid']
                     obj.save()
-                    dor = models.Detpedido.objects.get(pedido_id=mats[x]['oid'], materiales_id=mats[x]['mid'])
+                    dor = Detpedido.objects.get(pedido_id=mats[x]['oid'], materiales_id=mats[x]['mid'])
                     dor.spptag = True
                     dor.save()
                 data['status'] = True
@@ -1397,7 +1395,7 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                         counter = 0
                         for x in details:
                             # details Note Ingress
-                            det = models.DetIngress()
+                            det = DetIngress()
                             det.ingress_id = ingress
                             det.materials_id = x['materials']
                             det.quantity = x['quantity']
@@ -1405,12 +1403,12 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                             det.model_id = x['model'] if 'model' in x else 'MO000'
                             det.report = '0'
                             det.save()
-                            inv = models.Inventario.objects.filter(materiales_id=x['materials'], periodo=globalVariable.get_year, almacen_id=request.POST.get('storage'), flag=True)
+                            inv = Inventario.objects.filter(materiales_id=x['materials'], periodo=globalVariable.get_year, almacen_id=request.POST.get('storage'), flag=True)
                             if inv:
                                 inv[0].stock = (inv[0].stock + float(x['quantity']))
                                 inv[0].save()
                             else:
-                                inv = models.Inventario()
+                                inv = Inventario()
                                 inv.almacen_id = request.POST.get('storage')
                                 inv.materiales_id = x['materials']
                                 inv.stock = x['quantity']
@@ -1422,12 +1420,12 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                                 inv.periodo = globalVariable.get_year
                                 inv.compra_id = request.POST.get('purchase')
                                 inv.save()
-                            wbm = models.InventoryBrand.objects.filter(storage_id=request.POST.get('storage'), materials_id=x['materials'], period=globalVariable.get_year, brand_id=x['brand'] if 'brand' in x else 'BR000', model_id=x['model'] if 'model' in x else 'MO000')
+                            wbm = InventoryBrand.objects.filter(storage_id=request.POST.get('storage'), materials_id=x['materials'], period=globalVariable.get_year, brand_id=x['brand'] if 'brand' in x else 'BR000', model_id=x['model'] if 'model' in x else 'MO000')
                             if wbm:
                                 wbm[0].stock = wbm[0].stock + float(x['quantity'])
                                 wbm[0].save()
                             else:
-                                bm = models.InventoryBrand()
+                                bm = InventoryBrand()
                                 bm.storage_id = request.POST.get('storage')
                                 bm.materials_id = x['materials']
                                 bm.period = globalVariable.get_year
@@ -1472,14 +1470,14 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
                 try:
                     if 'search' in request.GET:
                         if 'nro' in request.GET:
-                            obj = models.NoteIngress.objects.filter(
+                            obj = NoteIngress.objects.filter(
                                     pk=request.GET.get('nro'), status='CO')
                         if 'status' in request.GET:
-                            obj = models.NoteIngress.objects.filter(
+                            obj = NoteIngress.objects.filter(
                                     status=request.GET.get('status'))
                         if 'sdate' in request.GET:
                             if 'edate' in request.GET:
-                                obj = models.NoteIngress.objects.filter(
+                                obj = NoteIngress.objects.filter(
                                         register__range=(
                                             globalVariable.format_str_date(
                                                 request.GET.get(
@@ -1492,7 +1490,7 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
                                 #        request.GET.get('sdate'),'%d-%m-%Y')
                                 date = globalVariable.format_str_date(
                                         request.GET.get('sdate'), '%d-%m-%Y')
-                                obj = models.NoteIngress.objects.filter(
+                                obj = NoteIngress.objects.filter(
                                     register__startswith=date)
                         if obj:
                             context['list'] = [{
@@ -1506,7 +1504,7 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
                         else:
                             context['status'] = False
                     if 'details' in request.GET:
-                        bedside = models.NoteIngress.objects.get(
+                        bedside = NoteIngress.objects.get(
                                     pk=request.GET['ingress'])
                         context['ingress'] = bedside.ingress_id
                         context['storage'] = bedside.storage.nombre
@@ -1525,7 +1523,7 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
                                 'model': x.model.model,
                                 'quantity': x.quantity
                             }
-                            for x in models.DetIngress.objects.filter(
+                            for x in DetIngress.objects.filter(
                                 ingress_id=request.GET.get('ingress'))
                         ]
                         context['status'] = True
@@ -1533,7 +1531,7 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
                     context['raise'] = str(e)
                     context['status'] = False
                 return self.render_to_json_response(context)
-            context['note'] = models.NoteIngress.objects.filter(
+            context['note'] = NoteIngress.objects.filter(
                                 status='CO').order_by('-register')[:10]
             return render_to_response(
                 self.template_name,
@@ -1548,7 +1546,7 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
         if request.is_ajax():
             try:
                 if 'editingress' in request.POST:
-                    obj = models.NoteIngress.objects.get(
+                    obj = NoteIngress.objects.get(
                             pk=request.POST.get('ingress'))
                     obj.guide = request.POST.get('guide')
                     obj.invoice = request.POST.get('invoice')
@@ -1557,12 +1555,12 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
                     obj.save()
                     context['status'] = True
                 if 'annularNI' in request.POST:
-                    ingress = models.NoteIngress.objects.get(
+                    ingress = NoteIngress.objects.get(
                                 pk=request.POST.get('ingress'))
-                    details = models.DetIngress.objects.filter(
+                    details = DetIngress.objects.filter(
                                 ingress_id=request.POST.get('ingress'))
                     for x in details:
-                        inv = models.Inventario.objects.get(
+                        inv = Inventario.objects.get(
                                 materiales_id=x.materials_id,
                                 periodo=ingress.register.strftime('%Y'))
                         stock = (inv.stock - x.quantity)
@@ -1571,7 +1569,7 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
                         else:
                             inv.stock = 0
                         try:
-                            brand = models.InventoryBrand.objects.get(
+                            brand = InventoryBrand.objects.get(
                                         materials_id=x.materials_id,
                                         period=ingress.register.strftime('%Y'),
                                         brand_id=x.brand_id,
@@ -1636,8 +1634,18 @@ class GuideSingle(JSONResponseMixin, TemplateView):
                         context['list'] = json.loads(
                             serializers.serialize(
                                 'json',
-                                models.TmpDetGuia.objects.filter(flag=True),
+                                TmpDetGuia.objects.filter(flag=True),
                                 relations=('materials', 'brand', 'model')))
+                        context['status'] = True
+                    if 'brandandmodel' in request.GET:
+                        context['brand'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                Brand.objects.filter(flag=True)))
+                        context['model'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                Model.objects.filter(flag=True)))
                         context['status'] = True
                 except ObjectDoesNotExist as e:
                     context['raise'] = str(e)
@@ -1655,12 +1663,20 @@ class GuideSingle(JSONResponseMixin, TemplateView):
             try:
                 if 'saveMaterial' in request.POST:
                     try:
-                        obj = models.TmpDetGuia.objects.get(
+                        if 'obrand' in request.POST:
+                            obj = TmpDetGuia.objects.get(
+                                materials_id=request.POST['materials'],
+                                brand_id=request.POST['obrand'],
+                                model_id=request.POST['omodel'])
+                            print 'obrand'
+                        else:
+                            obj = TmpDetGuia.objects.get(
                                 materials_id=request.POST['materials'],
                                 brand_id=request.POST['brand'],
                                 model_id=request.POST['model'])
+                            print 'without obrand'
                         form = forms.addTempGuide(request.POST, instance=obj)
-                    except models.TmpDetGuia.DoesNotExist:
+                    except TmpDetGuia.DoesNotExist:
                         form = forms.addTempGuide(request.POST)
                     if form.is_valid():
                         form.save()
@@ -1668,7 +1684,7 @@ class GuideSingle(JSONResponseMixin, TemplateView):
                     else:
                         context['status'] = False
                 if 'delItem' in request.POST:
-                    models.TmpDetGuia.objects.get(
+                    TmpDetGuia.objects.get(
                         materials_id=request.POST['materials'],
                         brand_id=request.POST['brand'],
                         model_id=request.POST['model']).delete()

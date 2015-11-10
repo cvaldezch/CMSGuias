@@ -156,15 +156,9 @@ class DetGuiaRemision(models.Model):
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     cantguide = models.FloatField(default=0, null=True, blank=True)
     brand = models.ForeignKey(
-                Brand,
-                to_field='brand_id',
-                null=True,
-                blank=True)
+                Brand, to_field='brand_id', null=True, blank=True)
     model = models.ForeignKey(
-                Model,
-                to_field='model_id',
-                null=True,
-                blank=True)
+                Model, to_field='model_id', null=True, blank=True)
     observation = models.CharField(max_length=250, null=True, blank=True)
     flag = models.BooleanField(default=True)
 

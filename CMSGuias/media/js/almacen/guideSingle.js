@@ -6,9 +6,10 @@ app = angular.module('SGuideApp', ['ngCookies']).config(function($httpProvider) 
   $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
 });
 
-app.controller('SGuideCtrl', function($scope, $http, $cookies) {
+app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+  $scope.mat = {};
   angular.element(document).ready(function() {
     $('.datepicker').pickadate({
       selectMonths: true,
@@ -18,6 +19,7 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies) {
     $scope.customersList();
     $scope.carrierList();
     $scope.listTemp();
+    $scope.brandmodel();
   });
   $scope.customersList = function() {
     $http.get('', {
@@ -62,6 +64,22 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies) {
       }
     });
   };
+  $scope.brandmodel = function() {
+    $http.get('', {
+      params: {
+        brandandmodel: true
+      }
+    }).success(function(response) {
+      if (response.status) {
+        $scope.brand = response.brand;
+        $scope.model = response.model;
+        $scope.mat.brand = 'BR000';
+        $scope.mat.model = 'MO000';
+      } else {
+        console.log("No loads brand and model");
+      }
+    });
+  };
   $scope.saveDetalle = function() {
     var data;
     data = {
@@ -71,6 +89,12 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies) {
       brand: $scope.mat.brand,
       model: $scope.mat.model
     };
+    if ($scope.mat.obrand !== "") {
+      data.obrand = $scope.mat.obrand;
+    }
+    if ($scope.mat.omodel !== "") {
+      data.omodel = $scope.mat.omodel;
+    }
     if ($scope.mat.quantity <= 0) {
       Materialize.toast("Cantidad Invalida", 3600);
       data.saveMaterial = false;
@@ -83,6 +107,12 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies) {
         method: 'post'
       }).success(function(response) {
         if (response.status) {
+          if ($scope.mat.hasOwnProperty('obrand')) {
+            $scope.mat.obrand = '';
+          }
+          if ($scope.mat.hasOwnProperty('omodel')) {
+            $scope.mat.omodel = '';
+          }
           $scope.listTemp();
           Materialize.toast('Guardado OK', 2600);
         } else {
@@ -99,7 +129,7 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies) {
     }).success(function(response) {
       if (response.status) {
         $scope.list = response.list;
-        setTimeout(function() {
+        $timeout(function() {
           return $('.dropdown-button').dropdown();
         }, 800);
       } else {
@@ -108,20 +138,26 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies) {
     });
   };
   $scope.showEdit = function($event) {
-    $scope.shwaddm = true;
     $scope.mat.code = $event.currentTarget.parentElement.parentElement.parentElement.parentElement.children[1].innerText;
-    setTimeout(function() {
+    $timeout(function() {
       var e;
       e = $.Event('keypress', {
         keyCode: 13
       });
       $("[name=code]").trigger(e);
     }, 100);
-    setTimeout(function() {
-      $scope.mat.quantity = parseFloat($event.currentTarget.parentElement.parentElement.parentElement.parentElement.children[6].innerText);
-      $scope.mat.brand = $event.currentTarget.dataset.brand;
-      $scope.mat.model = $event.currentTarget.dataset.model;
-    }, 600);
+    $timeout(function() {
+      var quantity;
+      quantity = parseFloat($event.currentTarget.parentElement.parentElement.parentElement.parentElement.children[6].innerText);
+      $scope.shwaddm = true;
+      $scope.mat = {
+        quantity: parseFloat(quantity),
+        brand: $event.currentTarget.dataset.brand,
+        model: $event.currentTarget.dataset.model,
+        obrand: $event.currentTarget.dataset.brand,
+        omodel: $event.currentTarget.dataset.model
+      };
+    }, 300);
   };
   $scope.delItem = function($event) {
     var text;
@@ -158,4 +194,9 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies) {
       }
     });
   };
+  $scope.$watch('shwaddm', function(old, nw) {});
+  $scope.$watch('mat.brand', function(old, nw) {
+    console.log(old, nw);
+    console.log($scope.mat, "object");
+  });
 });

@@ -118,20 +118,30 @@
                                 <label>Código</label>
                             </div>
                             <div class="input-field col l6 m6 s12">
-                                <input type="number" min="0" step="0.1" name="cantidad" ng-model="mat.quantity" value="{{mat.quantity}}">
-                                <label class="active" for="cantidad">Cantidad / Metrado</label>
+                                <input type="number" min="0" step="0.1" name="quantity" ng-model="mat.quantity">
+                                <label ng-class="{'active':mat.quantity}">Cantidad / Metrado</label>
                             </div>
                             <div class="col l6 m6 s12">
                                 <label>Marca</label>
-                                <select class="browser-default" ng-model="mat.brand" ng-init="mat.brand=$('[name=brand]').val()" name="brand"></select>
+                                <select class="browser-default" ng-model="mat.brand">
+                                    <option ng-repeat="x in brand" value="{{x.pk}}">{{x.fields.brand}}</option>
+                                </select>
                             </div>
                             <div class="col l6 m6 s12">
                                 <label>Modelo</label>
-                                <select class="browser-default" ng-model="mat.model" ng-init="mat.model=$('[name=model]').val()" name="model"></select>
+                                <select class="browser-default" ng-model="mat.model">
+                                    <option ng-repeat="x in model" value="{{x.pk}}">{{x.fields.model}}</option>
+                                </select>
+                                <!-- <input type="hidden" ng-model="mat.obrand">
+                                <input type="hidden" ng-model="mat.omodel"> -->
                             </div>
                         {% endverbatim %}
                         <div class="col l12 m12 s12 right-align">
                             <br>
+                            <button type="button" class="btn grey lighten-5 grey-text text-darken-3 left" ng-click="shwaddm=false">
+                                <i class="fa fa-times"></i>
+                                <span class="hide-on-med-and-down">CERRAR</span>
+                            </button>
                             <button type="button" class="btn light-blue darken-2" ng-click="saveDetalle()">
                                 <i class="fa fa-floppy-o"></i>
                                 <span class="hide-on-med-and-down">GUARDAR</span>
@@ -202,6 +212,9 @@
             </tbody>
         </table>
     </div>
+    <br>
+    <br>
+    <br>
 {% endblock content %}
 {% block footer %}
     <!-- css -->
