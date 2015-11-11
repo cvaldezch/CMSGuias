@@ -74,7 +74,6 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
             quantity: $scope.mat.quantity
             brand: $scope.mat.brand
             model: $scope.mat.model
-
         if $scope.mat.obrand isnt ""
             data.obrand = $scope.mat.obrand
         if $scope.mat.omodel isnt ""
@@ -96,6 +95,9 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
                         $scope.mat.omodel = ''
                     $scope.listTemp()
                     Materialize.toast 'Guardado OK', 2600
+                    $scope.mat.brand = 'BR000'
+                    $scope.mat.model = 'MO000'
+                    $scope.mat.quantity = 0
                     return
                 else
                     swal "Error", "No se guardo los datos", "error"
@@ -164,6 +166,42 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
                         return
                 return
         return
+    $scope.getStock = ->
+        $code = $(".id-mat")
+        data =
+            gstock: true
+            brand: $scope.mat.brand
+            model: $scope.mat.model
+        console.log data
+        if $code.val()
+            data.code = $code.val()
+        else
+            data.gstock = false
+        if data.gstock
+            $http
+                url: ''
+                data: $.param data
+                method: 'post'
+            .success (response) ->
+                if response.status
+                    return
+                else
+                    Materialize.toast "No se ha encontrado Stock", 2000
+                    return
+        return
+    $scope.validExistGuide = ->
+        data =
+            valid: true
+            guide: $scope.guide
+        $http
+            url: ''
+            method: 'post'
+            data: $.param data
+        .success (response) ->
+            if response.status
+                # message guide id exists
+                return
+        return
     $scope.$watch 'shwaddm', (old, nw) ->
         # if !nw
             # if $scope.mat.hasOwnProperty 'obrand'
@@ -172,7 +210,9 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
             #    $scope.mat.omodel = ''
         return
     $scope.$watch 'mat.brand', (old, nw) ->
-        console.log old, nw
-        console.log $scope.mat, "object"
+        # console.log old, nw
+        # console.log $scope.mat, "object"
+        if typeof(nw) isnt "undefined"
+            console.log nw
         return
     return

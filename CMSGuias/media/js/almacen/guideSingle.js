@@ -115,6 +115,9 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
           }
           $scope.listTemp();
           Materialize.toast('Guardado OK', 2600);
+          $scope.mat.brand = 'BR000';
+          $scope.mat.model = 'MO000';
+          $scope.mat.quantity = 0;
         } else {
           swal("Error", "No se guardo los datos", "error");
         }
@@ -194,9 +197,54 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
       }
     });
   };
+  $scope.getStock = function() {
+    var $code, data;
+    $code = $(".id-mat");
+    data = {
+      gstock: true,
+      brand: $scope.mat.brand,
+      model: $scope.mat.model
+    };
+    console.log(data);
+    if ($code.val()) {
+      data.code = $code.val();
+    } else {
+      data.gstock = false;
+    }
+    if (data.gstock) {
+      $http({
+        url: '',
+        data: $.param(data),
+        method: 'post'
+      }).success(function(response) {
+        if (response.status) {
+
+        } else {
+          Materialize.toast("No se ha encontrado Stock", 2000);
+        }
+      });
+    }
+  };
+  $scope.validExistGuide = function() {
+    var data;
+    data = {
+      valid: true,
+      guide: $scope.guide
+    };
+    $http({
+      url: '',
+      method: 'post',
+      data: $.param(data)
+    }).success(function(response) {
+      if (response.status) {
+
+      }
+    });
+  };
   $scope.$watch('shwaddm', function(old, nw) {});
   $scope.$watch('mat.brand', function(old, nw) {
-    console.log(old, nw);
-    console.log($scope.mat, "object");
+    if (typeof nw !== "undefined") {
+      console.log(nw);
+    }
   });
 });

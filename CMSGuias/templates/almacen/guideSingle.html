@@ -12,18 +12,18 @@
             <h5>Datos Generales</h5>
             <dvi class="row">
                 <div class="input-field col l2">
-                    <input type="text" maxlength="12">
+                    <input type="text" maxlength="12" ng-model="guide" ng-blur="validExistGuide()">
                     <label for="">Nro Guia</label>
                 </div>
                 <div class="input-field col l2">
-                    <input type="date" maxlength="10" class="datepicker">
+                    <input type="date" maxlength="10" class="datepicker" ng-model="transfer">
                     <label for="">Fecha Traslado</label>
                 </div>
                 <div class="col l8">
                     <div class="row">
                         <div class="col l12">
                             <label for="">Cliente</label>
-                            <select name="" id="" class="browser-default">
+                            <select name="" id="" class="browser-default" ng-model="customer">
                                 {% verbatim %}
                                     <option ng-repeat="x in customers" value="{{x.pk}}">{{x.fields.razonsocial}}</option>
                                 {% endverbatim %}
@@ -32,16 +32,16 @@
                     </div>
                 </div>
                 <div class="input-field col l6">
-                    <input type="text" value="{{ address }}">
+                    <input type="text" value="{{ address }}" ng-model="dotout">
                     <label for="">Punto de Salida</label>
                 </div>
                 <div class="input-field col l6">
-                    <input type="text">
+                    <input type="text" ng-model="dotarrival">
                     <label for="">Punto de Llegada</label>
                 </div>
                 <div class="col l4">
                     <label for="">Transportista</label>
-                    <select name="" id="" class="browser-default" ng-click="detCarriers($event)">
+                    <select name="" id="" class="browser-default" ng-model="carrier" ng-click="detCarriers($event)">
                         {% verbatim %}
                             <option ng-repeat="x in carriers" value="{{x.pk}}">{{x.fields.tranom}}</option>
                         {% endverbatim %}
@@ -49,7 +49,7 @@
                 </div>
                 <div class="col l4">
                     <label for="">Conductor</label>
-                    <select name="" id="" class="browser-default">
+                    <select name="" id="" class="browser-default" ng-model="driver">
                         {% verbatim %}
                             <option ng-repeat="x in drivers" value="{{x.pk}}">{{x.fields.connom}}</option>
                         {% endverbatim %}
@@ -57,22 +57,22 @@
                 </div>
                 <div class="col l4">
                     <label for="">Transporte</label>
-                    <select name="" id="" class="browser-default">
+                    <select name="" id="" class="browser-default" ng-model="transport">
                         {% verbatim %}
                             <option ng-repeat="x in transports" value="{{x.pk}}">{{x.fields.marca}} {{x.pk}}</option>
                         {% endverbatim %}
                     </select>
                 </div>
                 <div class="input-field col l2">
-                    <input type="text" value="VENTA">
+                    <input type="text" value="VENTA" ng-model="motive">
                     <label for="">Motivo</label>
                 </div>
                 <div class="input-field col l5">
-                    <input type="text">
+                    <input type="text" ng-model="observation">
                     <label for="">Observaciones</label>
                 </div>
                 <div class="input-field col l5">
-                    <input type="text">
+                    <input type="text" ng-model="note">
                     <label for="">Nota</label>
                 </div>
             </dvi>
@@ -119,17 +119,17 @@
                             </div>
                             <div class="input-field col l6 m6 s12">
                                 <input type="number" min="0" step="0.1" name="quantity" ng-model="mat.quantity">
-                                <label ng-class="{'active':mat.quantity}">Cantidad / Metrado</label>
+                                <label ng-class="{'active': mat.quantity}">Cantidad</label>
                             </div>
                             <div class="col l6 m6 s12">
                                 <label>Marca</label>
-                                <select class="browser-default" ng-model="mat.brand">
+                                <select class="browser-default" ng-model="mat.brand" ng-change="getStock()">
                                     <option ng-repeat="x in brand" value="{{x.pk}}">{{x.fields.brand}}</option>
                                 </select>
                             </div>
                             <div class="col l6 m6 s12">
                                 <label>Modelo</label>
-                                <select class="browser-default" ng-model="mat.model">
+                                <select class="browser-default" ng-model="mat.model" ng-change="getStock()">
                                     <option ng-repeat="x in model" value="{{x.pk}}">{{x.fields.model}}</option>
                                 </select>
                                 <!-- <input type="hidden" ng-model="mat.obrand">
