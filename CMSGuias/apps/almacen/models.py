@@ -130,7 +130,7 @@ class tmpniple(models.Model):
 
 class GuiaRemision(models.Model):
     guia_id = models.CharField(primary_key=True, max_length=12)
-    pedido = models.ForeignKey(Pedido, to_field='pedido_id')
+    pedido = models.ForeignKey(Pedido, to_field='pedido_id', null=True)
     ruccliente = models.ForeignKey(Cliente, to_field='ruccliente_id')
     puntollegada = models.CharField(max_length=200, null=True)
     registrado = models.DateTimeField(auto_now=True)

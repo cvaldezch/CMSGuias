@@ -202,17 +202,21 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
                 # message guide id exists
                 return
         return
-    $scope.$watch 'shwaddm', (old, nw) ->
+    $scope.change = ->
+        console.log "this object to change"
+        return
+    $scope.$watch 'summary', (old, nw) ->
+        console.log old, nw
         # if !nw
             # if $scope.mat.hasOwnProperty 'obrand'
             #    $scope.mat.obrand = ''
             # if $scope.mat.hasOwnProperty 'omodel'
             #    $scope.mat.omodel = ''
         return
-    $scope.$watch 'mat.brand', (old, nw) ->
-        # console.log old, nw
-        # console.log $scope.mat, "object"
-        if typeof(nw) isnt "undefined"
-            console.log nw
-        return
+    # $scope.$watch 'mat.brand', (old, nw) ->
+    #     # console.log old, nw
+    #     # console.log $scope.mat, "object"
+    #     if typeof(nw) isnt "undefined"
+    #         console.log nw
+    #     return
     return

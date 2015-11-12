@@ -104,12 +104,12 @@
                             <label>Descripción</label>
                             <ul id="matname-global" class="matname-global"></ul>
                         </div>
-                        <div class="col l6 m6 s12 input-field">
-                            <label ng-class="{'active': mat.measure != ''}">Medida</label>
-                            <select name="meter" class="browser-default" ng-model="mat.measure">
-                                <option value="" disabled selected></option>
-                            </select>
-                        </div>
+                        {% verbatim %}
+                            <div class="col l6 m6 s12 input-field">
+                                <label ng-class="{'active': summary}">Medida</label>
+                                <select name="meter" class="browser-default" ng-model="summary" ng-click="change()"></select>
+                            </div>
+                        {% endverbatim %}
                     </div>
                     <div class="col l6 m6 s12">
                         {% verbatim %}

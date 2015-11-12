@@ -241,10 +241,10 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
       }
     });
   };
-  $scope.$watch('shwaddm', function(old, nw) {});
-  $scope.$watch('mat.brand', function(old, nw) {
-    if (typeof nw !== "undefined") {
-      console.log(nw);
-    }
+  $scope.change = function() {
+    console.log("this object to change");
+  };
+  $scope.$watch('summary', function(old, nw) {
+    console.log(old, nw);
   });
 });
