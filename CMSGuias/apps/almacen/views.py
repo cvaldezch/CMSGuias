@@ -1890,8 +1890,25 @@ class GuideSingle(JSONResponseMixin, TemplateView):
                                 'json',
                                 Model.objects.filter(flag=True)))
                         context['status'] = True
-                    if 'stock' in request.GET:
-                        pass
+                    if 'gstock' in request.GET:
+                        context['stocka'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                Inventario.objects.filter(
+                                    materiales_id=request.GET['code'],
+                                    periodo=globalVariable.get_year)))
+                        det = InventoryBrand.objects.filter(
+                            period=globalVariable.get_year,
+                            materials_id=request.GET['code'])
+                        context['list'] = json.loads(
+                            serializers.serialize(
+                                'json', det))
+                        context['exact'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                det.filter(
+                                    brand_id=request.GET['brand'],
+                                    model_id=request.GET['model'])))
                         context['status'] = True
                 except ObjectDoesNotExist as e:
                     context['raise'] = str(e)

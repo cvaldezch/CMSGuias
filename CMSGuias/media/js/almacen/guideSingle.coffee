@@ -68,39 +68,72 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
                 return
         return
     $scope.saveDetalle = ->
+        # first get stock
+        $code = $(".id-mat")
         data =
-            saveMaterial: true
-            materials: $(".id-mat").text()
-            quantity: $scope.mat.quantity
+            gstock: true
             brand: $scope.mat.brand
             model: $scope.mat.model
-        if $scope.mat.obrand isnt ""
-            data.obrand = $scope.mat.obrand
-        if $scope.mat.omodel isnt ""
-            data.omodel = $scope.mat.omodel
-        if $scope.mat.quantity <= 0
-            Materialize.toast "Cantidad Invalida", 3600
-            data.saveMaterial = false
         console.log data
-        if data.saveMaterial
-            $http
-                url: ''
-                data: $.param data
-                method: 'post'
+        if $code.text()
+            data.code = $code.text()
+        else
+            data.gstock = false
+            Materialize.toast "El codigo del material no es correcto", 2000
+        if data.gstock
+            $http.get '', params: data
             .success (response) ->
                 if response.status
-                    if $scope.mat.hasOwnProperty 'obrand'
-                        $scope.mat.obrand = ''
-                    if $scope.mat.hasOwnProperty 'omodel'
-                        $scope.mat.omodel = ''
-                    $scope.listTemp()
-                    Materialize.toast 'Guardado OK', 2600
-                    $scope.mat.brand = 'BR000'
-                    $scope.mat.model = 'MO000'
-                    $scope.mat.quantity = 0
-                    return
+                    console.log "stock found"
+                    if response.exact.length
+                        data =
+                            saveMaterial: true
+                            materials: $(".id-mat").text()
+                            quantity: $scope.mat.quantity
+                            brand: $scope.mat.brand
+                            model: $scope.mat.model
+
+                        if $scope.mat.obrand isnt ""
+                            data.obrand = $scope.mat.obrand
+                        if $scope.mat.omodel isnt ""
+                            data.omodel = $scope.mat.omodel
+                        if data.quantity <= 0 or typeof(data.quantity) is "undefined"
+                            Materialize.toast "Cantidad Invalida", 4600
+                            data.saveMaterial = false
+                        console.log data
+                        if data.saveMaterial
+                            if response.exact[0].stock >= data.quantity
+                                $http
+                                    url: ''
+                                    data: $.param data
+                                    method: 'post'
+                                .success (response) ->
+                                    if response.status
+                                        if $scope.mat.hasOwnProperty 'obrand'
+                                            $scope.mat.obrand = ''
+                                        if $scope.mat.hasOwnProperty 'omodel'
+                                            $scope.mat.omodel = ''
+                                        $scope.listTemp()
+                                        Materialize.toast 'Guardado OK', 2600
+                                        $scope.mat.brand = 'BR000'
+                                        $scope.mat.model = 'MO000'
+                                        $scope.mat.quantity = 0
+                                        return
+                                    else
+                                        swal "Error", "No se guardo los datos", "error"
+                                        return
+                                return
+                            else
+                                swal "Alerta!", "Stock es menor o no existe en el inventario", "warning"
+                                return false
+                    else
+                        # show alternative for user
+                        # ...
+                        console.log response.list
+                        console.log response.stocka
+                        return
                 else
-                    swal "Error", "No se guardo los datos", "error"
+                    Materialize.toast "No se ha encontrado Stock", 2000
                     return
         return
     $scope.listTemp = ->
@@ -166,28 +199,9 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
                         return
                 return
         return
+    # function translate
     $scope.getStock = ->
-        $code = $(".id-mat")
-        data =
-            gstock: true
-            brand: $scope.mat.brand
-            model: $scope.mat.model
-        console.log data
-        if $code.val()
-            data.code = $code.val()
-        else
-            data.gstock = false
-        if data.gstock
-            $http
-                url: ''
-                data: $.param data
-                method: 'post'
-            .success (response) ->
-                if response.status
-                    return
-                else
-                    Materialize.toast "No se ha encontrado Stock", 2000
-                    return
+
         return
     $scope.validExistGuide = ->
         data =

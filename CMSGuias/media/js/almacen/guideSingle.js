@@ -81,45 +81,79 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
     });
   };
   $scope.saveDetalle = function() {
-    var data;
+    var $code, data;
+    $code = $(".id-mat");
     data = {
-      saveMaterial: true,
-      materials: $(".id-mat").text(),
-      quantity: $scope.mat.quantity,
+      gstock: true,
       brand: $scope.mat.brand,
       model: $scope.mat.model
     };
-    if ($scope.mat.obrand !== "") {
-      data.obrand = $scope.mat.obrand;
-    }
-    if ($scope.mat.omodel !== "") {
-      data.omodel = $scope.mat.omodel;
-    }
-    if ($scope.mat.quantity <= 0) {
-      Materialize.toast("Cantidad Invalida", 3600);
-      data.saveMaterial = false;
-    }
     console.log(data);
-    if (data.saveMaterial) {
-      $http({
-        url: '',
-        data: $.param(data),
-        method: 'post'
+    if ($code.text()) {
+      data.code = $code.text();
+    } else {
+      data.gstock = false;
+      Materialize.toast("El codigo del material no es correcto", 2000);
+    }
+    if (data.gstock) {
+      $http.get('', {
+        params: data
       }).success(function(response) {
         if (response.status) {
-          if ($scope.mat.hasOwnProperty('obrand')) {
-            $scope.mat.obrand = '';
+          console.log("stock found");
+          if (response.exact.length) {
+            data = {
+              saveMaterial: true,
+              materials: $(".id-mat").text(),
+              quantity: $scope.mat.quantity,
+              brand: $scope.mat.brand,
+              model: $scope.mat.model
+            };
+            if ($scope.mat.obrand !== "") {
+              data.obrand = $scope.mat.obrand;
+            }
+            if ($scope.mat.omodel !== "") {
+              data.omodel = $scope.mat.omodel;
+            }
+            if (data.quantity <= 0 || typeof data.quantity === "undefined") {
+              Materialize.toast("Cantidad Invalida", 4600);
+              data.saveMaterial = false;
+            }
+            console.log(data);
+            if (data.saveMaterial) {
+              if (response.exact[0].stock >= data.quantity) {
+                $http({
+                  url: '',
+                  data: $.param(data),
+                  method: 'post'
+                }).success(function(response) {
+                  if (response.status) {
+                    if ($scope.mat.hasOwnProperty('obrand')) {
+                      $scope.mat.obrand = '';
+                    }
+                    if ($scope.mat.hasOwnProperty('omodel')) {
+                      $scope.mat.omodel = '';
+                    }
+                    $scope.listTemp();
+                    Materialize.toast('Guardado OK', 2600);
+                    $scope.mat.brand = 'BR000';
+                    $scope.mat.model = 'MO000';
+                    $scope.mat.quantity = 0;
+                  } else {
+                    swal("Error", "No se guardo los datos", "error");
+                  }
+                });
+              } else {
+                swal("Alerta!", "Stock es menor o no existe en el inventario", "warning");
+                return false;
+              }
+            }
+          } else {
+            console.log(response.list);
+            console.log(response.stocka);
           }
-          if ($scope.mat.hasOwnProperty('omodel')) {
-            $scope.mat.omodel = '';
-          }
-          $scope.listTemp();
-          Materialize.toast('Guardado OK', 2600);
-          $scope.mat.brand = 'BR000';
-          $scope.mat.model = 'MO000';
-          $scope.mat.quantity = 0;
         } else {
-          swal("Error", "No se guardo los datos", "error");
+          Materialize.toast("No se ha encontrado Stock", 2000);
         }
       });
     }
@@ -197,34 +231,7 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
       }
     });
   };
-  $scope.getStock = function() {
-    var $code, data;
-    $code = $(".id-mat");
-    data = {
-      gstock: true,
-      brand: $scope.mat.brand,
-      model: $scope.mat.model
-    };
-    console.log(data);
-    if ($code.val()) {
-      data.code = $code.val();
-    } else {
-      data.gstock = false;
-    }
-    if (data.gstock) {
-      $http({
-        url: '',
-        data: $.param(data),
-        method: 'post'
-      }).success(function(response) {
-        if (response.status) {
-
-        } else {
-          Materialize.toast("No se ha encontrado Stock", 2000);
-        }
-      });
-    }
-  };
+  $scope.getStock = function() {};
   $scope.validExistGuide = function() {
     var data;
     data = {
