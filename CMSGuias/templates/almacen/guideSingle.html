@@ -152,6 +152,44 @@
                             <tbody></tbody>
                         </table>
                     </div>
+                    <div class="col l6 m6 s12" ng-show="alternative.length">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Marca</th>
+                                    <th>Modelo</th>
+                                    <th>Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% verbatim %}
+                                    <tr class="text-10" ng-repeat="x in alternative">
+                                        <td>{{$index + 1}}</td>
+                                        <td>{{x.fields.brand.fields.brand}}</td>
+                                        <td>{{x.fields.model.fields.model}}</td>
+                                        <th>{{x.fields.stock}}</th>
+                                    </tr>
+                                {% endverbatim %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col l6 m6 s12">
+                        <table class="table">
+                            <tbody>
+                                {% verbatim %}
+                                    <tr ng-repeat="x in exact">
+                                        <th class="col l4">Stock Material</th>
+                                        <th class="col l4">{{x.fields.stock}}</th>
+                                    </tr>
+                                    <tr ng-repeat="x in stkg">
+                                        <th class="col l4">Stock General</th>
+                                        <th class="col l4">{{x.fields.stock}}</th>
+                                    </tr>
+                                {% endverbatim %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

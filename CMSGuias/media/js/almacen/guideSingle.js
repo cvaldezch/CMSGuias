@@ -100,7 +100,6 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
         params: data
       }).success(function(response) {
         if (response.status) {
-          console.log("stock found");
           if (response.exact.length) {
             data = {
               saveMaterial: true,
@@ -121,7 +120,11 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
             }
             console.log(data);
             if (data.saveMaterial) {
-              if (response.exact[0].stock >= data.quantity) {
+              console.log(response.exact[0].fields);
+              if (response.exact[0].fields.stock >= data.quantity) {
+                $scope.exact = [];
+                $scope.alternative = [];
+                $scope.stkg = [];
                 $http({
                   url: '',
                   data: $.param(data),
@@ -145,12 +148,17 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
                 });
               } else {
                 swal("Alerta!", "Stock es menor o no existe en el inventario", "warning");
+                $scope.exact = response.exact;
+                $scope.alternative = response.list;
+                $scope.stkg = response.stocka;
                 return false;
               }
             }
           } else {
-            console.log(response.list);
-            console.log(response.stocka);
+            $scope.alternative = response.list;
+            $scope.stkg = response.stocka;
+            $scope.exact = response.exact;
+            swal("Alerta!", "El Material no cuenta con Stock", "warning");
           }
         } else {
           Materialize.toast("No se ha encontrado Stock", 2000);
@@ -231,20 +239,20 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
       }
     });
   };
-  $scope.getStock = function() {};
   $scope.validExistGuide = function() {
     var data;
     data = {
       valid: true,
       guide: $scope.guide
     };
+    console.log(data);
     $http({
       url: '',
       method: 'post',
       data: $.param(data)
     }).success(function(response) {
       if (response.status) {
-
+        swal("Información", "El Nro de guia ingresado ya existe", "info");
       }
     });
   };

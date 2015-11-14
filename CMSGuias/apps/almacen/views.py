@@ -1902,7 +1902,7 @@ class GuideSingle(JSONResponseMixin, TemplateView):
                             materials_id=request.GET['code'])
                         context['list'] = json.loads(
                             serializers.serialize(
-                                'json', det))
+                                'json', det, relations=('brand', 'model')))
                         context['exact'] = json.loads(
                             serializers.serialize(
                                 'json',
@@ -1950,6 +1950,14 @@ class GuideSingle(JSONResponseMixin, TemplateView):
                         brand_id=request.POST['brand'],
                         model_id=request.POST['model']).delete()
                     context['status'] = True
+                if 'valid' in request.POST:
+                    code = request.POST['guide']
+                    try:
+                        GuiaRemision.objects.get(guia_id=code)
+                        context['status'] = False
+                    except GuiaRemision.DoesNotExist, e:
+                        context['status'] = True
+                        context['raise'] = str(e)
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

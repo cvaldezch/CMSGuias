@@ -84,7 +84,6 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
             $http.get '', params: data
             .success (response) ->
                 if response.status
-                    console.log "stock found"
                     if response.exact.length
                         data =
                             saveMaterial: true
@@ -102,7 +101,11 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
                             data.saveMaterial = false
                         console.log data
                         if data.saveMaterial
-                            if response.exact[0].stock >= data.quantity
+                            console.log response.exact[0].fields
+                            if response.exact[0].fields.stock >= data.quantity
+                                $scope.exact = []
+                                $scope.alternative = []
+                                $scope.stkg = []
                                 $http
                                     url: ''
                                     data: $.param data
@@ -125,12 +128,15 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
                                 return
                             else
                                 swal "Alerta!", "Stock es menor o no existe en el inventario", "warning"
+                                $scope.exact = response.exact
+                                $scope.alternative = response.list
+                                $scope.stkg = response.stocka
                                 return false
                     else
-                        # show alternative for user
-                        # ...
-                        console.log response.list
-                        console.log response.stocka
+                        $scope.alternative = response.list
+                        $scope.stkg = response.stocka
+                        $scope.exact = response.exact
+                        swal "Alerta!", "El Material no cuenta con Stock", "warning"
                         return
                 else
                     Materialize.toast "No se ha encontrado Stock", 2000
@@ -199,21 +205,18 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
                         return
                 return
         return
-    # function translate
-    $scope.getStock = ->
-
-        return
     $scope.validExistGuide = ->
         data =
             valid: true
             guide: $scope.guide
+        console.log data
         $http
             url: ''
             method: 'post'
             data: $.param data
         .success (response) ->
             if response.status
-                # message guide id exists
+                swal "Información", "El Nro de guia ingresado ya existe", "info"
                 return
         return
     $scope.change = ->
