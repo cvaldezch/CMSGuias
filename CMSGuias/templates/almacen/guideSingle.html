@@ -8,22 +8,37 @@
         <a href="/almacen/" class="btn grey lighten-5 grey-text text-darken-3">
             <i class="fa fa-chevron-left"></i> REgresar
         </a>
+        <div class="card">
+            <div class="card-action">
+                <button type="button" class="btn grey lighten-5 grey-text text-darken-3" ng-click="refresh()">
+                    <i class="fa fa-refresh"></i> ACtualizar
+                </button>
+                <button type="button" class="btn grey lighten-5 grey-text text-darken-3" ng-click="recycleData()">
+                    <i class="fa fa-recycle"></i>
+                    Inicio
+                </button>
+                <button type="button" class="btn grey lighten-5 grey-text text-darken-3 right" ng-click="saveGuide()">
+                    <i class="fa fa-floppy-o"></i>
+                    GEnerar Guia
+                </button>
+            </div>
+        </div>
         <div class="card-panel">
             <h5>Datos Generales</h5>
             <dvi class="row">
                 <div class="input-field col l2">
-                    <input type="text" maxlength="12" ng-model="guide" ng-blur="validExistGuide()">
+                    <input type="text" maxlength="12" ng-model="guide.guide" ng-blur="validExistGuide()">
                     <label for="">Nro Guia</label>
                 </div>
                 <div class="input-field col l2">
-                    <input type="date" maxlength="10" class="datepicker" ng-model="transfer">
+                    <input type="date" maxlength="10" class="datepicker" ng-model="guide.transfer">
                     <label for="">Fecha Traslado</label>
                 </div>
                 <div class="col l8">
                     <div class="row">
                         <div class="col l12">
                             <label for="">Cliente</label>
-                            <select name="" id="" class="browser-default" ng-model="customer">
+                            <select name="" id="" class="browser-default" ng-model="guide.customer">
                                 {% verbatim %}
                                     <option ng-repeat="x in customers" value="{{x.pk}}">{{x.fields.razonsocial}}</option>
                                 {% endverbatim %}
@@ -32,16 +47,19 @@
                     </div>
                 </div>
                 <div class="input-field col l6">
-                    <input type="text" value="{{ address }}" ng-model="dotout">
+                    <input type="text" ng-model="guide.dotout" list="addr">
+                    <datalist id="addr">
+                        <option value="{{ address }}">
+                    </datalist>
                     <label for="">Punto de Salida</label>
                 </div>
                 <div class="input-field col l6">
-                    <input type="text" ng-model="dotarrival">
+                    <input type="text" ng-model="guide.dotarrival">
                     <label for="">Punto de Llegada</label>
                 </div>
                 <div class="col l4">
                     <label for="">Transportista</label>
-                    <select name="" id="" class="browser-default" ng-model="carrier" ng-click="detCarriers($event)">
+                    <select name="" id="" class="browser-default" ng-model="guide.carrier" ng-click="detCarriers($event)">
                         {% verbatim %}
                             <option ng-repeat="x in carriers" value="{{x.pk}}">{{x.fields.tranom}}</option>
                         {% endverbatim %}
@@ -49,7 +67,7 @@
                 </div>
                 <div class="col l4">
                     <label for="">Conductor</label>
-                    <select name="" id="" class="browser-default" ng-model="driver">
+                    <select name="" id="" class="browser-default" ng-model="guide.driver">
                         {% verbatim %}
                             <option ng-repeat="x in drivers" value="{{x.pk}}">{{x.fields.connom}}</option>
                         {% endverbatim %}
@@ -57,22 +75,22 @@
                 </div>
                 <div class="col l4">
                     <label for="">Transporte</label>
-                    <select name="" id="" class="browser-default" ng-model="transport">
+                    <select name="" id="" class="browser-default" ng-model="guide.transport">
                         {% verbatim %}
                             <option ng-repeat="x in transports" value="{{x.pk}}">{{x.fields.marca}} {{x.pk}}</option>
                         {% endverbatim %}
                     </select>
                 </div>
                 <div class="input-field col l2">
-                    <input type="text" value="VENTA" ng-model="motive">
+                    <input type="text" value="VENTA" ng-model="guide.motive">
                     <label for="">Motivo</label>
                 </div>
                 <div class="input-field col l5">
-                    <input type="text" ng-model="observation">
+                    <input type="text" ng-model="guide.observation">
                     <label for="">Observaciones</label>
                 </div>
                 <div class="input-field col l5">
-                    <input type="text" ng-model="note">
+                    <input type="text" ng-model="guide.note">
                     <label for="">Nota</label>
                 </div>
             </dvi>

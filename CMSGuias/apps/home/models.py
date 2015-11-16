@@ -340,7 +340,7 @@ class Moneda(models.Model):
 class TipoCambio(models.Model):
     moneda = models.ForeignKey(Moneda, to_field='moneda_id')
     fecha = models.DateField(auto_now=True)
-    registrado = models.TimeField(auto_now=True)
+    registrado = models.TimeField(auto_now_add=True)
     compra = models.FloatField()
     venta = models.FloatField()
     flag = models.BooleanField(default=True)
@@ -366,7 +366,7 @@ class Proveedor(models.Model):
                 max_length=60, default='ejemplo@dominio.com', null=True)
     contact = models.CharField(
                 max_length=200, default='', blank=True, null=True)
-    register = models.DateTimeField(auto_now=True, blank=True, null=True)
+    register = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     flag = models.BooleanField(default=True)
 
     class Meta:
@@ -388,7 +388,7 @@ class LoginProveedor(models.Model):
 
 class Configuracion(models.Model):
     periodo = models.CharField(max_length=4, default='')
-    registrado = models.DateTimeField(auto_now=True)
+    registrado = models.DateTimeField(auto_now_add=True)
     moneda = models.ForeignKey(Moneda, to_field='moneda_id')
     igv = models.IntegerField(default=10)
 

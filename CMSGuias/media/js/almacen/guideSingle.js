@@ -243,18 +243,71 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
     var data;
     data = {
       valid: true,
-      guide: $scope.guide
+      code: $scope.guide
     };
-    console.log(data);
     $http({
       url: '',
       method: 'post',
       data: $.param(data)
     }).success(function(response) {
-      if (response.status) {
-        swal("Información", "El Nro de guia ingresado ya existe", "info");
+      if (!response.status) {
+        swal("Información!", "El Nro de guia ingresado ya existe!", "info");
       }
     });
+  };
+  $scope.delallDetails = function() {
+    swal({
+      title: "Eliminar Detalle?",
+      text: "desea eliminar todo la lista de detalle?",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Si!, eliminar",
+      confirmButtonColor: "#dd6b55",
+      closeOnCancel: true
+    }, function(isConfirm) {
+      var data;
+      if (isConfirm) {
+        data = {
+          delAllDetails: true
+        };
+        $http({
+          url: '',
+          method: 'post',
+          data: $.param(data)
+        }).success(function(response) {
+          if (response.status) {
+            $scope.listTemp();
+          }
+        });
+      }
+    });
+  };
+  $scope.refresh = function() {
+    $scope.customersList();
+    $scope.carrierList();
+    $scope.listTemp();
+    $scope.brandmodel();
+  };
+  $scope.recycleData = function() {
+    $scope.customersList();
+    $scope.carrierList();
+    $scope.listTemp();
+    $scope.brandmodel();
+    $scope.guide = '';
+    $scope.transfer = '';
+    $scope.dotarricval = '';
+    $scope.driver = '';
+    $scope.transport = '';
+    $scope.motive = '';
+    $scope.observation = '';
+    return $scope.note = '';
+  };
+  $scope.saveGuide = function() {
+    var data;
+    data = $scope.guide;
+    data.transfer;
+    console.log(data);
+    console.log(data.transfer);
   };
   $scope.change = function() {
     console.log("this object to change");

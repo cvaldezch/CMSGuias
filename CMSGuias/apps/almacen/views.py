@@ -1536,23 +1536,23 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                                 } for x in Compra.objects.filter(registrado__range=(globalVariable.format_str_date(request.GET.get('start')), globalVariable.format_str_date(request.GET.get('end'))))]
                                 context['status'] = True
                     if 'purchase' in request.GET:
-                        buy = Compra.objects.get(
+                        com = Compra.objects.get(
                                 pk=request.GET.get('purchase'))
                         context['head'] = {
-                            'supplier': buy.proveedor_id,
-                            'quote': buy.cotizacion_id if buy.cotizacion_id else 'None',
-                            'place': buy.lugent,
-                            'document': buy.documento.documento,
-                            'payment': buy.pagos.pagos,
-                            'currency': buy.moneda.moneda,
+                            'supplier': com.proveedor_id,
+                            'quote': com.cotizacion_id if com.cotizacion_id else 'None',
+                            'place': com.lugent,
+                            'document': com.documento.documento,
+                            'payment': com.pagos.pagos,
+                            'currency': com.moneda.moneda,
                             'register': globalVariable.format_date_str(
-                                            buy.registrado),
+                                            com.registrado),
                             'transfer': globalVariable.format_date_str(
-                                            buy.traslado),
-                            'contact': buy.contacto,
-                            'deposit': '%s' % buy.deposito,
+                                            com.traslado),
+                            'contact': com.contacto,
+                            'deposit': '%s' % com.deposito,
                             'performed': '%s, %s' % (
-                                buy.empdni.firstname, buy.empdni.lastname)
+                                com.empdni.firstname, com.empdni.lastname)
                         }
                         context['details'] = [{
                             'materials': x.materiales_id,
@@ -1672,25 +1672,25 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                                     float(x['price']) + (
                                         float(x['price']) * 0.15))
                                 bm.save()
-                            buy = DetCompra.objects.get(
+                            dbuy = DetCompra.objects.get(
                                     compra_id=request.POST.get('purchase'),
                                     materiales_id=x['materials'])
-                            buy.flag = x['tag']
-                            buy.cantidad = (
-                                buy.cantidad - float(x['quantity']))
-                            buy.save()
-                        buy = Compra.objects.get(
+                            dbuy.flag = x['tag']
+                            dbuy.cantidad = (
+                                dbuy.cantidad - float(x['quantity']))
+                            dbuy.save()
+                        compra = Compra.objects.get(
                                 pk=request.POST.get('purchase'))
                         det = DetCompra.objects.filter(
                             Q(compra_id=request.POST.get('purchase')),
                             Q(flag='1') | Q(flag='0')).aggregate(
                                 counter=Count('flag'))
                         if det['counter'] > 0:
-                            buy.status = 'IN'
-                            buy.save()
+                            compra.status = 'IN'
+                            compra.save()
                         else:
-                            buy.status = 'CO'
-                            buy.save()
+                            compra.status = 'CO'
+                            compra.save()
                         context['status'] = True
                         context['ingress'] = ingress
                     else:
@@ -1951,10 +1951,25 @@ class GuideSingle(JSONResponseMixin, TemplateView):
                         model_id=request.POST['model']).delete()
                     context['status'] = True
                 if 'valid' in request.POST:
-                    code = request.POST['guide']
+                    code = request.POST['code']
                     try:
-                        GuiaRemision.objects.get(guia_id=code)
-                        context['status'] = False
+                        if len(code) == 12:
+                            if GuiaRemision.objects.get(guia_id=code):
+                                context['status'] = False
+                        elif len(code) > 0:
+                            try:
+                                code = code.split('-')
+                                GuiaRemision.objects.get(
+                                    guia_id='%s-%s' % (
+                                        code[0], '{:0>8d}'.format(
+                                            int(code[1]))))
+                                context['status'] = False
+                            except GuiaRemision.DoesNotExist:
+                                GuiaRemision.objects.get(
+                                    guia_id=request.POST['code'])
+                                context['status'] = False
+                        else:
+                            context['status'] = False
                     except GuiaRemision.DoesNotExist, e:
                         context['status'] = True
                         context['raise'] = str(e)

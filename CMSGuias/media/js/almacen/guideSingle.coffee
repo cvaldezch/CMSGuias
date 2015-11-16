@@ -208,27 +208,71 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
     $scope.validExistGuide = ->
         data =
             valid: true
-            guide: $scope.guide
-        console.log data
+            code: $scope.guide
         $http
             url: ''
             method: 'post'
             data: $.param data
         .success (response) ->
-            if response.status
-                swal "Información", "El Nro de guia ingresado ya existe", "info"
+            if not response.status
+                swal "Información!", "El Nro de guia ingresado ya existe!", "info"
                 return
+        return
+    $scope.delallDetails = ->
+        swal
+            title: "Eliminar Detalle?"
+            text: "desea eliminar todo la lista de detalle?"
+            type: "warning"
+            showCancelButton: true
+            confirmButtonText: "Si!, eliminar"
+            confirmButtonColor: "#dd6b55"
+            closeOnCancel: true
+        , (isConfirm) ->
+            if isConfirm
+                data =
+                    delAllDetails: true
+                $http
+                    url: ''
+                    method: 'post'
+                    data: $.param data
+                .success (response) ->
+                    if response.status
+                        $scope.listTemp()
+                        return
+                return
+        return
+    $scope.refresh = ->
+        $scope.customersList()
+        $scope.carrierList()
+        $scope.listTemp()
+        $scope.brandmodel()
+        return
+    $scope.recycleData = ->
+        $scope.customersList()
+        $scope.carrierList()
+        $scope.listTemp()
+        $scope.brandmodel()
+        $scope.guide = ''
+        $scope.transfer = ''
+        $scope.dotarricval = ''
+        $scope.driver = ''
+        $scope.transport = ''
+        $scope.motive = ''
+        $scope.observation = ''
+        $scope.note = ''
+    $scope.saveGuide = ->
+        data = $scope.guide
+        data.transfer
+        console.log data
+        console.log data.transfer
+        if data.guide isnt ""
+            # ...
         return
     $scope.change = ->
         console.log "this object to change"
         return
     $scope.$watch 'summary', (old, nw) ->
         console.log old, nw
-        # if !nw
-            # if $scope.mat.hasOwnProperty 'obrand'
-            #    $scope.mat.obrand = ''
-            # if $scope.mat.hasOwnProperty 'omodel'
-            #    $scope.mat.omodel = ''
         return
     # $scope.$watch 'mat.brand', (old, nw) ->
     #     # console.log old, nw

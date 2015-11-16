@@ -671,7 +671,7 @@ class ListPurchase(JSONResponseMixin, TemplateView):
                         context['list'] = [
                                         {
                                         'purchase': x.compra_id,
-                                        'document': x.documento.documento,
+                                        'document': x.proveedor.razonsocial,
                                         'transfer':  globalVariable.format_date_str(x.traslado),
                                         'currency': x.moneda.moneda,
                                         'deposito': str(x.deposito),
@@ -682,7 +682,7 @@ class ListPurchase(JSONResponseMixin, TemplateView):
                         context['list'] = [
                                         {
                                         'purchase': x.compra_id,
-                                        'document': x.documento.documento,
+                                        'document': x.proveedor.razonsocial,
                                         'transfer': globalVariable.format_date_str(x.traslado),
                                         'currency': x.moneda.moneda,
                                         'deposito': str(x.deposito),
@@ -698,7 +698,7 @@ class ListPurchase(JSONResponseMixin, TemplateView):
                         context['list'] = [
                             {
                                 'purchase': x.compra_id,
-                                'document': x.documento.documento,
+                                'document': x.proveedor.razonsocial,
                                 'transfer': globalVariable.format_date_str(x.traslado),
                                 'currency': x.moneda.moneda,
                                 'deposito':str(x.deposito),
@@ -819,15 +819,20 @@ class ListPurchase(JSONResponseMixin, TemplateView):
                     obj.save()
                     context['status'] = True
                 if 'delDPurchase' in request.POST:
-                    DetCompra.objects.filter(compra_id=request.POST.get('purchase'), materiales_id__in=json.loads(request.POST.get('materials'))).delete()
+                    DetCompra.objects.filter(
+                        compra_id=request.POST.get('purchase'),
+                        materiales_id__in=json.loads(
+                            request.POST.get('materials'))).delete()
                     context['status'] = True
                 if 'purchaseSave' in request.POST:
-                    ob = Compra.objects.get(compra_id=request.POST.get('purchase'))
+                    ob = Compra.objects.get(
+                            compra_id=request.POST.get('purchase'))
                     ob.lugent = request.POST.get('delivery')
                     ob.documento_id = request.POST.get('document')
                     ob.pagos_id = request.POST.get('payment')
                     ob.moneda_id = request.POST.get('currency')
-                    ob.traslado = globalVariable.format_str_date(request.POST.get('transfer'))
+                    ob.traslado = globalVariable.format_str_date(
+                                    request.POST.get('transfer'))
                     ob.contacto = request.POST.get('contact')
                     ob.discount = float(request.POST.get('discount'))
                     if request.POST['quotation']:
@@ -837,14 +842,19 @@ class ListPurchase(JSONResponseMixin, TemplateView):
                     if 'deposit' in request.FILES:
                         ob.deposito = request.FILES['deposit']
                     ob.save()
+                    print 'here save buys edit'
                     context['status'] = True
                 if 'annularPurchase' in request.POST:
-                    Compra.objects.get(compra_id=request.POST.get('purchase')).delete()
+                    an = Compra.objects.get(
+                            compra_id=request.POST.get('purchase'))
+                    an.status = 'AN'
+                    an.save()
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
+
 
 class LoginSupplier(JSONResponseMixin, TemplateView):
     template_name = 'logistics/loginSupplier.html'

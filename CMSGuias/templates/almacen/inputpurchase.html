@@ -279,7 +279,7 @@ Input Order Purchase
 							<label class="control-label ">Recibido por</label>
 							<select name="receive" id="receive" class="form-control">
 							{% for x in employee %}
-								<option value="{{ x.empdni_id }}">{{ x.firtsname }}{{ x.lastname }}</option>
+								<option value="{{ x.empdni_id }}">{{ x.firstname }} {{ x.lastname }}</option>
 							{% empty %}
 								<option value="">-- Nothing --</option>
 							{% endfor %}
@@ -291,7 +291,7 @@ Input Order Purchase
 							<label class="control-label ">Inspeccionado por</label>
 							<select name="inspection" id="inspection" class="form-control">
 							{% for x in employee %}
-								<option value="{{ x.empdni_id }}">{{ x.firtsname }}{{ x.lastname }}</option>
+								<option value="{{ x.empdni_id }}">{{ x.firstname }} {{ x.lastname }}</option>
 							{% empty %}
 								<option value="">-- Nothing --</option>
 							{% endfor %}
@@ -303,7 +303,7 @@ Input Order Purchase
 							<label class="control-label ">Vista Bueno por</label>
 							<select name="approval" id="approval" class="form-control">
 							{% for x in employee %}
-								<option value="{{ x.empdni_id }}">{{ x.firtsname }}{{ x.lastname }}</option>
+								<option value="{{ x.empdni_id }}">{{ x.firstname }} {{ x.lastname }}</option>
 							{% empty %}
 								<option value="">-- Nothing --</option>
 							{% endfor %}
@@ -313,8 +313,12 @@ Input Order Purchase
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn btn-default pull-left"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-				<button class="btn btn-primary btn-generate"><span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios</button>
+				<button class="btn btn-default pull-left" data-dismiss="modal">
+					<span class="glyphicon glyphicon-remove"></span> Cancelar
+				</button>
+				<button class="btn btn-primary btn-generate">
+					<span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios
+				</button>
 			</div>
 		</div>
 	</div>
