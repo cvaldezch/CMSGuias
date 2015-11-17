@@ -15,6 +15,8 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
             selectMonths: true # Creates a dropdown to control month
             selectYears: 15
             format: 'yyyy-mm-dd'
+            min: '0'
+            closeOnSelect: true
         $scope.customersList()
         $scope.carrierList()
         $scope.listTemp()
@@ -252,24 +254,65 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
         $scope.carrierList()
         $scope.listTemp()
         $scope.brandmodel()
-        $scope.guide = ''
-        $scope.transfer = ''
-        $scope.dotarricval = ''
-        $scope.driver = ''
-        $scope.transport = ''
-        $scope.motive = ''
-        $scope.observation = ''
-        $scope.note = ''
+        $scope.guide.guide = ''
+        $scope.guide.transfer = ''
+        $scope.guide.dotarrival = ''
+        $scope.guide.driver = ''
+        $scope.guide.transport = ''
+        $scope.guide.motive = ''
+        $scope.guide.observation = ''
+        $scope.guide.note = ''
     $scope.saveGuide = ->
-        data = $scope.guide
-        data.transfer
+        data =
+            save: true
+            guide: $scope.guide.guide
+            tranfer: $scope.guide.transfer
+            cliente: $scope.guide.customer
+            dotoutput: $scope.guide.dotout
+            puntollegada: $scope.guide.dotarrival
+            traslado: $scope.guide.transfer
+            traruc: $scope.guide.carrier
+            condni: $scope.guide.driver
+            nropla: $scope.guide.transport
+            motive: $scope.guide.motive
+            observation: $scope.guide.observation
+            note: $scope.guide.note
+        for k, v of data
+            console.log v, typeof(v)
+            if typeof(v) is "undefined"
+                console.log k, v
+                switch k
+                    when 'guide'
+                        swal 'Alerta!', 'Nro guia invalida.', 'warning'
+                        data.save = false
+                        break
+                    when 'transfer'
+                        swal 'Alerta!', 'Fecha de traslado invalido.', 'warning'
+                        data.save = false
+                        break
+                    when 'cliente'
+                        swal 'Alerta!', 'Cliente invalido.', 'warning'
+                        data.save = false
+                        break
+                    when 'dotoutput'
+                        swal 'Alerta!', 'Punto de salida invalida.', 'warning'
+                        data.save = false
+                        break
+                    when 'traduc'
+                        swal 'Alerta!', 'Transportita invalido.', 'warning'
+                        data.save = false
+                        break
+                    when 'condni'
+                        swal 'Alerta!', 'Conductor invalido.', 'warning'
+                        data.save = false
+                        break
+                    when 'nropla'
+                        swal 'Alerta!', 'Transporte invalido.','warning'
+                        data.save = false
+                        break
+                    # when 'observation' then break
+                    # when 'note' then break
         console.log data
-        console.log data.transfer
-        if data.guide isnt ""
-            # ...
-        return
-    $scope.change = ->
-        console.log "this object to change"
         return
     $scope.$watch 'summary', (old, nw) ->
         console.log old, nw

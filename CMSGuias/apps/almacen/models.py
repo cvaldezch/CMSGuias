@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#
 from django.db import connection, models, transaction
 
 from CMSGuias.apps.ventas.models import Proyecto, Subproyecto, Sectore

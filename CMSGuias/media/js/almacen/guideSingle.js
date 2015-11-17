@@ -14,7 +14,9 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
     $('.datepicker').pickadate({
       selectMonths: true,
       selectYears: 15,
-      format: 'yyyy-mm-dd'
+      format: 'yyyy-mm-dd',
+      min: '0',
+      closeOnSelect: true
     });
     $scope.customersList();
     $scope.carrierList();
@@ -293,24 +295,70 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
     $scope.carrierList();
     $scope.listTemp();
     $scope.brandmodel();
-    $scope.guide = '';
-    $scope.transfer = '';
-    $scope.dotarricval = '';
-    $scope.driver = '';
-    $scope.transport = '';
-    $scope.motive = '';
-    $scope.observation = '';
-    return $scope.note = '';
+    $scope.guide.guide = '';
+    $scope.guide.transfer = '';
+    $scope.guide.dotarrival = '';
+    $scope.guide.driver = '';
+    $scope.guide.transport = '';
+    $scope.guide.motive = '';
+    $scope.guide.observation = '';
+    return $scope.guide.note = '';
   };
   $scope.saveGuide = function() {
-    var data;
-    data = $scope.guide;
-    data.transfer;
+    var data, k, v;
+    data = {
+      save: true,
+      guide: $scope.guide.guide,
+      tranfer: $scope.guide.transfer,
+      cliente: $scope.guide.customer,
+      dotoutput: $scope.guide.dotout,
+      puntollegada: $scope.guide.dotarrival,
+      traslado: $scope.guide.transfer,
+      traruc: $scope.guide.carrier,
+      condni: $scope.guide.driver,
+      nropla: $scope.guide.transport,
+      motive: $scope.guide.motive,
+      observation: $scope.guide.observation,
+      note: $scope.guide.note
+    };
+    for (k in data) {
+      v = data[k];
+      console.log(v, typeof v);
+      if (typeof v === "undefined") {
+        console.log(k, v);
+        switch (k) {
+          case 'guide':
+            swal('Alerta!', 'Nro guia invalida.', 'warning');
+            data.save = false;
+            break;
+          case 'transfer':
+            swal('Alerta!', 'Fecha de traslado invalido.', 'warning');
+            data.save = false;
+            break;
+          case 'cliente':
+            swal('Alerta!', 'Cliente invalido.', 'warning');
+            data.save = false;
+            break;
+          case 'dotoutput':
+            swal('Alerta!', 'Punto de salida invalida.', 'warning');
+            data.save = false;
+            break;
+          case 'traduc':
+            swal('Alerta!', 'Transportita invalido.', 'warning');
+            data.save = false;
+            break;
+          case 'condni':
+            swal('Alerta!', 'Conductor invalido.', 'warning');
+            data.save = false;
+            break;
+          case 'nropla':
+            swal('Alerta!', 'Transporte invalido.', 'warning');
+            data.save = false;
+            break;
+        }
+      }
+    }
     console.log(data);
-    console.log(data.transfer);
-  };
-  $scope.change = function() {
-    console.log("this object to change");
   };
   $scope.$watch('summary', function(old, nw) {
     console.log(old, nw);
