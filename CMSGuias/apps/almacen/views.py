@@ -1066,33 +1066,41 @@ def view_generate_document_out(request,oid):
                     data = dict()
                     try:
                         add = form.save(commit=False)
-                        guidekeys = request.POST.get('guia_id') #genkeys.GenerateSerieGuideRemision()
-                        add.guia_id = guidekeys
+                        guidekeys = request.POST.get('guia_id')
+                        # genkeys.GenerateSerieGuideRemision()
+                        code = guidekeys.split('-')
+                        code = (
+                            '%s-%s' % (
+                                '{:0>3d}'.format(int(code[0])),
+                                '{:0>8d}'.format(int(code[1]))))
+                        add.guia_id = code
                         add.status = 'GE'
                         add.flag = True
                         # commit true save bedside guide
                         add.save()
                         # save details guide referral
                         # recover details orders
-                        det = Detpedido.objects.filter(pedido_id__exact=request.POST.get('pedido'),tag='1',flag=True)
+                        det = Detpedido.objects.filter(
+                            pedido_id__exact=request.POST.get(
+                                'pedido'), tag='1', flag=True)
                         for x in det:
                             obj = DetGuiaRemision()
-                            obj.guia_id = guidekeys
+                            obj.guia_id = code
                             obj.materiales_id = x.materiales_id
                             obj.cantguide = x.cantguide
                             obj.flag = True
                             obj.save()
                             ob = Detpedido.objects.get(pk__exact=x.id)
-                            ob.tag= '2' if x.cantshop <= 0 else '0'
+                            ob.tag = '2' if x.cantshop <= 0 else '0'
                             ob.save()
                             # here discount inventory
-                            #get nro orders
+                            # get nro orders
                             store = ''
                             try:
-                                store = Pedido.objects.get(pk=request.POST.get('pedido'))
+                                store = Pedido.objects.get(
+                                        pk=request.POST.get('pedido'))
                                 store = store.almacen_id
                             except ObjectDoesNotExist, e:
-                                print e
                                 store = 'AL01'
                             try:
                                 inv = Inventario.objects.get(materiales_id=x.materiales_id, periodo=globalVariable.get_year, almacen_id=store)
@@ -1952,6 +1960,7 @@ class GuideSingle(JSONResponseMixin, TemplateView):
                         brand_id=request.POST['brand'],
                         model_id=request.POST['model']).delete()
                     context['status'] = True
+
                 if 'valid' in request.POST:
                     code = request.POST['code']
                     try:
@@ -1975,6 +1984,61 @@ class GuideSingle(JSONResponseMixin, TemplateView):
                     except GuiaRemision.DoesNotExist, e:
                         context['status'] = True
                         context['raise'] = str(e)
+                if 'genGuide' in request.POST:
+                    # Generate Guide Single
+                    det = TmpDetGuia.objects.filter(flag=True)
+                    if det.count():
+                        code = request.POST['guide']
+                        if len(code) < 12:
+                            code = code.split('-')
+                            code = (
+                                '%s-%s' % (
+                                    '{:0>3d}'.format(int(code[0])),
+                                    '{:0>8d}'.format(int(code[1]))))
+                        form = addGuideReferral(request.POST)
+                        if form.is_valid():
+                            add = form.save(commit=False)
+                            add.guia_id = code
+                            add.flag = True
+                            add.status = 'GE'
+                            add.save()
+                            # save details
+                            for x in det:
+                                # get Stock Inventory of brand and model
+                                inv = Inventario.objects.filter(
+                                        periodo=globalVariable.get_year,
+                                        materiales_id=x.materials_id).order_by(
+                                        '-ingreso')[0]
+                                ibm = InventoryBrand.objects.filter(
+                                    period=globalVariable.get_year,
+                                    materials_id=x.materials_id,
+                                    brand_id=x.brand_id,
+                                    model_id=x.model_id).order_by(
+                                        '-ingress')[0]
+                                dg = DetGuiaRemision()
+                                inv.stock = (
+                                    float(inv.stock) - float(x.quantity))
+                                inv.save()
+                                ibm.stock = (
+                                    float(ibm.stock) - float(x.quantity))
+                                ibm.save()
+                                dg.guia_id = code
+                                dg.materiales_id = x.materials_id
+                                dg.cantguide = x.quantity
+                                db.brand_id = x.brand_id
+                                dg.model_id = x.model_id
+                                if x.observation:
+                                    dg.observation = x.observation
+                                dg.save()
+                                x.delete()
+                                context['status'] = True
+                        else:
+                            context['raise'] = 'fields invalid.'
+                            context['status'] = False
+                    else:
+                        context['status'] = False
+                        context['raise'] = 'No se a encontrado materiales' \
+                            ' para generar la Guia Remision'
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

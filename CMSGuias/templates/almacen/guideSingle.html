@@ -17,7 +17,7 @@
                     <i class="fa fa-recycle"></i>
                     Inicio
                 </button>
-                <button type="button" class="btn grey lighten-5 grey-text text-darken-3 right" ng-click="saveGuide()">
+                <button type="button" class="btn grey lighten-5 grey-text text-darken-3 right" ng-model="vguide" ng-init="vguide=true" ng-click="saveGuide()" ng-disabled="vguide">
                     <i class="fa fa-floppy-o"></i>
                     GEnerar Guia
                 </button>
@@ -238,7 +238,7 @@
                     </li>
                     <li class="divider"></li>
                     <li>
-                        <a style="padding: 2px 0px 2px 3px;" class="grey-text text-darken-3" href="#!">
+                        <a style="padding: 2px 0px 2px 3px;" class="grey-text text-darken-3" href="#!" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" data-materials="{{x.fields.materials.pk}}">
                             <small><i class="fa fa-font"></i> Comentario</small>
                         </a>
                     </li>
@@ -265,10 +265,29 @@
                 {% endverbatim %}
             </tbody>
         </table>
+        <div class="row">
+            <div class="modal col l4 offset-l4" id="mobs">
+                <div class="modal-content">
+                    <div class="input-field">
+                        <textarea class="materialize-textarea"></textarea>
+                        <label>Observaciones:</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn grey lighten-5 grey-text text-darken-3 modal-action modal-close">
+                        <i class="fa fa-times"></i> Salir
+                    </button>
+                    <button type="button" class="btn grey lighten-5 green-text text-darken-3">
+                        <i class="fa fa-ok"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
     <br>
     <br>
     <br>
+
 {% endblock content %}
 {% block footer %}
     <!-- css -->

@@ -245,13 +245,14 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
     var data;
     data = {
       valid: true,
-      code: $scope.guide
+      code: $scope.guide.guide
     };
     $http({
       url: '',
       method: 'post',
       data: $.param(data)
     }).success(function(response) {
+      $scope.vguide = !response.status;
       if (!response.status) {
         swal("Información!", "El Nro de guia ingresado ya existe!", "info");
       }
@@ -309,7 +310,6 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
     data = {
       save: true,
       guide: $scope.guide.guide,
-      tranfer: $scope.guide.transfer,
       cliente: $scope.guide.customer,
       dotoutput: $scope.guide.dotout,
       puntollegada: $scope.guide.dotarrival,
@@ -324,14 +324,14 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
     for (k in data) {
       v = data[k];
       console.log(v, typeof v);
-      if (typeof v === "undefined") {
+      if (typeof v === 'undefined') {
         console.log(k, v);
         switch (k) {
           case 'guide':
             swal('Alerta!', 'Nro guia invalida.', 'warning');
             data.save = false;
             break;
-          case 'transfer':
+          case 'traslado':
             swal('Alerta!', 'Fecha de traslado invalido.', 'warning');
             data.save = false;
             break;
@@ -341,6 +341,10 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
             break;
           case 'dotoutput':
             swal('Alerta!', 'Punto de salida invalida.', 'warning');
+            data.save = false;
+            break;
+          case 'puntollegada':
+            swal('Alerta!', 'Punto de llegada invalida.', 'warning');
             data.save = false;
             break;
           case 'traduc':
@@ -358,7 +362,29 @@ app.controller('SGuideCtrl', function($scope, $http, $cookies, $timeout) {
         }
       }
     }
+    if (new Date(data.traslado) < new Date()) {
+      swal('Alerta!', 'La fecha ingresada es menor', 'warning');
+      data.save = false;
+    }
     console.log(data);
+    if (data.save) {
+      data.traslado = (data.traslado.getFullYear()) + "-" + (data.traslado.getMonth() + 1) + "-" + (data.traslado.getDate());
+      data.genGuide = true;
+      $http({
+        url: '',
+        method: 'post',
+        data: $.param(data)
+      }).success(function(response) {
+        if (response.status) {
+          swal('Felicidades!', 'se a generado la Guia de Remision', 'success');
+          $timeout(function() {
+            return location.reload();
+          }, 2600);
+        } else {
+          swal('Error', 'No se a generado la Guia Remision', 'error');
+        }
+      });
+    }
   };
   $scope.$watch('summary', function(old, nw) {
     console.log(old, nw);

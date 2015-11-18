@@ -210,12 +210,13 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
     $scope.validExistGuide = ->
         data =
             valid: true
-            code: $scope.guide
+            code: $scope.guide.guide
         $http
             url: ''
             method: 'post'
             data: $.param data
         .success (response) ->
+            $scope.vguide = !response.status
             if not response.status
                 swal "Información!", "El Nro de guia ingresado ya existe!", "info"
                 return
@@ -266,7 +267,6 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
         data =
             save: true
             guide: $scope.guide.guide
-            tranfer: $scope.guide.transfer
             cliente: $scope.guide.customer
             dotoutput: $scope.guide.dotout
             puntollegada: $scope.guide.dotarrival
@@ -279,14 +279,14 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
             note: $scope.guide.note
         for k, v of data
             console.log v, typeof(v)
-            if typeof(v) is "undefined"
+            if typeof(v) is 'undefined'
                 console.log k, v
                 switch k
                     when 'guide'
                         swal 'Alerta!', 'Nro guia invalida.', 'warning'
                         data.save = false
                         break
-                    when 'transfer'
+                    when 'traslado'
                         swal 'Alerta!', 'Fecha de traslado invalido.', 'warning'
                         data.save = false
                         break
@@ -296,6 +296,10 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
                         break
                     when 'dotoutput'
                         swal 'Alerta!', 'Punto de salida invalida.', 'warning'
+                        data.save = false
+                        break
+                    when 'puntollegada'
+                        swal 'Alerta!', 'Punto de llegada invalida.', 'warning'
                         data.save = false
                         break
                     when 'traduc'
@@ -310,9 +314,27 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
                         swal 'Alerta!', 'Transporte invalido.','warning'
                         data.save = false
                         break
-                    # when 'observation' then break
-                    # when 'note' then break
+        if new Date(data.traslado) < new Date()
+            swal 'Alerta!', 'La fecha ingresada es menor', 'warning'
+            data.save = false
         console.log data
+        if data.save
+            data.traslado = "#{data.traslado.getFullYear()}-#{data.traslado.getMonth()+1}-#{data.traslado.getDate()}"
+            data.genGuide = true
+            $http
+                url: ''
+                method: 'post'
+                data: $.param data
+            .success (response) ->
+                if response.status
+                    swal 'Felicidades!', 'se a generado la Guia de Remision', 'success'
+                    $timeout ->
+                        location.reload()
+                    , 2600
+                    return
+                else
+                    swal 'Error', 'No se a generado la Guia Remision', 'error'
+                    return
         return
     $scope.$watch 'summary', (old, nw) ->
         console.log old, nw
