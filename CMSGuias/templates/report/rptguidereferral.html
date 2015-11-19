@@ -1,203 +1,210 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Guide Referral</title>
-	<link rel="stylesheet" type="text/css" href="/media/css/reports/style-guide.css">
+  <meta charset="UTF-8">
+  <title>Guide Referral</title>
+  <link rel="stylesheet" type="text/css" href="/media/css/reports/style-guide.css">
 </head>
 <body>
-	<header>
-		<img id="logo" src="/media/images/icrlogo.png" alt="image">
-		<div id="dir" >
-			{{ request.session.company.address }}<br >
-			Central Telefonica: (511) 371-0443<br >
-			E-mail: logistica@icrperusa.com
-		</div>
-		<!-- <div id="info-type">
-			<h1>Materiales</h1>
-		</div>-->
-		<div id="nro-serie">
-			<span id="ruc">R.U.C. Nº {{ request.session.company.ruc }} </span><br><br>
-			<span id="guide">GUIA REMISION REMITENTE</span><br><br>
-			<span id="nro">{{ guide.guia_id }}</span>
-		</div>
-		<table id="bedside">
-				<tr>
-					<td width="9.8cm">
-						<table>
-							<tr>
-								<td width="3cm" class="text-partida">Punto de partida:</td>
-								<td></td>
-							</tr>
-							<tr>
-								<td colspan="2" class="bedcontent">
-									{{ request.session.company.address }}
-								</td>
-							</tr>
-						</table>
-					</td>
-					<td width="9.8cm">
-						<table>
-							<tr>
-								<td width="3cm" class="text-partida">Punto de llegada:</td>
-								<td></td>
-							</tr>
-							<tr>
-								<td colspan="2" class="bedcontent">{{ guide.puntollegada }} {% if guide.puntollegada|length <= 47 %}<br>{% endif %}</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<table>
-							<tr>
-								<td width="6cm" class="text-partida">Nombre o Razón Social del Destinatario:</td>
-								<td></td>
-							</tr>
-							<tr>
-								<td colspan="2" class="bedcontent">{{guide.pedido.proyecto.ruccliente.razonsocial}}</td>
-							</tr>
-							<tr>
-								<td class="pretitle" colspan="2">Número de R.U.C. : {{guide.ruccliente_id}} </td>
-							</tr>
-						</table>
-					</td>
-					<td>
-						<table>
-							<tr>
-								<td width="4cm" class="text-partida">Fecha de Inicio de traslado:</td>
-								<td></td>
-							</tr>
-							<tr>
-								<td colspan="2" class="bedcontent">{{guide.traslado}}</td>
-							</tr>
-							<tr>
-								<td colspan="2"></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-				<tr></tr>
-				<tr>
-					<td>
-						<table>
-							<tr>
-								<td colspan="2" class="text-partida">UNIDAD DE TRANSPORTE Y CONDUCTOR:</td>
-								<td></td>
-							</tr>
-							<tr>
-								<td class="pretitle">Marca y Número de Placa</td>
-								<td class="text-center">{{guide.nropla.marca}} {{guide.nropla_id}}</td>
-							</tr>
-							<tr>
-								<td class="pretitle">Constancia de Inscripción</td>
-								<td></td>
-							</tr>
-							<tr>
-								<td class="pretitle">Licencia de Conducir</td>
-								<td class="text-center">{{guide.condni.conlic}}</td>
-							</tr>
-						</table>
-					</td>
-					<td>
-						<table>
-							<tr>
-								<td colspan="2" class="text-partida">EMPRESA DE TRANSPORTES:</td>
-								<td></td>
-							</tr>
-							<tr>
-								<td class="pretitle">Nombre o Razón Social</td>
-								<td class="text-center" rowspan="2">{{guide.traruc.tranom}}</td>
-							</tr>
-							<tr>
-								<td></td>
-							</tr>
-							<tr>
-								<td class="pretitle">Número de R.U.C.</td>
-								<td class="text-center">{{guide.traruc_id}}</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-		</table>
-	</header>
-	<section>
-		<div class="details">
-			<table>
-				<thead>
-					<tr>
-						<th width="1cm">ITEM</th>
-						<th width="2cm">CANTIDAD</th>
-						<th width="1.6cm">UNID.</th>
-						<th>DESCRIPCIÓN</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for x in det %}
-						<tr>
-							<td class="text-center text-up">{{forloop.counter}}</td>
-							<td class="text-center text-up">{{x.cantguide}}</td>
-							<td class="text-center text-up">{{x.materiales.unidad_id}}</td>
-							<td class="nom">{{x.materiales.matnom}} {{x.materiales.matmed}}
-								{% ifequal x.materiales_id|truncatechars:6 "115..." %}
-										{% for i in nipples %}
-											{% ifequal x.materiales_id i.materiales_id %}
-												{% if forloop.counter0|divisibleby:2 %}
+  <header>
+    <img id="logo" src="/media/images/icrlogo.png" alt="image">
+    <div id="dir" >
+      {{ request.session.company.address }}<br >
+      Central Telefonica: (511) 371-0443<br >
+      E-mail: logistica@icrperusa.com
+    </div>
+    <!-- <div id="info-type">
+      <h1>Materiales</h1>
+    </div>-->
+    <div id="nro-serie">
+      <span id="ruc">R.U.C. Nº {{ request.session.company.ruc }} </span><br><br>
+      <span id="guide">GUIA REMISION REMITENTE</span><br><br>
+      <span id="nro">{{ guide.guia_id }}</span>
+    </div>
+    <table id="bedside">
+        <tr>
+          <td width="9.8cm">
+            <table>
+              <tr>
+                <td width="3cm" class="text-partida">Punto de partida:</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td colspan="2" class="bedcontent">
+                  {{ request.session.company.address }}
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td width="9.8cm">
+            <table>
+              <tr>
+                <td width="3cm" class="text-partida">Punto de llegada:</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td colspan="2" class="bedcontent">{{ guide.puntollegada }} {% if guide.puntollegada|length <= 47 %}<br>{% endif %}</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table>
+              <tr>
+                <td width="6cm" class="text-partida">Nombre o Razón Social del Destinatario:</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td colspan="2" class="bedcontent">{{guide.ruccliente.razonsocial}}</td>
+              </tr>
+              <tr>
+                <td class="pretitle" colspan="2">Número de R.U.C. : {{guide.ruccliente_id}} </td>
+              </tr>
+            </table>
+          </td>
+          <td>
+            <table>
+              <tr>
+                <td width="4cm" class="text-partida">Fecha de Inicio de traslado:</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td colspan="2" class="bedcontent">{{guide.traslado}}</td>
+              </tr>
+              <tr>
+                <td colspan="2"></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr></tr>
+        <tr>
+          <td>
+            <table>
+              <tr>
+                <td colspan="2" class="text-partida">UNIDAD DE TRANSPORTE Y CONDUCTOR:</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td class="pretitle">Marca y Número de Placa</td>
+                <td class="text-center">{{guide.nropla.marca}} {{guide.nropla_id}}</td>
+              </tr>
+              <tr>
+                <td class="pretitle">Constancia de Inscripción</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td class="pretitle">Licencia de Conducir</td>
+                <td class="text-center">{{guide.condni.conlic}}</td>
+              </tr>
+            </table>
+          </td>
+          <td>
+            <table>
+              <tr>
+                <td colspan="2" class="text-partida">EMPRESA DE TRANSPORTES:</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td class="pretitle">Nombre o Razón Social</td>
+                <td class="text-center" rowspan="2">{{guide.traruc.tranom}}</td>
+              </tr>
+              <tr>
+                <td></td>
+              </tr>
+              <tr>
+                <td class="pretitle">Número de R.U.C.</td>
+                <td class="text-center">{{guide.traruc_id}}</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+    </table>
+  </header>
+  <section>
+    <div class="details">
+      <table>
+        <thead>
+          <tr>
+            <th width="1cm">ITEM</th>
+            <th width="2cm">CANTIDAD</th>
+            <th width="1.6cm">UNID.</th>
+            <th>DESCRIPCIÓN</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for x in det %}
+            <tr>
+              <td class="text-center text-up">{{forloop.counter}}</td>
+              <td class="text-center text-up">{{x.cantguide}}</td>
+              <td class="text-center text-up">{{x.materiales.unidad_id}}</td>
+              <td class="nom">{{x.materiales.matnom}} {{x.materiales.matmed}}
+                {% ifequal x.materiales_id|truncatechars:6 "115..." %}
+                    {% for i in nipples %}
+                      {% ifequal x.materiales_id i.materiales_id %}
+                        {% if forloop.counter0|divisibleby:2 %}
                                                     <br>
                                                 {% endif %}
-												{{ i.cantguide|safe }} Niple {% for k,v in tipo.items %}
-																	{% if k == i.tipo %}
-																		{{ i.cantidad|pluralize }} {{v}}{{ i.cantidad|pluralize }}
-																	{% endif %}
-																{% endfor %}
-																{{ x.materiales.matmed }} x {{ i.metrado|safe }} cm &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-											{% endifequal %}
-										{% endfor %}
-									{% endifequal %}
-							</td>
-						</tr>
-					{% endfor%}
-				</tbody>
-				<tfoot>
-					<tr>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					</tr>
-				</tfoot>
-			</table>
-			<div class="text-center">
-				<br>
-				<strong style="font-size: 16px;">
-					Proyecto : {{ guide.pedido.proyecto_id }}
-					{{ guide.pedido.proyecto.nompro }}
-				</strong>
-				<br>
-        <strong style="font-size: 16px;">Nota:</strong> {{ guide.pedido.asunto }}
-			</div>
-		</div>
-	</section>
-		<div id="footer_content">
-			<span class="fo">
-				<table>
-					<tr>
-						<td>
-							<table>
-								<tr><td class="text-center">________________________</td></tr>
-								<tr><td class="text-center">ICR PERU S.A.</td></tr>
-							</table>
-						</td>
-						<td>
-							<table>
-								<tr><td class="text-center">________________________</td></tr>
-								<tr><td class="text-center">RECIBI CONFORME</td></tr>
-							</table>
-						</td>
-					</tr>
-				</table>
-			</span>
-		</div>
+                        {{ i.cantguide|safe }} Niple {% for k,v in tipo.items %}
+                                  {% if k == i.tipo %}
+                                    {{ i.cantidad|pluralize }} {{v}}{{ i.cantidad|pluralize }}
+                                  {% endif %}
+                                {% endfor %}
+                                {{ x.materiales.matmed }} x {{ i.metrado|safe }} cm &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      {% endifequal %}
+                    {% endfor %}
+                  {% endifequal %}
+              </td>
+            </tr>
+          {% endfor%}
+        </tbody>
+        <tfoot>
+          <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          </tr>
+        </tfoot>
+      </table>
+      <div class="text-center">
+        <br>
+        {% if guide.pedido %}
+          <strong style="font-size: 16px;">
+            Proyecto : {{ guide.pedido.proyecto_id }}
+            {{ guide.pedido.proyecto.nompro }}
+          </strong>
+          <br>
+        {% endif %}
+        {% if guide.pedido.asunto %}
+          <strong style="font-size: 16px;">Nota:</strong> {{ guide.pedido.asunto }}
+        {% endif %}
+        {% if guide.pedido %}
+          <strong style="font-size: 16px;">Pedido:</strong> {{ guide.pedido_id }}
+        {% endif %}
+      </div>
+    </div>
+  </section>
+    <div id="footer_content">
+      <span class="fo">
+        <table>
+          <tr>
+            <td>
+              <table>
+                <tr><td class="text-center">________________________</td></tr>
+                <tr><td class="text-center">ICR PERU S.A.</td></tr>
+              </table>
+            </td>
+            <td>
+              <table>
+                <tr><td class="text-center">________________________</td></tr>
+                <tr><td class="text-center">RECIBI CONFORME</td></tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </span>
+    </div>
 </body>
 </html>

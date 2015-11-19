@@ -1995,12 +1995,14 @@ class GuideSingle(JSONResponseMixin, TemplateView):
                                 '%s-%s' % (
                                     '{:0>3d}'.format(int(code[0])),
                                     '{:0>8d}'.format(int(code[1]))))
-                        form = addGuideReferral(request.POST)
+                        form = forms.addGuideReferral(request.POST)
                         if form.is_valid():
                             add = form.save(commit=False)
                             add.guia_id = code
                             add.flag = True
                             add.status = 'GE'
+                            add.observation = request.POST['observation']
+                            add.nota = request.POST['nota']
                             add.save()
                             # save details
                             for x in det:
@@ -2025,13 +2027,13 @@ class GuideSingle(JSONResponseMixin, TemplateView):
                                 dg.guia_id = code
                                 dg.materiales_id = x.materials_id
                                 dg.cantguide = x.quantity
-                                db.brand_id = x.brand_id
+                                dg.brand_id = x.brand_id
                                 dg.model_id = x.model_id
                                 if x.observation:
                                     dg.observation = x.observation
                                 dg.save()
-                                x.delete()
-                                context['status'] = True
+                            det.delete()
+                            context['status'] = True
                         else:
                             context['raise'] = 'fields invalid.'
                             context['status'] = False
@@ -2039,6 +2041,14 @@ class GuideSingle(JSONResponseMixin, TemplateView):
                         context['status'] = False
                         context['raise'] = 'No se a encontrado materiales' \
                             ' para generar la Guia Remision'
+                if 'saveObs' in request.POST:
+                    obs = TmpDetGuia.objects.get(
+                        materials_id=request.POST['materials'],
+                        brand_id=request.POST['brand'],
+                        model_id=request.POST['model'])
+                    obs.observation = request.POST['observation']
+                    obs.save()
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

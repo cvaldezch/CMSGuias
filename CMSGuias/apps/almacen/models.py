@@ -132,7 +132,8 @@ class tmpniple(models.Model):
 
 class GuiaRemision(models.Model):
     guia_id = models.CharField(primary_key=True, max_length=12)
-    pedido = models.ForeignKey(Pedido, to_field='pedido_id', null=True)
+    pedido = models.ForeignKey(
+                Pedido, to_field='pedido_id', null=True, blank=True)
     ruccliente = models.ForeignKey(Cliente, to_field='ruccliente_id')
     puntollegada = models.CharField(max_length=200, null=True)
     registrado = models.DateTimeField(auto_now_add=True)
@@ -141,7 +142,7 @@ class GuiaRemision(models.Model):
     condni = models.ForeignKey(Conductore, to_field='condni_id')
     nropla = models.ForeignKey(Transporte, to_field='nropla_id')
     status = models.CharField(max_length=2, default='46')
-    motive = models.CharField(max_length=2, default='VE', blank=True)
+    motive = models.CharField(max_length=160, default='VENTA', blank=True)
     comment = models.TextField(default='')
     observation = models.CharField(max_length=250, null=True, blank=True)
     nota = models.CharField(max_length=250, null=True, blank=True)

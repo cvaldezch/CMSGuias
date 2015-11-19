@@ -76,7 +76,6 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
             gstock: true
             brand: $scope.mat.brand
             model: $scope.mat.model
-        console.log data
         if $code.text()
             data.code = $code.text()
         else
@@ -101,9 +100,7 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
                         if data.quantity <= 0 or typeof(data.quantity) is "undefined"
                             Materialize.toast "Cantidad Invalida", 4600
                             data.saveMaterial = false
-                        console.log data
                         if data.saveMaterial
-                            console.log response.exact[0].fields
                             if response.exact[0].fields.stock >= data.quantity
                                 $scope.exact = []
                                 $scope.alternative = []
@@ -267,7 +264,7 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
         data =
             save: true
             guide: $scope.guide.guide
-            cliente: $scope.guide.customer
+            ruccliente: $scope.guide.customer
             dotoutput: $scope.guide.dotout
             puntollegada: $scope.guide.dotarrival
             traslado: $scope.guide.transfer
@@ -276,11 +273,9 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
             nropla: $scope.guide.transport
             motive: $scope.guide.motive
             observation: $scope.guide.observation
-            note: $scope.guide.note
+            nota: $scope.guide.note
         for k, v of data
-            console.log v, typeof(v)
             if typeof(v) is 'undefined'
-                console.log k, v
                 switch k
                     when 'guide'
                         swal 'Alerta!', 'Nro guia invalida.', 'warning'
@@ -290,7 +285,7 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
                         swal 'Alerta!', 'Fecha de traslado invalido.', 'warning'
                         data.save = false
                         break
-                    when 'cliente'
+                    when 'ruccliente'
                         swal 'Alerta!', 'Cliente invalido.', 'warning'
                         data.save = false
                         break
@@ -317,7 +312,6 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
         if new Date(data.traslado) < new Date()
             swal 'Alerta!', 'La fecha ingresada es menor', 'warning'
             data.save = false
-        console.log data
         if data.save
             data.traslado = "#{data.traslado.getFullYear()}-#{data.traslado.getMonth()+1}-#{data.traslado.getDate()}"
             data.genGuide = true
@@ -330,15 +324,41 @@ app.controller 'SGuideCtrl', ($scope, $http, $cookies, $timeout) ->
                     swal 'Felicidades!', 'se a generado la Guia de Remision', 'success'
                     $timeout ->
                         location.reload()
+                        return
                     , 2600
                     return
                 else
                     swal 'Error', 'No se a generado la Guia Remision', 'error'
                     return
         return
-    $scope.$watch 'summary', (old, nw) ->
-        console.log old, nw
+    $scope.showObs = ($event) ->
+        $scope.obs = $event.currentTarget.dataset
+        $('#mobs').openModal()
         return
+    $scope.saveObser = ($event) ->
+        $data = $scope.obs
+        $data.saveObs = true
+        $http
+            url: ''
+            method: 'post'
+            data: $.param $data
+        .success (response) ->
+            if response.status
+                Materialize.toast "Guardado OK", 1600
+                $scope.obs =
+                    materials: ''
+                    brand: ''
+                    model: ''
+                    observation: ''
+                $('#mobs').closeModal()
+                return
+            else
+                swal "Error", "No se guardo la observación.", "error"
+                return
+        return
+    # $scope.$watch 'summary', (old, nw) ->
+    #     console.log old, nw
+    #     return
     # $scope.$watch 'mat.brand', (old, nw) ->
     #     # console.log old, nw
     #     # console.log $scope.mat, "object"

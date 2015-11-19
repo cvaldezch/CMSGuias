@@ -19,7 +19,7 @@
                 {{ guide.puntollegada|upper }}
             </div>
             <div id="reason" class="text-normal">
-                {{ guide.pedido.proyecto.ruccliente.razonsocial }}
+                {{ guide.ruccliente.razonsocial }}
             </div>
             <div id="ruc" class="text-number">
                 {{ guide.ruccliente_id }}
@@ -90,12 +90,22 @@
                 </table>
                 <div class="text-center xfont">
                     <br>
-                    <strong class="xfont">
-                        PROYECTO: {{ guide.pedido.proyecto_id|upper }} -
-                        {{ guide.pedido.proyecto.nompro|upper }}
-                    </strong>
-                    <br>
-                    <strong class="xfont">NOTA:</strong> {{ guide.pedido.asunto|upper }}
+                    {% if guide.pedido %}
+                      <strong style="font-size: 16px;">
+                        Proyecto : {{ guide.pedido.proyecto_id }}
+                        {{ guide.pedido.proyecto.nompro }}
+                      </strong>
+                      <br>
+                    {% endif %}
+                    {% if guide.pedido.asunto %}
+                      <strong style="font-size: 16px;">NOTA:</strong> {{ guide.pedido.asunto }}
+                    {% endif %}
+                    {% if guide.pedido %}
+                      <strong style="font-size: 16px;">PEDIDO:</strong> {{ guide.pedido_id }}
+                    {% endif %}
+                    {% if guide.observation %}
+                        <strong style="font-size: 16px;">Obser:</strong> {{ guide.observation }}
+                    {% endif %}
                 </div>
             </div>
         </section>
