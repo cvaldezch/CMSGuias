@@ -4,9 +4,10 @@
 *.tmp
 *.rar
 django_yuml/
-projects/
-pedido/
-vendor/
-storage/
+**/storage/
+**/projects/
+**/pedido/
+**/vendor/
 node_modules/
 npm-debug.log
+**/images/
