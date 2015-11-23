@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Max
 
 from CMSGuias.apps.almacen.models import (
-    Pedido, GuiaRemision, Suministro, NoteIngress)
+    Pedido, GuiaRemision, Suministro, NoteIngress, Restoration)
 from CMSGuias.apps.logistica.models import Cotizacion, Compra, ServiceOrder
 from CMSGuias.apps.ventas.models import Proyecto
 from CMSGuias.apps.home.models import Brand, Model, GroupMaterials, TypeGroup
@@ -117,7 +117,8 @@ def GenerateKeyQuotation():
 def GeneratekeysQuoteClient():
     keys = ''
     try:
-        chars = '@ObAcPdB1Qe2Cf3Dg4Rh5Ei6S7jF8kT9lG0UmnHoWpIqJrYsKtLuZwMyzN!()=|'
+        chars = '@ObAcPdB1Qe2Cf3Dg4Rh5Ei6S7jF8kT9lG0UmnHoWpIqJrYsKtLuZwMyzN!' \
+                '()=|'
         for x in xrange(1, 10):
             index = randint(0, (chars.__len__() - 1))
             keys = '%s%s' % (keys, chars[index])
@@ -409,8 +410,7 @@ def generateBudget():
         else:
             counter = 1
         id = '%s%i%s' % ('PROP', yn, '{:0>4d}'.format(counter))
-    except ObjectDoesNotExist as e:
-        print e
+    except ObjectDoesNotExist:
         id = '%s%i%s' % ('PROP', yn, '{:0>4d}'.format(1))
     return id
 
@@ -441,3 +441,20 @@ def genDSector(pro, group=None):
             return '%s%s' % (group, 'DS001')
     except ObjectDoesNotExist:
         return '%s%s' % (group, 'DS001')
+
+
+def keyRestoration():
+    yn = int(datetime.datetime.today().strftime(__year_str))
+    count = 1
+    try:
+        raw = Restoration.objects.latest('register')
+        if raw:
+            if yn > int(raw.restoration_id[1:3]):
+                count = 1
+            else:
+                count = (int(raw.restoration_id[3:]) + 1)
+            return 'D%s%s' % (yn, '{:0>3d}'.format(count))
+        else:
+            return 'D%s%s' % (yn, '{:0>3d}'.format(count))
+    except ObjectDoesNotExist:
+        return 'D%s%s' % (yn, '{:0>3d}'.format(count))

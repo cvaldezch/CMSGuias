@@ -53,7 +53,13 @@
 					<table class="table table-condensed table-hover table-striped">
 						<thead>
 							<tr class="bg-warning">
-								<th>Item</th><th>Nro</th><th>Proyecto</th><th>Traslado</th><th>Conductor</th><th>Ver</th><th>Anular</th>
+								<th>Item</th>
+								<th>Nro</th>
+								<th>Proyecto</th>
+								<th>Traslado</th>
+								<th>Conductor</th>
+								<th>Ver</th>
+								<th>Anular</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -105,16 +111,24 @@
 </div>
 <!-- anular guide referral -->
 <div class="modal mannular">
-	<div class="modal-dialog modal-sm">
+	<div class="modal-dialog">
 		<div class="modal-content brand-danger">
 			<div class="modal-body text-white">
 				<h4><em>Anular Guía de Remisión.</em></h4>
 				<p>Realmente desea anular la Guía de Remisión <span class="series"></span>?</p>
 				{% csrf_token %}
+				<div class="form-group">
+					<label>Observacion</label>
+					<textarea class="form-control" name="obser" rows="5" placeholder="Ingrese el motivo por que se anula la guia."></textarea>
+				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-				<button class="btn btn-danger btn-annular"><span class="glyphicon glyphicon-ban-circle"></span> Anular</button>
+				<button class="btn btn-default pull-left" data-dismiss="modal">
+					<span class="glyphicon glyphicon-remove"></span> Cancelar
+				</button>
+				<button class="btn btn-danger btn-annular">
+					<span class="glyphicon glyphicon-fire"></span> Anular Guia
+				</button>
 			</div>
 		</div>
 	</div>

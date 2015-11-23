@@ -953,84 +953,122 @@ def view_orders_pending(request):
 def view_orders_list_approved(request):
     try:
         if request.method == 'GET':
-            lst= Pedido.objects.filter(flag=True).exclude(Q(status='PE')|Q(status='AN')|Q(status='CO')).order_by('-pedido_id')
-            ctx= { 'lista': lst }
-            return render_to_response('almacen/listorderattend.html',ctx,context_instance=RequestContext(request))
-    except TemplateDoesNotExist, e:
+            lst = Pedido.objects.filter(
+                flag=True).exclude(
+                Q(status='PE') | Q(status='AN') | Q(status='CO')
+                ).order_by('-pedido_id')
+            ctx = {'lista': lst}
+            return render_to_response(
+                'almacen/listorderattend.html',
+                ctx,
+                context_instance=RequestContext(request))
+    except TemplateDoesNotExist:
         messages('Error template not found')
         raise Http404('Process Error')
+
+
 # meet Orders
 @login_required(login_url='/SignUp/')
-def view_attend_order(request,oid):
+def view_attend_order(request, oid):
     try:
         if request.method == 'GET':
-            obj= get_object_or_404(Pedido,pk=oid,flag=True)
+            obj = get_object_or_404(Pedido, pk=oid, flag=True)
             # det= get_list_or_404(Detpedido, pedido_id__exact=oid,flag=True)
             # use sintaxis sql for PostgreSQL
-            det = Detpedido.objects.filter(pedido_id__exact=oid,flag=True).extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},)
-            radio= ''
+            det = Detpedido.objects.filter(
+                pedido_id__exact=oid,
+                flag=True).extra(select={'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"})
+            radio = ''
             for x in det:
                 if x.cantshop <= 0:
-                    radio= 'disabled'
+                    radio = 'disabled'
                     break
-            # nipples= get_list_or_404(Niple.objects.order_by('metrado'),pedido_id__exact=oid,flag=True)
-            nipples = Niple.objects.filter(pedido_id__exact=oid, flag=True).order_by('metrado')
-            usr= userProfile.objects.get(empdni__exact=obj.empdni)
-            tipo= {'A':'Roscado','B':'Ranurado','C':'Rosca-Ranura'}
-            ctx= { 'orders': obj, 'det': det, 'nipples': nipples, 'usr': usr,'tipo':tipo,'radio':radio }
-            return render_to_response('almacen/attendorder.html',ctx,context_instance=RequestContext(request))
+            # nipples= get_list_or_404(
+            # Niple.objects.order_by('metrado'),pedido_id__exact=oid,flag=True)
+            nipples = Niple.objects.filter(
+                        pedido_id__exact=oid, flag=True).order_by('metrado')
+            usr = userProfile.objects.get(empdni__exact=obj.empdni)
+            tipo = {'A': 'Roscado', 'B': 'Ranurado', 'C': 'Rosca-Ranura'}
+            ctx = {
+                'orders': obj,
+                'det': det,
+                'nipples': nipples,
+                'usr': usr,
+                'tipo': tipo,
+                'radio': radio}
+            return render_to_response(
+                'almacen/attendorder.html',
+                ctx,
+                context_instance=RequestContext(request))
         elif request.method == 'POST':
             try:
-                data= {}
+                data = dict()
                 # recover list of materials
-                mat= json.loads( request.POST.get('materials') )
+                mat = json.loads(request.POST.get('materials'))
                 # recover list of nipples
-                nip= json.loads( request.POST.get('nipples') )
+                nip = json.loads(request.POST.get('nipples'))
                 # variables
-                cnm= 0
-                cnn= 0
-                ctn= 0
-                # we walk the list materials and update items materials of details orders
+                cnm = 0
+                cnn = 0
+                ctn = 0
+                # we walk the list materials and update items
+                # materials of details orders
                 for c in range(len(mat)):
-                    cs= 0
+                    cs = 0
                     for x in range(len(nip)):
                         if mat[c]['matid'] == nip[x]['matid']:
-                            cs+= (float(nip[x]['quantityshop']) * float(nip[x]['meter']) )
-                    ctn+= cs
-                    obj= Detpedido.objects.get(pedido_id__exact=request.POST.get('oid'),materiales_id__exact=mat[c]['matid'])
+                            cs += (
+                                float(nip[x]['quantityshop']) * float(
+                                    nip[x]['meter']))
+                    ctn += cs
+                    obj = Detpedido.objects.get(
+                            pedido_id__exact=request.POST.get('oid'),
+                            materiales_id__exact=mat[c]['matid'])
                     # aqui hacer otro if
-                    obj.cantshop=  (float(mat[c]['quantity']) - float(mat[c]['quantityshop'])) if (cs / 100 ) == float(mat[c]['quantity']) else (cs/100) if mat[c]['matid'][0:3] == '115' else (float(mat[c]['quantity']) - float(mat[c]['quantityshop']))
-                    #print (cs / 100 ) if mat[c]['matid'][0:3] == '115' else (float(mat[c]['quantity']) - float(mat[c]['quantityshop']))
-                    obj.cantguide= float(mat[c]['quantityshop'])
-                    obj.tag= '1'
+                    obj.cantshop = (float(mat[c]['quantity']) - float(
+                        mat[c]['quantityshop'])) if (cs / 100) == float(
+                        mat[c]['quantity']) else (cs/100) if mat[c][
+                            'matid'][0:3] == '115' else (
+                                float(mat[c]['quantity']) - float(
+                                    mat[c]['quantityshop']))
+                    # print (cs / 100 ) if mat[c]['matid'][0:3] == '115' else (
+                    # float(mat[c]['quantity'])- float(mat[c]['quantityshop']))
+                    obj.cantguide = float(mat[c]['quantityshop'])
+                    obj.tag = '1'
                     obj.save()
-                    cnm+= 1
+                    cnm += 1
                 # we walk the list nipples and update tag of tables nipples
                 for n in range(len(nip)):
-                    obj= Niple.objects.get(pk=nip[n]['nid'])
-                    obj.cantshop= int( float(nip[n]['quantity']) - float(nip[n]['quantityshop']) )
-                    obj.cantguide= int(float(nip[n]['quantityshop']))
-                    obj.tag= '1'
+                    obj = Niple.objects.get(pk=nip[n]['nid'])
+                    obj.cantshop = int(
+                        float(nip[n]['quantity']) - float(
+                            nip[n]['quantityshop']))
+                    obj.cantguide = int(float(nip[n]['quantityshop']))
+                    obj.tag = '1'
                     obj.save()
-                    cnn+= 1
+                    cnn += 1
                 # evaluation status orders
                 # recover number of materials
-                status= ''
-                onm= Detpedido.objects.filter(pedido_id__exact=request.POST.get('oid'),cantshop__gt=0).exclude(tag='2').count()
+                status = ''
+                onm = Detpedido.objects.filter(
+                    pedido_id__exact=request.POST.get('oid'),
+                    cantshop__gt=0).exclude(tag='2').count()
                 if onm > 0:
-                    status= 'IN'
+                    status = 'IN'
                 else:
-                    status= 'CO'
+                    status = 'CO'
                 # update status Bedside Orders
                 obj = Pedido.objects.get(pk=request.POST.get('oid'))
-                obj.status= status
+                obj.status = status
                 obj.save()
-                data['sts']= status
-                data['pass']= status
-                data['status']= True
+                data['sts'] = status
+                data['pass'] = status
+                data['status'] = True
             except ObjectDoesNotExist, e:
-                data['status']= False
-            return HttpResponse(simplejson.dumps(data), mimetype='application/json' )
+                data['status'] = False
+            return HttpResponse(
+                simplejson.dumps(data),
+                mimetype='application/json')
     except TemplateDoesNotExist, e:
         message('Error template not found')
         raise Http404
@@ -1038,27 +1076,40 @@ def view_attend_order(request,oid):
 """
     guide remision
 """
+
+
 # generate guide remision of a orders
 @login_required(login_url='/SignUp/')
 def view_generate_guide_orders(request):
     try:
         if request.method == 'GET':
-            #lst= get_list_or_404(Pedido.objects.exclude(Q(status='PE')|Q(status='AN')).order_by('-pedido_id'), flag=True )
-            lst= Detpedido.objects.filter(tag='1').order_by('-pedido').distinct('pedido')
-            ctx= { 'orders': lst }
-            return render_to_response('almacen/generateGuide.html',ctx,context_instance=RequestContext(request))
+            # lst= get_list_or_404(Pedido.objects.exclude(Q(status='PE')|
+            # Q(status='AN')).order_by('-pedido_id'), flag=True )
+            lst = Detpedido.objects.filter(tag='1').order_by(
+                    '-pedido').distinct('pedido')
+            ctx = {'orders': lst}
+            return render_to_response(
+                'almacen/generateGuide.html',
+                ctx,
+                context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
         message('Error Template not found')
         raise Http404
+
+
 # request generate guide remision
 @login_required(login_url='/SignUp/')
-def view_generate_document_out(request,oid):
+def view_generate_document_out(request, oid):
     try:
         if request.method == 'GET':
-            orders= get_object_or_404(Pedido,flag=True,pedido_id__exact=oid)
-            trans= get_list_or_404(Transportista.objects.values('traruc_id','tranom'),flag=True)
-            ctx= { 'oid': oid, 'trans': trans, 'orders': orders }
-            return render_to_response('almacen/documentout.html',ctx,context_instance=RequestContext(request))
+            orders = get_object_or_404(Pedido, flag=True, pedido_id__exact=oid)
+            trans = get_list_or_404(Transportista.objects.values(
+                'traruc_id', 'tranom'), flag=True)
+            ctx = {'oid': oid, 'trans': trans, 'orders': orders}
+            return render_to_response(
+                'almacen/documentout.html',
+                ctx,
+                context_instance=RequestContext(request))
         elif request.method == 'POST':
             if request.is_ajax():
                 form = forms.addGuideReferral(request.POST)
@@ -1103,18 +1154,25 @@ def view_generate_document_out(request,oid):
                             except ObjectDoesNotExist, e:
                                 store = 'AL01'
                             try:
-                                inv = Inventario.objects.get(materiales_id=x.materiales_id, periodo=globalVariable.get_year, almacen_id=store)
+                                inv = Inventario.objects.get(
+                                    materiales_id=x.materiales_id,
+                                    periodo=globalVariable.get_year,
+                                    almacen_id=store)
                                 stock = inv.stock
                                 inv.stock = (stock - float(x.cantguide))
                                 inv.save()
                             except ObjectDoesNotExist, e:
                                 print e
-                            # brands = InventoryBrand.objects.filter(materiales_id=x.materiales_id, periodo=globalVariable.get_year)
+                        # brands = InventoryBrand.objects.filter(
+                        # materiales_id=x.materiales_id,
+                        # periodo=globalVariable.get_year)
 
                         # recover details nipples
-                        nip = Niple.objects.filter(pedido_id__exact=request.POST.get('pedido'), tag='1',flag=True)
+                        nip = Niple.objects.filter(
+                            pedido_id__exact=request.POST.get('pedido'),
+                            tag='1', flag=True)
                         for x in nip:
-                            obj= NipleGuiaRemision()
+                            obj = NipleGuiaRemision()
                             obj.guia_id = guidekeys
                             obj.materiales_id = x.materiales_id
                             obj.metrado = x.metrado
@@ -1124,7 +1182,7 @@ def view_generate_document_out(request,oid):
                             # save details niples for guide referral
                             obj.save()
                             ob = Niple.objects.get(pk__exact=x.id)
-                            ob.tag= '2' if x.cantshop <= 0 else '0'
+                            ob.tag = '2' if x.cantshop <= 0 else '0'
                             ob.save()
                         data['status'] = True
                         data['guide'] = guidekeys
@@ -1133,10 +1191,13 @@ def view_generate_document_out(request,oid):
                 else:
                     data['status'] = False
                     data['raise'] = 'Form invalid'
-                return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+                return HttpResponse(
+                    simplejson.dumps(data),
+                    mimetype='application/json')
     except TemplateDoesNotExist, e:
         message('Error: Template not found')
-        raise Http404
+        raise Http404(e)
+
 
 # recover list guide referral for view and annular
 @login_required(login_url='/SignUp/')
@@ -1144,48 +1205,147 @@ def view_list_guide_referral_success(request):
     try:
         if request.method == 'GET':
             if request.is_ajax():
-                data = {}
+                data = dict()
                 ls = []
                 try:
                     if request.GET.get('tra') == 'series':
-                        lst= GuiaRemision.objects.get(pk=request.GET.get('series'),status='GE',flag=True)
-                        ls= [{'item':1,'guia_id':lst.guia_id,'nompro':lst.pedido.proyecto.nompro,'traslado':lst.traslado.strftime(FORMAT_DATE_STR),'connom':lst.condni.connom}]
-                        data['status']= True
+                        lst = GuiaRemision.objects.get(
+                            pk=request.GET.get('series'),
+                            status='GE', flag=True)
+                        ls = [{
+                            'item': 1,
+                            'guia_id': lst.guia_id,
+                            'nompro': lst.pedido.proyecto.nompro,
+                            'traslado': lst.traslado.strftime(FORMAT_DATE_STR),
+                            'connom': lst.condni.connom}]
+                        data['status'] = True
                     elif request.GET.get('tra') == 'dates':
-                        if request.GET.get('fecf') == '' and request.GET.get('feci') != '':
-                            star= datetime.datetime.strptime(request.GET.get('feci'), FORMAT_DATE_STR ).date()
-                            lst= GuiaRemision.objects.filter(traslado=star,status='GE',flag=True)
-                        elif request.GET.get('fecf') != '' and request.GET.get('feci') != '':
-                            star= datetime.datetime.strptime(request.GET.get('feci'), FORMAT_DATE_STR ).date()
-                            end= datetime.datetime.strptime(request.GET.get('fecf'), FORMAT_DATE_STR ).date()
-                            lst= GuiaRemision.objects.filter(traslado__range=[star,end],status='GE',flag=True)
-                        i= 1
+                        fecf = request.GET.get('fecf')
+                        feci = request.GET.get('feci')
+                        if fecf == '' and feci != '':
+                            star = datetime.datetime.strptime(
+                                    request.GET.get('feci'),
+                                    FORMAT_DATE_STR).date()
+                            lst = GuiaRemision.objects.filter(
+                                    traslado=star, status='GE', flag=True)
+                        elif fecf != '' and feci != '':
+                            star = datetime.datetime.strptime(
+                                    request.GET.get('feci'),
+                                    FORMAT_DATE_STR).date()
+                            end = datetime.datetime.strptime(
+                                    request.GET.get('fecf'),
+                                    FORMAT_DATE_STR).date()
+                            lst = GuiaRemision.objects.filter(
+                                    traslado__range=[star, end],
+                                    status='GE',
+                                    flag=True)
+                        i = 1
                         for x in lst:
-                            ls.append({'item':i,'guia_id':x.guia_id,'nompro':x.pedido.proyecto.nompro,'traslado':x.traslado.strftime(FORMAT_DATE_STR),'connom':x.condni.connom})
-                            i+= 1
-                        data['status']= True
+                            ls.append({
+                                'item': i,
+                                'guia_id': x.guia_id,
+                                'nompro': x.pedido.proyecto.nompro,
+                                'traslado': x.traslado.strftime(
+                                                FORMAT_DATE_STR),
+                                'connom': x.condni.connom})
+                            i += 1
+                        data['status'] = True
                 except ObjectDoesNotExist, e:
-                    data['status']= False
-                data['list']= ls
-                return HttpResponse(simplejson.dumps(data),mimetype='application/json')
-            lst= GuiaRemision.objects.filter(status='GE',flag=True).order_by('-guia_id')[:10]
-            ctx= {'guide':lst}
-            return render_to_response('almacen/listguide.html',ctx,context_instance=RequestContext(request))
+                    data['status'] = False
+                data['list'] = ls
+                return HttpResponse(
+                    simplejson.dumps(data),
+                    mimetype='application/json')
+            lst = GuiaRemision.objects.filter(
+                    status='GE',
+                    flag=True).order_by('-guia_id')[:10]
+            ctx = {'guide': lst}
+            return render_to_response(
+                'almacen/listguide.html',
+                ctx,
+                context_instance=RequestContext(request))
+
         if request.method == 'POST':
-            data= {}
+            data = dict()
             try:
-                obj= GuiaRemision.objects.get(pk=request.POST.get('series'),status='GE',flag=True)
-                obj.status= 'AN'
-                obj.flag= False
+                obj = GuiaRemision.objects.get(
+                        pk=request.POST.get('series'), status='GE', flag=True)
+                obj.status = 'AN'
+                obj.flag = False
                 obj.save()
-                det= DetGuiaRemision.objects.filter(guia_id__exact=request.POST.get('series')).update(flag=False)
-                nip= NipleGuiaRemision.objects.filter(guia_id__exact=request.POST.get('series')).update(flag=False)
-                data['status']= True
+                det = DetGuiaRemision.objects.filter(
+                        guia_id__exact=request.POST.get('series'))
+                det.update(flag=False)
+                nip = NipleGuiaRemision.objects.filter(
+                    guia_id__exact=request.POST.get('series'))
+                nip.update(flag=False)
+                # generate beside restoration
+                add = Restoration()
+                res = genkeys.keyRestoration().strip()
+                add.restoration_id = res
+                if obj.pedido_id:
+                    add.almacen_id = obj.pedido_id
+                else:
+                    add.almacen_id = 'AL01'
+                add.ndocument_id = obj.guia_id
+                add.observation = request.POST['observation']
+                add.performed = request.user.get_profile().empdni_id
+                add.save()
+                for x in det:
+                    # return quantity at inventory
+                    inv = Inventario.objects.filter(
+                            periodo=globalVariable.get_year,
+                            materiales_id=x.materiales_id).order_by(
+                            '-ingreso')[0]
+                    if not x.brand_id:
+                        brand = 'BR000'
+                    else:
+                        brand = x.brand_id
+                    if not x.model_id:
+                        model = 'MO000'
+                    else:
+                        model = x.model_id
+                    # return quantity at inventory brand
+                    ibm = InventoryBrand.objects.filter(
+                        period=globalVariable.get_year,
+                        materials_id=x.materiales_id,
+                        brand_id=brand,
+                        model_id=model).order_by('-ingress')[0]
+                    inv.stock = (float(inv.stock) + float(x.quantity))
+                    inv.save()
+                    ibm.stock = (float(ibm.stock) + float(x.quantity))
+                    ibm.save()
+                    # Save Details Restoration
+                    dt = DetRestoration()
+                    dt.restoration_id = res
+                    dt.materials_id = x.materiales_id
+                    dt.brand_id = brand
+                    dt.model = model
+                    dt.quantity = x.cantguide
+                    dt.save()
+                    # Return quantity at order if exists
+                    if obj.pedido_id:
+                        ords = Detpedido.objects.get(
+                            pedido_id=obj.pedido_id,
+                            materiales_id=x.materiales_id,
+                            brand_id=brand,
+                            model_id=model)
+                        ords.cantshop = (ords.cantshop + x.quantity)
+                        ords.cantguide = (ords.cantguide - x.quantity)
+                        ords.tag = '1'
+                        ords.save()
+                    # if guide nipple exist for material
+                if obj.pedido_id:
+                    Pedido.objects.get(
+                        pedido_id=obj.pedido_id).update(status='IN')
+                data['status'] = True
             except ObjectDoesNotExist, e:
-                data['status']= False
-            return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+                data['status'] = False
+            return HttpResponse(
+                simplejson.dumps(data), mimetype='application/json')
     except TemplateDoesNotExist, e:
-        raise Http404
+        raise Http404(e)
+
 
 # recover list guide referral for view and annular
 @login_required(login_url='/SignUp/')
@@ -1193,39 +1353,70 @@ def view_list_guide_referral_canceled(request):
     try:
         if request.method == 'GET':
             if request.is_ajax():
-                data= {}
-                ls= []
+                data = dict()
+                ls = list()
                 try:
                     if request.GET.get('tra') == 'series':
-                        lst= GuiaRemision.objects.get(pk=request.GET.get('series'),status='AN',flag=False)
-                        ls= [{'item':1,'guia_id':lst.guia_id,'nompro':lst.pedido.proyecto.nompro,'traslado':lst.traslado.strftime(FORMAT_DATE_STR),'connom':lst.condni.connom}]
-                        data['status']= True
+                        lst = GuiaRemision.objects.get(
+                            pk=request.GET.get('series'),
+                            status='AN', flag=False)
+                        ls = [{
+                            'item': 1,
+                            'guia_id': lst.guia_id,
+                            'nompro': lst.pedido.proyecto.nompro,
+                            'traslado': lst.traslado.strftime(FORMAT_DATE_STR),
+                            'connom': lst.condni.connom}]
+                        data['status'] = True
                     elif request.GET.get('tra') == 'dates':
                         if request.GET.get('fecf') == '' and request.GET.get('feci') != '':
-                            star= datetime.datetime.strptime(request.GET.get('feci'), FORMAT_DATE_STR ).date()
-                            lst= GuiaRemision.objects.filter(traslado=star,status='AN',flag=False)
+                            star = datetime.datetime.strptime(
+                                request.GET.get('feci'),
+                                FORMAT_DATE_STR).date()
+                            lst = GuiaRemision.objects.filter(
+                                traslado=star, status='AN', flag=False)
                         elif request.GET.get('fecf') != '' and request.GET.get('feci') != '':
-                            star= datetime.datetime.strptime(request.GET.get('feci'), FORMAT_DATE_STR ).date()
-                            end= datetime.datetime.strptime(request.GET.get('fecf'), FORMAT_DATE_STR ).date()
-                            lst= GuiaRemision.objects.filter(traslado__range=[star,end],status='AN',flag=False)
-                        i= 1
+                            star = datetime.datetime.strptime(
+                                request.GET.get('feci'),
+                                FORMAT_DATE_STR).date()
+                            end = datetime.datetime.strptime(
+                                request.GET.get('fecf'),
+                                FORMAT_DATE_STR).date()
+                            lst = GuiaRemision.objects.filter(
+                                traslado__range=[star, end],
+                                status='AN',
+                                flag=False)
+                        i = 1
                         for x in lst:
-                            ls.append({'item':i,'guia_id':x.guia_id,'nompro':x.pedido.proyecto.nompro,'traslado':x.traslado.strftime(FORMAT_DATE_STR),'connom':x.condni.connom})
-                            i+= 1
-                        data['status']= True
+                            ls.append({
+                                'item': i,
+                                'guia_id': x.guia_id,
+                                'nompro': x.pedido.proyecto.nompro,
+                                'traslado': x.traslado.strftime(
+                                                FORMAT_DATE_STR),
+                                'connom': x.condni.connom})
+                            i += 1
+                        data['status'] = True
                 except ObjectDoesNotExist, e:
-                    data['status']= False
-                data['list']= ls
-                return HttpResponse(simplejson.dumps(data),mimetype='application/json')
-            lst= GuiaRemision.objects.filter(status='AN',flag=False).order_by('-guia_id')[:10]
-            ctx= {'guide':lst}
-            return render_to_response('almacen/listguidecanceled.html',ctx,context_instance=RequestContext(request))
+                    data['status'] = False
+                    data['raise'] = str(e)
+                data['list'] = ls
+                return HttpResponse(
+                    simplejson.dumps(data),
+                    mimetype='application/json')
+            lst = GuiaRemision.objects.filter(
+                status='AN', flag=False).order_by('-guia_id')[:10]
+            ctx = {'guide': lst}
+            return render_to_response(
+                'almacen/listguidecanceled.html',
+                ctx,
+                context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
-        raise Http404
+        raise Http404(e)
 
 ###########################
 # Views natives of stores #
 ###########################
+
 
 class InventoryView(ListView, JSONResponseMixin):
 
@@ -1234,22 +1425,51 @@ class InventoryView(ListView, JSONResponseMixin):
         if request.is_ajax():
             if request.GET.get('tipo') == 'desc':
                 if bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') == 'None':
-                    model = Inventario.objects.filter(materiales__matnom__icontains=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'), stock__lte=0)
+                    model = Inventario.objects.filter(
+                        materiales__matnom__icontains=request.GET.get('omat'),
+                        periodo=request.GET.get('periodo'),
+                        almacen=request.GET.get('almacen'), stock__lte=0)
                 elif bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') != 'None':
-                    model = Inventario.objects.filter(materiales__matnom__icontains=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'), stock__lte=0, stkmin=request.GET.get('stkmin'))
+                    model = Inventario.objects.filter(
+                        materiales__matnom__icontains=request.GET.get('omat'),
+                        periodo=request.GET.get('periodo'),
+                        almacen=request.GET.get('almacen'),
+                        stock__lte=0,
+                        stkmin=request.GET.get('stkmin'))
                 elif not bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') != 'None':
-                    model = Inventario.objects.filter(materiales__matnom__icontains=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'))
+                    model = Inventario.objects.filter(
+                        materiales__matnom__icontains=request.GET.get('omat'),
+                        periodo=request.GET.get('periodo'),
+                        almacen=request.GET.get('almacen'))
                 else:
-                    model = Inventario.objects.filter(materiales__matnom__icontains=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'))
+                    model = Inventario.objects.filter(
+                        materiales__matnom__icontains=request.GET.get('omat'),
+                        periodo=request.GET.get('periodo'),
+                        almacen=request.GET.get('almacen'))
             elif request.GET.get('tipo') == 'cod':
                 if bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') == 'None':
-                    model = Inventario.objects.filter(materiales__materiales_id__startswith=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'), stock__lte=0)
+                    model = Inventario.objects.filter(
+                        materiales__materiales_id__startswith=request.GET.get(
+                            'omat'), periodo=request.GET.get('periodo'),
+                        almacen=request.GET.get('almacen'), stock__lte=0)
                 elif bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') != 'None':
-                    model = Inventario.objects.filter(materiales__materiales_id__startswith=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'), stock__lte=0, stkmin=request.GET.get('stkmin'))
+                    model = Inventario.objects.filter(
+                        materiales__materiales_id__startswith=request.GET.get(
+                            'omat'), periodo=request.GET.get('periodo'),
+                        almacen=request.GET.get('almacen'),
+                        stock__lte=0, stkmin=request.GET.get('stkmin'))
                 elif not bool(int(request.GET.get('stkzero'))) and request.GET.get('stkmin') != 'None':
-                    model = Inventario.objects.filter(materiales__materiales_id__startswith=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'))
+                    model = Inventario.objects.filter(
+                        materiales__materiales_id__startswith=request.GET.get(
+                            'omat'),
+                        periodo=request.GET.get('periodo'),
+                        almacen=request.GET.get('almacen'))
                 else:
-                    model = Inventario.objects.filter(materiales__materiales_id__startswith=request.GET.get('omat'),periodo=request.GET.get('periodo'),almacen=request.GET.get('almacen'))
+                    model = Inventario.objects.filter(
+                        materiales__materiales_id__startswith=request.GET.get(
+                            'omat'),
+                        periodo=request.GET.get('periodo'),
+                        almacen=request.GET.get('almacen'))
             counter = 0
             paginator = Paginator(model, 20)
             page = request.GET.get('page')
@@ -1259,9 +1479,18 @@ class InventoryView(ListView, JSONResponseMixin):
                 materials = paginator.page(1)
             except EmptyPage:
                 materials = paginator.page(paginator.num_pages)
-            data={'list': []}
+            data = {'list': []}
             for x in materials:
-                data['list'].append({'materiales_id':x.materiales_id,'matnom': x.materiales.matnom, 'matmed': x.materiales.matmed,'unid':x.materiales.unidad_id, 'stkmin': x.stkmin, 'stock': x.stock, 'ingreso': x.ingreso.strftime(FORMAT_DATE_STR), 'compra_id': x.compra_id,'spptag': x.spptag })
+                data['list'].append({
+                    'materiales_id': x.materiales_id,
+                    'matnom': x.materiales.matnom,
+                    'matmed': x.materiales.matmed,
+                    'unid': x.materiales.unidad_id,
+                    'stkmin': x.stkmin,
+                    'stock': x.stock,
+                    'ingreso': x.ingreso.strftime(FORMAT_DATE_STR),
+                    'compra_id': x.compra_id,
+                    'spptag': x.spptag})
             data['has_previous'] = materials.has_previous()
             if materials.has_previous():
                 data['previous_page_number'] = materials.previous_page_number()
@@ -1270,13 +1499,22 @@ class InventoryView(ListView, JSONResponseMixin):
             data['has_next'] = materials.has_next()
             if materials.has_next():
                 data['next_page_number'] = materials.next_page_number()
-            return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+            return HttpResponse(
+                simplejson.dumps(data),
+                mimetype='application/json')
         else:
-            model = Inventario.objects.filter(periodo=datetime.datetime.today().date().year.__str__(),flag=True).order_by('materiales')
-        context = {}
-        context['periodo'] = [x['periodo'] for x in Inventario.objects.values('periodo').order_by('periodo').distinct('periodo')]
-        context['almacen'] = [{'alid':x.almacen_id, 'nom': x.nombre} for x in Almacene.objects.filter(flag=True)]
-        paginator = Paginator(model, 20) # Show 25 materials per page
+            model = Inventario.objects.filter(
+                periodo=datetime.datetime.today().date().year.__str__(),
+                flag=True).order_by('materiales')
+        context = dict()
+        context['periodo'] = [
+            x['periodo'] for x in Inventario.objects.values(
+                'periodo').order_by('periodo').distinct('periodo')]
+        context['almacen'] = [{
+            'alid': x.almacen_id,
+            'nom': x.nombre} for x in Almacene.objects.filter(flag=True)]
+        paginator = Paginator(model, 20)
+        # Show 25 materials per page
         page = request.GET.get('page')
         try:
             materials = paginator.page(page)
@@ -1287,7 +1525,10 @@ class InventoryView(ListView, JSONResponseMixin):
             # If page is out of range (e.g. 9999), delibery last page of result
             materials = paginator.page(paginator.num_pages)
         context['inventory'] = materials
-        return render_to_response('almacen/inventory.html', context, context_instance=RequestContext(request))
+        return render_to_response(
+            'almacen/inventory.html',
+            context,
+            context_instance=RequestContext(request))
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
@@ -1302,12 +1543,16 @@ class InventoryView(ListView, JSONResponseMixin):
                 obj.origin_id = request.POST.get('add-oid')
                 obj.origin = request.POST.get('add-ori')
                 obj.save()
-                obj = Inventario.objects.get(materiales_id=request.POST.get('add-id'),almacen_id=request.POST.get('add-oid'),periodo=datetime.datetime.today().date().strftime('%Y'))
+                obj = Inventario.objects.get(
+                    materiales_id=request.POST.get('add-id'),
+                    almacen_id=request.POST.get('add-oid'),
+                    periodo=datetime.datetime.today().date().strftime('%Y'))
                 obj.spptag = True
                 obj.save()
                 data['status'] = True
             if tipo == 'all':
-                sts = Inventario.register_all_list_materilas(request.POST.get('alid'), request.POST.get('quantity'))
+                sts = Inventario.register_all_list_materilas(
+                    request.POST.get('alid'), request.POST.get('quantity'))
                 data['status'] = sts
             if tipo == 'per':
                 print 'ingress step'
@@ -1324,6 +1569,7 @@ class InventoryView(ListView, JSONResponseMixin):
         # data = simplejson.dumps(data)
         return self.render_to_json_response(data)
 
+
 class SupplyView(ListView):
     template_name = 'almacen/supply.html'
 
@@ -1333,9 +1579,18 @@ class SupplyView(ListView):
             data = dict()
             try:
                 arr = json.loads(request.GET.get('mats'))
-                queryset = tmpsuministro.objects.extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_tmpsuministro.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"},).filter(empdni__exact=request.user.get_profile().empdni_id, materiales_id__in=arr)
-                queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad_id', 'brand__brand','model__model','stock')
-                queryset = queryset.annotate(cantidad=Sum('cantidad')).order_by('materiales__matnom')
+                queryset = tmpsuministro.objects.extra(select={
+                    'stock': "SELECT stock FROM almacen_inventario WHERE almacen_tmpsuministro.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"}).filter(empdni__exact=request.user.get_profile().empdni_id, materiales_id__in=arr)
+                queryset = queryset.values(
+                    'materiales_id',
+                    'materiales__matnom',
+                    'materiales__matmed',
+                    'materiales__unidad_id',
+                    'brand__brand',
+                    'model__model',
+                    'stock')
+                queryset = queryset.annotate(
+                    cantidad=Sum('cantidad')).order_by('materiales__matnom')
                 data['list'] = [
                     {
                         'materiales_id': x['materiales_id'],
@@ -1353,11 +1608,19 @@ class SupplyView(ListView):
             except ObjectDoesNotExist, e:
                 data['status'] = False
             data = simplejson.dumps(data)
-            return HttpResponse(data, mimetype='application/json', content_type='application/json')
+            return HttpResponse(
+                data,
+                mimetype='application/json',
+                content_type='application/json')
         context = {}
-        context['tmp'] = tmpsuministro.objects.filter(empdni__exact=request.user.get_profile().empdni_id).order_by('materiales__matnom')
+        context['tmp'] = tmpsuministro.objects.filter(
+            empdni__exact=request.user.get_profile().empdni_id
+            ).order_by('materiales__matnom')
         context['almacen'] = Almacene.objects.filter(flag=True)
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
@@ -1365,14 +1628,21 @@ class SupplyView(ListView):
             data = {}
             try:
                 if request.POST.get('tipo') == 'deltmp':
-                    obj = tmpsuministro.objects.filter(empdni__exact=request.user.get_profile().empdni_id)
+                    obj = tmpsuministro.objects.filter(
+                        empdni__exact=request.user.get_profile().empdni_id)
                     if obj:
                         for x in obj:
                             det = None
                             if x.origin == 'PE':
-                                det = Detpedido.objects.get(pedido_id__exact=x.origin_id, materiales_id=x.materiales_id)
+                                det = Detpedido.objects.get(
+                                    pedido_id__exact=x.origin_id,
+                                    materiales_id=x.materiales_id)
                             elif x.origin == 'AL':
-                                det = Inventario.objects.get(almacen_id=x.origin_id, materiales_id=x.materiales_id, periodo=globalVariable.date_now(type='str',format='%Y'))
+                                det = Inventario.objects.get(
+                                    almacen_id=x.origin_id,
+                                    materiales_id=x.materiales_id,
+                                    periodo=globalVariable.date_now(
+                                        type='str', format='%Y'))
                             else:
                                 continue
                             det.spptag = False
@@ -1396,12 +1666,18 @@ class SupplyView(ListView):
                     bed.asunto = request.POST.get('asunto')
                     bed.status = 'PE'
                     # details supply
-                    obj = tmpsuministro.objects.filter(empdni=request.user.get_profile().empdni_id)
+                    obj = tmpsuministro.objects.filter(
+                        empdni=request.user.get_profile().empdni_id)
                     proj = obj.values('orders__proyecto__proyecto_id')
-                    proj = proj.distinct('orders__proyecto__proyecto_id').order_by('orders__proyecto__proyecto_id')
-                    #print ','.join([x['orders__proyecto__proyecto_id'] for x in proj])
+                    proj = proj.distinct(
+                        'orders__proyecto__proyecto_id'
+                        ).order_by('orders__proyecto__proyecto_id')
+                    # print ','.join([x['orders__proyecto__proyecto_id
+                    # '] for x in proj])
                     print proj
-                    bed.orders = ','.join([x['orders__proyecto__proyecto_id'] for x in proj]) if proj[0]['orders__proyecto__proyecto_id'] is not None else ''
+                    bed.orders = ','.join(
+                        [x['orders__proyecto__proyecto_id'] for x in proj]
+                        ) if proj[0]['orders__proyecto__proyecto_id'] is not None else ''
                     bed.save()
                     for x in obj:
                         det = DetSuministro()
@@ -1420,7 +1696,10 @@ class SupplyView(ListView):
                 context['raise'] = e.__str__()
                 data['status'] = False
             data = simplejson.dumps(data)
-            return HttpResponse(data, mimetype='application/json', content_type='application/json')
+            return HttpResponse(
+                data,
+                mimetype='application/json',
+                content_type='application/json')
 
 
 class ListOrdersSummary(TemplateView):
@@ -1445,20 +1724,26 @@ class ListOrdersSummary(TemplateView):
             data = {}
             try:
                 obj = tmpsuministro()
-                #arr = json.loads(request.POST.get('add-oid'))
-                #for x in arr.__len__():
+                # arr = json.loads(request.POST.get('add-oid'))
+                # for x in arr.__len__():
                 obj.empdni = request.user.get_profile().empdni_id
                 obj.materiales_id = request.POST.get('id-add')
                 obj.cantidad = (request.POST.get('cant-add'))
-                #obj.origin_id = arr[x]
+                # obj.origin_id = arr[x]
                 obj.origin_id = request.POST.get('add-ori')
                 obj.save()
                 arr = json.loads(request.POST.get('orders'))
-                Detpedido.objects.filter(Q(flag=True) & Q(pedido_id__in=arr) & Q(materiales_id=request.POST.get('id-add'))).update(spptag=True)
+                Detpedido.objects.filter(
+                    Q(flag=True) & Q(pedido_id__in=arr) & Q(
+                        materiales_id=request.POST.get('id-add'))
+                    ).update(spptag=True)
                 data['status'] = True
             except ObjectDoesNotExist:
                 data['status'] = False
-            return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+            return HttpResponse(
+                simplejson.dumps(data),
+                mimetype='application/json')
+
 
 class ListDetOrders(JSONResponseMixin, TemplateView):
     template_name = 'almacen/listdetailsOrders.html'
@@ -1466,13 +1751,18 @@ class ListDetOrders(JSONResponseMixin, TemplateView):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         context = dict()
-        context['orders'] = Pedido.objects.filter(Q(flag=True) & Q(status='AP') | Q(status='IN')).order_by('-pedido_id')
-        orders = [
-            x.pedido_id
-            for x in context['orders']
-        ]
-        context['details'] = Detpedido.objects.filter(pedido_id__in=orders).extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"}).order_by('materiales__matnom')
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        context['orders'] = Pedido.objects.filter(
+            Q(flag=True) & Q(status='AP') | Q(status='IN')
+            ).order_by('-pedido_id')
+        orders = [x.pedido_id for x in context['orders']]
+        context['details'] = Detpedido.objects.filter(
+            pedido_id__in=orders).extra(
+            select={
+                'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"}).order_by('materiales__matnom')
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
@@ -1533,8 +1823,8 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                                                     x.traslado)
                                     }
                                     for x in Compra.objects.filter(
-                                                registrado__startswith=globalVariable.format_str_date(
-                                                    request.GET.get('start')))]
+                                        registrado__startswith=globalVariable.format_str_date(
+                                            request.GET.get('start')))]
                                 context['status'] = True
                             elif 'end' in request.GET and 'start' in request.GET:
                                 context['list'] = [{
@@ -1542,8 +1832,14 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                                     'reason': x.proveedor.razonsocial,
                                     'supplier': x.proveedor_id,
                                     'document': x.documento.documento,
-                                    'transfer': globalVariable.format_date_str(x.traslado)
-                                } for x in Compra.objects.filter(registrado__range=(globalVariable.format_str_date(request.GET.get('start')), globalVariable.format_str_date(request.GET.get('end'))))]
+                                    'transfer': globalVariable.format_date_str(
+                                                    x.traslado)
+                                } for x in Compra.objects.filter(
+                                    registrado__range=(
+                                        globalVariable.format_str_date(
+                                            request.GET.get('start')),
+                                        globalVariable.format_str_date(
+                                            request.GET.get('end'))))]
                                 context['status'] = True
                     if 'purchase' in request.GET:
                         com = Compra.objects.get(
@@ -1562,8 +1858,7 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                             'contact': com.contacto,
                             'deposit': '%s' % com.deposito,
                             'performed': '%s, %s' % (
-                                com.empdni.firstname, com.empdni.lastname)
-                        }
+                                com.empdni.firstname, com.empdni.lastname)}
                         context['details'] = [{
                             'materials': x.materiales_id,
                             'name': x.materiales.matnom,

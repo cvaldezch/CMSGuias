@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
+from audit_log.models.managers import AuditLog
 from django.db import connection, models, transaction
-
 from CMSGuias.apps.ventas.models import Proyecto, Subproyecto, Sectore
 from CMSGuias.apps.home.models import (
                                         Materiale,
@@ -149,9 +149,11 @@ class GuiaRemision(models.Model):
     dotoutput = models.CharField(max_length=250, null=True, blank=True)
     flag = models.BooleanField(default=True)
 
+    audit_log = AuditLog()
+
     def __unicode__(self):
-        return '%s %s %s' % (
-            self.guia_id, self.pedido.pedido_id, self.ruccliente.razonsocial)
+        return '%s %s' % (
+            self.guia_id, self.ruccliente.razonsocial)
 
 
 class DetGuiaRemision(models.Model):
@@ -164,6 +166,8 @@ class DetGuiaRemision(models.Model):
                 Model, to_field='model_id', null=True, blank=True)
     observation = models.CharField(max_length=250, null=True, blank=True)
     flag = models.BooleanField(default=True)
+
+    audit_log = AuditLog()
 
     class Meta:
         ordering = ['materiales']
@@ -273,6 +277,8 @@ class Inventario(models.Model):
     spptag = models.BooleanField(default=False)
     flag = models.BooleanField(default=True)
 
+    audit_log = AuditLog()
+
     class Meta:
         ordering = ['materiales']
 
@@ -326,6 +332,8 @@ class InventoryBrand(models.Model):
     sale = models.FloatField()
     flag = models.BooleanField(default=True)
 
+    audit_log = AuditLog()
+
     class Meta:
         ordering = ['materials']
 
@@ -350,6 +358,8 @@ class NoteIngress(models.Model):
     status = models.CharField(max_length=2, default='IN')
     flag = models.BooleanField(default=True)
 
+    audit_log = AuditLog()
+
 
 class DetIngress(models.Model):
     ingress = models.ForeignKey(NoteIngress, to_field='ingress_id')
@@ -359,6 +369,8 @@ class DetIngress(models.Model):
     model = models.ForeignKey(Model, to_field='model_id')
     report = models.CharField(max_length=1, default='0')
     flag = models.BooleanField(default=True)
+
+    audit_log = AuditLog()
 
 
 class ReportInspect(models.Model):
@@ -372,3 +384,32 @@ class ReportInspect(models.Model):
     description = models.TextField()
     observation = models.TextField(null=True, blank=True)
     empdni = models.ForeignKey(Employee, to_field='empdni_id')
+
+
+class Restoration(models.Model):
+    restoration_id = models.CharField(max_length=6, primary_key=True)
+    almacen = models.ForeignKey(Almacene, to_field='almacen_id', blank=True)
+    register = models.DateTimeField(auto_now_add=True)
+    ndocument = models.ForeignKey(GuiaRemision, to_field='guia_id')
+    observation = models.TextField()
+    performed = models.ForeignKey(Employee, to_field='empdni_id')
+    flag = models.BooleanField(default=True)
+
+    audit_log = AuditLog()
+
+    def __unicode__(self):
+        return '%s %s' % (self.restoration_id, self.register)
+
+
+class DetRestoration(models.Model):
+    restoration = models.ForeignKey(Restoration, to_field='restoration_id')
+    materials = models.ForeignKey(Materiale, to_field='materiales_id')
+    brand = models.ForeignKey(Brand, to_field='brand_id')
+    model = models.ForeignKey(Model, to_field='model_id')
+    quantity = models.FloatField()
+
+    class Meta:
+        ordering = ['materials']
+
+    def __unicode__(self):
+        return '%s %s' % (self.restoration, self.materials)
