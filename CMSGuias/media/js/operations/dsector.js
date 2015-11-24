@@ -18,7 +18,7 @@ app = angular.module('dsApp', ['ngCookies']).config(function($httpProvider) {
   };
 });
 
-app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
+app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
   angular.element(document).ready(function() {
@@ -606,6 +606,40 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile) {
         samountp: true
       }
     }).success(function(response) {});
+  };
+  $scope.delAllModifyArea = function($event) {
+    var $btn;
+    $btn = $event;
+    console.log($btn);
+    swal({
+      title: 'Anular Modificación?',
+      text: 'se eliminara cualquier modificación realizada.',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dd6b55',
+      confirmButtonText: 'Anular Modificación',
+      cancelButtonText: 'No!'
+    }, function(isConfirm) {
+      var data;
+      if (isConfirm) {
+        data = {
+          'annModify': true
+        };
+        $http({
+          url: '',
+          method: 'post',
+          data: $.param(data)
+        }).success(function(response) {
+          if (response.status) {
+            $timeout((function() {
+              location.reload();
+            }), 2600);
+          } else {
+            swal("Alerta!", "No se a realizado la acción. " + response.raise, "error");
+          }
+        });
+      }
+    });
   };
   $scope.$watch('ascsector', function() {
     if ($scope.ascsector) {

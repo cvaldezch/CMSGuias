@@ -315,7 +315,6 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                     dsal = DSMetrado.objects.filter(dsector_id__in=sec)
                     rds = DSMetrado.objects.filter(dsector_id=kwargs['area']
                         ).aggregate(total=Sum('quantity', field=''))
-
                     context['samountp'] = MMetrado.objects.filter(
                         dsector_id=kwargs['area']).order_by(
                         'materials__matnom').aggregate(
@@ -344,23 +343,29 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
             try:
                 if 'savepmat' in request.POST:
                     try:
-                        DSMetrado.objects.get(
+                        dsm = DSMetrado.objects.get(
                             dsector_id=kwargs['area'],
                             materials_id=request.POST['code'],
                             brand_id=request.POST['brand'],
                             model_id=request.POST['model'])
-                    except DSMetrado.DoesNotExist:
-                        raise e
-                    dsm = DSMetrado()
-                    dsm.dsector_id = kwargs['area']
-                    dsm.materials_id = request.POST['code']
-                    dsm.brand_id = request.POST['brand']
-                    dsm.model_id = request.POST['model']
-                    dsm.quantity = request.POST['quantity']
-                    dsm.qorder = request.POST['quantity']
-                    dsm.qguide = 0
-                    dsm.ppurchase = request.POST['ppurchase']
-                    dsm.psales = request.POST['psales']
+                        dsm.quantity = (
+                            dsm.quantity + float(request.POST['quantity']))
+                        dsm.qorder = (
+                            dsm.qorder + float(request.POST['quantity']))
+                        dsm.ppurchase = request.POST['ppurchase']
+                        dsm.psales = request.POST['psales']
+                    except DSMetrado.DoesNotExist as e:
+                        context['raise'] = str(e)
+                        dsm = DSMetrado()
+                        dsm.dsector_id = kwargs['area']
+                        dsm.materials_id = request.POST['code']
+                        dsm.brand_id = request.POST['brand']
+                        dsm.model_id = request.POST['model']
+                        dsm.quantity = request.POST['quantity']
+                        dsm.qorder = request.POST['quantity']
+                        dsm.qguide = 0
+                        dsm.ppurchase = request.POST['ppurchase']
+                        dsm.psales = request.POST['psales']
                     dsm.save()
                     context['status'] = True
                 if 'copysector' in request.POST:
@@ -495,6 +500,9 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                         materials_id=request.POST['materials'],
                         brand_id=request.POST['brand'],
                         model_id=request.POST['model']).delete()
+                    context['status'] = True
+                if 'annModify' in request.POST:
+                    MMetrado.objects.filter(dsector_id=kwargs['area']).delete()
                     context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)

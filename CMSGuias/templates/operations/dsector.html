@@ -61,32 +61,37 @@
                     <i class="fa fa-plus"></i>
                     <span class="hide-on-med-and-down">Agregar</span>
                 </button>
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effects modal-trigger" data-target="mpcopy">
-                    <i class="fa fa-clone"></i>
-                    <span class="hide-on-med-and-down">Copiar Lista</span>
-                </button>
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="delAreaMA()">
-                    <i class="fa fa-trash"></i>
-                    <span class="hide-on-med-and-down">Eliminar Todo</span>
-                </button>
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect modal-trigger" data-target="mfileup">
-                    <i class="fa fa-file-excel-o"></i>
-                    <span class="hide-on-med-and-down">Cargar Archivo</span>
-                </button>
+                {% if modify|length <= 0 %}
+                    <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effects modal-trigger" data-target="mpcopy">
+                        <i class="fa fa-clone"></i>
+                        <span class="hide-on-med-and-down">Copiar Lista</span>
+                    </button>
+                    <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="delAreaMA()">
+                        <i class="fa fa-trash"></i>
+                        <span class="hide-on-med-and-down">Eliminar Todo</span>
+                    </button>
+                    <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect modal-trigger" data-target="mfileup">
+                        <i class="fa fa-file-excel-o"></i>
+                        <span class="hide-on-med-and-down">Cargar Archivo</span>
+                    </button>
+                {% endif %}
             {% endif %}
-            <br>
             <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-model="btnmodify" ng-init="btnmodify={% if modify|length > 0 %} true {% else %} false {% endif %}" ng-click="showModify()" ng-disabled="btnmodify">
                 <i class="fa fa-pencil"></i>
                 <span class="hide-on-med-and-down"> Modificar Área</span>
             </button>
-            <button type="button" class="btn red lighten-2 grey-text text-darken-3 waves-effect">
-                <i class="fa fa-trash"></i>
-                <span class="hide-on-med-and-down"> Eliminar Modificación</span>
-            </button>
-            <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect">
-                <i class="fa fa-pencil"></i>
-                <span class="hide-on-med-and-down"> Modificar Área</span>
-            </button>
+            {% if modify|length > 0 %}
+                <button type="button" class="btn red lighten-2 grey-text text-darken-3 waves-effect" ng-click="delAllModifyArea($event)">
+                    <i class="fa fa-fire"></i>
+                    <i class="fa fa-trash"></i>
+                    <span class="hide-on-med-and-down"> Eliminar Modificación</span>
+                </button>
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect">
+                    <i class="fa fa-pencil"></i>
+                    <i class="fa fa-check-square-o"></i>
+                    <span class="hide-on-med-and-down"> Aprobar Modificación</span>
+                </button>
+            {% endif %}
         </div>
         <div class="card-content" ng-model="gui.pac" ng-init="gui.pac=false" ng-show="gui.pac">
 

@@ -12,7 +12,7 @@ app = angular.module 'dsApp', ['ngCookies']
               return parseFloat value, 10
             return
 
-app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
+app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
   angular.element(document).ready ->
@@ -519,6 +519,37 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile) ->
   $scope.calcMM = ->
     $http.get "", params: samountp: true
     .success (response) ->
+    return
+  $scope.delAllModifyArea = ($event) ->
+    $btn = $event
+    console.log $btn
+    swal
+      title: 'Anular Modificación?'
+      text: 'se eliminara cualquier modificación realizada.'
+      type: 'warning'
+      showCancelButton: true
+      confirmButtonColor: '#dd6b55'
+      confirmButtonText: 'Anular Modificación'
+      cancelButtonText: 'No!'
+    , (isConfirm) ->
+      if isConfirm
+        data =
+          'annModify': true
+        $http
+          url: ''
+          method: 'post'
+          data: $.param data
+        .success (response) ->
+          if response.status
+            $timeout (->
+              location.reload()
+              return
+            ), 2600
+            return
+          else
+            swal "Alerta!", "No se a realizado la acción. #{response.raise}", "error"
+            return
+        return
     return
   $scope.$watch 'ascsector', ->
     if $scope.ascsector
