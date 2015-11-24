@@ -60,8 +60,9 @@ $(document).ready(function() {
     }
   };
   $('.btn-annular').click(function(event) {
-    var data, val;
-    event.preventDefault();
+    var $btn, data, val;
+    $btn = $(this);
+    $btn.attr("disabled", true);
     val = $('.series').html().trim();
     if (val !== "") {
       data = {
@@ -73,6 +74,7 @@ $(document).ready(function() {
         if (response.status) {
           $('.mannular').modal('hide');
           $().toastmessage('showNoticeToast', "Se a anulado la Guía de Remisión " + val + " correctamente.");
+          $btn.attr("disabled", false);
           setTimeout((function() {
             location.reload();
           }), 2600);

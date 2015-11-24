@@ -1284,12 +1284,12 @@ def view_list_guide_referral_success(request):
                 res = genkeys.keyRestoration().strip()
                 add.restoration_id = res
                 if obj.pedido_id:
-                    add.almacen_id = obj.pedido_id
+                    add.almacen_id = obj.pedido.almacen_id
                 else:
                     add.almacen_id = 'AL01'
                 add.ndocument_id = obj.guia_id
                 add.observation = request.POST['observation']
-                add.performed = request.user.get_profile().empdni_id
+                add.performed_id = request.user.get_profile().empdni_id
                 add.save()
                 for x in det:
                     # return quantity at inventory
@@ -1297,30 +1297,30 @@ def view_list_guide_referral_success(request):
                             periodo=globalVariable.get_year,
                             materiales_id=x.materiales_id).order_by(
                             '-ingreso')[0]
-                    if not x.brand_id:
-                        brand = 'BR000'
-                    else:
+                    if x.brand_id:
                         brand = x.brand_id
-                    if not x.model_id:
-                        model = 'MO000'
                     else:
+                        brand = 'BR000'
+                    if x.model_id:
                         model = x.model_id
+                    else:
+                        model = 'MO000'
                     # return quantity at inventory brand
                     ibm = InventoryBrand.objects.filter(
                         period=globalVariable.get_year,
                         materials_id=x.materiales_id,
                         brand_id=brand,
                         model_id=model).order_by('-ingress')[0]
-                    inv.stock = (float(inv.stock) + float(x.quantity))
+                    inv.stock = (float(inv.stock) + float(x.cantguide))
                     inv.save()
-                    ibm.stock = (float(ibm.stock) + float(x.quantity))
+                    ibm.stock = (float(ibm.stock) + float(x.cantguide))
                     ibm.save()
                     # Save Details Restoration
                     dt = DetRestoration()
                     dt.restoration_id = res
                     dt.materials_id = x.materiales_id
                     dt.brand_id = brand
-                    dt.model = model
+                    dt.model_id = model
                     dt.quantity = x.cantguide
                     dt.save()
                     # Return quantity at order if exists
@@ -1330,16 +1330,36 @@ def view_list_guide_referral_success(request):
                             materiales_id=x.materiales_id,
                             brand_id=brand,
                             model_id=model)
-                        ords.cantshop = (ords.cantshop + x.quantity)
-                        ords.cantguide = (ords.cantguide - x.quantity)
+                        ords.cantshop = (ords.cantshop + x.cantguide)
+                        ords.cantguide = (ords.cantguide - x.cantguide)
                         ords.tag = '1'
                         ords.save()
-                    # if guide nipple exist for material
+                # if guide nipple exist for material
                 if obj.pedido_id:
-                    Pedido.objects.get(
-                        pedido_id=obj.pedido_id).update(status='IN')
+                    gn = NipleGuiaRemision.objects.filter(guia_id=obj.guia_id)
+                    if gn:
+                        for n in gn:
+                            try:
+                                np = Niple.objects.get(
+                                    pedido_id=obj.pedido_id,
+                                    materiales_id=n.materiales_id,
+                                    metrado=n.metrado,
+                                    tipo=n.tipo)
+                                np.cantguide = (np.cantguide - n.cantguide)
+                                np.cantshop = (np.cantshop + n.cantguide)
+                                np.save()
+                            except Niple.DoesNotExist:
+                                raise e
+                            n.flag = False
+                            n.save()
+                    pe = Pedido.objects.get(
+                        pedido_id=obj.pedido_id)
+                    pe.status = 'IN'
+                    pe.save()
                 data['status'] = True
             except ObjectDoesNotExist, e:
+                print e
+                data['raise'] = str(e)
                 data['status'] = False
             return HttpResponse(
                 simplejson.dumps(data), mimetype='application/json')

@@ -51,7 +51,8 @@ $(document).ready ->
     return
 
   $('.btn-annular').click (event) ->
-    event.preventDefault()
+    $btn = $(this)
+    $btn.attr "disabled", true
     val = $('.series').html().trim()
     if val isnt ""
       data =
@@ -62,6 +63,7 @@ $(document).ready ->
         if response.status
           $('.mannular').modal 'hide'
           $().toastmessage 'showNoticeToast', "Se a anulado la Guía de Remisión #{val} correctamente."
+          $btn.attr "disabled", false
           setTimeout (->
             location.reload()
             return
