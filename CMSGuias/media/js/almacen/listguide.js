@@ -20,9 +20,9 @@ $(document).ready(function() {
   $('input[name=search]').change(function() {
     $('input[name=search]').each(function() {
       if (this.checked) {
-        $("input[name= @value ]").attr('disabled', false);
+        $("input[name=" + this.value + "]").attr('disabled', false);
       } else {
-        $("input[name= @value ]").attr('disabled', true);
+        $("input[name=" + this.value + "]").attr('disabled', true);
       }
     });
   });

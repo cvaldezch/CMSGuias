@@ -15,9 +15,9 @@ $(document).ready ->
   $('input[name=search]').change ->
     $('input[name=search]').each ->
       if @checked
-        $("input[name= @value ]").attr 'disabled', false
+        $("input[name=#{this.value}]").attr 'disabled', false
       else
-        $("input[name= @value ]").attr 'disabled', true
+        $("input[name=#{this.value}]").attr 'disabled', true
       return
     return
   $('.btn-search').click (event) ->

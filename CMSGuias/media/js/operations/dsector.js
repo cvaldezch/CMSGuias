@@ -89,13 +89,23 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
       data.savepmat = false;
     }
     if (data.savepmat) {
+      if ($("#modify").val() === true) {
+        delete data['savepmat'];
+        data.savemmat = true;
+      }
       $http({
         url: "",
         data: $.param(data),
         method: "post"
       }).success(function(response) {
         if (response.status) {
-          $scope.getListAreaMaterials();
+          if ($("#modify").val() === true) {
+            $scope.modifyList();
+            return;
+          } else {
+            $scope.getListAreaMaterials();
+            return;
+          }
         } else {
           swal("Error", " No se guardado los datos", "error");
         }
@@ -608,9 +618,6 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
     }).success(function(response) {});
   };
   $scope.delAllModifyArea = function($event) {
-    var $btn;
-    $btn = $event;
-    console.log($btn);
     swal({
       title: 'Anular Modificación?',
       text: 'se eliminara cualquier modificación realizada.',

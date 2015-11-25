@@ -76,13 +76,21 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
       swal "Alerta!", "Debe de ingresar un precio de Venta!", "warning"
       data.savepmat = false
     if data.savepmat
+      if $("#modify").val() is true
+        delete data['savepmat']
+        data.savemmat = true
       $http
         url: ""
         data: $.param data
         method: "post"
       .success (response) ->
         if response.status
-          $scope.getListAreaMaterials()
+          if $("#modify").val() is true
+            $scope.modifyList()
+            return
+          else
+            $scope.getListAreaMaterials()
+            return
           return
         else
           swal "Error", " No se guardado los datos", "error"
@@ -521,8 +529,6 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
     .success (response) ->
     return
   $scope.delAllModifyArea = ($event) ->
-    $btn = $event
-    console.log $btn
     swal
       title: 'Anular Modificación?'
       text: 'se eliminara cualquier modificación realizada.'
