@@ -89,7 +89,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
       data.savepmat = false;
     }
     if (data.savepmat) {
-      if ($("#modify").val() === true) {
+      if (Boolean($("#modify").length)) {
         delete data['savepmat'];
         data.savemmat = true;
       }
@@ -99,7 +99,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
         method: "post"
       }).success(function(response) {
         if (response.status) {
-          if ($("#modify").val() === true) {
+          if (Boolean($("#modify").length)) {
             $scope.modifyList();
             return;
           } else {

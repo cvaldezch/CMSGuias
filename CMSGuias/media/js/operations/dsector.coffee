@@ -76,7 +76,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
       swal "Alerta!", "Debe de ingresar un precio de Venta!", "warning"
       data.savepmat = false
     if data.savepmat
-      if $("#modify").val() is true
+      if Boolean $("#modify").length
         delete data['savepmat']
         data.savemmat = true
       $http
@@ -85,7 +85,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
         method: "post"
       .success (response) ->
         if response.status
-          if $("#modify").val() is true
+          if Boolean $("#modify").length
             $scope.modifyList()
             return
           else

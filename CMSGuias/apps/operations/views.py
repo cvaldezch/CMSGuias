@@ -504,6 +504,12 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                 if 'annModify' in request.POST:
                     MMetrado.objects.filter(dsector_id=kwargs['area']).delete()
                     context['status'] = True
+                if 'savemmat' in request.GET:
+                    try:
+                        pass
+                    except MMetrado.DoesNotExist, e:
+                        raise e
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False
