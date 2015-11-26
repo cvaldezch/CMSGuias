@@ -4,7 +4,11 @@
 import datetime
 import json
 
-from django.shortcuts import render_to_response, render
+from django.shortcuts import (
+                              render_to_response,
+                              get_object_or_404,
+                              render,
+                              get_list_or_404)
 from django.template import RequestContext, TemplateDoesNotExist
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseRedirect, Http404

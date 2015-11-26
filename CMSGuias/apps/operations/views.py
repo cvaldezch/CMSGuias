@@ -506,9 +506,9 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                     context['status'] = True
                 if 'savemmat' in request.GET:
                     try:
-                        pass
+                        mm = MMetrado()
                     except MMetrado.DoesNotExist, e:
-                        raise e
+                        context['raise'] e
                     context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
