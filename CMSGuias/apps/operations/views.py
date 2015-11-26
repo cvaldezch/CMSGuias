@@ -508,7 +508,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                     try:
                         mm = MMetrado()
                     except MMetrado.DoesNotExist, e:
-                        context['raise'] e
+                        context['raise'] = e
                     context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)

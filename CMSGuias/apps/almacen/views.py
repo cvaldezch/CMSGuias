@@ -512,8 +512,8 @@ def view_keep_add_subproyeto(request, pid):
                 return HttpResponseRedirect(url)
             else:
                 print 'Form no valid'
-    except TemplateDoesNotExist, e:
-        messages.error(request, str(e))
+    except TemplateDoesNotExist:
+        # messages.error(request, str(e))
         raise Http404('Method no proccess')
 
 
