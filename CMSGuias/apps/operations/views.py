@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+#
 import json
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -504,11 +504,32 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                 if 'annModify' in request.POST:
                     MMetrado.objects.filter(dsector_id=kwargs['area']).delete()
                     context['status'] = True
-                if 'savemmat' in request.GET:
+                if 'savemmat' in request.POST:
                     try:
-                        mm = MMetrado()
+                        mm = MMetrado.objects.get(
+                            dsector_id=kwargs['area'],
+                            materials_id=request.POST['code'],
+                            brand_id=request.POST['brand'],
+                            model_id=request.POST['model'])
+                        mm.quantity = (
+                            mm.quantity + float(request.POST['quantity']))
+                        mm.qorder = (
+                            mm.qorder + float(request.POST['quantity']))
+                        mm.ppurchase = request.POST['ppurchase']
+                        mm.psales = request.POST['psales']
                     except MMetrado.DoesNotExist, e:
-                        context['raise'] = e
+                        context['raise'] = str(e)
+                        mm = MMetrado()
+                        mm.dsector_id = kwargs['area']
+                        mm.materials_id = request.POST['code']
+                        mm.brand_id = request.POST['brand']
+                        mm.model_id = request.POST['model']
+                        mm.quantity = request.POST['quantity']
+                        mm.qorder = request.POST['quantity']
+                        mm.qguide = 0
+                        mm.ppurchase = request.POST['ppurchase']
+                        mm.psales = request.POST['psales']
+                    mm.save()
                     context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
