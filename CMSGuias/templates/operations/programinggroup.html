@@ -81,7 +81,7 @@
       <div class="row">
       {% verbatim %}
         <div class="col l3 m6 s12" ng-repeat="x in dslist | filter: dsfilter">
-          <div class="card">
+          <div class="card" style="height: 200px;">
             <div class="card-content" style="background: {{x.fields.sgroup.fields.colour}}">
               <strong>{{x.fields.name}}</strong>
               <p>{{x.fields.description}}</p>

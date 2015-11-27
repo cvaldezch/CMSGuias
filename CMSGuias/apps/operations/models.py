@@ -258,7 +258,7 @@ class DSector(models.Model):
     dateend = models.DateField(null=True)
     description = models.TextField(null=True, blank=True)
     observation = models.TextField(null=True, blank=True)
-    status = models.CharField(max_length=2, default='PE', blank=True)
+    status = models.CharField(max_length=2, default='PE')
     flag = models.BooleanField(default=True)
 
     audit_log = AuditLog()

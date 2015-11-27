@@ -455,6 +455,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
     }).success(function(response) {
       if (response.status) {
         $scope.lmodify = response.modify;
+        $scope.calcMM();
       } else {
         swal('Error', 'no se a encontrado datos', 'error');
       }
@@ -615,7 +616,9 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
       params: {
         samountp: true
       }
-    }).success(function(response) {});
+    }).success(function(response) {
+      return console.log(response);
+    });
   };
   $scope.delAllModifyArea = function($event) {
     swal({
@@ -643,6 +646,37 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
             }), 2600);
           } else {
             swal("Alerta!", "No se a realizado la acción. " + response.raise, "error");
+          }
+        });
+      }
+    });
+  };
+  $scope.approvedModify = function() {
+    swal({
+      title: "Aprobar modificación?",
+      text: "Desea aprobar las modificaciones del área?",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dd6b55",
+      confirmButtonText: "Si!, Aprobar",
+      closeOnConfirm: true,
+      closeOnCancel: true
+    }, function(isConfirm) {
+      var data;
+      if (isConfirm) {
+        data = {
+          apporved: true
+        };
+        $http({
+          url: "",
+          method: "post",
+          data: $.param(data)
+        }).success(function(response) {
+          if (response.status) {
+            Materialize.toast("Se Aprobó!");
+            $timeout((function() {
+              location.reload();
+            }), 800);
           }
         });
       }

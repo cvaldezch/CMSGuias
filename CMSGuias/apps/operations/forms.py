@@ -67,5 +67,6 @@ class DSectorForm(forms.ModelForm):
             'project',
             'register',
             'observation',
+            'status',
             'flag',
         }

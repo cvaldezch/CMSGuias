@@ -133,7 +133,8 @@ class ProgramingProject(JSONResponseMixin, View):
                                 'sub'] if unicode(kwargs[
                                     'sub']) != 'None' and unicode(kwargs[
                                         'sub']) != '' else None,
-                            sgroup__sector_id=kwargs['sec']).order_by('name')
+                            sgroup__sector_id=kwargs['sec']).order_by(
+                            'sgroup')
                     context['ds'] = json.loads(serializers.serialize(
                                         'json',
                                         ds,
@@ -199,7 +200,6 @@ class ProgramingProject(JSONResponseMixin, View):
                             form = SGroupForm(request.POST)
                     except ObjectDoesNotExist:
                         form = SGroupForm(request.POST)
-                    print form.is_valid()
                     if form.is_valid():
                         if 'sgroup_id' not in request.POST:
                             add = form.save(commit=False)
@@ -230,6 +230,7 @@ class ProgramingProject(JSONResponseMixin, View):
                             form = DSectorForm(request.POST, request.FILES)
                     except ObjectDoesNotExist as e:
                         form = DSectorForm(request.POST, request.FILES)
+                    print form
                     if form.is_valid():
                         if 'dsector_id' not in request.POST:
                             add = form.save(commit=False)
@@ -306,20 +307,33 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                                 'materials__matnom'),
                             relations=('materials', 'brand', 'model')))
                     context['status'] = True
-                if 'calMM' in request.GET:
+                if 'samountp' in request.GET:
                     sg = [x[0] for x in SGroup.objects.filter(
                             project_id=kwargs['pro'],
                             sector_id=kwargs['sec']).values_list('sgroup_id',)]
                     sec = [x[0] for x in DSector.objects.filter(
                             sgroup_id__in=sg).values_list('dsector_id')]
-                    dsal = DSMetrado.objects.filter(dsector_id__in=sec)
-                    rds = DSMetrado.objects.filter(dsector_id=kwargs['area']
-                        ).aggregate(total=Sum('quantity', field=''))
-                    context['samountp'] = MMetrado.objects.filter(
+                    dsal = DSMetrado.objects.filter(
+                            dsector_id__in=sec).aggregate(
+                            tpurchase=Sum(
+                                'quantity', field='quantity * ppurchase'),
+                            tsales=Sum('quantity', field='quantity * psales')
+                        )
+                    rds = DSMetrado.objects.filter(dsector_id=kwargs[
+                        'area']).aggregate(tpurchase=Sum(
+                            'quantity',
+                            field='quantity * ppurchase'),
+                            tsales=Sum('quantity', field='quantity * psales'))
+                    context['msector'] = dsal
+                    context['maarea'] = rds
+                    mm = MMetrado.objects.filter(
                         dsector_id=kwargs['area']).order_by(
                         'materials__matnom').aggregate(
-                        amount=Sum(
-                            'quantity', field='quantity*ppurchase'))['amount']
+                        apurchase=Sum(
+                            'quantity', field='quantity * ppurchase'),
+                        asale=Sum(
+                            'quantity', field='quantity * psales'))
+                    context['mmodidy'] = mm
                     context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)

@@ -86,7 +86,7 @@
                     <i class="fa fa-trash"></i>
                     <span class="hide-on-med-and-down"> Eliminar Modificación</span>
                 </button>
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect">
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="approvedModify()">
                     <i class="fa fa-pencil"></i>
                     <i class="fa fa-check-square-o"></i>
                     <span class="hide-on-med-and-down"> Aprobar Modificación</span>
@@ -134,13 +134,11 @@
                         </div>
                         <div class="col l6 m6 s12 input-field">
                             <label class="active">Marca</label>
-                            <select class="browser-default" name="brand">
-                            </select>
+                            <select class="browser-default" name="brand"></select>
                         </div>
                         <div class="col l6 m6 s12 input-field">
                             <label class="active">Modelo</label>
-                            <select class="browser-default" name="model">
-                            </select>
+                            <select class="browser-default" name="model"></select>
                         </div>
                     {% endverbatim %}
                     <div class="col l12 m12 s12 right-align">
@@ -316,6 +314,37 @@
                     <br>
                     <small>Tienes modificaciones pendientes.</small>
                 </h5>
+                {# calculate total #}
+                <table class="table responsive-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Importe Venta</th>
+                            <th>Importe Actual</th>
+                            <th>Importe Modificado</th>
+                            <th></th>
+                        </tr>
+                        <tr>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>COMPRA</th>
+                            <td></td>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th>VENTA</th>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
                 <input type="hidden" ng-model="modify" ng-init="modify={{ modify|length }}">
                 {% verbatim %}
                     <script type="text/ng-template" id="modifytmp.html">

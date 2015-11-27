@@ -399,6 +399,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
     .success (response) ->
       if response.status
         $scope.lmodify = response.modify
+        $scope.calcMM()
         return
       else
         swal 'Error', 'no se a encontrado datos', 'error'
@@ -527,6 +528,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
   $scope.calcMM = ->
     $http.get "", params: samountp: true
     .success (response) ->
+      console.log response
     return
   $scope.delAllModifyArea = ($event) ->
     swal
@@ -554,6 +556,34 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
             return
           else
             swal "Alerta!", "No se a realizado la acción. #{response.raise}", "error"
+            return
+        return
+    return
+  $scope.approvedModify = ->
+    swal
+      title: "Aprobar modificación?"
+      text: "Desea aprobar las modificaciones del área?"
+      type: "warning"
+      showCancelButton: true
+      confirmButtonColor: "#dd6b55"
+      confirmButtonText: "Si!, Aprobar"
+      closeOnConfirm: true
+      closeOnCancel: true
+    , (isConfirm) ->
+      if isConfirm
+        data =
+          apporved: true
+        $http
+          url: ""
+          method: "post"
+          data: $.param data
+        .success (response) ->
+          if response.status
+            Materialize.toast "Se Aprobó!"
+            $timeout (->
+              location.reload()
+              return
+            ), 800
             return
         return
     return
