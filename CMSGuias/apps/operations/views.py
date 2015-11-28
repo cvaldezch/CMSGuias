@@ -242,6 +242,26 @@ class ProgramingProject(JSONResponseMixin, View):
                             add.save()
                         else:
                             form.save()
+                        try:
+                            sg = SGroup.objects.get(
+                                    sgroup_id=request.POST['sgroup'])
+                            if sg.datestart is None:
+                                sg.datestart = request.POST['datestart']
+                            else:
+                                st = globalVariable.format_str_date(
+                                        request.POST['datestart'])
+                                if st < sg.datestart:
+                                    sg.datestart = st
+                            if sg.dateend is None:
+                                sg.dateend = request.POST['dateend']
+                            else:
+                                ed = globalVariable.format_str_date(
+                                        request.POST['dateend'])
+                                if ed > sg.dateend:
+                                    sg.dateend = ed
+                            sg.save()
+                        except SGroup.DoesNotExist, e:
+                            context['raise'] = str(e)
                         context['status'] = True
                     else:
                         context['status'] = False
@@ -357,15 +377,26 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
             try:
                 if 'savepmat' in request.POST:
                     try:
-                        dsm = DSMetrado.objects.get(
-                            dsector_id=kwargs['area'],
-                            materials_id=request.POST['code'],
-                            brand_id=request.POST['brand'],
-                            model_id=request.POST['model'])
-                        dsm.quantity = (
-                            dsm.quantity + float(request.POST['quantity']))
-                        dsm.qorder = (
-                            dsm.qorder + float(request.POST['quantity']))
+                        if 'editmat' in request.POST:
+                            dsm = DSMetrado.objects.get(
+                                dsector_id=kwargs['area'],
+                                materials_id=request.POST['code'],
+                                brand_id=request.POST['obrand'],
+                                model_id=request.POST['omodel'])
+                            dsm.brand_id = request.POST['brand']
+                            dsm.model_id = request.POST['model']
+                            dsm.quantity = float(request.POST['quantity'])
+                            dsm.qorder = float(request.POST['quantity'])
+                        else:
+                            dsm = DSMetrado.objects.get(
+                                dsector_id=kwargs['area'],
+                                materials_id=request.POST['code'],
+                                brand_id=request.POST['brand'],
+                                model_id=request.POST['model'])
+                            dsm.quantity = (
+                                dsm.quantity + float(request.POST['quantity']))
+                            dsm.qorder = (
+                                dsm.qorder + float(request.POST['quantity']))
                         dsm.ppurchase = request.POST['ppurchase']
                         dsm.psales = request.POST['psales']
                     except DSMetrado.DoesNotExist as e:
@@ -382,6 +413,16 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                         dsm.psales = request.POST['psales']
                     dsm.save()
                     context['status'] = True
+                if 'delmat' in request.POST:
+                    try:
+                        DSMetrado.objects.get(
+                            dsector_id=kwargs['area'],
+                            materials_id=request.POST['materials'],
+                            brand_id=request.POST['brand'],
+                            model_id=request.POST['model']).delete()
+                        context['status'] = True
+                    except DSMetrado.DoesNotExist, e:
+                        context['raise'] = str(e)
                 if 'copysector' in request.POST:
                     sec = MetProject.objects.filter(
                         proyecto_id=request.POST['project'],

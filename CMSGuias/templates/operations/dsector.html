@@ -17,6 +17,7 @@
     {% endif %}
 {% endblock menu %}
 {% block content %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/getMaterials.css">
 <div ng-app="dsApp" ng-controller="DSCtrl">
     <div class="card-panel" style="background: {{ dsector.sgroup.colour }};">
         <div class="card-content">
@@ -73,6 +74,10 @@
                     <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect modal-trigger" data-target="mfileup">
                         <i class="fa fa-file-excel-o"></i>
                         <span class="hide-on-med-and-down">Cargar Archivo</span>
+                    </button>
+                    <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="getListAreaMaterials()">
+                        <i class="fa fa-refresh"></i>
+                        <span class="hide-on-med-and-down">REcargar</span>
                     </button>
                 {% endif %}
             {% endif %}
@@ -180,13 +185,13 @@
                         <td class="right-align">{{x.fields.psales}}</td>
                         <td class="right-align">{{x.fields.quantity * x.fields.ppurchase | number:2}}</td>
                         <td class="center-align">
-                            <a href="#" class="dropdown-button btn waves-effect waves-light grey lighten-5 grey-text text-darken-3" data-constrainwidth="200" data-activates="ba{{x.fields.materials.pk}}">
+                            <a href="#" class="dropdown-button btn waves-effect waves-light grey lighten-5 grey-text text-darken-3" data-constrainwidth="200" data-activates="ba{{x.fields.materials.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}">
                               <i class="fa fa-cog"></i>
                             </a>
-                            <ul id="ba{{x.fields.materials.pk}}" class="dropdown-content">
-                              <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="" class="waves-effect waves-light light-blue-text text-darken-3"><small><i class="fa fa-edit"></i> Editar</small></a></li>
+                            <ul id="ba{{x.fields.materials.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" class="dropdown-content">
+                              <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="editDMaterial($event)" data-materials="{{x.fields.materials.pk}}" data-quantity="{{x.fields.quantity}}" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" class="waves-effect waves-light light-blue-text text-darken-3"><small><i class="fa fa-edit"></i> Editar</small></a></li>
                               <li class="divider"></li>
-                              <li><a href="#!" style="padding: 2px 0px 2px 3px;" class="waves-effect waves-light red-text text-darken-1"><small><i class="fa fa-trash"></i> Eliminar</small></a></li>
+                              <li><a href="#!" style="padding: 2px 0px 2px 3px;" class="waves-effect waves-light red-text text-darken-1" data-materials="{{x.fields.materials.pk}}" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" ng-click="deleteDMaterial($event)"><small><i class="fa fa-trash"></i> Eliminar</small></a></li>
                               <li class="divider"></li>
                               <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-i-cursor"></i> Observación</small></a></li>
                               <li class="divider"></li>
@@ -228,6 +233,26 @@
                     {% endverbatim %}
                     </tbody>
                 </table>
+                <!-- modal comment u observation -->
+                <div class="row">
+                    <div class="modal col l4 offset-l4" id="mcomment">
+                        <div class="modal-content">
+                            <div class="input-field">
+                                <textarea class="materialize-textarea"></textarea>
+                                <label for="textarea1">Observación</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="buttom" class="modal-action modal-close btn left grey lighten-5 grey-text text-darken-3">
+                                <i class="fa fa-times"></i> Cerrar
+                            </button>
+                            <button type="buttom" class="modal-action modal-close btn green lighten-1 grey-text text-darken-3">
+                                <i class="fa fa-i-cursor"></i>
+                                GUARDAR
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 <h4 ng-show="snipple">Niple</h4>
                 <ul class="collapsible popout" data-collapsible="accordion">
                 {% verbatim %}
@@ -479,7 +504,7 @@
         </div>
     </div>
 </div>
-<style type="text/css">
+<!--<style type="text/css">
     .matname-global {
       border-radius: 4px;
       max-height: 22em;
@@ -530,7 +555,7 @@
         background: rgba(80,80,80,.9);
         padding-bottom: 20px;
     }
-</style>
+</style>-->
 {% csrf_token %}
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>

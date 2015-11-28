@@ -42,16 +42,20 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
   });
   $scope.getListAreaMaterials = function() {
     var data;
+    $scope.dsmaterials = [];
     data = {
       dslist: true
     };
+    $(".table-withoutApproved > thead").append("<tr class=\"white\"><td colspan=\"13\" class=\"center-align\"><div class=\"preloader-wrapper big active\"><div class=\"spinner-layer spinner-blue-only\"><div class=\"circle-clipper left\"><div class=\"circle\"></div></div><div class=\"gap-patch\"><div class=\"circle\"></div></div><div class=\"circle-clipper right\"><div class=\"circle\"></div></div></div></div></td></tr>");
     $http.get("", {
       params: data
     }).success(function(response) {
       if (response.status) {
+        $(".table-withoutApproved > thead > tr").eq(1).remove();
         $scope.dsmaterials = response.list;
         $(".floatThead").floatThead('reflow');
         $scope.inDropdownTable(".table-withoutApproved");
+        $('.dropdown-button').dropdown();
       } else {
         swal("Error!", "al obtener la lista de materiales del área", "error");
       }
@@ -63,7 +67,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
       return false;
     } else {
       setTimeout(function() {
-        return $scope.inDropdownTable(table);
+        $scope.inDropdownTable(table);
       }, 1400);
     }
   };
@@ -93,6 +97,11 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
         delete data['savepmat'];
         data.savemmat = true;
       }
+      if ($scope.mat.hasOwnProperty("obrand")) {
+        if ($scope.mat.obrand) {
+          data.editmat = true;
+        }
+      }
       $http({
         url: "",
         data: $.param(data),
@@ -104,6 +113,10 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
             return;
           } else {
             $scope.getListAreaMaterials();
+            if ($scope.mat.hasOwnProperty("obrand")) {
+              $scope.mat.obrand = null;
+              $scope.mat.omodel = null;
+            }
             return;
           }
         } else {
@@ -111,6 +124,55 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
         }
       });
     }
+  };
+  $scope.deleteDMaterial = function($event) {
+    swal({
+      title: "Eliminar material?",
+      text: "realmente dese eliminar el material.",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dd6b55",
+      confirmButtonText: "Si!, eliminar",
+      closeOnConfirm: true,
+      closeOnCancel: true
+    }, function(isConfirm) {
+      var data;
+      if (isConfirm) {
+        data = $event.currentTarget.dataset;
+        data.delmat = true;
+        $http({
+          url: '',
+          method: 'post',
+          data: $.param(data)
+        }).success(function(response) {
+          if (response.status) {
+            $scope.getListAreaMaterials();
+          }
+        });
+      }
+    });
+  };
+  $scope.editDMaterial = function($event) {
+    $scope.mat.code = $event.currentTarget.dataset.materials;
+    $timeout((function() {
+      var e;
+      e = $.Event('keypress', {
+        keyCode: 13
+      });
+      $("[name=code]").trigger(e);
+    }), 100);
+    $timeout((function() {
+      var quantity;
+      quantity = parseFloat($event.currentTarget.dataset.quantity);
+      $scope.gui.smat = true;
+      $("[name=brand]").val($event.currentTarget.dataset.brand);
+      $("[name=model]").val($event.currentTarget.dataset.model);
+      $scope.mat = {
+        quantity: parseFloat(quantity),
+        obrand: $event.currentTarget.dataset.brand,
+        omodel: $event.currentTarget.dataset.model
+      };
+    }), 300);
   };
   $scope.getProject = function() {
     $http.get("/sales/projects/", {
@@ -207,7 +269,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
     var mat;
     mat = this;
     swal({
-      title: "Desea generar Niples de este materiales?",
+      title: "Desea generar Niples para este material?",
       text: mat.$parent.x.fields.materials.fields.matnom + " " + mat.$parent.x.fields.materials.fields.matmed,
       type: "warning",
       showCancelButton: true,

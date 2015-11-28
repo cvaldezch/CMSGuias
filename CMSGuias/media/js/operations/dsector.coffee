@@ -35,14 +35,18 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
     # , 100
     return
   $scope.getListAreaMaterials = ->
+    $scope.dsmaterials = []
     data =
       dslist: true
+    $(".table-withoutApproved > thead").append """<tr class="white"><td colspan="13" class="center-align"><div class="preloader-wrapper big active"><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div></td></tr>"""
     $http.get "", params: data
     .success (response) ->
       if response.status
+        $(".table-withoutApproved > thead > tr").eq(1).remove()
         $scope.dsmaterials = response.list
         $(".floatThead").floatThead 'reflow'
         $scope.inDropdownTable ".table-withoutApproved"
+        $('.dropdown-button').dropdown()
         return
       else
         swal "Error!", "al obtener la lista de materiales del área", "error"
@@ -56,6 +60,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
     else
       setTimeout ->
         $scope.inDropdownTable table
+        return
       , 1400
     return
   $scope.saveMateial = ->
@@ -79,6 +84,9 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
       if Boolean $("#modify").length
         delete data['savepmat']
         data.savemmat = true
+      if $scope.mat.hasOwnProperty("obrand")
+        if $scope.mat.obrand
+          data.editmat = true
       $http
         url: ""
         data: $.param data
@@ -90,11 +98,59 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
             return
           else
             $scope.getListAreaMaterials()
+            if $scope.mat.hasOwnProperty("obrand")
+              $scope.mat.obrand = null
+              $scope.mat.omodel = null
             return
           return
         else
           swal "Error", " No se guardado los datos", "error"
           return
+    return
+  $scope.deleteDMaterial = ($event) ->
+    swal
+      title: "Eliminar material?"
+      text: "realmente dese eliminar el material."
+      type: "warning"
+      showCancelButton: true
+      confirmButtonColor: "#dd6b55"
+      confirmButtonText: "Si!, eliminar"
+      closeOnConfirm: true
+      closeOnCancel: true
+    , (isConfirm) ->
+      if isConfirm
+        data = $event.currentTarget.dataset
+        data.delmat = true
+        $http
+          url: ''
+          method: 'post'
+          data: $.param data
+        .success (response) ->
+          if response.status
+            $scope.getListAreaMaterials()
+            return
+        return
+    return
+  $scope.editDMaterial = ($event) ->
+    $scope.mat.code = $event.currentTarget.dataset.materials
+    $timeout (->
+        e = $.Event 'keypress', keyCode: 13
+        $("[name=code]").trigger e
+        return
+    ), 100
+    $timeout (->
+      quantity = parseFloat $event.currentTarget.dataset.quantity
+      $scope.gui.smat = true
+      $("[name=brand]").val $event.currentTarget.dataset.brand
+      $("[name=model]").val $event.currentTarget.dataset.model
+      $scope.mat =
+        quantity: parseFloat quantity
+        # brand: $event.currentTarget.dataset.brand
+        # model: $event.currentTarget.dataset.model
+        obrand: $event.currentTarget.dataset.brand
+        omodel: $event.currentTarget.dataset.model
+      return
+    ), 300
     return
   $scope.getProject = ->
     $http.get "/sales/projects/",
@@ -179,7 +235,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
   $scope.availableNipple = ->
     mat = this
     swal
-      title: "Desea generar Niples de este materiales?"
+      title: "Desea generar Niples para este material?"
       text: "#{mat.$parent.x.fields.materials.fields.matnom} #{mat.$parent.x.fields.materials.fields.matmed}"
       type: "warning"
       showCancelButton: true
