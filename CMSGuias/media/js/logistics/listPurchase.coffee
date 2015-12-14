@@ -75,20 +75,21 @@ getSearch = ->
             if data.pass
                 $.getJSON "", data, (response) ->
                     if response.status
-                        template = "<tr>
+                        template = """<tr>
                                         <td>{{ item }}</td>
                                         <td>{{ purchase }}</td>
                                         <td>{{ document }}</td>
+                                        <td>{{ projects }}</td>
                                         <td>{{ transfer }}</td>
                                         <td>{{ currency }}</td>
                                         <td>{{!replace}}</td>
-                                        <td><a class=\"text-black\" target=\"_blank\" href=\"/media/{{ deposito }}\"><span class=\"glyphicon glyphicon-file\"></span></a></td>
-                                        <td><button value=\"{{ purchase }}\" class=\"btn btn-xs btn-link text-black btn-purchase\"><span class=\"glyphicon glyphicon-list\"></span></a>
+                                        <td><a class="text-black" target="_blank" href="/media/{{ deposito }}"><span class="glyphicon glyphicon-file"></span></a></td>
+                                        <td><button value="{{ purchase }}" class="btn btn-xs btn-link text-black btn-purchase"><span class="glyphicon glyphicon-list"></span></a>
                                         </td>
                                         <td>
                                             {{!status}}
                                         </td>
-                                    </tr>"
+                                    </tr>"""
                         $tb = $("table > tbody")
                         $tb.empty()
                         for x of response.list

@@ -5,8 +5,9 @@ import hashlib
 
 from django.db.models import Q, Count, Sum
 # from django.core import serializers
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -668,43 +669,54 @@ class ListPurchase(JSONResponseMixin, TemplateView):
             if request.is_ajax():
                 try:
                     if 'code' in request.GET:
-                        context['list'] = [
-                                        {
-                                        'purchase': x.compra_id,
-                                        'document': x.proveedor.razonsocial,
-                                        'transfer':  globalVariable.format_date_str(x.traslado),
-                                        'currency': x.moneda.moneda,
-                                        'deposito': str(x.deposito),
-                                        'status':x.status
-                                        } for x in Compra.objects.filter(flag=True, pk=request.GET.get('code'))
-                                        ]
+                        context['list'] = [{
+                            'purchase': x.compra_id,
+                            'document': x.proveedor.razonsocial,
+                            'projects': x.projects,
+                            'transfer': globalVariable.format_date_str(
+                                            x.traslado),
+                            'currency': x.moneda.moneda,
+                            'deposito': str(x.deposito),
+                            'status': x.status}
+                            for x in Compra.objects.filter(
+                                flag=True, pk=request.GET.get('code'))]
                     if 'status' in request.GET:
-                        context['list'] = [
-                                        {
-                                        'purchase': x.compra_id,
-                                        'document': x.proveedor.razonsocial,
-                                        'transfer': globalVariable.format_date_str(x.traslado),
-                                        'currency': x.moneda.moneda,
-                                        'deposito': str(x.deposito),
-                                        'status':x.status
-                                        }
-                                        for x in Compra.objects.filter(flag=True, status=request.GET.get('status'))
-                                        ]
+                        context['list'] = [{
+                            'purchase': x.compra_id,
+                            'document': x.proveedor.razonsocial,
+                            'projects': x.projects,
+                            'transfer': globalVariable.format_date_str(
+                                x.traslado),
+                            'currency': x.moneda.moneda,
+                            'deposito': str(x.deposito),
+                            'status': x.status}
+                            for x in Compra.objects.filter(
+                                flag=True, status=request.GET.get('status'))]
                     if 'dates' in request.GET:
                         if 'start' in request.GET and 'end' not in request.GET:
-                            obj = Compra.objects.filter(flag=True, registrado__startswith=globalVariable.format_str_date(request.GET.get('start')))
+                            obj = Compra.objects.filter(
+                                flag=True,
+                                registrado__startswith=(
+                                    globalVariable.format_str_date(
+                                        request.GET.get('start'))))
                         elif 'start' in request.GET and 'end' in request.GET:
-                            obj = Compra.objects.filter(flag=True, registrado__range=(globalVariable.format_str_date(request.GET.get('start')), globalVariable.format_str_date(request.GET.get('end'))))
-                        context['list'] = [
-                            {
-                                'purchase': x.compra_id,
-                                'document': x.proveedor.razonsocial,
-                                'transfer': globalVariable.format_date_str(x.traslado),
-                                'currency': x.moneda.moneda,
-                                'deposito':str(x.deposito),
-                                'status':x.status
-                            } for x in obj
-                        ]
+                            obj = Compra.objects.filter(
+                                flag=True,
+                                registrado__range=(
+                                    globalVariable.format_str_date(
+                                        request.GET.get('start')),
+                                    globalVariable.format_str_date(
+                                        request.GET.get('end'))))
+                        context['list'] = [{
+                            'purchase': x.compra_id,
+                            'document': x.proveedor.razonsocial,
+                            'projects': x.projects,
+                            'transfer': globalVariable.format_date_str(
+                                            x.traslado),
+                            'currency': x.moneda.moneda,
+                            'deposito': str(x.deposito),
+                            'status': x.status}
+                            for x in obj]
                     if 'getpurchase' in request.GET:
                         p = Compra.objects.get(pk=request.GET.get('purchase'))
                         context['supplier'] = p.proveedor_id
@@ -713,53 +725,62 @@ class ListPurchase(JSONResponseMixin, TemplateView):
                         context['document'] = p.documento_id
                         context['method'] = p.pagos_id
                         context['currency'] = p.moneda_id
-                        context['transfer'] = globalVariable.format_date_str(p.traslado)
+                        context['transfer'] = globalVariable.format_date_str(
+                                                p.traslado)
                         context['contact'] = p.contacto
                         context['discount'] = p.discount
                         context['observation'] = p.observation
-                        context['igv'] = search.getIGVCurrent(p.registrado.strftime('%Y'))
-                        context['details'] = [
-                            {
-                                'materials': x.materiales_id,
-                                'name': x.materiales.matnom,
-                                'meter': x.materiales.matmed,
-                                'unit': x.materiales.unidad.uninom,
-                                'brand': x.brand.brand,
-                                'model': x.model.model,
-                                'quantity': x.cantidad,
-                                'price': x.precio,
-                                'discount': float(x.discount),
-                                'amount': ((x.precio - float(x.discount)) * x.cantidad)
-                            }
-                            for x in DetCompra.objects.filter(compra_id=request.GET.get('purchase')).order_by('materiales__matnom')
-                        ]
+                        context['igv'] = search.getIGVCurrent(
+                                            p.registrado.strftime('%Y'))
+                        context['details'] = [{
+                            'materials': x.materiales_id,
+                            'name': x.materiales.matnom,
+                            'meter': x.materiales.matmed,
+                            'unit': x.materiales.unidad.uninom,
+                            'brand': x.brand.brand,
+                            'model': x.model.model,
+                            'quantity': x.cantidad,
+                            'price': x.precio,
+                            'discount': float(x.discount),
+                            'amount': ((
+                                x.precio - float(
+                                    x.discount)) * x.cantidad)}
+                            for x in DetCompra.objects.filter(
+                                compra_id=request.GET.get('purchase')
+                                ).order_by('materiales__matnom')]
                     if 'listDetails' in request.GET:
-                        context['details'] = [
-                            {
-                                'materials': x.materiales_id,
-                                'name': x.materiales.matnom,
-                                'meter': x.materiales.matmed,
-                                'unit': x.materiales.unidad.uninom,
-                                'brand': x.brand.brand,
-                                'model': x.model.model,
-                                'quantity': x.cantidad,
-                                'price': x.precio,
-                                'discount': float(x.discount),
-                                'amount': ((x.precio - float(x.discount)) * x.cantidad)
-                            }
-                            for x in DetCompra.objects.filter(compra_id=request.GET.get('purchase')).order_by('materiales__matnom')
-                        ]
+                        context['details'] = [{
+                            'materials': x.materiales_id,
+                            'name': x.materiales.matnom,
+                            'meter': x.materiales.matmed,
+                            'unit': x.materiales.unidad.uninom,
+                            'brand': x.brand.brand,
+                            'model': x.model.model,
+                            'quantity': x.cantidad,
+                            'price': x.precio,
+                            'discount': float(x.discount),
+                            'amount': ((
+                                x.precio - float(x.discount)) * x.cantidad)}
+                            for x in DetCompra.objects.filter(
+                                compra_id=request.GET.get('purchase')
+                                ).order_by('materiales__matnom')]
                     context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = e.__str__()
                     context['status'] = False
                 return self.render_to_json_response(context)
-            obj = Compra.objects.filter(status='PE', flag=True).order_by('-registrado')
-            context['document'] = Documentos.objects.filter(flag=True).order_by('documento')
-            context['payment'] = FormaPago.objects.filter(flag=True).order_by('pagos')
+            obj = Compra.objects.filter(
+                    status='PE', flag=True).order_by('-registrado')
+            context['document'] = Documentos.objects.filter(
+                                    flag=True).order_by('documento')
+            context['payment'] = FormaPago.objects.filter(
+                                    flag=True).order_by('pagos')
             context['currency'] = Moneda.objects.filter(flag=True)
             context['purchase'] = obj
-            return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+            return render_to_response(
+                self.template_name,
+                context,
+                context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404('Template not found')
 
@@ -770,13 +791,20 @@ class ListPurchase(JSONResponseMixin, TemplateView):
             try:
                 if 'addDPurchase' in request.POST:
                     try:
-                        obj = DetCompra.objects.get(compra_id=request.POST.get('purchase'), materiales_id=request.POST.get('code'))
-                        obj.cantidad = float(request.POST.get('quantity')) + obj.cantidad
-                        obj.cantstatic = float(request.POST.get('quantity')) + obj.cantidad
-                        obj.precio = float(request.POST.get('price')) if 'price' in request.POST else obj.precio
+                        obj = DetCompra.objects.get(
+                                compra_id=request.POST.get('purchase'),
+                                materiales_id=request.POST.get('code'))
+                        obj.cantidad = (float(
+                            request.POST.get('quantity')) + obj.cantidad)
+                        obj.cantstatic = (float(
+                            request.POST.get('quantity')) + obj.cantidad)
+                        obj.precio = float(request.POST.get('price')) if (
+                            'price' in request.POST) else obj.precio
                         obj.discount = float(request.POST.get('discount'))
-                        obj.brand_id = request.POST.get('brand') if 'brand' in request.POST else obj.brand_id
-                        obj.model_id = request.POST.get('model') if 'model' in request.POST else obj.model_id
+                        obj.brand_id = request.POST.get('brand') if (
+                            'brand' in request.POST) else obj.brand_id
+                        obj.model_id = request.POST.get('model') if (
+                            'model' in request.POST) else obj.model_id
                         obj.save()
                     except ObjectDoesNotExist:
                         obj = DetCompra()
@@ -792,24 +820,34 @@ class ListPurchase(JSONResponseMixin, TemplateView):
                     if 'details' in request.POST:
                         for x in json.loads(request.POST.get('details')):
                             try:
-                                obj = DetCompra.objects.get(compra_id=request.POST.get('purchase'), materiales_id=x['materials'])
-                                obj.cantidad = (float(request.POST.get('quantity')) * float(x['quantity'])) + obj.cantidad
-                                obj.cantstatic = (float(request.POST.get('quantity')) * float(x['quantity'])) + obj.cantidad
+                                obj = DetCompra.objects.get(
+                                    compra_id=request.POST.get('purchase'),
+                                    materiales_id=x['materials'])
+                                obj.cantidad = ((float(
+                                    request.POST.get('quantity')) * float(x[
+                                        'quantity'])) + obj.cantidad)
+                                obj.cantstatic = ((float(
+                                    request.POST.get('quantity')) * float(x[
+                                        'quantity'])) + obj.cantidad)
                                 obj.save()
                             except ObjectDoesNotExist:
                                 obj = DetCompra()
                                 obj.compra_id = request.POST.get('purchase')
                                 obj.materiales_id = x['materials']
-                                obj.cantidad = (float(request.POST.get('quantity')) * float(x['quantity']))
+                                obj.cantidad = (float(request.POST.get(
+                                    'quantity')) * float(x['quantity']))
                                 obj.precio = 0
-                                obj.cantstatic = (float(request.POST.get('quantity')) * float(x['quantity']))
+                                obj.cantstatic = (float(request.POST.get(
+                                    'quantity')) * float(x['quantity']))
                                 obj.flag = '0'
                                 obj.brand_id = 'BR000'
                                 obj.model_id = 'MO000'
                                 obj.save()
                     context['status'] = True
                 if 'editDPurchase' in request.POST:
-                    obj = DetCompra.objects.get(compra_id=request.POST.get('purchase'), materiales_id=request.POST.get('materials'))
+                    obj = DetCompra.objects.get(
+                        compra_id=request.POST.get('purchase'),
+                        materiales_id=request.POST.get('materials'))
                     obj.cantidad = float(request.POST.get('quantity'))
                     obj.cantstatic = float(request.POST.get('quantity'))
                     obj.precio = float(request.POST.get('price'))
@@ -863,23 +901,32 @@ class LoginSupplier(JSONResponseMixin, TemplateView):
         context = dict()
         if request.is_ajax():
             if 'exists' in request.GET:
-                exists = LoginProveedor.objects.filter(supplier_id=request.GET.get('ruc'))
+                exists = LoginProveedor.objects.filter(
+                        supplier_id=request.GET.get('ruc'))
                 if exists:
-                    context['exists'] = {'username':exists[0].username, 'status':True, 'supplier': exists[0].supplier_id}
+                    context['exists'] = {
+                        'username': exists[0].username,
+                        'status': True,
+                        'supplier': exists[0].supplier_id}
                 else:
-                    context['exists'] = {'status' : False}
+                    context['exists'] = {'status': False}
             return self.render_to_json_response(context)
-        context['supplier'] = Proveedor.objects.filter(flag=True).order_by('razonsocial')
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        context['supplier'] = Proveedor.objects.filter(
+            flag=True).order_by('razonsocial')
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
 
     def post(self, request, *args, **kwargs):
         context = dict()
         if request.is_ajax():
             try:
                 if 'supplier' in request.POST:
-                    obj = LoginProveedor.objects.filter(supplier_id=request.POST.get('supplier'))
+                    obj = LoginProveedor.objects.filter(
+                            supplier_id=request.POST.get('supplier'))
                     passwd = request.POST.get('password')
-                    passwd = hashlib.sha256(b'%s'%passwd)
+                    passwd = hashlib.sha256(b'%s' % passwd)
                     passwd = passwd.hexdigest()
                     if obj:
                         obj[0].password = passwd
@@ -894,7 +941,7 @@ class LoginSupplier(JSONResponseMixin, TemplateView):
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
-            return  self.render_to_json_response(context)
+            return self.render_to_json_response(context)
 
 
 class SupplierCreate(CreateView):
@@ -933,7 +980,7 @@ class CompareQuote(JSONResponseMixin, TemplateView):
             mats = DetCotizacion.objects.filter(
                     cotizacion_id=kwargs['quote']).order_by(
                         'materiales__materiales_id')
-            #.distinct('materiales__materiales_id')
+            # .distinct('materiales__materiales_id')
             context['client'] = CotCliente.objects.filter(
                                     cotizacion_id=kwargs['quote'])
             context['conf'] = Configuracion.objects.get(
@@ -971,7 +1018,10 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                                 'brand': '-',
                                 'model': '-',
                                 'amount': '0'})
-                    #data[j.proveedor_id] = arsu #{'price':dsup.precio, 'discount': dsup.discount, 'brand':dsup.marca, 'model':dsup.modelo}
+                    # data[j.proveedor_id] = arsu
+                    # {'price':dsup.precio,
+                    # 'discount': dsup.discount,
+                    # 'brand':dsup.marca, 'model':dsup.modelo}
                 arr.append(data)
                 arm.append({
                         'materials': x.materiales_id,
@@ -984,10 +1034,16 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                         'others': arsu})
             context['details'] = arm
             context['currency'] = Moneda.objects.filter(flag=True)
-            context['document'] = Documentos.objects.filter(flag=True).order_by('documento')
-            context['payment'] = FormaPago.objects.filter(flag=True).order_by('pagos')
-            context['purchase'] = Compra.objects.filter(cotizacion_id=kwargs['quote'],flag=True)
-            return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+            context['document'] = Documentos.objects.filter(
+                                    flag=True).order_by('documento')
+            context['payment'] = FormaPago.objects.filter(
+                                    flag=True).order_by('pagos')
+            context['purchase'] = Compra.objects.filter(
+                                    cotizacion_id=kwargs['quote'], flag=True)
+            return render_to_response(
+                self.template_name,
+                context,
+                context_instance=RequestContext(request))
         except ObjectDoesNotExist, e:
             raise Http404('Error %s' % (e.__str__()))
 
@@ -1007,7 +1063,8 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                         add.flag = True
                         add.empdni_id = request.user.get_profile().empdni_id
                         try:
-                            obj = Cotizacion.objects.get(cotizacion_id=kwargs['quote'])
+                            obj = Cotizacion.objects.get(
+                                    cotizacion_id=kwargs['quote'])
                             if obj.suministro_id:
                                 add.projects = obj.suministro.orders
                         except ObjectDoesNotExist:
@@ -1018,7 +1075,8 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                         # print details
                         for x in details:
                             # consult if brand exists and model
-                            brand = Brand.objects.filter(brand__icontains=x['brand'])
+                            brand = Brand.objects.filter(
+                                        brand__icontains=x['brand'])
                             if brand or x['brand'] == unicode(None):
                                 if x['brand'] == unicode(None):
                                     brand = 'BR000'
@@ -1031,7 +1089,8 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                                 br.brand = x['brand']
                                 br.save()
                             # print brand
-                            model = Model.objects.filter(model__icontains=x['model'])
+                            model = Model.objects.filter(
+                                        model__icontains=x['model'])
                             if model or x['model'] == unicode(None):
                                 if x['model'] == unicode(None):
                                     model = 'MO000'
@@ -1058,14 +1117,18 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                             det.save()
                         # change status of models CotCliente
                         try:
-                            cust = CotCliente.objects.get(cotizacion_id=kwargs['quote'], proveedor_id=request.POST.get('proveedor'))
+                            cust = CotCliente.objects.get(
+                                cotizacion_id=kwargs['quote'],
+                                proveedor_id=request.POST.get('proveedor'))
                             cust.status = 'CO'
                             cust.save()
                         except ObjectDoesNotExist, e:
                             context['client'] = 'No change model CotClient'
                         # Change status of models CotKeys
                         try:
-                            keys = CotKeys.objects.get(cotizacion_id=kwargs['quote'], proveedor_id=request.POST.get('proveedor'))
+                            keys = CotKeys.objects.get(
+                                cotizacion_id=kwargs['quote'],
+                                proveedor_id=request.POST.get('proveedor'))
                             keys.status = 'CO'
                             keys.save()
                         except ObjectDoesNotExist, e:
@@ -1077,21 +1140,26 @@ class CompareQuote(JSONResponseMixin, TemplateView):
                     cot.status = 'CO'
                     cot.save()
                     # change status of cotkeys and cot cli
-                    keys = CotKeys.objects.filter(Q(cotizacion_id=kwargs['quote']), ~Q(status='CO'))
+                    keys = CotKeys.objects.filter(
+                            Q(cotizacion_id=kwargs['quote']),
+                            ~Q(status='CO'))
                     if keys:
                         for x in keys:
                             x.status = 'NC'
                             x.save()
-                    cust = CotCliente.objects.filter(Q(cotizacion_id=kwargs['quote']), ~Q(status='CO'))
+                    cust = CotCliente.objects.filter(
+                            Q(cotizacion_id=kwargs['quote']),
+                            ~Q(status='CO'))
                     if cust:
                         for x in cust:
                             x.status = 'NC'
                             x.save()
                     context['status'] = True
             except ObjectDoesNotExist, e:
-                context['raise']  = e.__str__()
+                context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
+
 
 class IngressPriceQuote(JSONResponseMixin, TemplateView):
     template_name = 'logistics/ingressprices.html'
@@ -1101,22 +1169,25 @@ class IngressPriceQuote(JSONResponseMixin, TemplateView):
         if request.is_ajax():
             try:
                 if 'list' in request.GET:
-                    context['details'] = [
-                        {
-                            'pk': x.id,
-                            'materials': x.materiales_id,
-                            'names': '%s - %s'%(x.materiales.matnom, x.materiales.matmed),
-                            'unit': x.materiales.unidad.uninom,
-                            'quantity': x.cantidad,
-                            'price': x.precio,
-                            'discount': x.discount,
-                            'amount': ((x.precio - ((x.precio * x.discount) / 100)) * x.cantidad),
-                            'brand': x.marca,
-                            'model': x.modelo,
-                            'delivery': globalVariable.format_date_str(x.entrega) if x.entrega else None
-                        }
-                        for x in DetCotizacion.objects.filter(cotizacion_id=kwargs['quote'], proveedor_id=kwargs['supplier']).order_by('materiales__matnom')
-                    ]
+                    context['details'] = [{
+                        'pk': x.id,
+                        'materials': x.materiales_id,
+                        'names': '%s - %s' % (
+                            x.materiales.matnom, x.materiales.matmed),
+                        'unit': x.materiales.unidad.uninom,
+                        'quantity': x.cantidad,
+                        'price': x.precio,
+                        'discount': x.discount,
+                        'amount': ((x.precio - ((
+                            x.precio * x.discount) / 100)) * x.cantidad),
+                        'brand': x.marca,
+                        'model': x.modelo,
+                        'delivery': globalVariable.format_date_str(
+                            x.entrega) if x.entrega else None}
+                        for x in DetCotizacion.objects.filter(
+                            cotizacion_id=kwargs['quote'],
+                            proveedor_id=kwargs['supplier']
+                            ).order_by('materiales__matnom')]
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
@@ -1143,9 +1214,11 @@ class IngressPriceQuote(JSONResponseMixin, TemplateView):
                             context['disabled'] = False
                         context['supplier'] = kwargs['supplier']
                 else:
-                    return HttpResponseRedirect(reverse_lazy('view_quote_list'))
+                    return HttpResponseRedirect(
+                        reverse_lazy('view_quote_list'))
             else:
-                return HttpResponseRedirect(reverse_lazy('view_quote_list'))
+                return HttpResponseRedirect(
+                    reverse_lazy('view_quote_list'))
             return render_to_response(self.template_name, context, context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404('Template not found')

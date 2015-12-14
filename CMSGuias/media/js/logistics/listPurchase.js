@@ -89,7 +89,7 @@ getSearch = function() {
         $.getJSON("", data, function(response) {
           var $tb, template, tmp, x;
           if (response.status) {
-            template = "<tr> <td>{{ item }}</td> <td>{{ purchase }}</td> <td>{{ document }}</td> <td>{{ transfer }}</td> <td>{{ currency }}</td> <td>{{!replace}}</td> <td><a class=\"text-black\" target=\"_blank\" href=\"/media/{{ deposito }}\"><span class=\"glyphicon glyphicon-file\"></span></a></td> <td><button value=\"{{ purchase }}\" class=\"btn btn-xs btn-link text-black btn-purchase\"><span class=\"glyphicon glyphicon-list\"></span></a> </td> <td> {{!status}} </td> </tr>";
+            template = "<tr>\n    <td>{{ item }}</td>\n    <td>{{ purchase }}</td>\n    <td>{{ document }}</td>\n    <td>{{ projects }}</td>\n    <td>{{ transfer }}</td>\n    <td>{{ currency }}</td>\n    <td>{{!replace}}</td>\n    <td><a class=\"text-black\" target=\"_blank\" href=\"/media/{{ deposito }}\"><span class=\"glyphicon glyphicon-file\"></span></a></td>\n    <td><button value=\"{{ purchase }}\" class=\"btn btn-xs btn-link text-black btn-purchase\"><span class=\"glyphicon glyphicon-list\"></span></a>\n    </td>\n    <td>\n        {{!status}}\n    </td>\n</tr>";
             $tb = $("table > tbody");
             $tb.empty();
             for (x in response.list) {
