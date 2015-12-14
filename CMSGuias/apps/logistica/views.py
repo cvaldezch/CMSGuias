@@ -72,10 +72,22 @@ class SupplyPending(TemplateView):
                         pk=request.GET.get('id-su'), flag=True, status='PE')
             elif request.GET.get('rdo') == 'date':
                 if request.GET.get('fi-su') != '' and request.GET.get('ff-su') == '':
-                    messages.error(request, 'Ha ocurrido un error miestras se realizaba la consulta %s'%(str(request)))
-                    model = Suministro.objects.filter(flag=True, status='PE', registrado__startswith=globalVariable.format_str_date(_str=request.GET.get('fi-su')))
+                    messages.error(
+                        request,
+                        'Ha ocurrido un error miestras se realizaba la consulta %s' % (str(request)))
+                    model = Suministro.objects.filter(
+                        flag=True,
+                        status='PE',
+                        registrado__startswith=globalVariable.format_str_date(
+                            _str=request.GET.get('fi-su')))
                 elif request.GET.get('fi-su') != '' and request.GET.get('ff-su') != '':
-                    model = Suministro.objects.filter(flag=True, status='PE', registrado__range=(globalVariable.format_str_date(request.GET.get('fi-su')),globalVariable.format_str_date(request.GET.get('ff-su'))))
+                    model = Suministro.objects.filter(
+                        flag=True,
+                        status='PE',
+                        registrado__range=(globalVariable.format_str_date(
+                            request.GET.get('fi-su')),
+                            globalVariable.format_str_date(
+                            request.GET.get('ff-su'))))
         else:
             model = Suministro.objects.filter(flag=True, status='PE')
 
@@ -97,20 +109,32 @@ class SupplyPending(TemplateView):
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
-        context = {}
+        context = dict()
         if request.is_ajax():
             try:
-                obj = Suministro.objects.get(flag=True, status='PE', pk=request.POST.get('id-su'))
-                obj.status = 'AP' if request.POST.get('status') == 'approve' else 'AN'
-                obj.save() # update status supply
+                obj = Suministro.objects.get(
+                        flag=True,
+                        status='PE',
+                        pk=request.POST.get('id-su'))
+                obj.status = (
+                    'AP' if request.POST.get('status') == 'approve' else 'AN')
+                obj.save()
+                # update status supply
                 context['status'] = True
             except ObjectDoesNotExist:
-                messages.error(request, 'Se ha encontrado error al cambiar el status de supply', messages.ERROR);
+                messages.error(
+                    request,
+                    'Se ha encontrado error al cambiar el status de supply',
+                    messages.ERROR)
                 raise Http404
                 context['status'] = False
             context['type'] = request.POST.get('status')
             context = simplejson.dumps(context)
-            return HttpResponse(context, mimetype='application/json', content_type='application/json')
+            return HttpResponse(
+                context,
+                mimetype='application/json',
+                content_type='application/json')
+
 
 # Class view Convert Supply to quote or Purchase
 class SupplytoDocumentIn(TemplateView):
@@ -133,22 +157,22 @@ class SupplytoDocumentIn(TemplateView):
         context['status'] = globalVariable.status
         context['supplier'] = Proveedor.objects.filter(flag=True)
         context['storage'] = Almacene.objects.filter(flag=True)
-        context['documents'] = Documentos.objects.filter(flag=True).order_by('documento')
-        context['payment'] = FormaPago.objects.filter(flag=True).order_by('pagos')
+        context['documents'] = Documentos.objects.filter(
+                                flag=True).order_by('documento')
+        context['payment'] = FormaPago.objects.filter(
+                                flag=True).order_by('pagos')
         context['currency'] = Moneda.objects.filter(flag=True)
-        context['projects'] = [
-            {
-                s.suministro_id: [
-                    {
-                        'nompro': x.nompro
-                    }
-                    for x in Proyecto.objects.filter(proyecto_id__in=s.orders.split(','))
-                ]
-            }
-            for s in supply
-        ]
+        context['projects'] = [{
+            s.suministro_id: [{
+                'nompro': x.nompro}
+                for x in Proyecto.objects.filter(
+                    proyecto_id__in=s.orders.split(','))]}
+            for s in supply]
         # print context['projects']
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
@@ -156,15 +180,17 @@ class SupplytoDocumentIn(TemplateView):
             if request.POST.get('type') == 'finish':
                 data = {}
                 try:
-                    obj =  Suministro.objects.get(pk=request.POST.get('supply'))
+                    obj = Suministro.objects.get(pk=request.POST.get('supply'))
                     obj.status = 'CO'
                     obj.flag = False
                     obj.save()
                     data['obj'] = True
                 except ObjectDoesNotExist, e:
                     data['status'] = False
-                return HttpResponse(simplejson.dumps(data), mimetype='application/json', content_type='application/json')
-
+                return HttpResponse(
+                    simplejson.dumps(data),
+                    mimetype='application/json',
+                    content_type='application/json')
             response = HttpResponse()
             data = dict()
             try:
@@ -180,7 +206,8 @@ class SupplytoDocumentIn(TemplateView):
                         obj.suministro_id = request.POST.get('supply')
                         obj.empdni_id = request.user.get_profile().empdni_id
                         obj.almacen_id = request.POST.get('storage')
-                        obj.traslado = globalVariable.format_str_date(request.POST.get('traslado'))
+                        obj.traslado = globalVariable.format_str_date(
+                                        request.POST.get('traslado'))
                         obj.obser = request.POST.get('obser')
                         obj.status = 'PE'
                         obj.flag = True
@@ -189,7 +216,10 @@ class SupplytoDocumentIn(TemplateView):
                         idquote = request.POST.get('id')
 
                     # save quote to client
-                    counter = CotKeys.objects.filter(cotizacion_id=idquote, proveedor_id=request.POST.get('supplier')).aggregate(counter=Count('cotizacion'))
+                    counter = CotKeys.objects.filter(
+                        cotizacion_id=idquote,
+                        proveedor_id=request.POST.get('supplier')
+                        ).aggregate(counter=Count('cotizacion'))
                     if counter['counter'] == 0:
                         obj = CotKeys()
                         obj.cotizacion_id = idquote
@@ -198,7 +228,6 @@ class SupplytoDocumentIn(TemplateView):
                         obj.status = 'PE'
                         obj.flag = True
                         obj.save()
-
                     # save det quote
                     mats = json.loads(request.POST.get('mats'))
                     for x in range(mats.__len__()):
@@ -211,7 +240,6 @@ class SupplytoDocumentIn(TemplateView):
                         obj.modelo = mats[x]['model']
                         obj.flag = True
                         obj.save()
-
                     data['id'] = idquote
                     data['status'] = True
                 if 'purchase' in request.POST:
@@ -222,7 +250,6 @@ class SupplytoDocumentIn(TemplateView):
                         add.compra_id = purchase
                         add.empdni_id = request.user.get_profile().empdni_id
                         add.save()
-
                         # Save details
                         materials = json.loads(request.POST.get('mats'))
                         for x in materials:
@@ -242,10 +269,12 @@ class SupplytoDocumentIn(TemplateView):
                         data['status'] = False
             except ObjectDoesNotExist, e:
                 data['status'] = False
+                data['raise'] = str(e)
             response.write(simplejson.dumps(data))
             response['content_type'] = 'application/json'
             response['mimetype'] = 'application/json'
             return response
+
 
 class ViewListQuotation(TemplateView):
     template_name = 'logistics/listquotation.html'
@@ -254,14 +283,35 @@ class ViewListQuotation(TemplateView):
         context = super(ViewListQuotation, self).get_context_data(**kwargs)
         if request.is_ajax():
             if request.GET.get('by') == 'code':
-                model = CotKeys.objects.filter(Q(cotizacion_id=request.GET.get('code')), Q(flag=True),~Q(status='CO'), ~Q(status='NC') )
+                model = CotKeys.objects.filter(
+                    Q(cotizacion_id=request.GET.get('code')),
+                    Q(flag=True),
+                    ~Q(status='CO'),
+                    ~Q(status='NC'))
             elif request.GET.get('by') == 'dates':
                 if request.GET.get('dates') != '' and request.GET.get('datee') == '':
-                    model = CotKeys.objects.filter(Q(cotizacion__registrado__startswith=globalVariable.format_str_date(request.GET.get('dates'))), Q(flag=True),~Q(status='CO'), ~Q(status='NC'))
+                    model = CotKeys.objects.filter(
+                        Q(cotizacion__registrado__startswith=(
+                            globalVariable.format_str_date(
+                                request.GET.get('dates')))),
+                        Q(flag=True),
+                        ~Q(status='CO'),
+                        ~Q(status='NC'))
                 elif request.GET.get('dates') != '' and request.GET.get('datee') != '':
-                    model = CotKeys.objects.filter(Q(cotizacion__registrado__range=(globalVariable.format_str_date(request.GET.get('dates')),globalVariable.format_str_date(request.GET.get('datee')))), Q(flag=True),~Q(status='CO'), ~Q(status='NC'))
+                    model = CotKeys.objects.filter(
+                        Q(cotizacion__registrado__range=(
+                            globalVariable.format_str_date(request.GET.get(
+                                'dates')),
+                            globalVariable.format_str_date(
+                                request.GET.get('datee')))),
+                        Q(flag=True),
+                        ~Q(status='CO'),
+                        ~Q(status='NC'))
         else:
-            model = CotKeys.objects.filter(Q(flag=True),~Q(status='CO'), ~Q(status='NC')).order_by('-cotizacion__registrado')
+            model = CotKeys.objects.filter(
+                Q(flag=True),
+                ~Q(status='CO'),
+                ~Q(status='NC')).order_by('-cotizacion__registrado')
 
         paginator = Paginator(model, 15)
         page = request.GET.get('page')
@@ -274,26 +324,46 @@ class ViewListQuotation(TemplateView):
         context['list'] = quote
         if request.is_ajax():
             data = {}
-            data['list'] = [{'cotizacion_id':x.cotizacion_id,'proveedor_id':x.proveedor_id,'razonsocial':x.proveedor.razonsocial,'keygen':x.keygen,'traslado':globalVariable.format_date_str(x.cotizacion.traslado)} for x in quote]
+            data['list'] = [{
+                'cotizacion_id': x.cotizacion_id,
+                'proveedor_id': x.proveedor_id,
+                'razonsocial': x.proveedor.razonsocial,
+                'keygen': x.keygen,
+                'traslado': globalVariable.format_date_str(
+                    x.cotizacion.traslado)}
+                for x in quote]
             data['status'] = True
-            return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+            return HttpResponse(
+                simplejson.dumps(data),
+                mimetype='application/json')
         else:
-            return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+            return render_to_response(
+                self.template_name,
+                context,
+                context_instance=RequestContext(request))
 
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             context = dict()
             try:
-                key = CotKeys.objects.get(cotizacion_id=request.POST.get('quote'),proveedor_id=request.POST.get('supplier'))
+                key = CotKeys.objects.get(
+                    cotizacion_id=request.POST.get('quote'),
+                    proveedor_id=request.POST.get('supplier'))
                 if key.flag:
                     key.flag = False
                     key.save()
-                flag = CotKeys.objects.filter(cotizacion_id=request.POST.get('quote'),proveedor_id=request.POST.get('supplier'), flag=True).aggregate(counter=Count('cotizacion'))
+                flag = CotKeys.objects.filter(
+                    cotizacion_id=request.POST.get('quote'),
+                    proveedor_id=request.POST.get('supplier'),
+                    flag=True).aggregate(counter=Count('cotizacion'))
                 if flag['counter'] == 0:
-                    quote = Cotizacion.objects.get(cotizacion_id=request.POST.get('quote'))
+                    quote = Cotizacion.objects.get(
+                        cotizacion_id=request.POST.get('quote'))
                     quote.flag = False
                     quote.save()
-                customer = CotCliente.objects.filter(cotizacion_id=request.POST.get('quote'),proveedor_id=request.POST.get('supplier'))
+                customer = CotCliente.objects.filter(
+                    cotizacion_id=request.POST.get('quote'),
+                    proveedor_id=request.POST.get('supplier'))
                 if customer.__len__() > 0:
                     customer.flag = False
                     customer.save()
@@ -301,7 +371,10 @@ class ViewListQuotation(TemplateView):
             except ObjectDoesNotExist, e:
                 raise e
                 context['status'] = False
-            return HttpResponse(simplejson.dumps(context), mimetype='application/json')
+            return HttpResponse(
+                simplejson.dumps(context),
+                mimetype='application/json')
+
 
 class ViewQuoteSingle(JSONResponseMixin, TemplateView):
     template_name = 'logistics/single.html'
@@ -313,7 +386,8 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
             if request.GET.get('type') == 'list':
                 context = {}
                 try:
-                    tmp = tmpcotizacion.objects.filter(empdni=request.user.get_profile().empdni_id)
+                    tmp = tmpcotizacion.objects.filter(
+                        empdni=request.user.get_profile().empdni_id)
                     context['list'] = [
                         {
                             'id': x.id,
@@ -333,8 +407,13 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
                     context['raise'] = e
                     context['status'] = False
                 return self.render_to_json_response(context, **kwargs)
-        context['details'] = tmpcotizacion.objects.filter(empdni=request.user.get_profile().empdni_id).order_by('materiales__matnom')
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        context['details'] = tmpcotizacion.objects.filter(
+            empdni=request.user.get_profile().empdni_id
+            ).order_by('materiales__matnom')
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
@@ -356,7 +435,9 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
                 return self.render_to_json_response(context, **kwargs)
             if request.POST.get('type') == 'edit':
                 try:
-                    tmp = tmpcotizacion.objects.get(pk=request.POST.get('id'),materiales_id=request.POST.get('materials_id'))
+                    tmp = tmpcotizacion.objects.get(
+                        pk=request.POST.get('id'),
+                        materiales_id=request.POST.get('materials_id'))
                     tmp.cantidad = request.POST.get('quantity')
                     tmp.save()
                     context['status'] = True
@@ -366,7 +447,9 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
                 return self.render_to_json_response(context, **kwargs)
             if request.POST.get('type') == 'del':
                 try:
-                    tmp = tmpcotizacion.objects.get(pk=request.POST.get('id'),materiales_id=request.POST.get('materials_id'))
+                    tmp = tmpcotizacion.objects.get(
+                        pk=request.POST.get('id'),
+                        materiales_id=request.POST.get('materials_id'))
                     tmp.delete()
                     context['status'] = True
                 except ObjectDoesNotExist, e:
@@ -375,7 +458,8 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
                 return self.render_to_json_response(context, **kwargs)
             if request.POST.get('type') == 'delall':
                 try:
-                    tmp = tmpcotizacion.objects.filter(empdni=request.user.get_profile().empdni_id)
+                    tmp = tmpcotizacion.objects.filter(
+                        empdni=request.user.get_profile().empdni_id)
                     tmp.delete()
                     context['status'] = True
                 except ObjectDoesNotExist, e:
@@ -388,27 +472,37 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
                     # upload file
                     arch = request.FILES['archivo']
                     filename = uploadFiles.upload('/storage/temporary/', arch)
-                    book = open_workbook(filename,encoding_override='utf-8')
-                    sheet = book.sheet_by_index(0) # recover sheet of materials
+                    book = open_workbook(filename, encoding_override='utf-8')
+                    sheet = book.sheet_by_index(0)
+                    # recover sheet of materials
                     for m in range(10, sheet.nrows):
                         mid = sheet.cell(m, 2)
                         if mid.ctype != XL_CELL_EMPTY:
                             mid = str(int(mid.value))
                         else:
                             mid = ''
-                        cant = sheet.cell(m, 6) # get quantity
-                        if len(mid) == 15: # row code is length equal 15 chars
-                            obj, created = tmpcotizacion.objects.get_or_create(materiales_id=mid,empdni=request.user.get_profile().empdni_id,defaults={'cantidad':cant.value})
+                        cant = sheet.cell(m, 6)
+                        # get quantity
+                        if len(mid) == 15:
+                            # row code is length equal 15 chars
+                            obj, created = tmpcotizacion.objects.get_or_create(
+                                materiales_id=mid,
+                                empdni=request.user.get_profile().empdni_id,
+                                defaults={'cantidad': cant.value})
                             if not created:
                                 obj.cantidad = (obj.cantidad + cant.value)
                                 obj.save()
                         else:
                             if cant.ctype != XL_CELL_EMPTY:
-                                nothing.append({'name':sheet.cell(m, 3).value, 'measure':sheet.cell(m, 4).value, 'unit':sheet.cell(m, 5).value, 'quantity': cant.value})
+                                nothing.append({
+                                    'name': sheet.cell(m, 3).value,
+                                    'measure': sheet.cell(m, 4).value,
+                                    'unit': sheet.cell(m, 5).value,
+                                    'quantity': cant.value})
                             else:
                                 continue
                     uploadFiles.removeTmp(filename)
-                    context['status']= True
+                    context['status'] = True
                     context['list'] = nothing
                 except ObjectDoesNotExist, e:
                     context['raise'] = e
@@ -467,6 +561,7 @@ class ViewQuoteSingle(JSONResponseMixin, TemplateView):
                     context['status'] = False
                 return self.render_to_json_response(context, **kwargs)
 
+
 class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
     template_name = 'logistics/purchase.html'
 
@@ -476,12 +571,14 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
             if request.GET.get('type') == 'list':
                 context = dict()
                 try:
-                    tmp = tmpcompra.objects.filter(empdni=request.user.get_profile().empdni_id)
+                    tmp = tmpcompra.objects.filter(
+                        empdni=request.user.get_profile().empdni_id)
                     context['list'] = list()
                     igv = 0
                     subt = 0
                     total = 0
-                    conf = Configuracion.objects.get(periodo=globalVariable.get_year)
+                    conf = Configuracion.objects.get(
+                        periodo=globalVariable.get_year)
                     tdiscount = 0
                     # print conf.igv
                     for x in tmp:
@@ -490,21 +587,18 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                         precio = x.precio - disc
                         amount = (x.cantidad * precio)
                         subt += amount
-                        context['list'].append(
-                            {
-                                'id':x.id,
-                                'materials_id': x.materiales_id,
-                                'matname': x.materiales.matnom,
-                                'matmeasure': x.materiales.matmed,
-                                'unit': x.materiales.unidad_id,
-                                'brand': x.brand.brand,
-                                'model': x.model.model,
-                                'quantity':x.cantidad,
-                                'price':x.precio,
-                                'discount':x.discount,
-                                'amount':amount
-                            }
-                        )
+                        context['list'].append({
+                            'id': x.id,
+                            'materials_id': x.materiales_id,
+                            'matname': x.materiales.matnom,
+                            'matmeasure': x.materiales.matmed,
+                            'unit': x.materiales.unidad_id,
+                            'brand': x.brand.brand,
+                            'model': x.model.model,
+                            'quantity': x.cantidad,
+                            'price': x.precio,
+                            'discount': x.discount,
+                            'amount': amount})
                     context['discount'] = tdiscount
                     context['igv'] = ((conf.igv * subt) / 100)
                     context['subtotal'] = subt
@@ -519,8 +613,12 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
         context['pago'] = FormaPago.objects.all().order_by('pagos')
         context['currency'] = Moneda.objects.all()
         context['supplier'] = Proveedor.objects.all()
-        context['projects'] = Proyecto.objects.filter(status='AC', flag=True).order_by('nompro')
-        return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+        context['projects'] = Proyecto.objects.filter(
+            status='AC', flag=True).order_by('nompro')
+        return render_to_response(
+            self.template_name,
+            context,
+            context_instance=RequestContext(request))
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
@@ -556,7 +654,9 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
             #     return self.render_to_json_response(context, **kwargs)
             if request.POST.get('type') == 'edit':
                 try:
-                    tmp = tmpcompra.objects.get(pk=request.POST.get('id'),materiales_id=request.POST.get('materials_id'))
+                    tmp = tmpcompra.objects.get(
+                        pk=request.POST.get('id'),
+                        materiales_id=request.POST.get('materials_id'))
                     tmp.cantidad = request.POST.get('quantity')
                     tmp.precio = request.POST.get('price')
                     tmp.discount = request.POST.get('discount')
@@ -570,7 +670,9 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                 return self.render_to_json_response(context, **kwargs)
             if request.POST.get('type') == 'del':
                 try:
-                    tmp = tmpcompra.objects.get(pk=request.POST.get('id'),materiales_id=request.POST.get('materials_id'))
+                    tmp = tmpcompra.objects.get(
+                        pk=request.POST.get('id'),
+                        materiales_id=request.POST.get('materials_id'))
                     tmp.delete()
                     context['status'] = True
                 except ObjectDoesNotExist, e:
@@ -579,7 +681,8 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                 return self.render_to_json_response(context, **kwargs)
             if request.POST.get('type') == 'delall':
                 try:
-                    tmp = tmpcompra.objects.filter(empdni=request.user.get_profile().empdni_id)
+                    tmp = tmpcompra.objects.filter(
+                        empdni=request.user.get_profile().empdni_id)
                     tmp.delete()
                     context['status'] = True
                 except ObjectDoesNotExist, e:
@@ -592,29 +695,43 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                     # upload file
                     arch = request.FILES['archivo']
                     filename = uploadFiles.upload('/storage/temporary/', arch)
-                    book = open_workbook(filename,encoding_override='utf-8')
-                    sheet = book.sheet_by_index(0) # recover sheet of materials
+                    book = open_workbook(filename, encoding_override='utf-8')
+                    sheet = book.sheet_by_index(0)
+                    # recover sheet of materials
                     for m in range(10, sheet.nrows):
                         mid = sheet.cell(m, 2)
                         if mid.ctype != XL_CELL_EMPTY:
                             mid = str(int(mid.value))
                         else:
                             mid = ''
-                        cant = sheet.cell(m, 6) # get quantity
-                        price = sheet.cell(m, 7) # get price
-                        if len(mid) == 15: # row code is length equal 15 chars
-                            obj, created = tmpcompra.objects.get_or_create(materiales_id=mid,empdni=request.user.get_profile().empdni_id,defaults={'cantidad':cant.value,'precio':price.value})
+                        cant = sheet.cell(m, 6)
+                        # get quantity
+                        price = sheet.cell(m, 7)
+                        # get price
+                        if len(mid) == 15:
+                            # row code is length equal 15 chars
+                            obj, created = tmpcompra.objects.get_or_create(
+                                materiales_id=mid,
+                                empdni=request.user.get_profile().empdni_id,
+                                defaults={
+                                    'cantidad': cant.value,
+                                    'precio': price.value})
                             if not created:
                                 obj.cantidad = (obj.cantidad + cant.value)
                                 obj.precio = price.value
                                 obj.save()
                         else:
                             if cant.ctype != XL_CELL_EMPTY:
-                                nothing.append({'name':sheet.cell(m, 3).value, 'measure':sheet.cell(m, 4).value, 'unit':sheet.cell(m, 5).value, 'quantity': cant.value, 'price':price.value})
+                                nothing.append({
+                                    'name': sheet.cell(m, 3).value,
+                                    'measure': sheet.cell(m, 4).value,
+                                    'unit': sheet.cell(m, 5).value,
+                                    'quantity': cant.value,
+                                    'price': price.value})
                             else:
                                 continue
                     uploadFiles.removeTmp(filename)
-                    context['status']= True
+                    context['status'] = True
                     context['list'] = nothing
                 except ObjectDoesNotExist, e:
                     context['raise'] = e
@@ -625,7 +742,7 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                 if 'savePurchase' in request.POST:
                     # Set all data the form
                     form = CompraForm(request.POST, request.FILES)
-                    #print form
+                    # print form
                     if form.is_valid():
                         id = genkeys.GenerateKeyPurchase()
                         add = form.save(commit=False)
@@ -636,7 +753,7 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                         add.discount = float(request.POST.get('discount'))
                         add.save()
                         # save details os the order purchase
-                        #details = json.loads(request.POST.get('details'))
+                        # details = json.loads(request.POST.get('details'))
                         for x in tmpcompra.objects.filter(empdni=request.user.get_profile().empdni_id):
                             obj = DetCompra()
                             obj.compra_id = id
@@ -658,6 +775,7 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
+
 
 class ListPurchase(JSONResponseMixin, TemplateView):
     template_name = 'logistics/listPurchase.html'
@@ -1196,15 +1314,24 @@ class IngressPriceQuote(JSONResponseMixin, TemplateView):
         try:
             if kwargs['quote'] and kwargs['supplier']:
                 if kwargs['quote'].__len__() == 10 and kwargs['supplier'].__len__() == 11:
-                    context['quote'] = Cotizacion.objects.get(pk=kwargs['quote'])
+                    context['quote'] = Cotizacion.objects.get(
+                        pk=kwargs['quote'])
                     if context['quote'].status != 'PE':
-                        return HttpResponseRedirect(reverse_lazy('view_quote_list'))
+                        return HttpResponseRedirect(
+                            reverse_lazy('view_quote_list'))
                     else:
-                        context['details'] = DetCotizacion.objects.filter(cotizacion_id=kwargs['quote'], proveedor_id=kwargs['supplier']).order_by('materiales__matnom')
-                        obj = Configuracion.objects.filter(periodo=globalVariable.get_year)[:1]
+                        context['details'] = DetCotizacion.objects.filter(
+                            cotizacion_id=kwargs['quote'],
+                            proveedor_id=kwargs['supplier']).order_by(
+                            'materiales__matnom')
+                        obj = Configuracion.objects.filter(
+                            periodo=globalVariable.get_year)[:1]
                         context['igv'] = obj[0].igv
-                        context['currency'] = Moneda.objects.filter(flag=True).order_by('moneda')
-                        cli = CotCliente.objects.filter(cotizacion_id=kwargs['quote'], proveedor_id=kwargs['supplier'])
+                        context['currency'] = Moneda.objects.filter(
+                            flag=True).order_by('moneda')
+                        cli = CotCliente.objects.filter(
+                            cotizacion_id=kwargs['quote'],
+                            proveedor_id=kwargs['supplier'])
                         if cli:
                             if cli[0].status == 'CO':
                                 context['disabled'] = True
@@ -1219,7 +1346,10 @@ class IngressPriceQuote(JSONResponseMixin, TemplateView):
             else:
                 return HttpResponseRedirect(
                     reverse_lazy('view_quote_list'))
-            return render_to_response(self.template_name, context, context_instance=RequestContext(request))
+            return render_to_response(
+                self.template_name,
+                context,
+                context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404('Template not found')
 
@@ -1228,8 +1358,11 @@ class IngressPriceQuote(JSONResponseMixin, TemplateView):
             context = dict()
             try:
                 if 'blur' in request.POST:
-                    obj = DetCotizacion.objects.get(Q(cotizacion_id=kwargs['quote']), Q(proveedor_id=kwargs['supplier']), Q(materiales_id=request.POST.get('materials')), Q(id=request.POST.get('pk')))
-
+                    obj = DetCotizacion.objects.get(
+                        Q(cotizacion_id=kwargs['quote']),
+                        Q(proveedor_id=kwargs['supplier']),
+                        Q(materiales_id=request.POST.get('materials')),
+                        Q(id=request.POST.get('pk')))
                     if request.POST.get('blur') == 'price':
                         obj.precio = request.POST.get('val')
                         obj.save()
@@ -1249,29 +1382,35 @@ class IngressPriceQuote(JSONResponseMixin, TemplateView):
                         obj.save()
                         context['status'] = True
                     elif request.POST.get('blur') == 'dates':
-                        obj.entrega = globalVariable.format_str_date(request.POST.get('val'))
+                        obj.entrega = globalVariable.format_str_date(
+                            request.POST.get('val'))
                         obj.save()
                         context['status'] = True
                 if request.POST.get('type') == 'file':
                     sheet = request.FILES['sheet']
-                    uri = '/storage/quotations/%s/%s/'%(kwargs['quote'], kwargs['supplier'])
-                    name = '%s%s.pdf'%(uri, request.POST.get('materials'))
+                    uri = '/storage/quotations/%s/%s/' % (
+                        kwargs['quote'], kwargs['supplier'])
+                    name = '%s%s.pdf' % (uri, request.POST.get('materials'))
                     if uploadFiles.fileExists(name, True):
                         uploadFiles.deleteFile(name, True)
-
-                    filename = uploadFiles.upload(uri, sheet, {'name':request.POST.get('materials')})
+                    filename = uploadFiles.upload(uri, sheet, {
+                        'name': request.POST.get('materials')})
                     if filename:
                         context['status'] = True
                     else:
                         context['status'] = False
                 if 'client' in request.POST:
-                    obj = CotCliente.objects.filter(proveedor_id=kwargs['supplier'], cotizacion_id=kwargs['quote'])
+                    obj = CotCliente.objects.filter(
+                        proveedor_id=kwargs['supplier'],
+                        cotizacion_id=kwargs['quote'])
                     if not obj:
                         obj = CotCliente()
                         obj.proveedor_id = kwargs['supplier']
                         obj.cotizacion_id = kwargs['quote']
-                        obj.envio = globalVariable.format_str_date(request.POST.get('traslado'))
-                        obj.validez = globalVariable.format_str_date(request.POST.get('validez'))
+                        obj.envio = globalVariable.format_str_date(
+                                        request.POST.get('traslado'))
+                        obj.validez = globalVariable.format_str_date(
+                            request.POST.get('validez'))
                         obj.contacto = request.POST.get('contacto')
                         obj.moneda_id = request.POST.get('moneda')
                         obj.obser = request.POST.get('obser')
@@ -1293,6 +1432,7 @@ class IngressPriceQuote(JSONResponseMixin, TemplateView):
                 context['status'] = False
             return self.render_to_json_response(context)
 
+
 class ListCompressed(JSONResponseMixin, TemplateView):
 
     @method_decorator(login_required)
@@ -1302,15 +1442,26 @@ class ListCompressed(JSONResponseMixin, TemplateView):
             pass
         else:
             try:
-                queryset = MetProject.objects.extra(select = { 'stock': "SELECT stock FROM almacen_inventario WHERE operations_metproject.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"}).extra(select = { 'precompra': "SELECT precompra FROM almacen_inventario WHERE operations_metproject.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"}).filter(proyecto_id=kwargs['pro'],
-                    subproyecto_id=None)
-                queryset = queryset.values('materiales_id','materiales__matnom','materiales__matmed','materiales__unidad__uninom', 'brand_id','model_id', 'brand__brand','model__model','precio','stock', 'precompra')
-                queryset = queryset.annotate(cantidad=Sum('cantidad')).annotate(orders=Sum('quantityorder')).order_by('materiales__matnom')
-
-                #met = MetProject.objects.filter(
+                queryset = MetProject.objects.extra(select={'stock': "SELECT stock FROM almacen_inventario WHERE operations_metproject.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"}).extra(select={ 'precompra': "SELECT precompra FROM almacen_inventario WHERE operations_metproject.materiales_id LIKE almacen_inventario.materiales_id AND periodo LIKE to_char(now(), 'YYYY')"}).filter(proyecto_id=kwargs['pro'], subproyecto_id=None)
+                queryset = queryset.values(
+                    'materiales_id',
+                    'materiales__matnom',
+                    'materiales__matmed',
+                    'materiales__unidad__uninom',
+                    'brand_id',
+                    'model_id',
+                    'brand__brand',
+                    'model__model',
+                    'precio',
+                    'stock',
+                    'precompra')
+                queryset = queryset.annotate(
+                    cantidad=Sum('cantidad')).annotate(
+                    orders=Sum('quantityorder')).order_by('materiales__matnom')
+                # met = MetProject.objects.filter(
                 #    proyecto_id=kwargs['pro'],
                 #    subproyecto_id=None
-                #).distinct('materiales__materiales_id')
+                # ).distinct('materiales__materiales_id')
                 data = list()
                 for x in queryset:
                     # stock = 0
@@ -1325,29 +1476,28 @@ class ListCompressed(JSONResponseMixin, TemplateView):
                     # else:
                     #     stock = result[0].stock
                     #     pbuy = result[0].precompra
-                    data.append(
-                        {
-                            'materials': x['materiales_id'],
-                            'name': x['materiales__matnom'],
-                            'measure': x['materiales__matmed'],
-                            'unit': x['materiales__unidad__uninom'],
-                            'brand_id': x['brand_id'],
-                            'model_id': x['model_id'],
-                            'brand': x['brand__brand'],
-                            'model': x['model__model'],
-                            'quantity': x['orders'],
-                            'cantidad': x['cantidad'],
-                            'psale': x['precio'],
-                            'ppurchase': x['precompra'],
-                            'remainder': (x['cantidad'] - x['orders']),
-                            'stock': x['stock'],
-                            # 'tag': x.tag
-                        }
-                    )
+                    data.append({
+                        'materials': x['materiales_id'],
+                        'name': x['materiales__matnom'],
+                        'measure': x['materiales__matmed'],
+                        'unit': x['materiales__unidad__uninom'],
+                        'brand_id': x['brand_id'],
+                        'model_id': x['model_id'],
+                        'brand': x['brand__brand'],
+                        'model': x['model__model'],
+                        'quantity': x['orders'],
+                        'cantidad': x['cantidad'],
+                        'psale': x['precio'],
+                        'ppurchase': x['precompra'],
+                        'remainder': (x['cantidad'] - x['orders']),
+                        'stock': x['stock']})
                 context['compress'] = data
-                return render_to_response('logistics/compressedProject.html', context, context_instance=RequestContext(request))
+                return render_to_response(
+                    'logistics/compressedProject.html',
+                    context,
+                    context_instance=RequestContext(request))
             except TemplateDoesNotExist, e:
-                raise Http404
+                raise Http404(e)
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
@@ -1399,6 +1549,7 @@ class ListCompressed(JSONResponseMixin, TemplateView):
                 context['status'] = False
             return self.render_to_json_response(context)
 
+
 class ServiceOrders(JSONResponseMixin, TemplateView):
 
     @method_decorator(login_required)
@@ -1408,14 +1559,13 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
             try:
                 if 'changeProject' in request.GET:
                     address = Proyecto.objects.get(pk=request.GET.get('pro'))
-                    sub = Subproyecto.objects.filter(proyecto_id=request.GET.get('pro'))
+                    sub = Subproyecto.objects.filter(
+                        proyecto_id=request.GET.get('pro'))
                     context['address'] = address.direccion
-                    context['subprojects'] = [
-                        {
-                            'id': x.subproyecto_id,
-                            'subproject': x.subproyecto
-                        } for x in sub
-                    ]
+                    context['subprojects'] = [{
+                        'id': x.subproyecto_id,
+                        'subproject': x.subproyecto}
+                        for x in sub]
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
@@ -1423,21 +1573,28 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
             return self.render_to_json_response(context)
         else:
             try:
-                context['project'] = Proyecto.objects.filter(flag=True, status='AC')
+                context['project'] = Proyecto.objects.filter(
+                    flag=True,
+                    status='AC')
                 context['supplier'] = Proveedor.objects.filter(flag=True)
-                context['document'] = Documentos.objects.filter(flag=True).order_by('documento')
-                context['method'] = FormaPago.objects.filter(flag=True).order_by('pagos')
+                context['document'] = Documentos.objects.filter(
+                                        flag=True).order_by('documento')
+                context['method'] = FormaPago.objects.filter(
+                                        flag=True).order_by('pagos')
                 context['authorized'] = Employee.objects.filter(flag=True)
                 context['unit'] = Unidade.objects.filter(flag=True)
                 context['vigv'] = search.getIGVCurrent()
-                context['service'] = ServiceOrder.objects.filter(flag=True).order_by('-serviceorder_id')
+                context['service'] = ServiceOrder.objects.filter(
+                                        flag=True).order_by('-serviceorder_id')
                 context['currency'] = Moneda.objects.filter(flag=True)
-                return render_to_response('logistics/serviceorder.html', context, context_instance=RequestContext(request))
+                return render_to_response(
+                    'logistics/serviceorder.html',
+                    context,
+                    context_instance=RequestContext(request))
             except TemplateDoesNotExist, e:
                 raise Http404(e)
 
     @method_decorator(login_required)
-
     def post(self, request, *args, **kwargs):
         context = dict()
         if request.is_ajax():
@@ -1453,24 +1610,25 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
                                 x['unit'] = request.POST.get('unit')
                                 x['quantity'] = request.POST.get('quantity')
                                 x['price'] = request.POST.get('price')
-                                x['amount'] = (float(request.POST.get('quantity')) * float(request.POST.get('price')))
+                                x['amount'] = (float(request.POST.get(
+                                    'quantity')) * float(
+                                    request.POST.get('price')))
                                 break
                     else:
-                        tmp.append(
-                            {
-                                'item': len(request.session.get('serorddet')) + 1,
-                                'description': request.POST.get('desc'),
-                                'unit': request.POST.get('unit'),
-                                'quantity': request.POST.get('quantity'),
-                                'price': request.POST.get('price'),
-                                'amount': (float(request.POST.get('quantity')) * float(request.POST.get('price')))
-                            }
-                        )
+                        tmp.append({
+                            'item': len(request.session.get('serorddet')) + 1,
+                            'description': request.POST.get('desc'),
+                            'unit': request.POST.get('unit'),
+                            'quantity': request.POST.get('quantity'),
+                            'price': request.POST.get('price'),
+                            'amount': (float(request.POST.get(
+                                    'quantity')) * float(
+                                request.POST.get('price')))})
                     request.session['serorddet'] = tmp
                     context['list'] = request.session.get('serorddet')
                     context['status'] = True
                 if 'list' in request.POST:
-                    #print request.session['serorddet']
+                    # print request.session['serorddet']
                     context['list'] = request.session.get('serorddet')
                     context['status'] = True
                 if 'edit' in request.POST:
@@ -1480,7 +1638,9 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
                             x['unit'] = request.POST.get('unit')
                             x['quantity'] = request.POST.get('quantity')
                             x['price'] = request.POST.get('quantity')
-                            x['amount'] = (float(request.POST.get('quantity')) * float(request.POST.get('price')))
+                            x['amount'] = (float(request.POST.get(
+                                    'quantity')) * float(
+                                request.POST.get('price')))
                 if 'del' in request.POST:
                     item = 1
                     tmp = request.session['serorddet']
@@ -1502,7 +1662,8 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
                         add = form.save(commit=False)
                         service = genkeys.GenerateIdServiceOrder()
                         add.serviceorder_id = service
-                        add.elaborated_id = request.user.get_profile().empdni_id
+                        add.elaborated_id = request.user.get_profile(
+                            ).empdni_id
                         add.save()
                         # save details
                         for x in request.session['serorddet']:
@@ -1523,6 +1684,7 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
                 context['status'] = False
             return self.render_to_json_response(context)
 
+
 class PriceMaterialsViews(JSONResponseMixin, TemplateView):
 
     @method_decorator(login_required)
@@ -1531,47 +1693,46 @@ class PriceMaterialsViews(JSONResponseMixin, TemplateView):
         if request.is_ajax():
             try:
                 if 'searchCode' in request.GET:
-                    det = DetCompra.objects.filter(materiales_id=request.GET['code']).distinct('materiales__materiales_id').order_by('materiales__materiales_id')
-                    print det.count()
-                    context['details'] = [
-                        {
-                            'code': det[0].materiales_id,
-                            'name': det[0].materiales.matnom,
-                            'metering': det[0].materiales.matmed,
-                        }
-                    ]
+                    det = DetCompra.objects.filter(
+                            materiales_id=request.GET['code']
+                            ).distinct(
+                            'materiales__materiales_id').order_by(
+                            'materiales__materiales_id')
+                    # print det.count()
+                    context['details'] = [{
+                        'code': det[0].materiales_id,
+                        'name': det[0].materiales.matnom,
+                        'metering': det[0].materiales.matmed}]
                     context['status'] = True
                 if 'searchName' in request.GET:
-                    det = DetCompra.objects.filter(materiales__matnom__icontains=request.GET['name'])
-                    det = det.distinct('materiales__matnom', 'materiales__matmed')
+                    det = DetCompra.objects.filter(
+                            materiales__matnom__icontains=request.GET['name'])
+                    det = det.distinct(
+                        'materiales__matnom',
+                        'materiales__matmed')
                     # print DetCompra.objects.all().count()
-                    context['details'] = [
-                        {
-                            'code': x.materiales_id,
-                            'name': x.materiales.matnom,
-                            'metering': x.materiales.matmed,
-                        }
-                        for x in det
-                    ]
+                    context['details'] = [{
+                        'code': x.materiales_id,
+                        'name': x.materiales.matnom,
+                        'metering': x.materiales.matmed}
+                        for x in det]
                     context['status'] = True
                 if 'prices' in request.GET:
-                    det = DetCompra.objects.filter(materiales_id=request.GET['code']).order_by('-compra__registrado')[:5]
+                    det = DetCompra.objects.filter(
+                        materiales_id=request.GET['code']
+                        ).order_by('-compra__registrado')[:5]
                     context['data'] = {
                         'code': det[0].materiales_id,
                         'name': det[0].materiales.matnom,
                         'metering': det[0].materiales.matmed,
-                        'unit': det[0].materiales.unidad.uninom
-                    }
-                    context['prices'] = [
-                        {
-                            'purchase': x.compra_id,
-                            'supplier': x.compra.proveedor.razonsocial,
-                            'currency': x.compra.moneda.moneda,
-                            'date': x.compra.registrado.strftime('%d-%m-%Y'),
-                            'price': x.precio
-                        }
-                        for x in det
-                    ]
+                        'unit': det[0].materiales.unidad.uninom}
+                    context['prices'] = [{
+                        'purchase': x.compra_id,
+                        'supplier': x.compra.proveedor.razonsocial,
+                        'currency': x.compra.moneda.moneda,
+                        'date': x.compra.registrado.strftime('%d-%m-%Y'),
+                        'price': x.precio}
+                        for x in det]
                     context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
