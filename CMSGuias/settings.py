@@ -15,13 +15,17 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'erpicrperu', # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'erpicrperu',
+        # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': 'postgres',
         'PASSWORD': 'fronhell',
-        'HOST': 'localhost', # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '5432',                      # Set to empty string for default.
+        'HOST': 'localhost',
+        # Empty for localhost through domain sockets or '127.0.0.1'
+        # for localhost through TCP.
+        'PORT': '5432',      # Set to empty string for default.
     }
 }
 
@@ -76,7 +80,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    #'/home/christian/development/python/django/CMSGuias/CMSGuias/static',
+    # '/home/christian/development/python/django/CMSGuias/CMSGuias/static',
 )
 
 LOGIN_URL = '/SignUp/'
@@ -86,7 +90,7 @@ LOGIN_URL = '/SignUp/'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -96,7 +100,7 @@ SECRET_KEY = 'j!scaaw@3k7ra4#q7%##8t=bx#zf@80tgaie4b(45!j_%s%*9-'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    # 'django.template.loaders.eggs.Loader',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -127,10 +131,11 @@ AUTH_PROFILE_MODULE = 'home.userProfile'
 WSGI_APPLICATION = 'CMSGuias.wsgi.application'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Put strings here, like "/home/html/django_templates"
+    # or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(PATH_PROJECT,'templates')
+    os.path.join(PATH_PROJECT, 'templates')
 )
 
 INSTALLED_APPS = (
@@ -143,7 +148,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    #'django_evolution',
+    # 'django_evolution',
     'south',
     # 'CMSGuias.django_yuml',
     # Uncomment the next line to enable admin documentation:
