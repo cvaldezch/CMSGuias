@@ -586,6 +586,12 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                         mm.psales = request.POST['psales']
                     mm.save()
                     context['status'] = True
+                if 'approvedModify' in request.POST:
+                    try:
+                        pass
+                    except Exception, e:
+                        context['raise'] = str(e)
+                        context['status'] = False
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

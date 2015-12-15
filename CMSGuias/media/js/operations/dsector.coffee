@@ -93,6 +93,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
         method: "post"
       .success (response) ->
         if response.status
+          Materialize.toast "Material Agregado", 2600
           if Boolean $("#modify").length
             $scope.modifyList()
             return
