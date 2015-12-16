@@ -337,8 +337,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                             dsector_id__in=sec).aggregate(
                             tpurchase=Sum(
                                 'quantity', field='quantity * ppurchase'),
-                            tsales=Sum('quantity', field='quantity * psales')
-                        )
+                            tsales=Sum('quantity', field='quantity * psales'))
                     rds = DSMetrado.objects.filter(dsector_id=kwargs[
                         'area']).aggregate(tpurchase=Sum(
                             'quantity',
@@ -353,7 +352,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                             'quantity', field='quantity * ppurchase'),
                         asale=Sum(
                             'quantity', field='quantity * psales'))
-                    context['mmodidy'] = mm
+                    context['mmodify'] = mm
                     context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)

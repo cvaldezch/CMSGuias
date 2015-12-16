@@ -586,6 +586,10 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
     $http.get "", params: samountp: true
     .success (response) ->
       console.log response
+      $scope.amnp = response.maarea.tpurchase
+      $scope.amns = response.maarea.tsales
+      $scope.ammp = response.mmodify.apurchase
+      $scope.amms = response.mmodify.asale
     return
   $scope.delAllModifyArea = ($event) ->
     swal

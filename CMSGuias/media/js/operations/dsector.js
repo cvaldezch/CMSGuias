@@ -680,7 +680,11 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
         samountp: true
       }
     }).success(function(response) {
-      return console.log(response);
+      console.log(response);
+      $scope.amnp = response.maarea.tpurchase;
+      $scope.amns = response.maarea.tsales;
+      $scope.ammp = response.mmodify.apurchase;
+      return $scope.amms = response.mmodify.asale;
     });
   };
   $scope.delAllModifyArea = function($event) {
