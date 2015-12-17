@@ -328,6 +328,9 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                             relations=('materials', 'brand', 'model')))
                     context['status'] = True
                 if 'samountp' in request.GET:
+                    context['sec'] = json.loads(serializers.serialize(
+                        'json',
+                        [Sectore.objects.get(sector_id=kwargs['sec'])]))
                     sg = [x[0] for x in SGroup.objects.filter(
                             project_id=kwargs['pro'],
                             sector_id=kwargs['sec']).values_list('sgroup_id',)]

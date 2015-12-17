@@ -684,7 +684,11 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
       $scope.amnp = response.maarea.tpurchase;
       $scope.amns = response.maarea.tsales;
       $scope.ammp = response.mmodify.apurchase;
-      return $scope.amms = response.mmodify.asale;
+      $scope.amms = response.mmodify.asale;
+      $scope.amsecp = response.sec[0].fields.amount;
+      $scope.amsecs = response.sec[0].fields.amountsales;
+      $scope.amstp = response.msector.tpurchase;
+      return $scope.amsts = response.msector.tsales;
     });
   };
   $scope.delAllModifyArea = function($event) {

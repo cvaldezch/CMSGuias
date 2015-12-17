@@ -340,32 +340,42 @@
                     <small>Tienes modificaciones pendientes.</small>
                 </h5>
                 {# calculate total #}
-                <table class="table responsive-table">
+                <table class="bordered responsive-table">
                     <thead>
                         <tr>
-                            <th style="max-width: 50px;" colspan="3">{{ dsector.sgroup.project.currency.moneda }}</th>
+                            <th style="max-width: 50px;">{{ dsector.sgroup.project.currency.moneda }}</th>
+                            <th class="center-align" colspan="3">Sector</th>
+                            <th class="center-align" colspan="3">AREA</th>
                         </tr>
                     </thead>
                     {% verbatim %}
                         <tbody>
                             <tr>
-                                <td></td>
-                                <th>
-                                    <th>VENTA</th>
-                                    <th>SECTOR</th>
-                                    <th>DIFERENCIA</th>
-                                </th>
-                                <th>
-                                    <th>ACTUAL</th>
-                                    <th>MODIFICADO</th>
-                                    <th>DIFERENCIA</th>
-                                </th>
+                                <th></th>
+                                <th class="center-align">VENTA</th>
+                                <th class="center-align">SECTOR</th>
+                                <th class="center-align">DIFERENCIA</th>
+                                <th class="center-align">ACTUAL</th>
+                                <th class="center-align">MODIFICADO</th>
+                                <th class="center-align">DIFERENCIA</th>
                             </tr>
                             <tr>
                                 <th>COMPRA</th>
+                                <td class="center-align">{{amsecp|number:"2"}}</td>
+                                <td class="center-align">{{((amstp-amnp)+ammp)|number:"2"}}</td>
+                                <td class="center-align">{{(amsecp-((amstp-amnp)+ammp))}}</td>
+                                <td class="center-align">{{amnp|number:"2"}}</td>
+                                <td class="center-align">{{ammp|number:"2"}}</td>
+                                <td class="center-align">{{ammp - amnp|number:"2"}}</td>
                             </tr>
                             <tr>
                                 <th>VENTA</th>
+                                <td class="center-align">{{amsecs|number:"2"}}</td>
+                                <td class="center-align">{{((amsts-amns)+amms)|number:"2"}}</td>
+                                <td class="center-align">{{(amsecs-((amsts-amns)+amms))}}</td>
+                                <td class="center-align">{{amns|number:"2"}}</td>
+                                <td class="center-align">{{amms|number:"2"}}</td>
+                                <td class="center-align">{{amms - amns|number:"2"}}</td>
                             </tr>
                             <!--<tr>
                                 <th>COMPRA</th>

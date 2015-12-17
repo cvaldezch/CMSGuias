@@ -590,6 +590,10 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
       $scope.amns = response.maarea.tsales
       $scope.ammp = response.mmodify.apurchase
       $scope.amms = response.mmodify.asale
+      $scope.amsecp = response.sec[0].fields.amount
+      $scope.amsecs = response.sec[0].fields.amountsales
+      $scope.amstp = response.msector.tpurchase
+      $scope.amsts = response.msector.tsales
     return
   $scope.delAllModifyArea = ($event) ->
     swal
