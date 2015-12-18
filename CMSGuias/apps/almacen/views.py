@@ -1177,7 +1177,7 @@ def view_generate_document_out(request, oid):
                             tag='1', flag=True)
                         for x in nip:
                             obj = NipleGuiaRemision()
-                            obj.guia_id = guidekeys
+                            obj.guia_id = code
                             obj.materiales_id = x.materiales_id
                             obj.metrado = x.metrado
                             obj.cantguide = x.cantguide
