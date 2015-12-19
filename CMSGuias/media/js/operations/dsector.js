@@ -594,6 +594,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
     }).success(function(response) {
       var x;
       if (response.status) {
+        $scope.calcMM();
         for (x in $scope.lmodify) {
           if ($scope.lmodify[x].fields.materials.pk === $event.currentTarget.parentElement.parentElement.children[1].innerText && $scope.lmodify[x].fields.brand.pk === data.brand && $scope.lmodify[x].fields.model.pk === data.model) {
             if (data.name === "brand") {

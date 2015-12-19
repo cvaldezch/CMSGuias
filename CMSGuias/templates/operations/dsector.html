@@ -91,7 +91,7 @@
                     <i class="fa fa-trash"></i>
                     <span class="hide-on-med-and-down"> Eliminar Modificación</span>
                 </button>
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="approvedModify()">
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="approvedModify()" ng-disabled="(amsecp-((amstp-amnp)+ammp)) < 0">
                     <i class="fa fa-pencil"></i>
                     <i class="fa fa-check-square-o"></i>
                     <span class="hide-on-med-and-down"> Aprobar Modificación</span>
@@ -99,9 +99,7 @@
                 <input type="hidden" id="modify" value="true">
             {% endif %}
         </div>
-        <div class="card-content" ng-model="gui.pac" ng-init="gui.pac=false" ng-show="gui.pac">
-
-        </div>
+        <div class="card-content" ng-model="gui.pac" ng-init="gui.pac=false" ng-show="gui.pac"></div>
         <div class="card-content" ng-model="gui.smat" ng-init="gui.smat=false" ng-show="gui.smat">
             <div class="row">
                 <div class="col l12">
@@ -344,7 +342,7 @@
                     <thead>
                         <tr>
                             <th style="max-width: 50px;">{{ dsector.sgroup.project.currency.moneda }}</th>
-                            <th class="center-align" colspan="3">Sector</th>
+                            <th class="center-align" colspan="3">SECTOR</th>
                             <th class="center-align" colspan="3">AREA</th>
                         </tr>
                     </thead>
@@ -363,19 +361,19 @@
                                 <th>COMPRA</th>
                                 <td class="center-align">{{amsecp|number:"2"}}</td>
                                 <td class="center-align">{{((amstp-amnp)+ammp)|number:"2"}}</td>
-                                <td class="center-align">{{(amsecp-((amstp-amnp)+ammp))}}</td>
+                                <td class="center-align">{{(amsecp-((amstp-amnp)+ammp))|number:"2"}}</td>
                                 <td class="center-align">{{amnp|number:"2"}}</td>
                                 <td class="center-align">{{ammp|number:"2"}}</td>
-                                <td class="center-align">{{ammp - amnp|number:"2"}}</td>
+                                <td class="center-align">{{amnp-ammp|number:"2"}}</td>
                             </tr>
                             <tr>
                                 <th>VENTA</th>
                                 <td class="center-align">{{amsecs|number:"2"}}</td>
                                 <td class="center-align">{{((amsts-amns)+amms)|number:"2"}}</td>
-                                <td class="center-align">{{(amsecs-((amsts-amns)+amms))}}</td>
+                                <td class="center-align">{{(amsecs-((amsts-amns)+amms))|number:"2"}}</td>
                                 <td class="center-align">{{amns|number:"2"}}</td>
                                 <td class="center-align">{{amms|number:"2"}}</td>
-                                <td class="center-align">{{amms - amns|number:"2"}}</td>
+                                <td class="center-align">{{amns-amms|number:"2"}}</td>
                             </tr>
                             <!--<tr>
                                 <th>COMPRA</th>

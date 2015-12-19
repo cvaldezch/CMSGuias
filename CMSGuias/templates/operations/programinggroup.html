@@ -25,32 +25,27 @@
     REGRESAR
   </a>
   <div class="card-panel">
+    {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'ventas' %}
     <div class="card-content">
       <h5>Grupo</h5>
     </div>
-    <div class="card-action">
-      <button type="button" class="btn blue blue-lighten-3 waves-effect waves-light modal-trigger" data-target="mgroup">
-        <i class="fa fa-plus"></i> Agregar Grupo
-      </button>
-      <button type="button" class="btn blue blue-lighten-3" ng-click="listGroup()">
-        <i class="fa fa-list"></i> Lista Grupo
-      </button>
-    </div>
+      <div class="card-action">
+        <button type="button" class="btn blue blue-lighten-3 waves-effect waves-light modal-trigger" data-target="mgroup">
+          <i class="fa fa-plus"></i> Agregar Grupo
+        </button>
+        <button type="button" class="btn blue blue-lighten-3" ng-click="listGroup()">
+          <i class="fa fa-list"></i> Lista Grupo
+        </button>
+      </div>
+    {% endif %}
     <div class="card-content">
-      <h5>Area</h5>
+      <h5>Área</h5>
     </div>
     <div class="card-action">
+    {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'ventas' %}
       <button type="button" class="btn green lighten-2 waves-effect waves-light modal-trigger" data-target="mdsector">
         <i class="fa fa-plus"></i>
         <span>Agregar Area</span>
-      </button>
-      <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-model="dsfshow" ng-click="dsfshow=!dsfshow">
-        <i class="fa fa-search"></i>
-        <span>Buscar</span>
-      </button>
-      <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-click="getDSectorList()">
-        <i class="fa fa-refresh"></i>
-        <span>Actualizar</span>
       </button>
       <button type="button" class="btn green lighten-2 waves-effect waves-light modal-trigger" data-target="mexcel">
         <i class="fa fa-file-excel-o"></i>
@@ -63,6 +58,15 @@
       <button type="button" class="btn red darken-1 waves-effect waves-light right" ng-click="">
         <i class="fa fa-thumbs-o-up"></i>
         <span>Aprobar</span>
+      </button>
+    {% endif %}
+      <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-model="dsfshow" ng-click="dsfshow=!dsfshow">
+        <i class="fa fa-search"></i>
+        <span>Buscar</span>
+      </button>
+      <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-click="getDSectorList()">
+        <i class="fa fa-refresh"></i>
+        <span>Actualizar</span>
       </button>
     </div>
   </div>
@@ -94,9 +98,13 @@
                 <span class="right-align">$</span>
               </p>
             </div>
+      {% endverbatim %}
             <div class="card-action">
+            {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'ventas' %}
               <a class="red-text text-lighten-1" href="#"><i class="fa fa-trash"></i></a>
               <a class="amber-text text-darken-1" href="#"><i class="fa fa-pencil"></i> EDITAR</a>
+            {% endif %}
+      {% verbatim %}
               <a class="light-blue-text text-darken-1 right" href="/operations/area/{{x.fields.sgroup.pk}}/{{x.pk}}/{% endverbatim %}{{project.proyecto_id}}/{{sector.sector_id}}/{{sector.subproyecto_id}}/{% verbatim %}"><i class="fa fa-eye"></i> VER</a>
             </div>
           </div>

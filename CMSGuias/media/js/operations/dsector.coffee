@@ -516,6 +516,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
       data: $.param data
     .success (response) ->
       if response.status
+        $scope.calcMM()
         for x of $scope.lmodify
           if $scope.lmodify[x].fields.materials.pk is $event.currentTarget.parentElement.parentElement.children[1].innerText and $scope.lmodify[x].fields.brand.pk is data.brand and $scope.lmodify[x].fields.model.pk is data.model
             if data.name is "brand"
