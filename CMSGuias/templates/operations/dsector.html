@@ -19,6 +19,8 @@
 {% block content %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/getMaterials.css">
 <div ng-app="dsApp" ng-controller="DSCtrl">
+    <input type="hidden" id="perarea" value="{{ request.user.get_profile.empdni.charge.area|lower }}">
+    <input type="hidden" id="percharge" value="{{ request.user.get_profile.empdni.charge.cargos|lower }}">
     <div class="card-panel" style="background: {{ dsector.sgroup.colour }};">
         <div class="card-content">
             <a  href="{% url 'sectorgroup_view' dsector.sgroup.project_id dsector.sgroup.subproject_id dsector.sgroup.sector_id %}" class="btn grey lighten-5 grey-text text-darken-3"><i class="fa fa-chevron-left"></i> REGRESAR</a>
@@ -58,7 +60,7 @@
     <div class="card" id="card">
         <div class="card-action">
             {% if dsector.status == 'PE' %}
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="gui.smat=!gui.smat">
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="gui.smat=!gui.smat" ng-show="perarea == 'administrator' || perarea == 'ventas'">
                     <i class="fa fa-plus"></i>
                     <span class="hide-on-med-and-down">Agregar</span>
                 </button>
@@ -81,17 +83,17 @@
                     </button>
                 {% endif %}
             {% endif %}
-            <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-model="btnmodify" ng-init="btnmodify={% if modify|length > 0 %} true {% else %} false {% endif %}" ng-click="showModify()" ng-disabled="btnmodify">
+            <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-model="btnmodify" ng-init="btnmodify={% if modify|length > 0 %} true {% else %} false {% endif %}" ng-click="showModify()" ng-disabled="btnmodify" ng-show="perarea == 'administrator' || perarea == 'ventas'">
                 <i class="fa fa-pencil"></i>
                 <span class="hide-on-med-and-down"> Modificar Área</span>
             </button>
             {% if modify|length > 0 %}
-                <button type="button" class="btn red lighten-2 grey-text text-darken-3 waves-effect" ng-click="delAllModifyArea($event)">
+                <button type="button" class="btn red lighten-2 grey-text text-darken-3 waves-effect" ng-click="delAllModifyArea($event)" ng-show="perarea == 'administrator' || perarea == 'ventas'">
                     <i class="fa fa-fire"></i>
                     <i class="fa fa-trash"></i>
                     <span class="hide-on-med-and-down"> Eliminar Modificación</span>
                 </button>
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="approvedModify()" ng-disabled="(amsecp-((amstp-amnp)+ammp)) < 0">
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="approvedModify()" ng-disabled="(amsecp-((amstp-amnp)+ammp)) < 0" ng-show="perarea == 'administrator' || perarea == 'ventas'">
                     <i class="fa fa-pencil"></i>
                     <i class="fa fa-check-square-o"></i>
                     <span class="hide-on-med-and-down"> Aprobar Modificación</span>
@@ -338,7 +340,7 @@
                     <small>Tienes modificaciones pendientes.</small>
                 </h5>
                 {# calculate total #}
-                <table class="bordered responsive-table">
+                <table class="bordered responsive-table" ng-show="perarea == 'administrator' || perarea == 'ventas'">
                     <thead>
                         <tr>
                             <th style="max-width: 50px;">{{ dsector.sgroup.project.currency.moneda }}</th>
@@ -413,12 +415,12 @@
                         <td class="center-align">{{x.fields.materials.fields.unidad}}</td>
                         <td class="right-align col-2">{{x.fields.qorder}}</td>
                         <td class="right-align col-2">{{x.fields.quantity}}</td>
-                        <td class="right-align col-2">{{x.fields.ppurchase}}</td>
-                        <td class="right-align col-2">{{x.fields.psales}}</td>
-                        <td class="right-align col-2">{{x.fields.quantity * x.fields.ppurchase | number:2}}</td>
+                        <td class="right-align col-2" ng-show="perarea == 'administrator' || perarea == 'ventas'">{{x.fields.ppurchase}}</td>
+                        <td class="right-align col-2" ng-show="perarea == 'administrator' || perarea == 'ventas'">{{x.fields.psales}}</td>
+                        <td class="right-align col-2" ng-show="perarea == 'administrator' || perarea == 'ventas'">{{x.fields.quantity * x.fields.ppurchase | number:2}}</td>
                         <td class="center-align text-13">
-                            <a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="closeEditM($event)" class="waves-effect waves-light light-blue-text text-darken-3"><i class="fa fa-edit"></i></a>
-                            <a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="delEditM($event)" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" class="waves-effect waves-light red-text text-darken-1"><i class="fa fa-trash"></i></a>
+                            <a href="#!" style="padding: 2px 0px 2px 3px;" ng-show="perarea == 'administrator' || perarea == 'ventas'" ng-click="closeEditM($event)" class="waves-effect waves-light light-blue-text text-darken-3"><i class="fa fa-edit"></i></a>
+                            <a href="#!" style="padding: 2px 0px 2px 3px;" ng-show="perarea == 'administrator' || perarea == 'ventas'" ng-click="delEditM($event)" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" class="waves-effect waves-light red-text text-darken-1"><i class="fa fa-trash"></i></a>
                         </td>
                     </script>
                 {% endverbatim %}
@@ -433,7 +435,7 @@
                     <thead class="amber lighten-4">
                         <tr>
                             <th class="center-align">
-                                <i class="fa fa-angle-double-up cursor-hand" onClick="$('html,body').animate({scrollTop:500},400);"></i>
+                                <i class="fa fa-angle-double-up cursor-hand" onClick="$('html, body').animate({scrollTop: 500}, 400);"></i>
                             </th>
                             <th class="center-align">Código</th>
                             <th>Descripción</th>
@@ -442,9 +444,9 @@
                             <th class="center-align">Unidad</th>
                             <th class="right-align">Pendiente</th>
                             <th class="right-align">Vendido</th>
-                            <th class="right-align">Compra</th>
-                            <th class="right-align">Venta</th>
-                            <th class="right-align">Importe</th>
+                            <th class="right-align" ng-show="perarea == 'administrator' || perarea == 'ventas'">Compra</th>
+                            <th class="right-align" ng-show="perarea == 'administrator' || perarea == 'ventas'">Venta</th>
+                            <th class="right-align" ng-show="perarea == 'administrator' || perarea == 'ventas'">Importe</th>
                             <th class="center-align"><i class="fa fa-search cursor-hand" ng-model="fme" ng-click="fme=!fme"></i></th>
                         </tr>
                     </thead>
@@ -536,58 +538,6 @@
         </div>
     </div>
 </div>
-<!--<style type="text/css">
-    .matname-global {
-      border-radius: 4px;
-      max-height: 22em;
-      padding-left: 0;
-      margin-bottom: 0;
-      margin-top: 0;
-      overflow-y: auto;
-      overflow-x: hidden;
-      position: relative;
-      z-index: 0;
-    }
-    .matname-global li {
-      background-color: #fff;
-      border: 1px solid #ddd;
-      display: block;
-      margin-bottom: -1px;
-      padding: 2px 2px;
-      position: relative;
-    }
-    .matname-global li a {
-      cursor: pointer;
-      font-family: Arial sans-serif Helvetica;
-      font-size: 12px;
-      text-decoration: none;
-      width: 100%;
-    }
-    .matname-global li a:hover {
-      color: #000;
-    }
-    .matname-global li:first-child {
-      border-top-left-radius: 4px;
-      border-top-right-radius: 4px;
-    }
-    .matname-global li:last-child {
-      border-bottom-left-radius: 4px;
-      border-bottom-right-radius: 4px;
-    }
-    .matname-global .item-selected {
-      background-color: #ddd;
-      color: #000;
-    }
-    .matname-global li:hover,
-    .matname-global li:hover a {
-      background-color: #ddd;
-      color: #000;
-    }
-    iframe{
-        background: rgba(80,80,80,.9);
-        padding-bottom: 20px;
-    }
-</style>-->
 {% csrf_token %}
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>

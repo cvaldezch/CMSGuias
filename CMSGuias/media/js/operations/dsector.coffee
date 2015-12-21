@@ -15,6 +15,8 @@ app = angular.module 'dsApp', ['ngCookies']
 app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
+  $scope.perarea = ""
+  $scope.percharge = ""
   angular.element(document).ready ->
     $('.modal-trigger').leanModal()
     $table = $(".floatThead")
@@ -29,6 +31,8 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
       $scope.getListAreaMaterials()
       $scope.getProject()
       $scope.listTypeNip()
+    $scope.perarea = angular.element("#perarea")[0].value
+    $scope.percharge = angular.element("#percharge")[0].value
     # setTimeout ->
     #   console.log $scope.modify
     #   return
@@ -586,7 +590,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
   $scope.calcMM = ->
     $http.get "", params: samountp: true
     .success (response) ->
-      console.log response
+      # console.log response
       $scope.amnp = response.maarea.tpurchase
       $scope.amns = response.maarea.tsales
       $scope.ammp = response.mmodify.apurchase

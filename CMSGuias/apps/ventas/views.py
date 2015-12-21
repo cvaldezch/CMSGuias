@@ -23,17 +23,22 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 from CMSGuias.apps.home.models import *
 from CMSGuias.apps.operations.models import (
-                                            MetProject, Nipple, Deductive,
-                                            DeductiveInputs, DeductiveOutputs,
-                                            Letter, LetterAnexo)
+                                            MetProject,
+                                            Nipple,
+                                            Deductive,
+                                            DeductiveInputs,
+                                            DeductiveOutputs,
+                                            Letter,
+                                            LetterAnexo,
+                                            DSector)
 from CMSGuias.apps.almacen.models import (
-    Inventario,
-    Pedido,
-    Detpedido,
-    Niple,
-    GuiaRemision,
-    DetGuiaRemision,
-    NipleGuiaRemision)
+                                            Inventario,
+                                            Pedido,
+                                            Detpedido,
+                                            Niple,
+                                            GuiaRemision,
+                                            DetGuiaRemision,
+                                            NipleGuiaRemision)
 from .models import *
 from .forms import *
 from CMSGuias.apps.almacen.forms import addOrdersForm
@@ -842,6 +847,7 @@ class ProjectManager(JSONResponseMixin, View):
                 context['status'] = False
             return self.render_to_json_response(context)
 
+
 # Manager View Sectors
 class SectorManage(JSONResponseMixin, View):
     template_name = 'sales/managersec.html'
@@ -957,6 +963,11 @@ class SectorManage(JSONResponseMixin, View):
                             context['status'] = False
                             context['raise'] = ('No se han encontrado '
                                                 'materiales sin precios')
+
+                    if 'areasdsector' in request.GET:
+                        context['dsectors'] = DSector.objects.filter(
+                                            project_id=kwargs['pro']).count()
+                        context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)
                     context['status'] = False

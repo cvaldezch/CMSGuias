@@ -159,7 +159,7 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
         $("#mwithoutprices").openModal();
         console.log("Se encontraron materielas sin precio");
       } else {
-        swal("Alerta", "No se han encontrado materiales sin precios.", "warning");
+        swal("Felicidades!", "No se han encontrado materiales sin precios.", "success");
       }
     });
   };

@@ -195,10 +195,10 @@
                                     <span class="fa fa-object-group"></span>
                                     Programar Sector
                                 </a>
-                                <a href="{% url 'view_list_preordersop' project.proyecto_id subproject.subproyecto_id sector.sector_id %}" class="btn btn-success" target="_blank">
+                                <!--<a href="{% url 'view_list_preordersop' project.proyecto_id subproject.subproyecto_id sector.sector_id %}" class="btn btn-success" target="_blank">
                                     <span class="fa fa-list"></span>
                                     Lista de Pre Pedido a Almcén
-                                </a>
+                                </a>-->
                                 <button type="button" class="btn btn-success btn-show-orders-do">
                                     <span class="fa fa-list-alt"></span>
                                     Lista de Pedidos Almacén
@@ -218,7 +218,7 @@
                                         <span class="glyphicon glyphicon-remove"></span>
                                         Cancelar
                                     </button>
-                                    <button class="btn btn-danger text-black btn-update-meter">
+                                    <button type="button" id="msector" class="btn btn-danger text-black btn-update-meter">
                                         <span class="glyphicon glyphicon-link"></span>
                                         Modificar Sector
                                     </button>
@@ -602,16 +602,16 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group text-left">
-                                                    {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'operaciones' %}
-                                                            <button type="button" class="btn btn-default btn-generate-pre-orders">
+                                                    {#% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'operaciones' %#}
+                                                            <!--<button type="button" class="btn btn-default btn-generate-pre-orders">
                                                                 <span class="fa fa-columns"></span>
                                                                 Pre Pedido
-                                                            </button>
+                                                            </button>-->
                                                         <!-- </div> -->
-                                                    {% endif %}
+                                                    {#% endif %#}
                                                     {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'almacen' %} <!-- or user.get_profile.empdni.charge.area|lower == 'operaciones' -->
                                                     <!-- <div class="form-group"> -->
-                                                        <button class="btn btn-primary btn-show-orders">
+                                                        <button type="button" id="orderSt" class="btn btn-primary btn-show-orders">
                                                             <span class="fa fa-cubes"></span>
                                                             <span>Hacer Pedido Almacén</span>
                                                         </button>
@@ -867,7 +867,7 @@
                     {% if meter %}
                     <div class="panel panel-warning">
                         <div class="table-responsive">
-                            <table class="table table-condensed table-hover table-niple">
+                            <table class="table table-condensed table-hover table-niple" id="lnipples">
                             <caption class="text-left">
                                 <h4>Lista de Niples</h4>
                             </caption>

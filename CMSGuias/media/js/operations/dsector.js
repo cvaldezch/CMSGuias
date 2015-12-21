@@ -21,6 +21,8 @@ app = angular.module('dsApp', ['ngCookies']).config(function($httpProvider) {
 app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+  $scope.perarea = "";
+  $scope.percharge = "";
   angular.element(document).ready(function() {
     var $table;
     $('.modal-trigger').leanModal();
@@ -39,6 +41,8 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
       $scope.getProject();
       $scope.listTypeNip();
     }
+    $scope.perarea = angular.element("#perarea")[0].value;
+    $scope.percharge = angular.element("#percharge")[0].value;
   });
   $scope.getListAreaMaterials = function() {
     var data;
@@ -681,7 +685,6 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
         samountp: true
       }
     }).success(function(response) {
-      console.log(response);
       $scope.amnp = response.maarea.tpurchase;
       $scope.amns = response.maarea.tsales;
       $scope.ammp = response.mmodify.apurchase;

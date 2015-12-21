@@ -181,6 +181,7 @@ $(document).ready ->
     .mouseenter ->
         $(@).floatThead "reflow"
     getPercentAttend()
+    getCountDSector()
     return
 
 tableUp = (event) ->
@@ -2617,4 +2618,14 @@ saveWithoutPrice = (event) ->
           showConfirmButton: false
           timer: 2600
         return
+getCountDSector = ->
+  data =
+    areasdsector: true
+  $.getJSON '', data, (response) ->
+    if response.status
+      console.log response
+      if response.dsectors
+        $("#msector, #orderSt, #lnipples").hide()
+      return
+    return
   return

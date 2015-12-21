@@ -18,6 +18,8 @@
 {% endblock menu %}
 {% block content %}
 <div ng-app="programingApp" ng-controller="programingCtrl">
+  <input type="hidden" ng-model="area" ng-value="{{ request.user.get_profile.empdni.charge.area|lower }}">
+  <input type="hidden" ng-model="charge" ng-value="{{ request.user.get_profile.empdni.charge.cargos|lower }}">
   <h4 class="center-align">{{ project.proyecto_id }} {{ project.nompro }}</h4>
   <h5 class="center-align">{{ sector.sector_id }} - {{ sector.nomsec }}</h5>
   <a href="{% url 'managersec_view' project.proyecto_id sector.subproyecto_id sector.sector_id %}" class="btn grey lighten-5 grey-text text-darken-3">

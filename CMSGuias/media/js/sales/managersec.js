@@ -1,4 +1,4 @@
-var addListCusSectors, addMaterial, addMaterialUpdateMeter, addoldMaterialRemoveDeductive, aggregateMaterialsOutMeter, aggregate_nipples, approvedAdditional, approvedModify, backModify, backOrders, calMeter, calcAmountModifySector, calcAmountSector, calcDiffModify, changeRadio, changeRdoNip, changeSelectDeductiveMeter, changeTypeDeductive, chkNippChange, clearFieldsDeductiveMeter, commentToogle, copyBack, createTableDeductive, deductiveOneCancel, delAllMaterialDeductiveGlobal, delMaterials, delPlane, delUnitDeductiveGlobal, deleteAllUpdateMeter, deleteMaterialUpdateMeter, delete_all_temp_nipples, dellAllMaterial, displayResultTable, editBrandandModel, editMaterials, generateDeductiveMeter, generateOrders, getPercentAttend, listMaterials, list_temp_nipples, loadMaterials, loadSecandSub, loadSector, loadsAccounts, nextOrders, nippleDelOne, openAddMaterial, openBrand, openModel, panelPlanes, pasteAllLeft, pasteAllRight, pasteMaterials, pasteOneLeft, pasteOneRight, publisherCommnet, readerPrices, savePreOrders, saveWithoutPrice, saved_or_update_nipples, searchDescDeductiveGlobal, selectChoiseOrder, sendAlertModified, showEditComment, showGuideByProyect, showHideTbody, showInitDeductive, showListNipp, showListPreOrders, showModalSetPrices, showModify, showOrders, showOrdersByProyect, showPanelAddMateialsOldDeductiveGlobal, showPreOrders, showTableDeductiveGlobal, show_edit_nipple, showaddtableoutdeductivemeter, startModidfy, tableUp, updateCommentMat, updateMaterialUpdateMeter, uploadPlane, valMax, valQuantityPreOrders, validBlurNumber, validOrders, validQuantityPreOrder, viewFull;
+var addListCusSectors, addMaterial, addMaterialUpdateMeter, addoldMaterialRemoveDeductive, aggregateMaterialsOutMeter, aggregate_nipples, approvedAdditional, approvedModify, backModify, backOrders, calMeter, calcAmountModifySector, calcAmountSector, calcDiffModify, changeRadio, changeRdoNip, changeSelectDeductiveMeter, changeTypeDeductive, chkNippChange, clearFieldsDeductiveMeter, commentToogle, copyBack, createTableDeductive, deductiveOneCancel, delAllMaterialDeductiveGlobal, delMaterials, delPlane, delUnitDeductiveGlobal, deleteAllUpdateMeter, deleteMaterialUpdateMeter, delete_all_temp_nipples, dellAllMaterial, displayResultTable, editBrandandModel, editMaterials, generateDeductiveMeter, generateOrders, getCountDSector, getPercentAttend, listMaterials, list_temp_nipples, loadMaterials, loadSecandSub, loadSector, loadsAccounts, nextOrders, nippleDelOne, openAddMaterial, openBrand, openModel, panelPlanes, pasteAllLeft, pasteAllRight, pasteMaterials, pasteOneLeft, pasteOneRight, publisherCommnet, readerPrices, savePreOrders, saveWithoutPrice, saved_or_update_nipples, searchDescDeductiveGlobal, selectChoiseOrder, sendAlertModified, showEditComment, showGuideByProyect, showHideTbody, showInitDeductive, showListNipp, showListPreOrders, showModalSetPrices, showModify, showOrders, showOrdersByProyect, showPanelAddMateialsOldDeductiveGlobal, showPreOrders, showTableDeductiveGlobal, show_edit_nipple, showaddtableoutdeductivemeter, startModidfy, tableUp, updateCommentMat, updateMaterialUpdateMeter, uploadPlane, valMax, valQuantityPreOrders, validBlurNumber, validOrders, validQuantityPreOrder, viewFull;
 
 $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
@@ -197,6 +197,7 @@ $(document).ready(function() {
     return $(this).floatThead("reflow");
   });
   getPercentAttend();
+  getCountDSector();
 });
 
 tableUp = function(event) {
@@ -2777,7 +2778,7 @@ saveWithoutPrice = function(event) {
   if (zero === 0) {
     context.list = JSON.stringify(list);
     context.csrfmiddlewaretoken = $("[name=csrfmiddlewaretoken]").val();
-    $.post("", context, function(response) {
+    return $.post("", context, function(response) {
       if (response.status) {
         setTimeout(function() {
           return location.reload();
@@ -2800,4 +2801,20 @@ saveWithoutPrice = function(event) {
       }
     });
   }
+};
+
+getCountDSector = function() {
+  var data;
+  data = {
+    areasdsector: true
+  };
+  $.getJSON('', data, function(response) {
+    if (response.status) {
+      console.log(response);
+      if (response.dsectors) {
+        $("#msector, #orderSt, #lnipples").hide();
+      }
+      return;
+    }
+  });
 };

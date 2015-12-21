@@ -137,7 +137,7 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
         console.log "Se encontraron materielas sin precio"
         return
       else
-        swal "Alerta", "No se han encontrado materiales sin precios.", "warning"
+        swal "Felicidades!", "No se han encontrado materiales sin precios.", "success"
         return
     return
   $scope.savePricewithout = ($event)->
