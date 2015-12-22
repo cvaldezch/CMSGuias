@@ -740,7 +740,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
       var data;
       if (isConfirm) {
         data = {
-          apporved: true
+          approvedModify: true
         };
         $http({
           url: "",

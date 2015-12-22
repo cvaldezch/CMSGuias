@@ -590,7 +590,45 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                     context['status'] = True
                 if 'approvedModify' in request.POST:
                     try:
-                        pass
+                        lm = MMetrado.objects.filter(dsector_id=kwargs['area'])
+                        mn = DSMetrado.objects.filter(
+                                dsector_id=kwargs['area'])
+                        kc = globalVariable.get_Token()
+                        for o in mn:
+                            # save history and delete area
+                            his = HistoryDSMetrado()
+                            his.qcode = kc
+                            his.dsector_id = kwargs['area']
+                            his.materials_id = o.materials_id
+                            his.brand_id = o.brand_id
+                            his.model_id = o.model_id
+                            his.quantity = o.quantity
+                            his.qorder = o.qorder
+                            his.qguide = o.qguide
+                            his.ppurchase = o.ppurchase
+                            his.psales = o.psales
+                            his.comment = o.comment
+                            his.tag = o.tag
+                            his.nipple = o.tag
+                            his.flag = o.flag
+                            his.save()
+                            o.delete()
+                        for x in lm:
+                            ds = DSMetrado()
+                            ds.dsector_id = kwargs['area']
+                            ds.materials_id = x.materials_id
+                            ds.brand_id = x.brand_id
+                            ds.model_id = x.model_id
+                            ds.quantity = x.quantity
+                            ds.qorder = x.qorder
+                            ds.qguide = x.qguide
+                            ds.ppurchase = x.ppurchase
+                            ds.psales = x.psales
+                            ds.comment = x.comment
+                            ds.tag = x.tag
+                            ds.flag = x.flag
+                            ds.nipple = x.nipple
+                            ds.save()
                     except Exception, e:
                         context['raise'] = str(e)
                         context['status'] = False

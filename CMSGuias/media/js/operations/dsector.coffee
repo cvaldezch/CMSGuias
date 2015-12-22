@@ -642,7 +642,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
     , (isConfirm) ->
       if isConfirm
         data =
-          apporved: true
+          approvedModify: true
         $http
           url: ""
           method: "post"

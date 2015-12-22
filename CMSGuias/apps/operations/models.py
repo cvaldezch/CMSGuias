@@ -327,7 +327,7 @@ class MMetrado(models.Model):
 
 
 class HistoryDSMetrado(models.Model):
-    qcode = models.CharField(max_length=16)
+    qcode = models.CharField(max_length=6)
     register = models.DateTimeField(auto_now=True)
     dsector = models.ForeignKey(DSector, to_field='dsector_id')
     materials = models.ForeignKey(Materiale, to_field='materiales_id')
