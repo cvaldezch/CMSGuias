@@ -589,30 +589,66 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                     mm.save()
                     context['status'] = True
                 if 'approvedModify' in request.POST:
-                    try:
-                        lm = MMetrado.objects.filter(dsector_id=kwargs['area'])
-                        mn = DSMetrado.objects.filter(
-                                dsector_id=kwargs['area'])
-                        kc = globalVariable.get_Token()
-                        for o in mn:
-                            # save history and delete area
-                            his = HistoryDSMetrado()
-                            his.qcode = kc
-                            his.dsector_id = kwargs['area']
-                            his.materials_id = o.materials_id
-                            his.brand_id = o.brand_id
-                            his.model_id = o.model_id
-                            his.quantity = o.quantity
-                            his.qorder = o.qorder
-                            his.qguide = o.qguide
-                            his.ppurchase = o.ppurchase
-                            his.psales = o.psales
-                            his.comment = o.comment
-                            his.tag = o.tag
-                            his.nipple = o.tag
-                            his.flag = o.flag
-                            his.save()
+                    lm = MMetrado.objects.filter(dsector_id=kwargs['area'])
+                    mn = DSMetrado.objects.filter(
+                            dsector_id=kwargs['area'])
+                    kc = globalVariable.get_Token()
+                    for o in mn:
+                        # save history and delete area
+                        his = HistoryDSMetrado()
+                        his.qcode = kc
+                        his.dsector_id = kwargs['area']
+                        his.materials_id = o.materials_id
+                        his.brand_id = o.brand_id
+                        his.model_id = o.model_id
+                        his.quantity = o.quantity
+                        his.qorder = o.qorder
+                        his.qguide = o.qguide
+                        his.ppurchase = o.ppurchase
+                        his.psales = o.psales
+                        his.comment = o.comment
+                        his.tag = o.tag
+                        his.nipple = o.nipple
+                        his.flag = o.flag
+                        his.save()
+                        try:
+                            m = lm.get(
+                                dsector_id=kwargs['area'],
+                                materials_id=o.materials_id,
+                                brand_id=o.brand_id,
+                                model_id=o.model_id)
+                            ds = DSMetrado()
+                            ds.dsector_id = kwargs['area']
+                            ds.materials_id = m.materials_id
+                            ds.brand_id = m.brand_id
+                            ds.model_id = m.model_id
+                            ds.quantity = m.quantity
+                            if m.quantity < o.quantity:
+                                ds.qorder = (m.qorder-(o.quantity-m.quantity))
+                            elif m.quantity > o.quantity:
+                                ds.qorder = ((m.quantity-o.quantity)+m.qorder)
+                            else:
+                                ds.qorder = m.qorder
+                            ds.qguide = m.qguide
+                            ds.ppurchase = m.ppurchase
+                            ds.psales = m.psales
+                            ds.comment = m.comment
+                            if ds.qorder == ds.quantity:
+                                ds.tag = '0'
+                            if (ds.qorder < ds.quantity) and (ds.qorder > 0):
+                                ds.tag = '1'
+                            if ds.qorder <= 0:
+                                ds.qorder = 0
+                                ds.tag = '2'
+                            ds.flag = m.flag
+                            ds.nipple = m.nipple
                             o.delete()
+                            ds.save()
+                        except DSMetrado.DoesNotExist:
+                            o.delete()
+                    lds = DSMetrado.objects.filter(
+                            dsector_id=kwargs['area'])
+                    if lds.count() != lm.count():
                         for x in lm:
                             ds = DSMetrado()
                             ds.dsector_id = kwargs['area']
@@ -620,18 +656,22 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                             ds.brand_id = x.brand_id
                             ds.model_id = x.model_id
                             ds.quantity = x.quantity
-                            ds.qorder = x.qorder
+                            ds.qorder = x.quantity
                             ds.qguide = x.qguide
                             ds.ppurchase = x.ppurchase
                             ds.psales = x.psales
                             ds.comment = x.comment
-                            ds.tag = x.tag
+                            if x.quantity == (x.qorder):
+                                ds.tag = '2'
+                            if x.qorder < x.quantity and (x.qorder > 0):
+                                ds.tag = '1'
+                            if x.qorder == 0 and qguide == 0:
+                                ds.tag = '0'
                             ds.flag = x.flag
                             ds.nipple = x.nipple
                             ds.save()
-                    except Exception, e:
-                        context['raise'] = str(e)
-                        context['status'] = False
+                    lm.delete()
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

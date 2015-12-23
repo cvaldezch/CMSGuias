@@ -726,7 +726,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
       }
     });
   };
-  $scope.approvedModify = function() {
+  $scope.approvedModify = function($event) {
     swal({
       title: "Aprobar modificación?",
       text: "Desea aprobar las modificaciones del área?",
@@ -739,6 +739,8 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
     }, function(isConfirm) {
       var data;
       if (isConfirm) {
+        $event.currentTarget.disabled = true;
+        $event.currentTarget.innerHTML = "<i class=\"fa fa-spinner fa-pulse\"></i> Procesando";
         data = {
           approvedModify: true
         };
@@ -752,6 +754,9 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
             $timeout((function() {
               location.reload();
             }), 800);
+          } else {
+            $event.currentTarget.className = "btn red grey-text text-darken-1";
+            $event.currentTarget.innerHTML = "<i class=\"fa fa-timescircle\"></i> Error!";
           }
         });
       }

@@ -629,7 +629,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
             return
         return
     return
-  $scope.approvedModify = ->
+  $scope.approvedModify = ($event) ->
     swal
       title: "Aprobar modificación?"
       text: "Desea aprobar las modificaciones del área?"
@@ -641,6 +641,8 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
       closeOnCancel: true
     , (isConfirm) ->
       if isConfirm
+        $event.currentTarget.disabled = true
+        $event.currentTarget.innerHTML = """<i class="fa fa-spinner fa-pulse"></i> Procesando"""
         data =
           approvedModify: true
         $http
@@ -654,6 +656,10 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
               location.reload()
               return
             ), 800
+            return
+          else
+            $event.currentTarget.className = "btn red grey-text text-darken-1"
+            $event.currentTarget.innerHTML = """<i class="fa fa-timescircle"></i> Error!"""
             return
         return
     return

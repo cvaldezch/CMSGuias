@@ -93,7 +93,7 @@
                     <i class="fa fa-trash"></i>
                     <span class="hide-on-med-and-down"> Eliminar Modificación</span>
                 </button>
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="approvedModify()" ng-disabled="(amsecp-((amstp-amnp)+ammp)) < 0" ng-show="perarea == 'administrator' || perarea == 'ventas'">
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="approvedModify($event)" ng-disabled="(amsecp-((amstp-amnp)+ammp)) < 0" ng-show="perarea == 'administrator' || perarea == 'ventas'">
                     <i class="fa fa-pencil"></i>
                     <i class="fa fa-check-square-o"></i>
                     <span class="hide-on-med-and-down"> Aprobar Modificación</span>
