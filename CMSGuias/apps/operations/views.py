@@ -646,32 +646,35 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                             ds.save()
                         except DSMetrado.DoesNotExist:
                             o.delete()
-                    lds = DSMetrado.objects.filter(
-                            dsector_id=kwargs['area'])
+                    lds = DSMetrado.objects.filter(dsector_id=kwargs['area'])
                     if lds.count() != lm.count():
                         for x in lm:
-                            ds = DSMetrado()
-                            ds.dsector_id = kwargs['area']
-                            ds.materials_id = x.materials_id
-                            ds.brand_id = x.brand_id
-                            ds.model_id = x.model_id
-                            ds.quantity = x.quantity
-                            ds.qorder = x.quantity
-                            ds.qguide = x.qguide
-                            ds.ppurchase = x.ppurchase
-                            ds.psales = x.psales
-                            ds.comment = x.comment
-                            if x.quantity == (x.qorder):
-                                ds.tag = '2'
-                            if x.qorder < x.quantity and (x.qorder > 0):
-                                ds.tag = '1'
-                            if x.qorder == 0 and qguide == 0:
+                            try:
+                                DSMetrado.objects.get(
+                                    dsector_id=kwargs['area'],
+                                    materials_id=x.materials_id,
+                                    brand_id=x.brand_id,
+                                    model_id=x.model_id)
+                            except DSMetrado.DoesNotExist:
+                                ds = DSMetrado()
+                                ds.dsector_id = kwargs['area']
+                                ds.materials_id = x.materials_id
+                                ds.brand_id = x.brand_id
+                                ds.model_id = x.model_id
+                                ds.quantity = x.quantity
+                                ds.qorder = x.quantity
+                                ds.qguide = 1
+                                ds.ppurchase = x.ppurchase
+                                ds.psales = x.psales
+                                ds.comment = x.comment
                                 ds.tag = '0'
-                            ds.flag = x.flag
-                            ds.nipple = x.nipple
-                            ds.save()
+                                ds.flag = x.flag
+                                ds.nipple = x.nipple
+                                ds.save()
                     lm.delete()
                     context['status'] = True
+                if 'approvedAreas' in request.POST:
+                    pass
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

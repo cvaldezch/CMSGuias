@@ -182,6 +182,36 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
       }
     });
   };
+  $scope.approvedAreas = function($event) {
+    swal({
+      title: "Aprobar Áreas?",
+      text: "desea aprobar realmente todas las áreas.",
+      cancelShowButton: true,
+      confirmButtonText: "Si! aprobar",
+      confirmButotnColor: "#bb66dd",
+      closeOnConfirm: true,
+      closeOnCancel: true
+    }, function(isConfirm) {
+      var data;
+      if (isConfirm) {
+        data = {
+          approvedAreas: true
+        };
+        $http({
+          url: '',
+          method: 'post',
+          data: $.parma(data)
+        }, function(response) {
+          if (response.status) {
+            Materialize.toast("Áreas aprobadas!", 2600);
+            console.log(response);
+          } else {
+            swal("Error!", "No se a aprobado las áreas.", "error");
+          }
+        });
+      }
+    });
+  };
 });
 
 hextorbga = function(hex, alf) {

@@ -156,6 +156,33 @@ app.controller 'programingCtrl', ($scope, $http, $cookies) ->
         swal "Error", "No se guardo el precio, Intentelo nuevamente.", "warning"
         return
     return
+  $scope.approvedAreas = ($event) ->
+    swal
+      title: "Aprobar Áreas?"
+      text: "desea aprobar realmente todas las áreas."
+      cancelShowButton: true
+      confirmButtonText: "Si! aprobar"
+      confirmButotnColor: "#bb66dd"
+      closeOnConfirm: true
+      closeOnCancel: true
+    , (isConfirm) ->
+      if isConfirm
+        data =
+          approvedAreas: true
+        $http
+          url: ''
+          method: 'post'
+          data: $.parma data
+        , (response) ->
+          if response.status
+            Materialize.toast "Áreas aprobadas!", 2600
+            console.log response
+            return
+          else
+            swal "Error!", "No se a aprobado las áreas.", "error"
+            return
+        return
+    return
   return
 
 hextorbga = (hex, alf=1) ->
