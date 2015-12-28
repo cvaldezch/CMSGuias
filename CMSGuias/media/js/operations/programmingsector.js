@@ -186,26 +186,31 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
     swal({
       title: "Aprobar Áreas?",
       text: "desea aprobar realmente todas las áreas.",
-      cancelShowButton: true,
+      type: "warning",
+      showCancelButton: true,
       confirmButtonText: "Si! aprobar",
-      confirmButotnColor: "#bb66dd",
+      confirmButtonColor: "#dd6b55",
       closeOnConfirm: true,
       closeOnCancel: true
     }, function(isConfirm) {
       var data;
       if (isConfirm) {
+        $event.currentTarget.disabled = true;
+        $event.currentTarget.innerHTML = "<i class=\"fa fa-spinner fa-pulse\"></i> Procesando";
         data = {
           approvedAreas: true
         };
         $http({
           url: '',
           method: 'post',
-          data: $.parma(data)
-        }, function(response) {
+          data: $.param(data)
+        }).success(function(response) {
           if (response.status) {
             Materialize.toast("Áreas aprobadas!", 2600);
             console.log(response);
+            location.reload();
           } else {
+            $event.currentTarget.innerHTML = "<i class=\"fa fa-times\"></i> Error";
             swal("Error!", "No se a aprobado las áreas.", "error");
           }
         });

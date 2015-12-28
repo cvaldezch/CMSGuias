@@ -55,8 +55,7 @@ class SGroupForm(forms.ModelForm):
             'register',
             'datestart',
             'dateend',
-            'flag'
-        }
+            'flag'}
 
 
 class DSectorForm(forms.ModelForm):
@@ -65,8 +64,8 @@ class DSectorForm(forms.ModelForm):
         exclude = {
             'dsector_id',
             'project',
+            'sector_id',
             'register',
             'observation',
             'status',
-            'flag',
-        }
+            'flag'}

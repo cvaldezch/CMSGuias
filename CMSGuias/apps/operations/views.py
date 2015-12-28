@@ -9,7 +9,7 @@ from django.core import serializers
 # from django.contrib.auth.mod import User
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, Count
 from django.shortcuts import render_to_response, render
 from django.utils import simplejson
 from django.utils.decorators import method_decorator
@@ -178,6 +178,12 @@ class ProgramingProject(JSONResponseMixin, View):
                     subproyecto_id=kwargs['sub'] if kwargs[
                         'sub'] is None else None,
                     sector_id=kwargs['sec'])
+                ds = DSector.objects.filter(
+                        project_id=kwargs['pro'],
+                        sector_id=kwargs['sec'])
+                t = ds.count()
+                ts = ds.filter(status='AC').count()
+                context['status'] = 'AC' if t == ts else 'PE'
                 return render(
                     request,
                     'operations/programinggroup.html',
@@ -230,7 +236,6 @@ class ProgramingProject(JSONResponseMixin, View):
                             form = DSectorForm(request.POST, request.FILES)
                     except ObjectDoesNotExist as e:
                         form = DSectorForm(request.POST, request.FILES)
-                    print form
                     if form.is_valid():
                         if 'dsector_id' not in request.POST:
                             add = form.save(commit=False)
@@ -239,6 +244,7 @@ class ProgramingProject(JSONResponseMixin, View):
                                     request.POST['sgroup'])
                             add.dsector_id = key.strip()
                             add.project_id = kwargs['pro']
+                            add.sector_id = kwargs['sec']
                             add.save()
                         else:
                             form.save()
@@ -283,6 +289,17 @@ class ProgramingProject(JSONResponseMixin, View):
                         dsm.update(ppurchase=request.POST['value'])
                     if request.POST['field'] == 'sales':
                         dsm.update(psales=request.POST['value'])
+                    context['status'] = True
+                if 'approvedAreas' in request.POST:
+                    # print kwargs['pro'], kwargs['sec']
+                    SGroup.objects.filter(
+                        project_id=kwargs['pro'],
+                        sector_id=kwargs['sec']).update(
+                            status='AC')
+                    DSector.objects.filter(
+                        project_id=kwargs['pro'],
+                        sector_id=kwargs['sec']).update(
+                            status='AC')
                     context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
@@ -673,8 +690,6 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                                 ds.save()
                     lm.delete()
                     context['status'] = True
-                if 'approvedAreas' in request.POST:
-                    pass
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

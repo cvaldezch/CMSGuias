@@ -228,6 +228,7 @@ class SGroup(models.Model):
     observation = models.TextField(null=True, blank=True)
     colour = models.CharField(max_length=21, blank=True, null=True)
     flag = models.BooleanField(default=True)
+    status = models.CharField(max_length=2, default='PE')
 
     audit_log = AuditLog()
 
@@ -249,10 +250,17 @@ class DSector(models.Model):
                                     default='PRAA000SG0000DS000')
     sgroup = models.ForeignKey(SGroup, to_field='sgroup_id')
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
+    sector = models.ForeignKey(
+                               Sectore,
+                               to_field='sector_id',
+                               null=True,
+                               blank=True)
     name = models.CharField(max_length=255)
     plane = models.FileField(
                             upload_to=url,
-                            max_length=200, null=True, blank=True)
+                            max_length=200,
+                            null=True,
+                            blank=True)
     register = models.DateTimeField(auto_now_add=True)
     datestart = models.DateField(null=True)
     dateend = models.DateField(null=True)

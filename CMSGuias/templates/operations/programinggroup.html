@@ -1,4 +1,4 @@
-{% extends "basemd.html" %}
+{% extends 'basemd.html' %}
 {% block title %}
   Programing Sector
 {% endblock title %}
@@ -28,13 +28,15 @@
   </a>
   <div class="card-panel">
     {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'ventas' %}
-    <div class="card-content">
-      <h5>Grupo</h5>
-    </div>
+      <div class="card-content">
+        <h5>Grupo</h5>
+      </div>
       <div class="card-action">
+      {% if status == 'PE' %}
         <button type="button" class="btn blue blue-lighten-3 waves-effect waves-light modal-trigger" data-target="mgroup">
           <i class="fa fa-plus"></i> Agregar Grupo
         </button>
+      {% endif %}
         <button type="button" class="btn blue blue-lighten-3" ng-click="listGroup()">
           <i class="fa fa-list"></i> Lista Grupo
         </button>
@@ -45,22 +47,24 @@
     </div>
     <div class="card-action">
     {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'ventas' %}
-      <button type="button" class="btn green lighten-2 waves-effect waves-light modal-trigger" data-target="mdsector">
-        <i class="fa fa-plus"></i>
-        <span>Agregar Area</span>
-      </button>
-      <button type="button" class="btn green lighten-2 waves-effect waves-light modal-trigger" data-target="mexcel">
-        <i class="fa fa-file-excel-o"></i>
-        <span>Archivo</span>
-      </button>
-      <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-click="getPrices()">
-        <i class="fa fa-dollar"></i>
-        <span>Validar Precios</span>
-      </button>
-      <button type="button" class="btn red darken-1 waves-effect waves-light right" ng-click="">
-        <i class="fa fa-thumbs-o-up"></i>
-        <span>Aprobar</span>
-      </button>
+      {% if status == 'PE' %}
+        <button type="button" class="btn green lighten-2 waves-effect waves-light modal-trigger" data-target="mdsector">
+          <i class="fa fa-plus"></i>
+          <span>Agregar Area</span>
+        </button>
+        <button type="button" class="btn green lighten-2 waves-effect waves-light modal-trigger" data-target="mexcel">
+          <i class="fa fa-file-excel-o"></i>
+          <span>Archivo</span>
+        </button>
+        <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-click="getPrices()">
+          <i class="fa fa-dollar"></i>
+          <span>Validar Precios</span>
+        </button>
+        <button type="button" class="btn red darken-1 waves-effect waves-light right" ng-click="approvedAreas($event)">
+          <i class="fa fa-thumbs-o-up"></i>
+          <span>Aprobar</span>
+        </button>
+      {% endif %}
     {% endif %}
       <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-model="dsfshow" ng-click="dsfshow=!dsfshow">
         <i class="fa fa-search"></i>
