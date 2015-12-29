@@ -83,11 +83,21 @@
                     </button>
                 {% endif %}
             {% endif %}
-            <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-model="btnmodify" ng-init="btnmodify={% if modify|length > 0 %} true {% else %} false {% endif %}" ng-click="showModify()" ng-disabled="btnmodify" ng-show="perarea == 'administrator' || perarea == 'ventas'">
-                <i class="fa fa-pencil"></i>
-                <span class="hide-on-med-and-down"> Modificar Área</span>
-            </button>
+            {% if dsector.status == 'AC' %}
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-model="btnmodify" ng-init="btnmodify={% if modify|length > 0 %} true {% else %} false {% endif %}" ng-click="showModify()" ng-disabled="btnmodify" ng-show="perarea == 'administrator' || perarea == 'ventas'">
+                    <i class="fa fa-pencil"></i>
+                    <span class="hide-on-med-and-down"> Modificar Área</span>
+                </button>
+                <button type="button" class="btn blue lighten-1">
+                    <i class="fa fa-list"></i>
+                    PEDIDO ALMACÉN
+                </button>
+            {% endif %}
             {% if modify|length > 0 %}
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="gui.smat=!gui.smat" ng-show="perarea == 'administrator' || perarea == 'ventas'">
+                    <i class="fa fa-plus"></i>
+                    <span class="hide-on-med-and-down">Agregar</span>
+                </button>
                 <button type="button" class="btn red lighten-2 grey-text text-darken-3 waves-effect" ng-click="delAllModifyArea($event)" ng-show="perarea == 'administrator' || perarea == 'ventas'">
                     <i class="fa fa-fire"></i>
                     <i class="fa fa-trash"></i>
@@ -173,6 +183,7 @@
                 {% verbatim %}
                     <script type="text/ng-template" id="areatmp.html">
                         <td class="center-align">{{$index + 1}}</td>
+                        <td><input type="checkbox">dd</td>
                         <td class="center-align text-9">{{x.fields.materials.pk}}</td>
                         <td>{{x.fields.materials.fields.matnom}} {{x.fields.materials.fields.matmed}}</td>
                         <td class="center-align">{{x.fields.brand.fields.brand}}</td>
@@ -189,11 +200,11 @@
                               <i class="fa fa-cog"></i>
                             </a>
                             <ul id="ba{{x.fields.materials.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" class="dropdown-content">
-                              <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="editDMaterial($event)" data-materials="{{x.fields.materials.pk}}" data-quantity="{{x.fields.quantity}}" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" class="waves-effect waves-light light-blue-text text-darken-3"><small><i class="fa fa-edit"></i> Editar</small></a></li>
+                              <li ng-hide="x.fields.dsector.fields.status == 'AC'"><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="editDMaterial($event)" data-materials="{{x.fields.materials.pk}}" data-quantity="{{x.fields.quantity}}" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" class="waves-effect waves-light light-blue-text text-darken-3"><small><i class="fa fa-edit"></i> Editar</small></a></li>
                               <li class="divider"></li>
-                              <li><a href="#!" style="padding: 2px 0px 2px 3px;" class="waves-effect waves-light red-text text-darken-1" data-materials="{{x.fields.materials.pk}}" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" ng-click="deleteDMaterial($event)"><small><i class="fa fa-trash"></i> Eliminar</small></a></li>
+                              <li ng-hide="x.fields.dsector.fields.status == 'AC'"><a href="#!" style="padding: 2px 0px 2px 3px;" class="waves-effect waves-light red-text text-darken-1" data-materials="{{x.fields.materials.pk}}" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" ng-click="deleteDMaterial($event)"><small><i class="fa fa-trash"></i> Eliminar</small></a></li>
                               <li class="divider"></li>
-                              <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-i-cursor"></i> Observación</small></a></li>
+                              <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="showCommentMat()" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-i-cursor"></i> Observación</small></a></li>
                               <li class="divider"></li>
                               <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="availableNipple()" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-pause fa-rotate-90"></i> Niple</small></a></li>
                             </ul>
@@ -213,6 +224,7 @@
                             <th class="center-align">
                                 <i class="fa fa-angle-double-up cursor-hand" onClick="$('html,body').animate({scrollTop:500},400);"></i>
                             </th>
+                            <th>check</th>
                             <th class="center-align">Código</th>
                             <th>Descripción</th>
                             <th class="center-align">Marca</th>
@@ -246,7 +258,7 @@
                             <button type="buttom" class="modal-action modal-close btn left grey lighten-5 grey-text text-darken-3">
                                 <i class="fa fa-times"></i> Cerrar
                             </button>
-                            <button type="buttom" class="modal-action modal-close btn green lighten-1 grey-text text-darken-3">
+                            <button type="buttom"  class="btn green lighten-1 grey-text text-darken-3">
                                 <i class="fa fa-i-cursor"></i>
                                 GUARDAR
                             </button>
@@ -534,6 +546,27 @@
             <button type="button" class="btn red darken-1">
                 <i class="fa fa-upload"></i>
                 Cargar
+            </button>
+        </div>
+    </div>
+    <div class="modal" id="commentm">
+        <div class="modal-content">
+            {% verbatim %}
+            <h5>{{lblmcomment}}</h5>
+            <div class="input-field col s12">
+                <textarea id="observationmat" class="materialize-textarea" ng-model="mmc">{{mmc}}</textarea>
+                <label ng-class="{'active': mmc}" for="observationmat">Observación</label>
+            </div>
+            {% endverbatim %}
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn grey lighten-4 grey-text text-darken-3 left modal-action modal-close">
+                <i class="fa fa-times"></i>
+                Cancelar
+            </button>
+            <button type="button" id="mcs" class="btn green lighten-1 grey-text text-darken-3" ng-click="saveComment($event)">
+                <i class="fa fa-floppy-o"></i>
+                GUARDAR
             </button>
         </div>
     </div>

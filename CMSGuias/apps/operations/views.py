@@ -184,6 +184,7 @@ class ProgramingProject(JSONResponseMixin, View):
                 t = ds.count()
                 ts = ds.filter(status='AC').count()
                 context['status'] = 'AC' if t == ts else 'PE'
+                print context, t, ts
                 return render(
                     request,
                     'operations/programinggroup.html',
@@ -320,7 +321,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                         DSMetrado.objects.filter(
                             dsector_id=kwargs['area']).order_by(
                             'materials__matnom'), relations=(
-                            'materials', 'brand', 'model',)))
+                            'materials', 'brand', 'model', 'dsector')))
                     context['status'] = True
                 if 'lstnipp' in request.GET:
                     context['nip'] = json.loads(
@@ -680,7 +681,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                                 ds.model_id = x.model_id
                                 ds.quantity = x.quantity
                                 ds.qorder = x.quantity
-                                ds.qguide = 1
+                                ds.qguide = 0
                                 ds.ppurchase = x.ppurchase
                                 ds.psales = x.psales
                                 ds.comment = x.comment
@@ -689,6 +690,15 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                                 ds.nipple = x.nipple
                                 ds.save()
                     lm.delete()
+                    context['status'] = True
+                if 'saveComment' in request.POST:
+                    dm = DSMetrado.objects.get(
+                        dsector_id=kwargs['area'],
+                        materials_id=request.POST['materials'],
+                        brand_id=request.POST['brand'],
+                        model_id=request.POST['model'])
+                    dm.comment = request.POST['comment']
+                    dm.save()
                     context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)

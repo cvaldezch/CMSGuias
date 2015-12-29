@@ -663,6 +663,38 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
             return
         return
     return
+  $scope.showCommentMat = ->
+    $("#commentm").openModal()
+    # console.log this
+    $("#mcs").val this.$parent.x.fields.materials.pk
+      .attr "data-brand", this.$parent.x.fields.brand.pk
+      .attr "data-model", this.$parent.x.fields.model.pk
+    $scope.mmc = this.$parent.x.fields.comment
+    console.log this.$parent.x.fields.comment
+    $scope.lblmcomment = "#{this.$parent.x.fields.materials.fields.matnom} #{this.$parent.x.fields.materials.fields.matmed}"
+    return
+  $scope.saveComment = ($event) ->
+    $d = $("#mcs")
+    data =
+      materials: $d.val()
+      brand: $d.attr "data-brand"
+      model: $d.attr "data-model"
+      comment: $scope.mmc
+      saveComment: true
+    $event.currentTarget.disabled = true
+    $event.currentTarget.innerHTML = """<i class="fa fa-spinner fa-pulse"></i> Procesando"""
+    $http
+      url: ""
+      method: "post"
+      data: $.param data
+    .success (response) ->
+      $event.currentTarget.disabled = false
+      $event.currentTarget.innerHTML = """<i class="fa fa-floppy-o"></i> GUARDAR"""
+      if response.status
+        $scope.mmc = ''
+        $("#commentm").closeModal()
+        return
+    return
   $scope.$watch 'ascsector', ->
     if $scope.ascsector
       $scope.fsl = true

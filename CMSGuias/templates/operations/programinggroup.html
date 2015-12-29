@@ -189,9 +189,9 @@
               <i class="fa fa-cogs"></i>
             </button>
             <ul id="{{x.pk}}" class="dropdown-content">
-              <li><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="showESG()" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-edit"></i> Editar</small></a></li>
+              <li ng-hide="x.fields.status == 'AC'"><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="showESG()" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-edit"></i> Editar</small></a></li>
               <li class="divider"></li>
-              <li><a href="#!" style="padding: 2px 0px 2px 3px;" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-trash"></i> Eliminar</small></a></li>
+              <li ng-hide="x.fields.status == 'AC'"><a href="#!" style="padding: 2px 0px 2px 3px;" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-trash"></i> Eliminar</small></a></li>
             </ul>
           </td>
         </script>
