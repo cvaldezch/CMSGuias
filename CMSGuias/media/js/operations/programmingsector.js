@@ -6,7 +6,7 @@ app = angular.module('programingApp', ['ngCookies']).config(function($httpProvid
   $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
 });
 
-app.controller('programingCtrl', function($scope, $http, $cookies) {
+app.controller('programingCtrl', function($scope, $http, $cookies, $timeout) {
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
   $scope.group = {
@@ -215,6 +215,81 @@ app.controller('programingCtrl', function($scope, $http, $cookies) {
           }
         });
       }
+    });
+  };
+  $scope.uploadFile = function($event) {
+    swal({
+      title: 'Desea procesar el archivo?',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dd6b55',
+      confirmButtonText: 'Si!',
+      cancelButtonText: 'No!',
+      closeOnCancel: true,
+      closeOnConfirm: true
+    }, function(isConfirm) {
+      var data;
+      if (isConfirm) {
+        $event.currentTarget.disabled = true;
+        $event.currentTarget.innerHTML = "<i class=\"fa fa-spinner fa-pulse\"></i> Cargando...";
+        data = new FormData();
+        data.append("uploadFile", true);
+        data.append("upload", $("#fileUp")[0].files[0]);
+        data.append("csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val());
+        console.log(data);
+        $.ajax({
+          url: "",
+          type: "post",
+          data: data,
+          dataType: "json",
+          cache: false,
+          contentType: false,
+          processData: false,
+          success: function(response) {
+            console.log(response);
+            if (response.status) {
+              $event.currentTarget.innerHTML = "<i class=\"fa fa-cog fa-spin\"></i> Procesando";
+              data = {
+                processData: true,
+                filename: response.name
+              };
+              $http({
+                url: '',
+                method: 'post',
+                data: $.param(data)
+              }).success(function(result) {
+                if (result.status) {
+                  Materialize.toast("Hoja Procesada!");
+                  return $timeout((function() {
+                    location.reload();
+                  }), 1600);
+                } else {
+                  $event.currentTarget.disabled = false;
+                  $event.currentTarget.innerHTML = "<i class=\"fa fa-upload\"></i> Cargar";
+                  return Materialize.toast("Error al Procesar!", 2600);
+                }
+              });
+            } else {
+              $event.currentTarget.disabled = false;
+              $event.currentTarget.innerHTML = "<i class=\"fa fa-upload\"></i> Cargar";
+            }
+          }
+        });
+      }
+    });
+  };
+  $scope.test = function() {
+    var data;
+    data = {
+      processData: true,
+      filename: "C:\\Users\\MIDDENDORF\\Documents\\development\\django\\venvicrperu\\icrperu\\CMSGuias\\media/storage/Temp/tmpaPR15121.xlsx"
+    };
+    return $http({
+      url: '',
+      method: 'post',
+      data: $.param(data)
+    }).success(function(result) {
+      console.log(result);
     });
   };
 });

@@ -6,7 +6,7 @@ import urllib
 from openpyxl import load_workbook
 
 
-def upload(absolutePath,archive,options={}):
+def upload(absolutePath, archive, options={}):
     #defaults= {"date": False,"time": False}
     try:
         # path absolute
@@ -25,6 +25,7 @@ def upload(absolutePath,archive,options={}):
         else:
           name = archive.name
         filename = '%s%s'%(path, name)
+        deleteFile(filename)
         # recover full address of filename
         dirfilename = open(filename, 'wb+')
         # walk all file and save im new address

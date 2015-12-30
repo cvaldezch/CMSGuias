@@ -56,6 +56,10 @@
           <i class="fa fa-file-excel-o"></i>
           <span>Archivo</span>
         </button>
+        <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-click="test()" >
+          <i class="fa fa-file-excel-o"></i>
+          <span>test</span>
+        </button>
         <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-click="getPrices()">
           <i class="fa fa-dollar"></i>
           <span>Validar Precios</span>
@@ -311,14 +315,24 @@
       <div class="modal-content">
         <h5>Cargar Archivo</h5>
         <div class="file-field input-field">
-          <div class="btn">
+          <div class="btn green lighten-1">
             <span>Archivo</span>
-            <input type="file">
+            <input type="file" id="fileUp" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
           </div>
           <div class="file-path-wrapper">
             <input type="text" class="file-path validate">
           </div>
         </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn modal-close modal-action grey lighten-5 grey-text text-darken-3 left">
+          <i class="fa fa-times"></i>
+          Cancelar
+        </button>
+        <button class="btn green lighten-1" type="button" ng-click="uploadFile($event)">
+          <i class="fa fa-upload"></i>
+          Cargar
+        </button>
       </div>
     </div>
   </div>

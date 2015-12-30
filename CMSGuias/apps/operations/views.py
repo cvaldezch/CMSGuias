@@ -9,20 +9,21 @@ from django.core import serializers
 # from django.contrib.auth.mod import User
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
-from django.db.models import Q, Sum, Count
+from django.db.models import Q, Sum
 from django.shortcuts import render_to_response, render
 from django.utils import simplejson
 from django.utils.decorators import method_decorator
 from django.template import RequestContext, TemplateDoesNotExist
 from django.views.generic import TemplateView, View
-# from django.views.generic.edit import UpdateView, CreateView
 from django.core.serializers.json import DjangoJSONEncoder
+# from xlrd import open_workbook, XL_CELL_EMPTY
+from openpyxl import load_workbook
 
 from CMSGuias.apps.home.models import *
 from .models import *
 from .forms import *
 from CMSGuias.apps.ventas.models import Metradoventa
-from CMSGuias.apps.tools import genkeys
+from CMSGuias.apps.tools import genkeys, uploadFiles
 
 
 # Class Bases Views Generic
@@ -182,9 +183,12 @@ class ProgramingProject(JSONResponseMixin, View):
                         project_id=kwargs['pro'],
                         sector_id=kwargs['sec'])
                 t = ds.count()
-                ts = ds.filter(status='AC').count()
-                context['status'] = 'AC' if t == ts else 'PE'
-                print context, t, ts
+                if t == 0:
+                    context['status'] = 'PE'
+                else:
+                    ts = ds.filter(status='AC').count()
+                    context['status'] = 'AC' if t == ts else 'PE'
+                # print context, t, ts
                 return render(
                     request,
                     'operations/programinggroup.html',
@@ -301,6 +305,125 @@ class ProgramingProject(JSONResponseMixin, View):
                         project_id=kwargs['pro'],
                         sector_id=kwargs['sec']).update(
                             status='AC')
+                    context['status'] = True
+                if 'uploadFile' in request.POST:
+                    path = '/storage/Temp/'
+                    opt = {'name': 'tmpa%s' % kwargs['pro']}
+                    filename = uploadFiles.upload(
+                        path,
+                        request.FILES['upload'],
+                        opt)
+                    context['name'] = filename
+                    context['status'] = uploadFiles.fileExists(filename)
+                if 'processData' in request.POST:
+                    book = load_workbook(request.POST['filename'])
+                    sheet = book['AREAS']
+                    nrow = sheet.max_row
+                    ncol = sheet.max_column
+                    sgroup = dict()
+                    for x in range(1, nrow):
+                        print x, '-----------------'
+                        if x == 2:
+                            for c in range(4, ncol):
+                                if c > 3 and sheet.cell(row=x, column=c).value != None:
+                                    # crea los grupos
+                                    # print sheet.cell(row=x, column=c).value
+                                    name = sheet.cell(row=x, column=c).value
+                                    nw = SGroup()
+                                    sgroup[name] = {
+                                        'id': genkeys.genSGroup(
+                                                kwargs['pro'],
+                                                kwargs['sec'])}
+                                    nw.sgroup_id = sgroup[name]['id']
+                                    nw.project_id = kwargs['pro']
+                                    nw.subproject_id = kwargs['sub'] if unicode(kwargs['sub']) != 'None' else ''
+                                    nw.sector_id = kwargs['sec']
+                                    nw.name = name
+                                    nw.colour = 'rgba(254,255,180,0.8)'
+                                    nw.status = 'PE'
+                                    nw.save()
+                        elif x == 3:
+                            tng = None
+                            group = None
+                            for c in range(4, ncol):
+                                if c > 3:
+                                    if sheet.cell(row=x, column=c).value.__contains__('TOTAL'):
+                                        continue
+                                    # crea las areas
+                                    # print sheet.cell(row=x, column=c).value
+                                    name = sheet.cell(row=2, column=c).value
+                                    if name != None:
+                                        group = sgroup[name]['id']
+                                        tng = name
+
+                                    ds = genkeys.genDSector(kwargs['pro'], group)
+                                    dsn = sheet.cell(row=x, column=c).value
+                                    sgroup[tng].update({dsn: {'id': ds}})
+                                    nds = DSector()
+                                    nds.dsector_id = sgroup[tng][dsn]['id']
+                                    nds.sgroup_id = group
+                                    nds.project_id = kwargs['pro']
+                                    nds.sector_id = kwargs['sec']
+                                    nds.name = dsn
+                                    nds.datestart = globalVariable.date_now()
+                                    nds.dateend = globalVariable.date_now()
+                                    nds.description = ''
+                                    nds.status = 'PE'
+                                    nds.save()
+                        elif x > 3:
+                            tgn = None
+                            for c in range(4, ncol):
+                                if c == 37:
+                                    continue
+                                name = sheet.cell(row=2, column=c).value
+                                if name != None:
+                                    tgn = name
+                                cell = sheet.cell(row=x, column=c).value
+                                if cell == None or float(int(cell)) == 0:
+                                    continue
+                                else:
+                                    cell = float(int(cell))
+                                    cm = str(sheet.cell(row=x, column=1).value)
+                                    if len(cm) == 15:
+                                        # ingreso de materiales
+                                        ns = sheet.cell(row=3, column=c).value
+                                        purchase = 0
+                                        sales = 0
+                                        try:
+                                            dsm = DSMetrado.objects.filter(
+                                                materials_id=str(cm)).order_by(
+                                                    '-dsector__register')
+                                            if len(dsm):
+                                                dsm = dsm[0]
+                                                purchase = float(dsm.ppurchase)
+                                                sales = float(dsm.psales)
+                                        except DSMetrado.DoesNotExist:
+                                            raise e
+                                        if purchase == 0 or sales == 0:
+                                            try:
+                                                dsm = MetProject.objects.filter(
+                                                    materiales_id=str(cm)).order_by(
+                                                    '-proyecto__registrado')
+                                                if len(dsm):
+                                                    dsm = dsm[0]
+                                                    purchase = float(dsm.precio)
+                                                    sales = float(dsm.sales)
+                                            except MetProject.DoesNotExist:
+                                                raise e
+                                        dm = DSMetrado()
+                                        dm.dsector_id = sgroup[tgn][ns]['id']
+                                        dm.materials_id = cm
+                                        dm.brand_id = 'BR000'
+                                        dm.model_id = 'MO000'
+                                        dm.quantity = cell
+                                        dm.qorder = cell
+                                        dm.qguide = 0
+                                        dm.ppurchase = purchase
+                                        dm.sales = sales
+                                        dm.tag = '0'
+                                        dm.save()
+                                    else:
+                                        continue
                     context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
