@@ -68,7 +68,7 @@
 							<label class="control-label">Avanzado</label>
 							<button type="Button" name="btn-opad" class="btn btn-sm btn-primary btn-block"
 							{% ifnotequal user.get_profile.cargo_id '111111111' %}
-								disabled="true" 
+								disabled="true"
 							{% endifnotequal %} ><span class="glyphicon glyphicon-chevron-down"></span></button>
 						</div>
 						<!-- <div class="col-md-1">
@@ -84,6 +84,7 @@
 								<span class="glyphicon glyphicon-list-alt"></span>
 							</button>
 						</div>
+
 						<div class="col-md-12">
 							<div class="panel panel-primary opad">
 								<div class="panel-heading">Opciones Avanzadas <a class="close">&times;</a></div>
@@ -119,11 +120,26 @@
 											<option value="{{a.alid}}">{{a.nom}}</option>
 										{% endfor %}
 									</select>
-									<button class="btn btn-sm btn-primary btn-list-period"><span class="glyphicon glyphicon-chevron-right"></span> <span class="glyphicon glyphicon-ok-circle"></span></button>
+									<button class="btn btn-sm btn-primary btn-list-period">
+										<span class="glyphicon glyphicon-chevron-right"></span>
+										<span class="glyphicon glyphicon-ok-circle"></span>
+									</button>
 									</p>
 								</div>
 							</div>
 						</div>
+						{% if user.get_profile.empdni.charge.area|lower == 'administrator' %}
+							<div class="col-md-12">
+								<button class="btn btn-danger" id="bdelAllInv" type="button">
+									<i class="fa fa-fire"></i>
+									<span>Eliminar Todo</span>
+								</button>
+								<button class="btn btn-success" id="bupall" type="button">
+									<i class="fa fa-upload"></i>
+									<span>Cargar Archivo</span>
+								</button>
+							</div>
+						{% endif %}
 					</div>
 				</aside>
 			</div>

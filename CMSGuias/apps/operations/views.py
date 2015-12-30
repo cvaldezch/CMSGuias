@@ -379,10 +379,10 @@ class ProgramingProject(JSONResponseMixin, View):
                                 if name != None:
                                     tgn = name
                                 cell = sheet.cell(row=x, column=c).value
-                                if cell == None or float(int(cell)) == 0:
+                                if cell == None or float(str(cell)) == 0:
                                     continue
                                 else:
-                                    cell = float(int(cell))
+                                    cell = float(str(cell))
                                     cm = str(sheet.cell(row=x, column=1).value)
                                     if len(cm) == 15:
                                         # ingreso de materiales

@@ -22,12 +22,15 @@ from django.core.paginator import EmptyPage, Paginator, PageNotAnInteger
 from django.views.generic import TemplateView, ListView, View
 from django.core import serializers
 
+from openpyxl import load_workbook
+
 from CMSGuias.apps.almacen.models import *
 from CMSGuias.apps.home.models import *
 from CMSGuias.apps.ventas.models import Proyecto, Sectore, Subproyecto
 from CMSGuias.apps.almacen import forms
-from CMSGuias.apps.tools import genkeys, globalVariable
+from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles
 from CMSGuias.apps.logistica.models import Compra, DetCompra
+from CMSGuias.apps.operations.models import *
 
 
 ##
@@ -1587,8 +1590,94 @@ class InventoryView(ListView, JSONResponseMixin):
                 )
                 print sts
                 data['status'] = sts
+            if 'uploadInventory' in request.POST:
+                path = '/storage/Temp/'
+                options = {name: 'tmpstorage'}
+                filename = uploadFiles(
+                            path,
+                            request.FILES['inventory'],
+                            options)
+                if uploadFiles.fileExists(filename):
+                    wb = load_workbook(filename)
+                    ws = wb[0]
+                    for x in ws.max_rows:
+                        cell = ws.cell(row=x, column=1).value
+                        if len(str(cell)) == 15 and cell != None:
+                            if float(str(ws.cell(row=x, column=4).value)) == 0 or ws.cell(row=x, column=4).value == None:
+                                continue
+                            else:
+                                purchase = 0
+                                try:
+                                    p = MetProject.objects.filter(
+                                            materiales_id=str(cell)).order_by(
+                                            'proyecto__registrado')
+                                    if len(p):
+                                        p = p[0]
+                                        purchase = p.precio
+                                except MetProject.DoesNotExist:
+                                    raise
+                                # inventory general
+                                try:
+                                    inv = Inventario.objects.get(
+                                        materiales_id=str(cell),
+                                        periodo=globalVariable.get_year)
+                                    inv.stock += float(str(ws.cell(row=x, column=4).value))
+                                    inv.save()
+                                except Inventario.DoesNotExist:
+                                    inv = Inventario()
+                                    inv.materiales_id = str(cell)
+                                    inv.almacen_id = 'AL01'
+                                    inv.precompra = purchase
+                                    inv.stkmin = 0
+                                    inv.stock = float(str(ws.cell(row=x, column=4).value))
+                                    inv.stkpendiente = 0
+                                    inv.stkdevuelto = 0
+                                    inv.periodo = globalVariable.get_year
+                                    inv.ingreso = globalVariable.date_now()
+                                    inv.save()
+                                # inventory brand
+                                bc = None
+                                brand = None
+                                try:
+                                    brand = str(ws.cell(row=x, column=3).value)
+                                    bc = Brand.objects.get(brand__iexact=brand)
+                                except Brand.DoesNotExist:
+                                    bc = Brand()
+                                    bc.brand_id = genkeys.GenerateIdBrand()
+                                    bc.brand = str(ws.cell(row=x, column=3).value)
+                                    bc.save()
+                                try:
+                                    ib = InventoryBrand.objects.get(
+                                        materials_id=str(cell),
+                                        period=globalVariable.get_year,
+                                        brand_id=bc.brand_id,
+                                        model_id='MO000')
+                                    ib.stock += float(str(ws.cell(row=x, column=4).value))
+                                    ib.save()
+                                except InventoryBrand.DoesNotExist:
+                                    ib = InventoryBrand()
+                                    ib.storage_id = 'AL01'
+                                    ib.period = globalVariable.get_year
+                                    ib.materials_id = str(cell)
+                                    ib.brand_id = brand
+                                    ib.model_id = 'MO000'
+                                    ib.ingress = globalVariable.date_now()
+                                    ib.stock = float(str(ws.cell(row=x, column=4).value))
+                                    ib.purchase = purchase
+                                    ib.save()
+                        else:
+                            continue
+                    context['status'] = True
+                else:
+                    context['status'] = False
+            if 'delInventory' in request.POST:
+                Inventario.objects.filter(
+                    periodo=globalVariable.date_now().strftime('%Y')).delete()
+                InventoryBrand.objects.filter(
+                    period=globalVariable.date_now().strftime('%Y')).delete()
+                context['status'] = True
         except ObjectDoesNotExist, e:
-            data['raise'] = e.__str__()
+            data['raise'] = str(e)
             data['status'] = False
         # data = simplejson.dumps(data)
         return self.render_to_json_response(data)

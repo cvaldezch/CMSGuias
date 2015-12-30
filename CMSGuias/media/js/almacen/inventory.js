@@ -10,7 +10,17 @@ $(document).ready(function() {
 		$(".opad").toggle("blind",600);
 	});
 	$(".btn-stmp-supply").on("click", save_tmp_supply);
+	$("#bdelAllInv").on("click", bdelAllInv);
 });
+
+
+var delAllInv = function (){
+	$.post("", {'delInventory': true, 'csrfmiddlewaretoken': $("[name=csrfmiddlewaretoken]").val()}, function(response) {
+		if (response.status){
+			location.reload();
+		}
+	});
+}
 
 // functions
 var save_tmp_supply = function (event) {
