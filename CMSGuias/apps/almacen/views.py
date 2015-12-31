@@ -1536,7 +1536,7 @@ class InventoryView(ListView, JSONResponseMixin):
         context = dict()
         context['periodo'] = [
             x['periodo'] for x in Inventario.objects.values(
-                'periodo').order_by('periodo').distinct('periodo')]
+                'periodo').order_by('-periodo').distinct('periodo')]
         context['almacen'] = [{
             'alid': x.almacen_id,
             'nom': x.nombre} for x in Almacene.objects.filter(flag=True)]
@@ -1592,18 +1592,18 @@ class InventoryView(ListView, JSONResponseMixin):
                 data['status'] = sts
             if 'uploadInventory' in request.POST:
                 path = '/storage/Temp/'
-                options = {name: 'tmpstorage'}
-                filename = uploadFiles(
+                options = {'name': 'tmpstorage'}
+                filename = uploadFiles.upload(
                             path,
                             request.FILES['inventory'],
                             options)
                 if uploadFiles.fileExists(filename):
                     wb = load_workbook(filename)
-                    ws = wb[0]
-                    for x in ws.max_rows:
+                    ws = wb.worksheets[0]
+                    for x in range(1, ws.max_row):
                         cell = ws.cell(row=x, column=1).value
                         if len(str(cell)) == 15 and cell != None:
-                            if float(str(ws.cell(row=x, column=4).value)) == 0 or ws.cell(row=x, column=4).value == None:
+                            if float(str(ws.cell(row=x, column=4).value)) <= 0 or ws.cell(row=x, column=4).value == None:
                                 continue
                             else:
                                 purchase = 0
@@ -1637,21 +1637,48 @@ class InventoryView(ListView, JSONResponseMixin):
                                     inv.save()
                                 # inventory brand
                                 bc = None
-                                brand = None
-                                try:
-                                    brand = str(ws.cell(row=x, column=3).value)
-                                    bc = Brand.objects.get(brand__iexact=brand)
-                                except Brand.DoesNotExist:
-                                    bc = Brand()
-                                    bc.brand_id = genkeys.GenerateIdBrand()
-                                    bc.brand = str(ws.cell(row=x, column=3).value)
-                                    bc.save()
+                                brand = str(ws.cell(row=x, column=3).value)
+                                ml = 'MO000'
+                                if brand is None:
+                                    bc = 'BR000'
+                                else:
+                                    if len(brand.split('/')) > 1:
+                                        brand = brand.split('/')[1].strip()
+                                        try:
+                                            bc = Brand.objects.get(brand__iexact=brand)
+                                            bc = bc.brand_id
+                                        except Brand.DoesNotExist:
+                                            bc = Brand()
+                                            bc.brand_id = genkeys.GenerateIdBrand()
+                                            bc.brand = brand.strip().upper()
+                                            bc.save()
+                                            bc = bc.brand_id
+                                        try:
+                                            ml = Model.objects.get(
+                                                model__iexact=brand.split('/')[0].strip())
+                                            ml = ml.model_id
+                                        except Model.DoesNotExist:
+                                            ml = Model()
+                                            ml.model_id = genkeys.GenerateIdModel()
+                                            ml.brand_id = bc
+                                            ml.model = brand.split('/')[0].strip().upper()
+                                            ml.save()
+                                            ml = ml.model_id
+                                    else:
+                                        try:
+                                            bc = Brand.objects.get(brand__iexact=brand)
+                                            bc = bc.brand_id
+                                        except Brand.DoesNotExist:
+                                            bc = Brand()
+                                            bc.brand_id = genkeys.GenerateIdBrand()
+                                            bc.brand = brand.strip().upper()
+                                            bc.save()
+                                            bc = bc.brand_id
                                 try:
                                     ib = InventoryBrand.objects.get(
                                         materials_id=str(cell),
                                         period=globalVariable.get_year,
-                                        brand_id=bc.brand_id,
-                                        model_id='MO000')
+                                        brand_id=bc)
                                     ib.stock += float(str(ws.cell(row=x, column=4).value))
                                     ib.save()
                                 except InventoryBrand.DoesNotExist:
@@ -1659,23 +1686,24 @@ class InventoryView(ListView, JSONResponseMixin):
                                     ib.storage_id = 'AL01'
                                     ib.period = globalVariable.get_year
                                     ib.materials_id = str(cell)
-                                    ib.brand_id = brand
-                                    ib.model_id = 'MO000'
+                                    ib.brand_id = bc
+                                    ib.model_id = ml
                                     ib.ingress = globalVariable.date_now()
                                     ib.stock = float(str(ws.cell(row=x, column=4).value))
                                     ib.purchase = purchase
+                                    ib.sale = ((purchase * 0.1)+purchase)
                                     ib.save()
                         else:
                             continue
-                    context['status'] = True
+                    data['status'] = True
                 else:
-                    context['status'] = False
+                    data['status'] = False
             if 'delInventory' in request.POST:
                 Inventario.objects.filter(
                     periodo=globalVariable.date_now().strftime('%Y')).delete()
                 InventoryBrand.objects.filter(
                     period=globalVariable.date_now().strftime('%Y')).delete()
-                context['status'] = True
+                data['status'] = True
         except ObjectDoesNotExist, e:
             data['raise'] = str(e)
             data['status'] = False
@@ -2461,3 +2489,22 @@ class GuideSingle(JSONResponseMixin, TemplateView):
                 context['raise'] = str(e)
                 context['status'] = False
             return self.render_to_json_response(context)
+
+
+class MaterialBrand(JSONResponseMixin, TemplateView):
+
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            # if request.is_ajax():
+                # try:
+                #     pass
+                # except ObjectDoesNotExist as e:
+                #     context['raise'] = str(e)
+                #     context['status'] = False
+                # return self.render_to_json_response(context)
+            context['brand'] = InventoryBrand.objects.filter(
+                                materials_id=kwargs['mid'])
+            return render(request, 'almacen/materialbrand.html', context)
+        except TemplateDoesNotExist, e:
+            raise Http404(e)

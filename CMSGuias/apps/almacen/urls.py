@@ -58,4 +58,5 @@ urlpatterns = patterns('CMSGuias.apps.almacen.views',
     url(r'purchase/input/$', InputOrderPurchase.as_view(), name='view_purchase_input'),
     url(r'note/ingress/list/$', NoteIngressView.as_view(), name='view_note_ingress'),
     url(r'guide/single/$', GuideSingle.as_view(), name='view_guide_single'),
+    url(r'^brand/(?P<mid>\w{15})/$', MaterialBrand.as_view(), name='storebrand'),
 )

@@ -1,0 +1,21 @@
+{% extends "basemd.html" %}
+{% block content %}
+<div class="card card-panel">
+	<div class="card-content">
+		<h3>Marca de Materiales</h3>
+		<table class="table responsible-table">
+			<thead></thead>
+			<tbody>
+				{% for x in brand %}
+					<tr>
+						<td>{{forloop.counter}}</td>
+						<td>{{x.materials_id}}</td>
+						<td>{{x.brand.brand}}</td>
+						<td>{{x.model.model}}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+{% endblock content %}

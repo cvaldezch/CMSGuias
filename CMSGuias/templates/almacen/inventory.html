@@ -2,9 +2,11 @@
 {% block title %} Inventory {% endblock %}
 {% block script %}
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/sweetalert/dist/sweetalert.min.js"></script>
 <script src="{{ MEDIA_URL }}js/almacen/inventory.js"></script>
 {% endblock%}
 {% block style %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}vendor/sweetalert/dist/sweetalert.css">
 <style>
 	input[name=ias]{
 		width: 80px;
@@ -91,7 +93,13 @@
 								<div class="panel-body">
 									<strong>Ingreso a Inventario</strong>
 									<p>
-										<span class="glyphicon glyphicon-ok-sign"></span>  Ingresar al inventario, todo la lista de Materiales con stock 0, de lo contrario especifica aqui. <input type="number" class="input-sm" name="ias" min="0" value="0"> <button class="btn btn-sm btn-primary btn-register-all-list"><span class="glyphicon glyphicon-chevron-right"></span> <span class="glyphicon glyphicon-sort-by-attributes"></span></button>
+										<span class="glyphicon glyphicon-ok-sign">
+										</span>  Ingresar al inventario, todo la lista de Materiales con stock 0, de lo contrario especifica aqui.
+										<input type="number" class="input-sm" name="ias" min="0" value="0">
+										<button class="btn btn-sm btn-primary btn-register-all-list">
+										<span class="glyphicon glyphicon-chevron-right"></span>
+										<span class="glyphicon glyphicon-sort-by-attributes"></span>
+										</button>
 									</p>
 									<p>
 										<span class="glyphicon glyphicon-ok-sign"></span> Pasar el Stock del Periodo pasado al actual.
@@ -155,7 +163,7 @@
 							{% for x in inventory %}
 								<tr class="{% if x.stock > x.stkmin %}success{% elif x.stock <= x.stkmin and x.stock > 0 %}warning{% elif x.stock <= 0 %}danger{% endif %}">
 									<td>{{ forloop.counter }}</td>
-									<td>{{ x.materiales_id }}</td>
+									<td><a href="{% url 'storebrand' x.materiales_id %}">{{ x.materiales_id }}</a></td>
 									<td>{{ x.materiales.matnom }}</td>
 									<td>{{ x.materiales.matmed }}</td>
 									<td>{{ x.materiales.unidad_id }}</td>
@@ -223,6 +231,27 @@
 				</div>
 				<button data-dismiss="modal" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-remove"></span> Salir</button>
 				<button class="btn btn-sm btn-warning pull-right text-black btn-stmp-supply"><span class="glyphicon glyphicon-save"></span> Añadir</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="ufile">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<a href="#" class="close" data-dismiss="">&times;</a>
+				Cargar Archivo
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label class="control-label">Archivo</label>
+					<input type="file" id="afile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+				</div>
+				<div class="form-group text-right">
+					<button type="button" class="btn btn-primary upfile">
+						<i class="fa fa-upload"></i> Cargar
+					</button>
+				</div>
 			</div>
 		</div>
 	</div>

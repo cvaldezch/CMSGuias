@@ -7,17 +7,65 @@ $(document).ready(function() {
 	$(".btn-list-period").on("click", register_period_pased);
 	$(".stkmin").on("change", chkmin);
 	$("button[name=btn-opad]").click(function(event) {
-		$(".opad").toggle("blind",600);
+		$(".opad").toggle("blind", 600);
 	});
 	$(".btn-stmp-supply").on("click", save_tmp_supply);
-	$("#bdelAllInv").on("click", bdelAllInv);
+	$("#bdelAllInv").on("click", bdelallitem);
+	$("#bupall").on("click", function (){
+		$("#ufile").modal("show");
+	});
+	$(".upfile").on("click", uploadFile);
 });
 
+var bdelallitem = function (event){
+	swal({
+		title: "Eliminar todo el inventario?",
+		text: "realmente desea eliminar todo el inventario?",
+		type: "warning",
+		showCancelButton: true,
+		confirmButtonText: "Si!",
+		confirmButtonColor: "#DD6B55",
+		cancelButtonText: "No"
+	}, function (isConfirm) {
+		console.log(event);
+		if (isConfirm) {
+			event.currentTarget.disabled = true;
+			event.currentTarget.innerHTML = "<i class=\"fa fa-spinner fa-pulse\"></i> Procesando";
+			data = {"delInventory": true, "csrfmiddlewaretoken": $("[name=csrfmiddlewaretoken]").val()}
+			$.post("", data, function (response){
+				if (response.status) {
+					location.reload();
+				}else{
+					event.currentTarget.disabled = false;
+					event.currentTarget.innerHTML = "<i class=\"fa fa-fire\"></i> Eliminar Todo";
+				};
+			}, "json");
+		};
+	});
+}
 
-var delAllInv = function (){
-	$.post("", {'delInventory': true, 'csrfmiddlewaretoken': $("[name=csrfmiddlewaretoken]").val()}, function(response) {
-		if (response.status){
-			location.reload();
+var uploadFile = function (event){
+	event.currentTarget.disabled = true;
+	event.currentTarget.innerHTML = "<i class=\"fa fa-spinner fa-pulse\"></i> Procesando";
+	data = new FormData();
+	data.append("csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val())
+	data.append("uploadInventory", true);
+	data.append("inventory", $("#afile")[0].files[0]);
+	$.ajax({
+		url: "",
+		data: data,
+		dataType: "json",
+		type: "post",
+		processData: false,
+		contentType: false,
+		cache: false,
+		success: function (response){
+			if (response.status) {
+				location.reload();
+			}else{
+				event.currentTarget.disabled = false;
+				event.currentTarget.innerHTML = "<i class=\"fa fa-upload\"></i> Cargar";
+			};
 		}
 	});
 }
