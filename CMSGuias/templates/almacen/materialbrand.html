@@ -4,14 +4,22 @@
 	<div class="card-content">
 		<h3>Marca de Materiales</h3>
 		<table class="table responsible-table">
-			<thead></thead>
+			<thead>
+				<th></th>
+				<th>Código</th>
+				<th>Descripción</th>
+				<th>Marca</th>
+				<th>Modelo</th>
+				<th>Stock</th>
+			</thead>
 			<tbody>
 				{% for x in brand %}
 					<tr>
 						<td>{{forloop.counter}}</td>
 						<td>{{x.materials_id}}</td>
+						<td>{{x.materials.matnom}} - {{x.materials.matmed}}</td>
 						<td>{{x.brand.brand}}</td>
-						<td>{{x.model.model}}</td>
+						<td>{{x.model_id}}</td>
 						<th>{{x.stock}}</th>
 					</tr>
 				{% endfor %}

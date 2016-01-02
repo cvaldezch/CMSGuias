@@ -1639,13 +1639,14 @@ class InventoryView(ListView, JSONResponseMixin):
                                 bc = None
                                 brand = str(ws.cell(row=x, column=3).value)
                                 ml = 'MO000'
-                                if brand is None:
+                                if brand == None:
                                     bc = 'BR000'
                                 else:
-                                    if len(brand.split('/')) > 1:
-                                        brand = brand.split('/')[1].strip()
+                                    print len(brand.split('/'))
+                                    if len(brand.split('/')) == 2:
+                                        brand = brand.split('/')[-1].strip()
                                         try:
-                                            bc = Brand.objects.get(brand__iexact=brand)
+                                            bc = Brand.objects.get(brand__exact=brand)
                                             bc = bc.brand_id
                                         except Brand.DoesNotExist:
                                             bc = Brand()
@@ -1654,15 +1655,19 @@ class InventoryView(ListView, JSONResponseMixin):
                                             bc.save()
                                             bc = bc.brand_id
                                         try:
+                                            print brand.split('/')[0].strip().upper()
                                             ml = Model.objects.get(
-                                                model__iexact=brand.split('/')[0].strip())
+                                                model=brand.split('/')[0].strip().upper())
                                             ml = ml.model_id
-                                        except Model.DoesNotExist:
+                                            print 'mocre ', ml
+                                        except ObjectDoesNotExist:
                                             ml = Model()
                                             ml.model_id = genkeys.GenerateIdModel()
                                             ml.brand_id = bc
                                             ml.model = brand.split('/')[0].strip().upper()
                                             ml.save()
+                                            print brand.split('/')[0].strip().upper()
+                                            print ml.model_id
                                             ml = ml.model_id
                                     else:
                                         try:
@@ -1693,6 +1698,9 @@ class InventoryView(ListView, JSONResponseMixin):
                                     ib.purchase = purchase
                                     ib.sale = ((purchase * 0.1)+purchase)
                                     ib.save()
+                                    bc = None
+                                    ml = None
+                                    print '------------------'
                         else:
                             continue
                     data['status'] = True
