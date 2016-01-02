@@ -2504,7 +2504,8 @@ class MaterialBrand(JSONResponseMixin, TemplateView):
                 #     context['status'] = False
                 # return self.render_to_json_response(context)
             context['brand'] = InventoryBrand.objects.filter(
-                                materials_id=kwargs['mid'])
+                                materials_id=kwargs['mid'],
+                                period=globalVariable.get_year)
             return render(request, 'almacen/materialbrand.html', context)
         except TemplateDoesNotExist, e:
             raise Http404(e)
