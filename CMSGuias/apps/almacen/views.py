@@ -1657,9 +1657,9 @@ class InventoryView(ListView, JSONResponseMixin):
                                         try:
                                             print brand.split('/')[0].strip().upper()
                                             ml = Model.objects.get(
-                                                model=brand.split('/')[0].strip().upper())
-                                            ml = ml.model_id
+                                                model__exact=brand.split('/')[0].strip().upper())
                                             print 'mocre ', ml
+                                            ml = ml.model_id
                                         except ObjectDoesNotExist:
                                             ml = Model()
                                             ml.model_id = genkeys.GenerateIdModel()
@@ -1671,7 +1671,7 @@ class InventoryView(ListView, JSONResponseMixin):
                                             ml = ml.model_id
                                     else:
                                         try:
-                                            bc = Brand.objects.get(brand__iexact=brand)
+                                            bc = Brand.objects.get(brand__exact=brand)
                                             bc = bc.brand_id
                                         except Brand.DoesNotExist:
                                             bc = Brand()
