@@ -182,8 +182,8 @@ class ProgramingProject(JSONResponseMixin, View):
                 ds = DSector.objects.filter(
                         project_id=kwargs['pro'],
                         sector_id=kwargs['sec'])
-                t = ds.count()
-                if t == 0:
+
+                if len(ds) == 0:
                     context['status'] = 'PE'
                 else:
                     ts = ds.filter(status='AC').count()
