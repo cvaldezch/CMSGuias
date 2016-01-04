@@ -837,3 +837,58 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                 context['raise'] = str(e)
                 context['status'] = False
             return self.render_to_json_response(context)
+
+
+class CompareMaterials(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            sales = MetProject.objects.filter(
+                proyecto_id=kwargs['pro'], sector_id=kwargs['sec'])
+            ds = DSector.objects.filter(
+                project_id=kwargs['pro'], sector_id=kwargs['sec'])
+            print ds.count(), 'dsectorids'
+            operations = DSMetrado.objects.filter(
+                dsector_id__in=[x.dsector_id for x in ds])
+            lst = list()
+            print sales.count(), 'list ventas'
+            print operations.count(), 'list operations'
+            for s in sales:
+                lst.append({
+                    'materials': s.materiales_id,
+                    'name': '%s %s' % (
+                        s.materiales.matnom, s.materiales.matmed),
+                    'brand_id': s.brand_id,
+                    'brand': s.brand.brand,
+                    'model_id': s.model_id,
+                    'model': s.model.model,
+                    'und': s.materiales.unidad.uninom,
+                    'sales': s.cantidad,
+                    'operations': '-'})
+            for o in operations:
+                for x in lst:
+                    if 'materials' in x.keys():
+                        print x['materials']
+                        if x['materials'] == o.materials_id:
+                            x['operations'] = o.quantity
+                        else:
+                            lst.append({
+                                'materials': o.materials_id,
+                                'name': '%s %s' % (
+                                    o.materials.matnom, o.materials.matmed),
+                                'brand_id': o.brand_id,
+                                'brand': o.brand.brand,
+                                'model_id': o.model_id,
+                                'model': o.model.model,
+                                'und': o.materials.unidad.uninom,
+                                'sales': '-',
+                                'operations': o.quantity})
+                            break
+
+            context['lst'] = lst
+            print len(lst), 'here length compare'
+            return render(request, 'operations/comparematerials.html', context)
+        except TemplateDoesNotExist, e:
+            raise Http404(e)

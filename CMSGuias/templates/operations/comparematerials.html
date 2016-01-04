@@ -1,0 +1,47 @@
+{% extends "basemd.html" %}
+{% block title %}
+Comparar
+{% endblock title %}
+{% block menu %}
+  {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
+      {% include "menus/salesmd.html" %}
+  {% endif %}
+  {% if user.get_profile.empdni.charge.area|lower == 'logistica' %}
+      {% include "menus/logistics.htm" %}
+  {% endif %}
+  {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+      {% include "menus/operations.htm" %}
+  {% endif %}
+  {% if user.get_profile.empdni.charge.area|lower == 'almacen' %}
+      {% include "menus/storage_menu.htm" %}
+  {% endif %}
+{% endblock menu %}
+{% block content %}
+	{{lst}}
+<table class="table responsive-table">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Codigo</th>
+			<th>Descripcion</th>
+			<th>Marca</th>
+			<th>Model</th>
+			<th>Ventas</th>
+			<th>Operaciones</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for x in lst %}
+			<tr>
+				<td>{{forloop.counter}}</td>
+				<td>{{x.materials}}</td>
+				<td>{{x.name}}</td>
+				<td>{{x.brand}}</td>
+				<td>{{x.model}}</td>
+				<td>{{x.sales}}</td>
+				<td>{{x.operations}}</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endblock content %}

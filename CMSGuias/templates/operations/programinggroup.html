@@ -90,25 +90,33 @@
       </div>
     </div>
   </div>
-  <div class="card card-panel">
-    <div class="card-content">
-      <strong>{{project.currency.moneda}}</strong>
-      <div class="row">
-        <div class="col l6">
-          <div class="center-align">
-            <strong>Ventas</strong>
-            <p>{{sales|floatformat:2}}</p>
+  {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'ventas' %}
+    <div class="card card-panel">
+      <div class="card-content">
+        <strong>{{project.currency.moneda}}</strong>
+        <div class="row">
+          <div class="col l6">
+            <div class="center-align">
+              <h4>Ventas</h4>
+              <h3>{{project.currency.simbolo}} {{sales|floatformat:2}}</h3>
+            </div>
           </div>
-        </div>
-        <div class="col l6">
-          <div class="center-align">
-            <strong>Operaciones</strong>
-            <p>{{operations|floatformat:2}}</p>
+          <div class="col l6">
+            <div class="center-align">
+              <h4>Operaciones</h4>
+              <h3>{{project.currency.simbolo}} {{operations|floatformat:2}}</h3>
+            </div>
           </div>
         </div>
       </div>
+      <div class="card-action">
+        <a class="btn grey lighten-5 grey-text text-darken-3" href="{% url 'compareopsa_view' project.proyecto_id sector.sector_id %}">
+          <i class="fa fa-list"></i>
+          <span>Comparar materiales</span>
+        </a>
+      </div>
     </div>
-  </div>
+  {% endif %}
   <div class="card-panel">
     <div class="card-content">
       <div class="row">

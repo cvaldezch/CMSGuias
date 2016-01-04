@@ -17,4 +17,7 @@ urlpatterns = patterns(
         ProgramingProject.as_view(), name='sectorgroup_view'),
     url(r'area/(?P<sgroup>\w+)/(?P<area>\w+)/(?P<pro>\w+)/(?P<sec>\w+)/(?P<sub>\w+)/$',
         AreaProjectView.as_view(), name='dsector_view'),
+    url(r'compare/materials/(?P<pro>\w{7})/(?P<sec>\w+)/$',
+        CompareMaterials.as_view(),
+        name='compareopsa_view'),
 )
