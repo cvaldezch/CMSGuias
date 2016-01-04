@@ -182,13 +182,23 @@ class ProgramingProject(JSONResponseMixin, View):
                 ds = DSector.objects.filter(
                         project_id=kwargs['pro'],
                         sector_id=kwargs['sec'])
-
-                if len(ds) == 0:
+                t = ds.count()
+                if t == 0:
                     context['status'] = 'PE'
                 else:
                     ts = ds.filter(status='AC').count()
                     context['status'] = 'AC' if t == ts else 'PE'
-                # print context, t, ts
+                context['sales'] = MetProject.objects.filter(
+                    proyecto_id=kwargs['pro'],
+                    sector_id=kwargs['sec']).aggregate(
+                        amount=Sum(
+                            'cantidad', field='cantidad*precio'))['amount']
+                if ds:
+                    context['operations'] = DSMetrado.objects.filter(
+                        dsector_id__in=[x.dsector_id for x in ds]).aggregate(
+                        amount=Sum(
+                            'quantity',
+                            field='quantity*ppurchase'))['amount']
                 return render(
                     request,
                     'operations/programinggroup.html',

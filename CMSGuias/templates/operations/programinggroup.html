@@ -90,7 +90,25 @@
       </div>
     </div>
   </div>
-  div.<card class="card-panel"></card>
+  <div class="card card-panel">
+    <div class="card-content">
+      <strong>{{project.currency.moneda}}</strong>
+      <div class="row">
+        <div class="col l6">
+          <div class="center-align">
+            <strong>Ventas</strong>
+            <p>{{sales|floatformat:2}}</p>
+          </div>
+        </div>
+        <div class="col l6">
+          <div class="center-align">
+            <strong>Operaciones</strong>
+            <p>{{operations|floatformat:2}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="card-panel">
     <div class="card-content">
       <div class="row">

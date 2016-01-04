@@ -1071,16 +1071,16 @@
                                   </button>
                                 {% endif %}
                                 <div class="pull-right">
-                                    {% if request.user.get_profile.empdni.charge.area|lower == 'operaciones' %}
-                                        <button class="btn btn-sm btn-default btn-alert-modified">
-                                            <span class="fa fa-comment"></span>
-                                            Avisar, Termine de Modificar
-                                        </button>
-                                    {% endif %}
-                                    <!--<button class="btn btn-danger btn-sm btn-del-all-modify">
+                                    <button class="btn btn-sm btn-default btn-alert-modified">
+                                        <span class="fa fa-comment"></span>
+                                        Avisar, Termine de Modificar
+                                    </button>
+                                    {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' %}
+                                    <button class="btn btn-danger btn-sm btn-del-all-modify">
                                         <span class="fa fa-trash-o"></span>
                                         Eliminar Todo
-                                    </button>-->
+                                    </button>
+                                    {% endif %}
                                 </div>
                             </caption>
                             <table class="table table-bordered table-condensed table-hover table-modify table-float table-responsive">
