@@ -437,8 +437,9 @@ class ProjectManager(JSONResponseMixin, View):
                                         flag=True)
             except ObjectDoesNotExist, e:
                 context['subpro'] = list()
-            context['sectors'] = Sectore.objects.filter(proyecto_id=kwargs['project'], flag=True).order_by('subproyecto','planoid')
-            context['operation'] = Employee.objects.filter(charge__area__istartswith='opera').order_by('charge__area')
+            context['sectors'] = Sectore.objects.filter(proyecto_id=kwargs['project'], flag=True).order_by('subproyecto', 'planoid')
+            context['operation'] = Employee.objects.filter(
+                Q(charge__area__istartswith='opera') | Q(empdni_id=72604244)).order_by('charge__area')
             context['admin'] = Employee.objects.filter(charge__area__istartswith='admin').order_by('charge__area')
             context['alerts'] = Alertasproyecto.objects.filter(Q(proyecto_id=kwargs['project']) | ~Q(subproyecto_id=None), Q(sector_id=None), Q(flag=True)).order_by('-registrado')
             context['currency'] = Moneda.objects.filter(flag=True)
