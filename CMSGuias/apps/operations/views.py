@@ -331,15 +331,16 @@ class ProgramingProject(JSONResponseMixin, View):
                     sheet = book['AREAS']
                     nrow = sheet.max_row
                     ncol = sheet.max_column
+                    print 'row and col', nrow, ncol
                     sgroup = dict()
                     for x in range(1, nrow):
                         print x, '-----------------'
                         if x == 2:
                             for c in range(4, ncol):
-                                if c > 3 and sheet.cell(row=x, column=c).value != None:
+                                name = sheet.cell(row=x, column=c).value
+                                if c >= 4 and name != None:
                                     # crea los grupos
                                     # print sheet.cell(row=x, column=c).value
-                                    name = sheet.cell(row=x, column=c).value
                                     nw = SGroup()
                                     sgroup[name] = {
                                         'id': genkeys.genSGroup(
@@ -358,7 +359,7 @@ class ProgramingProject(JSONResponseMixin, View):
                             group = None
                             for c in range(4, ncol):
                                 if c > 3:
-                                    if sheet.cell(row=x, column=c).value.__contains__('TOTAL'):
+                                    if c == ncol:
                                         continue
                                     # crea las areas
                                     # print sheet.cell(row=x, column=c).value
@@ -367,7 +368,8 @@ class ProgramingProject(JSONResponseMixin, View):
                                         group = sgroup[name]['id']
                                         tng = name
 
-                                    ds = genkeys.genDSector(kwargs['pro'], group)
+                                    ds = genkeys.genDSector(
+                                        kwargs['pro'], group)
                                     dsn = sheet.cell(row=x, column=c).value
                                     sgroup[tng].update({dsn: {'id': ds}})
                                     nds = DSector()
@@ -384,7 +386,7 @@ class ProgramingProject(JSONResponseMixin, View):
                         elif x > 3:
                             tgn = None
                             for c in range(4, ncol):
-                                if c == 37:
+                                if c == ncol:
                                     continue
                                 name = sheet.cell(row=2, column=c).value
                                 if name != None:
