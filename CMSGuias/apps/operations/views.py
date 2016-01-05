@@ -432,7 +432,7 @@ class ProgramingProject(JSONResponseMixin, View):
                                         dm.qorder = cell
                                         dm.qguide = 0
                                         dm.ppurchase = purchase
-                                        dm.sales = sales
+                                        dm.psales = sales
                                         dm.tag = '0'
                                         dm.save()
                                     else:
