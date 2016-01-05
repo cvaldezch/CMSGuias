@@ -155,7 +155,8 @@ class ProgramingProject(JSONResponseMixin, View):
                     without = DSMetrado.objects.filter(
                         Q(dsector_id__in=sec),
                         Q(ppurchase=0) | Q(psales=0) | Q(quantity=0)
-                        ).order_by('materials__matnom')
+                        ).order_by('materials__matnom').distinct(
+                        'materials__matnom')
                     if without:
                         context['list'] = json.loads(
                             serializers.serialize(
@@ -853,7 +854,10 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
             ds = DSector.objects.filter(
                 project_id=kwargs['pro'], sector_id=kwargs['sec'])
             operations = DSMetrado.objects.filter(
-                dsector_id__in=[x.dsector_id for x in ds])
+                dsector_id__in=[x.dsector_id for x in ds]).order_by(
+                'materials__materiales_id').distinct(
+                'materials__materiales_id')
+            print operations
             lst = list()
             for s in sales:
                 lst.append({
@@ -874,7 +878,9 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                     brand = (x['brand_id'] == o.brand_id)
                     model = (x['model_id'] == o.model_id)
                     if mat and brand and model:
-                        x['operations'] = o.quantity
+                        if x['operations'] == '-':
+                            x['operations'] = 0
+                        x['operations'] += o.quantity
                         break
                     else:
                         c += 1
@@ -894,8 +900,8 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
             context['lst'] = lst
             context['sales'] = sales.aggregate(amount=Sum(
                                 'cantidad', field='cantidad*precio'))['amount']
-            context['operations'] = operations.aggregate(amount=Sum(
-                            'quantity', field='quantity*ppurchase'))['amount']
+            # context['operations'] = operations.aggregate(amount=Sum(
+            #                 'quantity', field='quantity*ppurchase'))['amount']
             context['currency'] = sales[0].proyecto.currency.moneda
             context['symbol'] = sales[0].proyecto.currency.simbolo
             return render(request, 'operations/comparematerials.html', context)
