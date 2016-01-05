@@ -17,7 +17,27 @@ Comparar
   {% endif %}
 {% endblock menu %}
 {% block content %}
-	{{lst}}
+{% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'ventas' %}
+  <div class="card card-panel">
+    <div class="card-content">
+      <strong>{{currency}}</strong>
+      <div class="row">
+        <div class="col l6">
+          <div class="center-align">
+            <h4>Ventas</h4>
+            <h3>{{symbol}} {{sales|floatformat:2}}</h3>
+          </div>
+        </div>
+        <div class="col l6">
+          <div class="center-align">
+            <h4>Operaciones</h4>
+            <h3>{{symbol}} {{operations|floatformat:2}}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
 <table class="table responsive-table">
 	<thead>
 		<tr>
@@ -31,15 +51,15 @@ Comparar
 		</tr>
 	</thead>
 	<tbody>
-		{% for x in lst %}
+		{% for x in lst|dictsort:"name" %}
 			<tr>
 				<td>{{forloop.counter}}</td>
 				<td>{{x.materials}}</td>
 				<td>{{x.name}}</td>
 				<td>{{x.brand}}</td>
 				<td>{{x.model}}</td>
-				<td>{{x.sales}}</td>
-				<td>{{x.operations}}</td>
+				<th class="center-align">{{x.sales|safe}}</th>
+				<th class="center-align">{{x.operations|safe}}</th>
 			</tr>
 		{% endfor %}
 	</tbody>

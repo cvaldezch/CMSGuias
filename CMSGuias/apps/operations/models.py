@@ -228,7 +228,7 @@ class SGroup(models.Model):
     observation = models.TextField(null=True, blank=True)
     colour = models.CharField(max_length=21, blank=True, null=True)
     flag = models.BooleanField(default=True)
-    status = models.CharField(max_length=2, default='PE')
+    status = models.CharField(max_length=2, default='PE', blank=True)
 
     audit_log = AuditLog()
 

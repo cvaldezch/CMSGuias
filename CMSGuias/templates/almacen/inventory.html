@@ -156,7 +156,15 @@
 					<table class="table table-hover table-striped table-condensed">
 						<thead>
 							<tr class="brand-warning">
-								<th class="text-center"></th><th class="text-center">Código</th><th class="text-center">Descripción</th><th class="text-center">Medida</th><th class="text-center">Unid.</th><th class="text-center">Min</th><th class="text-center">Stock</th><th class="text-center">Ingreso</th><th class="text-center">O. Compra</th><th class="text-center"></th>
+								<th class="text-center"></th>
+								<th class="text-center">Código</th>
+								<th class="text-center">Descripción</th>
+								<th class="text-center">Unid.</th>
+								<th class="text-center">Min</th>
+								<th class="text-center">Stock</th>
+								<th class="text-center">Ingreso</th>
+								<th class="text-center">O. Compra</th>
+								<th class="text-center"></th>
 							</tr>
 						</thead>
 						<tbody data-templeta-name="list-materials">
@@ -164,8 +172,7 @@
 								<tr class="{% if x.stock > x.stkmin %}success{% elif x.stock <= x.stkmin and x.stock > 0 %}warning{% elif x.stock <= 0 %}danger{% endif %}">
 									<td>{{ forloop.counter }}</td>
 									<td><a href="{% url 'storebrand' x.materiales_id %}">{{ x.materiales_id }}</a></td>
-									<td>{{ x.materiales.matnom }}</td>
-									<td>{{ x.materiales.matmed }}</td>
+									<td>{{ x.materiales.matnom }} - {{ x.materiales.matmed }}</td>
 									<td>{{ x.materiales.unidad_id }}</td>
 									<td>{{ x.stkmin }}</td>
 									<td>{{ x.stock }}</td>

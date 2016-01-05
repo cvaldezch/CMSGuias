@@ -221,6 +221,7 @@ class ProgramingProject(JSONResponseMixin, View):
                             form = SGroupForm(request.POST)
                     except ObjectDoesNotExist:
                         form = SGroupForm(request.POST)
+                    print form, form.is_valid()
                     if form.is_valid():
                         if 'sgroup_id' not in request.POST:
                             add = form.save(commit=False)
@@ -849,12 +850,9 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                 proyecto_id=kwargs['pro'], sector_id=kwargs['sec'])
             ds = DSector.objects.filter(
                 project_id=kwargs['pro'], sector_id=kwargs['sec'])
-            print ds.count(), 'dsectorids'
             operations = DSMetrado.objects.filter(
                 dsector_id__in=[x.dsector_id for x in ds])
             lst = list()
-            print sales.count(), 'list ventas'
-            print operations.count(), 'list operations'
             for s in sales:
                 lst.append({
                     'materials': s.materiales_id,
@@ -868,27 +866,36 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                     'sales': s.cantidad,
                     'operations': '-'})
             for o in operations:
+                c = 0
                 for x in lst:
-                    if 'materials' in x.keys():
-                        print x['materials']
-                        if x['materials'] == o.materials_id:
-                            x['operations'] = o.quantity
-                        else:
-                            lst.append({
-                                'materials': o.materials_id,
-                                'name': '%s %s' % (
-                                    o.materials.matnom, o.materials.matmed),
-                                'brand_id': o.brand_id,
-                                'brand': o.brand.brand,
-                                'model_id': o.model_id,
-                                'model': o.model.model,
-                                'und': o.materials.unidad.uninom,
-                                'sales': '-',
-                                'operations': o.quantity})
-                            break
-
+                    mat = (x['materials'] == o.materials_id)
+                    brand = (x['brand_id'] == o.brand_id)
+                    model = (x['model_id'] == o.model_id)
+                    if mat and brand and model:
+                        x['operations'] = o.quantity
+                        break
+                    else:
+                        c += 1
+                if len(lst) == c:
+                    lst.append({
+                        'materials': o.materials_id,
+                        'name': '%s %s' % (
+                            o.materials.matnom, o.materials.matmed),
+                        'brand_id': o.brand_id,
+                        'brand': o.brand.brand,
+                        'model_id': o.model_id,
+                        'model': o.model.model,
+                        'und': o.materials.unidad.uninom,
+                        'sales': '-',
+                        'operations': o.quantity})
+                    continue
             context['lst'] = lst
-            print len(lst), 'here length compare'
+            context['sales'] = sales.aggregate(amount=Sum(
+                                'cantidad', field='cantidad*precio'))['amount']
+            context['operations'] = operations.aggregate(amount=Sum(
+                            'quantity', field='quantity*ppurchase'))['amount']
+            context['currency'] = sales[0].proyecto.currency.moneda
+            context['symbol'] = sales[0].proyecto.currency.simbolo
             return render(request, 'operations/comparematerials.html', context)
         except TemplateDoesNotExist, e:
             raise Http404(e)

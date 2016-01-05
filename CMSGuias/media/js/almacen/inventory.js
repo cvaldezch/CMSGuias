@@ -136,16 +136,15 @@ var search = function (ctrl,page) {
 	data['page'] = page;
 	$.get('',data,function (response) {
 		var $tbody = $("tbody");
-		var template = "<tr class='{{status}}'><td>{{ item }}</td>"+
-									"<td>{{ materiales_id }}</td>"+
-									"<td>{{ matnom }}</td>"+
-									"<td>{{ matmed }}</td>"+
-									"<td>{{ unid }}</td>"+
-									"<td>{{ stkmin }}</td>"+
-									"<td>{{ stock }}</td>"+
-									"<td>{{ ingreso }}</td>"+
-									"<td>{{ compra_id }}</td>"+
-									"<td><button value='{{ materiales_id }}'' class='btn btn-xs btn-warning btn-add-supply text-black' {{ dis }}><span class='glyphicon glyphicon-plus'></span><span class='glyphicon glyphicon-shopping-cart'></span></button></td></tr>";
+		var template = "<tr class='{{status}}'><td>{{item}}</td>"+
+									"<td><a href='brand/{{materiales_id}}/'>{{materiales_id}}</a></td>"+
+									"<td>{{matnom}} - {{matmed}}</td>"+
+									"<td>{{unid}}</td>"+
+									"<td>{{stkmin}}</td>"+
+									"<td>{{stock}}</td>"+
+									"<td>{{ingreso}}</td>"+
+									"<td>{{compra_id}}</td>"+
+									"<td><button value='{{ materiales_id }}' class='btn btn-xs btn-warning btn-add-supply text-black' {{ dis }}><span class='glyphicon glyphicon-plus'></span><span class='glyphicon glyphicon-shopping-cart'></span></button></td></tr>";
 		$tbody.empty();
 		for (var x in response.list) {
 			response.list[x].status = response.list[x].stock <= 0 ? 'danger' : response.list[x].stock >= response.list[x].stkmin ? 'success' : 'warning'
@@ -168,7 +167,7 @@ var search = function (ctrl,page) {
 		$nav.append(tmpnav);
 	});
 }
-var search_page = function (name,page) {
+var search_page = function (name, page) {
 	console.log(name);
 	console.info($("[name="+name+"]").get(0));
 	var $ctrl = $("[name="+name+"]").get(0);

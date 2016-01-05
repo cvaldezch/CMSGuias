@@ -43,6 +43,7 @@ addResultTable = (response) ->
                 <td>{{ measure }}</td>
                 <td class=\"text-center\">{{ unit }}</td>
                 <td>{{ finished }}</td>
+                {{#user}}
                 <td>{{ area }}</td>
                 <td class=\"text-center\">
                     <button value=\"{{ materials }}\" data-des=\"{{ name }}\" data-met=\"{{ measure }}\" data-unit=\"{{ unit }}\" data-acb=\"{{ finished }}\" data-area=\"{{ area }}\" class=\"btn btn-xs btn-link text-black\" name=\"btnedit\">
@@ -54,6 +55,7 @@ addResultTable = (response) ->
                         <span class=\"fa fa-trash-o\"></span>
                     </button>
                 </td>
+                {{/user}}
                 </tr>"
     $tb = $("table > tbody")
     $tb.empty()

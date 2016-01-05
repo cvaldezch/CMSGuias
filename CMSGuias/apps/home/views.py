@@ -806,6 +806,14 @@ class MaterialsKeep(JSONResponseMixin, TemplateView):
                         'area': x.matare}
                         for x in Materiale.objects.filter(
                             materiales_id__startswith=request.GET.get('code'))]
+                    a = (request.user.get_profile(
+                            ).empdni.charge.area.lower() == 'administrator')
+                    v = (request.user.get_profile(
+                            ).empdni.charge.area.lower() == 'ventas')
+                    if a or v:
+                        context['user'] = True
+                    else:
+                        context['user'] = False
                     context['status'] = True
                 if 'desc' in request.GET:
                     context['list'] = [{
@@ -817,6 +825,14 @@ class MaterialsKeep(JSONResponseMixin, TemplateView):
                         'area': x.matare}
                         for x in Materiale.objects.filter(
                         matnom__icontains=request.GET.get('desc'))]
+                    a = (request.user.get_profile(
+                            ).empdni.charge.area.lower() == 'administrator')
+                    v = (request.user.get_profile(
+                            ).empdni.charge.area.lower() == 'ventas')
+                    if a or v:
+                        context['user'] = True
+                    else:
+                        context['user'] = False
                     context['status'] = True
                 # Ajax method for json
                 if 'searchName' in request.GET:

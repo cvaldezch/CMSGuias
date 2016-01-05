@@ -1642,11 +1642,9 @@ class InventoryView(ListView, JSONResponseMixin):
                                 if brand == None:
                                     bc = 'BR000'
                                 else:
-                                    print len(brand.split('/'))
                                     if len(brand.split('/')) == 2:
-                                        brand = brand.split('/')[-1].strip()
                                         try:
-                                            bc = Brand.objects.get(brand__exact=brand)
+                                            bc = Brand.objects.get(brand__exact=brand.split('/')[-1].strip())
                                             bc = bc.brand_id
                                         except Brand.DoesNotExist:
                                             bc = Brand()
@@ -1655,19 +1653,25 @@ class InventoryView(ListView, JSONResponseMixin):
                                             bc.save()
                                             bc = bc.brand_id
                                         try:
-                                            print brand.split('/')[0].strip().upper()
                                             ml = Model.objects.get(
                                                 model__exact=brand.split('/')[0].strip().upper())
-                                            print 'mocre ', ml
-                                            ml = ml.model_id
+                                            print ml.model
+                                            print brand.split('/')[1].upper()
+                                            if ml.model == brand.split('/')[0].strip().upper():
+                                                ml = ml.model_id
+                                            else:
+                                                ml = Model()
+                                                ml.model_id = genkeys.GenerateIdModel()
+                                                ml.brand_id = bc
+                                                ml.model = brand.split('/')[0].strip().upper()
+                                                ml.save()
+                                                ml = ml.model_id
                                         except ObjectDoesNotExist:
                                             ml = Model()
                                             ml.model_id = genkeys.GenerateIdModel()
                                             ml.brand_id = bc
                                             ml.model = brand.split('/')[0].strip().upper()
                                             ml.save()
-                                            print brand.split('/')[0].strip().upper()
-                                            print ml.model_id
                                             ml = ml.model_id
                                     else:
                                         try:
@@ -1682,8 +1686,9 @@ class InventoryView(ListView, JSONResponseMixin):
                                 try:
                                     ib = InventoryBrand.objects.get(
                                         materials_id=str(cell),
-                                        period=globalVariable.get_year,
-                                        brand_id=bc)
+                                        brand_id=bc,
+                                        model_id=ml,
+                                        period=globalVariable.get_year)
                                     ib.stock += float(str(ws.cell(row=x, column=4).value))
                                     ib.save()
                                 except InventoryBrand.DoesNotExist:
@@ -1754,7 +1759,7 @@ class SupplyView(ListView):
                     for x in queryset
                 ]
                 data['status'] = True
-            except ObjectDoesNotExist, e:
+            except ObjectDoesNotExist:
                 data['status'] = False
             data = simplejson.dumps(data)
             return HttpResponse(
@@ -1826,7 +1831,8 @@ class SupplyView(ListView):
                     print proj
                     bed.orders = ','.join(
                         [x['orders__proyecto__proyecto_id'] for x in proj]
-                        ) if proj[0]['orders__proyecto__proyecto_id'] is not None else ''
+                        ) if proj[0][
+                        'orders__proyecto__proyecto_id'] is not None else ''
                     bed.save()
                     for x in obj:
                         det = DetSuministro()
@@ -2210,19 +2216,16 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
                         context['invoice'] = bedside.invoice
                         context['motive'] = bedside.motive
                         context['observation'] = bedside.observation
-                        context['details'] = [
-                            {
-                                'materials': x.materials_id,
-                                'name': x.materials.matnom,
-                                'meter': x.materials.matmed,
-                                'unit': x.materials.unidad.uninom,
-                                'brand': x.brand.brand,
-                                'model': x.model.model,
-                                'quantity': x.quantity
-                            }
+                        context['details'] = [{
+                            'materials': x.materials_id,
+                            'name': x.materials.matnom,
+                            'meter': x.materials.matmed,
+                            'unit': x.materials.unidad.uninom,
+                            'brand': x.brand.brand,
+                            'model': x.model.model,
+                            'quantity': x.quantity}
                             for x in DetIngress.objects.filter(
-                                ingress_id=request.GET.get('ingress'))
-                        ]
+                                ingress_id=request.GET.get('ingress'))]
                         context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)
@@ -2451,16 +2454,16 @@ class GuideSingle(JSONResponseMixin, TemplateView):
                             # save details
                             for x in det:
                                 # get Stock Inventory of brand and model
-                                inv = Inventario.objects.filter(
+                                inv = Inventario.objects.get(
                                         periodo=globalVariable.get_year,
                                         materiales_id=x.materials_id).order_by(
-                                        '-ingreso')[0]
-                                ibm = InventoryBrand.objects.filter(
+                                        '-ingreso')
+                                ibm = InventoryBrand.objects.get(
                                     period=globalVariable.get_year,
                                     materials_id=x.materials_id,
                                     brand_id=x.brand_id,
                                     model_id=x.model_id).order_by(
-                                        '-ingress')[0]
+                                        '-ingress')
                                 dg = DetGuiaRemision()
                                 inv.stock = (
                                     float(inv.stock) - float(x.quantity))

@@ -40,10 +40,12 @@
                         </div>
                     </div>
                 </div>
+                {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
                 <button class="btn btn-primary btn-show-new">
                     <span class="fa fa-plus"></span>
                     <span class="form-class">Nuevo Material</span>
                 </button>
+                {% endif %}
                 <div class="panel panel-primary panel-new">
                     <div class="panel-body">
                         <div class="row">
@@ -116,9 +118,11 @@
                                 <th class="text-center">Diametro</th>
                                 <th class="text-center">Unidad</th>
                                 <th class="text-center">Acabado</th>
+                                {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
                                 <th class="text-center">Area</th>
                                 <th class="text-center">Edit</th>
                                 <th class="text-center">Eliminar</th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -130,6 +134,7 @@
                                     <td>{{ x.matmed }}</td>
                                     <td class="text-center">{{ x.unidad.uninom }}</td>
                                     <td>{{ x.matacb }}</td>
+                                    {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
                                     <td>{{ x.matare }}</td>
                                     <td class="text-center">
                                         <button value="{{ x.materiales_id }}" class="btn btn-xs btn-link text-black" data-des="{{ x.matnom }}" data-met="{{ x.matmed }}" data-unit="{{ x.unidad_id }}" data-acb="{{ x.matacb }}" data-area="{{ x.matare }}" name="btnedit">
@@ -141,6 +146,7 @@
                                             <span class="fa fa-trash-o"></span>
                                         </button>
                                     </td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                         </tbody>

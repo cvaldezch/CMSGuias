@@ -48,7 +48,7 @@ searchDesc = function(event) {
 
 addResultTable = function(response) {
   var $tb, template, x;
-  template = "<tr> <td class=\"text-center\">{{ item }}</td> <td class=\"text-center\">{{ materials }}</td> <td>{{ name }}</td> <td>{{ measure }}</td> <td class=\"text-center\">{{ unit }}</td> <td>{{ finished }}</td> <td>{{ area }}</td> <td class=\"text-center\"> <button value=\"{{ materials }}\" data-des=\"{{ name }}\" data-met=\"{{ measure }}\" data-unit=\"{{ unit }}\" data-acb=\"{{ finished }}\" data-area=\"{{ area }}\" class=\"btn btn-xs btn-link text-black\" name=\"btnedit\"> <span class=\"fa fa-edit\"></span> </button> </td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-red\" name=\"btndel\" value=\"{{ materials }}\" data-name=\"{{ name }}\" data-measure=\"{{ measure }}\" > <span class=\"fa fa-trash-o\"></span> </button> </td> </tr>";
+  template = "<tr> <td class=\"text-center\">{{ item }}</td> <td class=\"text-center\">{{ materials }}</td> <td>{{ name }}</td> <td>{{ measure }}</td> <td class=\"text-center\">{{ unit }}</td> <td>{{ finished }}</td> {{#user}} <td>{{ area }}</td> <td class=\"text-center\"> <button value=\"{{ materials }}\" data-des=\"{{ name }}\" data-met=\"{{ measure }}\" data-unit=\"{{ unit }}\" data-acb=\"{{ finished }}\" data-area=\"{{ area }}\" class=\"btn btn-xs btn-link text-black\" name=\"btnedit\"> <span class=\"fa fa-edit\"></span> </button> </td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-red\" name=\"btndel\" value=\"{{ materials }}\" data-name=\"{{ name }}\" data-measure=\"{{ measure }}\" > <span class=\"fa fa-trash-o\"></span> </button> </td> {{/user}} </tr>";
   $tb = $("table > tbody");
   $tb.empty();
   for (x in response.list) {
