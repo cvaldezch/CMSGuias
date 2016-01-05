@@ -57,6 +57,22 @@
             </div>
         </div>
     </div>
+    {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
+    <div class="card">
+        <div class="card-content">
+            <div class="row">
+                <div class="col l6">
+                    <h5 class="center-align">Compras</h5>
+                    <h5 class="center-align">{{amount.apurchase}}</h5>
+                </div>
+                <div class="col l6">
+                    <h5 class="center-align">Ventas</h5>
+                    <h5 class="center-align">{{amount.apurchase}}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
     <div class="card" id="card">
         <div class="card-action">
             {% if dsector.status == 'PE' %}

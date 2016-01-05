@@ -523,6 +523,11 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                 context['modify'] = MMetrado.objects.filter(
                                         dsector_id=kwargs['area']).order_by(
                                             '-register')[:5]
+                if request.user.get_profile().empdni.charge.area.lower() == 'ventas' or request.user.get_profile().empdni.charge.area .lower() == 'administrator':
+                    context['amount'] = DSMetrado.objects.filter(
+                        dsector_id=kwargs['area']).aggregate(apurchase=Sum(
+                            'quantity', field='quantity*ppurchase'),
+                            asales=Sum('quantity', field='quantity*psales'))
                 return render(request, 'operations/dsector.html', context)
             except TemplateDoesNotExist as e:
                 raise Http404(e)
