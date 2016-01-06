@@ -62,7 +62,7 @@ selectProject = function(event) {
 addItem = function(event) {
   var data;
   data = new Object;
-  $("div.modal-body").find("input, select").each(function(index, element) {
+  $("div.modal-body").find("input, select, textarea").each(function(index, element) {
     if (element.value === "") {
       $().toastmessage("showWarningToast", "Campo vacio. " + element.name);
       return false;
@@ -195,7 +195,7 @@ selectDel = function(event) {
 
 loadEdit = function(event) {
   $("input[name=edit-item]").val(this.getAttribute("data-item"));
-  $("input[name=desc]").val(this.getAttribute("data-desc"));
+  $("textarea[name=desc]").val(this.getAttribute("data-desc"));
   $("select[name=unit]").val(this.getAttribute("data-unit"));
   $("input[name=quantity]").val(this.getAttribute("data-quantity"));
   $("input[name=price]").val(this.getAttribute("data-price"));

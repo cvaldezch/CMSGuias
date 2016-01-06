@@ -53,7 +53,7 @@ selectProject = (event) ->
 
 addItem = (event) ->
     data = new Object
-    $("div.modal-body").find("input, select").each (index, element) ->
+    $("div.modal-body").find("input, select, textarea").each (index, element) ->
         if element.value is ""
             $().toastmessage "showWarningToast", "Campo vacio. #{element.name}"
             return false
@@ -180,7 +180,7 @@ selectDel = (event) ->
 
 loadEdit = (event) ->
     $("input[name=edit-item]").val @getAttribute "data-item"
-    $("input[name=desc]").val @getAttribute "data-desc"
+    $("textarea[name=desc]").val @getAttribute "data-desc"
     $("select[name=unit]").val @getAttribute "data-unit"
     $("input[name=quantity]").val @getAttribute "data-quantity"
     $("input[name=price]").val @getAttribute "data-price"
