@@ -695,6 +695,25 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
         $("#commentm").closeModal()
         return
     return
+  $scope.changeSelOrder = ($event) ->
+    # console.log $event.currentTarget.value
+    $("[name=chkorders]").each (index, element) ->
+      $(element).prop "checked", Boolean parseInt $event.currentTarget.value
+      return
+    return
+  $scope.pOrders = ($event) ->
+    $("[name=chkorders]").each (index, element) ->
+      $e = $(element)
+      if $e.is(":checked")
+        $scope.dataOrders.append
+          "id": $e.val()
+          "name": $e.attr "data-name"
+          "unit": $e.attr "data-unit"
+          "quantity": $e.attr "data-quantity"
+        return
+    if $scope.dataOrders.length
+      $("#morders").openModal()
+    return
   $scope.$watch 'ascsector', ->
     if $scope.ascsector
       $scope.fsl = true
@@ -713,6 +732,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
         return
       , 800
     return
+    $scope.dataOrders = new Array()
   # $scope.$watch 'gui.smat', ->
   #   $(".floatThead").floatThead 'reflow'
   #   return

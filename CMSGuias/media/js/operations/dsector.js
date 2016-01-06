@@ -794,6 +794,28 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
       }
     });
   };
+  $scope.changeSelOrder = function($event) {
+    $("[name=chkorders]").each(function(index, element) {
+      $(element).prop("checked", Boolean(parseInt($event.currentTarget.value)));
+    });
+  };
+  $scope.pOrders = function($event) {
+    $("[name=chkorders]").each(function(index, element) {
+      var $e;
+      $e = $(element);
+      if ($e.is(":checked")) {
+        $scope.dataOrders.append({
+          "id": $e.val(),
+          "name": $e.attr("data-name"),
+          "unit": $e.attr("data-unit"),
+          "quantity": $e.attr("data-quantity")
+        });
+      }
+    });
+    if ($scope.dataOrders.length) {
+      $("#morders").openModal();
+    }
+  };
   $scope.$watch('ascsector', function() {
     if ($scope.ascsector) {
       $scope.fsl = true;
@@ -814,5 +836,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
         $('.collapsible').collapsible();
       }, 800);
     }
+    return;
+    return $scope.dataOrders = new Array();
   });
 });

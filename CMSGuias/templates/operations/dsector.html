@@ -199,7 +199,10 @@
                 {% verbatim %}
                     <script type="text/ng-template" id="areatmp.html">
                         <td class="center-align">{{$index + 1}}</td>
-                        <td class="center-align"><p><input type="checkbox" name="chkorders"/><label></label></p></td>
+                        <td class="center-align">
+                            <input type="checkbox" name="chkorders" id="chk{{x.fields.materials.pk}}" value="{{x.fields.materials.pk}}" data-brand="" data-model="" data-quantity="quantity">
+                            <label for="chk{{x.fields.materials.pk}}"></label>
+                        </td>
                         <td class="center-align text-9">{{x.fields.materials.pk}}</td>
                         <td>{{x.fields.materials.fields.matnom}} {{x.fields.materials.fields.matmed}}</td>
                         <td class="center-align">{{x.fields.brand.fields.brand}}</td>
@@ -227,6 +230,15 @@
                         </td>
                     </script>
                 {% endverbatim %}
+                <p>
+                    <p>
+                      <strong>Seleccionar: </strong>
+                      <input name="sltorder" type="radio" ng-click="changeSelOrder($event)" id="all" value="1"/>
+                      <label for="all">Todo</label>
+                      <input name="sltorder" type="radio" ng-click="changeSelOrder($event)" id="nothing" value="0"/>
+                      <label for="nothing">Ninguno</label>
+                    </p>
+                </p>
                 <table class="table responsive-table floatThead table-withoutApproved">
                     <caption ng-show="fmatwoa">
                         <div class="input-field">
@@ -584,6 +596,25 @@
                 <i class="fa fa-floppy-o"></i>
                 GUARDAR
             </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col l12 modal" id="morders">
+            <div class="modal-content">
+                <h5>Pedido Almacén</h5>
+                <table id="torders" class="table responsive-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th>Cantidad</th>
+                            <th>C. Pedido</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
