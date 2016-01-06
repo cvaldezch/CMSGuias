@@ -199,7 +199,7 @@
                 {% verbatim %}
                     <script type="text/ng-template" id="areatmp.html">
                         <td class="center-align">{{$index + 1}}</td>
-                        <td><input type="checkbox" class=""></td>
+                        <td class="center-align"><p><input type="checkbox" name="chkorders"/><label></label></p></td>
                         <td class="center-align text-9">{{x.fields.materials.pk}}</td>
                         <td>{{x.fields.materials.fields.matnom}} {{x.fields.materials.fields.matmed}}</td>
                         <td class="center-align">{{x.fields.brand.fields.brand}}</td>
@@ -240,7 +240,7 @@
                             <th class="center-align">
                                 <i class="fa fa-angle-double-up cursor-hand" onClick="$('html,body').animate({scrollTop:500},400);"></i>
                             </th>
-                            <th>check</th>
+                            <th></th>
                             <th class="center-align">Código</th>
                             <th>Descripción</th>
                             <th class="center-align">Marca</th>
