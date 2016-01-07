@@ -1,0 +1,112 @@
+{% extends "basemd.html" %}
+{% block title %}
+  Servicios
+{% endblock title %}
+{% block menu %}
+    {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
+        {% include "menus/salesmd.html" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'logistica' %}
+        {% include "menus/logisticsmd.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+        {% include "menus/operations.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'almacen' %}
+        {% include "menus/storage_menu.htm" %}
+    {% endif %}
+{% endblock menu %}
+{% block content %}
+<div>
+  <div class="card card-panel">
+    <div class="card-content">
+      <h4>Servicios de Proyecto: {{ pro.nompro }}</h4>
+    </div>
+    {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
+      <div class="card-action">
+        <button type="button" class="btn modal-trigger" data-target="mservices">
+          <i class="fa fa-usd"></i>
+          <span>Monto Servicios</span>
+        </button>
+      </div>
+    {% endif %}
+  </div>
+  <div class="row">
+    <div class="col l6">
+      <div class="card card-panel">
+        <div class="card-content">
+          <a href="{% url 'orders_service' %}" class="btn grey lighten-5 grey-text text-darken-3">
+            <i class="fa fa-plus"></i>
+            Nueva Orden
+          </a>
+          <ul class="collection">
+            {% for x in services %}
+              <li class="collection-item avatar">
+                {# <img src="images/yuna.jpg" alt="" class="circle"> #}
+                <i class="fa fa-file-text circle"></i>
+                <span class="title"><a href="{% url 'rpt_serviceorder' x.id %}" target="_blank">{{ x.id }}</a></span>
+                <p>{{ x.supplier }} <br>
+                   {{ x.register }}
+                </p>
+                <span href="#!" class="secondary-content"><h5>{{ x.symbol }} {{ x.amount }}</h5></span>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col l6">
+      <div class="card card-panel">
+        <div class="card-content">
+          <table>
+            <tbody>
+              <tr>
+                <th><h4>Servicios</h4></th>
+                <td class="right-align"><h4>{{ pro.aservices }}</h4></td>
+              </tr>
+              <tr>
+                <th><h4>Ordenes</h4></th>
+                <th class="right-align"><h4>{{ total }}</h4></th>
+              </tr>
+              <tr>
+                <td colspan="2"><div class="divider"></div></td>
+              </tr>
+              <tr>
+                <th><h4>Total</h4></th>
+                <td class="right-align"><h4>{{ diff }}</h4></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="modal col l3 offset-l4" id="mservices">
+      <form method="post" action="">
+      {% csrf_token %}
+      <div class="modal-content">
+        <h4>Monto de Servicios</h4>
+        <div class="input-field">
+          <input type="number" id="aservices" name="aservices" class="validate">
+          <label for="aservices">Monto</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" name="saservices" value="true" class="btn grey lighten-5 grey-text text-darken-3">
+          <i class="fa fa-check"></i>
+          Guardar
+        </button>
+        <button type="reset" class="btn grey lighten-5 grey-text text-darken-3 waves-effect modal-action modal-close">
+          <i class="fa fa-times"></i>
+          Cancelar
+        </button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $('.modal-trigger').leanModal();
+</script>
+{% endblock content %}

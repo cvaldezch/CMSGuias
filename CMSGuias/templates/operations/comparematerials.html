@@ -10,10 +10,10 @@ Comparar
       {% include "menus/logisticsmd.htm" %}
   {% endif %}
   {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
-      {% include "menus/operations.htm" %}
+      {% include "menus/operationsmd.htm" %}
   {% endif %}
   {% if user.get_profile.empdni.charge.area|lower == 'almacen' %}
-      {% include "menus/storage_menu.htm" %}
+      {% include "menus/storagemd.htm" %}
   {% endif %}
 {% endblock menu %}
 {% block content %}

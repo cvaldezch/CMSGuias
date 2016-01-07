@@ -40,6 +40,12 @@ class Proyecto(models.Model):
                 max_length=254, null=True, blank=True, default='')
     phone = models.CharField(max_length=16, blank=True, null=True)
     email = models.EmailField(max_length=254, blank=True, null=True)
+    aservices = models.DecimalField(
+                    max_digits=9,
+                    decimal_places=3,
+                    null=True,
+                    blank=True,
+                    default=0)
     flag = models.BooleanField(default=True, null=False)
 
     audit_log = AuditLog()

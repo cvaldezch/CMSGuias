@@ -65,6 +65,7 @@ class Compra(models.Model):
     deposito = models.FileField(upload_to=url, null=True, blank=True)
     discount = models.FloatField(default=0, blank=True)
     # exchnage = models.DecimalField(max_digist=2, place_decimals=3)
+    sigv = models.BooleanField(default=True, blank=True)
     observation = models.TextField(null=True, blank=True)
     flag = models.BooleanField(default=True)
 
@@ -93,6 +94,7 @@ class DetCompra(models.Model):
     # models.PositiveSmallIntegerField(default=0)
     cantstatic = models.FloatField()
     flag = models.CharField(max_length=1, default='0')
+    perception = models.FloatField(default=0, blank=True)
 
     class Meta:
         ordering = ['materiales']
@@ -259,6 +261,7 @@ class ServiceOrder(models.Model):
                     Employee, related_name='elaboratedAsEmployee')
     authorized = models.ForeignKey(
                     Employee, related_name='authorizedAsEmployee')
+    sigv = models.BooleanField(default=True, blank=True)
     status = models.CharField(max_length=2, default='PE')
     flag = models.BooleanField(default=True)
 

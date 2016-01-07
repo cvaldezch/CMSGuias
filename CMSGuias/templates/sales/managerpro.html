@@ -224,6 +224,12 @@
                                                         <span class="glyphicon-class">Lista Materiales</span>
                                                     </a>
                                                 </li>
+                                                <li>
+                                                    <a href="{% url 'servicesp_view' project.proyecto_id %}" class="btn btn-link btn-xs text-black">
+                                                        <i class="fa fa-usd"></i>
+                                                        <span class="glyphicon-class">Servicios</span>
+                                                    </a>
+                                                </li>
                                             {% endif %}
                                         {% endif %}
                                         {% if project.status == 'AC' and request.user.get_profile.empdni.charge.cargos|lower == 'jefe de operaciones' or  request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'ventas' %}
