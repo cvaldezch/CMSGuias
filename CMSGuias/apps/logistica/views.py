@@ -1658,6 +1658,7 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
                 if 'generateService' in request.POST:
                     form = ServiceOrderForm(request.POST, request.FILES)
                     print form
+                    print form.is_valid()
                     if form.is_valid():
                         add = form.save(commit=False)
                         service = genkeys.GenerateIdServiceOrder()
