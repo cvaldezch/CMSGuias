@@ -7,10 +7,10 @@
 {% endblock script %}
 {% block menu %}
     {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
-        {% include "menus/sale.htm" %}
+        {% include "menus/salesmd.htm" %}
     {% endif %}
     {% if user.get_profile.empdni.charge.area|lower == 'logistica' %}
-        {% include "menus/logistics.htm" %}
+        {% include "menus/logisticsmd.htm" %}
     {% endif %}
     {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
         {% include "menus/operations.htm" %}
