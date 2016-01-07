@@ -1,0 +1,82 @@
+<div class="navbar-fixed">
+  <ul id="lst-sum" class="dropdown-content">
+    <li class="divider"></li>
+    <li>
+      <a class="black-text" href="{% url 'view_supply_pending' %}">Pendientes</a>
+    </li>
+    <li>
+      <a class="black-text" href="{% url 'view_convert_supply' %}">Aprobados</a>
+    </li>
+  </ul>
+  <ul id="lst-quote" class="dropdown-content">
+    <li><a href="{% url 'view_quote_list' %}" class="black-text"> Código</a></li>
+    <li class="divider"></li>
+    <li><a class="black-text" href="{% url 'view_quote_single' %}"> Cotizacion</a></li>
+    <li class="divider"></li>
+    <li><a class="black-text" href="{% url 'view_purchase_single' %}"> Compra</a></li>
+    <li><a class="black-text" href="{% url 'view_purchase_list' %}"> Lista Compras</a></li>
+    <div class="divider"></div>
+    <li><a href="{% url 'materials_price_views' %}" class="black-text"> Precios</a></li>
+  </ul>
+  <ul id="lst-mant" class="dropdown-content">
+    <li><a href="{% url 'view_create_supplier' %}" class="black-text"> Proveedor</a></li>
+    <li class="divider"></li>
+    <li><a class="black-text" href="{% url 'view_login_suppler' %}"> Usuario</a></li>
+    <!-- <li class="divider"></li> -->
+  </ul>
+  <ul id="user-setting" class="dropdown-content">
+    <li><a class="black-text">Cargo: {{ user.get_profile.empdni.charge.cargos }}</a></li>
+    <li class="divider"></li>
+    <li>
+      <a class="black-text" href="{% url 'vista_logout' %}">
+        <span class="fa fa-sign-out"></span> Cerrar Session
+      </a>
+    </li>
+  </ul>
+  <nav class="grey darken-3">
+    <!-- <div class="nav-warpper"> -->
+    <!-- menu for mobile -->
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a href="/"><span class="fa fa-home fa-lg"></span></a></li>
+        <li>
+          <a class="dropdown-button" href="#!" data-hover="true" data-activates="lst-sum" data-gutter="0"> Suministros</a>
+        </li>
+        <li><a class="dropdown-button" href="#!" data-hover="true" data-activates="lst-quote" data-gutter="0"> Cotización</a></li>
+        <li><a href="{% url 'view_projects' %}"> Proyectos</a></li>
+        <li><a href="{% url 'orders_service' %}">Servicio</a></li>
+        <li><a class="dropdown-button" href="#!" data-hover="true" data-activates="lst-mant" data-gutter="0"> Mantenimientos</a></li>
+        <li>
+          <a class="dropdown-button" href="#!" data-hover="true" data-activates="user-setting" data-gutter="0" data-beloworigin="true">
+            {{ user.get_profile.empdni.firstname }}, {{ user.get_profile.empdni.lastname }} <b class="fa fa-caret-down"></b>
+          </a>
+        </li>
+      </ul>
+       <ul id="slide-out" class="side-nav">
+        <li><a href="#!">First Sidebar Link</a></li>
+        <li><a href="#!">Second Sidebar Link</a></li>
+        <li class="no-padding">
+          <ul class="collapsible collapsible-accordion">
+            <li>
+              <a class="collapsible-header">Dropdown<i class="mdi-navigation-arrow-drop-down"></i></a>
+              <div class="collapsible-body">
+                <ul>
+                  <li><a href="#!">First</a></li>
+                  <li><a href="#!">Second</a></li>
+                  <li><a href="#!">Third</a></li>
+                  <li><a href="#!">Fourth</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <a class="brand-logo" href="/logistics/">Logística</a>
+      <a href="#" data-activates="slide-out" class="button-collapse">
+        <span class="fa fa-bars fa-2x"></span>
+      </a>
+    <!-- </div> -->
+  </nav>
+</div>
+<script type="text/javascript">
+  $(".button-collapse").sideNav();
+</script>
