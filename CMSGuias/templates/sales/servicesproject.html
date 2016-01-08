@@ -86,13 +86,13 @@
     </div>
   </div>
   <div class="row">
-    <div class="modal col l3 offset-l4" id="mservices">
+    <div class="modal col l4 offset-l4" id="mservices">
       <form method="post" action="">
       {% csrf_token %}
       <div class="modal-content">
         <h4>Monto de Servicios</h4>
         <div class="input-field">
-          <input type="number" id="aservices" name="aservices" class="validate">
+          <input type="number" id="aservices" name="aservices" step="0.01" class="validate">
           <label for="aservices">Monto</label>
         </div>
       </div>

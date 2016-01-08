@@ -702,16 +702,19 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
       return
     return
   $scope.pOrders = ($event) ->
+    $scope.dataOrders = new Array()
     $("[name=chkorders]").each (index, element) ->
       $e = $(element)
       if $e.is(":checked")
-        $scope.dataOrders.append
+        $scope.dataOrders.push
           "id": $e.val()
-          "name": $e.attr "data-name"
+          "name": $e.attr "data-nme"
           "unit": $e.attr "data-unit"
           "quantity": $e.attr "data-quantity"
+          "qorders": $e.attr "data-quantity"
         return
-    if $scope.dataOrders.length
+    console.log $scope.dataOrders
+    if $scope.dataOrders
       $("#morders").openModal()
     return
   $scope.$watch 'ascsector', ->

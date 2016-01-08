@@ -8,11 +8,10 @@ from django.db.models import Q, Sum
 # from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.exceptions import ObjectDoesNotExist
 from django.core import serializers
-from django.core.urlresolvers import reverse
 from django.contrib import messages
 # from django.contrib.auth.mod import User
 from django.contrib.auth.decorators import login_required
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse
 from django.shortcuts import render_to_response, render, redirect
 from django.utils import simplejson
 from django.utils.decorators import method_decorator
@@ -2250,24 +2249,27 @@ class ServicesProjectView(JSONResponseMixin, TemplateView):
             dsvc = DetailsServiceOrder.objects.filter(
                 serviceorder_id__in=[x.serviceorder_id for x in svc])
             lst = list()
-
             for x in svc.order_by('-register'):
                 am = dsvc.filter(
                         serviceorder_id=x.serviceorder_id
                         ).aggregate(amount=Sum(
                             'quantity', field='quantity*price'))['amount']
+                cs = ''
+                if x.currency_id == 'CU02':
+                    am = (am/x.project.exchange)
+                    cs = ' - USD'
                 conf = Configuracion.objects.get(
                         periodo=x.register.strftime('%Y'))
-                dst = (((x.dsct * am)/100) + am)
+                dst = (((x.dsct*am)/100)+am)
                 if x.sigv:
-                    am = (((conf.igv * dst)/100) + dst)
+                    am = (((conf.igv*dst)/100)+dst)
                 else:
                     am = dst
                 lst.append({
                     'id': x.serviceorder_id,
                     'supplier': x.supplier.razonsocial,
                     'register': x.register.strftime('%d-%m-%Y'),
-                    'symbol': x.currency.simbolo,
+                    'symbol': '%s%s' % (x.currency.simbolo, cs),
                     'amount': am})
                 am = None
             context['services'] = lst

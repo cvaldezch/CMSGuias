@@ -800,19 +800,22 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
     });
   };
   $scope.pOrders = function($event) {
+    $scope.dataOrders = new Array();
     $("[name=chkorders]").each(function(index, element) {
       var $e;
       $e = $(element);
       if ($e.is(":checked")) {
-        $scope.dataOrders.append({
+        $scope.dataOrders.push({
           "id": $e.val(),
-          "name": $e.attr("data-name"),
+          "name": $e.attr("data-nme"),
           "unit": $e.attr("data-unit"),
-          "quantity": $e.attr("data-quantity")
+          "quantity": $e.attr("data-quantity"),
+          "qorders": $e.attr("data-quantity")
         });
       }
     });
-    if ($scope.dataOrders.length) {
+    console.log($scope.dataOrders);
+    if ($scope.dataOrders) {
       $("#morders").openModal();
     }
   };
