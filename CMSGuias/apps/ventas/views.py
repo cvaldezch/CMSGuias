@@ -2246,22 +2246,32 @@ class ServicesProjectView(JSONResponseMixin, TemplateView):
         try:
             context['pro'] = Proyecto.objects.get(
                             proyecto_id=kwargs['pro'])
-            #Configuracion.objeects.get()
             svc = ServiceOrder.objects.filter(project_id=kwargs['pro'])
             dsvc = DetailsServiceOrder.objects.filter(
                 serviceorder_id__in=[x.serviceorder_id for x in svc])
-            context['services'] = [{
-                'id': x.serviceorder_id,
-                'supplier': x.supplier.razonsocial,
-                'register': x.register.strftime('%d-%m-%Y'),
-                'symbol': x.currency.simbolo,
-                'amount': dsvc.filter(
-                    serviceorder_id=x.serviceorder_id
-                    ).aggregate(amount=Sum(
-                        'quantity', field='quantity*price'))['amount']
-            } for x in svc.order_by('-register')]
-            context['total'] = dsvc.aggregate(
-                amount=Sum('quantity', field='quantity*price'))['amount']
+            lst = list()
+
+            for x in svc.order_by('-register'):
+                am = dsvc.filter(
+                        serviceorder_id=x.serviceorder_id
+                        ).aggregate(amount=Sum(
+                            'quantity', field='quantity*price'))['amount']
+                conf = Configuracion.objects.get(
+                        periodo=x.register.strftime('%Y'))
+                dst = (((x.dsct * am)/100) + am)
+                if x.sigv:
+                    am = (((conf.igv * dst)/100) + dst)
+                else:
+                    am = dst
+                lst.append({
+                    'id': x.serviceorder_id,
+                    'supplier': x.supplier.razonsocial,
+                    'register': x.register.strftime('%d-%m-%Y'),
+                    'symbol': x.currency.simbolo,
+                    'amount': am})
+                am = None
+            context['services'] = lst
+            context['total'] = sum([x['amount'] for x in lst])
             context['diff'] = (
                 float(context['pro'].aservices) - context['total'])
             return render(request, 'sales/servicesproject.html', context)

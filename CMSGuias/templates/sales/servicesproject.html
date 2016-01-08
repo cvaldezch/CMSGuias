@@ -20,7 +20,11 @@
 <div>
   <div class="card card-panel">
     <div class="card-content">
-      <h4>Servicios de Proyecto: {{ pro.nompro }}</h4>
+      <h4>
+        Servicios de Proyecto: {{ pro.nompro }}
+        <br>
+        <small>{{ pro.currency.moneda }}</small>
+      </h4>
     </div>
     {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
       <div class="card-action">
@@ -48,7 +52,7 @@
                 <p>{{ x.supplier }} <br>
                    {{ x.register }}
                 </p>
-                <span href="#!" class="secondary-content"><h5>{{ x.symbol }} {{ x.amount }}</h5></span>
+                <span href="#!" class="secondary-content"><h5>{{ x.symbol }} {{ x.amount|floatformat:"2" }}</h5></span>
               </li>
             {% endfor %}
           </ul>
@@ -61,19 +65,19 @@
           <table>
             <tbody>
               <tr>
-                <th><h4>Servicios</h4></th>
-                <td class="right-align"><h4>{{ pro.aservices }}</h4></td>
+                <th><h4>Asignado</h4></th>
+                <td class="right-align"><h4>{{ pro.aservices|floatformat:"2" }}</h4></td>
               </tr>
               <tr>
-                <th><h4>Ordenes</h4></th>
-                <th class="right-align"><h4>{{ total }}</h4></th>
+                <th><h4>Gastado</h4></th>
+                <th class="right-align"><h4>{{ total|floatformat:"2" }}</h4></th>
               </tr>
               <tr>
                 <td colspan="2"><div class="divider"></div></td>
               </tr>
               <tr>
                 <th><h4>Total</h4></th>
-                <td class="right-align"><h4>{{ diff }}</h4></td>
+                <td class="right-align"><h4>{{ diff|floatformat:"2" }}</h4></td>
               </tr>
             </tbody>
           </table>

@@ -390,7 +390,8 @@ class Configuracion(models.Model):
     periodo = models.CharField(max_length=4, default='')
     registrado = models.DateTimeField(auto_now_add=True)
     moneda = models.ForeignKey(Moneda, to_field='moneda_id')
-    igv = models.IntegerField(default=10)
+    igv = models.FloatField(default=18)
+    perception = models.FloatField(default=2)
 
     def __unicode__(self):
         return '%s %s' % (self.periodo, self.moneda)
