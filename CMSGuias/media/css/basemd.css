@@ -122,3 +122,10 @@ select:focus:not([readonly]) + label {
   min-width: 280px;
   width: 280px;
 }
+tbody tr td {
+  padding: 0;
+}
+input[type="number"] {
+  height: 35px;
+  margin-bottom: 0px;
+}

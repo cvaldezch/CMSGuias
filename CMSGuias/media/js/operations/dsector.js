@@ -25,6 +25,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
   $scope.percharge = "";
   angular.element(document).ready(function() {
     var $table;
+    $scope.dataOrders = new Array();
     $('.modal-trigger').leanModal();
     $table = $(".floatThead");
     $table.floatThead({
@@ -800,7 +801,6 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
     });
   };
   $scope.pOrders = function($event) {
-    $scope.dataOrders = new Array();
     $("[name=chkorders]").each(function(index, element) {
       var $e;
       $e = $(element);
@@ -809,8 +809,13 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
           "id": $e.val(),
           "name": $e.attr("data-nme"),
           "unit": $e.attr("data-unit"),
+          "brandid": $e.attr("data-brandid"),
+          "modelid": $e.attr("data-modelid"),
+          "brand": $e.attr("data-brand"),
+          "model": $e.attr("data-model"),
           "quantity": $e.attr("data-quantity"),
-          "qorders": $e.attr("data-quantity")
+          "qorders": $e.attr("data-quantity"),
+          "nipple": $e.attr("data-nipple")
         });
       }
     });

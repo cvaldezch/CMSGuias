@@ -200,7 +200,7 @@
                     <script type="text/ng-template" id="areatmp.html">
                         <td class="center-align">{{$index + 1}}</td>
                         <td class="center-align">
-                            <input type="checkbox" name="chkorders" id="chk{{x.fields.materials.pk}}" value="{{x.fields.materials.pk}}" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" data-quantity="{{x.fields.qorder}}" data-nme="{{x.fields.materials.fields.matnom}} - {{x.fields.materials.fields.matmed}}">
+                            <input type="checkbox" name="chkorders" id="chk{{x.fields.materials.pk}}" value="{{x.fields.materials.pk}}" data-brand="{{x.fields.brand.fields.brand}}" data-brandid="{{x.fields.brand.pk}}" data-modelid="{{x.fields.model.pk}}" data-model="{{x.fields.model.fields.model}}" data-quantity="{{x.fields.qorder}}" data-nme="{{x.fields.materials.fields.matnom}} - {{x.fields.materials.fields.matmed}}" data-nipple="{{x.fields.nipple}}">
                             <label for="chk{{x.fields.materials.pk}}"></label>
                         </td>
                         <td class="center-align text-9">{{x.fields.materials.pk}}</td>
@@ -353,16 +353,16 @@
                             <table class="table responsive-table">
                                 <thead>
                                     <tr>
-                                        <th></th>
-                                        <th>Cantidad</th>
-                                        <th>C. Pendiente</th>
-                                        <th>Tipo</th>
-                                        <th>Descripción</th>
-                                        <th>Diametro</th>
-                                        <th></th>
-                                        <th>Medida</th>
-                                        <th>Observación</th>
-                                        <th></th>
+                                        <th class="center-align"></th>
+                                        <th class="center-align">Cantidad</th>
+                                        <th class="center-align">C. Pendiente</th>
+                                        <th class="center-align">Tipo</th>
+                                        <th class="center-align">Descripción</th>
+                                        <th class="center-align">Diametro</th>
+                                        <th class="center-align"></th>
+                                        <th class="center-align">Medida</th>
+                                        <th class="center-align">Observación</th>
+                                        <th class="center-align"></th>
                                     </tr>
                                 </thead>
                                 <tbody class="nip{{x.fields.materials.pk}}"></tbody>
@@ -599,16 +599,18 @@
         </div>
     </div>
     <div class="row">
-        <div class="col l12 modal" id="morders">
+        <div class="col l12 modal modal-fixed-footer" id="morders">
             <div class="modal-content">
                 <h5>Pedido Almacén</h5>
-                <table id="torders" class="table responsive-table">
+                <table id="torders" class="table highlight responsive-table">
                     <thead>
                         <tr>
                             <th></th>
                             <th>Código</th>
                             <th>Descripción</th>
-                            <th>Cantidad</th>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th class="center-align">Cantidad</th>
                             <th>Pedido</th>
                         </tr>
                     </thead>
@@ -618,9 +620,11 @@
                                 <td>{{$index+1}}</td>
                                 <td>{{x.id}}</td>
                                 <td>{{x.name}}</td>
-                                <td>{{x.quantity}}</td>
+                                <td>{{x.brand}}</td>
+                                <td>{{x.model}}</td>
+                                <td class="center-align">{{x.quantity}}</td>
                                 <td>
-                                    <input type="number" step="0.01" max="{{x.quantity}}" min="0" class="right-align" value="{{x.quantity}}">
+                                    <input type="number" step="0.01" max="{{x.quantity}}" min="0" class="right-align" value="{{x.quantity}}" ng-disabled="x.nipple">
                                 </td>
                             </tr>
                         {% endverbatim %}

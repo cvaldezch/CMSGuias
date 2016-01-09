@@ -18,6 +18,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
   $scope.perarea = ""
   $scope.percharge = ""
   angular.element(document).ready ->
+    $scope.dataOrders = new Array()
     $('.modal-trigger').leanModal()
     $table = $(".floatThead")
     $table.floatThead
@@ -702,7 +703,6 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
       return
     return
   $scope.pOrders = ($event) ->
-    $scope.dataOrders = new Array()
     $("[name=chkorders]").each (index, element) ->
       $e = $(element)
       if $e.is(":checked")
@@ -710,8 +710,13 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
           "id": $e.val()
           "name": $e.attr "data-nme"
           "unit": $e.attr "data-unit"
+          "brandid": $e.attr "data-brandid"
+          "modelid": $e.attr "data-modelid"
+          "brand": $e.attr "data-brand"
+          "model": $e.attr "data-model"
           "quantity": $e.attr "data-quantity"
           "qorders": $e.attr "data-quantity"
+          "nipple": $e.attr "data-nipple"
         return
     console.log $scope.dataOrders
     if $scope.dataOrders
