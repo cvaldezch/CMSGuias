@@ -703,24 +703,57 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
       return
     return
   $scope.pOrders = ($event) ->
-    $("[name=chkorders]").each (index, element) ->
-      $e = $(element)
-      if $e.is(":checked")
-        $scope.dataOrders.push
-          "id": $e.val()
-          "name": $e.attr "data-nme"
-          "unit": $e.attr "data-unit"
-          "brandid": $e.attr "data-brandid"
-          "modelid": $e.attr "data-modelid"
-          "brand": $e.attr "data-brand"
-          "model": $e.attr "data-model"
-          "quantity": $e.attr "data-quantity"
-          "qorders": $e.attr "data-quantity"
-          "nipple": $e.attr "data-nipple"
+    data = $scope.dataOrders
+    $scope.dataOrders = new Array()
+    if $scope.dataOrders.length
+      $("[name=chkorders]").each (index, element) ->
+        $e = $(element)
+        if $e.is(":checked")
+          counter = 0
+          for x in data
+            if x.id == $e.val()
+              continue
+            else
+              counter++
+          console.log counter, data.length
+          if counter == data.length
+            data.push
+              "id": $e.val()
+              "name": $e.attr "data-nme"
+              "unit": $e.attr "data-unit"
+              "brandid": $e.attr "data-brandid"
+              "modelid": $e.attr "data-modelid"
+              "brand": $e.attr "data-brand"
+              "model": $e.attr "data-model"
+              "quantity": $e.attr "data-quantity"
+              "qorders": $e.attr "data-quantity"
+              "nipple": $e.attr "data-nipple"
+            return
+      $scope.dataOrders = data
+    else
+      $("[name=chkorders]").each (index, element) ->
+        $e = $(element)
+        if $e.is(":checked")
+          $scope.dataOrders.push
+            "id": $e.val()
+            "name": $e.attr "data-nme"
+            "unit": $e.attr "data-unit"
+            "brandid": $e.attr "data-brandid"
+            "modelid": $e.attr "data-modelid"
+            "brand": $e.attr "data-brand"
+            "model": $e.attr "data-model"
+            "quantity": $e.attr "data-quantity"
+            "qorders": $e.attr "data-quantity"
+            "nipple": $e.attr "data-nipple"
         return
     console.log $scope.dataOrders
     if $scope.dataOrders
       $("#morders").openModal()
+    return
+  $scope.changeQOrders = ($event) ->
+    for x in $scope.dataOrders
+      if x.id == $event.currentTarget.dataset.materials
+        x.qorders = $event.currentTarget.value
     return
   $scope.$watch 'ascsector', ->
     if $scope.ascsector
@@ -740,7 +773,10 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
         return
       , 800
     return
-    $scope.dataOrders = new Array()
+  $scope.$watch 'dataOrders', (old, nw)->
+    $scope.dataOrders = nw
+    return
+  $scope.dataOrders = new Array()
   # $scope.$watch 'gui.smat', ->
   #   $(".floatThead").floatThead 'reflow'
   #   return

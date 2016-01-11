@@ -801,27 +801,74 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
     });
   };
   $scope.pOrders = function($event) {
-    $("[name=chkorders]").each(function(index, element) {
-      var $e;
-      $e = $(element);
-      if ($e.is(":checked")) {
-        $scope.dataOrders.push({
-          "id": $e.val(),
-          "name": $e.attr("data-nme"),
-          "unit": $e.attr("data-unit"),
-          "brandid": $e.attr("data-brandid"),
-          "modelid": $e.attr("data-modelid"),
-          "brand": $e.attr("data-brand"),
-          "model": $e.attr("data-model"),
-          "quantity": $e.attr("data-quantity"),
-          "qorders": $e.attr("data-quantity"),
-          "nipple": $e.attr("data-nipple")
-        });
-      }
-    });
+    var data;
+    data = $scope.dataOrders;
+    $scope.dataOrders = new Array();
+    if ($scope.dataOrders.length) {
+      $("[name=chkorders]").each(function(index, element) {
+        var $e, counter, i, len, x;
+        $e = $(element);
+        if ($e.is(":checked")) {
+          counter = 0;
+          for (i = 0, len = data.length; i < len; i++) {
+            x = data[i];
+            if (x.id === $e.val()) {
+              continue;
+            } else {
+              counter++;
+            }
+          }
+          console.log(counter, data.length);
+          if (counter === data.length) {
+            data.push({
+              "id": $e.val(),
+              "name": $e.attr("data-nme"),
+              "unit": $e.attr("data-unit"),
+              "brandid": $e.attr("data-brandid"),
+              "modelid": $e.attr("data-modelid"),
+              "brand": $e.attr("data-brand"),
+              "model": $e.attr("data-model"),
+              "quantity": $e.attr("data-quantity"),
+              "qorders": $e.attr("data-quantity"),
+              "nipple": $e.attr("data-nipple")
+            });
+          }
+        }
+      });
+      $scope.dataOrders = data;
+    } else {
+      $("[name=chkorders]").each(function(index, element) {
+        var $e;
+        $e = $(element);
+        if ($e.is(":checked")) {
+          $scope.dataOrders.push({
+            "id": $e.val(),
+            "name": $e.attr("data-nme"),
+            "unit": $e.attr("data-unit"),
+            "brandid": $e.attr("data-brandid"),
+            "modelid": $e.attr("data-modelid"),
+            "brand": $e.attr("data-brand"),
+            "model": $e.attr("data-model"),
+            "quantity": $e.attr("data-quantity"),
+            "qorders": $e.attr("data-quantity"),
+            "nipple": $e.attr("data-nipple")
+          });
+        }
+      });
+    }
     console.log($scope.dataOrders);
     if ($scope.dataOrders) {
       $("#morders").openModal();
+    }
+  };
+  $scope.changeQOrders = function($event) {
+    var i, len, ref, x;
+    ref = $scope.dataOrders;
+    for (i = 0, len = ref.length; i < len; i++) {
+      x = ref[i];
+      if (x.id === $event.currentTarget.dataset.materials) {
+        x.qorders = $event.currentTarget.value;
+      }
     }
   };
   $scope.$watch('ascsector', function() {
@@ -844,7 +891,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
         $('.collapsible').collapsible();
       }, 800);
     }
-    return;
-    return $scope.dataOrders = new Array();
   });
+  $scope.$watch('dataOrders', function() {});
+  $scope.dataOrders = new Array();
 });

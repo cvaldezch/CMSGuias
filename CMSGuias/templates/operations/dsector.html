@@ -624,7 +624,16 @@
                                 <td>{{x.model}}</td>
                                 <td class="center-align">{{x.quantity}}</td>
                                 <td>
-                                    <input type="number" step="0.01" max="{{x.quantity}}" min="0" class="right-align" value="{{x.quantity}}" ng-disabled="x.nipple">
+                                    <input type="number" step="0.01" max="{{x.quantity}}" min="0" class="right-align" data-materials="{{x.id}}" value="{{x.nipple=='false' ? x.quantity : 0}}" ng-disabled="x.nipple=='true'" ng-change="changeQOrders($event)">
+                                </td>
+                                <td ng-if="x.nipple=='true'" class="center-align">
+                                    <ul>
+                                        <li>
+                                            <button type="button" class="btn-floating red">
+                                                <i class="fa fa-plus"></i>
+                                            </button>
+                                        </li>
+                                    </ul>
                                 </td>
                             </tr>
                         {% endverbatim %}
