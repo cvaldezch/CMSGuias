@@ -23,9 +23,9 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
   $scope.perarea = "";
   $scope.percharge = "";
+  $scope.dataOrders = new Array();
   angular.element(document).ready(function() {
     var $table;
-    $scope.dataOrders = new Array();
     $('.modal-trigger').leanModal();
     $table = $(".floatThead");
     $table.floatThead({
@@ -802,67 +802,37 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
   };
   $scope.pOrders = function($event) {
     var data;
-    data = $scope.dataOrders;
-    $scope.dataOrders = new Array();
-    if ($scope.dataOrders.length) {
-      $("[name=chkorders]").each(function(index, element) {
-        var $e, counter, i, len, x;
-        $e = $(element);
-        if ($e.is(":checked")) {
-          counter = 0;
-          for (i = 0, len = data.length; i < len; i++) {
-            x = data[i];
-            if (x.id === $e.val()) {
-              continue;
-            } else {
-              counter++;
-            }
-          }
-          console.log(counter, data.length);
-          if (counter === data.length) {
-            data.push({
-              "id": $e.val(),
-              "name": $e.attr("data-nme"),
-              "unit": $e.attr("data-unit"),
-              "brandid": $e.attr("data-brandid"),
-              "modelid": $e.attr("data-modelid"),
-              "brand": $e.attr("data-brand"),
-              "model": $e.attr("data-model"),
-              "quantity": $e.attr("data-quantity"),
-              "qorders": $e.attr("data-quantity"),
-              "nipple": $e.attr("data-nipple")
-            });
-          }
-        }
-      });
-      $scope.dataOrders = data;
-    } else {
-      $("[name=chkorders]").each(function(index, element) {
-        var $e;
-        $e = $(element);
-        if ($e.is(":checked")) {
-          $scope.dataOrders.push({
-            "id": $e.val(),
-            "name": $e.attr("data-nme"),
-            "unit": $e.attr("data-unit"),
-            "brandid": $e.attr("data-brandid"),
-            "modelid": $e.attr("data-modelid"),
-            "brand": $e.attr("data-brand"),
-            "model": $e.attr("data-model"),
-            "quantity": $e.attr("data-quantity"),
-            "qorders": $e.attr("data-quantity"),
-            "nipple": $e.attr("data-nipple")
-          });
-        }
-      });
-    }
-    console.log($scope.dataOrders);
-    if ($scope.dataOrders) {
-      $("#morders").openModal();
-    }
+    data = new Array();
+    $("[name=chkorders]").each(function(index, element) {
+      var $e;
+      $e = $(element);
+      if ($e.is(":checked")) {
+        data.push({
+          "id": $e.val(),
+          "name": $e.attr("data-nme"),
+          "unit": $e.attr("data-unit"),
+          "brandid": $e.attr("data-brandid"),
+          "modelid": $e.attr("data-modelid"),
+          "brand": $e.attr("data-brand"),
+          "model": $e.attr("data-model"),
+          "quantity": $e.attr("data-quantity"),
+          "qorders": $e.attr("data-quantity"),
+          "nipple": $e.attr("data-nipple")
+        });
+      }
+    });
+    $timeout(function() {
+      if (data.length) {
+        $scope.dataOrders = data;
+        $("#morders").openModal();
+      }
+    }, 900);
   };
   $scope.changeQOrders = function($event) {
     var i, len, ref, x;
+    if (parseFloat($event.currentTarget.value) > parseFloat($event.currentTarget.dataset.qmax)) {
+      $event.currentTarget.value = $event.currentTarget.dataset.qmax;
+    }
     ref = $scope.dataOrders;
     for (i = 0, len = ref.length; i < len; i++) {
       x = ref[i];
@@ -892,6 +862,4 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
       }, 800);
     }
   });
-  $scope.$watch('dataOrders', function() {});
-  $scope.dataOrders = new Array();
 });

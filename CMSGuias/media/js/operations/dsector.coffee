@@ -17,8 +17,8 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
   $scope.perarea = ""
   $scope.percharge = ""
+  $scope.dataOrders = new Array()
   angular.element(document).ready ->
-    $scope.dataOrders = new Array()
     $('.modal-trigger').leanModal()
     $table = $(".floatThead")
     $table.floatThead
@@ -703,54 +703,93 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
       return
     return
   $scope.pOrders = ($event) ->
-    data = $scope.dataOrders
-    $scope.dataOrders = new Array()
-    if $scope.dataOrders.length
-      $("[name=chkorders]").each (index, element) ->
-        $e = $(element)
-        if $e.is(":checked")
-          counter = 0
-          for x in data
-            if x.id == $e.val()
-              continue
-            else
-              counter++
-          console.log counter, data.length
-          if counter == data.length
-            data.push
-              "id": $e.val()
-              "name": $e.attr "data-nme"
-              "unit": $e.attr "data-unit"
-              "brandid": $e.attr "data-brandid"
-              "modelid": $e.attr "data-modelid"
-              "brand": $e.attr "data-brand"
-              "model": $e.attr "data-model"
-              "quantity": $e.attr "data-quantity"
-              "qorders": $e.attr "data-quantity"
-              "nipple": $e.attr "data-nipple"
-            return
-      $scope.dataOrders = data
-    else
-      $("[name=chkorders]").each (index, element) ->
-        $e = $(element)
-        if $e.is(":checked")
-          $scope.dataOrders.push
-            "id": $e.val()
-            "name": $e.attr "data-nme"
-            "unit": $e.attr "data-unit"
-            "brandid": $e.attr "data-brandid"
-            "modelid": $e.attr "data-modelid"
-            "brand": $e.attr "data-brand"
-            "model": $e.attr "data-model"
-            "quantity": $e.attr "data-quantity"
-            "qorders": $e.attr "data-quantity"
-            "nipple": $e.attr "data-nipple"
+    data = new Array()
+    $("[name=chkorders]").each (index, element) ->
+      $e = $(element)
+      if $e.is(":checked")
+        data.push
+          "id": $e.val()
+          "name": $e.attr "data-nme"
+          "unit": $e.attr "data-unit"
+          "brandid": $e.attr "data-brandid"
+          "modelid": $e.attr "data-modelid"
+          "brand": $e.attr "data-brand"
+          "model": $e.attr "data-model"
+          "quantity": $e.attr "data-quantity"
+          "qorders": $e.attr "data-quantity"
+          "nipple": $e.attr "data-nipple"
+      return
+    $timeout ->
+      if data.length
+        $scope.dataOrders = data
+        $("#morders").openModal()
         return
-    console.log $scope.dataOrders
-    if $scope.dataOrders
-      $("#morders").openModal()
+    , 900
     return
+    # $scope.dataOrders = []
+    # console.log $scope.dataOrders.length
+    # if $scope.dataOrders.length
+    #   data = []
+    #   $("[name=chkorders]").each (index, element) ->
+    #     $e = $(element)
+    #     if $e.is(":checked")
+    #       counter = 0
+    #       for x in data
+    #         if x.id == $e.val()
+    #           continue
+    #         else
+    #           counter++
+    #       console.log counter, data.length
+    #       if counter == data.length
+    #         data.push
+    #           "id": $e.val()
+    #           "name": $e.attr "data-nme"
+    #           "unit": $e.attr "data-unit"
+    #           "brandid": $e.attr "data-brandid"
+    #           "modelid": $e.attr "data-modelid"
+    #           "brand": $e.attr "data-brand"
+    #           "model": $e.attr "data-model"
+    #           "quantity": $e.attr "data-quantity"
+    #           "qorders": $e.attr "data-quantity"
+    #           "nipple": $e.attr "data-nipple"
+    #         return
+    #   $scope.dataOrders = []
+    #   $timeout (->
+    #     $scope.dataOrders = data
+    #     return
+    #   ), 200
+    #   console.log data
+    # else
+    #   data = new Array()
+    #   $("[name=chkorders]").each (index, element) ->
+    #     $e = $(element)
+    #     if $e.is(":checked")
+    #       $scope.dataOrders.push
+    #         "id": $e.val()
+    #         "name": $e.attr "data-nme"
+    #         "unit": $e.attr "data-unit"
+    #         "brandid": $e.attr "data-brandid"
+    #         "modelid": $e.attr "data-modelid"
+    #         "brand": $e.attr "data-brand"
+    #         "model": $e.attr "data-model"
+    #         "quantity": $e.attr "data-quantity"
+    #         "qorders": $e.attr "data-quantity"
+    #         "nipple": $e.attr "data-nipple"
+    #     return
+    #   # $scope.dataOrders = data
+    # $timeout ->
+    #   console.log $scope.dataOrders.length
+    #   if $scope.dataOrders.length
+    #     $("#morders").openModal()
+    #     return
+    #   else
+    #     swal "Ninguno.", "Debe de seleccionar al menos unos.", "warning"
+    #     return
+    # , 500
+    # return
   $scope.changeQOrders = ($event) ->
+    if parseFloat($event.currentTarget.value) > parseFloat($event.currentTarget.dataset.qmax)
+      $event.currentTarget.value = $event.currentTarget.dataset.qmax
     for x in $scope.dataOrders
       if x.id == $event.currentTarget.dataset.materials
         x.qorders = $event.currentTarget.value
@@ -773,10 +812,13 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
         return
       , 800
     return
-  $scope.$watch 'dataOrders', (old, nw)->
-    $scope.dataOrders = nw
-    return
-  $scope.dataOrders = new Array()
+  # $scope.$watch 'dataOrders', (old, nw) ->
+  #   if nw.length > old.length
+  #     $scope.dataOrders = nw
+  #   else
+  #     $scope.dataOrders = []
+  #     $scope.dataOrders = nw
+  #   return
   # $scope.$watch 'gui.smat', ->
   #   $(".floatThead").floatThead 'reflow'
   #   return

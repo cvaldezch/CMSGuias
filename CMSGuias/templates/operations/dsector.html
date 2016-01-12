@@ -612,6 +612,7 @@
                             <th>Modelo</th>
                             <th class="center-align">Cantidad</th>
                             <th>Pedido</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -624,16 +625,17 @@
                                 <td>{{x.model}}</td>
                                 <td class="center-align">{{x.quantity}}</td>
                                 <td>
-                                    <input type="number" step="0.01" max="{{x.quantity}}" min="0" class="right-align" data-materials="{{x.id}}" value="{{x.nipple=='false' ? x.quantity : 0}}" ng-disabled="x.nipple=='true'" ng-change="changeQOrders($event)">
+                                    <input type="number" step="0.01" max="{{x.quantity}}" min="0" class="right-align" data-materials="{{x.id}}" data-qmax="{{x.quantity}}" value="{{x.nipple=='false' ? x.quantity : 0}}" ng-disabled="x.nipple=='true'" ng-blur="changeQOrders($event)">
                                 </td>
-                                <td ng-if="x.nipple=='true'" class="center-align">
-                                    <ul>
-                                        <li>
-                                            <button type="button" class="btn-floating red">
-                                                <i class="fa fa-plus"></i>
-                                            </button>
-                                        </li>
-                                    </ul>
+                                <td class="center-align">
+                                    <button type="button" class="btn-flat grey lighten-5 green-text text-lighten-1 waves-effect" ng-if="x.nipple=='true'">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-flat grey lighten-5 red-text text-lighten-1 waves-effect">
+                                        <i class="fa fa-times"></i>
+                                    </button>
                                 </td>
                             </tr>
                         {% endverbatim %}
