@@ -599,9 +599,17 @@
         </div>
     </div>
     <div class="row">
-        <div class="col l12 modal modal-fixed-footer" id="morders">
+        <div class="modal bottom-sheet" style="max-height: 96%;" id="morders">
             <div class="modal-content">
-                <h5>Pedido Almacén</h5>
+                <h5>
+                    Pedido Almacén
+                    <small>
+                        <button type="button" class="right btn light-blue darken-1">
+                            <i class="fa fa-arrow-right"></i>
+                            continuar
+                        </button>
+                    </small>
+                </h5>
                 <table id="torders" class="table highlight responsive-table">
                     <thead>
                         <tr>
@@ -628,12 +636,12 @@
                                     <input type="number" step="0.01" max="{{x.quantity}}" min="0" class="right-align" data-materials="{{x.id}}" data-qmax="{{x.quantity}}" value="{{x.nipple=='false' ? x.quantity : 0}}" ng-disabled="x.nipple=='true'" ng-blur="changeQOrders($event)">
                                 </td>
                                 <td class="center-align">
-                                    <button type="button" class="btn-flat grey lighten-5 green-text text-lighten-1 waves-effect" ng-if="x.nipple=='true'">
+                                    <button type="button" class="btn-flat grey lighten-5 green-text text-lighten-1 waves-effect" ng-if="x.nipple=='true'" value="{{x.id}}" ng-click="getNippleMaterials($event)">
                                         <i class="fa fa-plus"></i>
                                     </button>
                                 </td>
                                 <td>
-                                    <button class="btn btn-flat grey lighten-5 red-text text-lighten-1 waves-effect">
+                                    <button type="button" ng-click="deleteItemOrders($event)" class="btn btn-flat grey lighten-5 red-text text-lighten-1 waves-effect" value="{{x.id}}">
                                         <i class="fa fa-times"></i>
                                     </button>
                                 </td>
@@ -641,6 +649,56 @@
                         {% endverbatim %}
                     </tbody>
                 </table>
+                {% verbatim %}
+                    <table id="ordersnipples" ng-repeat="x in dataOrders" ng-if="x.nipple=='true'" >
+                        <thead>
+                            <tr>
+                                <th style="width: 25px;">
+                                    <a href="#!" class="grey lighten-5 grey-text text-darken-3" ng-model="snip[x.id]" ng-init="snip[x.id]=false" ng-click="snip[x.id]=!snip[x.id]">
+                                        <i class="fa " ng-class="{'fa-chevron-up': snip[x.id], 'fa-chevron-down': !snip[x.id]}"></i>
+                                    </a>
+                                </th>
+                                <th colspan="5">
+                                    {{x.name}}
+                                    <div class="input-fieldd" ng-show="snip[x.id]">
+                                        <input type="radio" name="ro{{x.id}}" id="ro{{x.id}}all">
+                                        <label for="ro{{x.id}}all">Todo</label>
+                                        <input type="radio" name="ro{{x.id}}" id="ro{{x.id}}none">
+                                        <label for="ro{{x.id}}none">Ninguno</label>
+                                    </div>
+                                </th>
+                            </tr>
+                            <tr ng-show="snip[x.id]">
+                                <th></th>
+                                <th>Pedido</th>
+                                <th>Cantidad</th>
+                                <th>Tipo</th>
+                                <th>Diametro</th>
+                                <th>Medida</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody ng-model="nip[x.id]" ng-init="nip[x.id]=[]" ng-show="snip[x.id]">
+                            <tr ng-repeat="n in nip[x.id]">
+                                <td>{{$index+1}}</td>
+                                <td>
+                                <input type="number" step="0.1" max="{{n.qorder}}" min="0" class="right-align" data-materials="{{x.id}}" data-qmax="{{n.qorder}}" value="{{n.qorder}}">
+                                </td>
+                                <td>{{n.quantity}}</td>
+                                <td>{{n.type}}</td>
+                                <td>{{x.name.split('-').slice(-1)[0]}}</td>
+                                <td>{{n.measure}}</td>
+                                <td>cm</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                {% endverbatim %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn grey lighten-5 grey-text text-darken-3 modal-action modal-close">
+                    <i class="fa fa-times"></i>
+                    SAlir
+                </button>
             </div>
         </div>
     </div>

@@ -512,6 +512,16 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                             'quantity', field='quantity * psales'))
                     context['mmodify'] = mm
                     context['status'] = True
+                if 'nippleOrders' in request.GET:
+                    context['nipple'] = json.loads(
+                        serializers.serialize(
+                            'json',
+                            Nipple.objects.filter(
+                                area_id=kwargs['area'],
+                                materiales_id=request.GET['materials'],
+                                cantshop__gt=0),
+                            relations=('materiales')))
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

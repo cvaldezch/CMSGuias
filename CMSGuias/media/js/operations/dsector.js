@@ -24,6 +24,8 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
   $scope.perarea = "";
   $scope.percharge = "";
   $scope.dataOrders = new Array();
+  $scope.snip = [];
+  $scope.nip = [];
   angular.element(document).ready(function() {
     var $table;
     $('.modal-trigger').leanModal();
@@ -821,12 +823,11 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
         });
       }
     });
-    $timeout(function() {
-      if (data.length) {
-        $scope.dataOrders = data;
-        $("#morders").openModal();
-      }
-    }, 900);
+    if (data.length) {
+      $scope.dataOrders = data;
+      $("#morders").openModal();
+      return;
+    }
   };
   $scope.changeQOrders = function($event) {
     var i, len, ref, x;
@@ -840,6 +841,33 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
         x.qorders = $event.currentTarget.value;
       }
     }
+  };
+  $scope.deleteItemOrders = function($event) {
+    var count, i, len, ref, x;
+    count = 0;
+    ref = $scope.dataOrders;
+    for (i = 0, len = ref.length; i < len; i++) {
+      x = ref[i];
+      if (x.id === $event.currentTarget.value) {
+        $scope.dataOrders.splice(count, 1);
+        console.log("item delete");
+      }
+      count++;
+    }
+  };
+  $scope.getNippleMaterials = function($event) {
+    var data;
+    data = {
+      nippleOrders: true,
+      materials: $event.currentTarget.value
+    };
+    $.getJSON("", data, function(response) {
+      console.log(response);
+      if (response.status) {
+        console.log($scope.snip);
+        $scope.snip["" + data.materials] = true;
+      }
+    });
   };
   $scope.$watch('ascsector', function() {
     if ($scope.ascsector) {

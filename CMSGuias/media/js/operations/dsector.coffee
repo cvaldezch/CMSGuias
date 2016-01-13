@@ -18,6 +18,8 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
   $scope.perarea = ""
   $scope.percharge = ""
   $scope.dataOrders = new Array()
+  $scope.snip = []
+  $scope.nip = []
   angular.element(document).ready ->
     $('.modal-trigger').leanModal()
     $table = $(".floatThead")
@@ -719,12 +721,10 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
           "qorders": $e.attr "data-quantity"
           "nipple": $e.attr "data-nipple"
       return
-    $timeout ->
-      if data.length
-        $scope.dataOrders = data
-        $("#morders").openModal()
-        return
-    , 900
+    if data.length
+      $scope.dataOrders = data
+      $("#morders").openModal()
+      return
     return
     # $scope.dataOrders = []
     # console.log $scope.dataOrders.length
@@ -793,6 +793,26 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
     for x in $scope.dataOrders
       if x.id == $event.currentTarget.dataset.materials
         x.qorders = $event.currentTarget.value
+    return
+  $scope.deleteItemOrders = ($event) ->
+    count = 0
+    for x in $scope.dataOrders
+      # console.log x.id, $event.currentTarget.value
+      if x.id == $event.currentTarget.value
+        $scope.dataOrders.splice count, 1
+        console.log "item delete"
+      count++
+    return
+  $scope.getNippleMaterials = ($event) ->
+    data =
+      nippleOrders: true
+      materials: $event.currentTarget.value
+    $.getJSON "", data, (response) ->
+      console.log response
+      if response.status
+        console.log $scope.snip
+        $scope.snip["#{data.materials}"] = true
+        return
     return
   $scope.$watch 'ascsector', ->
     if $scope.ascsector
