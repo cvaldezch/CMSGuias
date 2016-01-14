@@ -2274,6 +2274,8 @@ class ServicesProjectView(JSONResponseMixin, TemplateView):
                 am = None
             context['services'] = lst
             context['total'] = sum([x['amount'] for x in lst])
+            if context['total'] is None:
+                context['total'] = 0
             context['diff'] = (
                 float(context['pro'].aservices) - context['total'])
             return render(request, 'sales/servicesproject.html', context)

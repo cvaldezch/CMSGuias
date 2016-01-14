@@ -633,7 +633,7 @@
                                 <td>{{x.model}}</td>
                                 <td class="center-align">{{x.quantity}}</td>
                                 <td>
-                                    <input type="number" step="0.01" max="{{x.quantity}}" min="0" class="right-align" data-materials="{{x.id}}" data-qmax="{{x.quantity}}" value="{{x.nipple=='false' ? x.quantity : 0}}" ng-disabled="x.nipple=='true'" ng-blur="changeQOrders($event)">
+                                    <input type="number" step="0.01" max="{{x.quantity}}" min="0" class="right-align" data-materials="{{x.id}}" data-qmax="{{x.quantity}}" ng-model="orders[x.id]" ng-init="orders[x.id]=x.nipple=='false' ? x.quantity : 0" ng-disabled="x.nipple=='true'" ng-value="orders[x.id]" ng-blur="changeQOrders($event)">
                                 </td>
                                 <td class="center-align">
                                     <button type="button" class="btn-flat grey lighten-5 green-text text-lighten-1 waves-effect" ng-if="x.nipple=='true'" value="{{x.id}}" ng-click="getNippleMaterials($event)">
@@ -650,7 +650,7 @@
                     </tbody>
                 </table>
                 {% verbatim %}
-                    <table id="ordersnipples" ng-repeat="x in dataOrders" ng-if="x.nipple=='true'" >
+                    <table class="table responsive-table highlight" id="ordersnipples" ng-repeat="x in dataOrders" ng-if="x.nipple=='true'" >
                         <thead>
                             <tr>
                                 <th style="width: 25px;">
@@ -661,34 +661,42 @@
                                 <th colspan="5">
                                     {{x.name}}
                                     <div class="input-fieldd" ng-show="snip[x.id]">
-                                        <input type="radio" name="ro{{x.id}}" id="ro{{x.id}}all">
+                                        <input type="hidden" ng-model="radioO[x.id]">
+                                        <input type="radio" name="ro{{x.id}}" id="ro{{x.id}}all" value="{{x.id}}" ng-click="radioO[x.id]=true;sumNipples($event)">
                                         <label for="ro{{x.id}}all">Todo</label>
-                                        <input type="radio" name="ro{{x.id}}" id="ro{{x.id}}none">
+                                        <input type="radio" name="ro{{x.id}}" id="ro{{x.id}}none" value="{{x.id}}" ng-click="radioO[x.id]=false;sumNipples($event)">
                                         <label for="ro{{x.id}}none">Ninguno</label>
                                     </div>
                                 </th>
                             </tr>
                             <tr ng-show="snip[x.id]">
+                                <th class="center-align"></th>
                                 <th></th>
-                                <th>Pedido</th>
-                                <th>Cantidad</th>
-                                <th>Tipo</th>
-                                <th>Diametro</th>
-                                <th>Medida</th>
+                                <th class="center-align">Pedido</th>
+                                <th class="center-align">Cantidad</th>
+                                <th class="center-align">Tipo</th>
+                                <th class="center-align">Diametro</th>
                                 <th></th>
+                                <th class="center-align">Medida</th>
+                                <th class="center-align"></th>
                             </tr>
                         </thead>
                         <tbody ng-model="nip[x.id]" ng-init="nip[x.id]=[]" ng-show="snip[x.id]">
                             <tr ng-repeat="n in nip[x.id]">
-                                <td>{{$index+1}}</td>
-                                <td>
-                                <input type="number" step="0.1" max="{{n.qorder}}" min="0" class="right-align" data-materials="{{x.id}}" data-qmax="{{n.qorder}}" value="{{n.qorder}}">
+                                <td class="center-align">{{$index+1}}</td>
+                                <td class="center-align">
+                                    <input type="checkbox" name="selno{{x.id}}" id="sel{{n.pk}}" data-nid="{{n.pk}}" value="{{x.id}}" ng-checked="radioO[x.id]" ng-click="sumNipple($event)">
+                                    <label for="sel{{n.pk}}"></label>
                                 </td>
-                                <td>{{n.quantity}}</td>
-                                <td>{{n.type}}</td>
-                                <td>{{x.name.split('-').slice(-1)[0]}}</td>
-                                <td>{{n.measure}}</td>
-                                <td>cm</td>
+                                <td class="center-align">
+                                    <input type="number" step="0.1" max="{{n.fields.cantshop}}" min="0" class="right-align" id="n{{n.pk}}" data-materials="{{x.id}}" data-qmax="{{n.fields.cantshop}}" value="{{n.fields.cantshop}}" data-measure="{{n.fields.metrado}}" ng-blur="changeQOrders($event)">
+                                </td>
+                                <td class="center-align">{{n.fields.cantidad}}</td>
+                                <td class="center-align">Niple{{n.fields.cantshop > 1 ? 's':''}} {{n.fields.tipo}}</td>
+                                <td class="center-align">{{x.name.split('-').slice(-1)[0]}}</td>
+                                <td class="center-align">x</td>
+                                <td class="center-align">{{n.fields.metrado}}</td>
+                                <td class="center-align">cm</td>
                             </tr>
                         </tbody>
                     </table>

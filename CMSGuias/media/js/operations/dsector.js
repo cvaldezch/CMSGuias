@@ -26,6 +26,8 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
   $scope.dataOrders = new Array();
   $scope.snip = [];
   $scope.nip = [];
+  $scope.orders = [];
+  $scope.qon = [];
   angular.element(document).ready(function() {
     var $table;
     $('.modal-trigger').leanModal();
@@ -817,7 +819,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
           "modelid": $e.attr("data-modelid"),
           "brand": $e.attr("data-brand"),
           "model": $e.attr("data-model"),
-          "quantity": $e.attr("data-quantity"),
+          "quantity": parseFloat($e.attr("data-quantity")),
           "qorders": $e.attr("data-quantity"),
           "nipple": $e.attr("data-nipple")
         });
@@ -861,11 +863,31 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
       nippleOrders: true,
       materials: $event.currentTarget.value
     };
-    $.getJSON("", data, function(response) {
-      console.log(response);
-      if (response.status) {
-        console.log($scope.snip);
-        $scope.snip["" + data.materials] = true;
+    if (!$scope.snip["" + data.materials]) {
+      $http.get("", {
+        params: data
+      }).success(function(response) {
+        console.log(response);
+        if (response.status) {
+          console.log($scope.snip);
+          $scope.snip["" + data.materials] = !$scope.snip["" + data.materials];
+          $scope.nip["" + data.materials] = response.nipple;
+        }
+      });
+    } else {
+      $scope.snip["" + data.materials] = !$scope.snip["" + data.materials];
+    }
+  };
+  $scope.sumNipple = function($event) {
+    console.log("Sum Nipples");
+    $scope.orders["" + $event.target.value] = 0;
+    $("[name=selno" + $event.target.value + "]").each(function(index, element) {
+      var $e, $np;
+      $e = $(element);
+      if ($e.is(":checked")) {
+        $np = $("#n" + ($e.attr("data-nid")));
+        console.log($np.val(), $np.attr("data-measure"));
+        $scope.orders["" + $event.target.value] += Math.round(parseFloat($np.val()) * parseFloat($np.attr("data-measure")) / 100);
       }
     });
   };

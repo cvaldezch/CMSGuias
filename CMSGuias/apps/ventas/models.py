@@ -43,7 +43,6 @@ class Proyecto(models.Model):
     aservices = models.DecimalField(
                     max_digits=9,
                     decimal_places=3,
-                    null=True,
                     blank=True,
                     default=0)
     flag = models.BooleanField(default=True, null=False)
