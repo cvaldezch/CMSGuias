@@ -600,11 +600,12 @@
     </div>
     <div class="row">
         <div class="modal bottom-sheet" style="max-height: 96%;" id="morders">
-            <div class="modal-content">
+            <div class="modal-content" ng-model="ordersp1" ng-hide="ordersp1">
                 <h5>
                     Pedido Almacén
+                    <br>
                     <small>
-                        <button type="button" class="right btn light-blue darken-1">
+                        <button type="button" class="right btn light-blue darken-1" ng-click="ordersp1=true;ordersp2=true">
                             <i class="fa fa-arrow-right"></i>
                             continuar
                         </button>
@@ -660,12 +661,14 @@
                                 </th>
                                 <th colspan="5">
                                     {{x.name}}
-                                    <div class="input-fieldd" ng-show="snip[x.id]">
-                                        <input type="hidden" ng-model="radioO[x.id]">
-                                        <input type="radio" name="ro{{x.id}}" id="ro{{x.id}}all" value="{{x.id}}" ng-click="radioO[x.id]=true;sumNipples($event)">
-                                        <label for="ro{{x.id}}all">Todo</label>
-                                        <input type="radio" name="ro{{x.id}}" id="ro{{x.id}}none" value="{{x.id}}" ng-click="radioO[x.id]=false;sumNipples($event)">
-                                        <label for="ro{{x.id}}none">Ninguno</label>
+                                    <div class="switch" ng-show="snip[x.id]">
+                                        <input type="hidden" ng-model="radioO[x.id]" ng-init="radioO[x.id]=false">
+                                        <label>
+                                          Ninguno
+                                          <input type="checkbox" value="{{x.id}}" ng-click="sumNipple($event);radioO[x.id]=!radioO[x.id]">
+                                          <span class="lever"></span>
+                                          Todo
+                                        </label>
                                     </div>
                                 </th>
                             </tr>
@@ -701,6 +704,61 @@
                         </tbody>
                     </table>
                 {% endverbatim %}
+            </div>
+            <div class="modal-content" ng-model="ordersp2" ng-show="ordersp2">
+                <h5>
+                    Pedido Almacén
+                    <br>
+                    <small>
+                        <button type="button" class="btn light-blue darken-1" ng-click="ordersp1=false;ordersp2=false">
+                            <i class="fa fa-arrow-left"></i>
+                            Volver
+                        </button>
+                        <button type="button" class="right btn light-blue darken-1">
+                            <i class="fa fa-floppy-o"></i>
+                            GENERAR PEDIDO
+                        </button>
+                    </small>
+                </h5>
+                <div class="row">
+                    <div class="input-field col l4">
+                        <label ng-class="{'active':orders.storage}">Almacén</label>
+                        <select class="browser-default" ng-model="orders.storage">
+                            <option value="" disabled selected>Elije tu Almacén</option>
+                            {% for a in storage %}
+                                <option value="{{a.almacen_id}}">{{a.nombre}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="input-field col l8">
+                        <input type="text" id="issue" ng-model="oreders.issue">
+                        <label for="issue">Asunto</label>
+                    </div>
+                    <!--<div class="input-field col l2">
+                        <input type="text" disabled="true" value="{{request.user.get_profile.empdni_id}}">
+                    </div>-->
+                    <div class="input-field col l8">
+                        <input type="text" disabled="true" value="{{request.user.get_profile.empdni_id}} {{request.user.get_profile.empdni.name_complete}}">
+                        <label for="name">Responsable</label>
+                    </div>
+                    <div class="input-field col l2">
+                        <input type="date" id="transfer" class="validate datepicker">
+                        <label for="transfer">Traslado</label>
+                    </div>
+                    <div class="file-field input-field col l12">
+                        <div class="btn">
+                            <span>Archivo</span>
+                            <input type="file">
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text">
+                        </div>
+                    </div>
+                    <div class="input-field col s12">
+                        <textarea id="observation" ng-model="orders.observation" class="materialize-textarea" length="246"></textarea>
+                        <label for="observation">Observaciones</label>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn grey lighten-5 grey-text text-darken-3 modal-action modal-close">

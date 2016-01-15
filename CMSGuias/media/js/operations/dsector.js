@@ -19,6 +19,7 @@ app = angular.module('dsApp', ['ngCookies']).config(function($httpProvider) {
 });
 
 app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
+  var changeSelNipple;
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
   $scope.perarea = "";
@@ -28,6 +29,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
   $scope.nip = [];
   $scope.orders = [];
   $scope.qon = [];
+  $scope.radioO = [];
   angular.element(document).ready(function() {
     var $table;
     $('.modal-trigger').leanModal();
@@ -46,6 +48,15 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
       $scope.getProject();
       $scope.listTypeNip();
     }
+    $('textarea#textarea1').characterCounter();
+    $('.datepicker').pickadate({
+      container: "body",
+      closeOnSelect: true,
+      min: new Date(),
+      selectMonths: true,
+      selectYears: 15,
+      format: "yyyy-mm-dd"
+    });
     $scope.perarea = angular.element("#perarea")[0].value;
     $scope.percharge = angular.element("#percharge")[0].value;
   });
@@ -879,17 +890,23 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
     }
   };
   $scope.sumNipple = function($event) {
-    console.log("Sum Nipples");
-    $scope.orders["" + $event.target.value] = 0;
-    $("[name=selno" + $event.target.value + "]").each(function(index, element) {
-      var $e, $np;
-      $e = $(element);
-      if ($e.is(":checked")) {
-        $np = $("#n" + ($e.attr("data-nid")));
-        console.log($np.val(), $np.attr("data-measure"));
-        $scope.orders["" + $event.target.value] += Math.round(parseFloat($np.val()) * parseFloat($np.attr("data-measure")) / 100);
-      }
-    });
+    $timeout(function() {
+      var amount;
+      $scope.orders["" + $event.currentTarget.value] = 0;
+      amount = 0;
+      $("[name=selno" + $event.currentTarget.value + "]").each(function(index, element) {
+        var $e, $np;
+        $e = $(element);
+        if ($e.is(":checked")) {
+          $np = $("#n" + ($e.attr("data-nid")));
+          amount += parseInt($np.val()) * parseFloat($np.attr("data-measure"));
+        }
+      });
+      return $scope.orders["" + $event.currentTarget.value] = amount / 100;
+    }, 200);
+  };
+  changeSelNipple = function($event) {
+    console.log("se hizo click");
   };
   $scope.$watch('ascsector', function() {
     if ($scope.ascsector) {
@@ -911,5 +928,8 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
         $('.collapsible').collapsible();
       }, 800);
     }
+  });
+  $scope.$watch('gui.smat', function() {
+    $(".floatThead").floatThead('reflow');
   });
 });

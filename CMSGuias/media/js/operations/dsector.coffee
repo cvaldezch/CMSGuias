@@ -22,6 +22,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
   $scope.nip = []
   $scope.orders = []
   $scope.qon = []
+  $scope.radioO = []
   angular.element(document).ready ->
     $('.modal-trigger').leanModal()
     $table = $(".floatThead")
@@ -36,6 +37,14 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
       $scope.getListAreaMaterials()
       $scope.getProject()
       $scope.listTypeNip()
+    $('textarea#textarea1').characterCounter()
+    $('.datepicker').pickadate
+      container: "body"
+      closeOnSelect: true
+      min: new Date()
+      selectMonths: true
+      selectYears: 15
+      format: "yyyy-mm-dd"
     $scope.perarea = angular.element("#perarea")[0].value
     $scope.percharge = angular.element("#percharge")[0].value
     # setTimeout ->
@@ -822,16 +831,20 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
       $scope.snip["#{data.materials}"] = !$scope.snip["#{data.materials}"]
     return
   $scope.sumNipple = ($event) ->
-    console.log "Sum Nipples"
-    $scope.orders["#{$event.target.value}"] = 0
-    $("[name=selno#{$event.target.value}]").each (index, element) ->
-      $e = $(element)
-      if $e.is(":checked")
-        $np = $("#n#{$e.attr("data-nid")}")
-        console.log $np.val(), $np.attr("data-measure")
-        $scope.orders["#{$event.target.value}"] += Math.round parseFloat($np.val())*parseFloat($np.attr("data-measure"))/100
-        return
-    # if $event.target.type is "radio"
+    $timeout ->
+      $scope.orders["#{$event.currentTarget.value}"] = 0
+      amount = 0
+      $("[name=selno#{$event.currentTarget.value}]").each (index, element) ->
+        $e = $(element)
+        if $e.is(":checked")
+          $np = $("#n#{$e.attr("data-nid")}")
+          amount += parseInt($np.val())*parseFloat($np.attr("data-measure"))
+          return
+      $scope.orders["#{$event.currentTarget.value}"] = (amount/100)
+    , 200
+    return
+  changeSelNipple = ($event) ->
+    console.log "se hizo click"
     return
   $scope.$watch 'ascsector', ->
     if $scope.ascsector
@@ -858,7 +871,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
   #     $scope.dataOrders = []
   #     $scope.dataOrders = nw
   #   return
-  # $scope.$watch 'gui.smat', ->
-  #   $(".floatThead").floatThead 'reflow'
-  #   return
+  $scope.$watch 'gui.smat', ->
+    $(".floatThead").floatThead 'reflow'
+    return
   return

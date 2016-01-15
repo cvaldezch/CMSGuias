@@ -538,6 +538,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                         dsector_id=kwargs['area']).aggregate(apurchase=Sum(
                             'quantity', field='quantity*ppurchase'),
                             asales=Sum('quantity', field='quantity*psales'))
+                context['storage'] = Almacene.objects.filter(flag=True)
                 return render(request, 'operations/dsector.html', context)
             except TemplateDoesNotExist as e:
                 raise Http404(e)

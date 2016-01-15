@@ -64,7 +64,7 @@
 									<div class="form-group has-warning">
 										<label for="" class="control-label">Punto de Llegada</label>
 										<div class="input-group">
-											<input type="text" name="puntollegada" id="id_puntollegada" value="{{orders.proyecto.direccion}}" class="form-control" readonly />
+											<input type="text" name="puntollegada" id="id_puntollegada" value="{{orders.proyecto.direccion}} - {{ orders.proyecto.distrito.distnom }}  - {{ orders.proyecto.provincia.pronom }} - {{ orders.proyecto.departamento.depnom }}" class="form-control" readonly />
 											<span class="input-group-btn">
 												<button type="Button" class="btn btn-warning text-black btn-change" name="puntollegada"><span class="glyphicon glyphicon-pencil"></span></button>
 											</span>
