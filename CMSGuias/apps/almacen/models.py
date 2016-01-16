@@ -3,6 +3,7 @@
 from audit_log.models.managers import AuditLog
 from django.db import connection, models, transaction
 from CMSGuias.apps.ventas.models import Proyecto, Subproyecto, Sectore
+from CMSGuias.apps.operations.models import DSector
 from CMSGuias.apps.home.models import (
                                         Materiale,
                                         Almacene,
@@ -29,6 +30,8 @@ class Pedido(models.Model):
                     blank=True, null=True)
     sector = models.ForeignKey(
                 Sectore, to_field='sector_id', blank=True, null=True)
+    dsector = models.ForeignKey(
+                DSector, to_field='dsector_id', blank=True, null=True)
     almacen = models.ForeignKey(Almacene, to_field='almacen_id')
     asunto = models.CharField(max_length=160, null=True)
     empdni = models.ForeignKey(

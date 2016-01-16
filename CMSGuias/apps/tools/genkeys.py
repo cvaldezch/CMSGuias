@@ -28,8 +28,9 @@ def __init__():
 def GenerateIdOrders():
     id = None
     try:
-        cod = Pedido.objects.all().aggregate(Max('pedido_id'))
-        id = cod['pedido_id__max']
+        cod = Pedido.objects.latest('registrado')
+        # .all().aggregate(Max('pedido_id'))
+        id = cod.pedido_id
         an = int(datetime.datetime.today().strftime(__year_str))
         if id is not None:
             aa = int(id[2:4])
@@ -41,8 +42,9 @@ def GenerateIdOrders():
         else:
             count = 1
         id = '%s%s%s' % ('PE', str(an), '{:0>6d}'.format(count))
-    except ObjectDoesNotExist, e:
-        raise e
+    except Pedido.DoesNotExist:
+        an = int(datetime.datetime.today().strftime(__year_str))
+        id = '%s%s%s' % ('PE', str(an), '{:0>6d}'.format(1))
     return u'%s' % id
 
 

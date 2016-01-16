@@ -634,7 +634,7 @@
                                 <td>{{x.model}}</td>
                                 <td class="center-align">{{x.quantity}}</td>
                                 <td>
-                                    <input type="number" step="0.01" max="{{x.quantity}}" min="0" class="right-align" data-materials="{{x.id}}" data-qmax="{{x.quantity}}" ng-model="orders[x.id]" ng-init="orders[x.id]=x.nipple=='false' ? x.quantity : 0" ng-disabled="x.nipple=='true'" ng-value="orders[x.id]" ng-blur="changeQOrders($event)">
+                                    <input type="number" step="0.01" max="{{x.quantity}}" min="0" class="right-align" data-materials="{{x.id}}" data-qmax="{{x.quantity}}" ng-model="ordersm[x.id]" ng-init="ordersm[x.id]=x.nipple=='false' ? x.quantity : 0" ng-disabled="x.nipple=='true'" ng-value="ordersm[x.id]" ng-blur="changeQOrders($event)">
                                 </td>
                                 <td class="center-align">
                                     <button type="button" class="btn-flat grey lighten-5 green-text text-lighten-1 waves-effect" ng-if="x.nipple=='true'" value="{{x.id}}" ng-click="getNippleMaterials($event)">
@@ -714,7 +714,7 @@
                             <i class="fa fa-arrow-left"></i>
                             Volver
                         </button>
-                        <button type="button" class="right btn light-blue darken-1">
+                        <button type="button" class="right btn light-blue darken-1" ng-click="saveOrdersStorage($event)">
                             <i class="fa fa-floppy-o"></i>
                             GENERAR PEDIDO
                         </button>
@@ -723,7 +723,7 @@
                 <div class="row">
                     <div class="input-field col l4">
                         <label ng-class="{'active':orders.storage}">Almacén</label>
-                        <select class="browser-default" ng-model="orders.storage">
+                        <select class="browser-default" ng-model="orders.storage" tabindex="0">
                             <option value="" disabled selected>Elije tu Almacén</option>
                             {% for a in storage %}
                                 <option value="{{a.almacen_id}}">{{a.nombre}}</option>
@@ -731,7 +731,7 @@
                         </select>
                     </div>
                     <div class="input-field col l8">
-                        <input type="text" id="issue" ng-model="oreders.issue">
+                        <input type="text" id="issue" ng-model="orders.issue" tabindex="1">
                         <label for="issue">Asunto</label>
                     </div>
                     <!--<div class="input-field col l2">
@@ -742,20 +742,20 @@
                         <label for="name">Responsable</label>
                     </div>
                     <div class="input-field col l2">
-                        <input type="date" id="transfer" class="validate datepicker">
+                        <input type="date" id="transfer" class="validate datepicker" ng-model="orders.transfer" tabindex="2">
                         <label for="transfer">Traslado</label>
                     </div>
                     <div class="file-field input-field col l12">
                         <div class="btn">
                             <span>Archivo</span>
-                            <input type="file">
+                            <input type="file" ng-model="orders.files" id="ordersfiles" tabindex="4">
                         </div>
                         <div class="file-path-wrapper">
                             <input class="file-path validate" type="text">
                         </div>
                     </div>
                     <div class="input-field col s12">
-                        <textarea id="observation" ng-model="orders.observation" class="materialize-textarea" length="246"></textarea>
+                        <textarea id="observation" ng-model="orders.observation" class="materialize-textarea" length="246" tabindex="3"></textarea>
                         <label for="observation">Observaciones</label>
                     </div>
                 </div>

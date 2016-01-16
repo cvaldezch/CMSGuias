@@ -22,6 +22,7 @@ from openpyxl import load_workbook
 from CMSGuias.apps.home.models import *
 from .models import *
 from .forms import *
+from CMSGuias.apps.almacen.models import *
 from CMSGuias.apps.ventas.models import Metradoventa
 from CMSGuias.apps.tools import genkeys, uploadFiles
 
@@ -853,6 +854,40 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                     dm.comment = request.POST['comment']
                     dm.save()
                     context['status'] = True
+                if 'saveOrders' in request.POST:
+                    # get id new orders
+                    gkey = genkeys.GenerateIdOrders()
+                    orders = Pedido()
+                    orders.pedido_id = gkey
+                    orders.proyecto_id = kwargs['pro']
+                    orders.sector_id = kwargs['sec']
+                    orders.dsector_id = kwargs['area']
+                    orders.almacen_id = request.POST['storage']
+                    orders.asunto = request.POST['issue']
+                    orders.empdni_id = request.user.get_profile().empdni_id
+                    orders.traslado = request.POST['transfer']
+                    orders.obser = request.POST['observation']
+                    orders.status = 'PE'
+                    if 'ordersf' in request.FILES:
+                        orders.orderfile = request.FILES['ordersf']
+                    orders.save()
+                    # save orders details
+                    det = json.loads(request.POST['details'])
+                    for x in det:
+                        ds = DSMetrado.objects.get(
+                                dsector_id=kwargs['area'], materials_id=x)
+                        d = Detpedido()
+                        d.pedido_id = gkey
+                        d.materiales_id = x
+                        d.brand_id = ds.brand_id
+                        d.model_id = ds.model_id
+                        d.cantidad = det[x]
+                        d.cantshop = det[x]
+                        d.tag = '0'
+                        d.comment = ds.comment
+                        d.save()
+                        ds.qorder -= d.cantshop
+                        ds.save()
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

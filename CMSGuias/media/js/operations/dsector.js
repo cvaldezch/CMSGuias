@@ -19,7 +19,6 @@ app = angular.module('dsApp', ['ngCookies']).config(function($httpProvider) {
 });
 
 app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
-  var changeSelNipple;
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
   $scope.perarea = "";
@@ -28,6 +27,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
   $scope.snip = [];
   $scope.nip = [];
   $scope.orders = [];
+  $scope.ordersm = [];
   $scope.qon = [];
   $scope.radioO = [];
   angular.element(document).ready(function() {
@@ -892,7 +892,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
   $scope.sumNipple = function($event) {
     $timeout(function() {
       var amount;
-      $scope.orders["" + $event.currentTarget.value] = 0;
+      $scope.ordersm["" + $event.currentTarget.value] = 0;
       amount = 0;
       $("[name=selno" + $event.currentTarget.value + "]").each(function(index, element) {
         var $e, $np;
@@ -902,11 +902,75 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
           amount += parseInt($np.val()) * parseFloat($np.attr("data-measure"));
         }
       });
-      return $scope.orders["" + $event.currentTarget.value] = amount / 100;
+      return $scope.ordersm["" + $event.currentTarget.value] = amount / 100;
     }, 200);
   };
-  changeSelNipple = function($event) {
-    console.log("se hizo click");
+  $scope.saveOrdersStorage = function($event) {
+    var $file, arn, data, i, k, len, n, nipples, ref, ref1, v;
+    console.log($scope.orders);
+    console.log($scope.ordersm);
+    arn = new Array;
+    nipples = new Array;
+    for (n in $scope.dataOrders) {
+      if (JSON.parse($scope.dataOrders[n].nipple)) {
+        arn.push($scope.dataOrders[n].id);
+      }
+    }
+    console.log(arn);
+    if (arn.length) {
+      for (i = 0, len = arn.length; i < len; i++) {
+        n = arn[i];
+        $("[name=selno" + n).each(function(index, element) {
+          var $e, $np;
+          $e = $(element);
+          if ($e.is(":checked")) {
+            $np = $("#n" + ($e.attr("data-nid")));
+            nipples.push({
+              'id': $e.attr("data-nid"),
+              'm': n,
+              'quantity': $np.val(),
+              'measure': $np.attr("data-measure")
+            });
+          }
+        });
+      }
+    }
+    console.log(nipples);
+    ref = $scope.ordersm;
+    for (k in ref) {
+      v = ref[k];
+      console.log(k, v);
+      if (v <= 0) {
+        swal("", "Los materiales deben de tener una cantidad mayor a 0", "warning");
+        break;
+        return false;
+      }
+    }
+    data = new FormData;
+    if (!$scope.orders.hasOwnProperty("transfer")) {
+      swal("", "Debe de seleccionar una fecha para la envio.", "warning");
+      return false;
+    }
+    if (!$scope.orders.hasOwnProperty("storage")) {
+      swal("", "Debe de seleccionar un almacén.", "warning");
+      return false;
+    }
+    $file = $("#ordersfiles")[0];
+    if ($file.files.length) {
+      data.append("ordersf", $files.files[0]);
+    }
+    ref1 = $scope.orders;
+    for (k in ref1) {
+      v = ref1[k];
+      data.append(k, v);
+    }
+    console.log(data);
+    data.append("details", JSON.stringify($scope.ordersm));
+    data.append("saveOrders", true);
+    if (nipples.length) {
+      data.append("nipples", JSON.stringify(nipples));
+    }
+    console.log($event);
   };
   $scope.$watch('ascsector', function() {
     if ($scope.ascsector) {
