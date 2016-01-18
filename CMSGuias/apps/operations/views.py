@@ -873,21 +873,55 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                     orders.save()
                     # save orders details
                     det = json.loads(request.POST['details'])
+                    print det
                     for x in det:
                         ds = DSMetrado.objects.get(
-                                dsector_id=kwargs['area'], materials_id=x)
+                                dsector_id=kwargs['area'],
+                                materials_id=x['materials'])
                         d = Detpedido()
                         d.pedido_id = gkey
-                        d.materiales_id = x
+                        d.materiales_id = x['materials']
                         d.brand_id = ds.brand_id
                         d.model_id = ds.model_id
-                        d.cantidad = det[x]
-                        d.cantshop = det[x]
+                        d.cantidad = x['quantity']
+                        d.cantshop = x['quantity']
                         d.tag = '0'
-                        d.comment = ds.comment
-                        d.save()
-                        ds.qorder -= d.cantshop
+                        d.comment = ds.comment if ds.comment else ''
+                        ds.qorder -= float(d.cantshop)
+                        if ds.qorder > 0:
+                            ds.tag = '1'
+                        else:
+                            ds.tag = '2'
                         ds.save()
+                        d.save()
+                    # save nipples
+                    nipples = json.loads(request.POST['nipples'])
+                    print nipples
+                    for n in nipples:
+                        npo = Nipple.objects.get(id=n['id'])
+                        nip = Niple()
+                        nip.pedido_id = gkey
+                        nip.proyecto_id = kwargs['pro']
+                        nip.sector_id = kwargs['sec']
+                        nip.dsector_id = kwargs['area']
+                        nip.empdni = request.user.get_profile().empdni_id
+                        nip.materiales_id = n['m']
+                        nip.cantidad = n['quantity']
+                        nip.metrado = n['measure']
+                        nip.cantshop = n['quantity']
+                        nip.cantguide = 0
+                        nip.tipo = npo.tipo
+                        nip.comment = npo.comment
+                        nip.tag = '0'
+                        npo.cantshop -= float(nip.cantshop)
+                        if npo.cantshop > 0:
+                            npo.tag = '1'
+                        else:
+                            npo.tag = '2'
+                        npo.save()
+                        nip.save()
+                    context['orders'] = gkey
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False

@@ -19,7 +19,13 @@ from CMSGuias.apps.logistica.models import Compra
 
 class Pedido(models.Model):
     def url(self, filename):
-        ruta = 'storage/pedido/%s/%s.pdf' % (self.proyecto_id, self.pedido_id)
+        ext = filename.split('.')[-1]
+        year = self.proyecto.registrado.strftime('%Y')
+        ruta = 'storage/projects/%s/%s/orders/%s.%s' % (
+                year,
+                self.proyecto_id,
+                self.pedido_id,
+                ext)
         return ruta
 
     pedido_id = models.CharField(
@@ -60,7 +66,7 @@ class Detpedido(models.Model):
     cantguide = models.FloatField(default=0, null=True, blank=True)
     tag = models.CharField(max_length=1, default='0', null=False)
     spptag = models.BooleanField(default=False)
-    comment = models.CharField(max_length=250, default='')
+    comment = models.CharField(max_length=250, default='', null=True)
     flag = models.BooleanField(default=True)
 
     class Meta:
@@ -93,6 +99,8 @@ class Niple(models.Model):
                     blank=True, null=True)
     sector = models.ForeignKey(
                 Sectore, to_field='sector_id', blank=True, null=True)
+    dsector = models.ForeignKey(
+                DSector, to_field='dsector_id', blank=True, null=True)
     empdni = models.CharField(max_length=8, null=False)
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     cantidad = models.FloatField(null=True, default=1)

@@ -19,8 +19,8 @@
 {% block content %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/getMaterials.css">
 <div ng-app="dsApp" ng-controller="DSCtrl">
-    <input type="hidden" id="perarea" value="{{ request.user.get_profile.empdni.charge.area|lower }}">
-    <input type="hidden" id="percharge" value="{{ request.user.get_profile.empdni.charge.cargos|lower }}">
+    <input type="hidden" id="perarea" ng-model="perarea" ng-init="{{ request.user.get_profile.empdni.charge.area|lower }}" value="{{ request.user.get_profile.empdni.charge.area|lower }}">
+    <input type="hidden" id="percharge" ng-model="percharge" ng-init="{{ request.user.get_profile.empdni.charge.cargos|lower }}" value="{{ request.user.get_profile.empdni.charge.cargos|lower }}">
     <div class="card-panel" style="background: {{ dsector.sgroup.colour }};">
         <div class="card-content">
             <a  href="{% url 'sectorgroup_view' dsector.sgroup.project_id dsector.sgroup.subproject_id dsector.sgroup.sector_id %}" class="btn grey lighten-5 grey-text text-darken-3"><i class="fa fa-chevron-left"></i> REGRESAR</a>
@@ -200,7 +200,7 @@
                     <script type="text/ng-template" id="areatmp.html">
                         <td class="center-align">{{$index + 1}}</td>
                         <td class="center-align">
-                            <input type="checkbox" name="chkorders" id="chk{{x.fields.materials.pk}}" value="{{x.fields.materials.pk}}" data-brand="{{x.fields.brand.fields.brand}}" data-brandid="{{x.fields.brand.pk}}" data-modelid="{{x.fields.model.pk}}" data-model="{{x.fields.model.fields.model}}" data-quantity="{{x.fields.qorder}}" data-nme="{{x.fields.materials.fields.matnom}} - {{x.fields.materials.fields.matmed}}" data-nipple="{{x.fields.nipple}}">
+                            <input type="checkbox" name="chkorders" id="chk{{x.fields.materials.pk}}" value="{{x.fields.materials.pk}}" data-brand="{{x.fields.brand.fields.brand}}" data-brandid="{{x.fields.brand.pk}}" data-modelid="{{x.fields.model.pk}}" data-model="{{x.fields.model.fields.model}}" data-quantity="{{x.fields.qorder}}" data-nme="{{x.fields.materials.fields.matnom}} - {{x.fields.materials.fields.matmed}}" data-nipple="{{x.fields.nipple}}" ng-if="x.fields.tag != '2'">
                             <label for="chk{{x.fields.materials.pk}}"></label>
                         </td>
                         <td class="center-align text-9">{{x.fields.materials.pk}}</td>
@@ -211,9 +211,11 @@
                         <td class="right-align">{{x.fields.quantity}}</td>
                         <td class="right-align">{{x.fields.qorder}}</td>
                         <td class="right-align">{{x.fields.qguide}}</td>
-                        <td class="right-align">{{x.fields.ppurchase}}</td>
-                        <td class="right-align">{{x.fields.psales}}</td>
-                        <td class="right-align">{{x.fields.quantity * x.fields.ppurchase | number:2}}</td>
+                        <td class="right-align" ng-if="perarea == 'administrator' || perarea == 'ventas'">{{x.fields.ppurchase}}</td>
+                        <td class="right-align" ng-if="perarea == 'administrator' || perarea == 'ventas'">{{x.fields.psales}}</td>
+                        <td class="right-align" ng-if="perarea == 'administrator' || perarea == 'ventas'">{{x.fields.quantity * x.fields.ppurchase | number:2}}</td>
+                        <td class="center-align" ng-if="x.fields.tag == '2'"><i class='fa fa-check'></i></td>
+                        <td class="center-align" ng-if="x.fields.tag != '2'"><i class='fa fa-minus'></i></td>
                         <td class="center-align">
                             <a href="#" class="dropdown-button btn waves-effect waves-light grey lighten-5 grey-text text-darken-3" data-constrainwidth="200" data-activates="ba{{x.fields.materials.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}">
                               <i class="fa fa-cog"></i>
@@ -248,24 +250,27 @@
                         </div>
                     </caption>
                     <thead class="amber lighten-4">
-                        <tr>
-                            <th class="center-align">
-                                <i class="fa fa-angle-double-up cursor-hand" onClick="$('html,body').animate({scrollTop:500},400);"></i>
-                            </th>
-                            <th></th>
-                            <th class="center-align">Código</th>
-                            <th>Descripción</th>
-                            <th class="center-align">Marca</th>
-                            <th class="center-align">Modelo</th>
-                            <th class="center-align">Unidad</th>
-                            <th class="right-align">Vendido</th>
-                            <th class="right-align">Pendiente</th>
-                            <th class="right-align">Enviada</th>
-                            <th class="right-align">Compra</th>
-                            <th class="right-align">Venta</th>
-                            <th>Importe C</th>
-                            <th class="center-align"><i class="fa fa-search cursor-hand" ng-model="fmatwoa" ng-click="fmatwoa=!fmatwoa"></i></th>
-                        </tr>
+                        {% verbatim %}
+                            <tr>
+                                <th class="center-align">
+                                    <i class="fa fa-angle-double-up cursor-hand" onClick="$('html,body').animate({scrollTop:500},400);"></i>
+                                </th>
+                                <th></th>
+                                <th class="center-align">Código</th>
+                                <th>Descripción</th>
+                                <th class="center-align">Marca</th>
+                                <th class="center-align">Modelo</th>
+                                <th class="center-align">Unidad</th>
+                                <th class="right-align">Vendido</th>
+                                <th class="right-align">Pendiente</th>
+                                <th class="right-align">Enviada</th>
+                                <th class="right-align" ng-if="perarea == 'administrator' || perarea == 'ventas'">Compra</th>
+                                <th class="right-align" ng-if="perarea == 'administrator' || perarea == 'ventas'">Venta</th>
+                                <th ng-if="perarea == 'administrator' || perarea == 'ventas'">Importe C</th>
+                                <th></th>
+                                <th class="center-align"><i class="fa fa-search cursor-hand" ng-model="fmatwoa" ng-click="fmatwoa=!fmatwoa"></i></th>
+                            </tr>
+                        {% endverbatim %}
                     </thead>
                     <tbody>
                     {% verbatim %}
@@ -742,7 +747,7 @@
                         <label for="name">Responsable</label>
                     </div>
                     <div class="input-field col l2">
-                        <input type="date" id="transfer" class="validate datepicker" ng-model="orders.transfer" tabindex="2">
+                        <input type="text" id="transfer" class="validate datepicker" ng-model="orders.transfer" tabindex="2">
                         <label for="transfer">Traslado</label>
                     </div>
                     <div class="file-field input-field col l12">

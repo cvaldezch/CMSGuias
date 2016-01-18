@@ -848,67 +848,97 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
     console.log $scope.orders
     console.log $scope.ordersm
     # get list nipples
-    arn = new Array
-    nipples = new Array
-    for n of $scope.dataOrders
-      if JSON.parse($scope.dataOrders[n].nipple)
-        arn.push $scope.dataOrders[n].id
-    console.log arn
-    if arn.length
-      for n in arn
-        $("[name=selno#{n}").each (index, element) ->
-          $e = $(element)
-          if $e.is(":checked")
-            $np = $("#n#{$e.attr("data-nid")}")
-            nipples.push
-              'id': $e.attr("data-nid")
-              'm': n
-              'quantity': $np.val()
-              'measure': $np.attr("data-measure")
+    swal
+      title: "Desea generar la orden?"
+      text: ''
+      type: "warning"
+      showCancelButton: true
+      confirmButtonText: 'Si!, Generar!'
+      confirmButtonColor: '#dd6b55'
+      cancelButtonText: 'No'
+      closeOnConfirm: true
+      closeOnCancel: true
+    , (isConfirm) ->
+      if isConfirm
+        arn = new Array
+        nipples = new Array
+        for n of $scope.dataOrders
+          if JSON.parse($scope.dataOrders[n].nipple)
+            arn.push $scope.dataOrders[n].id
+        console.log arn
+        if arn.length
+          for n in arn
+            $("[name=selno#{n}").each (index, element) ->
+              $e = $(element)
+              if $e.is(":checked")
+                $np = $("#n#{$e.attr("data-nid")}")
+                nipples.push
+                  'id': $e.attr("data-nid")
+                  'm': n
+                  'quantity': $np.val()
+                  'measure': $np.attr("data-measure")
+                return
+        console.log nipples
+        det = new Array()
+        # Valid quantity list principal
+        for k,v of $scope.ordersm
+          console.log k, v
+          if v <= 0
+            swal "", "Los materiales deben de tener una cantidad mayor a 0", "warning"
+            break
+            return false
+          else
+            det.push
+              'materials': k
+              'quantity': v
+        # get bedside orders
+        data = new FormData
+        if !$scope.orders.hasOwnProperty "transfer"
+          swal "", "Debe de seleccionar una fecha para la envio.", "warning"
+          return false
+        if !$scope.orders.hasOwnProperty "storage"
+          swal "", "Debe de seleccionar un almacén.", "warning"
+          return false
+        # data.transfer = "#{data.transfer.getFullYear()}-#{data.transfer.getMonth()+1}-#{data.transfer.getDate()}"
+        $file = $("#ordersfiles")[0]
+        if $file.files.length
+          data.append "ordersf", $file.files[0]
+        for k,v of $scope.orders
+          data.append k, v
+        console.log data
+        data.append "details", JSON.stringify det
+        data.append "saveOrders", true
+        if nipples.length
+          data.append "nipples", JSON.stringify nipples
+        console.log $event
+        data.append "csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val()
+        $.ajax
+          url: ""
+          data: data
+          type: "post"
+          dataType: "json"
+          processData: false
+          contentType: false
+          cache: false
+          sendBefore: (object, result) ->
+            $event.target.disabled = true
+            $event.target.innerHTML = """<i class="fa fa-cog fa-spin"></i>"""
             return
-    console.log nipples
-    # Valid quantity list principal
-    for k,v of $scope.ordersm
-      console.log k, v
-      if v <= 0
-        swal "", "Los materiales deben de tener una cantidad mayor a 0", "warning"
-        break
-        return false
-    # get bedside orders
-    data = new FormData
-    if !$scope.orders.hasOwnProperty "transfer"
-      swal "", "Debe de seleccionar una fecha para la envio.", "warning"
-      return false
-    if !$scope.orders.hasOwnProperty "storage"
-      swal "", "Debe de seleccionar un almacén.", "warning"
-      return false
-    $file = $("#ordersfiles")[0]
-    if $file.files.length
-      data.append "ordersf", $files.files[0]
-    for k,v of $scope.orders
-      data.append k, v
-    console.log data
-    data.append "details", JSON.stringify $scope.ordersm
-    data.append "saveOrders", true
-    if nipples.length
-      data.append "nipples", JSON.stringify nipples
-    console.log $event
-    # $.ajax
-    #   url: ""
-    #   data: data
-    #   type: "post"
-    #   dataType: "json"
-    #   processData: false
-    #   contentType: false
-    #   cache: false
-    #   sendBefore: (object, result) ->
-    #     $event.target.innerHTML =
-    #   success: (response) ->
-    #     if response.status
-    #       location.reload()
-    #     else
-    #       swal "Error", "al procesar. #{response.raise}", "error"
-    #       return
+          success: (response) ->
+            if response.status
+              swal "#{response.orders}", "Felicidades! Orden generada.", "success"
+              $timeout ->
+                location.reload()
+                return
+              , 2600
+              return
+            else
+              swal "Error", "al procesar. #{response.raise}", "error"
+              $event.target.disabled = false
+              $event.target.className = "btn red grey-text text-darken-1"
+              $event.target.innerHTML = """<i class="fa fa-timescircle"></i> Error!"""
+              return
+        return
     return
   $scope.$watch 'ascsector', ->
     if $scope.ascsector

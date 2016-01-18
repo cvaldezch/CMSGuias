@@ -906,71 +906,118 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
     }, 200);
   };
   $scope.saveOrdersStorage = function($event) {
-    var $file, arn, data, i, k, len, n, nipples, ref, ref1, v;
     console.log($scope.orders);
     console.log($scope.ordersm);
-    arn = new Array;
-    nipples = new Array;
-    for (n in $scope.dataOrders) {
-      if (JSON.parse($scope.dataOrders[n].nipple)) {
-        arn.push($scope.dataOrders[n].id);
-      }
-    }
-    console.log(arn);
-    if (arn.length) {
-      for (i = 0, len = arn.length; i < len; i++) {
-        n = arn[i];
-        $("[name=selno" + n).each(function(index, element) {
-          var $e, $np;
-          $e = $(element);
-          if ($e.is(":checked")) {
-            $np = $("#n" + ($e.attr("data-nid")));
-            nipples.push({
-              'id': $e.attr("data-nid"),
-              'm': n,
-              'quantity': $np.val(),
-              'measure': $np.attr("data-measure")
+    swal({
+      title: "Desea generar la orden?",
+      text: '',
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonText: 'Si!, Generar!',
+      confirmButtonColor: '#dd6b55',
+      cancelButtonText: 'No',
+      closeOnConfirm: true,
+      closeOnCancel: true
+    }, function(isConfirm) {
+      var $file, arn, data, det, i, k, len, n, nipples, ref, ref1, v;
+      if (isConfirm) {
+        arn = new Array;
+        nipples = new Array;
+        for (n in $scope.dataOrders) {
+          if (JSON.parse($scope.dataOrders[n].nipple)) {
+            arn.push($scope.dataOrders[n].id);
+          }
+        }
+        console.log(arn);
+        if (arn.length) {
+          for (i = 0, len = arn.length; i < len; i++) {
+            n = arn[i];
+            $("[name=selno" + n).each(function(index, element) {
+              var $e, $np;
+              $e = $(element);
+              if ($e.is(":checked")) {
+                $np = $("#n" + ($e.attr("data-nid")));
+                nipples.push({
+                  'id': $e.attr("data-nid"),
+                  'm': n,
+                  'quantity': $np.val(),
+                  'measure': $np.attr("data-measure")
+                });
+              }
             });
+          }
+        }
+        console.log(nipples);
+        det = new Array();
+        ref = $scope.ordersm;
+        for (k in ref) {
+          v = ref[k];
+          console.log(k, v);
+          if (v <= 0) {
+            swal("", "Los materiales deben de tener una cantidad mayor a 0", "warning");
+            break;
+            return false;
+          } else {
+            det.push({
+              'materials': k,
+              'quantity': v
+            });
+          }
+        }
+        data = new FormData;
+        if (!$scope.orders.hasOwnProperty("transfer")) {
+          swal("", "Debe de seleccionar una fecha para la envio.", "warning");
+          return false;
+        }
+        if (!$scope.orders.hasOwnProperty("storage")) {
+          swal("", "Debe de seleccionar un almacén.", "warning");
+          return false;
+        }
+        $file = $("#ordersfiles")[0];
+        if ($file.files.length) {
+          data.append("ordersf", $file.files[0]);
+        }
+        ref1 = $scope.orders;
+        for (k in ref1) {
+          v = ref1[k];
+          data.append(k, v);
+        }
+        console.log(data);
+        data.append("details", JSON.stringify(det));
+        data.append("saveOrders", true);
+        if (nipples.length) {
+          data.append("nipples", JSON.stringify(nipples));
+        }
+        console.log($event);
+        data.append("csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val());
+        $.ajax({
+          url: "",
+          data: data,
+          type: "post",
+          dataType: "json",
+          processData: false,
+          contentType: false,
+          cache: false,
+          sendBefore: function(object, result) {
+            $event.target.disabled = true;
+            $event.target.innerHTML = "<i class=\"fa fa-cog fa-spin\"></i>";
+          },
+          success: function(response) {
+            if (response.status) {
+              swal("" + response.orders, "Felicidades! Orden generada.", "success");
+              $timeout(function() {
+                location.reload();
+              }, 2600);
+            } else {
+              swal("Error", "al procesar. " + response.raise, "error");
+              $event.target.disabled = false;
+              $event.target.className = "btn red grey-text text-darken-1";
+              $event.target.innerHTML = "<i class=\"fa fa-timescircle\"></i> Error!";
+            }
           }
         });
       }
-    }
-    console.log(nipples);
-    ref = $scope.ordersm;
-    for (k in ref) {
-      v = ref[k];
-      console.log(k, v);
-      if (v <= 0) {
-        swal("", "Los materiales deben de tener una cantidad mayor a 0", "warning");
-        break;
-        return false;
-      }
-    }
-    data = new FormData;
-    if (!$scope.orders.hasOwnProperty("transfer")) {
-      swal("", "Debe de seleccionar una fecha para la envio.", "warning");
-      return false;
-    }
-    if (!$scope.orders.hasOwnProperty("storage")) {
-      swal("", "Debe de seleccionar un almacén.", "warning");
-      return false;
-    }
-    $file = $("#ordersfiles")[0];
-    if ($file.files.length) {
-      data.append("ordersf", $files.files[0]);
-    }
-    ref1 = $scope.orders;
-    for (k in ref1) {
-      v = ref1[k];
-      data.append(k, v);
-    }
-    console.log(data);
-    data.append("details", JSON.stringify($scope.ordersm));
-    data.append("saveOrders", true);
-    if (nipples.length) {
-      data.append("nipples", JSON.stringify(nipples));
-    }
-    console.log($event);
+    });
   };
   $scope.$watch('ascsector', function() {
     if ($scope.ascsector) {
