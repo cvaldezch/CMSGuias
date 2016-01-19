@@ -18,7 +18,7 @@ class Proyecto(models.Model):
     ruccliente = models.ForeignKey(
                     Cliente, to_field='ruccliente_id', null=True)
     nompro = models.CharField(max_length=200)
-    registrado = models.DateTimeField(auto_now=True, null=False)
+    registrado = models.DateTimeField(auto_now_add=True, null=False)
     comienzo = models.DateField(null=True)
     fin = models.DateField(null=True, blank=True)
     pais = models.ForeignKey(Pais, to_field='pais_id')
@@ -84,7 +84,7 @@ class CloseProject(models.Model):
             self.project.registrado.strftime('%Y'), self.project_id, filename)
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
     storageclose = models.BooleanField(default=False, blank=True)
-    datestorage = models.DateField(auto_now=True)
+    datestorage = models.DateField(auto_now_add=True)
     letterdelivery = models.FileField(upload_to=url, null=True, max_length=250)
     dateletter = models.DateField(null=True, blank=True)
     documents = models.BooleanField(default=False, blank=True)
@@ -116,7 +116,7 @@ class Subproyecto(models.Model):
                         primary_key=True, max_length=7, null=False)
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
     nomsub = models.CharField(max_length=200)
-    registrado = models.DateTimeField(auto_now=True)
+    registrado = models.DateTimeField(auto_now_add=True)
     comienzo = models.DateField(null=True, blank=True)
     fin = models.DateField(null=True, blank=True)
     obser = models.TextField(null=True, blank=True)
@@ -141,7 +141,7 @@ class Sectore(models.Model):
                 Subproyecto, to_field='subproyecto_id', null=True, blank=True)
     planoid = models.CharField(max_length=16, null=True, default='')
     nomsec = models.CharField(max_length=200)
-    registrado = models.DateTimeField(auto_now=True)
+    registrado = models.DateTimeField(auto_now_add=True)
     comienzo = models.DateField(null=True, blank=True)
     fin = models.DateField(null=True, blank=True)
     obser = models.TextField(null=True, blank=True)
@@ -260,7 +260,7 @@ class Alertasproyecto(models.Model):
 
 
 class HistoryMetProject(models.Model):
-    date = models.DateTimeField(auto_now=True)
+    date = models.DateTimeField(auto_now_add=True)
     token = models.CharField(max_length=6, default=globalVariable.get_Token())
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id', default='')
     subproyecto = models.ForeignKey(
@@ -292,7 +292,7 @@ class HistoryMetProject(models.Model):
 
 
 class RestoreStorage(models.Model):
-    date = models.DateField(auto_now=True)
+    date = models.DateField(auto_now_add=True)
     token = models.CharField(max_length=6, default=globalVariable.get_Token())
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id', default='')
     subproyecto = models.ForeignKey(

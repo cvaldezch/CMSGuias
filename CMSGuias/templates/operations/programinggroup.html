@@ -10,10 +10,10 @@
         {% include "menus/logisticsmd.htm" %}
     {% endif %}
     {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
-        {% include "menus/operations.htm" %}
+        {% include "menus/operationsmd.htm" %}
     {% endif %}
     {% if user.get_profile.empdni.charge.area|lower == 'almacen' %}
-        {% include "menus/storage_menu.htm" %}
+        {% include "menus/storagemd.htm" %}
     {% endif %}
 {% endblock menu %}
 {% block content %}
@@ -95,16 +95,28 @@
       <div class="card-content">
         <strong>{{project.currency.moneda}}</strong>
         <div class="row">
-          <div class="col l6">
+          <div class="col l3">
+            <div class="center-align">
+              <h4>Aprox</h4>
+              <h3>{{project.currency.simbolo}} {{sector.amount|floatformat:2}}</h3>
+            </div>
+          </div>
+          <div class="col l3">
             <div class="center-align">
               <h4>Ventas</h4>
               <h3>{{project.currency.simbolo}} {{sales|floatformat:2}}</h3>
             </div>
           </div>
-          <div class="col l6">
+          <div class="col l3">
             <div class="center-align">
               <h4>Operaciones</h4>
               <h3>{{project.currency.simbolo}} {{operations|floatformat:2}}</h3>
+            </div>
+          </div>
+          <div class="col l3">
+            <div class="center-align">
+              <h4>Diferencia</h4>
+              <h3>{{project.currency.simbolo}} {{diff|floatformat:2}}</h3>
             </div>
           </div>
         </div>
@@ -124,7 +136,7 @@
         <div class="col l3 m6 s12" ng-repeat="x in dslist | filter: dsfilter">
           <div class="card" style="height: 200px;">
             <div class="card-content" style="background: {{x.fields.sgroup.fields.colour}}">
-              <strong>{{x.fields.name}}</strong>
+              <strong>{{x.fields.sgroup.fields.name}} {{x.fields.name}}</strong>
               <p>{{x.fields.description}}</p>
               <p>
                 <div class="progress red lighten-4">

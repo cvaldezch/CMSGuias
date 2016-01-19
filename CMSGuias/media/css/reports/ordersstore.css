@@ -60,6 +60,9 @@ img{
 .nom {
 	width: 7cm;
 }
+.cod{
+	font-size: 8px;
+}
 .item {
 	width: 1cm;
 }

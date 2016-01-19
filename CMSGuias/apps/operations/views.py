@@ -201,6 +201,8 @@ class ProgramingProject(JSONResponseMixin, View):
                         amount=Sum(
                             'quantity',
                             field='quantity*ppurchase'))['amount']
+                    context['diff'] = (context[
+                                        'sector'].amount-context['operations'])
                 return render(
                     request,
                     'operations/programinggroup.html',
@@ -895,31 +897,32 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                         ds.save()
                         d.save()
                     # save nipples
-                    nipples = json.loads(request.POST['nipples'])
-                    print nipples
-                    for n in nipples:
-                        npo = Nipple.objects.get(id=n['id'])
-                        nip = Niple()
-                        nip.pedido_id = gkey
-                        nip.proyecto_id = kwargs['pro']
-                        nip.sector_id = kwargs['sec']
-                        nip.dsector_id = kwargs['area']
-                        nip.empdni = request.user.get_profile().empdni_id
-                        nip.materiales_id = n['m']
-                        nip.cantidad = n['quantity']
-                        nip.metrado = n['measure']
-                        nip.cantshop = n['quantity']
-                        nip.cantguide = 0
-                        nip.tipo = npo.tipo
-                        nip.comment = npo.comment
-                        nip.tag = '0'
-                        npo.cantshop -= float(nip.cantshop)
-                        if npo.cantshop > 0:
-                            npo.tag = '1'
-                        else:
-                            npo.tag = '2'
-                        npo.save()
-                        nip.save()
+                    if 'nipples' in request.POST:
+                        nipples = json.loads(request.POST['nipples'])
+                        print nipples
+                        for n in nipples:
+                            npo = Nipple.objects.get(id=n['id'])
+                            nip = Niple()
+                            nip.pedido_id = gkey
+                            nip.proyecto_id = kwargs['pro']
+                            nip.sector_id = kwargs['sec']
+                            nip.dsector_id = kwargs['area']
+                            nip.empdni = request.user.get_profile().empdni_id
+                            nip.materiales_id = n['m']
+                            nip.cantidad = n['quantity']
+                            nip.metrado = n['measure']
+                            nip.cantshop = n['quantity']
+                            nip.cantguide = 0
+                            nip.tipo = npo.tipo
+                            nip.comment = npo.comment
+                            nip.tag = '0'
+                            npo.cantshop -= float(nip.cantshop)
+                            if npo.cantshop > 0:
+                                npo.tag = '1'
+                            else:
+                                npo.tag = '2'
+                            npo.save()
+                            nip.save()
                     context['orders'] = gkey
                     context['status'] = True
             except ObjectDoesNotExist as e:
@@ -956,6 +959,7 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                     'model': s.model.model,
                     'und': s.materiales.unidad.uninom,
                     'sales': s.cantidad,
+                    'purchase': s.precio,
                     'operations': '-'})
             for o in operations:
                 c = 0
@@ -981,6 +985,7 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                         'model': o.model.model,
                         'und': o.materials.unidad.uninom,
                         'sales': '-',
+                        'purchase': o.ppurchase,
                         'operations': o.quantity})
 
             context['lst'] = lst
@@ -990,6 +995,8 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                              'quantity', field='quantity*ppurchase'))['amount']
             context['currency'] = sales[0].proyecto.currency.moneda
             context['symbol'] = sales[0].proyecto.currency.simbolo
+            context['salesap'] = sales[0].sector.amount
+            context['diff'] = (sales[0].sector.amount - context['operations'])
             return render(request, 'operations/comparematerials.html', context)
         except TemplateDoesNotExist, e:
             raise Http404(e)

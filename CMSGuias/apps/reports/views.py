@@ -105,7 +105,8 @@ def rpt_orders_details(request, pid, sts):
                         'unit': x.materiales.unidad.uninom,
                         'brand': x.brand.brand,
                         'model': x.model.model,
-                        'quantity': x.cantidad})
+                        'quantity': x.cantidad,
+                        'comment': x.comment})
                     counter += 1
                 section.append(tmp)
             context['lista'] = section
@@ -133,8 +134,8 @@ def rpt_orders_details(request, pid, sts):
                         'type': tipo[x.tipo],
                         'comment': x.comment,
                         'measure': x.materiales.matmed,
-                        'meter': x.metrado
-                    })
+                        'meter': x.metrado,
+                        'comment': x.comment})
                     print tmp, 'temp'
                     count += 1
                 secn.append(tmp)

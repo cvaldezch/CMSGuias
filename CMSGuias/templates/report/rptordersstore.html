@@ -22,20 +22,21 @@
 		</div>
 		<div id="bedside-col1">
 			<table>
-			<tr><td width="2cm"><strong>Proyecto :</strong></td><td> {{ order.proyecto.nompro}}</td></tr>
-			<tr><td><strong>Subproyecto :</strong></td><td> {{ order.subproyecto.nomsub}}</td></tr>
-			<tr><td><strong>Sector :</strong></td><td> {{ order.sector.nomsec}}</td></tr>
-			<tr><td><strong>Almacén :</strong></td><td> {{ order.almacen.nombre}}</td></tr>
-			<tr><td><strong>Asunto :</strong></td><td> {{ order.asunto}}</td></tr>
+			<tr><td width="2cm"><strong>Proyecto :</strong></td><td> {{ order.proyecto.nompro }}</td></tr>
+			<tr><td><strong>Subproyecto :</strong></td><td> {{ order.subproyecto.nomsub }}</td></tr>
+			<tr><td><strong>Sector :</strong></td><td> {{ order.sector.nomsec }}</td></tr>
+			<tr><td><strong>Área :</strong></td><td> {{ order.dsector.sgroup.name }} - {{ order.dsector.name }}</td></tr>
+			<tr><td><strong>Almacén :</strong></td><td> {{ order.almacen.nombre }}</td></tr>
+			<tr><td><strong>Asunto :</strong></td><td> {{ order.asunto }}</td></tr>
 			</table>
 		</div>
 		<div id="bedside-col2">
 			<table>
-			<tr><td width="3cm"><strong>Fecha Registrado :</strong></td><td> {{order.registrado}}</td></tr>
-			<tr><td><strong>Fecha Traslado :</strong></td><td> {{order.traslado}}</td></tr>
-			<tr><td><strong>Estado :</strong></td><td> PENDIENTE</td></tr>
+			<tr><td width="3cm"><strong>Fecha Registrado :</strong></td><td> {{ order.registrado }}</td></tr>
+			<tr><td><strong>Fecha Traslado :</strong></td><td> {{ order.traslado }}</td></tr>
+			<tr><td><strong>Estado :</strong></td><td> {{ order.status }}</td></tr>
 			<tr><td><strong>Realizado :</strong></td><td>{{ order.empdni.firstname }} {{ order.empdni.lastname }}</td></tr>
-			<tr><td><strong>Observación :</strong></td><td> {{ order.obser|removetags:"p" }}</td></tr>
+			<tr><td><strong>Observación :</strong></td><td> {{ order.obser|removetags:"p"|safe }}</td></tr>
 			</table>
 		</div>
 	</header>
@@ -60,7 +61,12 @@
 						<tr>
 							<td class="text-center item">{{ x.item|floatformat:"2" }}</td>
 							<td class="text-center cod">{{ x.materials }}</td>
-							<td>{{ x.name }}</td>
+							<td>
+								{{ x.name }}
+								{% if x.comment|length %}
+									- {{ x.comment }}
+								{% endif %}
+							</td>
 							<td class="text-center">{{ x.unit }}</td>
 							<td class="text-center">{{ x.brand }}</td>
 							<td class="text-center">{{ x.model }}</td>
@@ -95,57 +101,56 @@
 		</div>
 	</section>
 
-	{% if nipples %}
-
-	<pdf:nextpage	>
-	<pdf:nexttemplate name="nipples" />
-	<h3>Lista de Nipples</h3>
-	<section>
-		<div class="details">
-		{% for n in nipples %}
-			<table>
-				<thead>
-					<tr>
-						<th>Item</th>
-						<th width="2.5cm">Código</th>
-						<th width="1cm">Cantidad</th>
-						<th width="8cm">Descripción</th>
-						<th width="3cm">Diametro</th>
-						<th width="1cm"></th>
-						<th width="1cm">Medida</th>
-						<th width="1cm">Unidad</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for x in n %}
+	{% if nipples.0|length > 0 %}
+		<pdf:nextpage	>
+		<pdf:nexttemplate name="nipples" />
+		<h3>Lista de Nipples</h3>
+		<section>
+			<div class="details">
+			{% for n in nipples %}
+				<table>
+					<thead>
 						<tr>
-							<td class="text-center item">{{ x.item }}</td>
-							<td class="text-center cod">{{ x.materials }}</td>
-							<td class="text-center">{{ x.quantity }}</td>
-							<td class="">Niple{{ x.quantity|pluralize }} {{ x.type }}{{ x.quantity|pluralize }}
-							{% if x.comment %}
-								- {{ x.comment }}
-							{% endif %}
-							</td>
-							<td class="text-center">{{ x.measure }}</td>
-							<td class="text-center">x</td>
-							<td class="text-center">{{ x.meter }}</td>
-							<td class="text-center">cm</td>
+							<th>Item</th>
+							<th width="2.5cm">Código</th>
+							<th width="1cm">Cantidad</th>
+							<th width="8cm">Descripción</th>
+							<th width="3cm">Diametro</th>
+							<th width="1cm"></th>
+							<th width="1cm">Medida</th>
+							<th width="1cm">Unidad</th>
 						</tr>
-					{% endfor%}
-				</tbody>
-				<tfoot>
-					<tr>
-						<td colspan="8"></td>
-					</tr>
-				</tfoot>
-			</table>
-			{% if not forloop.last %}
-				<div><pdf:nextpage /></div>
-			{% endif %}
-		{% endfor %}
-		</div>
-	</section>
+					</thead>
+					<tbody>
+						{% for x in n %}
+							<tr>
+								<td class="text-center item">{{ x.item }}</td>
+								<td class="text-center cod">{{ x.materials }}</td>
+								<td class="text-center">{{ x.quantity }}</td>
+								<td class="">Niple{{ x.quantity|pluralize }} {{ x.type }}{{ x.quantity|pluralize }}
+								{% if x.comment|length %}
+									- {{ x.comment }}
+								{% endif %}
+								</td>
+								<td class="text-center">{{ x.measure }}</td>
+								<td class="text-center">x</td>
+								<td class="text-center">{{ x.meter }}</td>
+								<td class="text-center">cm</td>
+							</tr>
+						{% endfor%}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="8"></td>
+						</tr>
+					</tfoot>
+				</table>
+				{% if not forloop.last %}
+					<div><pdf:nextpage /></div>
+				{% endif %}
+			{% endfor %}
+			</div>
+		</section>
 	{% endif %}
 </body>
 </html>
