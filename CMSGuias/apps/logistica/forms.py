@@ -15,7 +15,7 @@ class addTmpCotizacionForm(forms.ModelForm):
 class addTmpCompraForm(forms.ModelForm):
     class Meta:
         model = tmpcompra
-        exclude = {'empdni'}
+        exclude = {'empdni', 'unit'}
 
 
 # Purchase

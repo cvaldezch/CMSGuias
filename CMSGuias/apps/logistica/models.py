@@ -40,8 +40,9 @@ class Cotizacion(models.Model):
 
 class Compra(models.Model):
     def url(self, filename):
-        return 'storage/compra/%s/%s-%s.pdf' % (
-            globalVariable.get_year, self.compra_id, self.proveedor_id)
+        ext = filename.split('.')[-1]
+        return 'storage/compra/%s/%s-%s.%s' % (
+            globalVariable.get_year, self.compra_id, self.proveedor_id, ext)
 
     compra_id = models.CharField(primary_key=True, max_length=10)
     proveedor = models.ForeignKey(Proveedor, to_field='proveedor_id')
@@ -66,7 +67,9 @@ class Compra(models.Model):
     discount = models.FloatField(default=0, blank=True)
     # exchnage = models.DecimalField(max_digist=2, place_decimals=3)
     sigv = models.BooleanField(default=True, blank=True)
+    freight = models.FloatField(default=0, blank=True)
     observation = models.TextField(null=True, blank=True)
+    paid = models.CharField(max_length=1, default='0')
     flag = models.BooleanField(default=True)
 
     class Meta:
@@ -84,17 +87,19 @@ class Compra(models.Model):
 class DetCompra(models.Model):
     compra = models.ForeignKey(Compra, to_field='compra_id')
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
+    unit = models.ForeignKey(
+            Unidade, to_field='unidad_id', null=True, blank=True)
     brand = models.ForeignKey(
-        Brand, to_field='brand_id', default='BR000', blank=True)
+                Brand, to_field='brand_id', default='BR000', blank=True)
     model = models.ForeignKey(
-        Model, to_field='model_id', default='MO000', blank=True)
+                Model, to_field='model_id', default='MO000', blank=True)
     cantidad = models.FloatField()
     precio = models.FloatField()
     discount = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    # models.PositiveSmallIntegerField(default=0)
     cantstatic = models.FloatField()
     flag = models.CharField(max_length=1, default='0')
     perception = models.FloatField(default=0, blank=True)
+    observation = models.TextField(blank=True, default='')
 
     class Meta:
         ordering = ['materiales']
@@ -107,13 +112,17 @@ class DetCompra(models.Model):
 class tmpcompra(models.Model):
     empdni = models.CharField(max_length=8, null=False)
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
+    unit = models.ForeignKey(
+            Unidade, to_field='unidad_id', null=True, blank=True)
     brand = models.ForeignKey(
-        Brand, to_field='brand_id', blank=True, default='BR000')
+                Brand, to_field='brand_id', blank=True, default='BR000')
     model = models.ForeignKey(
-        Model, to_field='model_id', blank=True, default='MO000')
+                Model, to_field='model_id', blank=True, default='MO000')
     cantidad = models.FloatField(null=False)
     discount = models.PositiveSmallIntegerField(default=0)
     precio = models.FloatField(null=False, default=0)
+    perception = models.FloatField(default=0, blank=True)
+    observation = models.TextField(blank=True, default='')
 
     class Meta:
         ordering = ['materiales']

@@ -962,7 +962,10 @@ class Unit(JSONResponseMixin, TemplateView):
         context = dict()
         try:
             if request.is_ajax():
-                pass
+                context['lunit'] = list(
+                    Unidade.objects.filter(flag=True).values(
+                        'unidad_id', 'uninom').order_by('uninom'))
+                context['status'] = True
             else:
                 if 'list' in request.GET:
                     context['unit'] = list(

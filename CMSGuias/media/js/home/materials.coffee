@@ -36,32 +36,35 @@ searchDesc = (event) ->
     return
 
 addResultTable = (response) ->
-    template = "<tr>
-                <td class=\"text-center\">{{ item }}</td>
-                <td class=\"text-center\">{{ materials }}</td>
+    template = """{{#list}}<tr>
+                <td class="text-center">{{ index }}</td>
+                <td class="text-center">{{ materials }}</td>
                 <td>{{ name }}</td>
                 <td>{{ measure }}</td>
-                <td class=\"text-center\">{{ unit }}</td>
+                <td class="text-center">{{ unit }}</td>
                 <td>{{ finished }}</td>
                 {{#user}}
                 <td>{{ area }}</td>
-                <td class=\"text-center\">
-                    <button value=\"{{ materials }}\" data-des=\"{{ name }}\" data-met=\"{{ measure }}\" data-unit=\"{{ unit }}\" data-acb=\"{{ finished }}\" data-area=\"{{ area }}\" class=\"btn btn-xs btn-link text-black\" name=\"btnedit\">
-                        <span class=\"fa fa-edit\"></span>
+                <td class="text-center">
+                    <button value="{{ materials }}" data-des="{{ name }}" data-met="{{ measure }}" data-unit="{{ unit }}" data-acb="{{ finished }}" data-area="{{ area }}" class="btn btn-xs btn-link text-black" name="btnedit">
+                        <span class="fa fa-edit"></span>
                     </button>
                 </td>
-                <td class=\"text-center\">
-                    <button class=\"btn btn-xs btn-link text-red\" name=\"btndel\" value=\"{{ materials }}\" data-name=\"{{ name }}\" data-measure=\"{{ measure }}\" >
-                        <span class=\"fa fa-trash-o\"></span>
+                <td class="text-center">
+                    <button class="btn btn-xs btn-link text-red" name="btndel" value="{{ materials }}" data-name="{{ name }}" data-measure="{{ measure }}" >
+                        <span class="fa fa-trash-o"></span>
                     </button>
                 </td>
                 {{/user}}
-                </tr>"
+                </tr>{{/list}}"""
     $tb = $("table > tbody")
     $tb.empty()
-    for x of response.list
-        response.list[x].item = parseInt(x) + 1
-        $tb.append Mustache.render template, response.list[x]
+    count = 1
+    response.index = -> return count++
+    $tb.html Mustache.render template, response
+    # for x of response.list
+    #     response.list[x].item = parseInt(x) + 1
+    #     $tb.append Mustache.render template, response.list[x]
     return
 
 showNewMaterials = (event) ->

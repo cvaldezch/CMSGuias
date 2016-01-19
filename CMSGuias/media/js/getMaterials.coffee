@@ -72,6 +72,7 @@ getSummaryMaterials = ->
       sec: $sec.val()
     $.getJSON "/json/get/resumen/details/materiales/", data, (response) ->
       #console.log(response);
+      searchUnitOption()
       template = """<tr><th>Codigo :</th><td class='id-mat'>{{materialesid}}</td></tr><tr><th>Descripción :</th><td>{{matnom}}</td></tr><tr><th>Medida :</th><td>{{matmed}}</td></tr><tr><th>Unidad :</th><td>{{unidad}}</td></tr>"""
       $tb = $(".tb-details > tbody")
       $tb.empty()
@@ -324,6 +325,23 @@ searchModelOption = ->
       else
         $().toastmessage "showWarningToast", "No se a podido obtener la lista de marcas."
       return
+  return
+
+searchUnitOption = ->
+  $unit = $("[name=unit]")
+  if $unit.length
+    data =
+      list: true
+    $.get "/unit/list/", data, (response) ->
+      if response.status
+        template = """<option selected>--Elije una unidad--</option>{{#lunit}}<option value="{{unidad_id}}">{{uninom}}</option>{{/lunit}}"""
+        $unit.empty()
+        $unit.html Mustache.render template, response
+        return
+      else
+        $().toastmessage "showWarningToast", "Error al listar unidades"
+        return
+    return
   return
 
 globalDataBrand = new Object

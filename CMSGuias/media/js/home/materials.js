@@ -47,14 +47,15 @@ searchDesc = function(event) {
 };
 
 addResultTable = function(response) {
-  var $tb, template, x;
-  template = "<tr> <td class=\"text-center\">{{ item }}</td> <td class=\"text-center\">{{ materials }}</td> <td>{{ name }}</td> <td>{{ measure }}</td> <td class=\"text-center\">{{ unit }}</td> <td>{{ finished }}</td> {{#user}} <td>{{ area }}</td> <td class=\"text-center\"> <button value=\"{{ materials }}\" data-des=\"{{ name }}\" data-met=\"{{ measure }}\" data-unit=\"{{ unit }}\" data-acb=\"{{ finished }}\" data-area=\"{{ area }}\" class=\"btn btn-xs btn-link text-black\" name=\"btnedit\"> <span class=\"fa fa-edit\"></span> </button> </td> <td class=\"text-center\"> <button class=\"btn btn-xs btn-link text-red\" name=\"btndel\" value=\"{{ materials }}\" data-name=\"{{ name }}\" data-measure=\"{{ measure }}\" > <span class=\"fa fa-trash-o\"></span> </button> </td> {{/user}} </tr>";
+  var $tb, count, template;
+  template = "{{#list}}<tr>\n<td class=\"text-center\">{{ index }}</td>\n<td class=\"text-center\">{{ materials }}</td>\n<td>{{ name }}</td>\n<td>{{ measure }}</td>\n<td class=\"text-center\">{{ unit }}</td>\n<td>{{ finished }}</td>\n{{#user}}\n<td>{{ area }}</td>\n<td class=\"text-center\">\n    <button value=\"{{ materials }}\" data-des=\"{{ name }}\" data-met=\"{{ measure }}\" data-unit=\"{{ unit }}\" data-acb=\"{{ finished }}\" data-area=\"{{ area }}\" class=\"btn btn-xs btn-link text-black\" name=\"btnedit\">\n        <span class=\"fa fa-edit\"></span>\n    </button>\n</td>\n<td class=\"text-center\">\n    <button class=\"btn btn-xs btn-link text-red\" name=\"btndel\" value=\"{{ materials }}\" data-name=\"{{ name }}\" data-measure=\"{{ measure }}\" >\n        <span class=\"fa fa-trash-o\"></span>\n    </button>\n</td>\n{{/user}}\n</tr>{{/list}}";
   $tb = $("table > tbody");
   $tb.empty();
-  for (x in response.list) {
-    response.list[x].item = parseInt(x) + 1;
-    $tb.append(Mustache.render(template, response.list[x]));
-  }
+  count = 1;
+  response.index = function() {
+    return count++;
+  };
+  $tb.html(Mustache.render(template, response));
 };
 
 showNewMaterials = function(event) {

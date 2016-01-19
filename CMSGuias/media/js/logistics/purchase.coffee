@@ -82,6 +82,8 @@ addTmpPurchase = (event) ->
                 data.precio = price
                 data.brand = $("select[name=brand]").val()
                 data.model = $("select[name=model]").val()
+                data.unit = $("select[name=unit]").val()
+                data.perception = if $("[name=perception]").is(":checked") then 1 else 0
                 data.discount = discount
                 data.type = "add"
                 data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()

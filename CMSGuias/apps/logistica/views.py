@@ -574,9 +574,9 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                     tmp = tmpcompra.objects.filter(
                         empdni=request.user.get_profile().empdni_id)
                     context['list'] = list()
-                    igv = 0
+                    # igv = 0
                     subt = 0
-                    total = 0
+                    # total = 0
                     conf = Configuracion.objects.get(
                         periodo=globalVariable.get_year)
                     tdiscount = 0
@@ -627,10 +627,12 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
             if request.POST.get('type') == 'add':
                 try:
                     form = addTmpCompraForm(request.POST)
+                    print form.is_valid()
                     if form.is_valid():
                         add = form.save(commit=False)
                         add.empdni = request.user.get_profile().empdni_id
-                        add.save()
+                        add.unit_id = request.POST['unit']
+                        form.save()
                         context['status'] = True
                     else:
                         context['status'] = False
@@ -749,12 +751,14 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                         add.compra_id = id
                         add.empdni_id = request.user.get_profile().empdni_id
                         add.status = 'PE'
-                        add.projects = request.POST.get('projects') if 'projects' in request.POST else ''
+                        add.projects = request.POST[
+                            'projects'] if 'projects' in request.POST else ''
                         add.discount = float(request.POST.get('discount'))
                         add.save()
                         # save details os the order purchase
                         # details = json.loads(request.POST.get('details'))
-                        for x in tmpcompra.objects.filter(empdni=request.user.get_profile().empdni_id):
+                        for x in tmpcompra.objects.filter(
+                                empdni=request.user.get_profile().empdni_id):
                             obj = DetCompra()
                             obj.compra_id = id
                             obj.materiales_id = x.materiales_id
@@ -765,7 +769,8 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                             obj.cantstatic = x.cantidad
                             obj.discount = x.discount
                             obj.save()
-                            # if all success delete all data of the temp purchase
+                            # if all success delete all
+                            # data of the temp purchase
                             x.delete()
                         context['status'] = True
                         context['nro'] = id

@@ -1,4 +1,4 @@
-var autoSearchMaterialGroup, bgModalAddMaterials, bgModalBack, bgModalErase, counter_materials_global, getDataBrand, getDataModel, getDescription, getDetailsGroupMaterials, getMeters, getSummaryMaterials, getidli, globalDataBrand, globalDataModel, keyCode, keyDescription, keyUpDescription, mat, modalGlobalGroupMaterial, moveTopBottom, openBrand, openModel, searchBrandOption, searchMaterial, searchMaterialCode, searchModelOption, selectMaterial, setDataBrand, setDataModel, tmpObjectDetailsGroupMaterials;
+var autoSearchMaterialGroup, bgModalAddMaterials, bgModalBack, bgModalErase, counter_materials_global, getDataBrand, getDataModel, getDescription, getDetailsGroupMaterials, getMeters, getSummaryMaterials, getidli, globalDataBrand, globalDataModel, keyCode, keyDescription, keyUpDescription, mat, modalGlobalGroupMaterial, moveTopBottom, openBrand, openModel, searchBrandOption, searchMaterial, searchMaterialCode, searchModelOption, searchUnitOption, selectMaterial, setDataBrand, setDataModel, tmpObjectDetailsGroupMaterials;
 
 mat = new Object;
 
@@ -87,6 +87,7 @@ getSummaryMaterials = function() {
     };
     $.getJSON("/json/get/resumen/details/materiales/", data, function(response) {
       var $lstp, $lsts, $tb, template, x;
+      searchUnitOption();
       template = "<tr><th>Codigo :</th><td class='id-mat'>{{materialesid}}</td></tr><tr><th>Descripción :</th><td>{{matnom}}</td></tr><tr><th>Medida :</th><td>{{matmed}}</td></tr><tr><th>Unidad :</th><td>{{unidad}}</td></tr>";
       $tb = $(".tb-details > tbody");
       $tb.empty();
@@ -369,6 +370,27 @@ searchModelOption = function() {
         $().toastmessage("showWarningToast", "No se a podido obtener la lista de marcas.");
       }
     });
+  }
+};
+
+searchUnitOption = function() {
+  var $unit, data;
+  $unit = $("[name=unit]");
+  if ($unit.length) {
+    data = {
+      list: true
+    };
+    $.get("/unit/list/", data, function(response) {
+      var template;
+      if (response.status) {
+        template = "<option selected>--Elije una unidad--</option>{{#lunit}}<option value=\"{{unidad_id}}\">{{uninom}}</option>{{/lunit}}";
+        $unit.empty();
+        $unit.html(Mustache.render(template, response));
+      } else {
+        $().toastmessage("showWarningToast", "Error al listar unidades");
+      }
+    });
+    return;
   }
 };
 

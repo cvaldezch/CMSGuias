@@ -102,6 +102,8 @@ addTmpPurchase = function(event) {
         data.precio = price;
         data.brand = $("select[name=brand]").val();
         data.model = $("select[name=model]").val();
+        data.unit = $("select[name=unit]").val();
+        data.perception = $("[name=perception]").is(":checked") ? 1 : 0;
         data.discount = discount;
         data.type = "add";
         data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();

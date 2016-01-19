@@ -100,10 +100,16 @@
                                             <input type="number" class="form-control input-sm" name="precio" min="1" placeholder="0">
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="form-group has-warning">
                                             <label class="control-label">Desct %</label>
                                             <input type="number" name="discount" class="form-control input-sm" value="0" min="0" max="100">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group has-warning">
+                                            <label class="control-label">Percepción</label>
+                                            <input type="checkbox" name="perception" class="form-control input-sm" value="0">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -128,7 +134,18 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-4">
+                                        <div class="form-group has-warning">
+                                            <label class="control-label">Unidad</label>
+                                            <div class="input-group">
+                                                <select name="unit" id="unit" class="form-control input-sm"></select>
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default btn-sm btn-new-unit"><span class="span glyphicon glyphicon-plus"></span></button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
                                         <div class="form-group has-warning">
                                             <label class="control-label">Agregar</label>
                                             <button class="btn btn-block btn-sm btn-warning text-black btn-add"><span class="glyphicon glyphicon-plus"></span></button>
