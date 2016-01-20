@@ -582,23 +582,33 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                     tdiscount = 0
                     # print conf.igv
                     for x in tmp:
-                        disc = ((x.precio * x.discount) / 100)
-                        tdiscount += (disc * x.cantidad)
+                        disc = ((x.precio*x.discount)/100)
+                        tdiscount += (disc*x.cantidad)
                         precio = x.precio - disc
-                        amount = (x.cantidad * precio)
+                        print precio
+                        if x.perception:
+                            print ' percep precio ', conf.perception, precio
+                            per = ((precio*conf.perception)/100)
+                            print per, ' perception'
+                            precio = per+precio
+                            print precio, ' new precio'
+                        amount = (precio*x.cantidad)
+                        print 'precio cantidad ', precio, x.cantidad
                         subt += amount
                         context['list'].append({
                             'id': x.id,
                             'materials_id': x.materiales_id,
                             'matname': x.materiales.matnom,
                             'matmeasure': x.materiales.matmed,
-                            'unit': x.materiales.unidad_id,
+                            'unit': (
+                                x.unit_id if x.unit_id else x.materiales.unidad_id),
                             'brand': x.brand.brand,
                             'model': x.model.model,
                             'quantity': x.cantidad,
                             'price': x.precio,
                             'discount': x.discount,
-                            'amount': amount})
+                            'perception': conf.perception if x.perception else 0,
+                            'amount': '%.2f' % amount})
                     context['discount'] = tdiscount
                     context['igv'] = ((conf.igv * subt) / 100)
                     context['subtotal'] = subt
@@ -627,11 +637,11 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
             if request.POST.get('type') == 'add':
                 try:
                     form = addTmpCompraForm(request.POST)
-                    print form.is_valid()
                     if form.is_valid():
                         add = form.save(commit=False)
                         add.empdni = request.user.get_profile().empdni_id
-                        add.unit_id = request.POST['unit']
+                        add.unit_id = request.POST[
+                            'unit'] if request.POST['unit'] is None else None
                         form.save()
                         context['status'] = True
                     else:
