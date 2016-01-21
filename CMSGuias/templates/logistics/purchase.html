@@ -153,7 +153,6 @@
                                     </div>
                                 </div>
                             </div>
-
 	                        <div class="col-md-6">
 	                            <div class="alert alert-warning alert-block">
 	                                <strong>Resumén</strong>
@@ -207,8 +206,8 @@
                                     <th>Unidad</th>
                                     <th>Marca</th>
                                     <th>Modelo</th>
-                                    <th>Cantidad</th>
-                                    <th>Precio</th>
+                                    <th class="text-right">Cantidad</th>
+                                    <th class="text-right">Precio</th>
                                     <th>Descuento</th>
                                     <th>Percepción</th>
                                     <th>Importe</th>
@@ -241,11 +240,25 @@
                     </div>
                     <div class="form-group has-info col-md-6">
                         <label class="control-label">Marca</label>
-                        <select name="ebrand" class="form-control input-sm"></select>
+                        <div class="input-group">
+                            <select name="ebrand" class="form-control input-sm"></select>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-sm btn-new-model">
+                                    <span class="span glyphicon glyphicon-plus"></span>
+                                </button>
+                            </span>
+                        </div>
                     </div>
                     <div class="form-group has-info col-md-6">
                         <label class="control-label">Model</label>
-                        <select name="emodel" class="form-control input-sm"></select>
+                        <div class="input-group">
+                            <select name="emodel" class="form-control input-sm"></select>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-sm btn-new-model">
+                                    <span class="span glyphicon glyphicon-plus"></span>
+                                </button>
+                            </span>
+                        </div>
                     </div>
                     <div class="form-group has-info col-md-6">
                         <label class="control-label">Precio</label>
@@ -259,6 +272,21 @@
                                 %
                             </span>
                         </div>
+                    </div>
+                    <div class="form-group has-info col-md-6">
+                        <label class="control-label">Unindad</label>
+                        <div class="input-group">
+                            <select name="eunit" class="form-control input-sm"></select>
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default btn-sm">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group has-info col-md-6">
+                        <label class="control-label">Percepción</label>
+                        <input type="checkbox" class="form-control input-sm" name="eperception">
                     </div>
                 </div>
             </div>

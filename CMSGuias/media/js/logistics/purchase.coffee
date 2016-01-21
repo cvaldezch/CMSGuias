@@ -27,6 +27,14 @@ $(document).ready ->
     .on "keypress", numberOnly
     $("[name=selproject]").chosen({width: "100%"})
     listTmpBuy()
+    $.get "/unit/list/?list=true", (response) ->
+      if response.status
+        template = "{{#lunit}}<option value=\"{{ unidad_id }}\">{{ uninom }}</option>{{/lunit}}"
+        $unit = $("select[name=eunit]")
+        $unit.empty()
+        console.log response
+        $unit.html Mustache.render template, response
+        return
     $("table.table-list").floatThead
         useAbsolutePositioning: true
         scrollingTop: 50
@@ -116,8 +124,8 @@ listTmpBuy = (event) ->
                     <td class="text-right">{{ discount }}%</td>
                     <td class="text-right">{{ perception }}%</td>
                     <td class="text-right">{{ amount }}</td>
-                    <td><button class="btn btn-xs btn-link" name="btn-edit" value="{{ quantity }}" data-price="{{ price }}" data-brand="{{ brand }}" data-model="{{ model }}" data-id="{{ id }}" data-mat="{{ materials_id }}" data-discount="{{ discount }}"><span class="glyphicon glyphicon-pencil"></span></button></td>
-                    <td><button class="btn btn-xs btn-link text-red" name="btn-del" value="{{ id }}" data-mat="{{ materials_id }}"><span class="glyphicon glyphicon-trash"></span></button></td>
+                    <td class="text-center"><button class="btn btn-xs btn-link" name="btn-edit" value="{{ quantity }}" data-price="{{ price }}" data-brand="{{ brand }}" data-model="{{ model }}" data-id="{{ id }}" data-mat="{{ materials_id }}" data-discount="{{ discount }}"><span class="glyphicon glyphicon-pencil"></span></button></td>
+                    <td class="text-center"><button class="btn btn-xs btn-link text-red" name="btn-del" value="{{ id }}" data-mat="{{ materials_id }}"><span class="glyphicon glyphicon-trash"></span></button></td>
                     </tr>"""
             $tb = $("table.table-list > tbody")
             $tb.empty()
@@ -397,3 +405,54 @@ calcTotal = (event) ->
     total = (sub - discount + igv)
     $("label[name=vtotal]").text total.toFixed 2
     return
+
+openBrand = ->
+    url = "/brand/new/"
+    win = window.open url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600"
+    interval = window.setInterval ->
+        if win == null or win.closed
+            window.clearInterval interval
+            $.getJSON "/json/brand/list/option/", (response) ->
+            if response.status
+                template = "{{#brand}}<option value=\"{{ brand_id }}\">{{ brand }}</option>{{/brand}}"
+                $brand = $("select[name=ebrand]")
+                $brand.empty()
+                $brand.html Mustache.render template, response
+            return
+    , 1000
+    return win;
+
+openModel = ->
+    url = "/model/new/"
+    win = window.open url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600"
+    interval = window.setInterval ->
+        if win == null or win.closed
+            window.clearInterval interval
+            brand = $("select[name=brand]").val()
+            data =
+                brand: brand
+            $.getJSON "/json/model/list/option/", data, (response) ->
+              if response.status
+                template = "{{#model}}<option value=\"{{ model_id }}\">{{ model }}</option>{{/model}}"
+                $model = $("select[name=emodel]")
+                $model.empty()
+                $model.html Mustache.render template, response
+            return
+    , 1000
+    return win;
+
+openUnit = ->
+    url = "/unit/add"
+    win = window.open url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600"
+    interval = window.setInterval ->
+        if win == null or win.closed
+            window.clearInterval interval
+            $.get "/unit/list/?list=true", (response) ->
+              if response.status
+                template = "{{#lunit}}<option value=\"{{ unidad_id }}\">{{ uninom }}</option>{{/lunit}}"
+                $unit = $("select[name=eunit]")
+                $unit.empty()
+                $unit.html Mustache.render template, response
+            return
+    , 1000
+    return win;

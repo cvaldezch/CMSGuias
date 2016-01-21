@@ -1,4 +1,4 @@
-var addTmpPurchase, blurRange, calcTotal, deleteAll, deleteMaterial, editMaterial, listTmpBuy, saveOrderPurchase, showBedside, showEdit, showMaterials, toggleDeposito, uploadReadFile;
+var addTmpPurchase, blurRange, calcTotal, deleteAll, deleteMaterial, editMaterial, listTmpBuy, openBrand, openModel, openUnit, saveOrderPurchase, showBedside, showEdit, showMaterials, toggleDeposito, uploadReadFile;
 
 $(document).ready(function() {
   $(".panel-add,input[name=read],.step-second").hide();
@@ -37,6 +37,16 @@ $(document).ready(function() {
     width: "100%"
   });
   listTmpBuy();
+  $.get("/unit/list/?list=true", function(response) {
+    var $unit, template;
+    if (response.status) {
+      template = "{{#lunit}}<option value=\"{{ unidad_id }}\">{{ uninom }}</option>{{/lunit}}";
+      $unit = $("select[name=eunit]");
+      $unit.empty();
+      console.log(response);
+      $unit.html(Mustache.render(template, response));
+    }
+  });
   $("table.table-list").floatThead({
     useAbsolutePositioning: true,
     scrollingTop: 50
@@ -132,7 +142,7 @@ listTmpBuy = function(event) {
   }, function(response) {
     var $tb, template, x;
     if (response.status) {
-      template = "<tr name=\"{{ id }}\">\n<td>{{ item }}</td><td>{{ materials_id }}</td>\n<td>{{ matname }} - {{ matmeasure }}</td>\n<td>{{ unit }}</td>\n<td>{{ brand }}</td>\n<td>{{ model }}</td>\n<td class=\"text-right\">{{ quantity }}</td>\n<td class=\"text-right\">{{ price }}</td>\n<td class=\"text-right\">{{ discount }}%</td>\n<td class=\"text-right\">{{ perception }}%</td>\n<td class=\"text-right\">{{ amount }}</td>\n<td><button class=\"btn btn-xs btn-link\" name=\"btn-edit\" value=\"{{ quantity }}\" data-price=\"{{ price }}\" data-brand=\"{{ brand }}\" data-model=\"{{ model }}\" data-id=\"{{ id }}\" data-mat=\"{{ materials_id }}\" data-discount=\"{{ discount }}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td>\n<td><button class=\"btn btn-xs btn-link text-red\" name=\"btn-del\" value=\"{{ id }}\" data-mat=\"{{ materials_id }}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td>\n</tr>";
+      template = "<tr name=\"{{ id }}\">\n<td>{{ item }}</td><td>{{ materials_id }}</td>\n<td>{{ matname }} - {{ matmeasure }}</td>\n<td>{{ unit }}</td>\n<td>{{ brand }}</td>\n<td>{{ model }}</td>\n<td class=\"text-right\">{{ quantity }}</td>\n<td class=\"text-right\">{{ price }}</td>\n<td class=\"text-right\">{{ discount }}%</td>\n<td class=\"text-right\">{{ perception }}%</td>\n<td class=\"text-right\">{{ amount }}</td>\n<td class=\"text-center\"><button class=\"btn btn-xs btn-link\" name=\"btn-edit\" value=\"{{ quantity }}\" data-price=\"{{ price }}\" data-brand=\"{{ brand }}\" data-model=\"{{ model }}\" data-id=\"{{ id }}\" data-mat=\"{{ materials_id }}\" data-discount=\"{{ discount }}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td>\n<td class=\"text-center\"><button class=\"btn btn-xs btn-link text-red\" name=\"btn-del\" value=\"{{ id }}\" data-mat=\"{{ materials_id }}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td>\n</tr>";
       $tb = $("table.table-list > tbody");
       $tb.empty();
       for (x in response.list) {
@@ -475,4 +485,71 @@ calcTotal = function(event) {
   $("label[name=vigv]").text(igv.toFixed(2));
   total = sub - discount + igv;
   $("label[name=vtotal]").text(total.toFixed(2));
+};
+
+openBrand = function() {
+  var interval, url, win;
+  url = "/brand/new/";
+  win = window.open(url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600");
+  interval = window.setInterval(function() {
+    var $brand, template;
+    if (win === null || win.closed) {
+      window.clearInterval(interval);
+      $.getJSON("/json/brand/list/option/", function(response) {});
+      if (response.status) {
+        template = "{{#brand}}<option value=\"{{ brand_id }}\">{{ brand }}</option>{{/brand}}";
+        $brand = $("select[name=ebrand]");
+        $brand.empty();
+        $brand.html(Mustache.render(template, response));
+      }
+    }
+  }, 1000);
+  return win;
+};
+
+openModel = function() {
+  var interval, url, win;
+  url = "/model/new/";
+  win = window.open(url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600");
+  interval = window.setInterval(function() {
+    var brand, data;
+    if (win === null || win.closed) {
+      window.clearInterval(interval);
+      brand = $("select[name=brand]").val();
+      data = {
+        brand: brand
+      };
+      $.getJSON("/json/model/list/option/", data, function(response) {
+        var $model, template;
+        if (response.status) {
+          template = "{{#model}}<option value=\"{{ model_id }}\">{{ model }}</option>{{/model}}";
+          $model = $("select[name=emodel]");
+          $model.empty();
+          return $model.html(Mustache.render(template, response));
+        }
+      });
+    }
+  }, 1000);
+  return win;
+};
+
+openUnit = function() {
+  var interval, url, win;
+  url = "/unit/add";
+  win = window.open(url, "Popup", "toolbar=no, scrollbars=yes, resizable=no, width=400, height=600");
+  interval = window.setInterval(function() {
+    if (win === null || win.closed) {
+      window.clearInterval(interval);
+      $.get("/unit/list/?list=true", function(response) {
+        var $unit, template;
+        if (response.status) {
+          template = "{{#lunit}}<option value=\"{{ unidad_id }}\">{{ uninom }}</option>{{/lunit}}";
+          $unit = $("select[name=eunit]");
+          $unit.empty();
+          return $unit.html(Mustache.render(template, response));
+        }
+      });
+    }
+  }, 1000);
+  return win;
 };
