@@ -113,19 +113,19 @@ addTmpPurchase = (event) ->
 listTmpBuy = (event) ->
     $.getJSON "", "type":"list", (response) ->
         if response.status
-            template = """<tr name="{{ id }}">
-                    <td>{{ item }}</td><td>{{ materials_id }}</td>
-                    <td>{{ matname }} - {{ matmeasure }}</td>
-                    <td>{{ unit }}</td>
-                    <td>{{ brand }}</td>
-                    <td>{{ model }}</td>
-                    <td class="text-right">{{ quantity }}</td>
-                    <td class="text-right">{{ price }}</td>
-                    <td class="text-right">{{ discount }}%</td>
-                    <td class="text-right">{{ perception }}%</td>
-                    <td class="text-right">{{ amount }}</td>
-                    <td class="text-center"><button class="btn btn-xs btn-link" name="btn-edit" value="{{ quantity }}" data-price="{{ price }}" data-brand="{{ brand }}" data-model="{{ model }}" data-id="{{ id }}" data-mat="{{ materials_id }}" data-discount="{{ discount }}"><span class="glyphicon glyphicon-pencil"></span></button></td>
-                    <td class="text-center"><button class="btn btn-xs btn-link text-red" name="btn-del" value="{{ id }}" data-mat="{{ materials_id }}"><span class="glyphicon glyphicon-trash"></span></button></td>
+            template = """<tr name="{{id}}">
+                    <td>{{item}}</td><td>{{materials_id}}</td>
+                    <td>{{matname}} - {{matmeasure}}</td>
+                    <td>{{unit}}</td>
+                    <td>{{brand}}</td>
+                    <td>{{model}}</td>
+                    <td class="text-right">{{quantity}}</td>
+                    <td class="text-right">{{price}}</td>
+                    <td class="text-right">{{discount}}%</td>
+                    <td class="text-right">{{perception}}%</td>
+                    <td class="text-right">{{amount}}</td>
+                    <td class="text-center"><button class="btn btn-xs btn-link" name="btn-edit" value="{{quantity}}" data-price="{{price}}" data-brand="{{brand}}" data-model="{{model}}" data-nombre="{{matname}} {{matmeasure}}" data-id="{{id}}" data-mat="{{materials_id}}" data-discount="{{discount}}" data-unit="{{unit}}" data-perception="{{perception}}"><span class="glyphicon glyphicon-pencil"></span></button></td>
+                    <td class="text-center"><button class="btn btn-xs btn-link text-red" name="btn-del" value="{{id}}" data-mat="{{materials_id}}"><span class="glyphicon glyphicon-trash"></span></button></td>
                     </tr>"""
             $tb = $("table.table-list > tbody")
             $tb.empty()
@@ -145,7 +145,7 @@ showEdit = (event) ->
     btn = @
     getDataBrand()
     getDataModel()
-    opb = "<option value=\"{{ brand_id }}\" {{!se}}>{{ brand }}</option>"
+    opb = "<option value=\"{{brand_id}}\" {{!se}}>{{ brand }}</option>"
     opm = "<option value=\"{{ model_id }}\" {{!se}}>{{ model }}</option>"
     $("input[name=ematid]").val $(@).attr "data-mat"
     $("input[name=eidtmp]").val $(@).attr "data-id"
@@ -167,6 +167,9 @@ showEdit = (event) ->
             if globalDataModel[x].model is btn.getAttribute "data-model"
                 tm = tm.replace "{{!se}}", "selected"
             $mo.append Mustache.render tm, globalDataModel[x]
+        $("[name=eunit]").val btn.getAttribute "data-unit"
+        $("[name=eperception]").prop "checked", Boolean parseInt btn.getAttribute "data-perception"
+        $("#descedit").html btn.getAttribute "data-nombre"
         $(".medit").modal "show"
     , 1000
     return
@@ -187,6 +190,8 @@ editMaterial = (event) ->
         data.brand = $("select[name=ebrand]").val()
         data.model = $("select[name=emodel]").val()
         data.type = "edit"
+        data.unit = $("select[name=eunit]").val()
+        data.perception = if $("[name=eperception]").is(":checked") then 1 else 0
         data.discount = parseFloat $discount
         data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val()
         $.post "", data, (response) ->
@@ -450,7 +455,7 @@ openUnit = ->
             $.get "/unit/list/?list=true", (response) ->
               if response.status
                 template = "{{#lunit}}<option value=\"{{ unidad_id }}\">{{ uninom }}</option>{{/lunit}}"
-                $unit = $("select[name=eunit]")
+                $unit = $("select[name=unit],select[name=eunit]")
                 $unit.empty()
                 $unit.html Mustache.render template, response
             return

@@ -142,7 +142,7 @@ listTmpBuy = function(event) {
   }, function(response) {
     var $tb, template, x;
     if (response.status) {
-      template = "<tr name=\"{{ id }}\">\n<td>{{ item }}</td><td>{{ materials_id }}</td>\n<td>{{ matname }} - {{ matmeasure }}</td>\n<td>{{ unit }}</td>\n<td>{{ brand }}</td>\n<td>{{ model }}</td>\n<td class=\"text-right\">{{ quantity }}</td>\n<td class=\"text-right\">{{ price }}</td>\n<td class=\"text-right\">{{ discount }}%</td>\n<td class=\"text-right\">{{ perception }}%</td>\n<td class=\"text-right\">{{ amount }}</td>\n<td class=\"text-center\"><button class=\"btn btn-xs btn-link\" name=\"btn-edit\" value=\"{{ quantity }}\" data-price=\"{{ price }}\" data-brand=\"{{ brand }}\" data-model=\"{{ model }}\" data-id=\"{{ id }}\" data-mat=\"{{ materials_id }}\" data-discount=\"{{ discount }}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td>\n<td class=\"text-center\"><button class=\"btn btn-xs btn-link text-red\" name=\"btn-del\" value=\"{{ id }}\" data-mat=\"{{ materials_id }}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td>\n</tr>";
+      template = "<tr name=\"{{id}}\">\n<td>{{item}}</td><td>{{materials_id}}</td>\n<td>{{matname}} - {{matmeasure}}</td>\n<td>{{unit}}</td>\n<td>{{brand}}</td>\n<td>{{model}}</td>\n<td class=\"text-right\">{{quantity}}</td>\n<td class=\"text-right\">{{price}}</td>\n<td class=\"text-right\">{{discount}}%</td>\n<td class=\"text-right\">{{perception}}%</td>\n<td class=\"text-right\">{{amount}}</td>\n<td class=\"text-center\"><button class=\"btn btn-xs btn-link\" name=\"btn-edit\" value=\"{{quantity}}\" data-price=\"{{price}}\" data-brand=\"{{brand}}\" data-model=\"{{model}}\" data-nombre=\"{{matname}} {{matmeasure}}\" data-id=\"{{id}}\" data-mat=\"{{materials_id}}\" data-discount=\"{{discount}}\" data-unit=\"{{unit}}\" data-perception=\"{{perception}}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td>\n<td class=\"text-center\"><button class=\"btn btn-xs btn-link text-red\" name=\"btn-del\" value=\"{{id}}\" data-mat=\"{{materials_id}}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td>\n</tr>";
       $tb = $("table.table-list > tbody");
       $tb.empty();
       for (x in response.list) {
@@ -164,7 +164,7 @@ showEdit = function(event) {
   btn = this;
   getDataBrand();
   getDataModel();
-  opb = "<option value=\"{{ brand_id }}\" {{!se}}>{{ brand }}</option>";
+  opb = "<option value=\"{{brand_id}}\" {{!se}}>{{ brand }}</option>";
   opm = "<option value=\"{{ model_id }}\" {{!se}}>{{ model }}</option>";
   $("input[name=ematid]").val($(this).attr("data-mat"));
   $("input[name=eidtmp]").val($(this).attr("data-id"));
@@ -191,6 +191,9 @@ showEdit = function(event) {
       }
       $mo.append(Mustache.render(tm, globalDataModel[x]));
     }
+    $("[name=eunit]").val(btn.getAttribute("data-unit"));
+    $("[name=eperception]").prop("checked", Boolean(parseInt(btn.getAttribute("data-perception"))));
+    $("#descedit").html(btn.getAttribute("data-nombre"));
     return $(".medit").modal("show");
   }, 1000);
 };
@@ -212,6 +215,8 @@ editMaterial = function(event) {
     data.brand = $("select[name=ebrand]").val();
     data.model = $("select[name=emodel]").val();
     data.type = "edit";
+    data.unit = $("select[name=eunit]").val();
+    data.perception = $("[name=eperception]").is(":checked") ? 1 : 0;
     data.discount = parseFloat($discount);
     data.csrfmiddlewaretoken = $("input[name=csrfmiddlewaretoken]").val();
     $.post("", data, function(response) {
@@ -544,7 +549,7 @@ openUnit = function() {
         var $unit, template;
         if (response.status) {
           template = "{{#lunit}}<option value=\"{{ unidad_id }}\">{{ uninom }}</option>{{/lunit}}";
-          $unit = $("select[name=eunit]");
+          $unit = $("select[name=unit],select[name=eunit]");
           $unit.empty();
           return $unit.html(Mustache.render(template, response));
         }

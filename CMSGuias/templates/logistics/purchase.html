@@ -138,7 +138,7 @@
                                         <div class="form-group has-warning">
                                             <label class="control-label">Unidad</label>
                                             <div class="input-group">
-                                                <select name="unit" id="unit" class="form-control input-sm"></select>
+                                                <select name="unit" id="unit" class="form-control input-sm" onclick="openUnit()"></select>
                                                 <span class="input-group-btn">
                                                     <button class="btn btn-default btn-sm btn-new-unit"><span class="span glyphicon glyphicon-plus"></span></button>
                                                 </span>
@@ -227,7 +227,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">
-                <h4>Editar cantidad de material.</h4>
+                <h4>
+                    Editar material.
+                    <br>
+                    <small id="descedit"></small>
+                </h4>
                 <div class="row">
                     <div class="form-group has-info col-md-6">
                         <input type="hidden" name="eidtmp">
@@ -278,7 +282,7 @@
                         <div class="input-group">
                             <select name="eunit" class="form-control input-sm"></select>
                             <span class="input-group-btn">
-                                <button type="button" class="btn btn-default btn-sm">
+                                <button type="button" class="btn btn-default btn-sm" onclick="openUnit()">
                                     <i class="fa fa-plus"></i>
                                 </button>
                             </span>
