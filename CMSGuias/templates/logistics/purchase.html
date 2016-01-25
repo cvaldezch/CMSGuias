@@ -438,10 +438,16 @@
                             <input type="text" name="contacto" class="form-control input-sm">
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group has-warning">
                             <label class="control-label">Cotización Cliente</label>
                             <input class="form-control" name="quotation" maxlength="20">
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group has-warning">
+                            <label class="control-label">I. IGV</label>
+                            <input type="checkbox" class="form-control" name="sigv" onChange="calcTotal()" checked="checked">
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -466,8 +472,10 @@
                         <div class="form-group has-warning">
                             <label class="control-label">IGV</label>
                             <div class="input-group">
-                                <label class="form-control text-right input-sm" name="vigv"></label>
-                                <span class="input-group-addon"></span>
+                                <input type="text" class="form-control text-right input-sm" name="vigv" readonly="true">
+                                <span class="input-group-addon">
+                                    <!--<input type="checkbox" class="">-->
+                                </span>
                             </div>
                         </div>
                     </div>

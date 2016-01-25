@@ -29,7 +29,8 @@ class CompraForm(forms.ModelForm):
             'empdni',
             'status',
             'discount',
-            'projects'}
+            'projects',
+            'sigv'}
 
 
 class ProveedorForm(forms.ModelForm):

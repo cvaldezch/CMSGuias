@@ -134,8 +134,12 @@ listTmpBuy = (event) ->
                 $tb.append Mustache.render template, response.list[x]
             $(".discount").html response.discount.toFixed 2
             $(".sub").html response.subtotal.toFixed 2
-            $(".igv").html response.igv.toFixed 2
-            $(".total").html response.total.toFixed 2
+            if $("[name=sigv]").is(":checked")
+                $(".igv").html response.igv.toFixed 2
+                $(".total").html response.total.toFixed 2
+            else
+                $(".igv").html 0
+                $(".total").html (response.total - response.igv).toFixed 2
             return
         else
             $().toastmessage "showWarningToast", "No se a encontrado resultados. #{ response.raise }"
@@ -326,16 +330,16 @@ saveOrderPurchase = ->
     valid = false
     data = new Object()
     $("div.mpurchase > .modal-dialog > .modal-content > .modal-body > .row").find("select,input").each (index, elements) ->
-            if elements.type is "file" or elements.type is "select" or elements.type is "text"
-                data[elements.name] = elements.value
-                return true
-            if elements.value isnt ""
-                valid = true
-                data[elements.name] = elements.value
-            else
-                valid = false
-                data.element = elements.name
-                return valid
+        if elements.type is "file" or elements.type is "select" or elements.type is "text"
+            data[elements.name] = elements.value
+            return true
+        if elements.value isnt ""
+            valid = true
+            data[elements.name] = elements.value
+        else
+            valid = false
+            data.element = elements.name
+            return valid
     if valid
         $().toastmessage "showToast",
             text : "Desea generar la <q>Orden de Compra</q>?"
@@ -344,16 +348,16 @@ saveOrderPurchase = ->
             buttons : [{value:'Si'},{value:'No'}]
             success : (result) ->
                 if result is "Si"
-                    arr = new Array()
-                    $("table.table-list > tbody > tr").each (index, elements) ->
-                        $td = $(elements).find("td")
-                        discount = parseInt $td.eq(7).text().split("%")[0]
-                        arr.push
-                            "materials": $td.eq(1).text()
-                            "quantity": parseFloat($td.eq(5).text())
-                            "price": parseFloat($td.eq(6).text())
-                            "discount": discount
-                        return
+                    # arr = new Array()
+                    # $("table.table-list > tbody > tr").each (index, elements) ->
+                    #     $td = $(elements).find("td")
+                    #     discount = parseInt $td.eq(7).text().split("%")[0]
+                    #     arr.push
+                    #         "materials": $td.eq(1).text()
+                    #         "quantity": parseFloat($td.eq(5).text())
+                    #         "price": parseFloat($td.eq(6).text())
+                    #         "discount": discount
+                    #     return
                     discount = $("input[name=pdiscount]").val()
                     if discount is ""
                         discount = 0
@@ -366,13 +370,14 @@ saveOrderPurchase = ->
                     prm.append "traslado", data.traslado
                     prm.append "contacto", data.contacto
                     prm.append "discount", discount
+                    prm.append "sigv", if $("[name=sigv]").is(":checked") then 1 else 0
                     prm.append "projects", $("select[name=selproject]").val().toString()
                     prm.append "savePurchase", true
                     prm.append 'quotation', $("[name=quotation]").val()
                     prm.append 'observation', $("#observation_ifr").contents().find('body').html()
-                    prm.append "details", JSON.stringify arr
+                    # prm.append "details", JSON.stringify arr
                     if $("input[name=deposito]").get(0).files.length
-                        prm.append "deposito", $("input[name=deposito]").get(0).files[0]
+                        prm.append "deposito", $("input[name=deposito]").get(0).files[1]
                     prm.append "csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val()
                     $.ajax
                         url : "",
@@ -405,9 +410,13 @@ calcTotal = (event) ->
     $("label[name=vamount]").text sub
     discount = ((sub * discount) / 100)
     $("label[name=vdsct]").text discount
-    igv = (((sub - discount) * igv) / 100)
-    $("label[name=vigv]").text igv.toFixed 2
-    total = (sub - discount + igv)
+    if $("[name=sigv]").is(":checked")
+        igv = (((sub - discount) * igv) / 100)
+        $("[name=vigv]").val igv.toFixed 2
+        total = (sub - discount + igv)
+    else
+        $("[name=vigv]").val 0
+        total = (sub - discount)
     $("label[name=vtotal]").text total.toFixed 2
     return
 

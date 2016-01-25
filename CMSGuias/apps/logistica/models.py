@@ -67,9 +67,9 @@ class Compra(models.Model):
     discount = models.FloatField(default=0, blank=True)
     # exchnage = models.DecimalField(max_digist=2, place_decimals=3)
     sigv = models.BooleanField(default=True, blank=True)
-    freight = models.FloatField(default=0, blank=True)
+    # freight = models.FloatField(default=0, blank=True, null=True)
     observation = models.TextField(null=True, blank=True)
-    paid = models.CharField(max_length=1, default='0')
+    paid = models.CharField(max_length=1, blank=True, default='0')
     flag = models.BooleanField(default=True)
 
     class Meta:

@@ -304,8 +304,9 @@ class RptPurchase(TemplateView):
             igv = 0
             subt = 0
             total = 0
-            # conf = Configuracion.objects.get(periodo=globalVariable.get_year)
-            search.getIGVCurrent(context['bedside'].registrado.strftime('%Y'))
+            conf = Configuracion.objects.get(
+                periodo=context['bedside'].registrado.strftime('%Y'))
+            # search.getIGVCurrent(context['bedside'].registrado.strftime('%Y'))
             disc = 0
             # print conf.igv
             lcount = float(lista.count())
@@ -322,47 +323,60 @@ class RptPurchase(TemplateView):
                 dataset = lista[counter:counter+20]
                 tmp = list()
                 for x in dataset:
-                    disc += ((x.precio * float(x.discount)) / 100)
-                    # tdiscount += (disc * x.cantstatic)
-                    # precio = x.precio - disc
-                    amount = (x.cantstatic * x.precio)
+                    discountm = ((x.precio*float(x.discount))/100)
+                    disc += (x.precio*(float(x.discount)/100))
+                    if x.perception:
+                        amount = (x.cantstatic * (
+                            (x.precio-discountm)+(
+                                x.precio*(conf.perception/100))))
+                    else:
+                        amount = (x.cantstatic * (x.precio-discountm))
                     subt += amount
-                    tmp.append(
-                        {
-                            'item': counter + 1,
-                            'materials_id': x.materiales_id,
-                            'matname': x.materiales.matnom,
-                            'measure': x.materiales.matmed,
-                            'unit': x.materiales.unidad_id,
-                            'brand': x.brand.brand,
-                            'model': x.model.model,
-                            'quantity': x.cantstatic,
-                            'price': x.precio,
-                            'discount': float(x.discount),
-                            'amount': amount
-                        }
-                    )
+                    unit = None
+                    if x.unit_id:
+                        unit = x.unit_id
+                    else:
+                        unit = x.materiales.unidad_id
+                    tmp.append({
+                        'item': counter + 1,
+                        'materials_id': x.materiales_id,
+                        'matname': x.materiales.matnom,
+                        'measure': x.materiales.matmed,
+                        'unit': x.materiales.unidad_id,
+                        'brand': x.brand.brand,
+                        'model': x.model.model,
+                        'quantity': x.cantstatic,
+                        'price': x.precio,
+                        'discount': float(x.discount),
+                        'perception': x.perception,
+                        'amount': amount})
                     counter += 1
                 section.append(tmp)
             context['details'] = section
-            igv = search.getIGVCurrent(context['bedside'].registrado.strftime('%Y'))
+            # igv = search.getIGVCurrent(context['bedside'].registrado.strftime('%Y'))
+            igv = conf.igv
             context['subtotal'] = subt
             # print context['bedside'].discount, 'DISCOUNT'
             if context['bedside'].discount:
                 discount = ((subt * context['bedside'].discount) / 100)
-                if disc:
-                    discount += disc
+                ns = (subt - discount)
+                # if disc:
+                #     discount += disc
             else:
                 discount = disc
+                ns = subt
             # print discount
-            ns = (subt - discount)
             context['discount'] = discount
-            context['igvval'] = ((igv * ns) / 100)
-            context['igv'] = igv
+            if context['bedside'].sigv:
+                context['igvval'] = ((igv * ns) / 100)
+                context['igv'] = igv
+            else:
+                context['igvval'] = 0
             total = (context['igvval'] + ns)
             context['total'] = total
             context['literal'] = number_to_char.numero_a_letras(total)
             context['status'] = globalVariable.status
+            context['conf'] = conf
             html = render_to_string(
                     self.template_name,
                     context,

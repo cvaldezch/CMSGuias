@@ -61,7 +61,8 @@
                             <th>Unidad</th>
                             <th>Cantidad</th>
                             <th>Precio</th>
-                            <th width="2cm">Dscto.</th>
+                            <th width="1.8cm">Dscto.</th>
+                            <th width="2cm">Percepción.</th>
                             <th>Importe</th>
                         </tr>
                     </thead>
@@ -75,6 +76,7 @@
                                 <td class="text-center">{{ x.quantity|safe }}</td>
                                 <td class="text-center">{{ x.price|safe }}</td>
                                 <td class="text-center">{{ x.discount }}%</td>
+                                <td class="text-center">{% if x.perception %}{{conf.perception}}{%else%}0{% endif %}%</td>
                                 <td class="text-right">{{ x.amount|safe|floatformat:"2" }}</td>
                             </tr>
                         {% endfor%}
@@ -100,9 +102,11 @@
                         <td  class="text-right">{{ discount|safe|floatformat:"2" }}</td>
                     </tr>
                     <tr class="border">
-                        <!-- <td colspan="6"></td> -->
-                        <td class="text-left">IGV {{ igv }}%</td>
-                        <td class="text-right">{{ igvval|safe|floatformat:"2" }}</td>
+                    {% if bedside.sigv %}
+                            <!-- <td colspan="6"></td> -->
+                            <td class="text-left">IGV {{ igv }}%</td>
+                            <td class="text-right">{{ igvval|safe|floatformat:"2" }}</td>
+                    {% endif %}
                     </tr>
                     <tr class="border">
                         <!-- <td colspan="6"></td> -->

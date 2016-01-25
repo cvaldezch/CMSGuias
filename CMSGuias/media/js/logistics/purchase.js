@@ -151,8 +151,13 @@ listTmpBuy = function(event) {
       }
       $(".discount").html(response.discount.toFixed(2));
       $(".sub").html(response.subtotal.toFixed(2));
-      $(".igv").html(response.igv.toFixed(2));
-      $(".total").html(response.total.toFixed(2));
+      if ($("[name=sigv]").is(":checked")) {
+        $(".igv").html(response.igv.toFixed(2));
+        $(".total").html(response.total.toFixed(2));
+      } else {
+        $(".igv").html(0);
+        $(".total").html((response.total - response.igv).toFixed(2));
+      }
     } else {
       return $().toastmessage("showWarningToast", "No se a encontrado resultados. " + response.raise);
     }
@@ -414,20 +419,8 @@ saveOrderPurchase = function() {
         }
       ],
       success: function(result) {
-        var arr, discount, prm;
+        var discount, prm;
         if (result === "Si") {
-          arr = new Array();
-          $("table.table-list > tbody > tr").each(function(index, elements) {
-            var $td, discount;
-            $td = $(elements).find("td");
-            discount = parseInt($td.eq(7).text().split("%")[0]);
-            arr.push({
-              "materials": $td.eq(1).text(),
-              "quantity": parseFloat($td.eq(5).text()),
-              "price": parseFloat($td.eq(6).text()),
-              "discount": discount
-            });
-          });
           discount = $("input[name=pdiscount]").val();
           if (discount === "") {
             discount = 0;
@@ -441,13 +434,13 @@ saveOrderPurchase = function() {
           prm.append("traslado", data.traslado);
           prm.append("contacto", data.contacto);
           prm.append("discount", discount);
+          prm.append("sigv", $("[name=sigv]").is(":checked") ? 1 : 0);
           prm.append("projects", $("select[name=selproject]").val().toString());
           prm.append("savePurchase", true);
           prm.append('quotation', $("[name=quotation]").val());
           prm.append('observation', $("#observation_ifr").contents().find('body').html());
-          prm.append("details", JSON.stringify(arr));
           if ($("input[name=deposito]").get(0).files.length) {
-            prm.append("deposito", $("input[name=deposito]").get(0).files[0]);
+            prm.append("deposito", $("input[name=deposito]").get(0).files[1]);
           }
           prm.append("csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val());
           $.ajax({
@@ -486,9 +479,14 @@ calcTotal = function(event) {
   $("label[name=vamount]").text(sub);
   discount = (sub * discount) / 100;
   $("label[name=vdsct]").text(discount);
-  igv = ((sub - discount) * igv) / 100;
-  $("label[name=vigv]").text(igv.toFixed(2));
-  total = sub - discount + igv;
+  if ($("[name=sigv]").is(":checked")) {
+    igv = ((sub - discount) * igv) / 100;
+    $("[name=vigv]").val(igv.toFixed(2));
+    total = sub - discount + igv;
+  } else {
+    $("[name=vigv]").val(0);
+    total = sub - discount;
+  }
   $("label[name=vtotal]").text(total.toFixed(2));
 };
 

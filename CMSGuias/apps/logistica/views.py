@@ -674,6 +674,12 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                     tmp.discount = request.POST.get('discount')
                     tmp.brand_id = request.POST.get('brand')
                     tmp.model_id = request.POST.get('model')
+                    tmp.perception = request.POST['perception']
+                    if tmp.unit_id != request.POST['unit']:
+                        if request.POST['unit'] == tmp.materiales.unidad_id:
+                            tmp.unit_id = None
+                        else:
+                            tmp.unit_id = request.POST['unit']
                     tmp.save()
                     context['status'] = True
                 except ObjectDoesNotExist, e:
@@ -764,6 +770,7 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                         add.projects = request.POST[
                             'projects'] if 'projects' in request.POST else ''
                         add.discount = float(request.POST.get('discount'))
+                        add.sigv = int(request.POST['sigv'])
                         add.save()
                         # save details os the order purchase
                         # details = json.loads(request.POST.get('details'))
@@ -778,6 +785,7 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                             obj.precio = x.precio
                             obj.cantstatic = x.cantidad
                             obj.discount = x.discount
+                            obj.perception = x.perception
                             obj.save()
                             # if all success delete all
                             # data of the temp purchase
@@ -786,6 +794,7 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                         context['nro'] = id
                     else:
                         context['status'] = False
+                        context['raise'] = str(form)
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
