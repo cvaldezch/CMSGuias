@@ -1,6 +1,6 @@
 {% extends "basemd.html" %}
 {% block title %}
-Comparar
+  Comparar
 {% endblock title %}
 {% block menu %}
   {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
@@ -24,26 +24,26 @@ Comparar
       <div class="row">
         <div class="col l3">
           <div class="center-align">
-            <h4>Aprox.</h4>
-            <h3>{{symbol}} {{salesap|floatformat:2}}</h3>
+            <h5>Aprox.</h5>
+            <h4><small>{{symbol}} {{salesap|floatformat:2}}</small></h4>
           </div>
         </div>
         <div class="col l3">
           <div class="center-align">
-            <h4>Ventas</h4>
-            <h3>{{symbol}} {{sales|floatformat:2}}</h3>
+            <h5>Ventas</h5>
+            <h4><small>{{symbol}} {{sales|floatformat:2}}</small></h4>
           </div>
         </div>
         <div class="col l3">
           <div class="center-align">
-            <h4>Operaciones</h4>
-            <h3>{{symbol}} {{operations|floatformat:2}}</h3>
+            <h5>Operaciones</h5>
+            <h4><small>{{symbol}} {{operations|floatformat:2}}</small></h4>
           </div>
         </div>
         <div class="col l3">
           <div class="center-align">
-            <h4>Diferencia</h4>
-            <h3>{{symbol}} {{diff|floatformat:2}}</h3>
+            <h5>Diferencia</h5>
+            <h4><small>{{symbol}} {{diff|floatformat:2}}</small></h4>
           </div>
         </div>
       </div>
