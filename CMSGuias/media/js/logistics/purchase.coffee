@@ -114,7 +114,7 @@ listTmpBuy = (event) ->
     $.getJSON "", "type":"list", (response) ->
         if response.status
             template = """<tr name="{{id}}">
-                    <td>{{item}}</td><td>{{materials_id}}</td>
+                    <td style="width: 20px;" class="text-center">{{item}}</td><td>{{materials_id}}</td>
                     <td>{{matname}} - {{matmeasure}}</td>
                     <td>{{unit}}</td>
                     <td>{{brand}}</td>
@@ -126,6 +126,11 @@ listTmpBuy = (event) ->
                     <td class="text-right">{{amount}}</td>
                     <td class="text-center"><button class="btn btn-xs btn-link" name="btn-edit" value="{{quantity}}" data-price="{{price}}" data-brand="{{brand}}" data-model="{{model}}" data-nombre="{{matname}} {{matmeasure}}" data-id="{{id}}" data-mat="{{materials_id}}" data-discount="{{discount}}" data-unit="{{unit}}" data-perception="{{perception}}"><span class="glyphicon glyphicon-pencil"></span></button></td>
                     <td class="text-center"><button class="btn btn-xs btn-link text-red" name="btn-del" value="{{id}}" data-mat="{{materials_id}}"><span class="glyphicon glyphicon-trash"></span></button></td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-sm btn-link black-text" n>
+                            <i class="fa fa-font fa-lg"></i>
+                        </button>
+                    </td>
                     </tr>"""
             $tb = $("table.table-list > tbody")
             $tb.empty()

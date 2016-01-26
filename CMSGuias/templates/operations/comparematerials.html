@@ -4,16 +4,16 @@
 {% endblock title %}
 {% block menu %}
   {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
-      {% include "menus/salesmd.html" %}
+    {% include "menus/salesmd.html" %}
   {% endif %}
   {% if user.get_profile.empdni.charge.area|lower == 'logistica' %}
-      {% include "menus/logisticsmd.htm" %}
+    {% include "menus/logisticsmd.htm" %}
   {% endif %}
   {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
-      {% include "menus/operationsmd.htm" %}
+    {% include "menus/operationsmd.htm" %}
   {% endif %}
   {% if user.get_profile.empdni.charge.area|lower == 'almacen' %}
-      {% include "menus/storagemd.htm" %}
+    {% include "menus/storagemd.htm" %}
   {% endif %}
 {% endblock menu %}
 {% block content %}
