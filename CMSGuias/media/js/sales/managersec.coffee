@@ -2629,3 +2629,45 @@ getCountDSector = ->
       return
     return
   return
+
+uploadOrdersFormat = ->
+    $this = this
+    $file = $("#fufileorders")[0]
+    if $file.length
+        data = new FormData
+        data.append "fOrders", $file.files[0]
+        data.append "readNOrders", true
+        data.append "csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val()
+        $().toastmessage "showToast",
+            text: "Seguro que desea procesar el archivo"
+            type: "confirm"
+            buttons: [{value:'Si'}, {value:'No'}]
+            sticky: true
+            success: (isConfirm) ->
+                if isConfirm is "Si"
+                    $.ajax
+                        url: ""
+                        type: "post"
+                        dataType: "json"
+                        cache: false
+                        contentType: false
+                        processData: false
+                        success: (response) ->
+                            if response.status
+                                if response.st is "complete"
+                                    $().toastmessage "showSuccessToast", "Felicidades, Orden  Generada! #{response.code}"
+                                    setTimeout ->
+                                        location.reload()
+                                    , 26000
+                                    return
+                                if response.st is "modify"
+                                    $().toastmessage "showWarningToast", "Esta orden modifica la lista!"
+                            else
+                                $().toastmessage "showErrorToast", "Error al procesar. #{response.raise}"
+                                return
+                    return
+                return
+        return
+    else
+        $().toastmessage "showWarningToast", "No se ha seleccionado un archivo!"
+    return

@@ -17,6 +17,7 @@ from django.utils import simplejson
 from django.utils.decorators import method_decorator
 from django.template import RequestContext, TemplateDoesNotExist
 from django.views.generic import TemplateView, View
+from openpyxl import load_workbook
 # from django.views.generic.edit import UpdateView, CreateView
 # from decimal import Decimal
 from django.core.serializers.json import DjangoJSONEncoder
@@ -2124,6 +2125,16 @@ class SectorManage(JSONResponseMixin, View):
                         prices.sales = x['sales']
                         prices.save()
                     context['status'] = True
+                if 'readNOrders' in request.POST:
+                    path = 'storage/Temp/'
+                    name = uploadFiles.upload(path, request.FILES['fOrders'])
+                    wb = load_workbook(filename=name, read_only=True)
+                    ws = wb['ORDEN']
+                    nrow = ws.max_row
+                    ncol = ws.max_column
+                    for y in range(7, nrow):
+                        if ws.cell(row=y, column=1).value:
+
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False
@@ -2144,7 +2155,7 @@ class ListGuideByProject(JSONResponseMixin, TemplateView):
             else:
                 guide = GuiaRemision.objects.filter(
                     pedido__proyecto_id=kwargs['pro'],
-                    pedido__sector_id=kwargs['sec']).order_by('registrado')
+                    pedido__sector_id=kwargs['sec']).order_by('-registrado')
                 context['sec'] = Sectore.objects.get(sector_id=kwargs['sec'])
             if guide:
                 context['guides'] = [
@@ -2197,7 +2208,7 @@ class ListOrdersByProject(JSONResponseMixin, TemplateView):
             else:
                 orders = Pedido.objects.filter(
                     proyecto_id=kwargs['pro'],
-                    sector_id=kwargs['sec']).order_by('registrado')
+                    sector_id=kwargs['sec']).order_by('-registrado')
                 context['sec'] = Sectore.objects.get(sector_id=kwargs['sec'])
             if orders:
                 context['orders'] = [{

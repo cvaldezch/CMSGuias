@@ -1,4 +1,4 @@
-var addListCusSectors, addMaterial, addMaterialUpdateMeter, addoldMaterialRemoveDeductive, aggregateMaterialsOutMeter, aggregate_nipples, approvedAdditional, approvedModify, backModify, backOrders, calMeter, calcAmountModifySector, calcAmountSector, calcDiffModify, changeRadio, changeRdoNip, changeSelectDeductiveMeter, changeTypeDeductive, chkNippChange, clearFieldsDeductiveMeter, commentToogle, copyBack, createTableDeductive, deductiveOneCancel, delAllMaterialDeductiveGlobal, delMaterials, delPlane, delUnitDeductiveGlobal, deleteAllUpdateMeter, deleteMaterialUpdateMeter, delete_all_temp_nipples, dellAllMaterial, displayResultTable, editBrandandModel, editMaterials, generateDeductiveMeter, generateOrders, getCountDSector, getPercentAttend, listMaterials, list_temp_nipples, loadMaterials, loadSecandSub, loadSector, loadsAccounts, nextOrders, nippleDelOne, openAddMaterial, openBrand, openModel, panelPlanes, pasteAllLeft, pasteAllRight, pasteMaterials, pasteOneLeft, pasteOneRight, publisherCommnet, readerPrices, savePreOrders, saveWithoutPrice, saved_or_update_nipples, searchDescDeductiveGlobal, selectChoiseOrder, sendAlertModified, showEditComment, showGuideByProyect, showHideTbody, showInitDeductive, showListNipp, showListPreOrders, showModalSetPrices, showModify, showOrders, showOrdersByProyect, showPanelAddMateialsOldDeductiveGlobal, showPreOrders, showTableDeductiveGlobal, show_edit_nipple, showaddtableoutdeductivemeter, startModidfy, tableUp, updateCommentMat, updateMaterialUpdateMeter, uploadPlane, valMax, valQuantityPreOrders, validBlurNumber, validOrders, validQuantityPreOrder, viewFull;
+var addListCusSectors, addMaterial, addMaterialUpdateMeter, addoldMaterialRemoveDeductive, aggregateMaterialsOutMeter, aggregate_nipples, approvedAdditional, approvedModify, backModify, backOrders, calMeter, calcAmountModifySector, calcAmountSector, calcDiffModify, changeRadio, changeRdoNip, changeSelectDeductiveMeter, changeTypeDeductive, chkNippChange, clearFieldsDeductiveMeter, commentToogle, copyBack, createTableDeductive, deductiveOneCancel, delAllMaterialDeductiveGlobal, delMaterials, delPlane, delUnitDeductiveGlobal, deleteAllUpdateMeter, deleteMaterialUpdateMeter, delete_all_temp_nipples, dellAllMaterial, displayResultTable, editBrandandModel, editMaterials, generateDeductiveMeter, generateOrders, getCountDSector, getPercentAttend, listMaterials, list_temp_nipples, loadMaterials, loadSecandSub, loadSector, loadsAccounts, nextOrders, nippleDelOne, openAddMaterial, openBrand, openModel, panelPlanes, pasteAllLeft, pasteAllRight, pasteMaterials, pasteOneLeft, pasteOneRight, publisherCommnet, readerPrices, savePreOrders, saveWithoutPrice, saved_or_update_nipples, searchDescDeductiveGlobal, selectChoiseOrder, sendAlertModified, showEditComment, showGuideByProyect, showHideTbody, showInitDeductive, showListNipp, showListPreOrders, showModalSetPrices, showModify, showOrders, showOrdersByProyect, showPanelAddMateialsOldDeductiveGlobal, showPreOrders, showTableDeductiveGlobal, show_edit_nipple, showaddtableoutdeductivemeter, startModidfy, tableUp, updateCommentMat, updateMaterialUpdateMeter, uploadOrdersFormat, uploadPlane, valMax, valQuantityPreOrders, validBlurNumber, validOrders, validQuantityPreOrder, viewFull;
 
 $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
@@ -2817,4 +2817,60 @@ getCountDSector = function() {
       return;
     }
   });
+};
+
+uploadOrdersFormat = function() {
+  var $file, $this, data;
+  $this = this;
+  $file = $("#fufileorders")[0];
+  if ($file.length) {
+    data = new FormData;
+    data.append("fOrders", $file.files[0]);
+    data.append("readNOrders", true);
+    data.append("csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val());
+    $().toastmessage("showToast", {
+      text: "Seguro que desea procesar el archivo",
+      type: "confirm",
+      buttons: [
+        {
+          value: 'Si'
+        }, {
+          value: 'No'
+        }
+      ],
+      sticky: true,
+      success: function(isConfirm) {
+        if (isConfirm === "Si") {
+          $.ajax({
+            url: "",
+            type: "post",
+            dataType: "json",
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+              if (response.status) {
+                if (response.st === "complete") {
+                  $().toastmessage("showSuccessToast", "Felicidades, Orden  Generada! " + response.code);
+                  setTimeout(function() {
+                    return location.reload();
+                  }, 26000);
+                  return;
+                }
+                if (response.st === "modify") {
+                  return $().toastmessage("showWarningToast", "Esta orden modifica la lista!");
+                }
+              } else {
+                $().toastmessage("showErrorToast", "Error al procesar. " + response.raise);
+              }
+            }
+          });
+          return;
+        }
+      }
+    });
+    return;
+  } else {
+    $().toastmessage("showWarningToast", "No se ha seleccionado un archivo!");
+  }
 };

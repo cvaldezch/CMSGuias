@@ -615,6 +615,10 @@
                                                             <span class="fa fa-cubes"></span>
                                                             <span>Hacer Pedido Almacén</span>
                                                         </button>
+                                                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#muordersshow">
+                                                            <i class="fa fa-upload"></i>
+                                                            <span>Cargar Pedido</span>
+                                                        </button>
                                                     {% endif %}
                                                     </div>
                                                 </div>
@@ -1772,6 +1776,31 @@
       </div>
     </div>
   </div>
+</div>
+<div class="modal fade" id="muordersshow">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+                <h4 class="modal-title">Cargar Pedido</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">Seleccionar su Archivo</label>
+                    <input type="file" id="fufileorders" accept="application/vnd.ms-excel">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <i class="fa fa-times"></i> Salir
+                </button>
+                <button type="button" class="btn btn-primary">
+                    <i class="fa fa-upload"></i>
+                    Cargar Archivo
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- Data Project -->
 {% csrf_token %}
