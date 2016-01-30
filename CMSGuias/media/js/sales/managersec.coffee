@@ -2659,7 +2659,7 @@ uploadOrdersFormat = ->
                                     $().toastmessage "showSuccessToast", "Felicidades, Orden  Generada! #{response.orders}"
                                     setTimeout ->
                                         location.reload()
-                                    , 26000
+                                    , 2600
                                     return
                                 if response.result is "modify"
                                     $("#muordersshow").modal("hide")

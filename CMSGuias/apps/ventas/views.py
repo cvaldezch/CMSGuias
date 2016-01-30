@@ -2089,7 +2089,7 @@ class SectorManage(JSONResponseMixin, View):
                         prices.save()
                     context['status'] = True
                 if 'readNOrders' in request.POST:
-                    path = 'storage/Temp/'
+                    path = '/storage/Temp/'
                     name = uploadFiles.upload(path, request.FILES['fOrders'])
                     wb = load_workbook(filename=name, read_only=True)
                     ws = wb['ORDEN']
@@ -2107,7 +2107,7 @@ class SectorManage(JSONResponseMixin, View):
                             accessory.append({
                                 'materials': a,
                                 'quantity': float(ws.cell(row=y, column=4).value),
-                                'observation': str(ws.cell(row=y, column=5).value)
+                                'observation': ws.cell(row=y, column=5).value if not ws.cell(row=y, column=5).value is None else ''
                             })
                         if a == 'NIPLES':
                             # Save list nipples
@@ -2137,7 +2137,7 @@ class SectorManage(JSONResponseMixin, View):
                                                 'type': typen.strip(),
                                                 'measure': me,
                                                 'quantity': qu,
-                                                'observation': str(ws.cell(row=yn, column=6).value),
+                                                'observation': ws.cell(row=yn, column=6).value if not ws.cell(row=yn, column=6).value is None else '',
                                                 })
                                             d['quantity']+=((me*qu)/100)
                             break
@@ -2165,7 +2165,7 @@ class SectorManage(JSONResponseMixin, View):
                             else:
                                 ntexists.append({
                                     'materials': lo.materiales_id,
-                                    'quantity': (ac['quantity']-lo.quantityorders),
+                                    'quantity': (ac['quantity']-lo.quantityorder),
                                     'brand': lo.brand_id,
                                     'model': lo.model_id,
                                     'observation': ac['observation'] if 'observation' in ac else ''
@@ -2224,21 +2224,32 @@ class SectorManage(JSONResponseMixin, View):
                                 m = m[0]
                                 ppurchase = m.precio
                                 psales = m.sales
-                            obj = UpdateMetProject()
-                            obj.proyecto_id = kwargs['pro']
-                            obj.subproyecto_id = kwargs['sub'] if kwargs[
-                                'sub'] != unicode(None) else ''
-                            obj.sector_id = kwargs['sec']
-                            obj.materials_id = x['materials']
-                            obj.brand_id = 'BR000'
-                            obj.model_id = 'MO000'
-                            obj.quantity = x['quantity']
-                            obj.price = ppurchase
-                            obj.sales = psales
-                            obj.comment = x['observation']
-                            obj.quantityorders = x['quantity']
-                            obj.tag = '0'
-                            obj.save()
+                            try:
+                                u = UpdateMetProject.objects.get(
+                                        proyecto_id=kwargs['pro'],
+                                        subproyecto_id=kwargs['sub'] if kwargs[
+                                            'sub'] != unicode(None) else None,
+                                        sector_id=kwargs['sec'],
+                                        materials_id=x['materials'])
+                                u.quantity += x['quantity']
+                                u.quantityorders += x['quantity']
+                                u.save()
+                            except UpdateMetProject.DoesNotExist:
+                                obj = UpdateMetProject()
+                                obj.proyecto_id = kwargs['pro']
+                                obj.subproyecto_id = kwargs['sub'] if kwargs[
+                                    'sub'] != unicode(None) else ''
+                                obj.sector_id = kwargs['sec']
+                                obj.materials_id = x['materials']
+                                obj.brand_id = 'BR000'
+                                obj.model_id = 'MO000'
+                                obj.quantity = x['quantity']
+                                obj.price = ppurchase
+                                obj.sales = psales
+                                obj.comment = x['observation']
+                                obj.quantityorders = x['quantity']
+                                obj.tag = '0'
+                                obj.save()
                         context['result'] = 'modify'
                     else:
                         # create order to storage
@@ -2305,13 +2316,13 @@ class SectorManage(JSONResponseMixin, View):
                             de = Detpedido()
                             de.pedido_id = gkey
                             de.materiales_id = d['materials']
-                            de.brand_id = d['brand']
-                            de.model_id = d['model']
+                            de.brand_id = 'BR000'
+                            de.model_id = 'MO000'
                             de.cantidad = d['quantity']
                             de.cantshop = d['quantity']
                             de.cantguide = 0
                             de.tag = '0'
-                            de.comment = d['observation']
+                            de.comment = d['observation'] if 'observation' in d else ''
                             de.flag = True
                             de.save()
                             if 'nipples' in d:
@@ -2327,13 +2338,14 @@ class SectorManage(JSONResponseMixin, View):
                                     n.metrado = dn['measure']
                                     n.cantshop = dn['quantity']
                                     n.cantguide = 0
-                                    n.tipo = dn['type']
+                                    n.tipo = str(dn['type']).strip()
                                     n.flag = True
                                     n.tag = '0'
-                                    n.comment = dn['observation']
+                                    n.comment = dn['observation'] if 'observation' in dn else ''
                                     n.save()
                         context['result'] = 'orders'
                         context['orders'] = gkey
+                        uploadFiles.deleteFile(name)
                     context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()

@@ -2855,7 +2855,7 @@ uploadOrdersFormat = function() {
                   $().toastmessage("showSuccessToast", "Felicidades, Orden  Generada! " + response.orders);
                   setTimeout(function() {
                     return location.reload();
-                  }, 26000);
+                  }, 2600);
                   return;
                 }
                 if (response.result === "modify") {
