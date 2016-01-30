@@ -942,13 +942,22 @@ def view_conductor_edit(request, cid, tid):
 def view_orders_pending(request):
     try:
         if request.method == 'GET':
-            lst = Pedido.objects.filter(
-                    flag=True,
-                    status='PE').order_by('-pedido_id')
-            ctx = {'lista': lst}
+            if request.is_ajax():
+                context = dict()
+                try:
+                    lst = Pedido.objects.filter(
+                            flag=True,
+                            status='PE').order_by('-registrado')
+                    context['list'] = json.loads(serializers.serialize(
+                            'json', lst, relations=('proyecto', 'almacen')))
+                    context['status'] = True
+                except ObjectDoesNotExist as e:
+                    context['raise'] = str(e)
+                    context['status'] = False
+                return HttpResponse(
+                    simplejson.dumps(context), mimetype='application/json')
             return render_to_response(
                             'almacen/slopeorders.html',
-                            ctx,
                             context_instance=RequestContext(request))
     except TemplateDoesNotExist, e:
         messages('Error template not found')

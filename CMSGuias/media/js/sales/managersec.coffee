@@ -2625,7 +2625,7 @@ getCountDSector = ->
     if response.status
       console.log response
       if response.dsectors
-        $("#msector, #orderSt, #lnipples").hide()
+        $("#msector, #orderSt, #lnipples, #bmuorders").hide()
       return
     return
   return

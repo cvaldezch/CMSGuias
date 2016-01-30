@@ -2440,7 +2440,7 @@ class ListOrdersByProject(JSONResponseMixin, TemplateView):
                         'nipple': [{
                             'type': [globalVariable.tipo_nipples[k] for k in globalVariable.tipo_nipples if n.tipo == k],
                             'meter': n.metrado,
-                            'quantity': n.cantguide}
+                            'quantity': n.cantidad}
                             for n in Niple.objects.filter(
                                 pedido_id=o.pedido_id,
                                 materiales_id=x.materiales_id)
