@@ -2823,13 +2823,13 @@ uploadOrdersFormat = function() {
   var $file, $this, data;
   $this = this;
   $file = $("#fufileorders")[0];
-  if ($file.length) {
+  if ($file.files.length) {
     data = new FormData;
     data.append("fOrders", $file.files[0]);
     data.append("readNOrders", true);
     data.append("csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val());
     $().toastmessage("showToast", {
-      text: "Seguro que desea procesar el archivo",
+      text: "Seguro que desea procesar el archivo?",
       type: "confirm",
       buttons: [
         {
@@ -2843,6 +2843,7 @@ uploadOrdersFormat = function() {
         if (isConfirm === "Si") {
           $.ajax({
             url: "",
+            data: data,
             type: "post",
             dataType: "json",
             cache: false,
@@ -2850,14 +2851,16 @@ uploadOrdersFormat = function() {
             processData: false,
             success: function(response) {
               if (response.status) {
-                if (response.st === "complete") {
-                  $().toastmessage("showSuccessToast", "Felicidades, Orden  Generada! " + response.code);
+                if (response.result === "orders") {
+                  $().toastmessage("showSuccessToast", "Felicidades, Orden  Generada! " + response.orders);
                   setTimeout(function() {
                     return location.reload();
                   }, 26000);
                   return;
                 }
-                if (response.st === "modify") {
+                if (response.result === "modify") {
+                  $("#muordersshow").modal("hide");
+                  $(".btn-update-meter").click();
                   return $().toastmessage("showWarningToast", "Esta orden modifica la lista!");
                 }
               } else {
@@ -2865,11 +2868,9 @@ uploadOrdersFormat = function() {
               }
             }
           });
-          return;
         }
       }
     });
-    return;
   } else {
     $().toastmessage("showWarningToast", "No se ha seleccionado un archivo!");
   }

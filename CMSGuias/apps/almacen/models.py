@@ -46,7 +46,7 @@ class Pedido(models.Model):
     registrado = models.DateTimeField(auto_now_add=True)
     traslado = models.DateField()
     obser = models.TextField(null=True, blank=True)
-    status = models.CharField(max_length=2, null=False, default='36')
+    status = models.CharField(max_length=2, null=False, default='PE')
     flag = models.BooleanField(default=True)
     orderfile = models.FileField(upload_to=url, null=True, blank=True)
 
