@@ -174,7 +174,7 @@
                 {% for x in details %}
                     <tr>
                         <td class="text-center">{{ forloop.counter }}</td>
-                        <td>{{ x.description }}</td>
+                        <td>{{ x.description|safe }}</td>
                         <td class="text-center">{{ x.unit.uninom }}</td>
                         <td class="text-center">{{ x.quantity }}</td>
                         <td class="text-right">{{ x.price }}</td>
