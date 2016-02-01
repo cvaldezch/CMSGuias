@@ -2672,3 +2672,6 @@ uploadOrdersFormat = ->
     else
         $().toastmessage "showWarningToast", "No se ha seleccionado un archivo!"
     return
+processRequirement = (event) ->
+
+    return

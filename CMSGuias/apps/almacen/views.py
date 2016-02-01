@@ -969,14 +969,21 @@ def view_orders_pending(request):
 def view_orders_list_approved(request):
     try:
         if request.method == 'GET':
-            lst = Pedido.objects.filter(
-                flag=True).exclude(
-                Q(status='PE') | Q(status='AN') | Q(status='CO')
-                ).order_by('-pedido_id')
-            ctx = {'lista': lst}
+            context = dict()
+            if request.is_ajax():
+                lst = Pedido.objects.filter(
+                    flag=True).exclude(
+                    Q(status='PE') | Q(status='AN') | Q(status='CO') |
+                    Q(status='DI')).order_by('-registrado')
+                context['list'] = json.loads(
+                    serializers.serialize(
+                        'json', lst, relations=('proyecto', 'almacen')))
+                context['status'] = True
+                return HttpResponse(
+                        json.dumps(context),
+                        mimetype='application/json')
             return render_to_response(
                 'almacen/listorderattend.html',
-                ctx,
                 context_instance=RequestContext(request))
     except TemplateDoesNotExist:
         messages('Error template not found')

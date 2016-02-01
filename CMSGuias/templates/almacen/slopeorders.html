@@ -1,6 +1,30 @@
 {% extends 'base.html' %}
 {% block script %}
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
+<script type="text/javascript">
+	var app = angular.module("slopeApp", []).config(function ($httpProvider) {
+					$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+					$httpProvider.defaults.xsrfCookieName = 'csrftoken';
+  				$httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+				});
+	app.controller('CtrSlope', ['$scope','$http', function($scope, $http){
+		$scope.ordersSlope = []
+		angular.element(document).ready(function () {
+			$scope.getListSlope();
+		});
+		$scope.getListSlope = function () {
+			var data = {glist: true}
+			$http.get("", {params: data}).success(function (response){
+				console.log(response);
+				if (response.status) {
+					$scope.ordersSlope = response.list;
+				}else{
+					swal("Alerta!", "No hay datos para mostrar.", "warning");
+				};
+			});
+		}
+	}]);
+</script>
 <script>
 	$(document).ready(function() {
 		$(".btn-approved").click(function(event) {
@@ -50,30 +74,6 @@
 		};
 	}
 </script>
-<script type="text/javascript">
-	var app = angular.module("slopeApp", []).config(function ($httpProvider) {
-					$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-					$httpProvider.defaults.xsrfCookieName = 'csrftoken';
-  				$httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
-				});
-	app.controller('CtrSlope', ['$scope','$http', function($scope, $http){
-		$scope.ordersSlope = []
-		angular.element(document).ready(function () {
-			$scope.getListSlope();
-		});
-		$scope.getListSlope = function () {
-			var data = {glist: true}
-			$http.get("", {params: data}).success(function (response){
-				console.log(response);
-				if (response.status) {
-					$scope.ordersSlope = response.list;
-				}else{
-					swal("Alerta!", "No hay datos para mostrar.", "warning");
-				};
-			});
-		}
-	}]);
-</script>
 {% endblock %}
 {% block menu %}
 	{% include "menus/storage_menu.htm" %}
@@ -88,6 +88,12 @@
 			<div class="col-md-12">
 				<div class="table-responsive">
 					<table class="table table-hover table-bordered table-condensed">
+						<caption>
+							<div class="form-group text-left">
+								<label class="control-label">Busqueda</label>
+								<input type="text" ng-model="search" class="form-control">
+							</div>
+						</caption>
 						<thead>
 							<tr class="brand-warning">
 								<th class="text-center">Item</th>
@@ -102,7 +108,7 @@
 						</thead>
 						<tbody>
 						{% verbatim %}
-							<tr class="warning tr-{{x.pedido_id}}" ng-repeat="x in ordersSlope">
+							<tr class="warning tr-{{x.pedido_id}}" ng-repeat="x in ordersSlope|filter:search">
 								<td class="text-center">{{ $index+1 }}</td>
 								<td class="text-center">
 									<button class="btn btn-xs btn-link text-black btn-approved" value="{{x.pk}}">
@@ -115,7 +121,7 @@
 								<td class="text-center">{{ x.fields.traslado }}</td>
 								<td class="text-center">{{ x.fields.status }}</td>
 								<td class="text-center">
-									<a href="{% url 'rpt_orders' x.pedido_id x.status %}" target="_blank" class="btn btn-xs btn-link text-black" value="{{ x.pk }}">
+									<a href="/reports/orders/{{x.pk}}/{{x.fields.status}}/" target="_blank" class="btn btn-xs btn-link text-black" value="{{ x.pk }}">
 										<span class="fa fa-file-pdf-o"></span>
 									</a>
 								</td>

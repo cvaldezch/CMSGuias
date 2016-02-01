@@ -2032,7 +2032,7 @@ class SectorManage(JSONResponseMixin, View):
                                     'materials': x.materiales_id,
                                     'name': x.materials.matnom,
                                     'meter': x.materials.matmed,
-                                    'unit': x.materialss.unidad.uninom,
+                                    'unit': x.materials.unidad.uninom,
                                     'brand': x.brand.brand,
                                     'model': x.model.model,
                                     'quantity': x.cantidad,
@@ -2094,7 +2094,7 @@ class SectorManage(JSONResponseMixin, View):
                     wb = load_workbook(filename=name, read_only=True)
                     ws = wb['ORDEN']
                     nrow = ws.max_row
-                    ncol = ws.max_column
+                    # ncol = ws.max_column
                     accessory = list()
                     for y in range(7, nrow):
                         cell = ws.cell(row=y, column=1)
@@ -2154,14 +2154,16 @@ class SectorManage(JSONResponseMixin, View):
                                         'sub'] != unicode(None) else None,
                                     sector_id=kwargs['sec'],
                                     materiales_id=ac['materials'])
+                            ac['name'] = lo.materiales.matnom
+                            ac['measure'] = lo.materiales.matmed
+                            ac['unit'] = lo.materiales.unidad.uninom
                             if ac['quantity'] <= lo.quantityorder:
                                 orders.append({
                                     'materials': lo.materiales_id,
                                     'quantity': ac['quantity'],
                                     'observation': ac['observation'] if 'observation' in ac else '',
                                     'brand': lo.brand_id,
-                                    'model': lo.model_id
-                                    })
+                                    'model': lo.model_id})
                             else:
                                 ntexists.append({
                                     'materials': lo.materiales_id,
@@ -2183,13 +2185,20 @@ class SectorManage(JSONResponseMixin, View):
                                     'quantity': ac['quantity'],
                                     'brand': 'BR000',
                                     'model': 'MO000',
-                                    'observation': ac['observation'] if 'observation' in ac else ''
-                                    })
+                                    'observation': ac['observation'] if 'observation' in ac else ''})
+                            try:
+                                ma = Material.objects.get(materiales_id=ac['materials'])
+                                ac['name'] = ma.matnom
+                                ac['measure'] = ma.matmed
+                                ac['unit'] = ma.unidad.uninom
+                            except Materiale.DoesNotExist:
+                                pass
                     if len(ntexists):
                         # clear update meter project
                         UpdateMetProject.objects.filter(
                             proyecto_id=kwargs['pro'],
-                            subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None,
+                            subproyecto_id=kwargs['sub'] if kwargs[
+                                'sub'] != unicode(None) else None,
                             sector_id=kwargs['sec']).delete()
                         # add list to update list
                         for x in MetProject.objects.filter(
@@ -2252,101 +2261,107 @@ class SectorManage(JSONResponseMixin, View):
                                 obj.save()
                         context['result'] = 'modify'
                     else:
-                        # create order to storage
-                        # save Nipples
-                        for ac in accessory:
-                            if 'nipples' in ac:
-                                for x in ac['nipples']:
-                                    try:
-                                        np = Nipple.objects.get(
-                                                proyecto_id=kwargs['pro'],
-                                                subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None,
-                                                sector_id=kwargs['sec'],
-                                                materiales_id=ac['materials'],
-                                                metrado=x['measure'],
-                                                tipo=x['type'])
-                                        np.cantidad += x['quantity']
-                                        if np.cantshop == 0:
-                                            np.tag = '2'
-                                        else:
-                                            np.tag = '1'
-                                        np.save()
-                                    except Nipple.DoesNotExist:
-                                        np = Nipple()
-                                        np.proyecto_id = kwargs['pro']
-                                        np.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else None
-                                        np.sector_id = kwargs['sec']
-                                        np.materiales_id = ac['materials']
-                                        np.metrado = x['measure']
-                                        np.tipo = str(x['type']).strip()
-                                        np.cantidad = x['quantity']
-                                        np.cantshop = 0
-                                        np.comment = x['observation']
-                                        np.tag = '2'
-                                        np.save()
-                        # generate orders Storage
-                        gkey = genkeys.GenerateIdOrders()
-                        pe = Pedido()
-                        pe.pedido_id = gkey
-                        pe.proyecto_id = kwargs['pro']
-                        pe.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else None
-                        pe.sector_id = kwargs['sec']
-                        pe.almacen_id = 'AL01'
-                        pe.asunto = str(ws.cell(row=5, column=2).value)
-                        pe.empdni_id = request.user.get_profile().empdni_id
-                        print type(ws.cell(row=4, column=4).value), ws.cell(row=4, column=4).value
-                        pe.traslado = ws.cell(row=4, column=4).value
-                        pe.obser = kwargs['pro']
-                        pe.orderfile = request.FILES['fOrders']
-                        pe.status = 'PE'
-                        pe.save()
-                        # details orders
-                        for d in accessory:
-                            dlm = MetProject.objects.get(
-                                    proyecto_id=kwargs['pro'],
-                                    subproyecto_id=kwargs['sub']
-                                    if kwargs['sub'] != unicode(None)
-                                    else None, sector_id=kwargs['sec'],
-                                    materiales_id = d['materials'])
-                            dlm.quantityorder-=d['quantity']
-                            if dlm.quantityorder <= 0:
-                                dlm.quantityorder = 0
-                                dlm.tag = '2'
-                            dlm.save()
-                            de = Detpedido()
-                            de.pedido_id = gkey
-                            de.materiales_id = d['materials']
-                            de.brand_id = 'BR000'
-                            de.model_id = 'MO000'
-                            de.cantidad = d['quantity']
-                            de.cantshop = d['quantity']
-                            de.cantguide = 0
-                            de.tag = '0'
-                            de.comment = d['observation'] if 'observation' in d else ''
-                            de.flag = True
-                            de.save()
-                            if 'nipples' in d:
-                                for dn in d['nipples']:
-                                    n = Niple()
-                                    n.pedido_id = gkey
-                                    n.proyecto_id = kwargs['pro']
-                                    n.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else None
-                                    n.sector_id = kwargs['sec']
-                                    n.empdni_id = request.user.get_profile().empdni_id
-                                    n.materiales_id = d['materials']
-                                    n.cantidad = dn['quantity']
-                                    n.metrado = dn['measure']
-                                    n.cantshop = dn['quantity']
-                                    n.cantguide = 0
-                                    n.tipo = str(dn['type']).strip()
-                                    n.flag = True
-                                    n.tag = '0'
-                                    n.comment = dn['observation'] if 'observation' in dn else ''
-                                    n.save()
-                        context['result'] = 'orders'
-                        context['orders'] = gkey
+                        context['requeriment'] = accessory
+                        context['issue'] = str(ws.cell(row=5, column=2).value)
+                        context['traslate'] = ws.cell(row=4, column=4).value
                         uploadFiles.deleteFile(name)
+                        context['result'] = 'showTable'
                     context['status'] = True
+                if 'processRequeriment' in request.POST:
+                    # create order to storage
+                    # save Nipples
+                    for ac in accessory:
+                        if 'nipples' in ac:
+                            for x in ac['nipples']:
+                                try:
+                                    np = Nipple.objects.get(
+                                            proyecto_id=kwargs['pro'],
+                                            subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None,
+                                            sector_id=kwargs['sec'],
+                                            materiales_id=ac['materials'],
+                                            metrado=x['measure'],
+                                            tipo=x['type'])
+                                    np.cantidad += x['quantity']
+                                    if np.cantshop == 0:
+                                        np.tag = '2'
+                                    else:
+                                        np.tag = '1'
+                                    np.save()
+                                except Nipple.DoesNotExist:
+                                    np = Nipple()
+                                    np.proyecto_id = kwargs['pro']
+                                    np.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else None
+                                    np.sector_id = kwargs['sec']
+                                    np.materiales_id = ac['materials']
+                                    np.metrado = x['measure']
+                                    np.tipo = str(x['type']).strip()
+                                    np.cantidad = x['quantity']
+                                    np.cantshop = 0
+                                    np.comment = x['observation']
+                                    np.tag = '2'
+                                    np.save()
+                    # generate orders Storage
+                    gkey = genkeys.GenerateIdOrders()
+                    pe = Pedido()
+                    pe.pedido_id = gkey
+                    pe.proyecto_id = kwargs['pro']
+                    pe.subproyecto_id = kwargs['sub'] if kwargs[
+                        'sub'] != unicode(None) else None
+                    pe.sector_id = kwargs['sec']
+                    pe.almacen_id = 'AL01'
+                    pe.asunto = '' # str(ws.cell(row=5, column=2).value)
+                    pe.empdni_id = request.user.get_profile().empdni_id
+                    pe.traslado =
+                    pe.obser = kwargs['pro']
+                    pe.orderfile = request.FILES['fOrders']
+                    pe.status = 'PE'
+                    pe.save()
+                    # details orders
+                    for d in accessory:
+                        dlm = MetProject.objects.get(
+                                proyecto_id=kwargs['pro'],
+                                subproyecto_id=kwargs['sub']
+                                if kwargs['sub'] != unicode(None)
+                                else None, sector_id=kwargs['sec'],
+                                materiales_id=d['materials'])
+                        dlm.quantityorder -= d['quantity']
+                        if dlm.quantityorder <= 0:
+                            dlm.quantityorder = 0
+                            dlm.tag = '2'
+                        dlm.save()
+                        de = Detpedido()
+                        de.pedido_id = gkey
+                        de.materiales_id = d['materials']
+                        de.brand_id = 'BR000'
+                        de.model_id = 'MO000'
+                        de.cantidad = d['quantity']
+                        de.cantshop = d['quantity']
+                        de.cantguide = 0
+                        de.tag = '0'
+                        de.comment = d['observation'] if 'observation' in d else ''
+                        de.flag = True
+                        de.save()
+                        if 'nipples' in d:
+                            for dn in d['nipples']:
+                                n = Niple()
+                                n.pedido_id = gkey
+                                n.proyecto_id = kwargs['pro']
+                                n.subproyecto_id = kwargs['sub'] if kwargs[
+                                    'sub'] != unicode(None) else None
+                                n.sector_id = kwargs['sec']
+                                n.empdni_id = request.user.get_profile().empdni_id
+                                n.materiales_id = d['materials']
+                                n.cantidad = dn['quantity']
+                                n.metrado = dn['measure']
+                                n.cantshop = dn['quantity']
+                                n.cantguide = 0
+                                n.tipo = str(dn['type']).strip()
+                                n.flag = True
+                                n.tag = '0'
+                                n.comment = dn['observation'] if 'observation' in dn else ''
+                                n.save()
+                    context['result'] = 'orders'
+                    context['orders'] = gkey
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

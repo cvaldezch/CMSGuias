@@ -1,5 +1,27 @@
 {% extends 'base.html' %}
 {% block script %}
+	<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
+	<script type="text/javascript">
+		var app = angular.module("appAO", []).config(function ($httpProvider) {
+					$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+					$httpProvider.defaults.xsrfCookieName = 'csrftoken';
+  				$httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+				});
+		app.controller('CtrlAO', ['$scope','$http', function($scope, $http){
+			$scope.orders = []
+			angular.element(document).ready(function () {
+				var data = {glist: true}
+				$http.get("", {params: data}).success(function (response){
+					console.log(response);
+					if (response.status) {
+						$scope.orders = response.list;
+					}else{
+						swal("Alerta!", "No hay datos para mostrar.", "warning");
+					};
+				});
+			});
+		}]);
+	</script>
 	<script src="{{ MEDIA_URL }}js/floatThead.js"></script>
 	<script>
 		$("table.table-float").floatThead({
@@ -12,14 +34,20 @@
 	{% include "menus/storage_menu.htm" %}
 {% endblock menu %}
 {% block content %}
-<div class="container">
+<div class="container" ng-app="appAO" ng-controller="CtrlAO">
 	<div class="well">
 	<h1 class="text-primary">Lista Atender Pedido</h1>
 		<!--<input type="hidden" class="empdni" value="{{user.get_profile.empdni}}">-->
 		<div class="row show-grid">
 			<div class="col-md-12">
 				<div class="table-responsive">
-					<table class="table table-striped table-hover table-bordered table-condensed table-float">
+					<table class="table table-hovered table-bordered table-condensed table-float">
+						<caption>
+							<div class="form-group text-left">
+								<label for="" class="control-label text-left">Busqueda</label>
+								<input type="text" ng-model="search" class="form-control">
+							</div>
+						</caption>
 						<thead>
 							<tr class="brand-primary text-white">
 								<th class="text-center">Item</th>
@@ -33,33 +61,26 @@
 							</tr>
 						</thead>
 						<tbody>
-							{% if lista %}
-							{% for x in lista %}
-							<tr class="tr-{{x.pedido_id}}">
-								<td class="text-center">{{forloop.counter}}</td>
-								<td>{{x.pedido_id}}</td>
-								<td>{{ x.proyecto_id }} {{x.proyecto.nompro}}</td>
-								<td>{{x.almacen.nombre}}</td>
-								<td class="text-center">{{x.traslado}}</td>
-								<td class="text-center">{{x.status}}</td>
+						{% verbatim %}
+							<tr class="tr-{{x.pk}}" ng-repeat="x in orders | filter: search">
+								<td class="text-center">{{$index+1}}</td>
+								<td>{{x.pk}}</td>
+								<td>{{ x.fields.proyecto.pk }} {{x.fields.proyecto.fields.nompro}}</td>
+								<td>{{x.fields.almacen.fields.nombre}}</td>
+								<td class="text-center">{{x.fields.traslado}}</td>
+								<td class="text-center">{{x.fields.status}}</td>
 								<td class="text-center">
-									<a href="{% url 'rpt_orders' x.pedido_id x.status %}" target="_blank" class="btn btn-xs btn-link text-black" value="{{x.pedido_id}}">
+									<a href="/reports/orders/{{x.pk}}/{{x.fields.status}}/" target="_blank" class="btn btn-xs btn-link text-black">
 										<span class="fa fa-file-text"></span>
 									</a>
 								</td>
 								<td class="text-center">
-									<a  class="btn btn-xs btn-link text-black" href="{% url 'vista_meet_order' x.pedido_id %}">
+									<a  class="btn btn-xs btn-link text-black" href="/almacen/meet/order/{{x.pk}}/">
 										<span class="glyphicon glyphicon-ok"></span>
 									</a>
 								</td>
 							</tr>
-							{% endfor%}
-							{% else %}
-								<div class="alert alert-warning">
-									<strong>Warning</strong>
-									<p>No se han encontrado <q><strong>Pedidos</strong></q> para mostrar.<p>
-								</div>
-							{% endif %}
+						{% endverbatim %}
 						</tbody>
 					</table>
 				</div>
