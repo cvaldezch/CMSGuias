@@ -1,4 +1,4 @@
-var addListCusSectors, addMaterial, addMaterialUpdateMeter, addoldMaterialRemoveDeductive, aggregateMaterialsOutMeter, aggregate_nipples, approvedAdditional, approvedModify, backModify, backOrders, calMeter, calcAmountModifySector, calcAmountSector, calcDiffModify, changeRadio, changeRdoNip, changeSelectDeductiveMeter, changeTypeDeductive, chkNippChange, clearFieldsDeductiveMeter, commentToogle, copyBack, createTableDeductive, deductiveOneCancel, delAllMaterialDeductiveGlobal, delMaterials, delPlane, delUnitDeductiveGlobal, deleteAllUpdateMeter, deleteMaterialUpdateMeter, delete_all_temp_nipples, dellAllMaterial, displayResultTable, editBrandandModel, editMaterials, generateDeductiveMeter, generateOrders, getCountDSector, getPercentAttend, listMaterials, list_temp_nipples, loadMaterials, loadSecandSub, loadSector, loadsAccounts, nextOrders, nippleDelOne, openAddMaterial, openBrand, openModel, panelPlanes, pasteAllLeft, pasteAllRight, pasteMaterials, pasteOneLeft, pasteOneRight, processRequirement, publisherCommnet, readerPrices, savePreOrders, saveWithoutPrice, saved_or_update_nipples, searchDescDeductiveGlobal, selectChoiseOrder, sendAlertModified, showEditComment, showGuideByProyect, showHideTbody, showInitDeductive, showListNipp, showListPreOrders, showModalSetPrices, showModify, showOrders, showOrdersByProyect, showPanelAddMateialsOldDeductiveGlobal, showPreOrders, showTableDeductiveGlobal, show_edit_nipple, showaddtableoutdeductivemeter, startModidfy, tableUp, updateCommentMat, updateMaterialUpdateMeter, uploadOrdersFormat, uploadPlane, valMax, valQuantityPreOrders, validBlurNumber, validOrders, validQuantityPreOrder, viewFull;
+var $requestRequireTmp, addListCusSectors, addMaterial, addMaterialUpdateMeter, addoldMaterialRemoveDeductive, aggregateMaterialsOutMeter, aggregate_nipples, approvedAdditional, approvedModify, backModify, backOrders, calMeter, calcAmountModifySector, calcAmountSector, calcDiffModify, cancelRequeriment, changeRadio, changeRdoNip, changeSelectDeductiveMeter, changeTypeDeductive, chkNippChange, clearFieldsDeductiveMeter, commentToogle, copyBack, createTableDeductive, deductiveOneCancel, delAllMaterialDeductiveGlobal, delMaterials, delPlane, delUnitDeductiveGlobal, deleteAllUpdateMeter, deleteMaterialUpdateMeter, delete_all_temp_nipples, dellAllMaterial, displayResultTable, editBrandandModel, editMaterials, generateDeductiveMeter, generateOrders, getCountDSector, getPercentAttend, listMaterials, list_temp_nipples, loadMaterials, loadSecandSub, loadSector, loadsAccounts, nextOrders, nippleDelOne, openAddMaterial, openBrand, openModel, panelPlanes, pasteAllLeft, pasteAllRight, pasteMaterials, pasteOneLeft, pasteOneRight, processRequeriment, publisherCommnet, readerPrices, savePreOrders, saveWithoutPrice, saved_or_update_nipples, searchDescDeductiveGlobal, selectChoiseOrder, sendAlertModified, showEditComment, showGuideByProyect, showHideTbody, showInitDeductive, showListNipp, showListPreOrders, showModalSetPrices, showModify, showOrders, showOrdersByProyect, showPanelAddMateialsOldDeductiveGlobal, showPreOrders, showTableDeductiveGlobal, show_edit_nipple, showaddtableoutdeductivemeter, startModidfy, tableUp, updateCommentMat, updateMaterialUpdateMeter, uploadOrdersFormat, uploadPlane, valMax, valQuantityPreOrders, validBlurNumber, validOrders, validQuantityPreOrder, viewFull;
 
 $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
@@ -2819,6 +2819,8 @@ getCountDSector = function() {
   });
 };
 
+$requestRequireTmp = null;
+
 uploadOrdersFormat = function() {
   var $file, $this, data;
   $this = this;
@@ -2850,12 +2852,13 @@ uploadOrdersFormat = function() {
             contentType: false,
             processData: false,
             success: function(response) {
+              var temp;
               if (response.status) {
-                if (response.result === "orders") {
-                  $().toastmessage("showSuccessToast", "Felicidades, Orden  Generada! " + response.orders);
-                  setTimeout(function() {
-                    return location.reload();
-                  }, 2600);
+                if (response.result === "showTable") {
+                  $requestRequireTmp = response;
+                  temp = "{{#list}}<tr><td>{{$index+1}}</td><td>{{materials}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{quantity}}</td></tr>{{/list}}";
+                  $("stmrequire > tbody").html(Mustache.render(temp, response));
+                  $("#mstrequire").modal("show");
                   return;
                 }
                 if (response.result === "modify") {
@@ -2876,4 +2879,38 @@ uploadOrdersFormat = function() {
   }
 };
 
-processRequirement = function(event) {};
+processRequeriment = function(event) {
+  swal({
+    title: 'Deseas generar el Pedido?',
+    text: '',
+    type: 'warning',
+    showConfirmButton: true,
+    showCancelButton: true,
+    confirmButtonColor: "#DD6B55",
+    confirmButtonText: "Si! Generar",
+    confirmOnClose: true,
+    cancelOnCancel: true
+  }, function(isConfirm) {
+    var data;
+    if (isConfirm) {
+      console.log("Start process requiriment");
+      data = {
+        'data': JSON.stringify($requestRequireTmp),
+        'processRequeriment': true
+      };
+      return $.post("", data, function(response) {
+        if (response.status) {
+          return setTimeout(function() {
+            return swal("Pedido: " + response.orders, "", "success");
+          }, 2600);
+        }
+      }, 'json');
+    }
+  });
+};
+
+cancelRequeriment = function() {
+  $requestRequireTmp = null;
+  $("stmrequire > tbody").empty();
+  $("#mstrequire").modal("hide");
+};

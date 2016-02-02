@@ -2264,12 +2264,15 @@ class SectorManage(JSONResponseMixin, View):
                         context['requeriment'] = accessory
                         context['issue'] = str(ws.cell(row=5, column=2).value)
                         context['traslate'] = ws.cell(row=4, column=4).value
-                        uploadFiles.deleteFile(name)
+                        context['filename'] = filename
+                        # uploadFiles.deleteFile(name)
                         context['result'] = 'showTable'
                     context['status'] = True
                 if 'processRequeriment' in request.POST:
                     # create order to storage
                     # save Nipples
+                    data = json.loads(request.POST['data'])
+                    accessory = data['requeriment']
                     for ac in accessory:
                         if 'nipples' in ac:
                             for x in ac['nipples']:
@@ -2309,9 +2312,9 @@ class SectorManage(JSONResponseMixin, View):
                         'sub'] != unicode(None) else None
                     pe.sector_id = kwargs['sec']
                     pe.almacen_id = 'AL01'
-                    pe.asunto = '' # str(ws.cell(row=5, column=2).value)
+                    pe.asunto = data['issue']
                     pe.empdni_id = request.user.get_profile().empdni_id
-                    pe.traslado =
+                    pe.traslado = data['traslate']
                     pe.obser = kwargs['pro']
                     pe.orderfile = request.FILES['fOrders']
                     pe.status = 'PE'

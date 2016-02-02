@@ -1802,6 +1802,36 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="mstrequire">
+    <div class="modal-dialog" style="width: 100%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" data-dismiss="modal" class="btn btn-default btn-sm" onClick="cancelRequeriment()">
+                    <i class="fa fa-times"></i>
+                    Cancelar
+                </button>
+                <button type="button" data-dismiss="modal" class="btn btn-success btn-sm pull-right" onclick="processRequeriment()">
+                    <i class="fa fa-check"></i>
+                    Procesar Pedido
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-responsive stmrequire">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Codigo</th>
+                            <th>Descripción</th>
+                            <th>Unidad</th>
+                            <th>Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Data Project -->
 {% csrf_token %}
 <input type="hidden" name="pro" value="{{ project.proyecto_id }}" data-name="{{ project.nompro }}">
@@ -1822,4 +1852,5 @@
 <input type="hidden" name="area" value="{{ user.get_profile.empdni.charge.area|lower }}" data-cargo="{{ user.get_profile.empdni.charge.cargos|lower }}">
 <!-- block files -->
 <input type="file" name="plane" class="hide" accept="application/pdf">
+
 {% endblock content %}

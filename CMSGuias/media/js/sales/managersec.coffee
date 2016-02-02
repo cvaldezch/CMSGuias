@@ -2629,7 +2629,7 @@ getCountDSector = ->
       return
     return
   return
-
+$requestRequireTmp = null
 uploadOrdersFormat = ->
     $this = this
     $file = $("#fufileorders")[0]
@@ -2655,11 +2655,16 @@ uploadOrdersFormat = ->
                         processData: false
                         success: (response) ->
                             if response.status
-                                if response.result is "orders"
-                                    $().toastmessage "showSuccessToast", "Felicidades, Orden  Generada! #{response.orders}"
-                                    setTimeout ->
-                                        location.reload()
-                                    , 2600
+                                if response.result is "showTable"
+                                    # swal "#{response.ode}", "Felicidades, Orden  Generada! #{response.orders}"
+                                    #setTimeout ->
+                                    #    location.reload()
+                                    #, 2600
+                                    # create table and show
+                                    $requestRequireTmp = response
+                                    temp = """{{#list}}<tr><td>{{$index+1}}</td><td>{{materials}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{quantity}}</td></tr>{{/list}}"""
+                                    $("stmrequire > tbody").html Mustache.render temp, response
+                                    $("#mstrequire").modal("show")
                                     return
                                 if response.result is "modify"
                                     $("#muordersshow").modal("hide")
@@ -2672,6 +2677,35 @@ uploadOrdersFormat = ->
     else
         $().toastmessage "showWarningToast", "No se ha seleccionado un archivo!"
     return
-processRequirement = (event) ->
 
+processRequeriment = (event) ->
+    swal
+        title: 'Deseas generar el Pedido?'
+        text: ''
+        type: 'warning'
+        showConfirmButton: true
+        showCancelButton: true
+        confirmButtonColor: "#DD6B55"
+        confirmButtonText: "Si! Generar"
+        confirmOnClose: true
+        cancelOnCancel: true
+    , (isConfirm) ->
+        if isConfirm
+            console.log "Start process requiriment"
+            data =
+                'data': JSON.stringify $requestRequireTmp
+
+                'processRequeriment': true
+            $.post "", data, (response) ->
+                if response.status
+                    setTimeout ->
+                        swal "Pedido: #{response.orders}", "", "success"
+                    , 2600
+            , 'json'
+    return
+
+cancelRequeriment = ->
+    $requestRequireTmp = null
+    $("stmrequire > tbody").empty()
+    $("#mstrequire").modal("hide")
     return
