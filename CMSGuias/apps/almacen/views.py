@@ -1333,11 +1333,13 @@ def view_list_guide_referral_success(request):
                         period=globalVariable.get_year,
                         materials_id=x.materiales_id,
                         brand_id=brand,
-                        model_id=model).order_by('-ingress')[0]
-                    inv.stock = (float(inv.stock) + float(x.cantguide))
-                    inv.save()
-                    ibm.stock = (float(ibm.stock) + float(x.cantguide))
-                    ibm.save()
+                        model_id=model).order_by('-ingress')
+                    if ibm:
+                        ibm = ibm[0]
+                        inv.stock = (float(inv.stock) + float(x.cantguide))
+                        inv.save()
+                        ibm.stock = (float(ibm.stock) + float(x.cantguide))
+                        ibm.save()
                     # Save Details Restoration
                     dt = DetRestoration()
                     dt.restoration_id = res
