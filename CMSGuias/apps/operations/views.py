@@ -1031,14 +1031,15 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
             context['lst'] = lst
             context['sales'] = sales.aggregate(amount=Sum(
                                 'cantidad', field='cantidad*precio'))['amount']
-            context['operations'] = operations.aggregate(amount=Sum(
-                             'quantity', field='quantity*ppurchase'))['amount']
+            # context['operations'] = operations.aggregate(amount=Sum(
+            #                'quantity', field='quantity*ppurchase'))['amount']
             am = 0
             for x in lst:
                 if not type(x['operations']) is str:
                     am += x['amount']
                 # am += (x.quantity*float(x.ppurchase))
             print 'AMOUNT TOTAL PURCHASE ', am
+            context['operations'] = am
             context['currency'] = sales[0].proyecto.currency.moneda
             context['symbol'] = sales[0].proyecto.currency.simbolo
             context['salesap'] = sales[0].sector.amount

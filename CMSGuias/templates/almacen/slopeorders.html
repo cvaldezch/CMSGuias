@@ -27,7 +27,7 @@
 </script>
 <script>
 	$(document).ready(function() {
-		$(".btn-approved").click(function(event) {
+		$(document).on("click", ".btn-approved", function(event) {
 			console.warn(this);
 			//event.preventDefault();
 			var item = this;

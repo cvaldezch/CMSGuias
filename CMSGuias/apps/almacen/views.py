@@ -1616,7 +1616,7 @@ class InventoryView(ListView, JSONResponseMixin):
                 if uploadFiles.fileExists(filename):
                     wb = load_workbook(filename)
                     ws = wb.worksheets[0]
-                    for x in range(1, ws.max_row):
+                    for x in range(1, ws.max_row+1):
                         cell = ws.cell(row=x, column=1).value
                         if len(str(cell)) == 15 and cell != None:
                             if float(str(ws.cell(row=x, column=4).value)) <= 0 or ws.cell(row=x, column=4).value == None:
