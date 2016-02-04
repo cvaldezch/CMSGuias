@@ -61,11 +61,12 @@ app.controller 'programingCtrl', ($scope, $http, $cookies, $timeout) ->
       .success (response) ->
         if response.status
           $scope.sglist = response.sg
-          $("#mlgroup").openModal()
+          if !$("#mlgroup").is(":visible")
+            $("#mlgroup").openModal()
           setTimeout ->
             $('.dropdown-button').dropdown()
             return
-          , 800
+          , 600
           return
         else
           swal "Error!", "No se han obtenido datos. #{response.raise}", "error"
@@ -242,6 +243,67 @@ app.controller 'programingCtrl', ($scope, $http, $cookies, $timeout) ->
               $event.currentTarget.innerHTML = """<i class="fa fa-upload"></i> Cargar"""
             return
         return
+    return
+  $scope.delarea = ($event) ->
+    console.log $event
+    swal
+      title: "Desea eliminar el area?"
+      text: "debe de tener en cuenta que se perderan todos los datos relacionados al área"
+      type: "warning"
+      showCancelButton: true
+      confirmButtonText: "Si!, eliminar"
+      confirmButtonColor: "#dd6b55"
+      cancelButtonText: "No"
+      closeOnConfirm: true
+      closeOnCancel: true
+    , (isConfirm) ->
+      if isConfirm
+        console.log "area del"
+        data =
+          'delarea': true
+          'ds': $event.currentTarget.dataset.dsector
+        $http
+          url: ""
+          data: $.param data
+          method: 'post'
+        .success (response) ->
+          if response.status
+            $scope.getDSectorList()
+            return
+          else
+            swal "Error!", "Se a producido un error. #{response.raise}", "error"
+            return
+    return
+  $scope.delsgroup = ($event) ->
+    console.log $event
+    swal
+      title: "Desea eliminar el grupo?"
+      text: "debe de tener en cuenta que se perderan todos los datos relacionados al grupo"
+      type: "warning"
+      showCancelButton: true
+      confirmButtonText: "Si!, eliminar"
+      confirmButtonColor: "#dd6b55"
+      cancelButtonText: "No"
+      closeOnConfirm: true
+      closeOnCancel: true
+    , (isConfirm) ->
+      if isConfirm
+        console.log "sgroup del"
+        data =
+          'delsgroup': true
+          'sgroup': $event.currentTarget.dataset.sgroup
+        $http
+          url: ""
+          data: $.param data
+          method: 'post'
+        .success (response) ->
+          if response.status
+            $scope.listGroup()
+            return
+          else
+            console.log "#{response.raise} , query fail"
+            swal "Error!", "Se a producido un error. #{response.raise}", "error"
+            return
     return
   $scope.test = ->
     data =

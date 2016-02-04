@@ -201,6 +201,8 @@ class ProgramingProject(JSONResponseMixin, View):
                         amount=Sum(
                             'quantity',
                             field='quantity*ppurchase'))['amount']
+                    if context['operations'] <= 0 or context['operations'] == None:
+                        context['operations'] = 0
                     context['diff'] = (context[
                                         'sector'].amount-context['operations'])
                 return render(
@@ -337,7 +339,7 @@ class ProgramingProject(JSONResponseMixin, View):
                     ncol = sheet.max_column
                     print 'row and col', nrow, ncol
                     sgroup = dict()
-                    for x in range(1, nrow):
+                    for x in range(1, nrow+1):
                         print x, '-----------------'
                         if x == 2:
                             for c in range(4, ncol):
@@ -345,24 +347,32 @@ class ProgramingProject(JSONResponseMixin, View):
                                 if c >= 4 and name != None:
                                     # crea los grupos
                                     # print sheet.cell(row=x, column=c).value
-                                    nw = SGroup()
-                                    sgroup[name] = {
-                                        'id': genkeys.genSGroup(
-                                                kwargs['pro'],
-                                                kwargs['sec'])}
-                                    nw.sgroup_id = sgroup[name]['id']
-                                    nw.project_id = kwargs['pro']
-                                    nw.subproject_id = kwargs['sub'] if unicode(kwargs['sub']) != 'None' else ''
-                                    nw.sector_id = kwargs['sec']
-                                    nw.name = name
-                                    nw.colour = 'rgba(254,255,180,0.8)'
-                                    nw.status = 'PE'
-                                    nw.save()
+                                    try:
+                                        sg = SGroup.objects.get(
+                                            project_id=kwargs['pro'],
+                                            sector_id=kwargs['sec'],
+                                            name=name)
+                                        sgroup[name] = {'id': sg.sgroup_id}
+                                    except SGroup.DoesNotExist, e:
+                                        nw = SGroup()
+                                        sgroup[name] = {
+                                            'id': genkeys.genSGroup(
+                                                    kwargs['pro'],
+                                                    kwargs['sec'])}
+                                        nw.sgroup_id = sgroup[name]['id']
+                                        nw.project_id = kwargs['pro']
+                                        nw.subproject_id = kwargs['sub'] if unicode(kwargs['sub']) != 'None' else ''
+                                        nw.sector_id = kwargs['sec']
+                                        nw.name = name
+                                        nw.colour = 'rgba(254,255,180,0.8)'
+                                        nw.status = 'PE'
+                                        nw.save()
                         elif x == 3:
                             tng = None
                             group = None
                             for c in range(4, ncol):
                                 if c > 3:
+                                    print c, ncol
                                     if c == ncol:
                                         continue
                                     # crea las areas
@@ -375,6 +385,8 @@ class ProgramingProject(JSONResponseMixin, View):
                                     ds = genkeys.genDSector(
                                         kwargs['pro'], group)
                                     dsn = sheet.cell(row=x, column=c).value
+                                    if str(dsn).strip().upper() == 'TOTAL':
+                                        break
                                     sgroup[tng].update({dsn: {'id': ds}})
                                     nds = DSector()
                                     nds.dsector_id = sgroup[tng][dsn]['id']
@@ -441,6 +453,31 @@ class ProgramingProject(JSONResponseMixin, View):
                                         dm.save()
                                     else:
                                         continue
+                    context['status'] = True
+                if 'delarea' in request.POST:
+                    DSMetrado.objects.filter(
+                        dsector_id=request.POST['ds']).delete()
+                    DSector.objects.get(dsector_id=request.POST['ds']).delete()
+                    context['status'] = True
+                if 'delsgroup' in request.POST:
+                    try:
+                        ds = DSector.objects.filter(
+                                project_id=kwargs['pro'],
+                                sgroup_id=request.POST['sgroup'])
+                        ds = [x.dsector_id for x in ds]
+                        DSMetrado.objects.filter(
+                            dsector_id__in=ds).delete()
+                        DSector.objects.filter(dsector_id__in=ds).delete()
+                    except DSector.DoesNotExist as e:
+                        context['raise'] = str(e)
+                    SGroup.objects.get(
+                            project_id=kwargs['pro'],
+                            subproject_id=kwargs[
+                                'sub'] if unicode(kwargs[
+                                    'sub']) != 'None' and unicode(kwargs[
+                                        'sub']) != '' else None,
+                            sector_id=kwargs['sec'],
+                            sgroup_id=request.POST['sgroup']).delete()
                     context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
@@ -957,7 +994,7 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                     'brand': s.brand.brand,
                     'model_id': s.model_id,
                     'model': s.model.model,
-                    'und': s.materiales.unidad.uninom,
+                    'unit': s.materiales.unidad.uninom,
                     'sales': s.cantidad,
                     'purchase': s.precio,
                     'operations': '-'})
@@ -983,7 +1020,7 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                         'brand': o.brand.brand,
                         'model_id': o.model_id,
                         'model': o.model.model,
-                        'und': o.materials.unidad.uninom,
+                        'unit': o.materials.unidad.uninom,
                         'sales': '-',
                         'purchase': o.ppurchase,
                         'operations': o.quantity})

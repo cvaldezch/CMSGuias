@@ -71,10 +71,12 @@ app.controller('programingCtrl', function($scope, $http, $cookies, $timeout) {
     }).success(function(response) {
       if (response.status) {
         $scope.sglist = response.sg;
-        $("#mlgroup").openModal();
+        if (!$("#mlgroup").is(":visible")) {
+          $("#mlgroup").openModal();
+        }
         setTimeout(function() {
           $('.dropdown-button').dropdown();
-        }, 800);
+        }, 600);
       } else {
         swal("Error!", "No se han obtenido datos. " + response.raise, "error");
       }
@@ -273,6 +275,75 @@ app.controller('programingCtrl', function($scope, $http, $cookies, $timeout) {
               $event.currentTarget.disabled = false;
               $event.currentTarget.innerHTML = "<i class=\"fa fa-upload\"></i> Cargar";
             }
+          }
+        });
+      }
+    });
+  };
+  $scope.delarea = function($event) {
+    console.log($event);
+    swal({
+      title: "Desea eliminar el area?",
+      text: "debe de tener en cuenta que se perderan todos los datos relacionados al área",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Si!, eliminar",
+      confirmButtonColor: "#dd6b55",
+      cancelButtonText: "No",
+      closeOnConfirm: true,
+      closeOnCancel: true
+    }, function(isConfirm) {
+      var data;
+      if (isConfirm) {
+        console.log("area del");
+        data = {
+          'delarea': true,
+          'ds': $event.currentTarget.dataset.dsector
+        };
+        return $http({
+          url: "",
+          data: $.param(data),
+          method: 'post'
+        }).success(function(response) {
+          if (response.status) {
+            $scope.getDSectorList();
+          } else {
+            swal("Error!", "Se a producido un error. " + response.raise, "error");
+          }
+        });
+      }
+    });
+  };
+  $scope.delsgroup = function($event) {
+    console.log($event);
+    swal({
+      title: "Desea eliminar el grupo?",
+      text: "debe de tener en cuenta que se perderan todos los datos relacionados al grupo",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Si!, eliminar",
+      confirmButtonColor: "#dd6b55",
+      cancelButtonText: "No",
+      closeOnConfirm: true,
+      closeOnCancel: true
+    }, function(isConfirm) {
+      var data;
+      if (isConfirm) {
+        console.log("sgroup del");
+        data = {
+          'delsgroup': true,
+          'sgroup': $event.currentTarget.dataset.sgroup
+        };
+        return $http({
+          url: "",
+          data: $.param(data),
+          method: 'post'
+        }).success(function(response) {
+          if (response.status) {
+            $scope.listGroup();
+          } else {
+            console.log(response.raise + " , query fail");
+            swal("Error!", "Se a producido un error. " + response.raise, "error");
           }
         });
       }

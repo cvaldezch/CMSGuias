@@ -2852,13 +2852,18 @@ uploadOrdersFormat = function() {
             contentType: false,
             processData: false,
             success: function(response) {
-              var temp;
+              var count, temp;
               if (response.status) {
                 if (response.result === "showTable") {
                   $requestRequireTmp = response;
-                  temp = "{{#list}}<tr><td>{{$index+1}}</td><td>{{materials}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{quantity}}</td></tr>{{/list}}";
-                  $("stmrequire > tbody").html(Mustache.render(temp, response));
+                  count = 1;
+                  response.index = function() {
+                    return count++;
+                  };
+                  temp = "{{#requeriment}}<tr><td>{{index}}</td><td>{{materials}}</td><td>{{name}} {{measure}} <br>{{#nipples}} Niple tipo {{type}} x {{measure}}cm {{quantity}} {{/nipples}}</td><td>{{unit}}</td><td>{{quantity}}</td></tr>{{/requeriment}}";
+                  $(".stmrequire > tbody").html(Mustache.render(temp, response));
                   $("#mstrequire").modal("show");
+                  console.log(response);
                   return;
                 }
                 if (response.result === "modify") {
@@ -2891,17 +2896,23 @@ processRequeriment = function(event) {
     confirmOnClose: true,
     cancelOnCancel: true
   }, function(isConfirm) {
-    var data;
+    var da, data;
     if (isConfirm) {
-      console.log("Start process requiriment");
+      console.log("Start process requeriment");
       data = {
-        'data': JSON.stringify($requestRequireTmp),
-        'processRequeriment': true
+        'data': $requestRequireTmp,
+        'processRequeriment': true,
+        'csrfmiddlewaretoken': $("[name=csrfmiddlewaretoken]").val()
       };
-      return $.post("", data, function(response) {
+      da = new Date($requestRequireTmp['traslate']);
+      data['data']['traslate'] = (da.getFullYear()) + "-" + (da.getMonth() + 1) + "-" + (da.getUTCDate());
+      data['data'] = JSON.stringify(data['data']);
+      console.log(data);
+      $.post("", data, function(response) {
         if (response.status) {
-          return setTimeout(function() {
-            return swal("Pedido: " + response.orders, "", "success");
+          swal("Pedido: " + response.orders, "", "success");
+          setTimeout(function() {
+            return location.reload();
           }, 2600);
         }
       }, 'json');

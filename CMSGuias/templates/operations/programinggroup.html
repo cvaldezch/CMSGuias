@@ -56,10 +56,10 @@
           <i class="fa fa-file-excel-o"></i>
           <span>Archivo</span>
         </button>
-        <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-click="test()" >
+        <!--<button type="button" class="btn green lighten-2 waves-effect waves-light" ng-click="test()" >
           <i class="fa fa-file-excel-o"></i>
           <span>test</span>
-        </button>
+        </button>-->
         <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-click="getPrices()">
           <i class="fa fa-dollar"></i>
           <span>Validar Precios</span>
@@ -136,7 +136,7 @@
         <div class="col l3 m6 s12" ng-repeat="x in dslist | filter: dsfilter">
           <div class="card" style="height: 200px;">
             <div class="card-content" style="background: {{x.fields.sgroup.fields.colour}}">
-              <strong>{{x.fields.sgroup.fields.name}} {{x.fields.name}}</strong>
+              <strong>{{x.fields.sgroup.fields.name}} | {{x.fields.name}}</strong>
               <p>{{x.fields.description}}</p>
               <p>
                 <div class="progress red lighten-4">
@@ -150,7 +150,7 @@
       {% endverbatim %}
             <div class="card-action">
             {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'ventas' %}
-              <a class="red-text text-lighten-1" href="#"><i class="fa fa-trash"></i></a>
+              <a class="red-text text-lighten-1" href="#" ng-click="delarea($event)" {% verbatim %}data-dsector="{{x.pk}}"{% endverbatim %}><i class="fa fa-trash"></i></a>
               <a class="amber-text text-darken-1" href="#"><i class="fa fa-pencil"></i> EDITAR</a>
             {% endif %}
       {% verbatim %}
@@ -234,7 +234,7 @@
             <ul id="{{x.pk}}" class="dropdown-content">
               <li ng-hide="x.fields.status == 'AC'"><a href="#!" style="padding: 2px 0px 2px 3px;" ng-click="showESG()" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-edit"></i> Editar</small></a></li>
               <li class="divider"></li>
-              <li ng-hide="x.fields.status == 'AC'"><a href="#!" style="padding: 2px 0px 2px 3px;" class="waves-effect waves-light grey-text text-darken-3"><small><i class="fa fa-trash"></i> Eliminar</small></a></li>
+              <li ng-hide="x.fields.status == 'AC'"><a href="#!" style="padding: 2px 0px 2px 3px;" class="waves-effect waves-light grey-text text-darken-3" ng-click="delsgroup($event)" data-sgroup="{{x.pk}}"><small><i class="fa fa-trash"></i> Eliminar</small></a></li>
             </ul>
           </td>
         </script>

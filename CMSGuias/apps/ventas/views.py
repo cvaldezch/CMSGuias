@@ -3,6 +3,7 @@
 
 import json
 import os
+import shutil
 
 from django.db.models import Q, Sum
 # from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -2187,7 +2188,7 @@ class SectorManage(JSONResponseMixin, View):
                                     'model': 'MO000',
                                     'observation': ac['observation'] if 'observation' in ac else ''})
                             try:
-                                ma = Material.objects.get(materiales_id=ac['materials'])
+                                ma = Materiale.objects.get(materiales_id=ac['materials'])
                                 ac['name'] = ma.matnom
                                 ac['measure'] = ma.matmed
                                 ac['unit'] = ma.unidad.uninom
@@ -2264,7 +2265,7 @@ class SectorManage(JSONResponseMixin, View):
                         context['requeriment'] = accessory
                         context['issue'] = str(ws.cell(row=5, column=2).value)
                         context['traslate'] = ws.cell(row=4, column=4).value
-                        context['filename'] = filename
+                        context['filename'] = name
                         # uploadFiles.deleteFile(name)
                         context['result'] = 'showTable'
                     context['status'] = True
@@ -2272,7 +2273,9 @@ class SectorManage(JSONResponseMixin, View):
                     # create order to storage
                     # save Nipples
                     data = json.loads(request.POST['data'])
+                    print 'requeriment'
                     accessory = data['requeriment']
+                    # print accessory
                     for ac in accessory:
                         if 'nipples' in ac:
                             for x in ac['nipples']:
@@ -2316,9 +2319,27 @@ class SectorManage(JSONResponseMixin, View):
                     pe.empdni_id = request.user.get_profile().empdni_id
                     pe.traslado = data['traslate']
                     pe.obser = kwargs['pro']
-                    pe.orderfile = request.FILES['fOrders']
+                    # pe.orderfile = request.FILES['fOrders']
                     pe.status = 'PE'
                     pe.save()
+                    ext = data['filename'].split('.')[-1]
+                    p = ''
+                    try:
+                        p = Proyecto.objects.get(proyecto_id=kwargs['pro'])
+                        p = p.registrado.strftime('%Y')
+                    except Proyecto.DoesNotExist, e:
+                        p = globalVariable.get_year
+                    path = '%s/storage/projects/%s/%s/' % (
+                        globalVariable.relative_path,
+                        p,
+                        kwargs['pro'])
+                    print 'origin', data['filename']
+                    print 'move', path
+                    if not os.path.exists(path):
+                        os.makedirs(path, 0777)
+                        os.chmod(path, 0777)
+                    path = '%s%s%s' % (path, gkey, ext)
+                    shutil.move(data['filename'], path)
                     # details orders
                     for d in accessory:
                         dlm = MetProject.objects.get(
@@ -2365,6 +2386,7 @@ class SectorManage(JSONResponseMixin, View):
                                 n.save()
                     context['result'] = 'orders'
                     context['orders'] = gkey
+                    context['status'] = True
             except ObjectDoesNotExist, e:
                 context['raise'] = e.__str__()
                 context['status'] = False

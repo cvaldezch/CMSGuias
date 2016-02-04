@@ -2662,9 +2662,12 @@ uploadOrdersFormat = ->
                                     #, 2600
                                     # create table and show
                                     $requestRequireTmp = response
-                                    temp = """{{#list}}<tr><td>{{$index+1}}</td><td>{{materials}}</td><td>{{name}}</td><td>{{unit}}</td><td>{{quantity}}</td></tr>{{/list}}"""
-                                    $("stmrequire > tbody").html Mustache.render temp, response
+                                    count = 1
+                                    response.index = -> return count++
+                                    temp = """{{#requeriment}}<tr><td>{{index}}</td><td>{{materials}}</td><td>{{name}} {{measure}} <br>{{#nipples}} Niple tipo {{type}} x {{measure}}cm {{quantity}} {{/nipples}}</td><td>{{unit}}</td><td>{{quantity}}</td></tr>{{/requeriment}}"""
+                                    $(".stmrequire > tbody").html Mustache.render temp, response
                                     $("#mstrequire").modal("show")
+                                    console.log response
                                     return
                                 if response.result is "modify"
                                     $("#muordersshow").modal("hide")
@@ -2691,17 +2694,24 @@ processRequeriment = (event) ->
         cancelOnCancel: true
     , (isConfirm) ->
         if isConfirm
-            console.log "Start process requiriment"
+            console.log "Start process requeriment"
             data =
-                'data': JSON.stringify $requestRequireTmp
-
+                'data': $requestRequireTmp
                 'processRequeriment': true
+                'csrfmiddlewaretoken': $("[name=csrfmiddlewaretoken]").val()
+            da = new Date($requestRequireTmp['traslate'])
+            data['data']['traslate'] = "#{da.getFullYear()}-#{da.getMonth()+1}-#{da.getUTCDate()}"
+            data['data'] = JSON.stringify data['data']
+            console.log data
             $.post "", data, (response) ->
                 if response.status
+                    swal "Pedido: #{response.orders}", "", "success"
                     setTimeout ->
-                        swal "Pedido: #{response.orders}", "", "success"
+                        location.reload()
                     , 2600
+                    return
             , 'json'
+            return
     return
 
 cancelRequeriment = ->
