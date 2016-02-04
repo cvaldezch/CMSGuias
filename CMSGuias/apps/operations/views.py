@@ -9,7 +9,7 @@ from django.core import serializers
 # from django.contrib.auth.mod import User
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, Avg
 from django.shortcuts import render_to_response, render
 from django.utils import simplejson
 from django.utils.decorators import method_decorator
@@ -541,6 +541,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                             'quantity',
                             field='quantity * ppurchase'),
                             tsales=Sum('quantity', field='quantity * psales'))
+                    print rds
                     context['msector'] = dsal
                     context['maarea'] = rds
                     mm = MMetrado.objects.filter(
@@ -1004,10 +1005,11 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                     mat = (x['materials'] == o.materials_id)
                     brand = (x['brand_id'] == o.brand_id)
                     model = (x['model_id'] == o.model_id)
-                    if mat and brand and model:
+                    if x['materials'] == o.materials_id:
                         if x['operations'] == '-':
                             x['operations'] = 0
-                        x['operations'] += o.quantity
+                        x['operations'] = (x['operations'] + o.quantity)
+                        x['amount'] = (x['operations'] * float(x['purchase']))
                         break
                     else:
                         c += 1
@@ -1022,14 +1024,21 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                         'model': o.model.model,
                         'unit': o.materials.unidad.uninom,
                         'sales': '-',
-                        'purchase': o.ppurchase,
-                        'operations': o.quantity})
+                        'purchase': float(o.ppurchase),
+                        'operations': o.quantity,
+                        'amount': (o.quantity*float(o.ppurchase))})
 
             context['lst'] = lst
             context['sales'] = sales.aggregate(amount=Sum(
                                 'cantidad', field='cantidad*precio'))['amount']
             context['operations'] = operations.aggregate(amount=Sum(
                              'quantity', field='quantity*ppurchase'))['amount']
+            am = 0
+            for x in lst:
+                if not type(x['operations']) is str:
+                    am += x['amount']
+                # am += (x.quantity*float(x.ppurchase))
+            print 'AMOUNT TOTAL PURCHASE ', am
             context['currency'] = sales[0].proyecto.currency.moneda
             context['symbol'] = sales[0].proyecto.currency.simbolo
             context['salesap'] = sales[0].sector.amount

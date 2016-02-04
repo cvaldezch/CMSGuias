@@ -67,6 +67,7 @@
       <th style="border: 1px solid black;" class="center-align">Compra</th>
 			<th style="border: 1px solid black;" class="center-align">Ventas</th>
 			<th style="border: 1px solid black;" class="center-align">Operaciones</th>
+      <th>Importe</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -81,6 +82,7 @@
         <td class="center-align">{{x.purchase}}</td>
 				<th class="center-align">{{x.sales|safe}}</th>
 				<th class="center-align">{{x.operations|safe}}</th>
+        <th>{{x.amount|safe}}</th>
 			</tr>
 		{% endfor %}
 	</tbody>
