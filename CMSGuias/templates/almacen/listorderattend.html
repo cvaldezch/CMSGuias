@@ -8,7 +8,8 @@
   				$httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
 				});
 		app.controller('CtrlAO', ['$scope','$http', function($scope, $http){
-			$scope.orders = []
+			$scope.orders = [];
+			$scope.area = '';
 			angular.element(document).ready(function () {
 				var data = {glist: true}
 				$http.get("", {params: data}).success(function (response){
@@ -18,8 +19,33 @@
 					}else{
 						swal("Alerta!", "No hay datos para mostrar.", "warning");
 					};
+				console.log($scope.area);
 				});
 			});
+			$scope.cancelOrder = function ($event) {
+				swal({
+					title: "Realmente desea anular el pedido?",
+					text: "",
+					type: "warning",
+					showCancelButton: true,
+					confirmButtonText: 'Si!, anular',
+					confirmButtonColor: "#d9534f",
+					closeOnConfirm: true,
+					closeOnCancel: true
+				}, function(isConfirm){
+					if (isConfirm){
+						var id = $event.currentTarget.dataset.order;
+						data = {"csrfmiddlewaretoken": $("[name=csrfmiddlewaretoken]").val(), "oid": id }
+						$.post('/json/post/cancel/orders/', data, function(response) {
+							if (response.status) {
+								location.reload()
+							}else{
+								$().toastmessage("showWarningToast","No se a podido anular el pedido. "+response.raise);
+							};
+						});
+					}
+				});
+			};
 		}]);
 	</script>
 	<script src="{{ MEDIA_URL }}js/floatThead.js"></script>
@@ -35,6 +61,7 @@
 {% endblock menu %}
 {% block content %}
 <div class="container" ng-app="appAO" ng-controller="CtrlAO">
+	<input type="hidden" ng-init="area='{{request.user.get_profile.empdni.charge.area|lower}}'" ng-model="area">
 	<div class="well">
 	<h1 class="text-primary">Lista Atender Pedido</h1>
 		<!--<input type="hidden" class="empdni" value="{{user.get_profile.empdni}}">-->
@@ -58,6 +85,9 @@
 								<th class="text-center">Estado</th>
 								<th class="text-center">Vista Previa</th>
 								<th class="text-center">Atender</th>
+								{% if request.user.get_profile.empdni.charge.area|lower == 'administrator' %}
+									<th>Anular</th>
+								{% endif %}
 							</tr>
 						</thead>
 						<tbody>
@@ -79,6 +109,11 @@
 										<span class="glyphicon glyphicon-ok"></span>
 									</a>
 								</td>
+								<td class="text-center" ng-if="area == 'administrator'">
+									<a href="#" class="btn btn-xs text-black" ng-click="cancelOrder($event)" data-order="{{x.pk}}">
+										<i class="fa fa-trash"></i>
+									</a>
+								</td>
 							</tr>
 						{% endverbatim %}
 						</tbody>
@@ -88,4 +123,5 @@
 		</div>
 	</div>
 </div>
+{% csrf_token %}
 {% endblock %}

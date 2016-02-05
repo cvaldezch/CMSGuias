@@ -2,5 +2,16 @@
 {% block menu %}
     {% include "menus/operations.htm" %}
 {% endblock menu %}
+{% block script %}
+	<script>
+		$.getJSON("/json/sunat/exchange/rate/",function (response) {
+			if (response.status) {
+				if (response.show) {
+					$().toastmessage("showNoticeToast", "Exito!, se obtubo el tipo de cambio")	;
+				};
+			};
+		});
+	</script>
+{% endblock script %}
 {% block content %}
 {% endblock content %}

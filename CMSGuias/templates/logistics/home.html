@@ -2,3 +2,14 @@
 {% block menu %}
 	{% include "menus/logistics.htm" %}
 {% endblock menu %}
+{% block script %}
+	<script>
+		$.getJSON("/json/sunat/exchange/rate/",function (response) {
+			if (response.status) {
+				if (response.show) {
+					$().toastmessage("showNoticeToast", "Exito!, se obtubo el tipo de cambio")	;
+				};
+			};
+		});
+	</script>
+{% endblock script %}
