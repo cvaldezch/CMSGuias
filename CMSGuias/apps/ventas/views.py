@@ -2110,10 +2110,14 @@ class SectorManage(JSONResponseMixin, View):
                                 'quantity': float(ws.cell(row=y, column=4).value),
                                 'observation': ws.cell(row=y, column=5).value if not ws.cell(row=y, column=5).value is None else ''
                             })
+                            print accessory
                         if a == 'NIPLES':
                             # Save list nipples
                             for yn in range(y+1, nrow+1):
-                                c = str(ws.cell(row=yn, column=1).value)
+                                try:
+                                    c = str(ws.cell(row=yn, column=1).value)
+                                except Exception, e:
+                                    break
                                 # print accessory
                                 if len(c) > 13 and len(c) <= 15:
                                     mc = c
@@ -2126,10 +2130,15 @@ class SectorManage(JSONResponseMixin, View):
                                 # print len(accessory)
                                 np = filter(lambda n: n['materials'] == mc, accessory)
                                 # np = next(n for n in accessory if n['materials'] == mc)
-                                # print np
+                                print np
                                 if np:
                                     for d in accessory:
                                         if d['materials'] == mc:
+                                            if ws.cell(row=yn, column=2).value == None:
+                                                continue
+                                            print ws.cell(row=yn, column=2).value
+                                            print ws.cell(row=yn, column=3).value
+                                            print ws.cell(row=yn, column=5).value
                                             typen = str(ws.cell(row=yn, column=2).value).split('=')[-1]
                                             me = float(str(ws.cell(row=yn, column=3).value))
                                             qu = float(str(ws.cell(row=yn, column=5).value))
