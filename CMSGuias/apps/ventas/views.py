@@ -2279,21 +2279,27 @@ class SectorManage(JSONResponseMixin, View):
                     for ac in accessory:
                         if 'nipples' in ac:
                             for x in ac['nipples']:
-                                try:
-                                    np = Nipple.objects.get(
-                                            proyecto_id=kwargs['pro'],
-                                            subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None,
-                                            sector_id=kwargs['sec'],
-                                            materiales_id=ac['materials'],
-                                            metrado=x['measure'],
-                                            tipo=x['type'])
+                                np = Nipple.objects.filter(
+                                        Q(proyecto_id=kwargs['pro']),
+                                        Q(subproyecto_id=kwargs['sub'] if kwargs['sub'] != unicode(None) else None),
+                                        Q(sector_id=kwargs['sec']),
+                                        Q(materiales_id=ac['materials']),
+                                        Q(metrado=x['measure']),
+                                        Q(tipo=x['type']),
+                                        Q(flag=True),)
+                                if np:
+                                    n = 0
+                                    for i in np:
+                                        if i.id > n:
+                                            n = i
+                                    np = n
                                     np.cantidad += x['quantity']
                                     if np.cantshop == 0:
                                         np.tag = '2'
                                     else:
                                         np.tag = '1'
                                     np.save()
-                                except Nipple.DoesNotExist:
+                                else:
                                     np = Nipple()
                                     np.proyecto_id = kwargs['pro']
                                     np.subproyecto_id = kwargs['sub'] if kwargs['sub'] != unicode(None) else None

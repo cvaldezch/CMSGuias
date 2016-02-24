@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
+from django.contrib import admin
 
 # import CMSGuias
 from CMSGuias.apps.home.models import (
@@ -35,7 +36,13 @@ class Cotizacion(models.Model):
         ordering = ['cotizacion_id']
 
     def __unicode__(self):
-        return '%s %s %s' % (self.cotizacion_id, self.almacen, self.traslado)
+        return u'%s %s %s' % (self.cotizacion_id, self.almacen, self.traslado)
+
+class CotizacionAdmin(admin.ModelAdmin):
+    list_display = ('cotizacion_id', 'registrado', 'suministro', 'empdni','traslado', 'status',)
+    search_fields = ('cotizacion_id',)
+    actions_on_top = True
+    actions_selection_counter = True
 
 
 class Compra(models.Model):
@@ -76,7 +83,7 @@ class Compra(models.Model):
         ordering = ['compra_id']
 
     def __unicode__(self):
-        return '%s %s %s %s %s' % (
+        return u'%s %s %s %s %s' % (
             self.compra_id,
             self.proveedor,
             self.documento,
@@ -105,7 +112,7 @@ class DetCompra(models.Model):
         ordering = ['materiales']
 
     def __unicode__(self):
-        return '%s %s %f %f' % (
+        return u'%s %s %f %f' % (
             self.compra, self.materiales, self.cantstatic, self.precio)
 
 
@@ -128,7 +135,7 @@ class tmpcompra(models.Model):
         ordering = ['materiales']
 
     def __unicode__(self):
-        return '%s %s %f' % (self.empdni, self.materiales, self.cantidad)
+        return u'%s %s %f' % (self.empdni, self.materiales, self.cantidad)
 
 
 class CotCliente(models.Model):
@@ -148,7 +155,7 @@ class CotCliente(models.Model):
         ordering = ['registrado']
 
     def __unicode__(self):
-        return '%s %s %s' % (self.cotizacion, self.proveedor, self.contacto)
+        return u'%s %s %s' % (self.cotizacion, self.proveedor, self.contacto)
 
 
 class DetCotizacion(models.Model):
@@ -167,7 +174,7 @@ class DetCotizacion(models.Model):
         ordering = ['materiales']
 
     def __unicode__(self):
-        return '%s %s %s %f %f' % (
+        return u'%s %s %s %f %f' % (
             self.cotizacion_id,
             self.proveedor_id,
             self.materiales,
@@ -192,7 +199,7 @@ class CotKeys(models.Model):
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return '%s %s %s' % (
+        return u'%s %s %s' % (
             self.cotizacion_id, self.proveedor_id, self.keygen)
 
 
@@ -209,7 +216,7 @@ class tmpcotizacion(models.Model):
         ordering = ['materiales']
 
     def __unicode__(self):
-        return '%s %s %f' % (self.empdni, self.materiales, self.cantidad)
+        return u'%s %s %f' % (self.empdni, self.materiales, self.cantidad)
 
 
 class DevProveedor(models.Model):
@@ -226,7 +233,7 @@ class DevProveedor(models.Model):
         ordering = ['devolucionp_id']
 
     def __unicode__(self):
-        return '%s %s %s' % (
+        return u'%s %s %s' % (
             self.devolucionp_id, self.notaingreso, self.compra)
 
 
@@ -241,7 +248,7 @@ class DetDevProveedor(models.Model):
         ordering = ['materiales']
 
     def __unicode__(self):
-        return '%s %s %f' % (
+        return u'%s %s %f' % (
             self.devolucionp, self.materiales, self.cantstatic)
 
 
@@ -275,7 +282,7 @@ class ServiceOrder(models.Model):
     flag = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return '%s %s %s %s' % (
+        return u'%s %s %s %s' % (
             self.serviceorder_id, self.project, self.supplier, self.document)
 
 
@@ -291,7 +298,13 @@ class DetailsServiceOrder(models.Model):
         return '%.3f' % (self.quantity * float(self.price))
 
     def __unicode__(self):
-        return '%s %s %f' % (
+        return u'%s %s %f' % (
             self.serviceorder,
             self.description,
             self.quantity)
+
+class DetailsServiceOrderAdmin(admin.ModelAdmin):
+    list_display = ('serviceorder', 'description', 'unit', 'quantity', 'price', 'amount')
+    search_fields = ['serviceorder__serviceorder_id', 'description',]
+    actions_on_top = True
+    actions_selection_counter = True
