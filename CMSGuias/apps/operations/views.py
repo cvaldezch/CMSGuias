@@ -611,8 +611,31 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                                 dsm.quantity + float(request.POST['quantity']))
                             dsm.qorder = (
                                 dsm.qorder + float(request.POST['quantity']))
+                        pp = (dsm.ppurchase != float(request.POST['ppurchase']))
+                        ps = (dsm.ppurchase != float(request.POST['psales']))
                         dsm.ppurchase = request.POST['ppurchase']
                         dsm.psales = request.POST['psales']
+                        # function for update price to all the project
+                        print 'price PURCHASE', request.POST['ppurchase']
+                        print 'price SALES', request.POST['psales']
+                        dsm.save()
+                        if pp or ps:
+                            sg = [x[0] for x in SGroup.objects.filter(
+                                project_id=kwargs['pro'],
+                                subproject_id=kwargs[
+                                    'sub'] if unicode(kwargs[
+                                        'sub']) != 'None' and unicode(kwargs[
+                                            'sub']) != '' else None,
+                                sector_id=kwargs['sec']).values_list('sgroup_id',)]
+                            sec = [x[0] for x in DSector.objects.filter(
+                                    sgroup_id__in=sg).values_list('dsector_id')]
+                            dsmup = DSMetrado.objects.filter(
+                                dsector_id__in=sec,
+                                materials_id=request.POST['code'])
+                            if 'ppurchase' in request.POST:
+                                dsmup.update(ppurchase=request.POST['ppurchase'])
+                            if 'psales' in request.POST:
+                                dsmup.update(psales=request.POST['psales'])
                     except DSMetrado.DoesNotExist as e:
                         context['raise'] = str(e)
                         dsm = DSMetrado()
@@ -625,11 +648,11 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                         dsm.qguide = 0
                         dsm.ppurchase = request.POST['ppurchase']
                         dsm.psales = request.POST['psales']
-                    dsm.save()
+                        dsm.save()
                     context['status'] = True
                 if 'delmat' in request.POST:
                     try:
-                        DSMetrado.objects.get(
+                        DSMetrado.objects.filter(
                             dsector_id=kwargs['area'],
                             materials_id=request.POST['materials'],
                             brand_id=request.POST['brand'],
