@@ -50,6 +50,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
       format: "yyyy-mm-dd"
     $scope.perarea = angular.element("#perarea")[0].value
     $scope.percharge = angular.element("#percharge")[0].value
+    $scope.perdni = angular.element("#perdni")[0].value
     # setTimeout ->
     #   console.log $scope.modify
     #   return

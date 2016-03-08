@@ -21,7 +21,7 @@
 <div ng-app="dsApp" ng-controller="DSCtrl">
     <input type="hidden" id="perarea" ng-model="perarea" ng-init="{{ request.user.get_profile.empdni.charge.area|lower }}" value="{{ request.user.get_profile.empdni.charge.area|lower }}">
     <input type="hidden" id="percharge" ng-model="percharge" ng-init="{{ request.user.get_profile.empdni.charge.cargos|lower }}" value="{{ request.user.get_profile.empdni.charge.cargos|lower }}">
-    <input type="hidden" id="perdni" ng-model="perdni" ng-init="{{ request.user.get_profile.empdni_id|lower }}" value="{{ request.user.get_profile.empdni_id|lower }}">
+    <input type="hidden" id="perdni" ng-model="perdni" ng-init="perdni={{ request.user.get_profile.empdni_id|lower }}" value="{{ request.user.get_profile.empdni_id|lower }}">
     <div class="card-panel" style="background: {{ dsector.sgroup.colour }};">
         <div class="card-content">
             <a  href="{% url 'sectorgroup_view' dsector.sgroup.project_id dsector.sgroup.subproject_id dsector.sgroup.sector_id %}" class="btn grey lighten-5 grey-text text-darken-3"><i class="fa fa-chevron-left"></i> REGRESAR</a>
