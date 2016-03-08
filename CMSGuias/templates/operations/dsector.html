@@ -21,6 +21,7 @@
 <div ng-app="dsApp" ng-controller="DSCtrl">
     <input type="hidden" id="perarea" ng-model="perarea" ng-init="{{ request.user.get_profile.empdni.charge.area|lower }}" value="{{ request.user.get_profile.empdni.charge.area|lower }}">
     <input type="hidden" id="percharge" ng-model="percharge" ng-init="{{ request.user.get_profile.empdni.charge.cargos|lower }}" value="{{ request.user.get_profile.empdni.charge.cargos|lower }}">
+    <input type="hidden" id="perdni" ng-model="perdni" ng-init="{{ request.user.get_profile.empdni_id|lower }}" value="{{ request.user.get_profile.empdni_id|lower }}">
     <div class="card-panel" style="background: {{ dsector.sgroup.colour }};">
         <div class="card-content">
             <a  href="{% url 'sectorgroup_view' dsector.sgroup.project_id dsector.sgroup.subproject_id dsector.sgroup.sector_id %}" class="btn grey lighten-5 grey-text text-darken-3"><i class="fa fa-chevron-left"></i> REGRESAR</a>
@@ -100,11 +101,11 @@
                 {% endif %}
             {% endif %}
             {% if dsector.status == 'AC' %}
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-model="btnmodify" ng-init="btnmodify={% if modify|length > 0 %} true {% else %} false {% endif %}" ng-click="showModify()" ng-disabled="btnmodify" ng-show="perarea == 'administrator' || perarea == 'ventas'">
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-model="btnmodify" ng-init="btnmodify={% if modify|length > 0 %} true {% else %} false {% endif %}" ng-click="showModify()" ng-disabled="btnmodify" ng-show="perarea == 'administrator' || perarea == 'ventas' || perdni == '46377134'">
                     <i class="fa fa-pencil"></i>
                     <span class="hide-on-med-and-down"> Modificar Área</span>
                 </button>
-                <button type="button" class="btn blue lighten-1" ng-click="pOrders($event)" ng-if="perarea == 'administrator' || perarea == 'ventas' || perarea == 'almacen'">
+                <button type="button" class="btn blue lighten-1" ng-click="pOrders($event)" ng-if="perarea == 'administrator' || perarea == 'ventas' || perarea == 'operaciones'">
                     <i class="fa fa-list"></i>
                     PEDIDO ALMACÉN
                 </button>
@@ -322,7 +323,7 @@
                                     <div class="row">
                                         <div class="col l2">
                                             <br>
-                                            <button type="button" class="btn waves-effect grey lighten-5 grey-text text-darken-3 sdnip{{x.fields.materials.pk}}" ng-model="sdnip[x.fields.materials.pk]" ng-click="sdnip[x.fields.materials.pk]=!sdnip[x.fields.materials.pk]" ng-if="perarea == 'administrator' || perarea == 'ventas'">
+                                            <button type="button" class="btn waves-effect grey lighten-5 grey-text text-darken-3 sdnip{{x.fields.materials.pk}}" ng-model="sdnip[x.fields.materials.pk]" ng-init="sdnip[x.fields.materials.pk]=false;" ng-click="sdnip[x.fields.materials.pk]=!sdnip[x.fields.materials.pk]" ng-if="perarea == 'administrator' || perarea == 'ventas' || perarea == 'operaciones'">
                                                 <i class="fa fa-plus"></i>
                                             </button>
                                             <button type="button" class="btn waves-effect grey lighten-5 grey-text text-darken-3 rf{{x.fields.materials.pk}}" ng-click="listNipple()" data-materials="{{x.fields.materials.pk}}">

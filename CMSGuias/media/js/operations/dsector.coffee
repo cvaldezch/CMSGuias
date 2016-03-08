@@ -24,6 +24,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
   $scope.ordersm = []
   $scope.qon = []
   $scope.radioO = []
+  $scope.sdnip = []
   angular.element(document).ready ->
     $('.modal-trigger').leanModal()
     $table = $(".floatThead")
