@@ -24,6 +24,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
   $scope.perarea = "";
   $scope.percharge = "";
+  $scope.perdni = "";
   $scope.dataOrders = new Array();
   $scope.snip = [];
   $scope.nip = [];
