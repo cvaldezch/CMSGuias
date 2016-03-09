@@ -33,6 +33,9 @@ app.controller('programingCtrl', function($scope, $http, $cookies, $timeout) {
     console.log($scope.perdni);
     console.log($scope.area);
     console.log($scope.charge);
+    $timeout(function() {
+      return $('.modal-trigger').leanModal();
+    }, 600);
   });
   $scope.$watch('group.colour', function(val, old) {
     $scope.group.rgba = hextorbga(val, 0.5);
