@@ -626,25 +626,76 @@ def post_cancel_orders(request):
         data = {}
         try:
             obj = Pedido.objects.get(pedido_id=request.POST.get('oid'))
+            if obj.dsector_id != None:
+                try:
+                    det = Detpedido.objects.filter(pedido_id=request.POST.get('oid'))
+                    for x in det:
+                        ds = DSMetrado.objects.filter(
+                                dsector_id=obj.dsector_id,
+                                materials_id=x.materiales_id,
+                                brand_id=x.brand_id,
+                                model_id=x.model_id)
+                        if ds:
+                            ds = ds[0]
+                            quantity = (x.cantidad + ds.qorder)
+                            if quantity > 0 and quantity < ds.quantity:
+                                ds.tag = '1'
+                                ds.qorder = quantity
+                            if quantity >= ds.quantity:
+                                ds.tag = '0'
+                                ds.qorder = ds.quantity
+                            ds.save()
+                        x.tag = '3'
+                        x.flag = False
+                        x.save()
+                except DSMetrado.DoesNotExist, e:
+                    data['raise'] = str(e)
+            else:
+                try:
+                    det = Detpedido.objects.filter(pedido_id=request.POST.get('oid'))
+                    for x in det:
+                        meter = MetProject.objects.get(
+                                    proyecto_id=obj.proyecto_id,
+                                    subproyecto_id=obj.subproyecto_id,
+                                    sector_id=obj.sector_id,
+                                    materiales_id=x.materiales_id,
+                                    brand_id=x.brand_id,
+                                    model_id=x.model_id)
+                        quantitydev = (x.cantidad + meter.quantityorder)
+                        if quantitydev == meter.cantidad:
+                            meter.tag = '0'
+                            meter.quantityorder = quantitydev
+                        if meter.quantityorder > 0 and quantitydev < meter.cantidad:
+                            meter.tag = '1'
+                            meter.quantityorder = quantitydev
+                        if quantitydev > meter.cantidad:
+                            meter.tag = '0'
+                            meter.quantityorder = meter.cantidad
+                        meter.quantityorder = quantitydev
+                        meter.save()
+                        x.tag = '3'
+                        x.flag = False
+                        x.save()
+                except ObjectDoesNotExist, e:
+                    data['raise'] = str(e)
             try:
-                det = Detpedido.objects.filter(pedido_id=request.POST.get('oid'))
-                for x in det:
-                    meter = MetProject.objects.get(proyecto_id=obj.proyecto_id, subproyecto_id=obj.subproyecto_id, sector_id=obj.sector_id, materiales_id=x.materiales_id, brand_id=x.brand_id, model_id=x.model_id)
-                    quantitydev = (x.cantidad + meter.quantityorder)
-                    if quantitydev == meter.cantidad:
-                        meter.tag = '0'
-                        meter.quantityorder = quantitydev
-                    if meter.quantityorder > 0 and quantitydev < meter.cantidad:
-                        meter.tag = '1'
-                        meter.quantityorder = quantitydev
-                    if quantitydev > meter.cantidad:
-                        meter.tag = '0'
-                        meter.quantityorder = meter.cantidad
-                    meter.quantityorder = quantitydev
-                    meter.save()
-                    x.tag = '3'
-                    x.flag = False
-                    x.save()
+                nb = Niple.objects.filter(pedido_id=request.POST['oid'])
+                if nb:
+                    for x in nb:
+                        n = Nipple.objects.filter(
+                            proyecto_id=x.proyecto_id,
+                            sector_id=x.sector_id,
+                            area_id=x.dsector_id,
+                            materiales_id=x.materiales_id,
+                            cantidad=x.cantidad,
+                            metrado=x.metrado,
+                            tipo=x.tipo)
+                        if n:
+                            n = n[0]
+                            n.tag = '0'
+                            n.flag = True
+                            n.cantshop = x.cantidad
+                            n.save()
             except ObjectDoesNotExist, e:
                 data['raise'] = str(e)
             obj.status = 'AN'

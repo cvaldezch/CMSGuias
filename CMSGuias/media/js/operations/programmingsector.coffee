@@ -10,6 +10,9 @@ app.controller 'programingCtrl', ($scope, $http, $cookies, $timeout) ->
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
   $scope.group =
     rgba: ""
+  $scope.perdni = ""
+  $scope.area = ""
+  $scope.charge = ""
   angular.element(document).ready ->
     $('.modal-trigger').leanModal()
     $(".datepicker").pickadate
@@ -20,6 +23,12 @@ app.controller 'programingCtrl', ($scope, $http, $cookies, $timeout) ->
     $scope.lgroup()
     $scope.getDSectorList()
     $(".modal").css "max-height", "80%"
+    $scope.perdni = angular.element("#perdni")[0].value
+    $scope.area = angular.element("#area")[0].value
+    $scope.charge = angular.element("#charge")[0].value
+    console.log $scope.perdni
+    console.log $scope.area
+    console.log $scope.charge
     return
   $scope.$watch 'group.colour', (val, old) ->
     $scope.group.rgba = hextorbga(val, 0.5)

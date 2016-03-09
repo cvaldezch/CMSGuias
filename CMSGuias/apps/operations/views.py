@@ -879,7 +879,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                             ds.nipple = m.nipple
                             o.delete()
                             ds.save()
-                        except DSMetrado.DoesNotExist:
+                        except ObjectDoesNotExist:
                             o.delete()
                     lds = DSMetrado.objects.filter(dsector_id=kwargs['area'])
                     if lds.count() != lm.count():

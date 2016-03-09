@@ -64,11 +64,11 @@
             <div class="row">
                 <div class="col l6">
                     <h5 class="center-align">Compras</h5>
-                    <h5 class="center-align">{{amount.apurchase}}</h5>
+                    <h5 class="center-align">{{ amount.apurchase|floatformat:2 }}</h5>
                 </div>
                 <div class="col l6">
                     <h5 class="center-align">Ventas</h5>
-                    <h5 class="center-align">{{amount.asales}}</h5>
+                    <h5 class="center-align">{{ amount.asales|floatformat:2 }}</h5>
                 </div>
             </div>
         </div>
