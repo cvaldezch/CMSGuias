@@ -787,7 +787,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                         context['status'] = False
                         context['raise'] = 'Data not found'
                 if 'delMM' in request.POST:
-                    MMetrado.objects.get(
+                    MMetrado.objects.filter(
                         dsector_id=kwargs['area'],
                         materials_id=request.POST['materials'],
                         brand_id=request.POST['brand'],

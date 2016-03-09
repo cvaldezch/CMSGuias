@@ -28,21 +28,20 @@
     REGRESAR
   </a>
   <div class="card-panel">
-    {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'ventas' %}
       <div class="card-content">
         <h5>Grupo</h5>
       </div>
       <div class="card-action">
       {% if status == 'PE' %}
-        <button type="button" class="btn blue blue-lighten-3 waves-effect waves-light modal-trigger" data-target="mgroup">
+        <button type="button" class="btn blue blue-lighten-3 waves-effect waves-light modal-trigger" data-target="mgroup" ng-if="area == 'administrator' || area == 'ventas' ">
           <i class="fa fa-plus"></i> Agregar Grupo
         </button>
       {% endif %}
-        <button type="button" class="btn blue blue-lighten-3" ng-click="listGroup()">
+        <button type="button" class="btn blue blue-lighten-3" ng-click="listGroup()" ng-if="area == 'administrator' || area == 'ventas' || perdni == '46377134'">
           <i class="fa fa-list"></i> Lista Grupo
         </button>
       </div>
-    {% endif %}
+    
     <div class="card-content">
       <h5>Área</h5>
     </div>
