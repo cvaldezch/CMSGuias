@@ -21,7 +21,7 @@ from CMSGuias.apps.almacen.models import *
 from CMSGuias.apps.home.models import *
 from CMSGuias.apps.ventas.models import (
         Proyecto, Sectore, Subproyecto, Metradoventa)
-from CMSGuias.apps.operations.models import MetProject
+from CMSGuias.apps.operations.models import MetProject, DSMetrado, Nipple
 from CMSGuias.apps.logistica.models import DetCompra
 from CMSGuias.apps.tools import uploadFiles, globalVariable, search, genkeys
 
