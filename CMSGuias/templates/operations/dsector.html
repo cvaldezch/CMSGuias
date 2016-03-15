@@ -111,11 +111,11 @@
                 </button>
             {% endif %}
             {% if modify|length > 0 %}
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="gui.smat=!gui.smat" ng-show="perarea == 'administrator' || perarea == 'ventas'">
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="gui.smat=!gui.smat" ng-show="perarea == 'administrator' || perarea == 'ventas' || perdni == '46377134'">
                     <i class="fa fa-plus"></i>
                     <span class="hide-on-med-and-down">Agregar</span>
                 </button>
-                <button type="button" class="btn red lighten-2 grey-text text-darken-3 waves-effect" ng-click="delAllModifyArea($event)" ng-show="perarea == 'administrator' || perarea == 'ventas'">
+                <button type="button" class="btn red lighten-2 grey-text text-darken-3 waves-effect" ng-click="delAllModifyArea($event)" ng-show="perarea == 'administrator' || perarea == 'ventas' || perdni == '46377134'">
                     <i class="fa fa-fire"></i>
                     <i class="fa fa-trash"></i>
                     <span class="hide-on-med-and-down"> Eliminar Modificación</span>
@@ -465,8 +465,8 @@
                         <td class="right-align col-2" ng-show="perarea == 'administrator' || perarea == 'ventas'">{{x.fields.psales}}</td>
                         <td class="right-align col-2" ng-show="perarea == 'administrator' || perarea == 'ventas'">{{x.fields.quantity * x.fields.ppurchase | number:2}}</td>
                         <td class="center-align text-13">
-                            <a href="#!" style="padding: 2px 0px 2px 3px;" ng-show="perarea == 'administrator' || perarea == 'ventas'" ng-click="closeEditM($event)" class="waves-effect waves-light light-blue-text text-darken-3"><i class="fa fa-edit"></i></a>
-                            <a href="#!" style="padding: 2px 0px 2px 3px;" ng-show="perarea == 'administrator' || perarea == 'ventas'" ng-click="delEditM($event)" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" class="waves-effect waves-light red-text text-darken-1"><i class="fa fa-trash"></i></a>
+                            <a href="#!" style="padding: 2px 0px 2px 3px;" ng-show="perarea == 'administrator' || perarea == 'ventas' || perdni == '46377134'" ng-click="closeEditM($event)" class="waves-effect waves-light light-blue-text text-darken-3"><i class="fa fa-edit"></i></a>
+                            <a href="#!" style="padding: 2px 0px 2px 3px;" ng-show="perarea == 'administrator' || perarea == 'ventas' || perdni == '46377134'" ng-click="delEditM($event)" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" class="waves-effect waves-light red-text text-darken-1"><i class="fa fa-trash"></i></a>
                         </td>
                     </script>
                 {% endverbatim %}
