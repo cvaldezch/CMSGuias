@@ -342,7 +342,7 @@ class RptPurchase(TemplateView):
                         'materials_id': x.materiales_id,
                         'matname': x.materiales.matnom,
                         'measure': x.materiales.matmed,
-                        'unit': x.materiales.unidad_id,
+                        'unit': x.unit_id if x.unit_id else x.materiales.unidad_id,
                         'brand': x.brand.brand,
                         'model': x.model.model,
                         'quantity': x.cantstatic,
