@@ -232,6 +232,41 @@ app.controller('programingCtrl', function($scope, $http, $cookies, $timeout) {
       }
     });
   };
+  $scope.DiscapprovedAreas = function($event) {
+    swal({
+      title: "Desaprobar Áreas?",
+      text: "desea quitar la aprobación realmente todas las áreas.",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Si! Quitar",
+      confirmButtonColor: "#dd6b55",
+      closeOnConfirm: true,
+      closeOnCancel: true
+    }, function(isConfirm) {
+      var data;
+      if (isConfirm) {
+        $event.currentTarget.disabled = true;
+        $event.currentTarget.innerHTML = "<i class=\"fa fa-spinner fa-pulse\"></i> Procesando";
+        data = {
+          DiscapprovedAreas: true
+        };
+        $http({
+          url: '',
+          method: 'post',
+          data: $.param(data)
+        }).success(function(response) {
+          if (response.status) {
+            Materialize.toast("Áreas Sin aprobación!", 2600);
+            console.log(response);
+            location.reload();
+          } else {
+            $event.currentTarget.innerHTML = "<i class=\"fa fa-times\"></i> Error";
+            swal("Error!", "No se a quitado la aprobación las áreas.", "error");
+          }
+        });
+      }
+    });
+  };
   $scope.uploadFile = function($event) {
     swal({
       title: 'Desea procesar el archivo?',

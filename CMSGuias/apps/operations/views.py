@@ -323,6 +323,16 @@ class ProgramingProject(JSONResponseMixin, View):
                         sector_id=kwargs['sec']).update(
                             status='AC')
                     context['status'] = True
+                if 'DiscapprovedAreas' in request.POST:
+                    SGroup.objects.filter(
+                        project_id=kwargs['pro'],
+                        sector_id=kwargs['sec']).update(
+                            status='PE')
+                    DSector.objects.filter(
+                        project_id=kwargs['pro'],
+                        sector_id=kwargs['sec']).update(
+                            status='PE')
+                    context['status'] = True
                 if 'uploadFile' in request.POST:
                     path = '/storage/Temp/'
                     opt = {'name': 'tmpa%s' % kwargs['pro']}
