@@ -1150,6 +1150,7 @@ def view_generate_document_out(request, oid):
                         add.guia_id = code
                         add.status = 'GE'
                         add.flag = True
+                        add.registrado = datetime.datetime.today()
                         # commit true save bedside guide
                         add.save()
                         # save details guide referral
