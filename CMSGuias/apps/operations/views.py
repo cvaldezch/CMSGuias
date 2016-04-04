@@ -349,7 +349,7 @@ class ProgramingProject(JSONResponseMixin, View):
                     ncol = sheet.max_column
                     print 'row and col', nrow, ncol
                     sgroup = dict()
-                    for x in range(1, nrow+1):
+                    for x in range(1, nrow + 1):
                         print x, '-----------------'
                         if x == 2:
                             for c in range(4, ncol):
@@ -451,6 +451,7 @@ class ProgramingProject(JSONResponseMixin, View):
                                                 raise e
                                         dm = DSMetrado()
                                         dm.dsector_id = sgroup[tgn][ns]['id']
+                                        dm.sector_id = kwargs['sec']
                                         dm.materials_id = cm
                                         dm.brand_id = 'BR000'
                                         dm.model_id = 'MO000'
@@ -1014,7 +1015,7 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                 project_id=kwargs['pro'], sector_id=kwargs['sec'])
             operations = DSMetrado.objects.filter(
                 dsector_id__in=[x.dsector_id for x in ds])
-            print 'count opertaions ', operations.count()
+            # print 'count opertaions ', operations.count()
             # .order_by(
             #    'materials__materiales_id').distinct(
             #    'materials__materiales_id')
@@ -1041,6 +1042,7 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                     if x['materials'] == o.materials_id:
                         if x['operations'] == '-':
                             x['operations'] = 0
+                        x['purchase'] = o.ppurchase
                         x['operations'] = (x['operations'] + o.quantity)
                         x['amount'] = (x['operations'] * float(x['purchase']))
                         break

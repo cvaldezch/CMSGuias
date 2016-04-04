@@ -211,7 +211,7 @@ class DetailsPreOrders(models.Model):
 class SGroup(models.Model):
     sgroup_id = models.CharField(
                                 primary_key=True,
-                                max_length=13,
+                                max_length=18,
                                 default='PRAA000SG0000',
                                 unique=False)
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
@@ -246,8 +246,8 @@ class DSector(models.Model):
 
     dsector_id = models.CharField(
                                     primary_key=True,
-                                    max_length=18,
-                                    default='PRAA000SG0000DS000')
+                                    max_length=23,
+                                    default='PRAA000VEN00SG0000DS000')
     sgroup = models.ForeignKey(SGroup, to_field='sgroup_id')
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
     sector = models.ForeignKey(
@@ -280,6 +280,7 @@ class DSector(models.Model):
 
 class DSMetrado(models.Model):
     dsector = models.ForeignKey(DSector, to_field='dsector_id')
+    sector = models.ForeignKey(Sectore, to_field='sector_id', null=True)
     materials = models.ForeignKey(Materiale, to_field='materiales_id')
     brand = models.ForeignKey(Brand, to_field='brand_id')
     model = models.ForeignKey(Model, to_field='model_id')
@@ -309,6 +310,7 @@ class DSMetrado(models.Model):
 class MMetrado(models.Model):
     register = models.DateTimeField(auto_now=True, null=True)
     dsector = models.ForeignKey(DSector, to_field='dsector_id')
+    sector = models.ForeignKey(Sectore, to_field='sector_id', null=True)
     materials = models.ForeignKey(Materiale, to_field='materiales_id')
     brand = models.ForeignKey(Brand, to_field='brand_id')
     model = models.ForeignKey(Model, to_field='model_id')

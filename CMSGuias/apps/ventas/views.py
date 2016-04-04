@@ -2433,6 +2433,8 @@ class ListGuideByProject(JSONResponseMixin, TemplateView):
                       'customer': c.ruccliente_id,
                       'companyname': c.ruccliente.razonsocial,
                       'currency': c.pedido.proyecto.currency.moneda,
+                      'status': c.status,
+                      'orders': c.pedido_id,
                       'details': [
                         {
                             'materials': x.materiales_id,

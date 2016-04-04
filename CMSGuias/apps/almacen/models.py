@@ -50,6 +50,8 @@ class Pedido(models.Model):
     flag = models.BooleanField(default=True)
     orderfile = models.FileField(upload_to=url, null=True, blank=True)
 
+    audit_log = AuditLog()
+
     def __unicode__(self):
         return '%s %s' % (self.pedido_id, self.proyecto.nompro)
 
@@ -68,6 +70,8 @@ class Detpedido(models.Model):
     spptag = models.BooleanField(default=False)
     comment = models.CharField(max_length=250, default='', null=True)
     flag = models.BooleanField(default=True)
+
+    audit_log = AuditLog()
 
     class Meta:
         ordering = ['materiales']

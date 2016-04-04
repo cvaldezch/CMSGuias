@@ -52,41 +52,44 @@
                                     <td>{{ c.companyname }}</td>
                                     <td>{{ c.currency }}</td>
                                     <td>{{ c.status }}</td>
+                                    <td>{{ c.orders }}</td>
                                 </tr>
-                                <tr>
-                                    <td colspan="7">
-                                        <table class="table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th class="col-2">Código</th>
-                                                    <th>Descripción</th>
-                                                    <th>Unidad</th>
-                                                    <th>Cantidad</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for x in c.details  %}
+                                {% if c.status != 'AN' %}
+                                    <tr>
+                                        <td colspan="8">
+                                            <table class="table table-hover">
+                                                <thead>
                                                     <tr>
-                                                        <td>{{ x.materials }}</td>
-                                                        <td>
-                                                            {{ x.name }} - {{ x.meter }}
-                                                            {% if x.nipple %}
-                                                                {% for n in x.nipple  %}
-                                                                {% if forloop.counter0|divisibleby:2 %}
-                                                                    <br>
-                                                                {% endif %}
-                                                                    {{ n.quantity|safe }} Niple {{ n.type.0 }} {{ x.meter }} x {{ n.meter|safe }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                                {% endfor %}
-                                                            {% endif %}
-                                                        </td>
-                                                        <td>{{ x.unit }}</td>
-                                                        <td>{{ x.quantity|safe }}</td>
+                                                        <th class="col-2">Código</th>
+                                                        <th>Descripción</th>
+                                                        <th>Unidad</th>
+                                                        <th>Cantidad</th>
                                                     </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for x in c.details  %}
+                                                        <tr>
+                                                            <td>{{ x.materials }}</td>
+                                                            <td>
+                                                                {{ x.name }} - {{ x.meter }}
+                                                                {% if x.nipple %}
+                                                                    {% for n in x.nipple  %}
+                                                                    {% if forloop.counter0|divisibleby:2 %}
+                                                                        <br>
+                                                                    {% endif %}
+                                                                        {{ n.quantity|safe }} Niple {{ n.type.0 }} {{ x.meter }} x {{ n.meter|safe }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                            </td>
+                                                            <td>{{ x.unit }}</td>
+                                                            <td>{{ x.quantity|safe }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                {% endif %}
                             {% endfor %}
                         </tbody>
                     </table>

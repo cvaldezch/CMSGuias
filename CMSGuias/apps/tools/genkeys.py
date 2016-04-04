@@ -424,11 +424,11 @@ def genSGroup(pro=None, sec=None):
         if row:
             row = row[0]
             code = int(row.sgroup_id[7:][2:])
-            return '%s%s' % (pro, 'SG{:0>4d}'.format(code + 1))
+            return '%s%s%s' % (pro, str(sec.strip()[-5:]), 'SG{:0>4d}'.format(code + 1))
         else:
-            return '%s%s' % (pro, 'SG0001')
+            return '%s%s%s' % (pro, str(sec.strip()[-5:]), 'SG0001')
     except ObjectDoesNotExist:
-        return '%s%s' % (pro, 'SG0001')
+        return '%s%s%s' % (pro, str(sec.strip()[-5:]), 'SG0001')
 
 
 def genDSector(pro, group=None):
@@ -437,7 +437,7 @@ def genDSector(pro, group=None):
                 sgroup_id=group).order_by('-register')
         if raw:
             raw = raw[0]
-            code = int(raw.dsector_id[7:][8:])
+            code = int(raw.dsector_id[-3:])
             return '%s%s' % (group, 'DS{:0>3d}'.format(code + 1))
         else:
             return '%s%s' % (group, 'DS001')
