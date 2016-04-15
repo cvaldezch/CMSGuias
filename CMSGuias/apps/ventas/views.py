@@ -2482,7 +2482,7 @@ class ListOrdersByProject(JSONResponseMixin, TemplateView):
             if orders:
                 context['orders'] = [{
                     'orders': o.pedido_id,
-                    'resgister': o.registrado,
+                    'register': o.registrado,
                     'transfer': o.traslado,
                     'perform': o.empdni.name_complete,
                     'status': o.status,
