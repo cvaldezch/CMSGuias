@@ -789,7 +789,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                         if request.POST['name'] == 'quantity':
                             update[0].quantity = request.POST['value']
                         if request.POST['name'] == 'ppurchase':
-                            update[0].ppurchase == request.POST['value']
+                            update[0].ppurchase = request.POST['value']
                         if request.POST['name'] == 'psales':
                             update[0].psales = request.POST['value']
                         update[0].save()
@@ -901,7 +901,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                                     materials_id=x.materials_id,
                                     brand_id=x.brand_id,
                                     model_id=x.model_id)
-                            except DSMetrado.DoesNotExist:
+                            except Exception:
                                 ds = DSMetrado()
                                 ds.dsector_id = kwargs['area']
                                 ds.materials_id = x.materials_id
