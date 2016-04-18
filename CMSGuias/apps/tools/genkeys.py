@@ -423,7 +423,7 @@ def genSGroup(pro=None, sec=None):
                 project_id=pro, sector_id=sec).order_by('-register')
         if row:
             row = row[0]
-            code = int(row.sgroup_id[7:][2:])
+            code = int(row.sgroup_id[-4:])
             return '%s%s%s' % (pro, str(sec.strip()[-5:]), 'SG{:0>4d}'.format(code + 1))
         else:
             return '%s%s%s' % (pro, str(sec.strip()[-5:]), 'SG0001')

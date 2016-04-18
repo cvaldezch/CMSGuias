@@ -343,12 +343,19 @@ class ProgramingProject(JSONResponseMixin, View):
                     context['name'] = filename
                     context['status'] = uploadFiles.fileExists(filename)
                 if 'processData' in request.POST:
+                    # import time
+                    print 'kwargs'
+                    print kwargs
+                    print 'print kwargs', kwargs
+                    print 'this is sector id'
+                    print kwargs['sec']
                     book = load_workbook(request.POST['filename'])
                     sheet = book['AREAS']
                     nrow = sheet.max_row
                     ncol = sheet.max_column
                     print 'row and col', nrow, ncol
                     sgroup = dict()
+                    sec = kwargs['sec']
                     for x in range(1, nrow + 1):
                         print x, '-----------------'
                         if x == 2:
@@ -365,10 +372,8 @@ class ProgramingProject(JSONResponseMixin, View):
                                     #     sgroup[name] = {'id': sg.sgroup_id}
                                     # except SGroup.DoesNotExist, e:
                                     nw = SGroup()
-                                    sgroup[name] = {
-                                        'id': genkeys.genSGroup(
-                                                kwargs['pro'],
-                                                kwargs['sec'])}
+                                    sgroup[name] = {'id': genkeys.genSGroup(kwargs['pro'], sec)}
+                                    # time.sleep(1)
                                     nw.sgroup_id = sgroup[name]['id']
                                     nw.project_id = kwargs['pro']
                                     nw.subproject_id = kwargs['sub'] if unicode(kwargs['sub']) != 'None' else ''
