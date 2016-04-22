@@ -970,7 +970,7 @@ class SectorManage(JSONResponseMixin, View):
 
                     if 'areasdsector' in request.GET:
                         context['dsectors'] = DSector.objects.filter(
-                                            project_id=kwargs['pro']).count()
+                                            project_id=kwargs['pro'], sector_id=kwargs['sec']).count()
                         context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)

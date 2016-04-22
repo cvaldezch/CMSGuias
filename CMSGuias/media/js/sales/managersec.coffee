@@ -2624,7 +2624,7 @@ getCountDSector = ->
   $.getJSON '', data, (response) ->
     if response.status
       console.log response
-      if response.dsectors
+      if parseFloat(response.dsectors)
         $("#msector, #orderSt, #lnipples, #bmuorders").hide()
       return
     return
