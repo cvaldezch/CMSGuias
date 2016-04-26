@@ -1093,3 +1093,30 @@ class ToolsView(JSONResponseMixin, TemplateView):
                     raise Http404('Fail Add Tools')
         except ObjectDoesNotExist as e:
             raise e
+
+
+class DataMaterials(JSONResponseMixin, View):
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        try:
+            context = dict()
+            if request.is_ajax():
+                try:
+                    if 'brandm' in request.GET:
+                        obj = DetCompra.objects.filter(
+                            materiales_id=request.GET['materials']
+                            ).distinct('brand_id').order_by('brand_id')
+                        context['brand'] = json.loads(
+                                            serializers.serialize('json', obj))
+                        obj = DetCompra.objects.filter(
+                            materiales_id=request.GET['materials']
+                            ).distinct('model_id').order_by('model_id')
+                        context['model'] = json.loads(
+                            serializers.serialize('json', obj))
+                        context['status'] = True
+                except ObjectDoesNotExist, e:
+                    context['raise'] = str(e)
+                    context['status'] = False
+                return self.render_to_json_response(context)
+        except TemplateDoesNotExist, e:
+            raise Http404(e.__str__())

@@ -1014,76 +1014,148 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
-            sales = MetProject.objects.filter(
-                proyecto_id=kwargs['pro'], sector_id=kwargs['sec'])
-            ds = DSector.objects.filter(
-                project_id=kwargs['pro'], sector_id=kwargs['sec'])
-            operations = DSMetrado.objects.filter(
-                dsector_id__in=[x.dsector_id for x in ds])
-            # print 'count opertaions ', operations.count()
-            # .order_by(
-            #    'materials__materiales_id').distinct(
-            #    'materials__materiales_id')
-            lst = list()
-            for s in sales:
-                lst.append({
-                    'materials': s.materiales_id,
-                    'name': '%s %s' % (
-                        s.materiales.matnom, s.materiales.matmed),
-                    'brand_id': s.brand_id,
-                    'brand': s.brand.brand,
-                    'model_id': s.model_id,
-                    'model': s.model.model,
-                    'unit': s.materiales.unidad.uninom,
-                    'sales': s.cantidad,
-                    'purchase': s.precio,
-                    'operations': '-'})
-            for o in operations:
-                c = 0
-                for x in lst:
-                    mat = (x['materials'] == o.materials_id)
-                    brand = (x['brand_id'] == o.brand_id)
-                    model = (x['model_id'] == o.model_id)
-                    if x['materials'] == o.materials_id:
-                        if x['operations'] == '-':
-                            x['operations'] = 0
-                        x['purchase'] = o.ppurchase
-                        x['operations'] = (x['operations'] + o.quantity)
-                        x['amount'] = (x['operations'] * float(x['purchase']))
-                        break
-                    else:
-                        c += 1
-                if len(lst) == c:
-                    lst.append({
-                        'materials': o.materials_id,
-                        'name': '%s %s' % (
-                            o.materials.matnom, o.materials.matmed),
-                        'brand_id': o.brand_id,
-                        'brand': o.brand.brand,
-                        'model_id': o.model_id,
-                        'model': o.model.model,
-                        'unit': o.materials.unidad.uninom,
-                        'sales': '-',
-                        'purchase': float(o.ppurchase),
-                        'operations': o.quantity,
-                        'amount': (o.quantity*float(o.ppurchase))})
+            if request.is_ajax():
+                if 'glist' in request.GET:
+                    sales = MetProject.objects.filter(
+                        proyecto_id=kwargs['pro'], sector_id=kwargs['sec'])
+                    ds = DSector.objects.filter(
+                        project_id=kwargs['pro'], sector_id=kwargs['sec'])
+                    operations = DSMetrado.objects.filter(
+                        dsector_id__in=[x.dsector_id for x in ds])
+                    # print 'count opertaions ', operations.count()
+                    # .order_by(
+                    #    'materials__materiales_id').distinct(
+                    #    'materials__materiales_id')
+                    lst = list()
+                    for s in sales:
+                        lst.append({
+                            'materials': s.materiales_id,
+                            'name': '%s %s' % (
+                                s.materiales.matnom, s.materiales.matmed),
+                            'brand_id': s.brand_id,
+                            'brand': s.brand.brand,
+                            'model_id': s.model_id,
+                            'model': s.model.model,
+                            'unit': s.materiales.unidad.uninom,
+                            'sales': s.cantidad,
+                            'purchase': s.precio,
+                            'operations': '-'})
+                    for o in operations:
+                        c = 0
+                        for x in lst:
+                            mat = (x['materials'] == o.materials_id)
+                            brand = (x['brand_id'] == o.brand_id)
+                            model = (x['model_id'] == o.model_id)
+                            if x['materials'] == o.materials_id:
+                                if x['operations'] == '-':
+                                    x['operations'] = 0
+                                x['purchase'] = o.ppurchase
+                                x['operations'] = (x['operations'] + o.quantity)
+                                x['amount'] = (x['operations'] * float(x['purchase']))
+                                break
+                            else:
+                                c += 1
+                        if len(lst) == c:
+                            lst.append({
+                                'materials': o.materials_id,
+                                'name': '%s %s' % (
+                                    o.materials.matnom, o.materials.matmed),
+                                'brand_id': o.brand_id,
+                                'brand': o.brand.brand,
+                                'model_id': o.model_id,
+                                'model': o.model.model,
+                                'unit': o.materials.unidad.uninom,
+                                'sales': '-',
+                                'purchase': float(o.ppurchase),
+                                'operations': o.quantity,
+                                'amount': (o.quantity*float(o.ppurchase))})
 
-            context['lst'] = lst
-            context['sales'] = sales.aggregate(amount=Sum(
-                                'cantidad', field='cantidad*precio'))['amount']
-            # context['operations'] = operations.aggregate(amount=Sum(
-            #                'quantity', field='quantity*ppurchase'))['amount']
-            am = 0
-            for x in lst:
-                if not type(x['operations']) is str:
-                    am += x['amount']
-                # am += (x.quantity*float(x.ppurchase))
-            print 'AMOUNT TOTAL PURCHASE ', am
-            context['operations'] = am
-            context['currency'] = sales[0].proyecto.currency.moneda
-            context['symbol'] = sales[0].proyecto.currency.simbolo
-            context['salesap'] = sales[0].sector.amount
-            context['diff'] = (sales[0].sector.amount - context['operations'])
+                    context['lst'] = lst
+                    context['sales'] = sales.aggregate(amount=Sum(
+                                        'cantidad', field='cantidad*precio'))['amount']
+                    # context['operations'] = operations.aggregate(amount=Sum(
+                    #                'quantity', field='quantity*ppurchase'))['amount']
+                    am = 0
+                    for x in lst:
+                        if not type(x['operations']) is str:
+                            am += x['amount']
+                        # am += (x.quantity*float(x.ppurchase))
+                    context['operations'] = am
+                    context['currency'] = sales[0].proyecto.currency.moneda
+                    context['symbol'] = sales[0].proyecto.currency.simbolo
+                    context['salesap'] = sales[0].sector.amount
+                    context['diff'] = (sales[0].sector.amount - context['operations'])
+                return self.render_to_json_response(context)
+            # sales = MetProject.objects.filter(
+            #     proyecto_id=kwargs['pro'], sector_id=kwargs['sec'])
+            # ds = DSector.objects.filter(
+            #     project_id=kwargs['pro'], sector_id=kwargs['sec'])
+            # operations = DSMetrado.objects.filter(
+            #     dsector_id__in=[x.dsector_id for x in ds])
+            # # print 'count opertaions ', operations.count()
+            # # .order_by(
+            # #    'materials__materiales_id').distinct(
+            # #    'materials__materiales_id')
+            # lst = list()
+            # for s in sales:
+            #     lst.append({
+            #         'materials': s.materiales_id,
+            #         'name': '%s %s' % (
+            #             s.materiales.matnom, s.materiales.matmed),
+            #         'brand_id': s.brand_id,
+            #         'brand': s.brand.brand,
+            #         'model_id': s.model_id,
+            #         'model': s.model.model,
+            #         'unit': s.materiales.unidad.uninom,
+            #         'sales': s.cantidad,
+            #         'purchase': s.precio,
+            #         'operations': '-'})
+            # for o in operations:
+            #     c = 0
+            #     for x in lst:
+            #         mat = (x['materials'] == o.materials_id)
+            #         brand = (x['brand_id'] == o.brand_id)
+            #         model = (x['model_id'] == o.model_id)
+            #         if x['materials'] == o.materials_id:
+            #             if x['operations'] == '-':
+            #                 x['operations'] = 0
+            #             x['purchase'] = o.ppurchase
+            #             x['operations'] = (x['operations'] + o.quantity)
+            #             x['amount'] = (x['operations'] * float(x['purchase']))
+            #             break
+            #         else:
+            #             c += 1
+            #     if len(lst) == c:
+            #         lst.append({
+            #             'materials': o.materials_id,
+            #             'name': '%s %s' % (
+            #                 o.materials.matnom, o.materials.matmed),
+            #             'brand_id': o.brand_id,
+            #             'brand': o.brand.brand,
+            #             'model_id': o.model_id,
+            #             'model': o.model.model,
+            #             'unit': o.materials.unidad.uninom,
+            #             'sales': '-',
+            #             'purchase': float(o.ppurchase),
+            #             'operations': o.quantity,
+            #             'amount': (o.quantity*float(o.ppurchase))})
+
+            # context['lst'] = lst
+            # context['sales'] = sales.aggregate(amount=Sum(
+            #                     'cantidad', field='cantidad*precio'))['amount']
+            # # context['operations'] = operations.aggregate(amount=Sum(
+            # #                'quantity', field='quantity*ppurchase'))['amount']
+            # am = 0
+            # for x in lst:
+            #     if not type(x['operations']) is str:
+            #         am += x['amount']
+            #     # am += (x.quantity*float(x.ppurchase))
+            # print 'AMOUNT TOTAL PURCHASE ', am
+            # context['operations'] = am
+            # context['currency'] = sales[0].proyecto.currency.moneda
+            # context['symbol'] = sales[0].proyecto.currency.simbolo
+            # context['salesap'] = sales[0].sector.amount
+            # context['diff'] = (sales[0].sector.amount - context['operations'])
             return render(request, 'operations/comparematerials.html', context)
         except TemplateDoesNotExist, e:
             raise Http404(e)

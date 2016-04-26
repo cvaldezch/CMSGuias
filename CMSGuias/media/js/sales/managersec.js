@@ -2811,7 +2811,7 @@ getCountDSector = function() {
   $.getJSON('', data, function(response) {
     if (response.status) {
       console.log(response);
-      if (response.dsectors) {
+      if (parseFloat(response.dsectors)) {
         $("#msector, #orderSt, #lnipples, #bmuorders").hide();
       }
       return;
