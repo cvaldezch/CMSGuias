@@ -213,7 +213,7 @@
                             </div>
                             <br>
                             <div class="btn-group">
-                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'operaciones' or user.get_profile.empdni.charge.area|lower == 'logistica' or user.get_profile.empdni.charge.cargos|lower == 'Jefe de Almacen' %}
+                                {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'operaciones' or user.get_profile.empdni.charge.area|lower == 'logistica' or user.get_profile.empdni.charge.cargos|lower == 'jefe de almacen' %}
                                     <button class="btn btn-default btn-update-meter-cancel">
                                         <span class="glyphicon glyphicon-remove"></span>
                                         Cancelar
@@ -1079,7 +1079,7 @@
                                         <span class="fa fa-comment"></span>
                                         Avisar, Termine de Modificar
                                     </button>
-                                    {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' %}
+                                    {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.cargos|lower == 'jefe de almacen' %}
                                     <button class="btn btn-danger btn-sm btn-del-all-modify">
                                         <span class="fa fa-trash-o"></span>
                                         Eliminar Todo
