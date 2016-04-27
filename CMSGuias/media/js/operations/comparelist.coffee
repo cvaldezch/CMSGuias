@@ -17,9 +17,12 @@ app.factory 'fDSMetrado', ($http, $cookies, $q) ->
       deffered.resolve response
       return
     return deffered.promise
-  obj.getDataMaterials = ->
+  obj.getDataMaterials = (materails) ->
     deffered = $q.defer()
-    $http.get "", params: 's': true
+    prm =
+      'setdata': true
+      'materails': materails
+    $http.get "", params: prm
     .success (response) ->
       deffered.resolve response
       return
@@ -49,11 +52,11 @@ app.controller 'ctrl', ($scope, $cookies, $timeout, $q, fDSMetrado) ->
   $scope.openEdit = ($event) ->
     $cell = $event.currentTarget.cells
     if $cell[8].innerText isnt ""
-      fDSMetrado.getDataMaterials()
+      fDSMetrado.getDataMaterials($cell[1].innerText)
       .then (data) ->
         $("#medit").openModal()
-        brand = data.brand
-        model = data.model
+        $scope.brand = data.brand
+        $scope.model = data.model
       , (error) ->
         console.error error
     return

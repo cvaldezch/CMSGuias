@@ -24,13 +24,15 @@ app.factory('fDSMetrado', function($http, $cookies, $q) {
     });
     return deffered.promise;
   };
-  obj.getDataMaterials = function() {
-    var deffered;
+  obj.getDataMaterials = function(materails) {
+    var deffered, prm;
     deffered = $q.defer();
+    prm = {
+      'setdata': true,
+      'materails': materails
+    };
     $http.get("", {
-      params: {
-        's': true
-      }
+      params: prm
     }).success(function(response) {
       deffered.resolve(response);
     });
@@ -63,11 +65,10 @@ app.controller('ctrl', function($scope, $cookies, $timeout, $q, fDSMetrado) {
     var $cell;
     $cell = $event.currentTarget.cells;
     if ($cell[8].innerText !== "") {
-      fDSMetrado.getDataMaterials().then(function(data) {
-        var brand, model;
+      fDSMetrado.getDataMaterials($cell[1].innerText).then(function(data) {
         $("#medit").openModal();
-        brand = data.brand;
-        return model = data.model;
+        $scope.brand = data.brand;
+        return $scope.model = data.model;
       }, function(error) {
         return console.error(error);
       });

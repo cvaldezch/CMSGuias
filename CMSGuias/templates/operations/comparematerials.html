@@ -27,25 +27,25 @@
           <div class="col l3">
             <div class="center-align">
               <h5>Aprox.</h5>
-              <h4><small>{{symbol}} {{salesap}}</small></h4>
+              <h4><small>{{symbol}} {{salesap|number:2}}</small></h4>
             </div>
           </div>
           <div class="col l3">
             <div class="center-align">
               <h5>Ventas</h5>
-              <h4><small>{{symbol}} {{sales}}</small></h4>
+              <h4><small>{{symbol}} {{sales|number:2}}</small></h4>
             </div>
           </div>
           <div class="col l3">
             <div class="center-align">
               <h5>Operaciones</h5>
-              <h4><small>{{symbol}} {{operations}}</small></h4>
+              <h4><small>{{symbol}} {{operations|number:2}}</small></h4>
             </div>
           </div>
           <div class="col l3">
             <div class="center-align">
               <h5>Diferencia</h5>
-              <h4><small>{{symbol}} {{diff}}</small></h4>
+              <h4><small>{{symbol}} {{diff|number:2}}</small></h4>
             </div>
           </div>
         </div>
@@ -101,10 +101,10 @@
             <td>{{x.brand}}</td>
             <td>{{x.model}}</td>
             <td class="center-align">{{x.unit}}</td>
-            <td class="center-align">{{x.purchase | number:2}}</td>
-            <th class="center-align">{{x.sales | number:2}}</th>
-            <th class="center-align">{{x.operations | number:2}}</th>
-            <th>{{x.amount | number:2}}</th>
+            <td class="center-align">{{x.purchase|number:2}}</td>
+            <th class="center-align">{{x.sales|number:2}}</th>
+            <th class="center-align">{{x.operations|number:2}}</th>
+            <th>{{x.amount|number:2}}</th>
           </tr>
       {% endverbatim %}
       {#% endfor %#}
