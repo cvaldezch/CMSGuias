@@ -121,13 +121,15 @@
             <th>{{ematn}}</th>
             <th>
               <div class="input-field col l4">
-                <select name="" id="" ng-model="" ng-options="brand_id as brand for x in brandm"></select>
+                <select ng-model="ebrand" ng-options="x.id as x.name for x in brand">
+                  
+                </select>
                 <label for="">Marca</label>
               </div>
             </th>
             <th>
               <div class="input-field col l4">
-                <select name="" id="" ng-options="model_id as model for x in modelm"></select>
+                <select ng-model="emodel" ng-options="id as name for x in model"></select>
                 <label for="">Modelo</label>
               </div>
             </th>

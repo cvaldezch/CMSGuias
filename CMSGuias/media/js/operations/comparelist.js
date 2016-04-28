@@ -24,14 +24,14 @@ app.factory('fDSMetrado', function($http, $cookies, $q) {
     });
     return deffered.promise;
   };
-  obj.getDataMaterials = function(materails) {
+  obj.getDataMaterials = function(materials) {
     var deffered, prm;
     deffered = $q.defer();
     prm = {
-      'setdata': true,
-      'materails': materails
+      'brandbymaterials': true,
+      'materials': materials
     };
-    $http.get("", {
+    $http.get("/brand/list/", {
       params: prm
     }).success(function(response) {
       deffered.resolve(response);
@@ -42,6 +42,8 @@ app.factory('fDSMetrado', function($http, $cookies, $q) {
 });
 
 app.controller('ctrl', function($scope, $cookies, $timeout, $q, fDSMetrado) {
+  $scope.brand = [];
+  $scope.model = [];
   angular.element(document).ready(function() {
     console.log("estamos listos!");
     $scope.loadList();
@@ -65,10 +67,12 @@ app.controller('ctrl', function($scope, $cookies, $timeout, $q, fDSMetrado) {
     var $cell;
     $cell = $event.currentTarget.cells;
     if ($cell[8].innerText !== "") {
-      fDSMetrado.getDataMaterials($cell[1].innerText).then(function(data) {
+      fDSMetrado.getDataMaterials($cell[1].innerText).then(function(response) {
+        console.log($scope.brand);
         $("#medit").openModal();
-        $scope.brand = data.brand;
-        return $scope.model = data.model;
+        $scope.brand = response.data;
+        console.log(response.data);
+        console.log($scope.brand);
       }, function(error) {
         return console.error(error);
       });

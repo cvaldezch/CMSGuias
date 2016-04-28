@@ -21,7 +21,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 # from CMSGuias.apps.home.forms import signupForm, logininForm
 from CMSGuias.apps.tools.redirectHome import RedirectModule
 from CMSGuias.apps.tools import genkeys
-# from CMSGuias.apps.logistica.models import Compra, DetCompra
+from CMSGuias.apps.logistica.models import Compra, DetCompra
+from CMSGuias.apps.operations.models import DSMetrado
 from .models import *
 from .forms import *
 
@@ -388,6 +389,32 @@ class BrandList(JSONResponseMixin, ListView):
                         serializers.serialize(
                             'json',
                             Model.objects.filter(flag=True)))
+                    context['status'] = True
+                if 'brandbymaterials' in request.GET:
+                    print request.GET['materials']
+                    c = DetCompra.objects.filter(
+                                materiales_id=request.GET['materials'])
+                    c = c.distinct('brand').order_by('brand')
+                    if c:
+                        c = [{'id': x.brand_id, 'name': x.brand.brand} for x in c]
+                    else:
+                        c = list()
+                    s = DSMetrado.objects.filter(materials_id=request.GET['materials'])
+                    s = s.distinct('brand').order_by('brand')
+                    if s:
+                        s = [{'id': x.brand_id, 'name': x.brand.brand} for x in s]
+                    else:
+                        s = list()
+                    d = [{'id':'BR000', 'name':'S/M'}]
+                    d = (c + s + d)
+                    dt = list({x['id']:x for x in d}.values())
+                    context['data'] = dt
+                    context['status'] = True
+                if 'modelbybrand' in request.GET:
+                    m = Model.objects.filter(brand_id=request.GET['brand'])
+                    m = m.order_by('model')
+                    context['model'] = json.loads(
+                        serializers.serialize('json', m))
                     context['status'] = True
             except Brand.DoesNotExist, e:
                 context['raise'] = str(e)

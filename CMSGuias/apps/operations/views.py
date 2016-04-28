@@ -1014,7 +1014,10 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
+            print request.GET
             if request.is_ajax():
+                if 'getdata' in request.GET:
+                    pass
                 if 'glist' in request.GET:
                     sales = MetProject.objects.filter(
                         proyecto_id=kwargs['pro'], sector_id=kwargs['sec'])

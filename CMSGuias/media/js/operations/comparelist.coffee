@@ -17,18 +17,20 @@ app.factory 'fDSMetrado', ($http, $cookies, $q) ->
       deffered.resolve response
       return
     return deffered.promise
-  obj.getDataMaterials = (materails) ->
+  obj.getDataMaterials = (materials) ->
     deffered = $q.defer()
     prm =
-      'setdata': true
-      'materails': materails
-    $http.get "", params: prm
+      'brandbymaterials': true
+      'materials': materials
+    $http.get "/brand/list/", params: prm
     .success (response) ->
       deffered.resolve response
       return
     return deffered.promise
   obj
 app.controller 'ctrl', ($scope, $cookies, $timeout, $q, fDSMetrado) ->
+  $scope.brand = []
+  $scope.model = []
   angular.element(document).ready ->
     console.log "estamos listos!"
     $scope.loadList()
@@ -53,10 +55,13 @@ app.controller 'ctrl', ($scope, $cookies, $timeout, $q, fDSMetrado) ->
     $cell = $event.currentTarget.cells
     if $cell[8].innerText isnt ""
       fDSMetrado.getDataMaterials($cell[1].innerText)
-      .then (data) ->
+      .then (response) ->
+        console.log $scope.brand
         $("#medit").openModal()
-        $scope.brand = data.brand
-        $scope.model = data.model
+        $scope.brand = response.data
+        console.log response.data
+        console.log $scope.brand
+        return
       , (error) ->
         console.error error
     return

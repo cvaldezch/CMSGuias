@@ -75,7 +75,7 @@ brand_urls = patterns(
         BrandUpdate.as_view(), name='brand_edit'),
     url(r'^delete/(?P<brand_id>\w+)/$',
         BrandDelete.as_view(), name='brand_del'),
-    url(r'^bym/$', DataMaterials.as_view(), name="bymaterials"),
+    # url(r'^bym/$', DataMaterials.as_view(), name="bymaterials"),
 )
 # Model
 model_urls = patterns(
