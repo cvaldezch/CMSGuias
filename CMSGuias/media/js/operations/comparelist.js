@@ -42,9 +42,11 @@ app.factory('fDSMetrado', function($http, $cookies, $q) {
 });
 
 app.controller('ctrl', function($scope, $cookies, $timeout, $q, fDSMetrado) {
+  $scope.ebrand = "";
   $scope.brand = [];
   $scope.model = [];
   angular.element(document).ready(function() {
+    angular.element("select").material_select();
     console.log("estamos listos!");
     $scope.loadList();
   });
@@ -73,9 +75,15 @@ app.controller('ctrl', function($scope, $cookies, $timeout, $q, fDSMetrado) {
         $scope.brand = response.data;
         console.log(response.data);
         console.log($scope.brand);
+        $timeout(function() {
+          return angular.element("select").material_select("update");
+        }, 800);
       }, function(error) {
         return console.error(error);
       });
     }
+  };
+  $scope.lmodel = function() {
+    console.info($scope.ebrand);
   };
 });

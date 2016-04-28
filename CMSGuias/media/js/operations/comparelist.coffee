@@ -29,9 +29,11 @@ app.factory 'fDSMetrado', ($http, $cookies, $q) ->
     return deffered.promise
   obj
 app.controller 'ctrl', ($scope, $cookies, $timeout, $q, fDSMetrado) ->
+  $scope.ebrand = ""
   $scope.brand = []
   $scope.model = []
   angular.element(document).ready ->
+    angular.element("select").material_select()
     console.log "estamos listos!"
     $scope.loadList()
     return
@@ -61,8 +63,15 @@ app.controller 'ctrl', ($scope, $cookies, $timeout, $q, fDSMetrado) ->
         $scope.brand = response.data
         console.log response.data
         console.log $scope.brand
+        $timeout ->
+          angular.element("select").material_select "update"
+        , 800
         return
       , (error) ->
         console.error error
+    return
+
+  $scope.lmodel = ->
+    console.info $scope.ebrand
     return
   return

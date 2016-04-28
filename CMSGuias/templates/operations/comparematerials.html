@@ -113,28 +113,24 @@
   <div id="medit" class="modal">
     <div class="modal-content">
       <h5>Editar Material</h5>
-      <table class="table responsive-table highlight row">
+      <table class="table responsive-table highlight">
         {% verbatim %}
         <tbody>
           <tr>
-            <th>{{ematc}}</th>
-            <th>{{ematn}}</th>
             <th>
-              <div class="input-field col l4">
-                <select ng-model="ebrand" ng-options="x.id as x.name for x in brand">
-                  
-                </select>
+              <div class="input-field ">
+                <select ng-model="ebrand" ng-options="x.id as x.name for x in brand" ng-change="lmodel()"></select>
                 <label for="">Marca</label>
               </div>
             </th>
             <th>
-              <div class="input-field col l4">
+              <div class="input-field ">
                 <select ng-model="emodel" ng-options="id as name for x in model"></select>
                 <label for="">Modelo</label>
               </div>
             </th>
             <th>
-              <div class="input-field col l6">
+              <div class="input-field ">
                 <input type="text">
                 <label for="input">Precio de Compra</label>
               </div>
