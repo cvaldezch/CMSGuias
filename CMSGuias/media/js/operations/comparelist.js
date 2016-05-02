@@ -151,8 +151,4 @@ app.controller('ctrl', function($scope, $cookies, $timeout, $q, fDSMetrado) {
       }
     });
   };
-  $scope.$watch('obrand', function(nw, old) {
-    console.log(nw);
-    console.log(old);
-  });
 });

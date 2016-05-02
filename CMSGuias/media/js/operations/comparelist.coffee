@@ -134,8 +134,8 @@ app.controller 'ctrl', ($scope, $cookies, $timeout, $q, fDSMetrado) ->
       return
     return
   
-  $scope.$watch 'obrand', (nw, old) ->
-    console.log nw
-    console.log old
-    return
+  # $scope.$watch 'obrand', (nw, old) ->
+  #   console.log nw
+  #   console.log old
+  #   return
   return
