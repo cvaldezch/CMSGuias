@@ -296,9 +296,9 @@ class DSMetrado(models.Model):
 
     audit_log = AuditLog()
 
-    class Meta:
-        verbose_name = 'SMetrado'
-        verbose_name_plural = 'SMetrados'
+    # class Meta:
+    #     verbose_name = 'DSMetrado'
+    #     verbose_name_plural = 'DSMetrados'
 
     def __unicode__(self):
         return '%s %s %f %f' % (self.dsector_id,
@@ -324,9 +324,9 @@ class MMetrado(models.Model):
     nipple = models.BooleanField(default=False, blank=True)
     flag = models.BooleanField(default=True)
 
-    class Meta:
-        verbose_name = 'MMetrado'
-        verbose_name_plural = 'MMetrados'
+    # class Meta:
+    #     verbose_name = 'MMetrado'
+    #     verbose_name_plural = 'MMetrados'
 
     def __unicode__(self):
         return '%s %s %f' % (self.dsector_id, self.materials, self.quantity)
@@ -353,9 +353,9 @@ class HistoryDSMetrado(models.Model):
     nipple = models.BooleanField(default=False, blank=True)
     flag = models.BooleanField(default=True)
 
-    class Meta:
-        verbose_name = 'SMetrado'
-        verbose_name_plural = 'SMetrados'
+    # class Meta:
+    #     verbose_name = 'SMetrado'
+    #     verbose_name_plural = 'SMetrados'
 
     def __unicode__(self):
         return '%s %s %f %f' % (self.dsector_id,

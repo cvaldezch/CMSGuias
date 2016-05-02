@@ -413,8 +413,11 @@ class BrandList(JSONResponseMixin, ListView):
                 if 'modelbybrand' in request.GET:
                     m = Model.objects.filter(brand_id=request.GET['brand'])
                     m = m.order_by('model')
-                    context['model'] = json.loads(
-                        serializers.serialize('json', m))
+                    m = [{'id': x.model_id, 'name': x.model} for x in m]
+                    m = m + [{'id':'MO000', 'name': 'S/M'}]
+                    m = list({x['id']:x for x in m}.values())
+                    context['model'] = m
+                    # json.loads(serializers.serialize('json', m))
                     context['status'] = True
             except Brand.DoesNotExist, e:
                 context['raise'] = str(e)

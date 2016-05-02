@@ -63,7 +63,7 @@
             <label for="icon_prefix">Buscar ...</label>
           </div>
         </th>
-        <th style="border: 1px solid black;" class="center-align">PRECIO</th>
+        <th style="border: 1px solid black;" class="center-align" colspan="2">PRECIOS</th>
         <th style="border: 1px solid black;" class="center-align" colspan="2">CANTIDADES</th>
         <th class="center-align">
           <button type="button" class="btn-flat waves-effect waves-teal" ng-click="loadList()">
@@ -78,15 +78,16 @@
         <th>Marca</th>
         <th>Model</th>
         <th>Unidad</th>
-        <th style="border: 1px solid black;" class="center-align">Compra</th>
+        <th style="border: 1px solid black;" class="center-align">P.C</th>
+        <th style="border: 1px solid black;" class="center-align">P.V</th>
         <th style="border: 1px solid black;" class="center-align">Ventas</th>
         <th style="border: 1px solid black;" class="center-align">Operaciones</th>
         <th style="border: 1px solid black;">Importe</th>
       </tr>
       <tr ng-model="loader" ng-init="loader=false" ng-hide="loader">
-        <th colspan="10">
-          <div class="progress">
-            <div class="indeterminate"></div>
+        <th colspan="11">
+          <div class="progress light-blue accent-1">
+            <div class="indeterminate light-blue darken-4"></div>
           </div>
         </th>
       </tr>
@@ -95,13 +96,17 @@
       {#% for x in lst|dictsort:"name" %#}
       {% verbatim %}
          <tr ng-repeat="x in list | orderBy: 'name' | filter: search" ng-dblclick="openEdit($event)">
-            <td>{{$index + 1}}</td>
+            <td>
+              {{$index + 1}}
+              <input type="hidden" data-brand="{{x.brand_id}}" data-model="{{x.model_id}}">
+            </td>
             <td>{{x.materials}}</td>
             <td>{{x.name}}</td>
             <td>{{x.brand}}</td>
             <td>{{x.model}}</td>
             <td class="center-align">{{x.unit}}</td>
             <td class="center-align">{{x.purchase|number:2}}</td>
+            <td class="center-align">{{x.psales|number:2}}</td>
             <th class="center-align">{{x.sales|number:2}}</th>
             <th class="center-align">{{x.operations|number:2}}</th>
             <th>{{x.amount|number:2}}</th>
@@ -112,41 +117,54 @@
   </table>
   <div id="medit" class="modal">
     <div class="modal-content">
+      {% verbatim %}
       <h5>Editar Material</h5>
+      <h5>
+        {{ename}} - {{eunit}}
+      </h5>
       <table class="table responsive-table highlight">
-        {% verbatim %}
         <tbody>
           <tr>
             <th>
-              <div class="input-field ">
-                <select ng-model="ebrand" ng-options="x.id as x.name for x in brand" ng-change="lmodel()"></select>
+              <!--<div class="input-field ">-->
                 <label for="">Marca</label>
-              </div>
+                <select class="browser-default" ng-model="ebrand" ng-options="x.id as x.name for x in brand" ng-change="lmodel()">
+                  <option value="">--Seleccione--</option>
+                </select>
+              <!--</div>-->
             </th>
             <th>
-              <div class="input-field ">
-                <select ng-model="emodel" ng-options="id as name for x in model"></select>
+              <!--<div class="input-field ">-->
                 <label for="">Modelo</label>
+                <select class="browser-default" ng-model="emodel" ng-options="x.id as x.name for x in model">
+                  <option value="">--Seleccione--</option>
+                </select>
+              <!--</div>-->
+            </th>
+            <th>
+              <div class="input-field ">
+                <input type="text" ng-model="eprice" value="{{eprice}}">
+                <label for="input" ng-class="{'active': eprice}">Precio de Compra</label>
               </div>
             </th>
             <th>
               <div class="input-field ">
-                <input type="text">
-                <label for="input">Precio de Compra</label>
+                <input type="text" ng-model="esales" value="{{esales}}">
+                <label for="input" ng-class="{'active': esales}">Precio de Venta</label>
               </div>
             </th>
           </tr>
         </tbody>
-        {% endverbatim %}
       </table>
+      {% endverbatim %}
     </div>
     <div class="modal-footer">
+      {% verbatim %}
+        <button type="button" class="btn" value="{{ematc}}" data-obrand="{{obrand}}" data-omodel="omodel" ng-click="saveChange()">Guardar Cambios</button>
+      {% endverbatim %}
       <button type="button" class="modal-action modal-close waves-effect waves-green btn-flat">
         Cancelar
       </button>
-      {% verbatim %}
-        <button type="button" class="btn" value="{{ematc}}">Guardar Cambios</button>
-      {% endverbatim %}
     </div>
   </div>
 </section>

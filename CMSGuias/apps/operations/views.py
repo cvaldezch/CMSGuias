@@ -1016,8 +1016,20 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
         try:
             print request.GET
             if request.is_ajax():
-                if 'getdata' in request.GET:
-                    pass
+                if 'saveChange' in request.GET:
+                    d = DSMetrado.objects.filter(
+                            sector__sector_id__startswith=kwargs['pro'],
+                            materials_id=request.GET['materials'],
+                            brand_id=request.GET['obrand'],
+                            model_id=request.GET['omodel'])
+                    if d:
+                        for x in d:
+                            x.brand_id = request.GET['brand']
+                            x.model_id = request.GET['model']
+                            x.ppurchase = request.GET['ppurchase']
+                            x.psales = request.GET['psales']
+                            x.save()
+                    context['status'] = True
                 if 'glist' in request.GET:
                     sales = MetProject.objects.filter(
                         proyecto_id=kwargs['pro'], sector_id=kwargs['sec'])
@@ -1053,6 +1065,7 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                                 if x['operations'] == '-':
                                     x['operations'] = 0
                                 x['purchase'] = o.ppurchase
+                                x['psales'] = o.psales
                                 x['operations'] = (x['operations'] + o.quantity)
                                 x['amount'] = (x['operations'] * float(x['purchase']))
                                 break

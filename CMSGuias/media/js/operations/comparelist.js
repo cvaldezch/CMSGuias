@@ -38,6 +38,26 @@ app.factory('fDSMetrado', function($http, $cookies, $q) {
     });
     return deffered.promise;
   };
+  obj.getModel = function(brand) {
+    var prm;
+    prm = {
+      'modelbybrand': true,
+      'brand': brand
+    };
+    return $http.get("/brand/list/", {
+      params: prm
+    });
+  };
+  obj.update = function(options) {
+    var prm;
+    if (options == null) {
+      options = {};
+    }
+    prm = options;
+    return $http.get("", {
+      params: prm
+    });
+  };
   return obj;
 });
 
@@ -45,8 +65,9 @@ app.controller('ctrl', function($scope, $cookies, $timeout, $q, fDSMetrado) {
   $scope.ebrand = "";
   $scope.brand = [];
   $scope.model = [];
+  $scope.ename = "";
+  $scope.eunit = "";
   angular.element(document).ready(function() {
-    angular.element("select").material_select();
     console.log("estamos listos!");
     $scope.loadList();
   });
@@ -68,22 +89,70 @@ app.controller('ctrl', function($scope, $cookies, $timeout, $q, fDSMetrado) {
   $scope.openEdit = function($event) {
     var $cell;
     $cell = $event.currentTarget.cells;
-    if ($cell[8].innerText !== "") {
+    if ($cell[9].innerText.replace(' ', '') !== "") {
       fDSMetrado.getDataMaterials($cell[1].innerText).then(function(response) {
-        console.log($scope.brand);
         $("#medit").openModal();
         $scope.brand = response.data;
-        console.log(response.data);
-        console.log($scope.brand);
         $timeout(function() {
-          return angular.element("select").material_select("update");
-        }, 800);
+          $scope.ename = $cell[2].innerText;
+          $scope.eunit = $cell[5].innerText;
+          $scope.ematc = $cell[1].innerText;
+          $scope.eprice = $cell[6].innerText;
+          $scope.esales = $cell[7].innerText;
+          $scope.ebrand = $cell[0].children[0].dataset.brand;
+          $scope.obrand = $cell[0].children[0].dataset.brand;
+          $scope.omodel = $cell[0].children[0].dataset.model;
+          $scope.lmodel();
+        }, 600);
+        $timeout(function() {
+          $scope.emodel = $cell[0].children[0].dataset.model;
+        }, 1200);
       }, function(error) {
         return console.error(error);
       });
     }
   };
   $scope.lmodel = function() {
-    console.info($scope.ebrand);
+    fDSMetrado.getModel($scope.ebrand).success(function(response) {
+      console.log(response);
+      return $scope.model = response.model;
+    });
   };
+  $scope.saveChange = function($event) {
+    var obj;
+    obj = {
+      materials: $scope.ematc,
+      brand: $scope.ebrand,
+      model: $scope.emodel,
+      obrand: $scope.obrand,
+      omodel: $scope.omodel,
+      ppurchase: $scope.eprice,
+      psales: $scope.esales,
+      'saveChange': true
+    };
+    fDSMetrado.update(obj).success(function(response) {
+      if (response.status) {
+        swal({
+          title: "Felicidades!",
+          text: "",
+          type: "success",
+          allowOutsideClick: false,
+          timer: 2600
+        });
+        $scope.ematc = "";
+        $scope.ename = "";
+        $scope.eunit = "";
+        $scope.obrand = "";
+        $scope.omodel = "";
+        $scope.loadList();
+        $("#medit").closeModal();
+      } else {
+        swal("No se ha guardado los cambios", "", "warning");
+      }
+    });
+  };
+  $scope.$watch('obrand', function(nw, old) {
+    console.log(nw);
+    console.log(old);
+  });
 });

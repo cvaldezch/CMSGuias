@@ -27,13 +27,25 @@ app.factory 'fDSMetrado', ($http, $cookies, $q) ->
       deffered.resolve response
       return
     return deffered.promise
+  obj.getModel = (brand) ->
+    # deffered = $q.defer()
+    prm =
+      'modelbybrand': true
+      'brand': brand
+    $http.get "/brand/list/", params: prm
+    # deffered.promise
+  obj.update = (options = {}) ->
+    prm = options
+    $http.get "", params: prm
   obj
 app.controller 'ctrl', ($scope, $cookies, $timeout, $q, fDSMetrado) ->
   $scope.ebrand = ""
   $scope.brand = []
   $scope.model = []
+  $scope.ename = ""
+  $scope.eunit = ""
   angular.element(document).ready ->
-    angular.element("select").material_select()
+    # angular.element("select").material_select()
     console.log "estamos listos!"
     $scope.loadList()
     return
@@ -55,23 +67,75 @@ app.controller 'ctrl', ($scope, $cookies, $timeout, $q, fDSMetrado) ->
 
   $scope.openEdit = ($event) ->
     $cell = $event.currentTarget.cells
-    if $cell[8].innerText isnt ""
+    if $cell[9].innerText.replace(' ', '') isnt ""
       fDSMetrado.getDataMaterials($cell[1].innerText)
       .then (response) ->
-        console.log $scope.brand
+        # console.log $scope.brand
         $("#medit").openModal()
         $scope.brand = response.data
-        console.log response.data
-        console.log $scope.brand
         $timeout ->
-          angular.element("select").material_select "update"
-        , 800
+           # console.log $cell
+          $scope.ename = $cell[2].innerText
+          $scope.eunit = $cell[5].innerText
+          $scope.ematc = $cell[1].innerText
+          $scope.eprice = $cell[6].innerText
+          $scope.esales = $cell[7].innerText
+          $scope.ebrand = $cell[0].children[0].dataset.brand
+          $scope.obrand = $cell[0].children[0].dataset.brand
+          $scope.omodel = $cell[0].children[0].dataset.model
+          $scope.lmodel();
+          # $timeout (-> $scope.model = $cell[0].children[0].dataset.model;return), 400
+          return
+        , 600
+        $timeout ->
+          $scope.emodel = $cell[0].children[0].dataset.model
+          return
+        , 1200
         return
       , (error) ->
         console.error error
     return
 
   $scope.lmodel = ->
-    console.info $scope.ebrand
+    fDSMetrado.getModel($scope.ebrand)
+    .success (response) ->
+      console.log response
+      $scope.model = response.model
+    return
+
+  $scope.saveChange = ($event) ->
+    obj =
+      materials: $scope.ematc
+      brand: $scope.ebrand
+      model: $scope.emodel
+      obrand: $scope.obrand
+      omodel: $scope.omodel
+      ppurchase: $scope.eprice
+      psales: $scope.esales
+      'saveChange': true
+    fDSMetrado.update(obj)
+    .success (response) ->
+      if response.status
+        swal
+          title: "Felicidades!"
+          text: ""
+          type: "success"
+          allowOutsideClick: false
+          timer: 2600
+        $scope.ematc = ""
+        $scope.ename = ""
+        $scope.eunit = ""
+        $scope.obrand = ""
+        $scope.omodel = ""
+        $scope.loadList()
+        $("#medit").closeModal()
+      else
+        swal "No se ha guardado los cambios", "", "warning"
+      return
+    return
+  
+  $scope.$watch 'obrand', (nw, old) ->
+    console.log nw
+    console.log old
     return
   return
