@@ -48,6 +48,15 @@ app.factory('fDSMetrado', function($http, $cookies, $q) {
       params: prm
     });
   };
+  obj.getBrand = function() {
+    var prm;
+    prm = {
+      lbrand: true
+    };
+    return $http.get("", {
+      params: prm
+    });
+  };
   obj.update = function(options) {
     var prm;
     if (options == null) {
@@ -56,6 +65,26 @@ app.factory('fDSMetrado', function($http, $cookies, $q) {
     prm = options;
     return $http.get("", {
       params: prm
+    });
+  };
+  obj.saveBrand = function(options) {
+    if (options == null) {
+      options = {};
+    }
+    return $http({
+      url: '',
+      method: 'post',
+      data: $.param(options)
+    });
+  };
+  obj.saveModel = function(options) {
+    if (options == null) {
+      options = {};
+    }
+    return $http({
+      url: '',
+      method: 'post',
+      data: $.param(options)
     });
   };
   return obj;
@@ -68,6 +97,7 @@ app.controller('ctrl', function($scope, $cookies, $timeout, $q, fDSMetrado) {
   $scope.ename = "";
   $scope.eunit = "";
   angular.element(document).ready(function() {
+    angular.element('.modal-trigger').leanModal();
     console.log("estamos listos!");
     $scope.loadList();
   });
@@ -118,6 +148,11 @@ app.controller('ctrl', function($scope, $cookies, $timeout, $q, fDSMetrado) {
       return $scope.model = response.model;
     });
   };
+  $scope.getBrand = function() {
+    fDSMetrado.getBrand().success(function(response) {
+      return $scope.vbrand = response.brand;
+    });
+  };
   $scope.saveChange = function($event) {
     var obj;
     obj = {
@@ -150,5 +185,47 @@ app.controller('ctrl', function($scope, $cookies, $timeout, $q, fDSMetrado) {
         swal("No se ha guardado los cambios", "", "warning");
       }
     });
+  };
+  $scope.saveBrand = function() {
+    var prm;
+    prm = {
+      'brand': $scope.nbrand,
+      'saveBrand': true
+    };
+    fDSMetrado.saveBrand(prm).success(function(response) {
+      if (response.statuts) {
+        return angular.element("#mbrand").closeModal();
+      } else {
+        return swal("No se ha guardado los cambios", "", "warning");
+      }
+    });
+  };
+  $scope.saveModel = function() {
+    var prm;
+    prm = {
+      'brand': $scope.sbrand,
+      'model': $scope.nmodel,
+      'saveBrand': true
+    };
+    fDSMetrado.saveModel(prm).success(function(response) {
+      if (response.statuts) {
+        return angular.element("#").closeModal();
+      } else {
+        return swal("No se ha guardado los cambios", "", "warning");
+      }
+    });
+  };
+  $scope.openaBrand = function() {
+    angular.element("#mbrand").openModal();
+  };
+  $scope.openaModel = function() {
+    $scope.getBrand();
+    angular.element("#mmodel").openModal();
+  };
+  $scope.closeBrand = function() {
+    angular.element("#mbrand").closeModal();
+  };
+  $scope.closeModel = function() {
+    angular.element("#mmodel").closeModal();
   };
 });

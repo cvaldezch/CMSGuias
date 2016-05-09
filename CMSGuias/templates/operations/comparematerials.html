@@ -158,8 +158,8 @@
         <tfoot>
           <tr>
             <th colspan="4">
-              <button class="btn" type="button" ng-click="">Marca</button>
-              <button class="btn" type="button" ng-click="">Modelo</button>
+              <button class="btn" type="button" ng-click="openaBrand()">Marca</button>
+              <button class="btn" type="button" ng-click="openaModel()">Modelo</button>
             </th>
           </tr>
         </tfoot>
@@ -169,22 +169,50 @@
     <div class="modal-footer">
       {% verbatim %}
         <button type="button" class="btn" value="{{ematc}}" data-obrand="{{obrand}}" data-omodel="omodel" ng-click="saveChange()">Guardar Cambios</button>
+        <button type="button" class="waves-effect waves-green btn-flat" onClick="$('#medit').closeModal()">
+          Salir
+        </button>
       {% endverbatim %}
-      <button type="button" class="modal-action modal-close waves-effect waves-green btn-flat">
-        Cancelar
-      </button>
     </div>
   </div>
-  <div id="mbrand" class="modal">
-    <div class="modal-content">
-      
+  {% verbatim %}
+    <div id="mbrand" class="modal">
+      <div class="modal-content">
+        <h5>Marca</h5>
+        <div class="field-group">
+          <input type="text" ng-model="nbrand">
+          <label for="">Marca</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn grey lighten-5 grey-text text-darken-3" ng-click="closeBrand()">Salir</button>
+        <button type="button" class="btn grey-text text-lighten-5 light-blue accent-4">Guardar</button>
+      </div>
     </div>
-    <div class="modal-footer"></div>
-  </div>
-  <div id="mmodel" class="modal">
-    <div class="modal-content"></div>
-    <div class="modal-footer"></div>
-  </div>
+    <div id="mmodel" class="modal">
+      <div class="modal-content">
+        <h5>Modelo</h5>
+        <div class="row">
+          <div class="col l6">
+            <div class="field-group">
+              <select class="browser-default" ng-model="sbrand" ng-options="x.brand_id as x.brand for x in vbrand"></select>
+              <label for="">Marca</label>
+            </div>
+          </div>
+          <div class="col l6">
+            <div class="field-group">
+              <input type="text" ng-model="nmodel">
+              <label for="">Modelo</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn grey lighten-5 grey-text text-darken-3" ng-click="closeModel()">Salir</button>
+        <button type="button" class="btn grey-text text-lighten-5 light-blue accent-4">Guardar</button>
+      </div>
+    </div>
+  {% endverbatim %}
 </section>
 <script src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
 <script src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>

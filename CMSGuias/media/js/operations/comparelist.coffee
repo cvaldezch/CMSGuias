@@ -34,9 +34,23 @@ app.factory 'fDSMetrado', ($http, $cookies, $q) ->
       'brand': brand
     $http.get "/brand/list/", params: prm
     # deffered.promise
+  obj.getBrand = ->
+    prm =
+      lbrand: true
+    $http.get "", params: prm
   obj.update = (options = {}) ->
     prm = options
     $http.get "", params: prm
+  obj.saveBrand = (options = {}) ->
+    $http
+      url: ''
+      method: 'post'
+      data: $.param options
+  obj.saveModel = (options = {}) ->
+    $http
+      url: ''
+      method: 'post'
+      data: $.param options
   obj
 app.controller 'ctrl', ($scope, $cookies, $timeout, $q, fDSMetrado) ->
   $scope.ebrand = ""
@@ -45,6 +59,7 @@ app.controller 'ctrl', ($scope, $cookies, $timeout, $q, fDSMetrado) ->
   $scope.ename = ""
   $scope.eunit = ""
   angular.element(document).ready ->
+    angular.element('.modal-trigger').leanModal()
     # angular.element("select").material_select()
     console.log "estamos listos!"
     $scope.loadList()
@@ -102,7 +117,11 @@ app.controller 'ctrl', ($scope, $cookies, $timeout, $q, fDSMetrado) ->
       console.log response
       $scope.model = response.model
     return
-
+  $scope.getBrand = ->
+    fDSMetrado.getBrand()
+    .success (response) ->
+      $scope.vbrand = response.brand
+    return
   $scope.saveChange = ($event) ->
     obj =
       materials: $scope.ematc
@@ -133,7 +152,43 @@ app.controller 'ctrl', ($scope, $cookies, $timeout, $q, fDSMetrado) ->
         swal "No se ha guardado los cambios", "", "warning"
       return
     return
-  
+  $scope.saveBrand = ->
+    prm = 
+      'brand': $scope.nbrand
+      'saveBrand': true
+    fDSMetrado.saveBrand(prm)
+    .success (response) ->
+      if response.statuts
+        angular.element("#mbrand").closeModal()
+      else
+        swal "No se ha guardado los cambios", "", "warning"
+    return
+  $scope.saveModel = ->
+    prm = 
+      'brand': $scope.sbrand
+      'model': $scope.nmodel
+      'saveBrand': true
+    fDSMetrado.saveModel(prm)
+    .success (response) ->
+      if response.statuts
+        angular.element("#").closeModal()
+      else
+        swal "No se ha guardado los cambios", "", "warning"
+    return
+  $scope.openaBrand = ->
+    angular.element("#mbrand").openModal()
+    return
+  $scope.openaModel = ->
+    $scope.getBrand()
+    angular.element("#mmodel").openModal()
+    return
+  $scope.closeBrand = ->
+    angular.element("#mbrand").closeModal()
+    return
+  $scope.closeModel = ->
+    angular.element("#mmodel").closeModal()
+    return
+  # $scope
   # $scope.$watch 'obrand', (nw, old) ->
   #   console.log nw
   #   console.log old

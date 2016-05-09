@@ -1016,6 +1016,11 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
         try:
             print request.GET
             if request.is_ajax():
+                if 'lbrand' in request.GET:
+                    context['brand'] = json.loads(
+                                    serializers.serialize(
+                                        Brand.objects.filter(flag=True)))
+                    context['status'] = True
                 if 'saveChange' in request.GET:
                     d = DSMetrado.objects.filter(
                             sector__sector_id__startswith=kwargs['pro'],
@@ -1175,3 +1180,23 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
             return render(request, 'operations/comparematerials.html', context)
         except TemplateDoesNotExist, e:
             raise Http404(e)
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if 'saveBrand' in request.POST:
+                o = Brand.objects.filter(brand=request.POST['brand']).count()
+                if not o:
+                    key = genkeys.GenerateIdBrand()
+                    obj = Brand()
+                    obj.brand = request.POST['brand'].strip().upper()
+                    obj.brand_id = key
+                    obj.save()
+                context['status'] = True
+            if 'saveModel' in request.POST: 
+                pass
+        except ObjectDoesNotExist, e:
+            context['raise'] = str(e)
+            context['status'] = False
+        return self.render_to_json_response(context)
