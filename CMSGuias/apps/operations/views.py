@@ -17,7 +17,7 @@ from django.template import RequestContext, TemplateDoesNotExist
 from django.views.generic import TemplateView, View
 from django.core.serializers.json import DjangoJSONEncoder
 # from xlrd import open_workbook, XL_CELL_EMPTY
-from openpyxl import load_workbook
+from openpyxl import load_workbook, Workbook, cell, styles
 
 from CMSGuias.apps.home.models import *
 from .models import *
@@ -1014,7 +1014,6 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
-            print request.GET
             if request.is_ajax():
                 if 'lbrand' in request.GET:
                     context['brand'] = json.loads(
@@ -1107,76 +1106,102 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                     context['salesap'] = sales[0].sector.amount
                     context['diff'] = (sales[0].sector.amount - context['operations'])
                 return self.render_to_json_response(context)
-            # sales = MetProject.objects.filter(
-            #     proyecto_id=kwargs['pro'], sector_id=kwargs['sec'])
-            # ds = DSector.objects.filter(
-            #     project_id=kwargs['pro'], sector_id=kwargs['sec'])
-            # operations = DSMetrado.objects.filter(
-            #     dsector_id__in=[x.dsector_id for x in ds])
-            # # print 'count opertaions ', operations.count()
-            # # .order_by(
-            # #    'materials__materiales_id').distinct(
-            # #    'materials__materiales_id')
-            # lst = list()
-            # for s in sales:
-            #     lst.append({
-            #         'materials': s.materiales_id,
-            #         'name': '%s %s' % (
-            #             s.materiales.matnom, s.materiales.matmed),
-            #         'brand_id': s.brand_id,
-            #         'brand': s.brand.brand,
-            #         'model_id': s.model_id,
-            #         'model': s.model.model,
-            #         'unit': s.materiales.unidad.uninom,
-            #         'sales': s.cantidad,
-            #         'purchase': s.precio,
-            #         'operations': '-'})
-            # for o in operations:
-            #     c = 0
-            #     for x in lst:
-            #         mat = (x['materials'] == o.materials_id)
-            #         brand = (x['brand_id'] == o.brand_id)
-            #         model = (x['model_id'] == o.model_id)
-            #         if x['materials'] == o.materials_id:
-            #             if x['operations'] == '-':
-            #                 x['operations'] = 0
-            #             x['purchase'] = o.ppurchase
-            #             x['operations'] = (x['operations'] + o.quantity)
-            #             x['amount'] = (x['operations'] * float(x['purchase']))
-            #             break
-            #         else:
-            #             c += 1
-            #     if len(lst) == c:
-            #         lst.append({
-            #             'materials': o.materials_id,
-            #             'name': '%s %s' % (
-            #                 o.materials.matnom, o.materials.matmed),
-            #             'brand_id': o.brand_id,
-            #             'brand': o.brand.brand,
-            #             'model_id': o.model_id,
-            #             'model': o.model.model,
-            #             'unit': o.materials.unidad.uninom,
-            #             'sales': '-',
-            #             'purchase': float(o.ppurchase),
-            #             'operations': o.quantity,
-            #             'amount': (o.quantity*float(o.ppurchase))})
-
-            # context['lst'] = lst
-            # context['sales'] = sales.aggregate(amount=Sum(
-            #                     'cantidad', field='cantidad*precio'))['amount']
-            # # context['operations'] = operations.aggregate(amount=Sum(
-            # #                'quantity', field='quantity*ppurchase'))['amount']
-            # am = 0
-            # for x in lst:
-            #     if not type(x['operations']) is str:
-            #         am += x['amount']
-            #     # am += (x.quantity*float(x.ppurchase))
-            # print 'AMOUNT TOTAL PURCHASE ', am
-            # context['operations'] = am
-            # context['currency'] = sales[0].proyecto.currency.moneda
-            # context['symbol'] = sales[0].proyecto.currency.simbolo
-            # context['salesap'] = sales[0].sector.amount
-            # context['diff'] = (sales[0].sector.amount - context['operations'])
+            if 'export' in request.GET:
+                response = HttpResponse(mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                response['Content-Disposition'] = 'attachment; filename=com.xlsx'
+                wb = Workbook()
+                ws = wb.active
+                ws.title = 'Materiales'
+                ws.sheet_properties.tabColor = '1072BA'
+                # ws = wb.create_sheet()
+                # sales = MetProject.objects.filter(
+                #         proyecto_id=kwargs['pro'], sector_id=kwargs['sec'])
+                ds = DSector.objects.filter(
+                        project_id=kwargs['pro'], sector_id=kwargs['sec'])
+                operations = DSMetrado.objects.filter(
+                    dsector_id__in=[x.dsector_id for x in ds]).order_by('materials__matnom')
+                lst = list()
+                for o in operations:
+                #     lst.append({
+                #         'materials': s.materiales_id,
+                #         'name': '%s %s' % (
+                #             s.materiales.matnom, s.materiales.matmed),
+                #         'brand_id': s.brand_id,
+                #         'brand': s.brand.brand,
+                #         'model_id': s.model_id,
+                #         'model': s.model.model,
+                #         'unit': s.materiales.unidad.uninom,
+                #         'sales': s.cantidad,
+                #         # 'purchase': s.precio,
+                #         'operations': '-'})
+                # for o in operations:
+                #     c = 0
+                #     for x in lst:
+                #         mat = (x['materials'] == o.materials_id)
+                #         brand = (x['brand_id'] == o.brand_id)
+                #         model = (x['model_id'] == o.model_id)
+                #         if x['materials'] == o.materials_id:
+                #             if x['operations'] == '-':
+                #                 x['operations'] = 0
+                #             #x['purchase'] = o.ppurchase
+                #             #x['psales'] = o.psales
+                #             x['operations'] = (x['operations'] + o.quantity)
+                #             # x['amount'] = (x['operations'] * float(x['purchase']))
+                #             break
+                #         else:
+                #             c += 1
+                # if len(lst) == c:
+                    lst.append({
+                        'materials': o.materials_id,
+                        'name': '%s %s' % (
+                            o.materials.matnom, o.materials.matmed),
+                        'brand_id': o.brand_id,
+                        'brand': o.brand.brand,
+                        'model_id': o.model_id,
+                        'model': o.model.model,
+                        'unit': o.materials.unidad.uninom,
+                        #'sales': '-',
+                        #'purchase': float(o.ppurchase),
+                        'operations': o.quantity,})
+                            # 'amount': (o.quantity*float(o.ppurchase))})
+                columns = [
+                    ('Código', 16),
+                    ('Descripción', 60),
+                    ('Unidad', 9),
+                    ('Marca', 9),
+                    ('Modelo', 9),
+                    ('Cantidad', 9),]
+                border = styles.borders.Border(left=styles.borders.Side(style='thin'),
+                                                right=styles.borders.Side(style='thin'),
+                                                top=styles.borders.Side(style='thin'),
+                                                bottom=styles.borders.Side(style='thin'))
+                mstyle = styles.Style(border=border)
+                # col_num = 0
+                for col_num in xrange(len(columns)):
+                    c = ws.cell(row=1, column=col_num+1)
+                    c.value = columns[col_num][0]
+                    c.style = mstyle
+                    c.font = styles.Font(name='Tahoma', bold=True, size=9)
+                    ws.column_dimensions[cell.get_column_letter(col_num+1)].width = columns[col_num][1]
+                    # col_num+=1
+                rw = 2
+                for x in lst:
+                    ws.cell(column=1, row=rw).value = x['materials']
+                    ws.cell(column=1, row=rw).style = mstyle
+                    ws.cell(column=2, row=rw).value = x['name']
+                    ws.cell(column=2, row=rw).style = mstyle
+                    ws.cell(column=3, row=rw).value = x['unit']
+                    ws.cell(column=3, row=rw).style = mstyle
+                    ws.cell(column=4, row=rw).value = x['brand']
+                    ws.cell(column=4, row=rw).style = mstyle
+                    ws.cell(column=5, row=rw).value = x['model']
+                    ws.cell(column=5, row=rw).style = mstyle
+                    ws.cell(column=6, row=rw).value = x['operations']
+                    ws.cell(column=6, row=rw).style = mstyle
+                    rw+=1
+                # print len(ws.cell(column=1, row=2).width)
+                wb.save(response)
+                return response
             return render(request, 'operations/comparematerials.html', context)
         except TemplateDoesNotExist, e:
             raise Http404(e)

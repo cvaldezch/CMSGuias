@@ -10,9 +10,10 @@ gulp.task('stylus', function() {
     .pipe(plumber())
     .pipe(stylus({
         use: nib(),
+        import: ['nib']
       }))
     .pipe(gulp.dest('CMSGuias/media/'));
-    console.log('Stylus Compiled!');
+    console.log('Stylus Compiled! with Nib');
 });
 
 gulp.task('coffee', function() {

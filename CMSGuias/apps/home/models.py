@@ -456,3 +456,14 @@ class Tools(models.Model):
 
     def __unicode__(self):
         return '%s - %s' % (self.name, self.measure)
+
+class LogSys(models.Model):
+    version = models.CharField(max_length=10)
+    register = models.DateTimeField(auto_now_add=True)
+    flag = models.CharField(max_length=1, default='1')
+    log = models.TextField()
+
+    audit_log = AuditLog()
+
+    def __unicode__(self):
+        return '%s %s' % (self.version, register)

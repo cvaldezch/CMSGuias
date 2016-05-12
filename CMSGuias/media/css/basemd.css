@@ -43,6 +43,7 @@ input[type=search]:focus:not([readonly]),
 textarea.materialize-textarea:focus:not([readonly]),
 select:focus:not([readonly]) {
   border-bottom: 1px solid #0091ea;
+  -webkit-box-shadow: 0 1px 0 0 #0091ea;
   box-shadow: 0 1px 0 0 #0091ea;
 }
 input[type=text]:focus:not([readonly]) + label,
@@ -62,6 +63,7 @@ select:focus:not([readonly]) + label {
 .input-field input,
 .input-field select {
   border-bottom: 1px solid #9e9e9e;
+  -webkit-box-shadow: 0 1px 0 0 #9e9e9e;
   box-shadow: 0 1px 0 0 #9e9e9e;
 }
 .input-field .prefix.active,

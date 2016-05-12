@@ -52,6 +52,14 @@
       </div>
     {% endverbatim %}
   </div>
+  <div class="card">
+    <div class="card-content right-align">
+      <button type="button" class="btn waves waves-effect grey lighten-5 grey-text text-darken-3" ng-click="exportData()">
+        <i class="fa fa-file-excel-o"></i>
+        Exportar Datos
+      </button>
+    </div>
+  </div>
 {% endif %}
   <table class="table responsive-table highlight">
     <thead style="border: 1px solid black;">
@@ -93,7 +101,7 @@
       </tr>
     </thead>
     <tbody>
-      {#% for x in lst|dictsort:"name" %#}
+      {#% for x in lst | dictsort:"name" %#}
       {% verbatim %}
          <tr ng-repeat="x in list | orderBy: 'name' | filter: search" ng-dblclick="openEdit($event)">
             <td>

@@ -228,4 +228,7 @@ app.controller('ctrl', function($scope, $cookies, $timeout, $q, fDSMetrado) {
   $scope.closeModel = function() {
     angular.element("#mmodel").closeModal();
   };
+  $scope.exportData = function() {
+    window.open('?export=true', '_blank');
+  };
 });

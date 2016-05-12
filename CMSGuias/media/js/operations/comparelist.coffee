@@ -188,7 +188,10 @@ app.controller 'ctrl', ($scope, $cookies, $timeout, $q, fDSMetrado) ->
   $scope.closeModel = ->
     angular.element("#mmodel").closeModal()
     return
-  # $scope
+  $scope.exportData = ->
+    # location.href = '?export'
+    window.open '?export=true', '_blank'
+    return
   # $scope.$watch 'obrand', (nw, old) ->
   #   console.log nw
   #   console.log old
