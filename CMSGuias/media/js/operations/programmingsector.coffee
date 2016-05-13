@@ -191,9 +191,27 @@ app.controller 'programingCtrl', ($scope, $http, $cookies, $timeout) ->
           data: $.param data
         .success (response) ->
           if response.status
+            data = new Object
+            data.forsb = "logistica@icrperusa.com, contabilidad@icrperusa.com"
+            data.issue = "Info. sectorización Aprodado #{angular.element('#nproject').text()}"
+            data.body = """<p>Se ha aprobado la sectorización del Proyecto <strong>"#{angular.element('#nproject').text()}"</strong> para el sector <strong>"#{angular.element('#nsector').text()}".</strong><br></p><p>Fecha Registrada: #{new Date()}</p><p>Para:&nbsp;<strong>ICR PERUSA</strong></p><p><br data-mce-bogus="1"></p>"""
+            $.ajax
+                url: "http://190.41.246.91:3000/mailer/" #url: "http://127.0.0.1:3000/mailer/"
+                type: "GET"
+                crossDomain: true
+                data: $.param data
+                dataType: "jsonp",
+                success: (response) ->
+                    # if response.status
+                    #     #$().toastmessage "showNoticeToast", "Se a enviado el código de confirmación."
+                    # else
+                    #     $().toastmessage "showErrorToast", "No se podido enviar el correo."
             Materialize.toast "Áreas aprobadas!", 2600
             console.log response
-            location.reload()
+            $timeout ->
+              location.reload()
+              return
+            , 2600
             return
           else
             $event.currentTarget.innerHTML = """<i class="fa fa-times"></i> Error"""

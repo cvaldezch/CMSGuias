@@ -21,8 +21,8 @@
   <input type="hidden" id="area" ng-model="area" value="{{ request.user.get_profile.empdni.charge.area|lower }}" value="{{ request.user.get_profile.empdni.charge.area|lower }}">
   <input type="hidden" id="charge" ng-model="charge" value="{{ request.user.get_profile.empdni.charge.cargos|lower }}" value="{{ request.user.get_profile.empdni.charge.cargos|lower }}">
   <input type="hidden" id="perdni" ng-model="perdni" ng-value="{{ request.user.get_profile.empdni_id|lower }}" value="{{ request.user.get_profile.empdni_id|lower }}">
-  <h4 class="center-align">{{ project.proyecto_id }} {{ project.nompro }}</h4>
-  <h5 class="center-align">{{ sector.sector_id }} - {{ sector.nomsec }}</h5>
+  <h4 class="center-align" id="nproject">{{ project.proyecto_id }} {{ project.nompro }}</h4>
+  <h5 class="center-align" id="nsector">{{ sector.sector_id }} - {{ sector.nomsec }}</h5>
   <a href="{% url 'managersec_view' project.proyecto_id sector.subproyecto_id sector.sector_id %}" class="btn grey lighten-5 grey-text text-darken-3">
     <i class="fa fa-chevron-left"></i>
     REGRESAR

@@ -52,8 +52,10 @@ def generate_pdf(html):
             dest=result,
             link_callback=fetch_resources)
     if not pdf.err:
+        print 'HERE PRODUCE ERROR'
+        print pdf
         return HttpResponse(result.getvalue(), mimetype='application/pdf')
-    return HttpResponse('error al generar el PDF: %s' % cgi.escape(html))
+    return HttpResponse('error al generar el PDF: %s' % html)
 
 """
    block generate pdf test
@@ -377,6 +379,7 @@ class RptPurchase(TemplateView):
             context['literal'] = number_to_char.numero_a_letras(total)
             context['status'] = globalVariable.status
             context['conf'] = conf
+            context['pagesize'] = 'A4'
             html = render_to_string(
                     self.template_name,
                     context,
