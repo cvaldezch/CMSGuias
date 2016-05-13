@@ -23,6 +23,7 @@
   <input type="hidden" id="perdni" ng-model="perdni" ng-value="{{ request.user.get_profile.empdni_id|lower }}" value="{{ request.user.get_profile.empdni_id|lower }}">
   <h4 class="center-align" id="nproject">{{ project.proyecto_id }} {{ project.nompro }}</h4>
   <h5 class="center-align" id="nsector">{{ sector.sector_id }} - {{ sector.nomsec }}</h5>
+  <input type="hidden" id="enterprice" value="{{request.session.company.name}}">
   <a href="{% url 'managersec_view' project.proyecto_id sector.subproyecto_id sector.sector_id %}" class="btn grey lighten-5 grey-text text-darken-3">
     <i class="fa fa-chevron-left"></i>
     REGRESAR
