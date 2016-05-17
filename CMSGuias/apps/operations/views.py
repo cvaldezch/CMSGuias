@@ -142,6 +142,17 @@ class ProgramingProject(JSONResponseMixin, View):
                                         ds,
                                         relations=('sgroup',)))
                     context['status'] = True
+                if 'getAreasByGroup' in request.GET:
+                    ds = DSector.objects.filter(
+                            project_id=kwargs['pro'],
+                            sgroup_id=request.GET['sgroup'],
+                            sgroup__sector_id=kwargs['sec']).order_by(
+                            'sgroup')
+                    context['areas'] = json.loads(serializers.serialize(
+                                        'json',
+                                        ds,
+                                        relations=('sgroup',)))
+                    context['status'] = True
                 if 'valPrices' in request.GET:
                     # get sgroup
                     sg = [x[0] for x in SGroup.objects.filter(
@@ -1018,14 +1029,16 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                 if 'lbrand' in request.GET:
                     context['brand'] = json.loads(
                                     serializers.serialize(
-                                        Brand.objects.filter(flag=True)))
+                                        'json',Brand.objects.filter(flag=True).distinct('brand').order_by('brand')))
                     context['status'] = True
                 if 'saveChange' in request.GET:
                     d = DSMetrado.objects.filter(
-                            sector__sector_id__startswith=kwargs['pro'],
+                            dsector__dsector_id__startswith=kwargs['pro'],
                             materials_id=request.GET['materials'],
                             brand_id=request.GET['obrand'],
                             model_id=request.GET['omodel'])
+                    print d.count()
+                    print 'COUNT DSECTOR '
                     if d:
                         for x in d:
                             x.brand_id = request.GET['brand']
@@ -1211,16 +1224,36 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
         context = dict()
         try:
             if 'saveBrand' in request.POST:
-                o = Brand.objects.filter(brand=request.POST['brand']).count()
-                if not o:
+                brand = request.POST['brand'].strip().upper()
+                o = Brand.objects.filter(brand=brand)
+                if not o.count():
                     key = genkeys.GenerateIdBrand()
                     obj = Brand()
-                    obj.brand = request.POST['brand'].strip().upper()
+                    obj.brand = brand
                     obj.brand_id = key
                     obj.save()
+                    context['id'] = key
+                    context['name'] = brand
+                else:
+                    context['id'] = o[0].brand_id
+                    context['name'] = o[0].brand
                 context['status'] = True
             if 'saveModel' in request.POST: 
-                pass
+                model = request.POST['model'].strip().upper()
+                o = Model.objects.filter(brand_id=request.POST['brand'], model=model)
+                if not o.count():
+                    key = genkeys.GenerateIdModel()
+                    obj = Model()
+                    obj.model_id = key
+                    obj.brand_id = request.POST['brand']
+                    obj.model = model
+                    obj.save()
+                    context['id'] = key
+                    context['name'] = model
+                else:
+                    context['id'] = o[0].model_id
+                    context['name'] = o[0].model
+                context['status'] = True
         except ObjectDoesNotExist, e:
             context['raise'] = str(e)
             context['status'] = False

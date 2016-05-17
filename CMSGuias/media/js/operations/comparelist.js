@@ -193,7 +193,12 @@ app.controller('ctrl', function($scope, $cookies, $timeout, $q, fDSMetrado) {
       'saveBrand': true
     };
     fDSMetrado.saveBrand(prm).success(function(response) {
-      if (response.statuts) {
+      if (response.status) {
+        $scope.brand.push({
+          'id': response.id,
+          'name': response.name
+        });
+        console.log($scope.brand);
         return angular.element("#mbrand").closeModal();
       } else {
         return swal("No se ha guardado los cambios", "", "warning");
@@ -205,11 +210,16 @@ app.controller('ctrl', function($scope, $cookies, $timeout, $q, fDSMetrado) {
     prm = {
       'brand': $scope.sbrand,
       'model': $scope.nmodel,
-      'saveBrand': true
+      'saveModel': true
     };
     fDSMetrado.saveModel(prm).success(function(response) {
-      if (response.statuts) {
-        return angular.element("#").closeModal();
+      if (response.status) {
+        $scope.model.push({
+          'id': response.id,
+          'name': response.name
+        });
+        console.log($scope.model);
+        return angular.element("#mmodel").closeModal();
       } else {
         return swal("No se ha guardado los cambios", "", "warning");
       }

@@ -117,11 +117,13 @@ app.controller 'ctrl', ($scope, $cookies, $timeout, $q, fDSMetrado) ->
       console.log response
       $scope.model = response.model
     return
+
   $scope.getBrand = ->
     fDSMetrado.getBrand()
     .success (response) ->
       $scope.vbrand = response.brand
     return
+    
   $scope.saveChange = ($event) ->
     obj =
       materials: $scope.ematc
@@ -158,7 +160,11 @@ app.controller 'ctrl', ($scope, $cookies, $timeout, $q, fDSMetrado) ->
       'saveBrand': true
     fDSMetrado.saveBrand(prm)
     .success (response) ->
-      if response.statuts
+      if response.status
+        $scope.brand.push
+          'id': response.id
+          'name': response.name
+        console.log $scope.brand
         angular.element("#mbrand").closeModal()
       else
         swal "No se ha guardado los cambios", "", "warning"
@@ -167,11 +173,15 @@ app.controller 'ctrl', ($scope, $cookies, $timeout, $q, fDSMetrado) ->
     prm = 
       'brand': $scope.sbrand
       'model': $scope.nmodel
-      'saveBrand': true
+      'saveModel': true
     fDSMetrado.saveModel(prm)
     .success (response) ->
-      if response.statuts
-        angular.element("#").closeModal()
+      if response.status
+        $scope.model.push
+          'id': response.id
+          'name': response.name
+        console.log $scope.model
+        angular.element("#mmodel").closeModal()
       else
         swal "No se ha guardado los cambios", "", "warning"
     return

@@ -21,11 +21,13 @@ app.controller 'programingCtrl', ($scope, $http, $cookies, $timeout) ->
       selectMonths: true
       selectYears: true
     $scope.lgroup()
+    $scope.lareas = []
     $scope.getDSectorList()
     $(".modal").css "max-height", "80%"
     $scope.perdni = angular.element("#perdni")[0].value
     $scope.area = angular.element("#area")[0].value
     $scope.charge = angular.element("#charge")[0].value
+    angular.element(".dropdown-button").dropdown()
     console.log $scope.perdni
     console.log $scope.area
     console.log $scope.charge
@@ -368,17 +370,36 @@ app.controller 'programingCtrl', ($scope, $http, $cookies, $timeout) ->
             swal "Error!", "Se a producido un error. #{response.raise}", "error"
             return
     return
-  $scope.test = ->
+  $scope.getAreasByGroup = (sgroup, index)->
     data =
-      processData: true
-      filename: `"C:\\Users\\MIDDENDORF\\Documents\\development\\django\\venvicrperu\\icrperu\\CMSGuias\\media/storage/Temp/tmpaPR15121.xlsx"`
-    $http
-      url: ''
-      method: 'post'
-      data: $.param data
-    .success (result) ->
-      console.log result
-      return
+      'getAreasByGroup': true
+      'sgroup': sgroup
+    $http.get "", params: data
+    .success (response) ->
+      if response.status
+        $scope.selected = index
+        $scope.lareas = response.areas
+        return
+      else
+        swal
+          title: "Error al traer los datos del group"
+          text: ""
+          type: "warning"
+          timer: 2600
+        return
+    return
+  
+  # $scope.test = ->
+  #   data =
+  #     processData: true
+  #     filename: `"C:\\Users\\MIDDENDORF\\Documents\\development\\django\\venvicrperu\\icrperu\\CMSGuias\\media/storage/Temp/tmpaPR15121.xlsx"`
+  #   $http
+  #     url: ''
+  #     method: 'post'
+  #     data: $.param data
+  #   .success (result) ->
+  #     console.log result
+  #     return
   return
 
 hextorbga = (hex, alf=1) ->
