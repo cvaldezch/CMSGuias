@@ -1052,6 +1052,7 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                         proyecto_id=kwargs['pro'], sector_id=kwargs['sec'])
                     ds = DSector.objects.filter(
                         project_id=kwargs['pro'], sector_id=kwargs['sec'])
+                    print ds
                     operations = DSMetrado.objects.filter(
                         dsector_id__in=[x.dsector_id for x in ds])
                     # print 'count opertaions ', operations.count()

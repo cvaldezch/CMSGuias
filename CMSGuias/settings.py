@@ -158,10 +158,10 @@ INSTALLED_APPS = (
     'CMSGuias.apps.home',
     'CMSGuias.apps.logistica',
     'CMSGuias.apps.reports',
-    'CMSGuias.apps.ventas',
     'CMSGuias.apps.taller',
     'CMSGuias.apps.wsjson',
     'CMSGuias.apps.operations',
+    'CMSGuias.apps.ventas',
     'CMSGuias.apps.suppliers',
     'CMSGuias.apps.ventas.budget',
 )

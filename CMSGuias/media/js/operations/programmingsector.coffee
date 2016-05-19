@@ -13,6 +13,7 @@ app.controller 'programingCtrl', ($scope, $http, $cookies, $timeout) ->
   $scope.perdni = ""
   $scope.area = ""
   $scope.charge = ""
+  $scope.dsector = []
   angular.element(document).ready ->
     $('.modal-trigger').leanModal()
     $(".datepicker").pickadate
@@ -103,6 +104,8 @@ app.controller 'programingCtrl', ($scope, $http, $cookies, $timeout) ->
       form.append k, v
     if $("[name=plane]").get(0).files.length > 0
       form.append "plane", $("[name=plane]").get(0).files[0]
+    if $scope.dsector.pk isnt ''
+      form.append 'dsector_id', $scope.dsector.pk
     form.append "csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val()
     $.ajax
       url: ''
@@ -114,13 +117,36 @@ app.controller 'programingCtrl', ($scope, $http, $cookies, $timeout) ->
       processData: false
       success: (response) ->
         if response.status
-          $scope.getDSectorList()
+          if $scope.slist
+            $scope.getDSectorList()
+          else
+            $(".collection a").each (index, value) ->
+              $element = $(value)
+              if $element.hasClass 'active'
+                console.log $element.attr "data-pk"
+                pk = String $element.attr "data-pk"
+                index = String $element.attr "data-index"
+                $scope.getAreasByGroup pk, index
+                return
           $("#mdsector").closeModal()
           return
         else
           swal "Error!", "No se guardo los datos. #{response.raise}", "error"
           return
     return
+  $scope.showArea = ->
+    dsector = this.x
+    console.log dsector
+    $scope.dsector.name = dsector.fields.name
+    $scope.dsector.datestart = dsector.fields.datestart
+    $scope.dsector.dateend = dsector.fields.dateend
+    $scope.dsector.sgroup = dsector.fields.sgroup.pk
+    $scope.dsector.description = dsector.fields.description
+    # $scope.dsector['plane'] = dsector.fields
+    $scope.dsector.pk = dsector.pk
+    angular.element("#mdsector").openModal()
+    return
+  
   $scope.datechk = ->
     start = $scope.dsector.datestart.split("-")
     end = $scope.dsector.dateend.split("-")
@@ -371,9 +397,11 @@ app.controller 'programingCtrl', ($scope, $http, $cookies, $timeout) ->
             return
     return
   $scope.getAreasByGroup = (sgroup, index)->
+    console.info sgroup
     data =
       'getAreasByGroup': true
       'sgroup': sgroup
+    console.error data
     $http.get "", params: data
     .success (response) ->
       if response.status

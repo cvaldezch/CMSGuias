@@ -12,7 +12,6 @@ from CMSGuias.apps.home.models import (
 from CMSGuias.apps.tools import globalVariable, search
 from CMSGuias.apps import operations
 
-
 class Proyecto(models.Model):
     proyecto_id = models.CharField(primary_key=True, max_length=7, null=False)
     ruccliente = models.ForeignKey(
@@ -183,25 +182,35 @@ class Sectore(models.Model):
 
 class SectorFiles(models.Model):
     def url(self, filename):
-        if self.subproyecto is None:
-            ruta = 'storage/projects/%s/%s/%s/%s' % (
-                    self.proyecto.registrado.strftime('%Y'),
-                    self.proyecto_id,
-                    self.sector_id,
-                    filename)
+        if self.dsector is None:
+            if self.subproyecto is None:
+                ruta = 'storage/projects/%s/%s/%s/%s' % (
+                        self.proyecto.registrado.strftime('%Y'),
+                        self.proyecto_id,
+                        self.sector_id,
+                        filename)
+            else:
+                ruta = 'storage/projects/%s/%s/%s/%s/%s' % (
+                        self.proyecto.registrado.strftime('%Y'),
+                        self.proyecto_id,
+                        self.subproyecto_id,
+                        self.sector_id,
+                        filename)
         else:
             ruta = 'storage/projects/%s/%s/%s/%s/%s' % (
-                    self.proyecto.registrado.strftime('%Y'),
-                    self.proyecto_id,
-                    self.subproyecto_id,
-                    self.sector_id,
-                    filename)
+                        self.proyecto.registrado.strftime('%Y'),
+                        self.proyecto_id,
+                        self.sector_id,
+                        self.dsector_id,
+                        filename)
         return ruta
 
     sector = models.ForeignKey(Sectore, to_field='sector_id')
     proyecto = models.ForeignKey(Proyecto, to_field='proyecto_id')
     subproyecto = models.ForeignKey(
                 Subproyecto, to_field='subproyecto_id', null=True, blank=True)
+    from CMSGuias.apps.operations.models import DSector
+    dsector = models.ForeignKey(DSector, to_field='dsector_id', blank=True, null=True)
     files = models.FileField(upload_to=url, max_length=200)
     note = models.TextField(default='', blank=True)
     date = models.DateField(auto_now=True)

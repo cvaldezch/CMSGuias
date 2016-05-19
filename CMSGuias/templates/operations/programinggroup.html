@@ -164,7 +164,7 @@
             <div class="card-action">
             {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'ventas' %}
               <a class="red-text text-lighten-1" href="#" ng-click="delarea($event)" {% verbatim %}data-dsector="{{x.pk}}"{% endverbatim %}><i class="fa fa-trash"></i></a>
-              <a class="amber-text text-darken-1" href="#"><i class="fa fa-pencil"></i> EDITAR</a>
+              <a class="amber-text text-darken-1" href="#!" ng-click="showArea()"><i class="fa fa-pencil"></i> EDITAR</a>
             {% endif %}
       {% verbatim %}
               <a class="light-blue-text text-darken-1 right" href="/operations/area/{{x.fields.sgroup.pk}}/{{x.pk}}/{% endverbatim %}{{project.proyecto_id}}/{{sector.sector_id}}/{{sector.subproyecto_id}}/{% verbatim %}"><i class="fa fa-eye"></i> VER</a>
@@ -177,18 +177,18 @@
     <div class="card-content" ng-hide="sgp">
       {% verbatim %}
         <div class="row">
-          <div class="col l2">
+          <div class="col l3 m4 s12">
             <div class="card">
               <div class="card-content">
                 <div class="collection">
-                  <a href="#!" class="collection-item grey-text text-darken-3" ng-repeat="x in sglist" ng-click="getAreasByGroup(x.pk, $index)" ng-class="{'active': $index == selected}">
+                  <a href="#!" data-pk="{{x.pk}}" data-index="{{$index}}" class="collection-item grey-text text-darken-3" ng-repeat="x in sglist" ng-click="getAreasByGroup(x.pk, $index)" ng-class="{'active': $index == selected}">
                     <i class="fa fa-tags"></i> {{ x.fields.name }}
                   </a>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col l10">
+          <div class="col l9 m8 s12">
             <div class="card">
               <div class="card-content">
                 <div class="row">
@@ -199,7 +199,7 @@
                       <label>Buscar Áreas</label>
                     </div>
                   </div>
-                  <div class="col l3 m6 s12" ng-repeat="x in lareas | filter: sname">
+                  <div class="col l4 m6 s12" ng-repeat="x in lareas | filter: sname">
                     <div class="card" style="height: 200px;">
                       <div class="card-content" style="background: {{x.fields.sgroup.fields.colour}}">
                         <strong>{{x.fields.sgroup.fields.name}} | {{x.fields.name}}</strong>
@@ -217,7 +217,7 @@
                       <div class="card-action">
                       {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'ventas' %}
                         <a class="red-text text-lighten-1" href="#" ng-click="delarea($event)" {% verbatim %}data-dsector="{{x.pk}}"{% endverbatim %}><i class="fa fa-trash"></i></a>
-                        <a class="amber-text text-darken-1" href="#"><i class="fa fa-pencil"></i> EDITAR</a>
+                        <a class="amber-text text-darken-1" href="#!" ng-click="showArea()"><i class="fa fa-pencil"></i> EDITAR</a>
                       {% endif %}
                       {% verbatim %}
                         <a class="light-blue-text text-darken-1 right" href="/operations/area/{{x.fields.sgroup.pk}}/{{x.pk}}/{% endverbatim %}{{project.proyecto_id}}/{{sector.sector_id}}/{{sector.subproyecto_id}}/{% verbatim %}"><i class="fa fa-eye"></i> VER</a>
@@ -340,7 +340,7 @@
     <div class="modal bottom-sheet" id="mdsector">
       <div class="modal-content">
         <h4>
-          Detalla de Área
+          Detalle de Área
         </h4>
         <button type="button" class="btn grey lighten-5 grey-text text-darken-3 modal-action modal-close">
           <i class="fa fa-times"></i>
@@ -350,6 +350,9 @@
           <i class="fa fa-save"></i>
           <span>Guardar Cambios</span>
         </button>
+        {% verbatim %}
+          <input type="hidden" ng-model="dsector.pk">
+        {% endverbatim %}
         <div class="row">
           <div class="col l6 m6 s12 input-field">
             <input type="text" ng-model="dsector.name" ng-value="dsector.name">

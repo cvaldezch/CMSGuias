@@ -15,6 +15,7 @@ app.controller('programingCtrl', function($scope, $http, $cookies, $timeout) {
   $scope.perdni = "";
   $scope.area = "";
   $scope.charge = "";
+  $scope.dsector = [];
   angular.element(document).ready(function() {
     $('.modal-trigger').leanModal();
     $(".datepicker").pickadate({
@@ -118,6 +119,9 @@ app.controller('programingCtrl', function($scope, $http, $cookies, $timeout) {
     if ($("[name=plane]").get(0).files.length > 0) {
       form.append("plane", $("[name=plane]").get(0).files[0]);
     }
+    if ($scope.dsector.pk !== '') {
+      form.append('dsector_id', $scope.dsector.pk);
+    }
     form.append("csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val());
     $.ajax({
       url: '',
@@ -129,13 +133,38 @@ app.controller('programingCtrl', function($scope, $http, $cookies, $timeout) {
       processData: false,
       success: function(response) {
         if (response.status) {
-          $scope.getDSectorList();
+          if ($scope.slist) {
+            $scope.getDSectorList();
+          } else {
+            $(".collection a").each(function(index, value) {
+              var $element, pk;
+              $element = $(value);
+              if ($element.hasClass('active')) {
+                console.log($element.attr("data-pk"));
+                pk = String($element.attr("data-pk"));
+                index = String($element.attr("data-index"));
+                $scope.getAreasByGroup(pk, index);
+              }
+            });
+          }
           $("#mdsector").closeModal();
         } else {
           swal("Error!", "No se guardo los datos. " + response.raise, "error");
         }
       }
     });
+  };
+  $scope.showArea = function() {
+    var dsector;
+    dsector = this.x;
+    console.log(dsector);
+    $scope.dsector.name = dsector.fields.name;
+    $scope.dsector.datestart = dsector.fields.datestart;
+    $scope.dsector.dateend = dsector.fields.dateend;
+    $scope.dsector.sgroup = dsector.fields.sgroup.pk;
+    $scope.dsector.description = dsector.fields.description;
+    $scope.dsector.pk = dsector.pk;
+    angular.element("#mdsector").openModal();
   };
   $scope.datechk = function() {
     var end, start;
@@ -414,10 +443,12 @@ app.controller('programingCtrl', function($scope, $http, $cookies, $timeout) {
   };
   $scope.getAreasByGroup = function(sgroup, index) {
     var data;
+    console.info(sgroup);
     data = {
       'getAreasByGroup': true,
       'sgroup': sgroup
     };
+    console.error(data);
     $http.get("", {
       params: data
     }).success(function(response) {

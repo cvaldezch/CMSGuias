@@ -81,6 +81,10 @@
                     <i class="fa fa-plus"></i>
                     <span class="hide-on-med-and-down">Agregar</span>
                 </button>
+                <button class="btn waves waves-effect amber accent-2 grey-text text-darken-3" ng-show="perarea == 'administrator' || perarea == 'ventas' || perdni == '46377134'" ng-click="">
+                    <i class="fa fa-file-pdf-o"></i>
+                    <span class="hide-on-med-and-down">Plano Detalle</span>
+                </button>
                 {% if modify|length <= 0 %}
                     <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effects modal-trigger" data-target="mpcopy">
                         <i class="fa fa-clone"></i>
