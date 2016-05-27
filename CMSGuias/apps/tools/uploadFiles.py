@@ -50,6 +50,8 @@ def deleteFile(uriPath, partial=False):
         path = None
         # path absolute
         if partial:
+            if not uriPath.startswith('/'):
+                uriPath = '/%s' % uriPath
             path = '%s%s'%(settings.MEDIA_ROOT, uriPath)
         else:
             path = uriPath
@@ -63,11 +65,14 @@ def deleteFile(uriPath, partial=False):
 
 def fileExists(paths, partial=False):
     try:
+        path_ = ''
+        print paths.startswith('/'), 'FILE Exists'
         if partial:
-            # path absolute
-            path = '%s%s'%(settings.MEDIA_ROOT, paths)
+            if not paths.startswith('/'):
+                paths = '/%s' % paths
+            path_ = '%s%s' % (settings.MEDIA_ROOT, paths)
         else:
-            path = paths
+            path_ = paths
         return os.path.lexists(path)
     except Exception, e:
         #print e

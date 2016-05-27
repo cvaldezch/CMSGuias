@@ -192,7 +192,7 @@ app.controller('programingCtrl', function($scope, $http, $cookies, $timeout) {
     });
   };
   $scope.getPrices = function() {
-    $http.get("", {
+    return $http.get("", {
       params: {
         'valPrices': true
       }
@@ -203,8 +203,20 @@ app.controller('programingCtrl', function($scope, $http, $cookies, $timeout) {
         console.log(response.list);
         $("#mwithoutprices").openModal();
         console.log("Se encontraron materielas sin precio");
+        swal({
+          title: "Se han encontrado materiales sin precios",
+          text: "",
+          type: "warning",
+          timer: 2600
+        });
+        return false;
       } else {
-        swal("Felicidades!", "No se han encontrado materiales sin precios.", "success");
+        swal({
+          title: "Felicidades!",
+          text: "No se han encontrado materiales sin precios.",
+          type: "success"
+        });
+        return true;
       }
     });
   };
@@ -228,49 +240,54 @@ app.controller('programingCtrl', function($scope, $http, $cookies, $timeout) {
     });
   };
   $scope.approvedAreas = function($event) {
-    swal({
-      title: "Aprobar Áreas?",
-      text: "desea aprobar realmente todas las áreas.",
-      type: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Si! aprobar",
-      confirmButtonColor: "#dd6b55",
-      closeOnConfirm: true,
-      closeOnCancel: true
-    }, function(isConfirm) {
-      var data;
-      if (isConfirm) {
-        $event.currentTarget.disabled = true;
-        $event.currentTarget.innerHTML = "<i class=\"fa fa-spinner fa-pulse\"></i> Procesando";
-        data = {
-          approvedAreas: true
-        };
-        $http({
-          url: '',
-          method: 'post',
-          data: $.param(data)
-        }).success(function(response) {
-          if (response.status) {
-            data = new Object;
-            data.forsb = "logistica@icrperusa.com, contabilidad@icrperusa.com";
-            data.issue = "Info. sectorización Aprodado " + (angular.element('#nproject').text());
-            data.body = "<p>Se ha aprobado la sectorización del Proyecto <strong>\"" + (angular.element('#nproject').text()) + "\"</strong> para el sector <strong>\"" + (angular.element('#nsector').text()) + "\".</strong><br></p><p>Fecha Registrada: " + (new Date()) + "</p><p>Para:&nbsp;<strong>" + (angular.element('#enterprice').val()) + "</strong></p><p><br data-mce-bogus=\"1\"></p>";
-            $.ajax({
-              url: "http://190.41.246.91:3000/mailer/",
-              type: "GET",
-              crossDomain: true,
-              data: $.param(data),
-              dataType: "jsonp",
-              success: function(response) {}
+    $scope.getPrices().success(function(response) {
+      console.log(response);
+      if (!response.status) {
+        return swal({
+          title: "Aprobar Áreas?",
+          text: "desea aprobar realmente todas las áreas.",
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Si! aprobar",
+          confirmButtonColor: "#dd6b55",
+          closeOnConfirm: true,
+          closeOnCancel: true
+        }, function(isConfirm) {
+          var data;
+          if (isConfirm) {
+            $event.currentTarget.disabled = true;
+            $event.currentTarget.innerHTML = "<i class=\"fa fa-spinner fa-pulse\"></i> Procesando";
+            data = {
+              approvedAreas: true
+            };
+            $http({
+              url: '',
+              method: 'post',
+              data: $.param(data)
+            }).success(function(response) {
+              if (response.status) {
+                data = new Object;
+                data.forsb = "logistica@icrperusa.com, contabilidad@icrperusa.com";
+                data.issue = "Info. sectorización Aprodado " + (angular.element('#nproject').text());
+                data.body = "<p>Se ha aprobado la sectorización del Proyecto <strong>\"" + (angular.element('#nproject').text()) + "\"</strong> para el sector <strong>\"" + (angular.element('#nsector').text()) + "\".</strong><br></p><p>Fecha Registrada: " + (new Date()) + "</p><p>Para:&nbsp;<strong>" + (angular.element('#enterprice').val()) + "</strong></p><p><br data-mce-bogus=\"1\"></p>";
+                $.ajax({
+                  url: "http://190.41.246.91:3000/mailer/",
+                  type: "GET",
+                  crossDomain: true,
+                  data: $.param(data),
+                  dataType: "jsonp",
+                  success: function(response) {}
+                });
+                Materialize.toast("Áreas aprobadas!", 2600);
+                console.log(response);
+                $timeout(function() {
+                  location.reload();
+                }, 2600);
+              } else {
+                $event.currentTarget.innerHTML = "<i class=\"fa fa-times\"></i> Error";
+                swal("Error!", "No se a aprobado las áreas.", "error");
+              }
             });
-            Materialize.toast("Áreas aprobadas!", 2600);
-            console.log(response);
-            $timeout(function() {
-              location.reload();
-            }, 2600);
-          } else {
-            $event.currentTarget.innerHTML = "<i class=\"fa fa-times\"></i> Error";
-            swal("Error!", "No se a aprobado las áreas.", "error");
           }
         });
       }

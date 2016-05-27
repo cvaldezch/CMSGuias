@@ -18,7 +18,27 @@ app = angular.module('dsApp', ['ngCookies']).config(function($httpProvider) {
   };
 });
 
-app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
+app.directive('file', function($parse) {
+  return {
+    restrict: 'A',
+    scope: {
+      file: '='
+    },
+    link: function(scope, element, attrs) {
+      var model, modelSetter;
+      model = $parse(attrs.file);
+      modelSetter = model.assign;
+      return element.bind('change', function(event) {
+        var file;
+        file = event.target.files[0];
+        scope.file = file ? file : void 0;
+        return scope.$apply();
+      });
+    }
+  };
+});
+
+app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout, $sce) {
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
   $scope.perarea = "";
@@ -32,6 +52,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
   $scope.qon = [];
   $scope.radioO = [];
   $scope.sdnip = [];
+  $scope.lplanes = [];
   angular.element(document).ready(function() {
     var $table;
     $('.modal-trigger').leanModal();
@@ -62,6 +83,8 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
     $scope.perarea = angular.element("#perarea")[0].value;
     $scope.percharge = angular.element("#percharge")[0].value;
     $scope.perdni = angular.element("#perdni")[0].value;
+    $scope.listPlanes();
+    angular.element('.materialboxed').materialbox();
   });
   $scope.getListAreaMaterials = function() {
     var data;
@@ -134,15 +157,14 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
           Materialize.toast("Material Agregado", 2600);
           if (Boolean($("#modify").length)) {
             $scope.modifyList();
-            return;
           } else {
             $scope.getListAreaMaterials();
             if ($scope.mat.hasOwnProperty("obrand")) {
               $scope.mat.obrand = null;
               $scope.mat.omodel = null;
             }
-            return;
           }
+          $scope.gui.smat = !$scope.gui.smat;
         } else {
           swal("Error", " No se guardado los datos", "error");
         }
@@ -1017,6 +1039,88 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout) {
               $event.target.className = "btn red grey-text text-darken-1";
               $event.target.innerHTML = "<i class=\"fa fa-timescircle\"></i> Error!";
             }
+          }
+        });
+      }
+    });
+  };
+  $scope.validUrl = function(file) {
+    var uri;
+    uri = "/media/" + file;
+    return uri;
+  };
+  $scope.listPlanes = function() {
+    $http.get('', {
+      params: {
+        'lplanes': true
+      }
+    }).success(function(response) {
+      console.log(response);
+      if (response.status) {
+        $scope.lplanes = response.lplane;
+      } else {
+        console.error("No se ha podido lista los planos " + response.raise);
+      }
+    });
+  };
+  $scope.uploadPlane = function() {
+    var data, form;
+    data = {
+      'uploadPlane': true,
+      'plane': $scope.file,
+      'note': $scope.note
+    };
+    form = new FormData;
+    angular.forEach(data, function(value, key) {
+      form.append(key, value);
+    });
+    $http.post("", form, {
+      transformRequest: angular.identity,
+      headers: {
+        'Content-Type': undefined
+      }
+    }).success(function(response, status, headers, config) {
+      if (response.status) {
+        angular.element("#mdplane").closeModal();
+        $scope.listPlanes();
+      } else {
+        swal("Alerta!", "No se a podido subir el archivo.", "error");
+      }
+    }).error(function(response, status, headers, config) {
+      console.log(response);
+    });
+  };
+  $scope.showFull = function(file) {
+    angular.element("#sPlane > div > iframe").attr("src", $scope.validUrl(file));
+    angular.element("#sPlane").openModal();
+  };
+  $scope.delPlane = function(plane) {
+    swal({
+      title: "Realmente desea eliminar el plano?",
+      text: "",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonText: 'Si!, Eliminar!',
+      confirmButtonColor: '#dd6b55',
+      cancelButtonText: 'No',
+      closeOnConfirm: true,
+      closeOnCancel: true
+    }, function(isConfirm) {
+      var data;
+      if (isConfirm) {
+        data = new FormData;
+        data.append('delplane', true);
+        data.append('plane', plane);
+        $http.post("", data, {
+          transformRequest: angular.identity,
+          headers: {
+            'Content-Type': void 0
+          }
+        }).success(function(response) {
+          if (response.status) {
+            $scope.listPlanes();
+          } else {
+            swal("Error", "No se a eliminado el plano seleccionado", "error");
           }
         });
       }

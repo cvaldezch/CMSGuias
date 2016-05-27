@@ -12,7 +12,19 @@ app = angular.module 'dsApp', ['ngCookies']
               return parseFloat value, 10
             return
 
-app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
+app.directive 'file', ($parse) ->
+  restrict: 'A'
+  scope:
+    file: '='
+  link: (scope, element, attrs) ->
+    model = $parse attrs.file
+    modelSetter = model.assign
+    element.bind 'change', (event) ->
+      file = event.target.files[0];
+      scope.file = if file then file else undefined
+      scope.$apply()
+
+app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout, $sce) ->
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
   $scope.perarea = ""
@@ -26,6 +38,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
   $scope.qon = []
   $scope.radioO = []
   $scope.sdnip = []
+  $scope.lplanes = []
   angular.element(document).ready ->
     $('.modal-trigger').leanModal()
     $table = $(".floatThead")
@@ -51,6 +64,8 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
     $scope.perarea = angular.element("#perarea")[0].value
     $scope.percharge = angular.element("#percharge")[0].value
     $scope.perdni = angular.element("#perdni")[0].value
+    $scope.listPlanes()
+    angular.element('.materialboxed').materialbox()
     # setTimeout ->
     #   console.log $scope.modify
     #   return
@@ -118,13 +133,12 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
           Materialize.toast "Material Agregado", 2600
           if Boolean $("#modify").length
             $scope.modifyList()
-            return
           else
             $scope.getListAreaMaterials()
             if $scope.mat.hasOwnProperty("obrand")
               $scope.mat.obrand = null
               $scope.mat.omodel = null
-            return
+          $scope.gui.smat = !$scope.gui.smat
           return
         else
           swal "Error", " No se guardado los datos", "error"
@@ -943,6 +957,81 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout) ->
               return
         return
     return
+
+  $scope.validUrl = (file) ->
+    uri = "/media/#{file}"
+    return uri
+
+  $scope.listPlanes = ->
+    $http.get '', params: 'lplanes': true
+    .success (response) ->
+      console.log response
+      if response.status
+        $scope.lplanes = response.lplane
+        return
+      else
+        console.error "No se ha podido lista los planos #{response.raise}"
+        return
+    return
+
+  $scope.uploadPlane = ->
+    data = 
+      'uploadPlane': true
+      'plane': $scope.file
+      'note': $scope.note
+      # 'csrfmiddlewaretoken': angular.element("[name=csrfmiddlewaretoken]").val()
+    form = new FormData
+    angular.forEach data, (value, key) ->
+      form.append key, value
+      return
+    $http.post "", form, transformRequest: angular.identity, headers: 'Content-Type': `undefined`
+    .success (response, status, headers, config) ->
+      if response.status
+        angular.element("#mdplane").closeModal()
+        $scope.listPlanes()
+        return
+      else
+        swal "Alerta!", "No se a podido subir el archivo.", "error"
+        return
+    .error (response, status, headers, config) ->
+      console.log response
+      return
+    return
+
+  $scope.showFull = (file) ->
+    angular.element("#sPlane > div > iframe").attr("src", $scope.validUrl(file))
+    # $scope.sfplane = $sce.trustAsResourceUrl($scope.validUrl(file))
+    angular.element("#sPlane").openModal()
+    # console.info $sce.($scope.validUrl(file))
+    return
+
+  $scope.delPlane = (plane) ->
+    swal
+      title: "Realmente desea eliminar el plano?"
+      text: ""
+      type: "warning"
+      showCancelButton: true
+      confirmButtonText: 'Si!, Eliminar!'
+      confirmButtonColor: '#dd6b55'
+      cancelButtonText: 'No'
+      closeOnConfirm: true
+      closeOnCancel: true
+      , (isConfirm) ->
+        if isConfirm
+          data = new FormData
+          data.append 'delplane', true
+          data.append 'plane', plane
+          $http.post "", data, transformRequest: angular.identity, headers: 'Content-Type': undefined
+          .success (response) ->
+            if response.status
+              $scope.listPlanes()
+              return
+            else
+              swal "Error", "No se a eliminado el plano seleccionado", "error"
+              return
+          return
+    return
+
   $scope.$watch 'ascsector', ->
     if $scope.ascsector
       $scope.fsl = true

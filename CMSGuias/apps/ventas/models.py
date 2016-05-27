@@ -43,7 +43,8 @@ class Proyecto(models.Model):
                     max_digits=9,
                     decimal_places=3,
                     blank=True,
-                    default=0)
+                    default=0,
+                    null=True)
     flag = models.BooleanField(default=True, null=False)
 
     audit_log = AuditLog()
@@ -182,27 +183,29 @@ class Sectore(models.Model):
 
 class SectorFiles(models.Model):
     def url(self, filename):
+        ext = filename.split('.')[-1]
+        date = datetime.datetime.today().strftime('%Y%m%d-%H%M%S')
         if self.dsector is None:
             if self.subproyecto is None:
-                ruta = 'storage/projects/%s/%s/%s/%s' % (
+                ruta = 'storage/projects/%s/%s/%s/%s.%s' % (
                         self.proyecto.registrado.strftime('%Y'),
                         self.proyecto_id,
                         self.sector_id,
-                        filename)
+                        date, ext)
             else:
-                ruta = 'storage/projects/%s/%s/%s/%s/%s' % (
+                ruta = 'storage/projects/%s/%s/%s/%s/%s.%s' % (
                         self.proyecto.registrado.strftime('%Y'),
                         self.proyecto_id,
                         self.subproyecto_id,
                         self.sector_id,
-                        filename)
+                        date, ext)
         else:
-            ruta = 'storage/projects/%s/%s/%s/%s/%s' % (
+            ruta = 'storage/projects/%s/%s/%s/%s/%s.%s' % (
                         self.proyecto.registrado.strftime('%Y'),
                         self.proyecto_id,
                         self.sector_id,
                         self.dsector_id,
-                        filename)
+                        date, ext)
         return ruta
 
     sector = models.ForeignKey(Sectore, to_field='sector_id')

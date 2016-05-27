@@ -58,6 +58,26 @@
             </div>
         </div>
     </div>
+    {% verbatim %}
+    <div class="card-panel">
+        <div class="card-content">
+            <h4><small>Detalle de Plano</small></h4>
+            <div class="row">
+                <div class="card col l3 m6 s12" ng-repeat="f in lplanes">
+                    <iframe ng-src="{{validUrl(f.fields.files)}}" type="application/pdf" style="width: 100%; height: 100%;"></iframe>
+                    <div class="card-action">
+                        <button type="button" class="waves-effect waves-teal btn red darken-1 grey-text text-lighten-5" ng-show="perarea == 'administrator' || perarea == 'ventas'" ng-click="delPlane(f.pk)">
+                            <i class="fa fa-trash fa-lg"></i>
+                        </button>
+                        <button type="button" class="btn light-green lighten-1 grey-text text-darken-3 right" ng-click="showFull(f.fields.files)">
+                            <i class="fa fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endverbatim %}
     {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
     <div class="card">
         <div class="card-content">
@@ -81,7 +101,7 @@
                     <i class="fa fa-plus"></i>
                     <span class="hide-on-med-and-down">Agregar</span>
                 </button>
-                <button class="btn waves waves-effect amber accent-2 grey-text text-darken-3" ng-show="perarea == 'administrator' || perarea == 'ventas' || perdni == '46377134'" ng-click="">
+                <button type="button" class="btn waves waves-effect amber accent-2 grey-text text-darken-3 modal-trigger" ng-show="perarea == 'administrator' || perarea == 'ventas' || perdni == '46377134'" data-target="mdplane">
                     <i class="fa fa-file-pdf-o"></i>
                     <span class="hide-on-med-and-down">Plano Detalle</span>
                 </button>
@@ -124,7 +144,7 @@
                     <i class="fa fa-trash"></i>
                     <span class="hide-on-med-and-down"> Eliminar Modificación</span>
                 </button>
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="approvedModify($event)" ng-disabled="(amsecp-((amstp-amnp)+ammp)) < 0" ng-show="perarea == 'administrator' || perarea == 'ventas'">
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="approvedModify($event)" ng-disabled="(amsecp-((amstp-amnp)+ammp)) < 0 && perarea != 'administrator'" ng-show="perarea == 'administrator' || perarea == 'ventas'">
                     <i class="fa fa-pencil"></i>
                     <i class="fa fa-check-square-o"></i>
                     <span class="hide-on-med-and-down"> Aprobar Modificación</span>
@@ -778,6 +798,43 @@
             </div>
         </div>
     </div>
+    <div class="modal" id="mdplane">
+        <div class="modal-content">
+            <div class="file-field input-field">
+                <div class="btn">
+                    <span>Seleccionar</span>
+                    <input type="file" file="file" accept="application/pdf">
+                </div>
+                <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text">
+                </div>
+            </div>
+            <div class="input-field">
+                <textarea id="textarea1" class="materialize-textarea" ng-model="note"></textarea>
+                <label for="textarea1">Nota</label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="buttom" class="btn waves waves-effect light-blue accent-4 grey-text text-lighten-5" ng-click="uploadPlane()">
+                <i class="fa fa-upload"></i>
+                Cargar Plano
+            </button>
+            <button type="buttom" class="modal-action modal-close btn waves waves-effect grey lighten-5 grey-text text-darken-3">
+                <i class="fa fa-times"></i>
+                Cancelar
+            </button>
+        </div>
+    </div>
+    {% verbatim %}
+    <div id="sPlane" class="modal bottom-sheet" style="min-height: 100%;">
+        <button type="button" class="modal-action modal-close waves-effect waves-orange btn btn-flat right">
+            <i class="fa fa-times"></i>
+        </button>
+        <div class="modal-content">
+            <iframe id"sfplane" type="application/pdf" style="height: 96%; width: 97%; position: absolute;" src=""></iframe>
+        </div>
+    </div>
+    {% endverbatim %}
 </div>
 {% csrf_token %}
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>

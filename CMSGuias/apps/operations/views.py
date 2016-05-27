@@ -23,7 +23,7 @@ from CMSGuias.apps.home.models import *
 from .models import *
 from .forms import *
 from CMSGuias.apps.almacen.models import *
-from CMSGuias.apps.ventas.models import Metradoventa
+from CMSGuias.apps.ventas.models import Metradoventa, SectorFiles
 from CMSGuias.apps.tools import genkeys, uploadFiles
 
 
@@ -325,24 +325,32 @@ class ProgramingProject(JSONResponseMixin, View):
                     context['status'] = True
                 if 'approvedAreas' in request.POST:
                     # print kwargs['pro'], kwargs['sec']
-                    SGroup.objects.filter(
-                        project_id=kwargs['pro'],
-                        sector_id=kwargs['sec']).update(
-                            status='AC')
-                    DSector.objects.filter(
-                        project_id=kwargs['pro'],
-                        sector_id=kwargs['sec']).update(
-                            status='AC')
+                    sg = SGroup.objects.filter(
+                            project_id=kwargs['pro'],
+                            sector_id=kwargs['sec'])
+                    for x in sg:
+                        x.status = 'AC'
+                        x.save()
+                    ds = DSector.objects.filter(
+                            project_id=kwargs['pro'],
+                            sector_id=kwargs['sec'])
+                    for x in ds:
+                        x.status = 'AC'
+                        x.save()
                     context['status'] = True
                 if 'DiscapprovedAreas' in request.POST:
-                    SGroup.objects.filter(
-                        project_id=kwargs['pro'],
-                        sector_id=kwargs['sec']).update(
-                            status='PE')
-                    DSector.objects.filter(
-                        project_id=kwargs['pro'],
-                        sector_id=kwargs['sec']).update(
-                            status='PE')
+                    sg = SGroup.objects.filter(
+                            project_id=kwargs['pro'],
+                            sector_id=kwargs['sec'])
+                    for x in sg:
+                        x.status = 'PE'
+                        x.save()
+                    ds = DSector.objects.filter(
+                            project_id=kwargs['pro'],
+                            sector_id=kwargs['sec'])
+                    for x in ds:
+                        x.status = 'PE'
+                        x.save()
                     context['status'] = True
                 if 'uploadFile' in request.POST:
                     path = '/storage/Temp/'
@@ -519,6 +527,11 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
         context = dict()
         if request.is_ajax():
             try:
+                if 'lplanes' in request.GET:
+                    context['lplane'] = json.loads(serializers.serialize(
+                        'json',
+                        SectorFiles.objects.filter(dsector_id=kwargs['area'])))
+                    context['status'] = True
                 if 'dslist' in request.GET:
                     context['list'] = json.loads(serializers.serialize(
                         'json',
@@ -1013,6 +1026,22 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                             nip.save()
                     context['orders'] = gkey
                     context['status'] = True
+                if 'uploadPlane' in request.POST:
+                    sf = SectorFiles()
+                    sf.dsector_id = kwargs['area']
+                    sf.sector_id = kwargs['sec']
+                    sf.proyecto_id = kwargs['pro']
+                    sf.files = request.FILES['plane']
+                    sf.note = request.POST['note']
+                    sf.flag = True
+                    sf.save()
+                    context['status'] = True
+                if 'delplane' in request.POST:
+                    sf = SectorFiles.objects.filter(pk=request.POST['plane'])
+                    for x in sf:
+                        uploadFiles.deleteFile(str(x.files), partial=True)
+                        x.delete()
+                    context['status'] = True
             except ObjectDoesNotExist as e:
                 context['raise'] = str(e)
                 context['status'] = False
@@ -1134,49 +1163,33 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                         project_id=kwargs['pro'], sector_id=kwargs['sec'])
                 operations = DSMetrado.objects.filter(
                     dsector_id__in=[x.dsector_id for x in ds]).order_by('materials__matnom')
+                operations = operations
                 lst = list()
                 for o in operations:
-                #     lst.append({
-                #         'materials': s.materiales_id,
-                #         'name': '%s %s' % (
-                #             s.materiales.matnom, s.materiales.matmed),
-                #         'brand_id': s.brand_id,
-                #         'brand': s.brand.brand,
-                #         'model_id': s.model_id,
-                #         'model': s.model.model,
-                #         'unit': s.materiales.unidad.uninom,
-                #         'sales': s.cantidad,
-                #         # 'purchase': s.precio,
-                #         'operations': '-'})
-                # for o in operations:
-                #     c = 0
-                #     for x in lst:
-                #         mat = (x['materials'] == o.materials_id)
-                #         brand = (x['brand_id'] == o.brand_id)
-                #         model = (x['model_id'] == o.model_id)
-                #         if x['materials'] == o.materials_id:
-                #             if x['operations'] == '-':
-                #                 x['operations'] = 0
-                #             #x['purchase'] = o.ppurchase
-                #             #x['psales'] = o.psales
-                #             x['operations'] = (x['operations'] + o.quantity)
-                #             # x['amount'] = (x['operations'] * float(x['purchase']))
-                #             break
-                #         else:
-                #             c += 1
-                # if len(lst) == c:
-                    lst.append({
-                        'materials': o.materials_id,
-                        'name': '%s %s' % (
-                            o.materials.matnom, o.materials.matmed),
-                        'brand_id': o.brand_id,
-                        'brand': o.brand.brand,
-                        'model_id': o.model_id,
-                        'model': o.model.model,
-                        'unit': o.materials.unidad.uninom,
-                        #'sales': '-',
-                        #'purchase': float(o.ppurchase),
-                        'operations': o.quantity,})
+                    c = 0
+                    for x in lst:
+                        mat = (x['materials'] == o.materials_id)
+                        brand = (x['brand_id'] == o.brand_id)
+                        model = (x['model_id'] == o.model_id)
+                        if mat and brand and model:
+                            x['operations'] = (x['operations'] + o.quantity)
+                            # x['amount'] = (x['operations'] * float(x['purchase']))
+                            break
+                        else:
+                            c += 1
+                    if len(lst) == c:
+                        lst.append({
+                            'materials': o.materials_id,
+                            'name': '%s %s' % (
+                                o.materials.matnom, o.materials.matmed),
+                            'brand_id': o.brand_id,
+                            'brand': o.brand.brand,
+                            'model_id': o.model_id,
+                            'model': o.model.model,
+                            'unit': o.materials.unidad.uninom,
+                            #'sales': '-',
+                            #'purchase': float(o.ppurchase),
+                            'operations': o.quantity,})
                             # 'amount': (o.quantity*float(o.ppurchase))})
                 columns = [
                     ('Código', 16),

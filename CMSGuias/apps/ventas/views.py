@@ -2485,6 +2485,8 @@ class ListOrdersByProject(JSONResponseMixin, TemplateView):
                     'register': o.registrado,
                     'transfer': o.traslado,
                     'perform': o.empdni.name_complete,
+                    'dsector': o.dsector.name if o.dsector else '',
+                    'sgroup': o.dsector.sgroup.name if o.dsector else '',
                     'status': o.status,
                     'details': [{
                         'materials': x.materiales_id,
@@ -2505,6 +2507,7 @@ class ListOrdersByProject(JSONResponseMixin, TemplateView):
                         for x in Detpedido.objects.filter(
                             pedido_id=o.pedido_id)]}
                     for o in orders]
+                print context['orders']
                 context['pro'] = Proyecto.objects.get(pk=kwargs['pro'])
                 context['dates'] = [
                     orders[0].registrado,
