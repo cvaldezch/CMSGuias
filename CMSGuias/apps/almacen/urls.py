@@ -110,4 +110,6 @@ urlpatterns = patterns(
         GuideSingle.as_view(), name='view_guide_single'),
     url(r'^brand/(?P<mid>\w{15})/$',
         MaterialBrand.as_view(), name='storebrand'),
+    url(r'^guide/edit/(?P<guide>.*)/$',
+        EditBedsideGuide.as_view(), name='view_guide_edit'),
 )

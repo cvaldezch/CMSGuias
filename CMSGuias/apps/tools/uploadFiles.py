@@ -73,9 +73,9 @@ def fileExists(paths, partial=False):
             path_ = '%s%s' % (settings.MEDIA_ROOT, paths)
         else:
             path_ = paths
-        return os.path.lexists(path)
+        return os.path.lexists(path_)
     except Exception, e:
-        #print e
+        print e
         return False
 
 def descompressRAR(filename, path_to_extract):

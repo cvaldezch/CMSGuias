@@ -3,5 +3,41 @@
     {% include "menus/storagemd.htm" %}
 {% endblock menu %}
 {% block content %}
-    
+<section>
+    <header>
+        <h4>Editar Guia Remision</h4>
+    </header>
+    <div class="card">
+        <div class="card-action">
+            <a href="{% url 'vista_lista_guide_success' %}" class="btn waves-effect waves-default grey lighten-5 grey-text text-darken-3">
+                <i class="fa fa-arrow-left"></i>
+                <span class="hide-on-small-only">Regresar</span>
+            </a>
+            <button type="button" class="btn waves-effect waves-blue blue accent-3 grey-text text-lighten-5">
+                <i class="fa fa-floppy-o"></i>
+                <span class="hide-on-small-only">Guardar Cambios</span>
+            </button>
+        </div>
+    </div>
+    <article class="yellow lighten-3">
+        <div class="row">
+            <div class="input-field col l2 ">
+                <input type="text" value="{{ guide.guia_id }}" disabled="disabled">
+                <label>Nro de Guia</label>
+            </div>
+            <div class="input-field col l2">
+                <input type="text" value="{{ guide.pedido_id }}" disabled="disabled">
+                <label for="">Pedido</label>
+            </div>
+            <div class="input-field col l2">
+                <input type="text" value="{{ guide.ruccliente_id }}" disabled="disabled">
+                <label for="">RUC</label>
+            </div>
+            <div class="input-field col l4">
+                <input type="text" value="{{ guide.ruccliente.razonsocial }}" disabled="disabled">
+                <label for="">Cliente</label>
+            </div>
+        </div>
+    </article>
+</section>
 {% endblock content %}

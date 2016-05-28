@@ -76,9 +76,9 @@
                                         </button>
                                     </td>
                                     <td class="text-center">
-                                        <button type="button" class="btn btn-link btn-sm text-black" value="{{x.guia_id}}">
+                                        <a class="btn btn-link btn-sm text-black" href="{% url 'view_guide_edit' x.guia_id %}">
                                             <i class="fa fa-pencil"></i>
-                                        </button>
+                                        </a>
                                     </td>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-link btn-sm text-black" value="{{x.guia_id}}" onclick="show_annular(this);"><span class="glyphicon glyphicon-fire"></span>

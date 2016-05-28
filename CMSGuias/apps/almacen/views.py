@@ -1960,7 +1960,7 @@ class ListDetOrders(JSONResponseMixin, TemplateView):
             except ObjectDoesNotExist, e:
                 data['raise'] = e.__str__()
                 data['status'] = False
-#            data = simplejson.dumps(data)
+            # data = simplejson.dumps(data)
             return self.render_to_json_response(data)
 
 
@@ -2537,5 +2537,17 @@ class MaterialBrand(JSONResponseMixin, TemplateView):
                                 materials_id=kwargs['mid'],
                                 period=globalVariable.get_year)
             return render(request, 'almacen/materialbrand.html', context)
+        except TemplateDoesNotExist, e:
+            raise Http404(e)
+
+class EditBedsideGuide(JSONResponseMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        try:
+            context = dict()
+            if request.is_ajax():   
+                return self.render_to_json_response(context)
+            context['guide'] = GuiaRemision.objects.get(guia_id=kwargs['guide'])
+            return render(request, 'almacen/guideedit.html', context)
         except TemplateDoesNotExist, e:
             raise Http404(e)

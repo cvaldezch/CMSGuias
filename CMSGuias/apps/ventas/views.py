@@ -2496,6 +2496,7 @@ class ListOrdersByProject(JSONResponseMixin, TemplateView):
                         'brand': x.brand.brand,
                         'model': x.model.model,
                         'quantity': x.cantidad,
+                        'qpending': x.cantshop,
                         'nipple': [{
                             'type': [globalVariable.tipo_nipples[k] for k in globalVariable.tipo_nipples if n.tipo == k],
                             'meter': n.metrado,

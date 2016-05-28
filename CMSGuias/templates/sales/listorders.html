@@ -55,7 +55,7 @@
                             </tr>
                             {% if d.status != 'AN' %}
                                 <tr>
-                                    <td colspan="6">
+                                    <td colspan="7">
                                         <table class="table table-hover">
                                             <thead>
                                                 <tr>
@@ -65,6 +65,7 @@
                                                     <th>Marca</th>
                                                     <th>Modelo</th>
                                                     <th>Cantidad</th>
+                                                    <th>Pendiente</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -86,6 +87,7 @@
                                                         <td>{{ x.brand }}</td>
                                                         <td>{{ x.model }}</td>
                                                         <td>{{ x.quantity|safe }}</td>
+                                                        <td>{{ x.qpending|safe }}</td>
                                                     </tr>
                                                 {% endfor %}
                                             </tbody>
