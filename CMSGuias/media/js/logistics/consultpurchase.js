@@ -89,10 +89,18 @@ app.controller('cPurchase', function($scope, $timeout, fPuchase) {
   };
   $scope.getHistotyMat = function(mat) {
     var prm;
-    prm = {
-      'materiales': mat,
-      'getMaterialHist': true
-    };
+    if (mat == null) {
+      mat = '';
+    }
+    prm = {};
+    if (mat === '') {
+      mat = $scope.hmat;
+      prm['year'] = $scope.sbyear;
+    } else {
+      $scope.hmat = mat;
+    }
+    prm['materiales'] = mat;
+    prm['getMaterialHist'] = true;
     fPuchase.filterHist(prm).success(function(response) {
       if (response.status) {
         $scope.resumen = response.resumen;

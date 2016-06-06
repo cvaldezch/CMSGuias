@@ -115,7 +115,7 @@
 				<h5>Total Items {{resumen.length}}</h5>
 			</div>
 			<div class="card-action">
-				<select class="browser-default" ng-model="sbyear">
+				<select class="browser-default" ng-model="sbyear" ng-change="getHistotyMat()">
 					<option value="{{x}}" ng-repeat="x in syears">{{x}}</option>
 				</select>
 			</div>
@@ -126,6 +126,7 @@
 					<th></th>
 					<th>Compra</th>
 					<th>Registrado</th>
+					<th>Código</th>
 					<th>Descripción</th>
 					<th>Unidad</th>
 					<th>Marca</th>

@@ -62,10 +62,16 @@ app.controller 'cPurchase', ($scope, $timeout, fPuchase) ->
 					return
 		return
 
-	$scope.getHistotyMat = (mat) ->
-		prm =
-			'materiales': mat
-			'getMaterialHist': true
+	$scope.getHistotyMat = (mat = '') ->
+		prm = {}
+		if mat is ''
+			mat = $scope.hmat
+			prm['year'] = $scope.sbyear
+		else
+			$scope.hmat = mat
+
+		prm['materiales'] = mat
+		prm['getMaterialHist'] = true
 		fPuchase.filterHist(prm)
 		.success (response) ->
 			if response.status
