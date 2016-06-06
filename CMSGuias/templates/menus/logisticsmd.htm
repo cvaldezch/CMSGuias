@@ -13,8 +13,12 @@
     <li class="divider"></li>
     <li><a class="black-text" href="{% url 'view_quote_single' %}"> Cotizacion</a></li>
     <li class="divider"></li>
-    <li><a class="black-text" href="{% url 'view_purchase_single' %}"> Compra</a></li>
+  </ul>
+  <ul id="lstpurchase" class="dropdown-content">
+    <li><a class="black-text" href="{% url 'view_purchase_single' %}"> Compra Simple</a></li>
     <li><a class="black-text" href="{% url 'view_purchase_list' %}"> Lista Compras</a></li>
+    <li class="divider"></li>
+    <li><a href="{% url 'consult_purchase_view' %}"> Detalle de Compras</a></li>
     <div class="divider"></div>
     <li><a href="{% url 'materials_price_views' %}" class="black-text"> Precios</a></li>
   </ul>
@@ -42,6 +46,7 @@
           <a class="dropdown-button" href="#!" data-hover="true" data-activates="lst-sum" data-gutter="0"> Suministros</a>
         </li>
         <li><a class="dropdown-button" href="#!" data-hover="true" data-activates="lst-quote" data-gutter="0"> Cotización</a></li>
+        <li><a class="dropdown-button" href="#!" data-hover="true" data-activates="lstpurchase" data-gutter="0"> Compras</a></li>
         <li><a href="{% url 'view_projects' %}"> Proyectos</a></li>
         <li><a href="{% url 'orders_service' %}">Servicio</a></li>
         <li><a class="dropdown-button" href="#!" data-hover="true" data-activates="lst-mant" data-gutter="0"> Mantenimientos</a></li>

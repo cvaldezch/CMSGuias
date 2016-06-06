@@ -2545,9 +2545,35 @@ class EditBedsideGuide(JSONResponseMixin, View):
     def get(self, request, *args, **kwargs):
         try:
             context = dict()
-            if request.is_ajax():   
+            if request.is_ajax():
+                if 'details' in request.GET:
+                    context['list'] = json.loads(serializers.serialize(
+                        'json',
+                        DetGuiaRemision.objects.filter(guia_id=kwargs['guide']),
+                        relations=('materiales',)))
+                    context['status'] = True
                 return self.render_to_json_response(context)
             context['guide'] = GuiaRemision.objects.get(guia_id=kwargs['guide'])
             return render(request, 'almacen/guideedit.html', context)
         except TemplateDoesNotExist, e:
             raise Http404(e)
+
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            context = dict()
+            try:
+                if 'saveGuide' in request.POST:
+                    o = GuiaRemision.objects.get(guia_id=kwargs['guide'])
+                    o.traslado = request.POST['traslado']
+                    o.puntollegada = request.POST['puntollegada']
+                    o.traruc_id = request.POST['traruc_id']
+                    o.condni_id = request.POST['condni_id']
+                    o.nropla_id = request.POST['nropla_id']
+                    o.comment = request.POST['comment']
+                    o.nota = request.POST['nota']
+                    o.save()
+                    context['status'] = True
+            except ObjectDoesNotExist, e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)

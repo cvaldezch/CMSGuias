@@ -29,11 +29,21 @@
             <li><a href="{% url 'view_quote_list' %}">Cotización and Keys</a></li>
             <li class="dropdown-header">Generar Cotizacion</li>
             <li><a href="{% url 'view_quote_single' %}">Cotización Materiales</a></li>
-            <li class="dropdown-header">Order de Compra</li>
+            <!-- <li class="dropdown-header">Order de Compra</li>
             <li><a href="{% url 'view_purchase_single' %}">Compra Materiales</a></li>
-            <li><a href="{% url 'view_purchase_list' %}">Ordenes de Compra</a></li>
+            <li><a href="{% url 'view_purchase_list' %}">Ordenes de Compra</a></li> -->
             <li class="divider"></li>
             <li><a href="{% url 'materials_price_views' %}">Precios</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Compras <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-header">COMPRAS</li>
+            <li><a href="{% url 'view_purchase_single' %}">Compra Simple</a></li>
+            <li><a href="{% url 'view_purchase_list' %}">Lista de Compras</a></li>
+            <li class="divider"></li>
+            <li><a href="{% url 'consult_purchase_view' %}">Detalle de Compras</a></li>
           </ul>
         </li>
         <li class="dropdown">

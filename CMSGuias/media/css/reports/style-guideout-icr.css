@@ -1,5 +1,6 @@
 @page {
-  size: legal portrait;
+  width: legal;
+  height: portrait;
   margin: 1cm;
   @frame header_frame {
     -pdf-frame-content: nro;

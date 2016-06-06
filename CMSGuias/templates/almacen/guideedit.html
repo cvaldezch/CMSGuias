@@ -3,7 +3,7 @@
     {% include "menus/storagemd.htm" %}
 {% endblock menu %}
 {% block content %}
-<section>
+<section ng-App="guideApp" ng-controller="cGuide">
     <header>
         <h4>Editar Guia Remision</h4>
     </header>
@@ -13,31 +13,104 @@
                 <i class="fa fa-arrow-left"></i>
                 <span class="hide-on-small-only">Regresar</span>
             </a>
-            <button type="button" class="btn waves-effect waves-blue blue accent-3 grey-text text-lighten-5">
+            <button type="button" class="btn waves-effect waves-blue blue accent-3 grey-text text-lighten-5 right" ng-click="saveGuide()" ng-model="guide['guia_id']" ng-init="guide['guia_id']='{{guide.guia_id}}'">
                 <i class="fa fa-floppy-o"></i>
                 <span class="hide-on-small-only">Guardar Cambios</span>
             </button>
         </div>
     </div>
-    <article class="yellow lighten-3">
+    <article class="lime lighten-3">
         <div class="row">
-            <div class="input-field col l2 ">
-                <input type="text" value="{{ guide.guia_id }}" disabled="disabled">
-                <label>Nro de Guia</label>
+            <div class="input-field col l2 m2 s12">
+                <input type="text" class="grey-text text-darken-3" value="{{ guide.guia_id }}" disabled="disabled">
+                <label class="grey-text text-darken-3">Nro de Guia</label>
             </div>
-            <div class="input-field col l2">
-                <input type="text" value="{{ guide.pedido_id }}" disabled="disabled">
-                <label for="">Pedido</label>
+            <div class="input-field col l2 m2 s12">
+                <input type="text" class="grey-text text-darken-3" value="{{ guide.pedido_id }}" disabled="disabled">
+                <label class="grey-text text-darken-3" for="">Pedido</label>
             </div>
-            <div class="input-field col l2">
-                <input type="text" value="{{ guide.ruccliente_id }}" disabled="disabled">
-                <label for="">RUC</label>
+            <div class="input-field col l2 m2 s12">
+                <input type="text" class="grey-text text-darken-3" value="{{ guide.ruccliente_id }}" disabled="disabled">
+                <label class="grey-text text-darken-3" for="">RUC</label>
             </div>
-            <div class="input-field col l4">
-                <input type="text" value="{{ guide.ruccliente.razonsocial }}" disabled="disabled">
-                <label for="">Cliente</label>
+            <div class="input-field col l6 m6 s12">
+                <input type="text" class="grey-text text-darken-3" value="{{ guide.ruccliente.razonsocial }}" disabled="disabled">
+                <label class="grey-text text-darken-3" for="">Razón Social</label>
+            </div>
+            <div class="input-field col l10 m10 s12">
+                <input type="text" ng-model="guide['puntollegada']" ng-init="guide['puntollegada']='{{ guide.puntollegada }}'">
+                <label for="">Punto de Llegada</label>
+            </div>
+            <div class="input-field col l2 m2 s12">
+                <input type="text" class="datepicker" ng-model="guide['traslado']" ng-init="guide['traslado']='{{ guide.traslado | date:'Y-m-d' }}'">
+                <label for="">Fecha de Traslado</label>
+            </div>
+            <div class="col l4 m4 s12">
+                <input type="hidden" ng-model="carrier" ng-init="carrier='{{ guide.traruc_id }}'">
+                <label>Transportista</label>
+                {% verbatim %}
+                <select class="browser-default" ng-model="guide['traruc_id']" ng-init="guide['traruc_id']=carrier" ng-change="getdriversandtransport()">
+                    <option value="{{x.pk}}" ng-repeat="x in carriers">{{x.fields.tranom}}</option>
+                </select>
+                {% endverbatim %}
+            </div>
+            <div class="col l4 m4 s12">
+                <input type="hidden" ng-model="driver" ng-init="driver='{{ guide.condni_id }}'">
+                <label>Conductor</label>
+                {% verbatim %}
+                    <select class="browser-default" ng-model="guide['condni_id']" ng-init="guide['condni_id']=driver">
+                        <option value="{{ x.condni_id }}" ng-repeat="x in drivers">{{x.connom}}</option>
+                    </select>
+                {% endverbatim %}
+            </div>
+            <div class="col l4 m4 s12">
+                <input type="hidden" ng-model="transport" ng-init="transport='{{ guide.nropla_id }}'">
+                <label>Transporte</label>
+                {% verbatim %}
+                    <select class="browser-default" ng-model="guide['nropla_id']" ng-init="guide['nropla_id']=transport">
+                        <option value="{{x.nropla_id}}" ng-repeat="x in transports" >{{x.nropla_id}} {{x.marca}}</option>
+                    </select>
+                {% endverbatim %}
+            </div>
+            <div class="input-field col l6 m6 s12">
+                <textarea id="nota" class="materialize-textarea" ng-model="guide['nota']" ng-init="guide['nota']='{{guide.nota}}'"></textarea>
+                <label for="nota">Nota</label>
+            </div>
+            <div class="input-field col l6 m6 s12">
+                <textarea id="comment" class="materialize-textarea" ng-model="guide['comment']" ng-init="guide['comment']='{{ guide.comment }}'"></textarea>
+                <label for="comment">Observación</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col l12 m12 s12">
+                <table class="bordered highlight reponsive-table">
+                    <thead>
+                        <tr class="lime">
+                            <th class="center-align"></th>
+                            <th class="center-align">Código</th>
+                            <th class="center-align">Cantidad</th>
+                            <th class="center-align">Unidad</th>
+                            <th>Descripcion</th>
+                        </tr>
+                    </thead>
+                    <tbody class="lime lighten-4">
+                        {% verbatim %}
+                            <tr ng-repeat="x in details">
+                                <td>{{$index + 1}}</td>
+                                <td class="center-align">{{x.fields.materiales.pk}}</td>
+                                <td class="center-align">{{x.fields.cantguide}}</td>
+                                <td class="center-align">{{x.fields.materiales.fields.unidad}}</td>
+                                <td>{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}</td>
+                            </tr>
+                        {% endverbatim %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </article>
+    {% csrf_token %}
 </section>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script src="{{ MEDIA_URL }}js/almacen/guideedit.js"></script>
 {% endblock content %}

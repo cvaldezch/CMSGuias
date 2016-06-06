@@ -707,6 +707,24 @@ def post_cancel_orders(request):
             data['msg']= e.__str__()
         return HttpResponse(simplejson.dumps(data), mimetype='application/json')
 
+# get list carrier XHR XMLHttpRequest
+def get_list_carrier(request):
+    if request.is_ajax():
+        context = dict()
+        try:
+            context['carrier'] = serializers.serialize(
+                                    'json',
+                                    Transportista.objects.filter(flag=True))
+            context['carrier'] = json.loads(context['carrier'])
+            context['status'] = True
+        except ObjectDoesNotExist, e:
+            context['raise'] = str(e)
+            context['status'] = False
+        return HttpResponse(json.dumps(context), mimetype='application/json')
+    else:
+        raise Http404('Url not accept request GET')
+
+
 # recover list transport
 def get_recover_list_transport(request,truc):
     if request.method == 'GET':

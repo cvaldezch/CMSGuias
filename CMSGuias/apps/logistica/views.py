@@ -4,7 +4,7 @@ import json
 import hashlib
 
 from django.db.models import Q, Count, Sum
-# from django.core import serializers
+from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.urlresolvers import reverse_lazy
@@ -24,7 +24,7 @@ from CMSGuias.apps.home.models import (
                                         Proveedor, Documentos, FormaPago,
                                         Almacene, Moneda, Configuracion,
                                         LoginProveedor, Brand, Model,
-                                        Employee, Unidade)
+                                        Employee, Unidade, Materiale)
 from .models import (
                         Compra, Cotizacion, CotCliente, CotKeys, DetCotizacion,
                         DetCompra, tmpcotizacion, tmpcompra, ServiceOrder,
@@ -1768,3 +1768,60 @@ class PriceMaterialsViews(JSONResponseMixin, TemplateView):
                 return render(request, 'logistics/searchprices.html', context)
             except TemplateDoesNotExist as e:
                 raise Http404(e)
+
+class ConsultPurchase(JSONResponseMixin, TemplateView):
+
+    def get(self, request, *args, **kwargs):
+        try:
+            context = dict()
+            if request.is_ajax():
+                try:
+                    if 'byPurchase' in request.GET:
+                        context['details'] = json.loads(serializers.serialize(
+                            'json',
+                            DetCompra.objects.filter(compra_id=request.GET['compra']),
+                            relations=(
+                                'compra',
+                                'materiales',
+                                'brand',
+                                'model',)))
+                        context['bedside'] = json.loads(serializers.serialize(
+                            'json',
+                            Compra.objects.filter(compra_id=request.GET['compra']),
+                            relations=('proveedor','moneda','documento', 'pagos')))
+                        context['status'] = True
+                    if 'byMaterials' in request.GET:
+                        d = DetCompra.objects.filter(
+                                    materiales__matnom__icontains=request.GET['materials']).values('materiales_id')
+                        # print d.count()
+                        d = d.order_by('materiales__materiales_id').distinct('materiales__materiales_id')
+                        # print d
+                        # print d.count()
+                        m = Materiale.objects.filter(materiales_id__in=[x['materiales_id'] for x in d])
+                        context['result'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                m))
+                        context['status'] = True
+                    if 'getMaterialHist' in request.GET:
+                        if 'year' in request.GET:
+                            dc = DetCompra.objects.filter(
+                                    materiales_id=request.GET['materiales'],
+                                    compra__registrado__year=request.GET['year'])
+                        else:
+                            dc = DetCompra.objects.filter(
+                                materiales_id=request.GET['materiales']).order_by('-compra__registrado')
+                            context['years'] = list(set([x.compra.registrado.strftime('%Y') for x in dc]))
+                            dc = dc.filter(compra__registrado__year=dc[0].compra.registrado.strftime('%Y'))
+                        context['resumen'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                dc, relations=('materiales', 'compra','brand','model',)))
+                        context['status'] = True
+                except ObjectDoesNotExist, e:
+                    context['raise'] = str(e)
+                    context['status'] = False
+                return self.render_to_json_response(context)
+            return render(request, 'logistics/consultpurchase.html', context)
+        except TemplateDoesNotExist, e:
+            raise Http404(e)

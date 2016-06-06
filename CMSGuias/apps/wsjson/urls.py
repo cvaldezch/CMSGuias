@@ -49,6 +49,7 @@ urlpatterns = patterns(
     url(r'^get/sectors/list/$', 'get_list_sectors'),
     url(r'^get/subprojects/list/$', 'get_list_subprojects'),
     url(r'^get/stores/list/$', 'get_list_stores'),
+    url(r'^get/carries/$', 'get_list_carrier'),
     url(r'^get/list/transport/(?P<truc>.*)/$', 'get_recover_list_transport'),
     url(r'^get/list/conductor/(?P<truc>.*)/$', 'get_recover_list_conductor'),
     url(r'^supplier/get/list/all/$', getSupplierList.as_view()),

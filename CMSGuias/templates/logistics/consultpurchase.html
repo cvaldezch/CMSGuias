@@ -1,0 +1,195 @@
+{% extends "basemd.html" %}
+{% block menu %}
+    {% include "menus/logisticsmd.htm" %}
+{% endblock menu %}
+{% block content %}
+<section ng-App="cpurApp" ng-controller="cPurchase">
+	<header>
+		<h4>Compras</h4>
+	</header>
+	<nav class="card">
+		<ul class="card-action">
+			<li class="btn waves-effect waves-default blue light" ng-model="fm" ng-click="fm=!fm" ng-class="{'grey lighten-1':fm}">
+				<i class="fa fa-filter"></i>
+				<span class="hide-on-small-only">Filtar Materiales</span>
+			</li>
+			<li class="btn waves-effect waves-default blue light" ng-model="fop" ng-click="fop=!fop" ng-class="{'grey lighten-1': fop}">
+				<i class="fa fa-filter"></i>
+				<span class="hide-on-small-only">Filtar Compra</span>
+			</li>
+		</ul>
+	</nav>
+	{% verbatim %}
+	<section class="card">
+		<article class="card-content">
+			<div class="input-field" ng-show="fop">
+				<i class="fa fa-search prefix"></i>
+				<input type="text" ng-model="filpur" ng-change="filterNroPurchase()" maxlength="10">
+				<label for="">BUSCAR ORDEN DE COMPRA</label>
+			</div>
+			<div class="input-field" ng-show="fm">
+				<i class="fa fa-search prefix"></i>
+				<input type="text" ng-model="filmat" ng-keyup="filterMaterialsByYear($event)">
+				<label for="">BUSCAR MATERIALES</label>
+			</div>
+		</article>
+	</section>
+	{% endverbatim %}
+	<article>
+		{% verbatim %}
+		<article class"card" ng-show="fop">
+			<div class="card-content">
+				<h5>Lista por Orden de Compra</h5>
+				<h5>Items {{purchase.length}}</h5>
+				<div class="row">
+					<div class="col l4 m4 s12">
+						<dl>
+							<dt>Nro Orden de Compra</dt>
+							<dd><a href="/reports/order/purchase/{{purbedside.pk}}/" target="_blank">{{purbedside.pk}}</a></dd>
+							<dt>Provedor</dt>
+							<dd>{{purbedside.fields.proveedor.pk}} {{purbedside.fields.proveedor.fields.razonsocial}}</dd>
+						</dl>
+					</div>
+					<div class="col l4 m4 s12">
+						<dl>
+							<dt>Moneda</dt>
+							<dd>{{purbedside.fields.moneda.fields.moneda}}</dd>
+							<dt>Registrado</dt>
+							<dd>{{purbedside.fields.registrado| date:"yyyy-MM-dd hh:mm:ss"}}</dd>
+						</dl>
+					</div>
+					<div class="col l4 m4 s12">
+						<dl>
+							<dt>Documento</dt>
+							<dd>{{purbedside.fields.documento.fields.documento}}</dd>
+							<dt>Forma de Pago</dt>
+							<dd>{{purbedside.fields.pagos.fields.pagos}}</dd>
+						</dl>
+					</div>
+					<div class="col l12 m12 s12">
+						<div class="input-field">
+							<i class="fa fa-filter prefix"></i>
+							<input type="text" ng-model="fpm">
+							<label>Filtrar materiales</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</article>
+		<table class="highlight hovered responsive-table bordered" ng-show="fop">
+			<thead>
+				<tr class="lime accent-1">
+					<th>Item</th>
+					<th>Código</th>
+					<th>Descripción</th>
+					<th>Unidad</th>
+					<th>Marca</th>
+					<th>Modelo</th>
+					<th>Cantidad</th>
+				</tr>
+			</thead>
+			<tbody class="yellow lighten-5">
+				<tr ng-repeat="x in purchase | filter:fpm ">
+					<td class="center-align"><small><b>{{$index + 1}}</b></small></td>
+					<td class="left-align"><small>{{x.fields.materiales.pk}}</small></td>
+					<td>{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}</td>
+					<td class="center-align">{{x.fields.unit==null?x.fields.materiales.fields.unidad:x.fields.unit}}</td>
+					<td class="center-align">{{x.fields.brand.fields.brand}}</td>
+					<td class="center-align">{{x.fields.model.fields.model}}</td>
+					<td class="center-align"><b>{{x.fields.cantstatic}}</b></td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr ng-if="!purchase.length && purchase != null">
+					<td colspan="7">
+						<div class="progress red lighten-3">
+							<div class="indeterminate red darken-3"></div>
+						</div>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+		<article class="card" ng-show="fm">
+			<div class="card-content">
+				<h4>Lista de Materiales</h4>
+				<h5>Total Items {{resumen.length}}</h5>
+			</div>
+			<div class="card-action">
+				<select class="browser-default" ng-model="sbyear">
+					<option value="{{x}}" ng-repeat="x in syears">{{x}}</option>
+				</select>
+			</div>
+		</article>
+		<table class="highlight hovered responsive-table" ng-show="fm">
+			<thead>
+				<tr>
+					<th></th>
+					<th>Compra</th>
+					<th>Registrado</th>
+					<th>Descripción</th>
+					<th>Unidad</th>
+					<th>Marca</th>
+					<th>Modelo</th>
+					<th>Cantidad</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="x in resumen">
+					<td>{{$index + 1}}</td>
+					<td>
+						<a href="/reports/order/purchase/{{x.fields.compra.pk}}/" target="_blank">{{x.fields.compra.pk}}</a>
+					</td>
+					<td>{{x.fields.compra.fields.registrado|date:"yyyy-MM-dd"}}</td>
+					<td>{{x.fields.materiales.pk}}</td>
+					<td>{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}</td>
+					<td>{{x.fields.unit == null ? x.fields.materiales.fields.unidad : x.fields.unit}}</td>
+					<td>{{x.fields.brand.fields.brand}}</td>
+					<td>{{x.fields.model.fields.model}}</td>
+					<td>{{x.fields.cantstatic}}</td>
+				</tr>
+			</tbody>
+		</table>
+		{% endverbatim %}
+	</article>
+	{% verbatim %}
+	<!-- block modals -->
+	<div class="modal bottom-sheet" id="mresult" style="max-height: 90%;">
+		<div class="modal-content">
+			<div class="input-field">
+				<i class="fa fa-filter prefix"></i>
+				<input type="text" ng-model="sfresult">
+				<label for="">Buscar</label>
+			</div>
+			<table class="highlight hovered responsive-table">
+				<thead>
+					<th></th>
+					<th>Código</th>
+					<th>Descripción</th>
+					<th>Unidad</th>
+					<th></th>
+				</thead>
+				<tbody>
+					<tr ng-repeat="x in resultmat | filter:sfresult" ng-dblclick="getHistotyMat(x.pk)">
+						<td>{{$index+1}}</td>
+						<td>{{x.pk}}</td>
+						<td>{{x.fields.matnom}} {{x.fields.matmed}}</td>
+						<td>{{x.fields.unidad}}</td>
+						<td>
+							<button type="button" class="btn-flat waves-effect waves-default" ng-click="getHistotyMat(x.pk)">
+								<i class="fa fa-history"></i>
+							</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<!-- blockend-->
+	{% endverbatim %}
+{% csrf_token %}
+</section>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<!--<script type="text/javascript" src="{{ MEDIA_URL }}vendor/jquery.floatThead/dist/jquery.floatThead.min.js"></script>-->
+<script src="{{ MEDIA_URL }}js/logistics/consultpurchase.js"></script>
+{% endblock content %}

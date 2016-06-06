@@ -124,10 +124,22 @@ select:focus:not([readonly]) + label {
   min-width: 280px;
   width: 280px;
 }
+dt {
+  font-weight: bold;
+}
+dd {
+  background: none no-repeat left top;
+  padding-left: 50px;
+}
 tbody tr td {
-  padding: 0;
+  padding: 4px 2px 4px 2px;
 }
 input[type="number"] {
   height: 35px;
   margin-bottom: 0px;
+}
+@media screen and (max-width: 992px) {
+  tbody tr td {
+    padding: 15px 5px 15px 5px !important;
+  }
 }

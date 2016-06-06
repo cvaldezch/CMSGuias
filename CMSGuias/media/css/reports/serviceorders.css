@@ -1,6 +1,7 @@
 @page {
-  size: a4;
   margin: 1cm;
+  width: legal;
+  height: portrait;
   @frame header_frame {
     -pdf-frame-content: logo;
     margin-top: 1cm;

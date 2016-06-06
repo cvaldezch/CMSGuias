@@ -1,3 +1,5 @@
+@import 'nib'
+
 @font-face
   font-family 'Material Icons'
   font-style normal
@@ -10,6 +12,7 @@
       url(/media/vendor/materialize/dist/font/material-design-icons/Material-Design-Icons.woff) format('woff'),
       url(/media/vendor/materialize/dist/font/material-design-icons/Material-Design-Icons.ttf) format('truetype'),
       url(/media/vendor/materialize/dist/font/material-design-icons/Material-Design-Icons.svg) format('svg')
+
 
 .material-icons
   font-family 'Material Icons'
@@ -67,6 +70,7 @@ input[type=search]:focus:not([readonly]) + label,
 textarea.materialize-textarea:focus:not([readonly]) + label,
 select:focus:not([readonly]) + label
   color #0091ea
+  
 
 // /* label underline focus color */
 .input-field input, .input-field select
@@ -141,10 +145,19 @@ select:focus:not([readonly]) + label
   /*max-width 290px*/
   min-width 280px
   width 280px
-
+  
+dt
+  font-weight bold
+dd
+  background none no-repeat left top
+  padding-left 50px
 
 tbody tr td
-    padding 0
+    padding 4px 2px 4px 2px
   & input[type="number"]
     height 35px
     margin-bottom 0px
+
+@media screen and (max-width: 992px)
+  tbody tr td
+    padding 15px 5px 15px 5px !important
