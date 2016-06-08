@@ -433,7 +433,7 @@ class ProgramingProject(JSONResponseMixin, View):
                                     ds = genkeys.genDSector(
                                         kwargs['pro'], group)
                                     dsn = sheet.cell(row=x, column=c).value
-                                    sdn = sdn.upper().strip()
+                                    dsn = dsn.upper().strip()
                                     if str(dsn).strip().upper() == 'TOTAL':
                                         break
                                     sgroup[tng].update({dsn: {'id': ds}})
