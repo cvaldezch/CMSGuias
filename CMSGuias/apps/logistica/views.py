@@ -608,6 +608,7 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                             'price': x.precio,
                             'discount': x.discount,
                             'perception': conf.perception if x.perception else 0,
+                            'observation': x.observation,
                             'amount': '%.2f' % amount})
                     context['discount'] = tdiscount
                     context['igv'] = ((conf.igv * subt) / 100)
@@ -641,7 +642,7 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                         add = form.save(commit=False)
                         add.empdni = request.user.get_profile().empdni_id
                         add.unit_id = request.POST[
-                            'unit'] if request.POST['unit'] is None else None
+                            'unit'] if 'unit' in request.POST else None
                         form.save()
                         context['status'] = True
                     else:
@@ -786,6 +787,8 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                             obj.cantstatic = x.cantidad
                             obj.discount = x.discount
                             obj.perception = x.perception
+                            obj.unit_id = x.unit_id
+                            obj.observation = x.observation
                             obj.save()
                             # if all success delete all
                             # data of the temp purchase
@@ -795,8 +798,13 @@ class ViewPurchaseSingle(JSONResponseMixin, TemplateView):
                     else:
                         context['status'] = False
                         context['raise'] = str(form)
-            except ObjectDoesNotExist, e:
-                context['raise'] = e.__str__()
+                if 'saveComment' in request.POST:
+                    tmp = tmpcompra.objects.get(id=request.POST['id'])
+                    tmp.observation = request.POST['comment']
+                    tmp.save()
+                    context['status'] = True
+            except (Exception, ObjectDoesNotExist) as e:
+                context['raise'] = str(e)
                 context['status'] = False
             return self.render_to_json_response(context)
 
@@ -1816,7 +1824,7 @@ class ConsultPurchase(JSONResponseMixin, TemplateView):
                         context['resumen'] = json.loads(
                             serializers.serialize(
                                 'json',
-                                dc, relations=('materiales', 'compra','brand','model',)))
+                                dc, relations=('materiales', 'compra', 'brand', 'model',)))
                         context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)

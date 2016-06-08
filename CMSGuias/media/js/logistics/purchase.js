@@ -1,4 +1,4 @@
-var addTmpPurchase, blurRange, calcTotal, deleteAll, deleteMaterial, editMaterial, listTmpBuy, openBrand, openModel, openUnit, saveOrderPurchase, showBedside, showEdit, showMaterials, toggleDeposito, uploadReadFile;
+var addTmpPurchase, blurRange, calcTotal, deleteAll, deleteMaterial, editMaterial, listTmpBuy, openBrand, openModel, openUnit, saveComment, saveOrderPurchase, showBedside, showEdit, showMaterials, showObservation, toggleDeposito, uploadReadFile;
 
 $(document).ready(function() {
   $(".panel-add,input[name=read],.step-second").hide();
@@ -36,6 +36,8 @@ $(document).ready(function() {
   $("[name=selproject]").chosen({
     width: "100%"
   });
+  $("#saveComment").on("click", saveComment);
+  $(document).on("click", "[name=btn-comment]", showObservation);
   listTmpBuy();
   $.get("/unit/list/?list=true", function(response) {
     var $unit, template;
@@ -142,7 +144,7 @@ listTmpBuy = function(event) {
   }, function(response) {
     var $tb, template, x;
     if (response.status) {
-      template = "<tr name=\"{{id}}\">\n<td style=\"width: 20px;\" class=\"text-center\">{{item}}</td><td>{{materials_id}}</td>\n<td>{{matname}} - {{matmeasure}}</td>\n<td>{{unit}}</td>\n<td>{{brand}}</td>\n<td>{{model}}</td>\n<td class=\"text-right\">{{quantity}}</td>\n<td class=\"text-right\">{{price}}</td>\n<td class=\"text-right\">{{discount}}%</td>\n<td class=\"text-right\">{{perception}}%</td>\n<td class=\"text-right\">{{amount}}</td>\n<td class=\"text-center\"><button class=\"btn btn-xs btn-link\" name=\"btn-edit\" value=\"{{quantity}}\" data-price=\"{{price}}\" data-brand=\"{{brand}}\" data-model=\"{{model}}\" data-nombre=\"{{matname}} {{matmeasure}}\" data-id=\"{{id}}\" data-mat=\"{{materials_id}}\" data-discount=\"{{discount}}\" data-unit=\"{{unit}}\" data-perception=\"{{perception}}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td>\n<td class=\"text-center\"><button class=\"btn btn-xs btn-link text-red\" name=\"btn-del\" value=\"{{id}}\" data-mat=\"{{materials_id}}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td>\n<td class=\"text-center\">\n    <button type=\"button\" class=\"btn btn-sm btn-link black-text\" n>\n        <i class=\"fa fa-font fa-lg\"></i>\n    </button>\n</td>\n</tr>";
+      template = "<tr name=\"{{id}}\">\n<td style=\"width: 20px;\" class=\"text-center\">{{item}}</td><td>{{materials_id}}</td>\n<td>{{matname}} - {{matmeasure}}</td>\n<td>{{unit}}</td>\n<td>{{brand}}</td>\n<td>{{model}}</td>\n<td class=\"text-right\">{{quantity}}</td>\n<td class=\"text-right\">{{price}}</td>\n<td class=\"text-right\">{{discount}}%</td>\n<td class=\"text-right\">{{perception}}%</td>\n<td class=\"text-right\">{{amount}}</td>\n<td class=\"text-center\"><button class=\"btn btn-xs btn-link\" name=\"btn-edit\" value=\"{{quantity}}\" data-price=\"{{price}}\" data-brand=\"{{brand}}\" data-model=\"{{model}}\" data-nombre=\"{{matname}} {{matmeasure}}\" data-id=\"{{id}}\" data-mat=\"{{materials_id}}\" data-discount=\"{{discount}}\" data-unit=\"{{unit}}\" data-perception=\"{{perception}}\"><span class=\"glyphicon glyphicon-pencil\"></span></button></td>\n<td class=\"text-center\"><button class=\"btn btn-xs btn-link text-red\" name=\"btn-del\" value=\"{{id}}\" data-mat=\"{{materials_id}}\"><span class=\"glyphicon glyphicon-trash\"></span></button></td>\n<td class=\"text-center\">\n    <button type=\"button\" class=\"btn btn-sm btn-link black-text\" name=\"btn-comment\" value=\"{{id}}\" data-materrials=\"{{materials_id}}\" data-desc=\"{{matname}} - {{matmeasure}}\" data-brand=\"{{brand}}\" data-model=\"{{model}}\" data-unit=\"{{unit}}\" data-obs=\"{{observation}}\">\n        <i class=\"fa fa-font fa-lg text-black\"></i>\n    </button>\n</td>\n</tr>";
       $tb = $("table.table-list > tbody");
       $tb.empty();
       for (x in response.list) {
@@ -162,6 +164,14 @@ listTmpBuy = function(event) {
       return $().toastmessage("showWarningToast", "No se a encontrado resultados. " + response.raise);
     }
   });
+};
+
+showObservation = function() {
+  console.log($(this).a);
+  $(".odesc").text(($(this).attr("data-desc")) + " " + ($(this).attr("data-brand")) + " " + ($(this).attr("data-model")));
+  $("#obs").html("" + ($(this).attr("data-obs")));
+  $("#saveComment").val($(this).val());
+  $("#mobservation").modal("show");
 };
 
 showEdit = function(event) {
@@ -468,6 +478,26 @@ saveOrderPurchase = function() {
   } else {
     $().toastmessage("showWarningToast", "Alerta!<br>Campo vacio, " + data.element);
   }
+};
+
+saveComment = function() {
+  var data;
+  data = {
+    comment: $("#obs").val(),
+    saveComment: true,
+    id: $(this).val(),
+    'csrfmiddlewaretoken': $("[name=csrfmiddlewaretoken]").val()
+  };
+  $.post("", data, function(response) {
+    console.log(response);
+    if (response.status) {
+      $("#obs").val();
+      listTmpBuy();
+      $("#mobservation").modal("hide");
+    } else {
+      $().toastmessage("showWarningToast", "No se a podido guardar los datos temporales. " + response.raise);
+    }
+  }, "json");
 };
 
 calcTotal = function(event) {

@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <img id="logo" src="/media/images/icrlogo.png" alt="image">
+        {# <img id="logo" src="/media/images/icrlogo.png" alt="image"> #}
         <div id="address">
             <p>
                 {{ request.session.company.address }}<br>
@@ -29,13 +29,15 @@
             <span class="text-header">
                 PRESTADOR DE SERVICIO:
             </span>
-            <span>{{ bedside.supplier_id }} {{ bedside.supplier.razonsocial }}</span>
+            <span>
+                <small>{{ bedside.supplier_id }}</small> {{ bedside.supplier.razonsocial }}
+            </span>
             <br>
             <span class="text-header">
                 DIRECCION:
             </span>
             <span>
-                {{ bedside.supplier.direccion }}
+                <small>{{ bedside.supplier.direccion }} {{ bedside.supplier.distrito}}</small>
             </span>
             <br>
             <span class="text-header">

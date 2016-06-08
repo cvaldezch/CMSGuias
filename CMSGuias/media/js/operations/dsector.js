@@ -1032,7 +1032,7 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout, $
               swal("" + response.orders, "Felicidades! Orden generada.", "success");
               $timeout(function() {
                 location.reload();
-              }, 2600);
+              }, 6600);
             } else {
               swal("Error", "al procesar. " + response.raise, "error");
               $event.target.disabled = false;

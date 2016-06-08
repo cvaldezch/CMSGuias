@@ -1306,7 +1306,7 @@ generateOrders = function() {
           $().toastmessage("showNoticeToast", "Correcto! se a generado el pedido a almacén nro " + response.nro);
           return setTimeout(function() {
             return location.reload();
-          }, 2600);
+          }, 6600);
         } else {
           return $().toastmessage("showWarningToast", "No se a generado el pedido almacén, " + response.raise);
         }

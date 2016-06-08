@@ -1211,7 +1211,7 @@ generateOrders = ->
                     $().toastmessage "showNoticeToast", "Correcto! se a generado el pedido a almacén nro #{response.nro}"
                     setTimeout ->
                         location.reload()
-                    , 2600
+                    , 6600
                 else
                     $().toastmessage "showWarningToast", "No se a generado el pedido almacén, #{response.raise}"
         return

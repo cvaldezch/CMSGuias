@@ -2,15 +2,6 @@
 {% block title %}
 	Order Purchase
 {% endblock title %}
-{% block script %}
-<script src="{{ MEDIA_URL }}js/mustache.js"></script>
-<!-- <script src="{{ MEDIA_URL }}js/scrollTo.js"></script> -->
-<script src="{{ MEDIA_URL }}js/getMaterials.js"></script>
-<script src="{{ MEDIA_URL }}js/tinymce.js"></script>
-<script src="{{ MEDIA_URL }}js/chosen.jquery.min.js "></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/floatThead.js"></script>
-<script src="{{ MEDIA_URL }}js/logistics/purchase.js"></script>
-{% endblock script %}
 {% block style %}
 <link rel="stylesheet" href="{{ MEDIA_URL }}css/chosen.css">
 {% endblock style %}
@@ -138,9 +129,11 @@
                                         <div class="form-group has-warning">
                                             <label class="control-label">Unidad</label>
                                             <div class="input-group">
-                                                <select name="unit" id="unit" class="form-control input-sm" onclick="openUnit()"></select>
+                                                <select name="unit" id="unit" class="form-control input-sm"></select>
                                                 <span class="input-group-btn">
-                                                    <button class="btn btn-default btn-sm btn-new-unit"><span class="span glyphicon glyphicon-plus"></span></button>
+                                                    <button class="btn btn-default btn-sm btn-new-unit"  onclick="openUnit()">
+                                                        <span class="span glyphicon glyphicon-plus"></span>
+                                                    </button>
                                                 </span>
                                             </div>
                                         </div>
@@ -522,8 +515,41 @@
 </div>
 <!-- block observation -->
 <div class="modal fade" id="mobservation">
-    div.modal-content
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>Observación para <span class="odesc"></span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">Observación</label>
+                            <textarea id="obs" rows="7" class="form-control"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <i class="fa fa-times"></i>
+                    <span>Cancelar</span>
+                </button>
+                <button type="button" class="btn btn-primary" id="saveComment">
+                    <i class="fa fa-times"></i>
+                    <span>Guardar Cambios</span>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- endblock -->
 {% csrf_token %}
+<script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<!-- <script src="{{ MEDIA_URL }}js/scrollTo.js"></script> -->
+<script src="{{ MEDIA_URL }}js/getMaterials.js"></script>
+<script src="{{ MEDIA_URL }}js/tinymce.js"></script>
+<script src="{{ MEDIA_URL }}js/chosen.jquery.min.js "></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/floatThead.js"></script>
+<script src="{{ MEDIA_URL }}js/logistics/purchase.js"></script>
 {% endblock content %}

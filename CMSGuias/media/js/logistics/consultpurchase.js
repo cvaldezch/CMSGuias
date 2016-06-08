@@ -105,7 +105,9 @@ app.controller('cPurchase', function($scope, $timeout, fPuchase) {
       if (response.status) {
         $scope.resumen = response.resumen;
         angular.element("#mresult").closeModal();
-        $scope.syears = response.years;
+        if (response.hasOwnProperty('years')) {
+          $scope.syears = response.years;
+        }
         $scope.sbyear = response.resumen[0].fields.compra.fields.registrado.substr(0, 4);
       } else {
         swal({

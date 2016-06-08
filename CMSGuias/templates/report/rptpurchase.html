@@ -71,7 +71,9 @@
                             <tr>
                                 <td class="text-center item font-small">{{ x.item|floatformat:"2" }}</td>
                                 <td class="text-center font-small">{{ x.materials_id }}</td>
-                                <td>{{ x.matname }} {{ x.measure }} - {{ x.brand }} - {{ x.model }}</td>
+                                <td>{{ x.matname }} {{ x.measure }} - {{ x.brand }} - {{ x.model }} {% if x.observation %}
+                                    {{ x.observation }}
+                                {% endif %}</td>
                                 <td class="text-center">{{ x.unit }}</td>
                                 <td class="text-center">{{ x.quantity|safe }}</td>
                                 <td class="text-center">{{ x.price|safe }}</td>

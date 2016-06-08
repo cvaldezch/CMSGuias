@@ -1,7 +1,9 @@
 @page {
   margin: 1cm;
-  width: legal;
-  height: portrait;
+
+  size legal portrait
+
+  size legal portrait
   @frame header_frame {
     -pdf-frame-content: logo;
     margin-top: 1cm;
@@ -35,47 +37,47 @@
   @frame header_frame {
     -pdf-frame-content: method;
     left: 1cm;
-    top: 5.8cm;
+    top: 6cm;
     width: 7cm;
   }
   @frame header_frame {
     -pdf-frame-content: facture;
     left: 1cm;
-    top: 6.7cm;
+    top: 6.9cm;
     width: 7cm;
   }
   @frame header_frame {
     -pdf-frame-content: currency;
     left: 1cm;
-    top: 7.6cm;
+    top: 7.8cm;
     width: 7cm;
   }
   @frame header_frame {
     -pdf-frame-content: execution;
     right: 1cm;
-    top: 5.8cm;
+    top: 6cm;
     width: 10.8cm;
   }
   @frame header_frame {
     -pdf-frame-content: arrival;
     right: 1cm;
-    top: 7.1cm;
+    top: 7.3cm;
     width: 10.8cm;
   }
   @frame header_frame {
     -pdf-frame-content: data;
     left: 1cm;
-    top: 8.4cm;
+    top: 8.6cm;
     width: 10cm;
   }
   @frame header_frame {
     -pdf-frame-content: authorized;
     right: 1cm;
-    top: 8.4cm;
+    top: 8.6cm;
     width: 7.8cm;
   }
   @frame content_frame {
-    top: 11cm;
+    top: 11.2cm;
     left: 1cm;
     right: 1cm;
   }

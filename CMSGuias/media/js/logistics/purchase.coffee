@@ -26,6 +26,9 @@ $(document).ready ->
     $("input[name=pdiscount]").on "keyup", calcTotal
     .on "keypress", numberOnly
     $("[name=selproject]").chosen({width: "100%"})
+
+    $("#saveComment").on "click", saveComment
+    $(document).on "click", "[name=btn-comment]", showObservation
     listTmpBuy()
     $.get "/unit/list/?list=true", (response) ->
       if response.status
@@ -127,8 +130,8 @@ listTmpBuy = (event) ->
                     <td class="text-center"><button class="btn btn-xs btn-link" name="btn-edit" value="{{quantity}}" data-price="{{price}}" data-brand="{{brand}}" data-model="{{model}}" data-nombre="{{matname}} {{matmeasure}}" data-id="{{id}}" data-mat="{{materials_id}}" data-discount="{{discount}}" data-unit="{{unit}}" data-perception="{{perception}}"><span class="glyphicon glyphicon-pencil"></span></button></td>
                     <td class="text-center"><button class="btn btn-xs btn-link text-red" name="btn-del" value="{{id}}" data-mat="{{materials_id}}"><span class="glyphicon glyphicon-trash"></span></button></td>
                     <td class="text-center">
-                        <button type="button" class="btn btn-sm btn-link black-text" n>
-                            <i class="fa fa-font fa-lg"></i>
+                        <button type="button" class="btn btn-sm btn-link black-text" name="btn-comment" value="{{id}}" data-materrials="{{materials_id}}" data-desc="{{matname}} - {{matmeasure}}" data-brand="{{brand}}" data-model="{{model}}" data-unit="{{unit}}" data-obs="{{observation}}">
+                            <i class="fa fa-font fa-lg text-black"></i>
                         </button>
                     </td>
                     </tr>"""
@@ -147,7 +150,15 @@ listTmpBuy = (event) ->
                 $(".total").html (response.total - response.igv).toFixed 2
             return
         else
-            $().toastmessage "showWarningToast", "No se a encontrado resultados. #{ response.raise }"
+            $().toastmessage "showWarningToast", "No se a encontrado resultados. #{response.raise}"
+    return
+
+showObservation = ->
+    console.log $(this).a
+    $(".odesc").text "#{$(this).attr "data-desc"} #{$(this).attr "data-brand"} #{$(this).attr "data-model"}"
+    $("#obs").html "#{$(this).attr "data-obs"}"
+    $("#saveComment").val $(this).val()
+    $("#mobservation").modal "show"
     return
 
 showEdit = (event) ->
@@ -405,6 +416,25 @@ saveOrderPurchase = ->
                     return
     else
         $().toastmessage "showWarningToast", "Alerta!<br>Campo vacio, #{data.element}"
+    return
+
+saveComment = ->
+    data =
+        comment: $("#obs").val()
+        saveComment: true
+        id: $(this).val()
+        'csrfmiddlewaretoken': $("[name=csrfmiddlewaretoken]").val()
+    $.post "", data, (response) ->
+        console.log response
+        if response.status
+            $("#obs").val()
+            listTmpBuy()
+            $("#mobservation").modal "hide"
+            return
+        else
+            $().toastmessage "showWarningToast", "No se a podido guardar los datos temporales. #{response.raise}"
+            return
+    , "json"
     return
 
 calcTotal = (event) ->

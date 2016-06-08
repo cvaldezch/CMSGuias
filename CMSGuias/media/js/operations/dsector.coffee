@@ -947,7 +947,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout, $sce) ->
               $timeout ->
                 location.reload()
                 return
-              , 2600
+              , 6600
               return
             else
               swal "Error", "al procesar. #{response.raise}", "error"
