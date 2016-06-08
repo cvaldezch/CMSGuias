@@ -69,6 +69,10 @@
           <span>Aprobar</span>
         </button>
       {% else %}
+        <button type="button" class="btn blue lighten-2 waves-effet-waves-light">
+          <i class="fa fa-bars"></i>
+          <span>Pendientes</span>
+        </button>
         <button type="button" class="btn red darken-1 waves-effect waves-light right" ng-click="DiscapprovedAreas($event)" ng-if="area == 'administrator' || area == 'ventas'">
           <i class="fa fa-thumbs-o-up"></i>
           <span>Quitar Aprobacion</span>

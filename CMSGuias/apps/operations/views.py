@@ -383,24 +383,38 @@ class ProgramingProject(JSONResponseMixin, View):
                                 if c >= 4 and name != None:
                                     # crea los grupos
                                     # print sheet.cell(row=x, column=c).value
-                                    # try:
-                                    #     sg = SGroup.objects.get(
-                                    #         project_id=kwargs['pro'],
-                                    #         sector_id=kwargs['sec'],
-                                    #         name=name)
-                                    #     sgroup[name] = {'id': sg.sgroup_id}
-                                    # except SGroup.DoesNotExist, e:
-                                    nw = SGroup()
-                                    sgroup[name] = {'id': genkeys.genSGroup(kwargs['pro'], sec)}
-                                    # time.sleep(1)
-                                    nw.sgroup_id = sgroup[name]['id']
-                                    nw.project_id = kwargs['pro']
-                                    nw.subproject_id = kwargs['sub'] if unicode(kwargs['sub']) != 'None' else ''
-                                    nw.sector_id = kwargs['sec']
-                                    nw.name = name
-                                    nw.colour = 'rgba(254,255,180,0.8)'
-                                    nw.status = 'PE'
-                                    nw.save()
+                                    name = name.upper().strip()
+                                    try:
+                                        sg = SGroup.objects.filter(
+                                            project_id=kwargs['pro'],
+                                            sector_id=kwargs['sec'],
+                                            name=name)
+                                        if len(sg) > 0:
+                                            sgroup[name] = {'id': sg.sgroup_id}
+                                        else:
+                                            nw = SGroup()
+                                            sgroup[name] = {'id': genkeys.genSGroup(kwargs['pro'], sec)}
+                                            # time.sleep(1)
+                                            nw.sgroup_id = sgroup[name]['id']
+                                            nw.project_id = kwargs['pro']
+                                            nw.subproject_id = kwargs['sub'] if unicode(kwargs['sub']) != 'None' else ''
+                                            nw.sector_id = kwargs['sec']
+                                            nw.name = name
+                                            nw.colour = 'rgba(254,255,180,0.8)'
+                                            nw.status = 'PE'
+                                            nw.save()
+                                    except (ObjectDoesNotExist or Exception) as e:
+                                        nw = SGroup()
+                                        sgroup[name] = {'id': genkeys.genSGroup(kwargs['pro'], sec)}
+                                        # time.sleep(1)
+                                        nw.sgroup_id = sgroup[name]['id']
+                                        nw.project_id = kwargs['pro']
+                                        nw.subproject_id = kwargs['sub'] if unicode(kwargs['sub']) != 'None' else ''
+                                        nw.sector_id = kwargs['sec']
+                                        nw.name = name
+                                        nw.colour = 'rgba(254,255,180,0.8)'
+                                        nw.status = 'PE'
+                                        nw.save()
                         elif x == 3:
                             tng = None
                             group = None
@@ -414,11 +428,12 @@ class ProgramingProject(JSONResponseMixin, View):
                                     name = sheet.cell(row=2, column=c).value
                                     if name != None:
                                         group = sgroup[name]['id']
-                                        tng = name
+                                        tng = str(name).upper().strip()
 
                                     ds = genkeys.genDSector(
                                         kwargs['pro'], group)
                                     dsn = sheet.cell(row=x, column=c).value
+                                    sdn = sdn.upper().strip()
                                     if str(dsn).strip().upper() == 'TOTAL':
                                         break
                                     sgroup[tng].update({dsn: {'id': ds}})
