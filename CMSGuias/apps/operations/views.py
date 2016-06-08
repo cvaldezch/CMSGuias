@@ -390,7 +390,7 @@ class ProgramingProject(JSONResponseMixin, View):
                                             sector_id=kwargs['sec'],
                                             name=name)
                                         if len(sg) > 0:
-                                            sgroup[name] = {'id': sg.sgroup_id}
+                                            sgroup[name] = {'id': sg[0].sgroup_id}
                                         else:
                                             nw = SGroup()
                                             sgroup[name] = {'id': genkeys.genSGroup(kwargs['pro'], sec)}
@@ -403,7 +403,7 @@ class ProgramingProject(JSONResponseMixin, View):
                                             nw.colour = 'rgba(254,255,180,0.8)'
                                             nw.status = 'PE'
                                             nw.save()
-                                    except (ObjectDoesNotExist or Exception) as e:
+                                    except (ObjectDoesNotExist, Exception) as e:
                                         nw = SGroup()
                                         sgroup[name] = {'id': genkeys.genSGroup(kwargs['pro'], sec)}
                                         # time.sleep(1)
@@ -488,19 +488,49 @@ class ProgramingProject(JSONResponseMixin, View):
                                                     sales = float(dsm.sales)
                                             except MetProject.DoesNotExist:
                                                 raise e
-                                        dm = DSMetrado()
-                                        dm.dsector_id = sgroup[tgn][ns]['id']
-                                        dm.sector_id = kwargs['sec']
-                                        dm.materials_id = cm
-                                        dm.brand_id = 'BR000'
-                                        dm.model_id = 'MO000'
-                                        dm.quantity = cell
-                                        dm.qorder = cell
-                                        dm.qguide = 0
-                                        dm.ppurchase = purchase
-                                        dm.psales = sales
-                                        dm.tag = '0'
-                                        dm.save()
+
+                                        try:
+                                            odsm = DSMetrado.objects.filter(dsector_id=sgroup[tgn][ns]['id'],
+                                                sector_id=kwargs['sec'],
+                                                materials_id=cm, brand_id='BR000',
+                                                model_id='MO000')
+                                            if len(odsm) > 0:
+                                                odsm = odsm[0]
+                                                odsm.quantity += cell
+                                                odsm.qorder += cell
+                                                odsm.ppurchase = purchase
+                                                odsm.psales = sales
+                                                if odsm.tag == '2':
+                                                    odsm.tag = '1'
+                                                odsm.save() 
+                                            else:
+                                                dm = DSMetrado()
+                                                dm.dsector_id = sgroup[tgn][ns]['id']
+                                                dm.sector_id = kwargs['sec']
+                                                dm.materials_id = cm
+                                                dm.brand_id = 'BR000'
+                                                dm.model_id = 'MO000'
+                                                dm.quantity = cell
+                                                dm.qorder = cell
+                                                dm.qguide = 0
+                                                dm.ppurchase = purchase
+                                                dm.psales = sales
+                                                dm.tag = '0'
+                                                dm.save()
+                                        except (ObjectDoesNotExist, Exception) as e:
+                                            dm = DSMetrado()
+                                            dm.dsector_id = sgroup[tgn][ns]['id']
+                                            dm.sector_id = kwargs['sec']
+                                            dm.materials_id = cm
+                                            dm.brand_id = 'BR000'
+                                            dm.model_id = 'MO000'
+                                            dm.quantity = cell
+                                            dm.qorder = cell
+                                            dm.qguide = 0
+                                            dm.ppurchase = purchase
+                                            dm.psales = sales
+                                            dm.tag = '0'
+                                            dm.save()
                                     else:
                                         continue
                     context['status'] = True
