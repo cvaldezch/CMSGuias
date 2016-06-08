@@ -37,7 +37,7 @@
                 DIRECCION:
             </span>
             <span>
-                <small>{{ bedside.supplier.direccion }} {{ bedside.supplier.distrito}}</small>
+                <small>{{ bedside.supplier.direccion }} {{ bedside.supplier.distrito.distnom}}</small>
             </span>
             <br>
             <span class="text-header">
@@ -113,7 +113,7 @@
                 LUGAR DE EJECUCIÓN DE LOS TRABAJOS:
             </span>
             <br>
-            <span>{{ bedside.arrival }}</span>
+            <span>{{ bedside.arrival }} {{bedside.project.distrito.distnom}} {{bedside.project.departamento.depnom}} {{bedside.project.pais.paisnom}}</span>
         </div>
         <div id="data">
             <span class="text-header text-center">
