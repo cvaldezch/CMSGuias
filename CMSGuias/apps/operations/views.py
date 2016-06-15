@@ -1337,6 +1337,27 @@ class  ConsultMaterialsAreas(JSONResponseMixin, View):
                                 'json',
                                 DSector.objects.filter(project_id=kwargs['pro'], sector_id=kwargs['sec'])))
                         context['status'] = True
+                    if 'getGlobal' in request.GET:
+                        query = DSMetrado.objects.filter(sector_id=kwargs['sec'])
+                        query = query.values_list(
+                            'materials_id',
+                            'materials__matnom',
+                            'materials__matmed',
+                            'brand__brand',
+                            'model__model',
+                            'materials__unidad__uninom',).annotate(sold=Sum('quantity'), pending=Sum('qorder')).order_by('materials__matnom')
+                        tmp = [{
+                            'materials': x[0],
+                            'matnom': x[1],
+                            'matmed': x[2],
+                            'brand': x[3],
+                            'model': x[4],
+                            'unit': x[5],
+                            'sold': x[6],
+                            'pending': x[7],
+                        } for x in query]
+                        context['dataset'] = tmp
+                        context['status'] = True
                     if 'getPendingData' in request.GET:
                         keys = request.GET['keys'].split(',')
                         query = None

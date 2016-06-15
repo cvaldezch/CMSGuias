@@ -118,6 +118,10 @@ app.controller('cpC', function($scope, $timeout, cpf) {
     });
   };
   $scope.getDataG = function() {
+    var prm;
+    prm = {
+      'getGlobal': true
+    };
     return cpf.getDataG(prm).success(function(response) {
       if (response.status) {
         $scope.gdata = response.dataset;

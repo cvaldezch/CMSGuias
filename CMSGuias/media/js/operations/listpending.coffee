@@ -86,6 +86,8 @@ app.controller 'cpC', ($scope, $timeout, cpf) ->
 				return
 
 	$scope.getDataG = ->
+		prm =
+			'getGlobal': true
 		cpf.getDataG(prm)
 		.success (response) ->
 			if response.status
