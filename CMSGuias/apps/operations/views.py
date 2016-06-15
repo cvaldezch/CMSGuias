@@ -1317,3 +1317,98 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
             context['raise'] = str(e)
             context['status'] = False
         return self.render_to_json_response(context)
+
+class  ConsultMaterialsAreas(JSONResponseMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        try:
+            context = dict()
+            if request.is_ajax():
+                try:
+                    if 'gsgroup' in request.GET:
+                        context['sg'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                SGroup.objects.filter(project_id=kwargs['pro'],sector_id=kwargs['sec'])))
+                        context['status'] = True
+                    if 'gdsector' in request.GET:
+                        context['ds'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                DSector.objects.filter(project_id=kwargs['pro'], sector_id=kwargs['sec'])))
+                        context['status'] = True
+                    if 'getPendingData' in request.GET:
+                        keys = request.GET['keys'].split(',')
+                        query = None
+                        count = 0
+                        if request.GET['searchby'] == 'sgroup':
+                            for key in keys:
+                                aux = DSMetrado.objects.filter(dsector__dsector_id__startswith=key)
+                                if count == 0:
+                                    query = aux
+                                    count+=1
+                                query = query | aux
+                        if request.GET['searchby'] == 'dsector':
+                            for key in keys:
+                                aux = DSMetrado.objects.filter(dsector__dsector_id__startswith=key)
+                                if count == 0:
+                                    query = aux
+                                    count += 1
+                                query = query | aux
+                        # context['query'] = json.loads(serializers.serialize('json', query))
+                        query = query.values_list(
+                            'materials_id',
+                            'materials__matnom',
+                            'materials__matmed',
+                            'brand__brand',
+                            'model__model',
+                            'materials__unidad__uninom',).annotate(sold=Sum('quantity'), pending=Sum('qorder')).order_by('materials__matnom')
+                        # query = query.distinct('materials').extra(select={'squantity':"SELECT SUM(quantity) FROM operations_dsmetrado t WHERE t.materials_id LIKE operations_dsmetrado.materials_id AND t.dsector_id LIKE operations_dsmetrado.dsector_id"})
+                        # query = query.annotate(Sum('quantity'))
+                        # print query
+                        tmp = [{
+                            'materials': x[0],
+                            'matnom': x[1],
+                            'matmed': x[2],
+                            'brand': x[3],
+                            'model': x[4],
+                            'unit': x[5],
+                            'sold': x[6],
+                            'pending': x[7],
+                        } for x in query]
+                        context['dataset'] = tmp
+                        context['status'] = True
+                    if 'getdsmetrado' in request.GET:
+                        context['status'] = True
+                    if 'getDetails' in request.GET:
+                        keys = request.GET['keys'].split(',')
+                        query = None
+                        count = 0
+                        if request.GET['searchby'] == 'sgroup':
+                            for key in keys:
+                                aux = DSMetrado.objects.filter(dsector__dsector_id__startswith=key, materials_id=request.GET['materials'])
+                                if count == 0:
+                                    query = aux
+                                    count+=1
+                                query = query | aux
+                        if request.GET['searchby'] == 'dsector':
+                            for key in keys:
+                                aux = DSMetrado.objects.filter(dsector__dsector_id__startswith=key, materials_id=request.GET['materials'])
+                                if count == 0:
+                                    query = aux
+                                    count += 1
+                                query = query | aux
+                        context['data'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                query,
+                                relations=('materials','brand','model','dsector',)))
+                        context['status'] = True
+                except (ObjectDoesNotExist, Exception) as e:
+                    context['raise'] = str(e)
+                    context['status'] = False
+                return self.render_to_json_response(context)
+            return render(request, 'operations/listpending.html', context)
+        except TemplateDoesNotExist, e:
+            raise Http404(str(e))
+

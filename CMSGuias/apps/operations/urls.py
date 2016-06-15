@@ -20,4 +20,6 @@ urlpatterns = patterns(
     url(r'compare/materials/(?P<pro>\w{7})/(?P<sec>\w+)/$',
         CompareMaterials.as_view(),
         name='compareopsa_view'),
+    url(r'consult/materials/pending/(?P<pro>\w{7})/(?P<sec>\w+)/$',
+        ConsultMaterialsAreas.as_view(), name='consultpending_view'),
 )

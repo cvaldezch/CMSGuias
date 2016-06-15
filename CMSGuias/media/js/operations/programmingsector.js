@@ -119,7 +119,7 @@ app.controller('programingCtrl', function($scope, $http, $cookies, $timeout) {
     if ($("[name=plane]").get(0).files.length > 0) {
       form.append("plane", $("[name=plane]").get(0).files[0]);
     }
-    if ($scope.dsector.pk !== '') {
+    if ($scope.dsector.pk !== '' && $scope.dsector.pk !== void 0) {
       form.append('dsector_id', $scope.dsector.pk);
     }
     form.append("csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val());

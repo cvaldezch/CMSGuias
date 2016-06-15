@@ -104,7 +104,7 @@ app.controller 'programingCtrl', ($scope, $http, $cookies, $timeout) ->
       form.append k, v
     if $("[name=plane]").get(0).files.length > 0
       form.append "plane", $("[name=plane]").get(0).files[0]
-    if $scope.dsector.pk isnt ''
+    if $scope.dsector.pk isnt '' and $scope.dsector.pk isnt undefined
       form.append 'dsector_id', $scope.dsector.pk
     form.append "csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val()
     $.ajax

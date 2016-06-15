@@ -322,7 +322,7 @@ class RptPurchase(TemplateView):
             counter = 0
             section = list()
             for c in range(sheet):
-                dataset = lista[counter:counter+20]
+                dataset = lista[counter:counter+21]
                 tmp = list()
                 for x in dataset:
                     discountm = ((x.precio*float(x.discount))/100)

@@ -2,17 +2,188 @@
 {% block title %}
     Lista de Pendientes
 {% endblock title %}
+{% block menu %}
+    {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
+        {% include "menus/salesmd.html" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'logistica' %}
+        {% include "menus/logisticsmd.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+        {% include "menus/operationsmd.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'almacen' %}
+        {% include "menus/storagemd.htm" %}
+    {% endif %}
+{% endblock menu %}
 {% block content %}
-<section>
+<section ng-app="cpApp" ng-controller="cpC">
 	<header>
 		<h4>Consulta de Materiales Pendientes</h4>
 	</header>
-	<nav class="card">
-		<div class="card-content">
-			<button type="button" class="btn ">
-				<span class="hide-only-small">Todo</span>
+	<div class="card">
+		<div class="card-action">
+			<button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect waves-light">
+				<i class="fa fa-bars"></i>
+				<span class="hide-on-small-only">Todo</span>
+			</button>
+			<button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect waves-light" ng-click="getSGroup()">
+				<i class="fa fa-th-list"></i>
+				<span class="hide-on-small-only">Grupos</span>
+			</button>
+			<button type="buttom" class="btn amber accent-2 grey-text text-darken-3 waves-effect waves-light" ng-click="getDSector()">
+				<i class="fa fa-ellipsis-h"></i
+				<span class="hide-on-small-only">AREAS</span>
 			</button>
 		</div>
-	</nav>
+	</div>
+	<article>
+	{% verbatim %}
+		<div class="input-field" ng-show="gdata">
+			<i class="fa fa-filter prefix"></i>
+			<input type="text" ng-model="filtergdetails">
+			<label for="">Filtar en Tabla</label>
+		</div>
+		<table class="highlight hovered responsive-table" ng-show="gdata">
+			<thead>
+				<tr>
+					<th></th>
+					<th>Código</th>
+					<th></th>
+					<th>Descripción</th>
+					<th>Unidad</th>
+					<th>Marca</th>
+					<th>Modelo</th>
+					<th>Cantidad</th>
+					<th>Pendiente</th>
+				</tr>
+			</thead>
+			<tbody>
+					<tr ng-repeat="x in gdata | filter: filtergdetails">
+						<td>{{$index+1}}</td>
+						<td>{{x.materials}}</td>
+						<td>
+							<button type="button" class="btn-flat waves-effect waves-light" ng-click="getDetails(x.materials)">
+								<i class="fa fa-bars"></i>
+							</button>
+						</td>
+						<td>{{x.matnom}} {{x.matmed}}</td>
+						<td>{{x.unit}}</td>
+						<td>{{x.brand}}</td>
+						<td>{{x.model}}</td>
+						<td>{{x.sold}}</td>
+						<td>{{x.pending}}</td>
+					</tr>
+			</tbody>
+			<tfoot ng-show="!gdata">
+				<tr>
+					<td colspan="8">
+						<div class="progress">
+							<div class="indeterminate"></div>
+						</div>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	{% endverbatim %}
+	</article>
+	<!-- block modal-->
+	<!-- Modal Structure -->
+	{% verbatim %}
+	<div id="mselection" class="modal bottom-sheet modal-fixed-footer" style="max-height: 85%;">
+		<div class="modal-content">
+			<h5>Selecciona para buscar pendientes</h5>
+			<div ng-show="sg" class="input-field">
+				<i class="fa fa-filter prefix"></i>
+				<input type="text" ng-model="filtergd">
+			</div>
+			<table class="highlight hovered responsive-table">
+				<thead>
+					<tr>
+						<th></th>
+						<th></th>
+						<th>Código</th>
+						<th>Nombre</th>
+					</tr>
+				</thead>
+				<tbody ng-show="sg">
+					<tr ng-repeat="x in sg | filter: filtergd">
+						<td>{{$index + 1}}</td>
+						<td>
+							<input type="checkbox" id="{{x.pk}}" class="filled-in"  ng-model="selected[x.pk]" ng-value="{{x.pk}}">
+							<label for="{{x.pk}}"></label>
+						</td>
+						<td>{{x.pk}}</td>
+						<td>{{x.fields.name}}</td>
+					</tr>
+				</tbody>
+				<tbody ng-show="ds">
+					<tr ng-repeat="x in ds | filter: filtergd ">
+						<td>{{$index + 1}}</td>
+						<td>
+							<input type="checkbox" id="{{x.pk}}" class="filled-in"  ng-model="selected[x.pk]" ng-value="{{x.pk}}">
+							<label for="{{x.pk}}"></label>
+						</td>
+						<td>{{x.pk}}</td>
+						<td>{{x.fields.name}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="modal-footer">
+			<a href="#" class="waves-effect waves-green btn-flat modal-action modal-close left">
+				<i class="fa fa-times"></i>
+				<span>Salir</span>
+			</a>
+			<button type="button" class="btn blue darken-2" ng-click="getData()">
+				<i class="fa fa-floppy-o"></i>
+				<span>OBTENER DATOS</span>
+			</button>
+		</div>
+	</div>
+	<!-- Modal Details Inside -->
+	<div id="mdetails" class="modal bottom-sheet modal-fixed-footer" style="max-height:85%">
+		<div class="modal-content">
+			<table class="hovered hightlight responsive-table">
+				<thead>
+					<tr>
+						<th>Item</th>
+						<th>Código</th>
+						<th>Descripción</th>
+						<th>Unidad</th>
+						<th>Vendido</th>
+						<th>Pendiente</th>
+						<th>Ir</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="x in dataDetails track by x.fields.dsector.pk">
+						<td>{{$index + 1}}</td>
+						<td>{{x.fields.dsector.fields.name}}</td>
+						<td>{{x.fields.materials.pk}}</td>
+						<td>{{x.fields.materials.fields.matnom}} {{x.fields.materials.fields.matmed}} {{x.fields.brand.fields.brand}} {{x.fields.model.fields.model}}</td>
+						<td>{{x.fields.materials.fields.unidad}}</td>
+						<td>{{x.fields.quantity}}</td>
+						<td>{{x.fields.qorder}}</td>
+						<td>
+							<a href="/operations/area/{{x.fields.dsector.pk.substr(0,18)}}/{{x.fields.dsector.pk}}/{{x.fields.dsector.pk.substr(0,7)}}/{{x.fields.dsector.pk.substr(0,12)}}/None/" target="_blank" class="btn-flat waves-effect waves-light">
+								<i class="fa fa-cube"></i>
+							</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="modal-action modal-close btn-flat waves-effect waves-light">
+				<i class="fa fa-times"></i>
+				<span class="hide-on-small-only">Salir</span>
+			</button>
+		</div>
+	</div>
+	{% endverbatim %}
 </section>
+<script type="application/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
+<script type="application/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script type="application/javascript" src="{{ MEDIA_URL }}js/operations/listpending.js"></script>
 {% endblock content %}

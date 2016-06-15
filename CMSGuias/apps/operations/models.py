@@ -306,6 +306,12 @@ class DSMetrado(models.Model):
                                 self.quantity,
                                 self.ppurchase)
 
+    # @property
+    # def squantity(self):
+    #     quant += self.quantity
+    #     return quant
+    
+
 
 class MMetrado(models.Model):
     register = models.DateTimeField(auto_now=True, null=True)
