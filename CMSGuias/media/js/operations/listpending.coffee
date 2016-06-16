@@ -26,6 +26,7 @@ app.factory 'cpf', ($http, $cookies) ->
 
 app.controller 'cpC', ($scope, $timeout, cpf) ->
 	$scope.selected = {}
+	$scope.dg = false
 	angular.element(document).ready ->
 		# ...
 		return
@@ -80,6 +81,7 @@ app.controller 'cpC', ($scope, $timeout, cpf) ->
 			if response.status
 				$scope.gdata = response.dataset
 				angular.element("#mselection").closeModal()
+				$scope.dg = false
 				return
 			else
 				swal "Alerta!", "#{response.raise}", "warning"
@@ -92,6 +94,7 @@ app.controller 'cpC', ($scope, $timeout, cpf) ->
 		.success (response) ->
 			if response.status
 				$scope.gdata = response.dataset
+				$scope.dg = true
 				return
 			else
 				swal "Alerta!", "#{response.raise}", "warning"
@@ -99,15 +102,16 @@ app.controller 'cpC', ($scope, $timeout, cpf) ->
 
 	$scope.getDetails = (materials) ->
 		prm = new Object
-		obj = $scope.selected
-		angular.forEach obj, (value, key) ->
-			if value is true
-				if not prm.hasOwnProperty('keys')
-					prm['keys'] = key
-				else
-					prm['keys'] += ",#{key}"
-			return
-		prm['searchby'] = $scope.bsearch
+		if $scope.dg is false
+			obj = $scope.selected
+			angular.forEach obj, (value, key) ->
+				if value is true
+					if not prm.hasOwnProperty('keys')
+						prm['keys'] = key
+					else
+						prm['keys'] += ",#{key}"
+				return
+			prm['searchby'] = $scope.bsearch
 		prm['materials'] = materials
 		prm['getDetails'] = true
 		cpf.getDetails(prm)

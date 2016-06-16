@@ -427,6 +427,7 @@ class ProgramingProject(JSONResponseMixin, View):
                                     # print sheet.cell(row=x, column=c).value
                                     name = sheet.cell(row=2, column=c).value
                                     if name != None:
+                                        name = name.upper().strip()
                                         group = sgroup[name]['id']
                                         tng = str(name).upper().strip()
 
@@ -1402,23 +1403,26 @@ class  ConsultMaterialsAreas(JSONResponseMixin, View):
                     if 'getdsmetrado' in request.GET:
                         context['status'] = True
                     if 'getDetails' in request.GET:
-                        keys = request.GET['keys'].split(',')
-                        query = None
-                        count = 0
-                        if request.GET['searchby'] == 'sgroup':
-                            for key in keys:
-                                aux = DSMetrado.objects.filter(dsector__dsector_id__startswith=key, materials_id=request.GET['materials'])
-                                if count == 0:
-                                    query = aux
-                                    count+=1
-                                query = query | aux
-                        if request.GET['searchby'] == 'dsector':
-                            for key in keys:
-                                aux = DSMetrado.objects.filter(dsector__dsector_id__startswith=key, materials_id=request.GET['materials'])
-                                if count == 0:
-                                    query = aux
-                                    count += 1
-                                query = query | aux
+                        if 'keys' in request.GET:
+                            keys = request.GET['keys'].split(',')
+                            query = None
+                            count = 0
+                            if request.GET['searchby'] == 'sgroup':
+                                for key in keys:
+                                    aux = DSMetrado.objects.filter(dsector__dsector_id__startswith=key, materials_id=request.GET['materials'])
+                                    if count == 0:
+                                        query = aux
+                                        count+=1
+                                    query = query | aux
+                            if request.GET['searchby'] == 'dsector':
+                                for key in keys:
+                                    aux = DSMetrado.objects.filter(dsector__dsector_id__startswith=key, materials_id=request.GET['materials'])
+                                    if count == 0:
+                                        query = aux
+                                        count += 1
+                                    query = query | aux
+                        else:
+                            query = DSMetrado.objects.filter(sector_id=kwargs['sec'], materials_id=request.GET['materials'])
                         context['data'] = json.loads(
                             serializers.serialize(
                                 'json',

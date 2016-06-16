@@ -58,6 +58,7 @@ app.factory('cpf', function($http, $cookies) {
 
 app.controller('cpC', function($scope, $timeout, cpf) {
   $scope.selected = {};
+  $scope.dg = false;
   angular.element(document).ready(function() {});
   $scope.getSGroup = function() {
     var prm;
@@ -112,6 +113,7 @@ app.controller('cpC', function($scope, $timeout, cpf) {
       if (response.status) {
         $scope.gdata = response.dataset;
         angular.element("#mselection").closeModal();
+        $scope.dg = false;
       } else {
         swal("Alerta!", "" + response.raise, "warning");
       }
@@ -125,6 +127,7 @@ app.controller('cpC', function($scope, $timeout, cpf) {
     return cpf.getDataG(prm).success(function(response) {
       if (response.status) {
         $scope.gdata = response.dataset;
+        $scope.dg = true;
       } else {
         swal("Alerta!", "" + response.raise, "warning");
       }
@@ -133,17 +136,19 @@ app.controller('cpC', function($scope, $timeout, cpf) {
   $scope.getDetails = function(materials) {
     var obj, prm;
     prm = new Object;
-    obj = $scope.selected;
-    angular.forEach(obj, function(value, key) {
-      if (value === true) {
-        if (!prm.hasOwnProperty('keys')) {
-          prm['keys'] = key;
-        } else {
-          prm['keys'] += "," + key;
+    if ($scope.dg === false) {
+      obj = $scope.selected;
+      angular.forEach(obj, function(value, key) {
+        if (value === true) {
+          if (!prm.hasOwnProperty('keys')) {
+            prm['keys'] = key;
+          } else {
+            prm['keys'] += "," + key;
+          }
         }
-      }
-    });
-    prm['searchby'] = $scope.bsearch;
+      });
+      prm['searchby'] = $scope.bsearch;
+    }
     prm['materials'] = materials;
     prm['getDetails'] = true;
     cpf.getDetails(prm).success(function(response) {
