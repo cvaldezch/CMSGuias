@@ -467,6 +467,7 @@ class ProgramingProject(JSONResponseMixin, View):
                                     if len(cm) == 15:
                                         # ingreso de materiales
                                         ns = sheet.cell(row=3, column=c).value
+                                        ns = ns.upper().strip()
                                         purchase = 0
                                         sales = 0
                                         try:
