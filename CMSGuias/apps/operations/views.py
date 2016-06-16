@@ -457,6 +457,7 @@ class ProgramingProject(JSONResponseMixin, View):
                                 name = sheet.cell(row=2, column=c).value
                                 if name != None:
                                     tgn = name
+                                    tgn = name.upper().strip()
                                 cell = sheet.cell(row=x, column=c).value
                                 if cell == None or float(str(cell)) == 0:
                                     continue
