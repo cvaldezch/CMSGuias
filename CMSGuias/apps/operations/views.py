@@ -1199,7 +1199,7 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                 return self.render_to_json_response(context)
             if 'export' in request.GET:
                 response = HttpResponse(mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-                response['Content-Disposition'] = 'attachment; filename=com.xlsx'
+                response['Content-Disposition'] = 'attachment; filename=DATOS-%s-%s.xlsx' %(kwargs['pro'], kwargs['sec'])
                 wb = Workbook()
                 ws = wb.active
                 ws.title = 'Materiales'
@@ -1207,11 +1207,10 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                 # ws = wb.create_sheet()
                 # sales = MetProject.objects.filter(
                 #         proyecto_id=kwargs['pro'], sector_id=kwargs['sec'])
-                ds = DSector.objects.filter(
-                        project_id=kwargs['pro'], sector_id=kwargs['sec'])
-                operations = DSMetrado.objects.filter(
-                    dsector_id__in=[x.dsector_id for x in ds]).order_by('materials__matnom')
-                operations = operations
+                # ds = DSector.objects.filter(
+                #        project_id=kwargs['pro'], sector_id=kwargs['sec'])
+                operations = DSMetrado.objects.filter(sector_id=kwargs['sec']).order_by('materials__matnom')
+                # operations = operations
                 lst = list()
                 for o in operations:
                     c = 0
@@ -1245,7 +1244,7 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                     ('Unidad', 9),
                     ('Marca', 9),
                     ('Modelo', 9),
-                    ('Cantidad', 9),]
+                    ('Cantidad Vendida', 20),]
                 border = styles.borders.Border(left=styles.borders.Side(style='thin'),
                                                 right=styles.borders.Side(style='thin'),
                                                 top=styles.borders.Side(style='thin'),

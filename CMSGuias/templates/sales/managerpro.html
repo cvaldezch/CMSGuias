@@ -149,7 +149,7 @@
                 <div class="col-md-9">
                     <div class="panel panel-primary panel-manager">
                         <div class="panel-body">
-                            <input type="hidden" name="pro" value="{{ project.proyecto_id }}" data-name="{{ project.nompro }}" data-address="{{ project.direccion }}" data-responsible="{{ project.empdni.name_complete }}" data-customers="{{ project.ruccliente.razonsocial }}" data-star="{{ project.comienzo }}" data-end="{{ project.fin }}">
+                            <input type="hidden" name="pro" value="{{ project.proyecto_id }}" data-name="{{ project.nompro }}" data-address="{{ project.direccion }} {{ project.distrito.distnom }} {{ project.provincia.pronom }} {{ project.departamento.depnom }}" data-responsible="{{ project.empdni.name_complete }}" data-customers="{{ project.ruccliente.razonsocial }}" data-star="{{ project.comienzo }}" data-end="{{ project.fin }}">
                             <input type="hidden" name="sub" value="">
                             <div class="header-project">
                                 <p>
