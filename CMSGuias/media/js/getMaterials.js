@@ -87,6 +87,7 @@ getSummaryMaterials = function() {
     };
     $.getJSON("/json/get/resumen/details/materiales/", data, function(response) {
       var $lstp, $lsts, $tb, template, x;
+      console.log(response);
       searchUnitOption();
       template = "<tr><th>Codigo :</th><td class='id-mat'>{{materialesid}}</td></tr><tr><th>Descripción :</th><td>{{matnom}}</td></tr><tr><th>Medida :</th><td>{{matmed}}</td></tr><tr><th>Unidad :</th><td>{{unidad}}</td></tr>";
       $tb = $(".tb-details > tbody");
@@ -109,6 +110,12 @@ getSummaryMaterials = function() {
       $lsts.empty();
       if ($lsts.length > 0 && response.purchase) {
         $lsts.append(Mustache.render("{{#purchase}}<option label=\"{{currency}}\" value=\"{{sales}}\" />{{/purchase}}", response));
+      }
+      if ($("#unit").length > 0) {
+        setTimeout(function() {
+          console.log(response.list[0].unidad);
+          $("#unit").val(response.list[0].unidad);
+        }, 800);
       }
     });
   }
@@ -169,6 +176,7 @@ searchMaterialCode = function(code) {
       if (response.status) {
         $met = $("[name=meter]");
         $met.empty();
+        searchUnitOption();
         $met.append(Mustache.render("<option value='{{ matmed }}'>{{ matmed }}</option>", response.list));
         $("[name=description]").val(response.list.matnom);
         template = "<tr><th>Codigo :</th><td class='id-mat'>{{ materialesid }}</td></tr><tr><th>Descripción :</th><td>{{ matnom }}</td></tr><tr><th>Medida :</th><td>{{ matmed }}</td></tr><tr><th>Unidad :</th><td>{{ unidad }}</td></tr>";
@@ -189,6 +197,12 @@ searchMaterialCode = function(code) {
         $lsts.empty();
         if ($lsts.length > 0 && response.purchase) {
           $lsts.append(Mustache.render("{{#purchase}}<option label=\"{{currency}}\" value=\"{{sales}}\" />{{/purchase}}", response));
+        }
+        if ($("#unit").length > 0) {
+          setTimeout(function() {
+            console.log(response.list.unidad);
+            $("#unit").val(response.list.unidad);
+          }, 800);
         }
       } else {
         console.log("materials not found");
