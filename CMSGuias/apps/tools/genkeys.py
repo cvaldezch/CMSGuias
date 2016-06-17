@@ -420,9 +420,9 @@ def generateBudget():
 def genSGroup(pro=None, sec=None):
     try:
         row = SGroup.objects.filter(
-                project_id=pro, sector_id=sec).order_by('-register')
+                project_id=pro, sector_id=sec)
         if row:
-            row = row[0]
+            row = row.latest('register')
             code = int(row.sgroup_id[-4:])
             return '%s%s%s' % (pro, str(sec.strip()[-5:]), 'SG{:0>4d}'.format(code + 1))
         else:
@@ -434,9 +434,9 @@ def genSGroup(pro=None, sec=None):
 def genDSector(pro, group=None):
     try:
         raw = DSector.objects.filter(
-                sgroup_id=group).order_by('-register')
+                sgroup_id=group)
         if raw:
-            raw = raw[0]
+            raw = raw.latest('register')
             code = int(raw.dsector_id[-3:])
             return '%s%s' % (group, 'DS{:0>3d}'.format(code + 1))
         else:
