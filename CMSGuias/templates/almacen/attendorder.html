@@ -47,9 +47,13 @@
 						</dl>
 					</div>
 					<div class="col-md-12">
-						<button class="btn btn-warning text-black btn-attend">
+						<button type="button" class="btn btn-warning text-black btn-attend">
 							<span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios
 						</button>
+						<a href="{% url 'return_order_items_view' orders.pedido_id %}" class="btn btn-primary pull-right">
+							<i class="fa fa-reply-all"></i>
+							<span>Retornar Items</span>
+						</a>
 					</div>
 				</div>
 			</div>

@@ -2577,3 +2577,45 @@ class EditBedsideGuide(JSONResponseMixin, View):
                 context['raise'] = str(e)
                 context['status'] = False
             return self.render_to_json_response(context)
+
+class ReturnItemOrders(JSONResponseMixin, TemplateView):
+    """docstring for ReturnItemOrders"""
+    def get(self, request, *args, **kwargs):
+        try:
+            context = dict()
+            if request.is_ajax():
+                try:
+                    if 'getorder' in request.GET:
+                        det = Detpedido.objects.filter(pedido_id=kwargs['order'])
+                        if det[0].pedido.status != 'CO' and det[0].pedido.status != 'AN':
+                            det = det.exclude(cantshop=0)
+                            context['details'] = json.loads(
+                                serializers.serialize(
+                                    'json',
+                                    det,
+                                    relations=('materiales','brand','model')))
+                        else:
+                            context['details'] = '[]'
+                        context['status'] = True
+                except (ObjectDoesNotExist, Exception) as e:
+                    context['raise'] = str(e)
+                    context['status'] = False
+                return self.render_to_json_response(context)
+            context['order'] = Pedido.objects.get(pedido_id=kwargs['order'], flag=True)
+            context['usr'] = userProfile.objects.get(empdni__exact=context['order'].empdni)
+            return render(request, 'almacen/returnorder.html', context)
+        except TemplateDoesNotExist, e:
+            raise Http404(e)
+
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'saveReturn' in request.POST:
+                    context['status'] =  True
+            except (ObjectDoesNotExist, Exception), e:
+                context['raise'] = str(e)
+                context['status'] = True
+            return self.render_to_json_response(context)
+        
+
