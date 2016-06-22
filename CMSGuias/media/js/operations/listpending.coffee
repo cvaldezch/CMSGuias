@@ -18,7 +18,6 @@ app.factory 'cpf', ($http, $cookies) ->
 		$http.get "", params: options
 	obj.getDataG = (options = {}) ->
 		$http.get "", params: options
-	
 	obj.getDetails = (options = {}) ->
 		$http.get "", params: options
 	

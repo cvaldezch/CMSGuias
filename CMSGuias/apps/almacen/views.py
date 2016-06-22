@@ -2612,6 +2612,33 @@ class ReturnItemOrders(JSONResponseMixin, TemplateView):
         if request.is_ajax():
             try:
                 if 'saveReturn' in request.POST:
+                    """ save changes return list to project"""
+                    # validating quantity in ddbb
+                    # requeriment before return materials to project
+                    data = json.loads(request.POST['details'])
+                    valid = True
+                    notProc = list()
+                    for x in data:
+                        queryset = Detpedido.objects.get(id=x['id'], pedido_id=kwargs['order'])
+                        if queryset.cantshop > x['quantity']:
+                            valid = False
+                        if valid:
+                            if queryset.cantidad == x['quantity']:
+                                queryset.delete()
+                            elif queryset.cantshop == x['quantity']:
+                                queryset.cantshop = (queryset.cantshop - x['quantity'])
+                                queryset.cantidad = (queryset.cantidad - x['quantoty'])
+                                queryset.tag = '2'
+                                queryset.save()
+                            if x['quantity'] < queryset.cantshop:
+                                queryset.cantshop = (queryset.cantshop - x['quantity'])
+                                queryset.cantidad = (queryset.cantidad - x['quantoty'])
+                                queryset.save()
+                        else:
+                            notProc.append(x)
+                        
+                    # preparing return project
+                    
                     context['status'] =  True
             except (ObjectDoesNotExist, Exception), e:
                 context['raise'] = str(e)

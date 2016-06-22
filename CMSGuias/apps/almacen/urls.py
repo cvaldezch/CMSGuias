@@ -112,6 +112,6 @@ urlpatterns = patterns(
         MaterialBrand.as_view(), name='storebrand'),
     url(r'^guide/edit/(?P<guide>.*)/$',
         EditBedsideGuide.as_view(), name='view_guide_edit'),
-    url(r'^return/item/orders/(?P<order>\w{10})/?',
+    url(r'^return/item/orders/(?P<order>\w{10})/$',
         ReturnItemOrders.as_view(), name='return_order_items_view'),
 )

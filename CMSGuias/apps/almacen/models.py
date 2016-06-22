@@ -431,3 +431,16 @@ class DetRestoration(models.Model):
 
     def __unicode__(self):
         return '%s %s' % (self.restoration, self.materials)
+
+class ReturnItemsProject(models.Model):
+    pedido = models.ForeignKey(Pedido, to_field='pedido_id')
+    register = models.DateTimeField(auto_now_add=True)
+    observation = models.TextField(null=True, blank=True)
+    listsend = models.TextField(null=False)
+    notpro = models.TextField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-register']
+
+    def __unicode__(self):
+        return '%s %s %s' % (self.pedido.pedido_id, self.register, self.observation)
