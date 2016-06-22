@@ -1,0 +1,1894 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"for",
+				"forEach"
+			],
+			[
+				"ng-",
+				"ng-init	AngularJS"
+			],
+			[
+				"cant",
+				"cantshop"
+			],
+			[
+				"verbatim",
+				"verbatim	verbatim"
+			],
+			[
+				"get",
+				"getDetails"
+			],
+			[
+				"cha",
+				"charset	Attr"
+			],
+			[
+				"render",
+				"render"
+			],
+			[
+				"View",
+				"Views"
+			],
+			[
+				"ser",
+				"serialize"
+			],
+			[
+				"se",
+				"searchby"
+			],
+			[
+				"mater",
+				"materials"
+			],
+			[
+				"mat",
+				"materials"
+			],
+			[
+				"ma",
+				"materials"
+			],
+			[
+				"fiedl",
+				"field"
+			],
+			[
+				"quan",
+				"quant"
+			],
+			[
+				"DS",
+				"DSMetrado"
+			],
+			[
+				"project",
+				"project_id"
+			],
+			[
+				"aut",
+				"auto"
+			],
+			[
+				"class",
+				"Class"
+			],
+			[
+				"pp",
+				"ppurchase"
+			],
+			[
+				"model",
+				"model_id"
+			],
+			[
+				"sg",
+				"sgroup"
+			],
+			[
+				"try",
+				"try	Try/Except"
+			],
+			[
+				"unit",
+				"unit_id"
+			],
+			[
+				"Tm",
+				"tmpcompra"
+			],
+			[
+				"save",
+				"saveComment"
+			],
+			[
+				"obser",
+				"observation"
+			],
+			[
+				"rq",
+				"request"
+			],
+			[
+				"str",
+				"strftime"
+			],
+			[
+				"requ",
+				"request"
+			],
+			[
+				"de",
+				"details"
+			],
+			[
+				"filter",
+				"filterHist"
+			],
+			[
+				"Det",
+				"DetCompra"
+			],
+			[
+				"materia",
+				"materiales_id"
+			],
+			[
+				"order",
+				"order_by"
+			],
+			[
+				"ng-key",
+				"ng-keyup	AngularJS"
+			],
+			[
+				"serial",
+				"serializers"
+			],
+			[
+				"fitler",
+				"filterMaterials"
+			],
+			[
+				"fon",
+				"font-family	styl"
+			],
+			[
+				"max",
+				"max-width	styl"
+			],
+			[
+				"ng",
+				"ng-if	AngularJS"
+			],
+			[
+				"fil",
+				"filpur"
+			],
+			[
+				"maxl",
+				"maxlength	Attr"
+			],
+			[
+				"material",
+				"materiales"
+			],
+			[
+				"TEmpla",
+				"TemplateDoesNotExist"
+			],
+			[
+				"csrf",
+				"csrf	Django template csrf token"
+			],
+			[
+				"con",
+				"Content-Type"
+			],
+			[
+				"tra",
+				"transformRequest"
+			],
+			[
+				"app",
+				"append"
+			],
+			[
+				"obj",
+				"objects"
+			],
+			[
+				"Transpo",
+				"transport"
+			],
+			[
+				"htt",
+				"Http404"
+			],
+			[
+				"http",
+				"http"
+			],
+			[
+				"Gui",
+				"GuiaRemision"
+			],
+			[
+				"Htt",
+				"Http404"
+			],
+			[
+				"rense",
+				"render_to_json_response"
+			],
+			[
+				"can",
+				"cantshop"
+			],
+			[
+				"block",
+				"block	Django template block"
+			],
+			[
+				"time",
+				"timeout"
+			],
+			[
+				"marg",
+				"margin-right	styl"
+			],
+			[
+				"margin",
+				"margin-left	styl"
+			],
+			[
+				"mari",
+				"margin-top	styl"
+			],
+			[
+				"min",
+				"min-height	styl"
+			],
+			[
+				"date",
+				"datetime"
+			],
+			[
+				"path",
+				"paths"
+			],
+			[
+				"uri",
+				"uriPath"
+			],
+			[
+				"file",
+				"fileExists"
+			],
+			[
+				"uplo",
+				"uploadFiles"
+			],
+			[
+				"up",
+				"uploadFiles"
+			],
+			[
+				"trnas",
+				"transformRequest"
+			],
+			[
+				"SEc",
+				"SectorFiles"
+			],
+			[
+				"tran",
+				"transformRequest"
+			],
+			[
+				"m-text",
+				"m-input:textarea	Materialize textarea"
+			],
+			[
+				"dsec",
+				"dsector_id"
+			],
+			[
+				"Sec",
+				"SectorFiles"
+			],
+			[
+				"list",
+				"listPlanes"
+			],
+			[
+				"col",
+				"col_num"
+			],
+			[
+				"wi",
+				"width"
+			],
+			[
+				"Mate",
+				"materiales"
+			],
+			[
+				"Http",
+				"HttpResponse"
+			],
+			[
+				"res",
+				"register"
+			],
+			[
+				"add",
+				"auto_now_add"
+			],
+			[
+				"Date",
+				"DateTimeField"
+			],
+			[
+				"border",
+				"border-radius	styl"
+			],
+			[
+				"font",
+				"font-weight	styl"
+			],
+			[
+				"text",
+				"text-transform	styl"
+			],
+			[
+				"ov",
+				"overflow-y	styl"
+			],
+			[
+				"re",
+				"render_to_response"
+			],
+			[
+				"Objec",
+				"ObjectDoesNotExist"
+			],
+			[
+				"close",
+				"closeModal"
+			],
+			[
+				"brand",
+				"brand_id"
+			],
+			[
+				"em",
+				"ematc"
+			],
+			[
+				"defe",
+				"deffered"
+			],
+			[
+				"materis",
+				"materials"
+			],
+			[
+				"dist",
+				"distinct"
+			],
+			[
+				"sel",
+				"serialize"
+			],
+			[
+				"seri",
+				"serializers"
+			],
+			[
+				"seria",
+				"serialize"
+			],
+			[
+				"resp",
+				"render_to_json_response"
+			],
+			[
+				"Templa",
+				"TemplateDoesNotExist"
+			],
+			[
+				"req",
+				"request"
+			],
+			[
+				"logi",
+				"login_required"
+			],
+			[
+				"method",
+				"method_decorator"
+			],
+			[
+				"ng-re",
+				"ng-repeat	AngularJS"
+			],
+			[
+				"ver",
+				"verbatim	Django template verbatim"
+			],
+			[
+				"facto",
+				"factoryDSector"
+			],
+			[
+				"fac",
+				"factoryDSector"
+			],
+			[
+				"f",
+				"factory"
+			],
+			[
+				"sector",
+				"sector_id"
+			],
+			[
+				"import",
+				"important"
+			],
+			[
+				"mar",
+				"margin"
+			],
+			[
+				"in",
+				"inline-block"
+			],
+			[
+				"bac",
+				"background"
+			],
+			[
+				"mon",
+				"month"
+			],
+			[
+				"pedido",
+				"pedido_id"
+			],
+			[
+				"arra",
+				"arrayToDataTable"
+			],
+			[
+				"visi",
+				"visualization"
+			],
+			[
+				"vi",
+				"visualization"
+			],
+			[
+				"op",
+				"ng-options	AngularJS"
+			],
+			[
+				"ng-op",
+				"ng-options	AngularJS"
+			],
+			[
+				"year",
+				"year"
+			],
+			[
+				"posts",
+				"posts_id"
+			],
+			[
+				"post",
+				"posts_id"
+			],
+			[
+				"to",
+				"arrayToDataTable"
+			],
+			[
+				"w",
+				"width"
+			],
+			[
+				"publi",
+				"publish"
+			],
+			[
+				"user",
+				"usersid"
+			],
+			[
+				"pub",
+				"publish"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "CMSGuias/apps/almacen/models.py",
+			"settings":
+			{
+				"buffer_size": 17039,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "CMSGuias/templates/almacen/returnorder.html",
+			"settings":
+			{
+				"buffer_size": 5219,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "CMSGuias/media/js/almacen/returnitemsorders.coffee",
+			"settings":
+			{
+				"buffer_size": 2113,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "CMSGuias/apps/almacen/urls.py",
+			"settings":
+			{
+				"buffer_size": 4790,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "CMSGuias/media/js/operations/dsector.coffee",
+			"settings":
+			{
+				"buffer_size": 39230,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "Packages/Stylus/Stylus.sublime-build",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Stylus/Stylus.sublime-build",
+					""
+				],
+				[
+					"Packages/Stylus/Stylus.sublime-build",
+					"compress"
+				]
+			],
+			[
+				"Packages/Stylus/Stylus.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 384.0,
+		"last_filter": "package ena",
+		"selected_items":
+		[
+			[
+				"package ena",
+				"Package Control: Enable Package"
+			],
+			[
+				"package",
+				"Package Control: Disable Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"conver",
+				"Indentation: Convert to Tabs"
+			],
+			[
+				"convert",
+				"Indentation: Convert to Tabs"
+			],
+			[
+				"coffee",
+				"Set Syntax: CoffeeScript"
+			],
+			[
+				"Package Control: disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"Package Control: ena",
+				"Package Control: Enable Package"
+			],
+			[
+				"Package Control: install",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: update",
+				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"Package Control: remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: List Packages"
+			],
+			[
+				"package disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"packageen",
+				"Package Control: Enable Package"
+			],
+			[
+				"html",
+				"Set Syntax: HTML (Django)"
+			],
+			[
+				"package up",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"packacdis",
+				"Package Control: Disable Package"
+			],
+			[
+				"package control install",
+				"Package Control: Install Package"
+			],
+			[
+				"package control disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"package control ena",
+				"Package Control: Enable Package"
+			],
+			[
+				"covnert",
+				"Indentation: Convert to Spaces"
+			],
+			[
+				"conve",
+				"Indentation: Convert to Spaces"
+			],
+			[
+				"colo",
+				"Color Picker"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"syntaxht",
+				"Set Syntax: HTML"
+			],
+			[
+				"install package ",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 504.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+			"yield",
+			"[x for x in range(10)]",
+			"range(10)",
+			"str('   asd    ').upper().strip()",
+			"'   asd    '.upper().strip()",
+			"'   as  d '.upper().strip()",
+			"'asd'.upper()",
+			"not True",
+			"not False",
+			"date",
+			"date = datetime.datetime.today().strftime('%Y%m%d-%H%M%S')",
+			"date",
+			"date = datetime.datetime.today().strftime('%Y%m%d-%H%M%S')",
+			"date",
+			"date = datetime.datetime.today().strftime('%Y%m%d-%H%M')",
+			"date",
+			"date = datetime.datetime.today().strftime('%Y%m%d')",
+			"date = datetime.datetime.today().strftime('%Y')",
+			"date = datetime.datetime.today().strftime('Y%m%d%')",
+			"import datetime",
+			"date = datetime.datetime.today().strftime('Y%m%d%')",
+			"path.startswith('/')",
+			"path = '/como esta/este pah.ph'",
+			"path.startswith('/')",
+			"path.startswith('a')",
+			"path",
+			"path = 'como esta/este pah.ph'",
+			"datetime.datetime.today()",
+			"datetime.datetime.now()",
+			"datetime.datetime",
+			"datetime.now",
+			"datetime.now()",
+			"datetime.today()",
+			"datetime",
+			"import datetime",
+			"datetime",
+			"o",
+			"'çon' if not o else 'sin'",
+			"'çon' if !o else 'sin'",
+			"'çon' if o else 'sin'",
+			"o = 1",
+			"'çon' if o else 'sin'",
+			"print ['çon' if o else 'sin']",
+			"o",
+			"print 'çon' if o else 'sin'",
+			"print ['çon' if o else 'sin']",
+			"print 'çon' if o else 'sin'",
+			"print o if o else ''",
+			"if o:",
+			"o = 0",
+			"a+f",
+			"f = [{'b': '05'}]",
+			"a+f",
+			"f = {'b': '05'}",
+			"a",
+			"da",
+			"d[0]['b']",
+			"d[0]",
+			"d",
+			"d = list({x['b']:x for x in c}.values())",
+			"d.",
+			"d",
+			"d[0]",
+			"d",
+			"d = {x['b']:x for x in c}.values()",
+			"{x['b']:x for x in c}.values()",
+			"{x['b']:x for x in c}.values",
+			"c",
+			"c = a + b",
+			"b = [{'b':'03'}, {'b':'02'}]",
+			"a = [{'b':'01'}, {'b':'02'}]",
+			"c.keys()",
+			"c",
+			"a",
+			"c = a + b",
+			"a + b",
+			"list(set(a+b))",
+			"b = [{'b3':'03'}, {'b2':'02'}]",
+			"a = [{'b1':'01'}, {'b2':'02'}]",
+			"t[-4:]",
+			"s[-5:]",
+			"s[-5]",
+			"s = 'PR15099VEN01'",
+			"t[-5:]",
+			"t[7:][2:]",
+			"t[7:][2;]",
+			"t = 'PR15099VEN01SG0001'",
+			"t[7:]",
+			"t[7]",
+			"t[7:]",
+			"t = 'PR15099VEN01SG0001'",
+			"'PR15054SG0001DS006'[-3:]",
+			"'PR15054SG0001DS006'[7:][8:]",
+			"'PR15054SG0001DS006'[7:]",
+			"'PR15054SG0001DS006'",
+			"'  sd  '.strip()[-2:]",
+			"'  sd  '.strip()[-2]",
+			"'  sd  '.strip()[:-2]",
+			"'  sd  '.strip()[5:-1]",
+			"'  sd  '.strip()[:-1]",
+			"'  sd  '.strip()[-1]",
+			"'  sd  '.strip()[-1:5]",
+			"'  sd  '.strip()[:-1]",
+			"'  sd  '.strip()[-1:]",
+			"'  sd  '.strip()[-1]",
+			"'  sd  '.strip()[-3]",
+			"'  sd  '[-3]",
+			"datetime.datetime.today()",
+			"datetime.datetime.date()",
+			"datetime.Now()",
+			"datetime.Date()",
+			"datetime.today()",
+			"import datetime",
+			"datetime.datetime.today()",
+			"datetime.now()",
+			"datetime.today()",
+			"datetime.date()",
+			"import datatime",
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/almacen",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates"
+	],
+	"file_history":
+	[
+		"/C/Users/CHRISTIAN/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/C/Users/CHRISTIAN/AppData/Roaming/Sublime Text 3/Packages/BracketHighlighter/Example.sublime-keymap",
+		"/C/Users/CHRISTIAN/AppData/Roaming/Sublime Text 3/Packages/BracketHighlighter/bh_core.sublime-settings",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/picrperu.sublime-project",
+		"/C/Users/CHRISTIAN/AppData/Roaming/Sublime Text 3/Settings/SideBarEnhancements.json",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/almacen/attendorder.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/almacen/views.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/almacen/urls.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/almacen/purchase.coffee",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/operations/models.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/operations/views.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/tools/genkeys.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/mailer.coffee",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/sales/managerpro.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/sales/managerpro.coffee",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/getMaterials.coffee",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/sales/managersec.coffee",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/logistics/purchase.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/operations/programmingsector.coffee",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/operations/listpending.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/operations/dsector.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/operations/listpending.coffee",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/operations/programinggroup.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/operations/urls.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/operations/dsector.coffee",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/public/css/lposts.styl",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/public/css/details.styl",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/views/default/viewpost.php",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/reports/views.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/css/reports/serviceorders.css",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/css/reports/serviceorders.styl",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/report/rptserviceorders.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/report/rptordersstore.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/logistica/views.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/report/rptpurchase.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/logistics/purchase.coffee",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/logistics/consultpurchase.coffee",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/logistics/consultpurchase.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/css/reports/style-guideout-icr.styl",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/errorlog.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/css/reports/style-guideout-icr.css",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/tools/uploadFiles.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/css/basemd.styl",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/logistics/convertSupply.coffee",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/basemd.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/logistica/urls.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/almacen/guideedit.coffee",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/almacen/guideedit.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/almacen/detailsorders.coffee",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/almacen/guideedit.js",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/menus/logistics.htm",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/menus/logisticsmd.htm",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/wsjson/urls.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/almacen/documentout.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/wsjson/views.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/almacen/listguide.coffee",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/almacen/listguide.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/almacen/generateGuide.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/operations/comparelist.coffee",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/ventas/budget/views.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/ventas/views.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/sales/listorders.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/operations/programmingsector.js",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/.htaccess",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/Core/Config.php",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/Controllers/post.php",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/templates/default/header.php",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/public/js/viewPost.coffee",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/public/js/index.coffee",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/public/js/index.js",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/ventas/models.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/storage/projects/2015/PR15099/PR15099VEN01/PR15099VEN01SG0001DS001/tabla equivalencia de fierros[1].pdf",
+		"/C/Users/CHRISTIAN/AppData/Roaming/Sublime Text 3/Installed Packages/Materialize.sublime-package",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/query.sql",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/settings.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/ventas/migrations/0005_auto__chg_field_restorestorage_date__chg_field_historymetproject_date_.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/operations/admin.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/logistica/models.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/home/models.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/almacen/models.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/operations/comparematerials.html",
+		"/C/Users/CHRISTIAN/AppData/Roaming/Sublime Text 3/Packages/Better CoffeeScript/Keymaps/Default (Windows).sublime-keymap",
+		"/C/Users/CHRISTIAN/AppData/Roaming/Sublime Text 3/Packages/Better CoffeeScript/CoffeeScript.sublime-settings",
+		"/C/Users/CHRISTIAN/AppData/Roaming/Sublime Text 3/Packages/User/CoffeeScript.sublime-settings",
+		"/C/Users/CHRISTIAN/AppData/Roaming/Sublime Text 3/Packages/Stylus/Stylus.sublime-settings",
+		"/C/Users/CHRISTIAN/AppData/Roaming/Sublime Text 3/Packages/User/Stylus.sublime-settings",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/sales/projects.coffee",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/css/reports/purchaseorder.css",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/report/test.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/report/rptpreorders.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/report/rptordersupply.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/report/rptguidereferralwithout.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/report/rptguidereferral.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/css/reports/style-guidewithout.css",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/css/reports/style-guidewithout.styl",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/css/reports/ordersstore.css",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/css/reports/style-guide.css",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/css/notify/notify.styl",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/notifys/notify.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/sales/home.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/css/notify/notify.css",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/Gulpfile.js",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/public/css/sidebar.styl",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/home/views.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/ventas/admin.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/home/urls.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/sales/managersec.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/almacen/listorderattend.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/almacen/slopeorders.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/almacen/listdetailsOrders.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/almacen/pedido.html",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/almacen/migrations/0008_auto__add_field_niple_dsector.py",
+		"/C/Users/CHRISTIAN/Desktop/Release-alfa/Views.exe.config",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/operations/factory/DSMetrado.coffee",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/public/js/modules/users.coffee",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/public/js/admin/users.coffee",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/public/js/admin/controllers/MenuCtrl.coffee",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/Controllers/blog.php",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/Controllers/Admin/Posts.php",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/views/default/blog.php",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/backup/elementos/app/views/admin/postsadd.php",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/views/admin/postsedit.php",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/views/admin/login.php",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/public/css/lposts.css",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/backup/elementos/app/views/default/blog.php",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/templates/default/footer.php",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/.gitignore",
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/views/admin/postsadd.php"
+	],
+	"find":
+	{
+		"height": 26.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"viewValue",
+			".$",
+			"ctrl",
+			"viewValue",
+			"selAll",
+			"value",
+			"click",
+			"ngModel",
+			"quantity",
+			"returnItems",
+			"small",
+			"materials",
+			"selected",
+			"all",
+			"class",
+			"h5",
+			"radio",
+			"label",
+			"det",
+			"options",
+			"Unidad",
+			"orders",
+			"div",
+			"article",
+			"usr",
+			"pedido_id",
+			"Pedido",
+			"orders",
+			"button",
+			"article",
+			"<button",
+			"button",
+			"return_order_items_view",
+			"raise",
+			"sgroup",
+			"operations",
+			"com.",
+			"name=\"pro\"",
+			"$(\"input[name=pro]\")",
+			"Estimados",
+			"message",
+			"globalmbody",
+			"sendGlobalMailer",
+			"btn-global-send",
+			"showGlobalEnvelop",
+			"        , 1600\n",
+			"#unit",
+			"summary",
+			"unitdad",
+			"resumen",
+			"ns",
+			"agregar",
+			"saveds",
+			"getData",
+			"gdata",
+			"click test",
+			"dsector_id",
+			"button",
+			"=key",
+			"key",
+			"filtergd",
+			"values",
+			"squantity",
+			"query",
+			"', ",
+			"json",
+			"key",
+			"value",
+			"getPendingData",
+			"search",
+			"getDSector",
+			"input",
+			"type=checkbox",
+			"sg",
+			"></",
+			"cpC",
+			"gsgroup",
+			"apf",
+			"ap",
+			"7472403188",
+			"fixed",
+			"adsbygoogleast",
+			"adsbygoogle",
+			"adsbygoogleasds",
+			"format",
+			"vertical",
+			"2973988384",
+			"async",
+			"acsyn",
+			"asycn",
+			"adsbygoogleasf",
+			"adsbygoogle",
+			"adsbygoogles",
+			"adsbygoogleasf",
+			"8249317987",
+			"adsbygoogleasf",
+			"purchase",
+			"td",
+			"h4",
+			"pendiente",
+			"button",
+			"consultpending_view",
+			"raise",
+			"btn",
+			"hide-only-small",
+			"sdn",
+			"7.6",
+			"6.7",
+			"5.8",
+			"top",
+			"order",
+			"save",
+			"purchase",
+			"saveComment",
+			"btn-edit",
+			"del",
+			"comment",
+			"showObservation",
+			"elem",
+			"@",
+			"unit",
+			"observation",
+			"obs",
+			"odesc",
+			"addTmpCompraForm",
+			"add",
+			"unidad",
+			":"
+		],
+		"highlight": false,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "CMSGuias/apps/almacen/models.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 17039,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8598,
+								8598
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.regions":
+							[
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"rulers":
+							[
+							],
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3567.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "CMSGuias/templates/almacen/returnorder.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5219,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3320,
+								3320
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.regions":
+							[
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"open_with_edit": true,
+							"rulers":
+							[
+							],
+							"syntax": "Packages/Djaneiro/Syntaxes/HTML (Django).tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1152.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "CMSGuias/media/js/almacen/returnitemsorders.coffee",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2113,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								383,
+								383
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.regions":
+							[
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content"
+							],
+							"open_with_edit": true,
+							"rulers":
+							[
+								41.9,
+								42.2
+							],
+							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 288.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "CMSGuias/apps/almacen/urls.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4790,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4790,
+								4790
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.regions":
+							[
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content"
+							],
+							"rulers":
+							[
+							],
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "CMSGuias/media/js/operations/dsector.coffee",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 39230,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								700,
+								700
+							]
+						],
+						"settings":
+						{
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.regions":
+							[
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content"
+							],
+							"rulers":
+							[
+							],
+							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 26.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.coffee_compile_output":
+	{
+		"height": 118.0
+	},
+	"output.exec":
+	{
+		"height": 118.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 118.0
+	},
+	"pinned_build_system": "Packages/Stylus/Stylus.sublime-build",
+	"project": "picrperu.sublime-project",
+	"replace":
+	{
+		"height": 48.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"app/almacen/models.py",
+				"django\\icrperu\\vicrperu\\icrperu\\CMSGuias\\apps\\almacen\\models.py"
+			],
+			[
+				"operations/models.py",
+				"django\\icrperu\\vicrperu\\icrperu\\CMSGuias\\apps\\operations\\models.py"
+			],
+			[
+				"uploadfiles",
+				"django\\icrperu\\vicrperu\\icrperu\\CMSGuias\\apps\\tools\\uploadFiles.py"
+			],
+			[
+				"basemd.sty",
+				"django\\icrperu\\vicrperu\\icrperu\\CMSGuias\\media\\css\\basemd.styl"
+			],
+			[
+				"erroloh",
+				"php\\mvelementos\\src\\elementos\\errorlog.html"
+			],
+			[
+				"ventas/mo",
+				"django\\icrperu\\vicrperu\\icrperu\\CMSGuias\\apps\\ventas\\models.py"
+			],
+			[
+				"home/models",
+				"django\\icrperu\\vicrperu\\icrperu\\CMSGuias\\apps\\home\\models.py"
+			],
+			[
+				"gulp",
+				"django\\icrperu\\vicrperu\\icrperu\\Gulpfile.js"
+			],
+			[
+				".stly",
+				"php\\mvelementos\\src\\elementos\\app\\public\\css\\sidebar.styl"
+			],
+			[
+				"tools/genke",
+				"django\\icrperu\\vicrperu\\icrperu\\CMSGuias\\apps\\tools\\genkeys.py"
+			],
+			[
+				"cmsguias/apps/home/mode",
+				"django\\icrperu\\vicrperu\\icrperu\\CMSGuias\\apps\\home\\models.py"
+			],
+			[
+				"niple",
+				"django\\icrperu\\vicrperu\\icrperu\\CMSGuias\\apps\\almacen\\migrations\\0008_auto__add_field_niple_dsector.py"
+			],
+			[
+				"blog",
+				"php\\mvelementos\\src\\backup\\elementos\\app\\views\\default\\blog.php"
+			],
+			[
+				"blo",
+				"php\\mvelementos\\src\\elementos\\app\\Controllers\\blog.php"
+			],
+			[
+				"viewpsot",
+				"php\\mvelementos\\src\\elementos\\app\\views\\default\\viewpost.php"
+			],
+			[
+				"postsadd",
+				"php\\mvelementos\\src\\backup\\elementos\\app\\views\\admin\\postsadd.php"
+			],
+			[
+				"viewpost",
+				"php\\mvelementos\\src\\elementos\\app\\views\\default\\viewpost.php"
+			],
+			[
+				".htacc",
+				"php\\mvelementos\\src\\elementos\\.htaccess"
+			],
+			[
+				"details.sty",
+				"php\\mvelementos\\src\\elementos\\app\\public\\css\\details.styl"
+			],
+			[
+				"lpos",
+				"php\\mvelementos\\src\\elementos\\app\\public\\css\\lposts.css"
+			],
+			[
+				"login",
+				"php\\mvelementos\\src\\elementos\\app\\views\\admin\\login.php"
+			],
+			[
+				"header",
+				"php\\mvelementos\\src\\elementos\\app\\templates\\default\\header.php"
+			],
+			[
+				"footer",
+				"php\\mvelementos\\src\\elementos\\app\\templates\\default\\footer.php"
+			],
+			[
+				"quer",
+				"php\\mvelementos\\src\\elementos\\query.sql"
+			],
+			[
+				".gitig",
+				"php\\mvelementos\\src\\elementos\\.gitignore"
+			],
+			[
+				"errorlo",
+				"php\\mvelementos\\src\\elementos\\errorlog.html"
+			],
+			[
+				".htaccess",
+				"php\\mvelementos\\src\\elementos\\.htaccess"
+			],
+			[
+				"core/config",
+				"php\\mvelementos\\src\\elementos\\app\\Core\\Config.php"
+			],
+			[
+				"query",
+				"php\\mvelementos\\src\\elementos\\query.sql"
+			],
+			[
+				".htac",
+				"php\\mvelementos\\src\\elementos\\.htaccess"
+			],
+			[
+				"error",
+				"php\\mvelementos\\src\\elementos\\errorlog.html"
+			],
+			[
+				"post",
+				"php\\mvelementos\\src\\elementos\\app\\Controllers\\Admin\\Posts.php"
+			],
+			[
+				"pwd",
+				"php\\mvelementos\\src\\elementos\\app\\Controllers\\Pwd.php"
+			],
+			[
+				"controller/pwd",
+				"php\\mvelementos\\src\\elementos\\app\\Controllers\\Pwd.php"
+			],
+			[
+				"models/admin/user",
+				"php\\mvelementos\\src\\elementos\\app\\Models\\Admin\\Users.php"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 244.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
