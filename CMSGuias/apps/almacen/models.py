@@ -438,6 +438,8 @@ class ReturnItemsProject(models.Model):
     observation = models.TextField(null=True, blank=True)
     listsend = models.TextField(null=False)
     notpro = models.TextField(null=True, blank=True)
+    note = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=2, default='AC')
 
     class Meta:
         ordering = ['-register']

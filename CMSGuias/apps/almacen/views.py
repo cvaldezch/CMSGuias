@@ -2637,8 +2637,27 @@ class ReturnItemOrders(JSONResponseMixin, TemplateView):
                         else:
                             notProc.append(x)
                         
-                    # preparing return project
-                    
+                    # consult and update status order
+                    order = Pedido.objects.get(pedido_id=kwargs['order'])
+                    qdp = Detpedido.objects.filter(pedido_id=kwargs['order'])
+                    if qdp.filter(cantshop__gt=0).count():
+                        if qdp.count() == qdp.filter(cantshop__gt=0).count():
+                            order.status = 'AP'
+                        else:
+                            order.status = 'IN'
+                    if qdp.filter(cantshop=0).count() == qdp.count():
+                        order.status = 'CO'
+                    order.save()
+                    # register in table ReturnItemsProject
+                    obj = ReturnItemsProject()
+                    obj.pedido_id = kwargs['order']
+                    obj.observation = request.POST['observation']
+                    obj.listsend = request.POST['details']
+                    obj.notpro = json.dumps(notProc)
+                    obj.save()
+                    # return materials to project
+                    if len(order.dsecto_id) > 0:
+                        
                     context['status'] =  True
             except (ObjectDoesNotExist, Exception), e:
                 context['raise'] = str(e)
