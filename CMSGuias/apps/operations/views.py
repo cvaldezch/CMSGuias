@@ -1120,8 +1120,9 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                             materials_id=request.GET['materials'],
                             brand_id=request.GET['obrand'],
                             model_id=request.GET['omodel'])
+                    print request.GET
                     print d.count()
-                    print 'COUNT DSECTOR '
+                    print 'COUNT DSECTOR'
                     if d:
                         for x in d:
                             x.brand_id = request.GET['brand']
@@ -1129,6 +1130,7 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                             x.ppurchase = request.GET['ppurchase']
                             x.psales = request.GET['psales']
                             x.save()
+                            timer.sleep(3)
                     context['status'] = True
                 if 'glist' in request.GET:
                     sales = MetProject.objects.filter(
