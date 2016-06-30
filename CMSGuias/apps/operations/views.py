@@ -18,6 +18,7 @@ from django.views.generic import TemplateView, View
 from django.core.serializers.json import DjangoJSONEncoder
 # from xlrd import open_workbook, XL_CELL_EMPTY
 from openpyxl import load_workbook, Workbook, cell, styles
+import time
 
 from CMSGuias.apps.home.models import *
 from .models import *
@@ -389,11 +390,12 @@ class ProgramingProject(JSONResponseMixin, View):
                                         sg = SGroup.objects.filter(
                                             project_id=kwargs['pro'],
                                             sector_id=kwargs['sec'],
-                                            name__startwith=name)
+                                            name__startswith=name)
                                         print 'COUNTER SGROUP', sg.count()
                                         if sg.count() > 0:
                                             sgroup[name] = {'id': sg[0].sgroup_id}
                                         else:
+                                            print "CREA NUEVO GROUP DEFECT"
                                             nw = SGroup()
                                             sgroup[name] = {'id': genkeys.genSGroup(kwargs['pro'], sec)}
                                             # time.sleep(1)
@@ -406,6 +408,7 @@ class ProgramingProject(JSONResponseMixin, View):
                                             nw.status = 'PE'
                                             nw.save()
                                     except (ObjectDoesNotExist, Exception) as e:
+                                        print "NEW GROUP By EXCEPT"
                                         nw = SGroup()
                                         sgroup[name] = {'id': genkeys.genSGroup(kwargs['pro'], sec)}
                                         # time.sleep(1)
@@ -417,6 +420,7 @@ class ProgramingProject(JSONResponseMixin, View):
                                         nw.colour = 'rgba(254,255,180,0.8)'
                                         nw.status = 'PE'
                                         nw.save()
+                                    time.sleep(30)
                         elif x == 3:
                             tng = None
                             group = None
@@ -452,6 +456,7 @@ class ProgramingProject(JSONResponseMixin, View):
                                     nds.status = 'PE'
                                     nds.save()
                         elif x > 3:
+                            time.sleep(180)
                             tgn = None
                             for c in range(4, ncol):
                                 if c == ncol:
