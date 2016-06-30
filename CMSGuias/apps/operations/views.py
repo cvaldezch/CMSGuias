@@ -1130,7 +1130,7 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                             x.ppurchase = request.GET['ppurchase']
                             x.psales = request.GET['psales']
                             x.save()
-                            time.sleep(3)
+                            # time.sleep(3)
                     context['status'] = True
                 if 'glist' in request.GET:
                     sales = MetProject.objects.filter(
