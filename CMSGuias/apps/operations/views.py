@@ -384,12 +384,14 @@ class ProgramingProject(JSONResponseMixin, View):
                                     # crea los grupos
                                     # print sheet.cell(row=x, column=c).value
                                     name = name.upper().strip()
+                                    print name
                                     try:
                                         sg = SGroup.objects.filter(
                                             project_id=kwargs['pro'],
                                             sector_id=kwargs['sec'],
-                                            name=name)
-                                        if len(sg) > 0:
+                                            name__startwith=name)
+                                        print 'COUNTER SGROUP', sg.count()
+                                        if sg.count() > 0:
                                             sgroup[name] = {'id': sg[0].sgroup_id}
                                         else:
                                             nw = SGroup()
