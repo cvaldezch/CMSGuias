@@ -420,7 +420,7 @@ class ProgramingProject(JSONResponseMixin, View):
                                         nw.colour = 'rgba(254,255,180,0.8)'
                                         nw.status = 'PE'
                                         nw.save()
-                                    time.sleep(3)
+                                    time.sleep(4)
                         elif x == 3:
                             tng = None
                             group = None
@@ -456,7 +456,6 @@ class ProgramingProject(JSONResponseMixin, View):
                                     nds.status = 'PE'
                                     nds.save()
                         elif x > 3:
-                            time.sleep(5)
                             tgn = None
                             for c in range(4, ncol):
                                 if c == ncol:
