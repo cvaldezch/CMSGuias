@@ -456,7 +456,7 @@ class ProgramingProject(JSONResponseMixin, View):
                                     nds.status = 'PE'
                                     nds.save()
                         elif x > 3:
-                            time.sleep(15)
+                            time.sleep(5)
                             tgn = None
                             for c in range(4, ncol):
                                 if c == ncol:
