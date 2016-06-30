@@ -1164,7 +1164,7 @@ class CompareMaterials(JSONResponseMixin, TemplateView):
                             mat = (x['materials'] == o.materials_id)
                             brand = (x['brand_id'] == o.brand_id)
                             model = (x['model_id'] == o.model_id)
-                            if x['materials'] == o.materials_id:
+                            if mat and brand and model:
                                 if x['operations'] == '-':
                                     x['operations'] = 0
                                 x['purchase'] = o.ppurchase
