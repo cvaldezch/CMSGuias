@@ -1048,12 +1048,13 @@ def view_attend_order(request, oid):
                             pedido_id__exact=request.POST.get('oid'),
                             materiales_id__exact=mat[c]['matid'])
                     # aqui hacer otro if
-                    obj.cantshop = (float(mat[c]['quantity']) - float(
-                        mat[c]['quantityshop'])) if (cs / 100) == float(
-                        mat[c]['quantity']) else (cs/100) if mat[c][
-                            'matid'][0:3] == '115' else (
-                                float(mat[c]['quantity']) - float(
-                                    mat[c]['quantityshop']))
+                    obj.cantshop -= float(mat[c]['quantityshop'])
+                    # (float(mat[c]['quantity']) - float(
+                    #    mat[c]['quantityshop'])) if (cs / 100) == float(
+                    #    mat[c]['quantity']) else (cs/100) if mat[c][
+                    #        'matid'][0:3] == '115' else (
+                    #            float(mat[c]['quantity']) - float(
+                    #                mat[c]['quantityshop']))
                     # print (cs / 100 ) if mat[c]['matid'][0:3] == '115' else (
                     # float(mat[c]['quantity'])- float(mat[c]['quantityshop']))
                     obj.cantguide = float(mat[c]['quantityshop'])
@@ -2656,8 +2657,8 @@ class ReturnItemOrders(JSONResponseMixin, TemplateView):
                     obj.notpro = json.dumps(notProc)
                     obj.save()
                     # return materials to project
-                    if len(order.dsecto_id) > 0:
-                        
+                    if isinstance(order.dsecto_id, str):
+                        pass
                     context['status'] =  True
             except (ObjectDoesNotExist, Exception), e:
                 context['raise'] = str(e)

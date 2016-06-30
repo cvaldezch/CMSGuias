@@ -539,7 +539,7 @@
 			"file": "CMSGuias/apps/almacen/views.py",
 			"settings":
 			{
-				"buffer_size": 122052,
+				"buffer_size": 122064,
 				"line_ending": "Windows"
 			}
 		},
@@ -591,10 +591,14 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 220.0,
-		"last_filter": "git push ",
+		"height": 146.0,
+		"last_filter": "install",
 		"selected_items":
 		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
 			[
 				"git push ",
 				"Git: Push"
@@ -626,10 +630,6 @@
 			[
 				"package",
 				"Package Control: Disable Package"
-			],
-			[
-				"install",
-				"Package Control: Install Package"
 			],
 			[
 				"conver",
@@ -724,13 +724,33 @@
 				"Package Control: Install Package"
 			]
 		],
-		"width": 504.0
+		"width": 472.0
 	},
 	"console":
 	{
 		"height": 126.0,
 		"history":
 		[
+			"isinstance(None, str)",
+			"isinstance(None, None)",
+			"isinstance(None, str)",
+			"isinstance('sa', None)",
+			"isinstance('', None)",
+			"isinstance(None, str)",
+			"isinstance(3, str)",
+			"isinstance(a, str)",
+			"isinstance('None', str)",
+			"type(str(None))",
+			"type(None) is ''",
+			"type(None) is None",
+			"type(None) is 'NoneType'",
+			"type(None)",
+			"type(None)[0]",
+			"type(None)",
+			"typeof(None)",
+			"typeod(None)",
+			"len(None)",
+			"None",
 			"a",
 			"a.append(2)",
 			"a",
@@ -838,23 +858,7 @@
 			"'  sd  '.strip()[:-1]",
 			"'  sd  '.strip()[-1]",
 			"'  sd  '.strip()[-1:5]",
-			"'  sd  '.strip()[:-1]",
-			"'  sd  '.strip()[-1:]",
-			"'  sd  '.strip()[-1]",
-			"'  sd  '.strip()[-3]",
-			"'  sd  '[-3]",
-			"datetime.datetime.today()",
-			"datetime.datetime.date()",
-			"datetime.Now()",
-			"datetime.Date()",
-			"datetime.today()",
-			"import datetime",
-			"datetime.datetime.today()",
-			"datetime.now()",
-			"datetime.today()",
-			"datetime.date()",
-			"import datatime",
-			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+			"'  sd  '.strip()[:-1]"
 		]
 	},
 	"distraction_free":
@@ -1006,7 +1010,7 @@
 	],
 	"find":
 	{
-		"height": 43.0
+		"height": 25.0
 	},
 	"find_in_files":
 	{
@@ -1305,11 +1309,12 @@
 								"bh_regex_close",
 								"bh_regex_content"
 							],
+							"color_scheme": "Packages/User/Color Highlighter/themes/Agila Monokai Extended.tmTheme",
 							"open_with_edit": true,
 							"rulers":
 							[
 							],
-							"syntax": "Packages/Djaneiro/Syntaxes/HTML (Django).tmLanguage",
+							"syntax": "Packages/Text/Plain text.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
@@ -1339,18 +1344,20 @@
 						"settings":
 						{
 							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
 							"bracket_highlighter.regions":
 							[
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
@@ -1361,47 +1368,58 @@
 								"bh_single_quote_open",
 								"bh_single_quote_close",
 								"bh_single_quote_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
 								"bh_regex",
 								"bh_regex_center",
 								"bh_regex_open",
 								"bh_regex_close",
 								"bh_regex_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
 								"bh_square",
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
 								"bh_square_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content"
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content"
 							],
+							"color_scheme": "Packages/User/Color Highlighter/themes/Agila Monokai Extended.tmTheme",
 							"open_with_edit": true,
 							"rulers":
 							[
 							],
-							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
+							"syntax": "Packages/Text/Plain text.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
@@ -1417,89 +1435,112 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 122052,
+						"buffer_size": 122064,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								121309,
-								121309
+								74138,
+								74138
 							]
 						],
 						"settings":
 						{
 							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										74379,
+										74380
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										74137,
+										74138
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
 							"bracket_highlighter.regions":
 							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
 								"bh_single_quote_close",
 								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content"
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content"
 							],
+							"color_scheme": "Packages/User/Color Highlighter/themes/Agila Monokai Extended.tmTheme",
 							"rulers":
 							[
-								31.9,
-								32.2
+								54.9,
+								55.2
 							],
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
+							"syntax": "Packages/Text/Plain text.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 47092.0,
+						"translation.y": 25349.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -1583,10 +1624,11 @@
 								"bh_regex_close",
 								"bh_regex_content"
 							],
+							"color_scheme": "Packages/User/Color Highlighter/themes/Agila Monokai Extended.tmTheme",
 							"rulers":
 							[
 							],
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
+							"syntax": "Packages/Text/Plain text.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
@@ -1617,8 +1659,35 @@
 						"settings":
 						{
 							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
 							"bracket_highlighter.regions":
 							[
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_c_define",
 								"bh_c_define_center",
 								"bh_c_define_open",
@@ -1629,56 +1698,42 @@
 								"bh_regex_open",
 								"bh_regex_close",
 								"bh_regex_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
 								"bh_angle_close",
 								"bh_angle_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
 								"bh_round",
 								"bh_round_center",
 								"bh_round_open",
 								"bh_round_close",
 								"bh_round_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content"
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content"
 							],
+							"color_scheme": "Packages/User/Color Highlighter/themes/Agila Monokai Extended.tmTheme",
 							"rulers":
 							[
 							],
-							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
+							"syntax": "Packages/Text/Plain text.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
@@ -1767,10 +1822,11 @@
 								"bh_c_define_close",
 								"bh_c_define_content"
 							],
+							"color_scheme": "Packages/User/Color Highlighter/themes/Agila Monokai Extended.tmTheme",
 							"rulers":
 							[
 							],
-							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
+							"syntax": "Packages/Text/Plain text.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
@@ -1786,7 +1842,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 26.0
+		"height": 25.0
 	},
 	"input":
 	{
@@ -1839,7 +1895,7 @@
 	"project": "picrperu.sublime-project",
 	"replace":
 	{
-		"height": 48.0
+		"height": 46.0
 	},
 	"save_all_on_build": true,
 	"select_file":
