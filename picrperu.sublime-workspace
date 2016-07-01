@@ -520,50 +520,26 @@
 	"buffers":
 	[
 		{
-			"file": "CMSGuias/templates/almacen/returnorder.html",
+			"file": "/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/operations/views.py",
 			"settings":
 			{
-				"buffer_size": 5247,
+				"buffer_size": 75337,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "CMSGuias/media/js/almacen/returnitemsorders.coffee",
+			"file": "/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/operations/comparematerials.html",
 			"settings":
 			{
-				"buffer_size": 3087,
+				"buffer_size": 8835,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "CMSGuias/apps/almacen/views.py",
+			"file": "/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/operations/comparelist.coffee",
 			"settings":
 			{
-				"buffer_size": 122064,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "CMSGuias/apps/almacen/models.py",
-			"settings":
-			{
-				"buffer_size": 17623,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "CMSGuias/apps/almacen/urls.py",
-			"settings":
-			{
-				"buffer_size": 4790,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "CMSGuias/media/js/operations/dsector.coffee",
-			"settings":
-			{
-				"buffer_size": 39230,
+				"buffer_size": 6079,
 				"line_ending": "Windows"
 			}
 		}
@@ -591,10 +567,14 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 146.0,
-		"last_filter": "install",
+		"height": 109.0,
+		"last_filter": "django",
 		"selected_items":
 		[
+			[
+				"django",
+				"Set Syntax: Python (Django)"
+			],
 			[
 				"install",
 				"Package Control: Install Package"
@@ -875,10 +855,23 @@
 		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu",
 		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias",
 		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps",
-		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/almacen"
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/operations",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/operations",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/operations"
 	],
 	"file_history":
 	[
+		"/C/Users/Christian/Desktop/fib.py",
+		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/almacen/views.py",
+		"/C/Users/Christian/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/almacen/returnorder.html",
+		"/C/Users/Christian/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/almacen/returnitemsorders.coffee",
+		"/C/Users/Christian/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/almacen/views.py",
+		"/C/Users/Christian/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/almacen/models.py",
+		"/C/Users/Christian/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/almacen/urls.py",
+		"/C/Users/Christian/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/operations/dsector.coffee",
 		"/C/Users/CHRISTIAN/Downloads/PROGRAMA ESTRUCTURAS/EJEMPLO1.e2k",
 		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/almacen/models.py",
 		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/almacen/admin.py",
@@ -889,7 +882,6 @@
 		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/picrperu.sublime-project",
 		"/C/Users/CHRISTIAN/AppData/Roaming/Sublime Text 3/Settings/SideBarEnhancements.json",
 		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/almacen/attendorder.html",
-		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/almacen/views.py",
 		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/almacen/urls.py",
 		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/almacen/purchase.coffee",
 		"/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/operations/models.py",
@@ -999,18 +991,11 @@
 		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/public/js/admin/users.coffee",
 		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/public/js/admin/controllers/MenuCtrl.coffee",
 		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/Controllers/blog.php",
-		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/Controllers/Admin/Posts.php",
-		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/views/default/blog.php",
-		"/C/Users/CHRISTIAN/development/php/mvelementos/src/backup/elementos/app/views/admin/postsadd.php",
-		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/views/admin/postsedit.php",
-		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/views/admin/login.php",
-		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/public/css/lposts.css",
-		"/C/Users/CHRISTIAN/development/php/mvelementos/src/backup/elementos/app/views/default/blog.php",
-		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/templates/default/footer.php"
+		"/C/Users/CHRISTIAN/development/php/mvelementos/src/elementos/app/Controllers/Admin/Posts.php"
 	],
 	"find":
 	{
-		"height": 25.0
+		"height": 43.0
 	},
 	"find_in_files":
 	{
@@ -1024,6 +1009,12 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"saveChange",
+			"update",
+			"saveChange",
+			"sleep",
+			"attend",
+			"attenf",
 			"observation",
 			"objects",
 			"post",
@@ -1145,13 +1136,7 @@
 			"purchase",
 			"saveComment",
 			"btn-edit",
-			"del",
-			"comment",
-			"showObservation",
-			"elem",
-			"@",
-			"unit",
-			"observation"
+			"del"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -1169,176 +1154,24 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "CMSGuias/templates/almacen/returnorder.html",
+					"file": "/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/apps/operations/views.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5247,
+						"buffer_size": 75337,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								892,
-								892
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content"
-							],
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.regions":
-							[
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content"
-							],
-							"color_scheme": "Packages/User/Color Highlighter/themes/Agila Monokai Extended.tmTheme",
-							"open_with_edit": true,
-							"rulers":
-							[
-							],
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 275.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "CMSGuias/media/js/almacen/returnitemsorders.coffee",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3087,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1144,
-								1144
+								60381,
+								60381
 							]
 						],
 						"settings":
@@ -1358,56 +1191,56 @@
 							},
 							"bracket_highlighter.regions":
 							[
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
 								"bh_square",
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
 								"bh_square_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_tag",
 								"bh_tag_center",
 								"bh_tag_open",
 								"bh_tag_close",
 								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
 								"bh_double_quote",
 								"bh_double_quote_center",
 								"bh_double_quote_open",
@@ -1415,245 +1248,32 @@
 								"bh_double_quote_content"
 							],
 							"color_scheme": "Packages/User/Color Highlighter/themes/Agila Monokai Extended.tmTheme",
-							"open_with_edit": true,
-							"rulers":
-							[
-							],
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 360.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "CMSGuias/apps/almacen/views.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 122064,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								74138,
-								74138
-							]
-						],
-						"settings":
-						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.locations":
-							{
-								"close":
-								{
-									"1":
-									[
-										74379,
-										74380
-									]
-								},
-								"open":
-								{
-									"1":
-									[
-										74137,
-										74138
-									]
-								},
-								"unmatched":
-								{
-								}
-							},
-							"bracket_highlighter.regions":
-							[
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content"
-							],
-							"color_scheme": "Packages/User/Color Highlighter/themes/Agila Monokai Extended.tmTheme",
-							"rulers":
-							[
-								54.9,
-								55.2
-							],
-							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 25349.0,
+						"translation.y": 5100.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "CMSGuias/apps/almacen/models.py",
+					"buffer": 1,
+					"file": "/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/templates/operations/comparematerials.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 17623,
+						"buffer_size": 8835,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								17400,
-								17400
-							]
-						],
-						"settings":
-						{
-							"bracket_highlighter.busy": false,
-							"bracket_highlighter.regions":
-							[
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content"
-							],
-							"color_scheme": "Packages/User/Color Highlighter/themes/Agila Monokai Extended.tmTheme",
-							"rulers":
-							[
-							],
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 7603.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "CMSGuias/apps/almacen/urls.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4790,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4790,
-								4790
+								6767,
+								6777
 							]
 						],
 						"settings":
@@ -1663,9 +1283,19 @@
 							{
 								"close":
 								{
+									"1":
+									[
+										6778,
+										6779
+									]
 								},
 								"open":
 								{
+									"1":
+									[
+										6777,
+										6778
+									]
 								},
 								"unmatched":
 								{
@@ -1673,56 +1303,56 @@
 							},
 							"bracket_highlighter.regions":
 							[
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
 								"bh_square",
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
 								"bh_square_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_tag",
 								"bh_tag_center",
 								"bh_tag_open",
 								"bh_tag_close",
 								"bh_tag_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
 								"bh_double_quote",
 								"bh_double_quote_center",
 								"bh_double_quote_open",
@@ -1730,57 +1360,71 @@
 								"bh_double_quote_content"
 							],
 							"color_scheme": "Packages/User/Color Highlighter/themes/Agila Monokai Extended.tmTheme",
-							"rulers":
-							[
-							],
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"tab_size": 4,
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 2157.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "CMSGuias/media/js/operations/dsector.coffee",
-					"semi_transient": false,
+					"buffer": 2,
+					"file": "/C/Users/CHRISTIAN/development/django/icrperu/vicrperu/icrperu/CMSGuias/media/js/operations/comparelist.coffee",
+					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 39230,
+						"buffer_size": 6079,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								37156,
-								37160
+								4127,
+								4137
 							]
 						],
 						"settings":
 						{
 							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+									"1":
+									[
+										4137,
+										4138
+									]
+								},
+								"open":
+								{
+									"1":
+									[
+										4126,
+										4127
+									]
+								},
+								"unmatched":
+								{
+								}
+							},
 							"bracket_highlighter.regions":
 							[
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
@@ -1791,50 +1435,51 @@
 								"bh_angle_open",
 								"bh_angle_close",
 								"bh_angle_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
 								"bh_c_define",
 								"bh_c_define_center",
 								"bh_c_define_open",
 								"bh_c_define_close",
-								"bh_c_define_content"
+								"bh_c_define_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content"
 							],
-							"color_scheme": "Packages/User/Color Highlighter/themes/Agila Monokai Extended.tmTheme",
-							"rulers":
-							[
-							],
-							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"syntax": "Packages/Better CoffeeScript/CoffeeScript.tmLanguage",
 							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 17452.0,
+						"translation.y": 1737.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]

@@ -734,6 +734,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                         context['raise'] = str(e)
                         dsm = DSMetrado()
                         dsm.dsector_id = kwargs['area']
+                        dsm.sector_id = kwargs['sec']
                         dsm.materials_id = request.POST['code']
                         dsm.brand_id = request.POST['brand']
                         dsm.model_id = request.POST['model']
@@ -771,6 +772,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                             except DSMetrado.DoesNotExist:
                                 ds = DSMetrado()
                             ds.dsector_id = kwargs['area']
+                            ds.sector_id = kwargs['sec']
                             ds.materials_id = x.materiales_id
                             ds.brand_id = x.brand_id
                             ds.model_id = x.model_id
@@ -852,6 +854,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                                 add.tag = x.tag
                                 add.nipple = x.nipple
                                 add.flag = x.flag
+                                add.sector_id = kwargs['sec']
                                 add.save()
                             context['status'] = True
                         else:
@@ -907,6 +910,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                         context['raise'] = str(e)
                         mm = MMetrado()
                         mm.dsector_id = kwargs['area']
+                        mm.sector_id = kwargs['sec']
                         mm.materials_id = request.POST['code']
                         mm.brand_id = request.POST['brand']
                         mm.model_id = request.POST['model']
@@ -948,6 +952,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                                 model_id=o.model_id)
                             ds = DSMetrado()
                             ds.dsector_id = kwargs['area']
+                            ds.sector_id = kwargs['sec']
                             ds.materials_id = m.materials_id
                             ds.brand_id = m.brand_id
                             ds.model_id = m.model_id
@@ -987,6 +992,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                             except Exception:
                                 ds = DSMetrado()
                                 ds.dsector_id = kwargs['area']
+                                ds.sector_id = kwargs['sec']
                                 ds.materials_id = x.materials_id
                                 ds.brand_id = x.brand_id
                                 ds.model_id = x.model_id
@@ -1030,7 +1036,7 @@ class AreaProjectView(JSONResponseMixin, TemplateView):
                     orders.save()
                     # save orders details
                     det = json.loads(request.POST['details'])
-                    print det
+                    # print det
                     for x in det:
                         ds = DSMetrado.objects.get(
                                 dsector_id=kwargs['area'],
