@@ -77,7 +77,9 @@ app.controller 'rioC', ($scope, rioF) ->
 							'name': "#{obj.fields.materiales.fields.matnom} #{obj.fields.materiales.fields.matmed}"
 							'unit': obj.fields.materiales.fields.unidad
 							'brand': obj.fields.brand.fields.brand
+							'brand_id': obj.fields.brand.pk
 							'model': obj.fields.model.fields.model
+							'model_id': obj.fields.model.pk
 							'quantity': $scope.quantity[obj.pk]
 						return
 			return

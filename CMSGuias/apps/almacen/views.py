@@ -2637,7 +2637,6 @@ class ReturnItemOrders(JSONResponseMixin, TemplateView):
                                 queryset.save()
                         else:
                             notProc.append(x)
-                        
                     # consult and update status order
                     order = Pedido.objects.get(pedido_id=kwargs['order'])
                     qdp = Detpedido.objects.filter(pedido_id=kwargs['order'])
@@ -2657,8 +2656,43 @@ class ReturnItemOrders(JSONResponseMixin, TemplateView):
                     obj.notpro = json.dumps(notProc)
                     obj.save()
                     # return materials to project
+                    opr = None
                     if isinstance(order.dsecto_id, str):
-                        pass
+                        # this part return item to area table operations "dsmetrado"
+                        for x in data:
+                            try:
+                                opr =  dsmetrado.objects.get(
+                                    dsecto_id=order.dsecto_id,
+                                    materials_id=x['materials'],
+                                    brand_id=x['brand_id'],
+                                    model_id=x['model_id'])
+                                opr.qorder += float(x['quantity'])
+                                if opr.quantity > opr.qorder:
+                                    opr.tag = '1'
+                                else:
+                                    opr.tag = '0'
+                                opr.save()
+                            except Exception, e:
+                                raise e
+                                continue
+                    else:
+                        # this part return item to project for table operations "metproject"
+                        for x in data:
+                            try:
+                                opr = dsmetrado.objects.get(
+                                    sector_id=order.sector_id,
+                                    materiales_id=x['materials'],
+                                    brand_id=x['brand_id'],
+                                    model_id=x['model_id'])
+                                opr.quantityorder += x['quantity']
+                                if opr.cantidad > opr.quantityorder:
+                                    opr.tag = '1'
+                                else:
+                                    opr.tag = '0'
+                                opr.save()
+                            except Exception, e:
+                                raise e
+                                continue
                     context['status'] =  True
             except (ObjectDoesNotExist, Exception), e:
                 context['raise'] = str(e)

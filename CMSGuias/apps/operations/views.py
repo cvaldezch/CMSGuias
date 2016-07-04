@@ -390,7 +390,7 @@ class ProgramingProject(JSONResponseMixin, View):
                                         sg = SGroup.objects.filter(
                                             project_id=kwargs['pro'],
                                             sector_id=kwargs['sec'],
-                                            name__startswith=name)
+                                            name__exact=name)
                                         print 'COUNTER SGROUP', sg.count()
                                         if sg.count() > 0:
                                             sgroup[name] = {'id': sg[0].sgroup_id}
