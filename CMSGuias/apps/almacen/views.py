@@ -51,7 +51,6 @@ class JSONResponseMixin(object):
 
 FORMAT_DATE_STR = '%Y-%m-%d'
 
-
 class StorageHome(View):
     template_name = 'almacen/storage.html'
 
@@ -59,7 +58,6 @@ class StorageHome(View):
     def get(self, request, *args, **kwargs):
         return render_to_response(
             self.template_name, context_instance=RequestContext(request))
-
 
 @login_required(login_url='/SignUp/')
 def view_pedido(request):
@@ -123,7 +121,6 @@ def view_pedido(request):
     except TemplateDoesNotExist, e:
         raise Http404(e)
 
-
 @login_required(login_url='/SignUp/')
 def view_keep_customers(request):
     try:
@@ -153,7 +150,6 @@ def view_keep_customers(request):
     except TemplateDoesNotExist, e:
         messages.error(request, str(e))
         raise Http404('Method no proccess')
-
 
 @login_required(login_url='/SignUp/')
 def view_keep_add_customers(request):
@@ -192,7 +188,6 @@ def view_keep_add_customers(request):
         messages.error(request, str(e))
         raise Http404('Method no proccess')
 
-
 @login_required(login_url='/SignUp/')
 def view_keep_edit_customers(request, ruc):
     try:
@@ -214,7 +209,6 @@ def view_keep_edit_customers(request, ruc):
     except TemplateDoesNotExist, e:
         messages.error(request, str(e))
         raise Http404('Method no proccess')
-
 
 # Project keep views
 @login_required(login_url='/SignUp/')
@@ -262,7 +256,6 @@ def view_keep_project(request):
     except TemplateDoesNotExist, e:
         messages.error(request, str(e))
         raise Http404('Method no proccess')
-
 
 @login_required(login_url='/SignUp/')
 def view_keep_add_project(request):
@@ -327,7 +320,6 @@ def view_keep_add_project(request):
         messages.error(request, str(e))
         raise Http404('Method no proccess')
 
-
 @login_required(login_url='/SignUp/')
 def view_keep_edit_project(request, proid):
     try:
@@ -351,7 +343,6 @@ def view_keep_edit_project(request, proid):
     except TemplateDoesNotExist, e:
         messages.error(request, str(e))
         raise Http404('Method no proccess')
-
 
 # Sectors keep views
 @login_required(login_url='/SignUp/')
@@ -387,7 +378,6 @@ def view_keep_sec_project(request, pid, sid):
         messages.error(request, str(e))
         raise Http404('Method no proccess')
 
-
 @login_required(login_url='/SignUp/')
 def view_keep_add_sector(request, proid, sid):
     try:
@@ -419,7 +409,6 @@ def view_keep_add_sector(request, proid, sid):
     except TemplateDoesNotExist, e:
         messages.error(request, str(e))
         raise Http404('Method no proccess')
-
 
 @login_required(login_url='/SignUp')
 def view_keep_edit_sector(request, pid, sid, cid):
@@ -457,7 +446,6 @@ def view_keep_edit_sector(request, pid, sid, cid):
         messages.error(request, 'No se puede mostrar la pagina.' + str(e))
         raise Http404('Method not proccess')
 
-
 # Subproyectos keep views
 @login_required(login_url='/SignUp/')
 def view_keep_sub_project(request, pid):
@@ -493,7 +481,6 @@ def view_keep_sub_project(request, pid):
         messages.error(request, str(e))
         raise Http404('Method no proccess')
 
-
 @login_required(login_url='/SignUp/')
 def view_keep_add_subproyeto(request, pid):
     try:
@@ -518,7 +505,6 @@ def view_keep_add_subproyeto(request, pid):
     except TemplateDoesNotExist:
         # messages.error(request, str(e))
         raise Http404('Method no proccess')
-
 
 @login_required(login_url='/SignUp')
 def view_keep_edit_subproyecto(request, pid, sid):
@@ -556,7 +542,6 @@ def view_keep_edit_subproyecto(request, pid, sid):
         messages.error(request, 'No se puede mostrar la pagina.' + str(e))
         raise Http404('Method not proccess')
 
-
 # Almacenes
 @login_required(login_url='/SignUp/')
 def view_stores(request):
@@ -582,7 +567,6 @@ def view_stores(request):
     except TemplateDoesNotExist, e:
         messages('Template not found' + str(e))
         raise Http404
-
 
 @login_required(login_url='/SignUp/')
 def view_stores_add(request):
@@ -620,7 +604,6 @@ def view_stores_add(request):
         messages('Template not found' + str(e))
         raise Http404
 
-
 @login_required(login_url='/SignUp/')
 def view_stores_edit(request, aid):
     try:
@@ -651,7 +634,6 @@ def view_stores_edit(request, aid):
     except TemplateDoesNotExist, e:
         messages('Template not found' + str(e))
         raise Http404
-
 
 # Transportistas
 @login_required(login_url='/SignUp/')
@@ -689,7 +671,6 @@ def view_carrier(request):
         messages('Template not found' + str(e))
         raise Http404
 
-
 @login_required(login_url='/SignUp/')
 def view_carrier_add(request):
     try:
@@ -717,7 +698,6 @@ def view_carrier_add(request):
     except TemplateDoesNotExist, e:
         messages('Template not found' + str(e))
         raise Http404
-
 
 @login_required(login_url='/SignUp/')
 def view_carrier_edit(request, ruc):
@@ -747,7 +727,6 @@ def view_carrier_edit(request, ruc):
     except TemplateDoesNotExist, e:
         messages('Template not found' + str(e))
         raise Http404
-
 
 # Transport
 @login_required(login_url='/SignUp/')
@@ -781,7 +760,6 @@ def view_transport(request, ruc):
         messages('Template not found' + str(e))
         raise Http404
 
-
 @login_required(login_url='/SignUp/')
 def view_transport_add(request, tid):
     try:
@@ -812,7 +790,6 @@ def view_transport_add(request, tid):
         messages('Template not found')
         raise Http404(e)
 
-
 @login_required(login_url='/SignUp/')
 def view_transport_edit(request, cid, tid):
     try:
@@ -838,7 +815,6 @@ def view_transport_edit(request, cid, tid):
     except TemplateDoesNotExist, e:
         messages('Template not found')
         raise Http404(e)
-
 
 # Conductor
 @login_required(login_url='/SignUp/')
@@ -873,7 +849,6 @@ def view_conductor(request, ruc):
         messages('Template not found')
         raise Http404(e)
 
-
 @login_required(login_url='/SignUp/')
 def view_conductor_add(request, tid):
     try:
@@ -904,7 +879,6 @@ def view_conductor_add(request, tid):
         messages('Template not found')
         raise Http404(e)
 
-
 @login_required(login_url='/SignUp/')
 def view_conductor_edit(request, cid, tid):
     try:
@@ -931,11 +905,9 @@ def view_conductor_edit(request, cid, tid):
         messages('Template not found')
         raise Http404(e)
 
-
 """
   request Orders
 """
-
 
 # pending request Orders
 @login_required(login_url='/SignUp/')
@@ -963,7 +935,6 @@ def view_orders_pending(request):
         messages('Error template not found')
         raise Http404(e)
 
-
 # list ortders attend request Orders
 @login_required(login_url='/SignUp/')
 def view_orders_list_approved(request):
@@ -988,7 +959,6 @@ def view_orders_list_approved(request):
     except TemplateDoesNotExist:
         messages('Error template not found')
         raise Http404('Process Error')
-
 
 # meet Orders
 @login_required(login_url='/SignUp/')
@@ -1058,17 +1028,24 @@ def view_attend_order(request, oid):
                     # print (cs / 100 ) if mat[c]['matid'][0:3] == '115' else (
                     # float(mat[c]['quantity'])- float(mat[c]['quantityshop']))
                     obj.cantguide = float(mat[c]['quantityshop'])
-                    obj.tag = '1'
+                    if obj.cantshop < 0:
+                        obj.tag = '2'
+                    else:
+                        obj.tag = '1'
                     obj.save()
                     cnm += 1
                 # we walk the list nipples and update tag of tables nipples
                 for n in range(len(nip)):
                     obj = Niple.objects.get(pk=nip[n]['nid'])
-                    obj.cantshop = int(
-                        float(nip[n]['quantity']) - float(
-                            nip[n]['quantityshop']))
-                    obj.cantguide = int(float(nip[n]['quantityshop']))
-                    obj.tag = '1'
+                    # obj.cantshop = int(
+                    #     float(nip[n]['quantity']) - float(
+                    #         nip[n]['quantityshop']))
+                    obj.cantguide = float(nip[n]['quantityshop'])
+                    obj.cantshop -= float(nip[n]['quantityshop'])
+                    if obj.cantshop > 0:
+                        obj.tag = '1'
+                    else:
+                        obj.tag = '2'
                     obj.save()
                     cnn += 1
                 # evaluation status orders
@@ -1101,7 +1078,6 @@ def view_attend_order(request, oid):
     guide remision
 """
 
-
 # generate guide remision of a orders
 @login_required(login_url='/SignUp/')
 def view_generate_guide_orders(request):
@@ -1119,7 +1095,6 @@ def view_generate_guide_orders(request):
     except TemplateDoesNotExist, e:
         message('Error Template not found')
         raise Http404
-
 
 # request generate guide remision
 @login_required(login_url='/SignUp/')
@@ -1222,7 +1197,6 @@ def view_generate_document_out(request, oid):
     except TemplateDoesNotExist, e:
         message('Error: Template not found')
         raise Http404(e)
-
 
 # recover list guide referral for view and annular
 @login_required(login_url='/SignUp/')
@@ -1393,7 +1367,6 @@ def view_list_guide_referral_success(request):
     except TemplateDoesNotExist, e:
         raise Http404(e)
 
-
 # recover list guide referral for view and annular
 @login_required(login_url='/SignUp/')
 def view_list_guide_referral_canceled(request):
@@ -1463,8 +1436,6 @@ def view_list_guide_referral_canceled(request):
 ###########################
 # Views natives of stores #
 ###########################
-
-
 class InventoryView(ListView, JSONResponseMixin):
 
     @method_decorator(login_required)
@@ -1743,7 +1714,6 @@ class InventoryView(ListView, JSONResponseMixin):
         # data = simplejson.dumps(data)
         return self.render_to_json_response(data)
 
-
 class SupplyView(ListView):
     template_name = 'almacen/supply.html'
 
@@ -1876,7 +1846,6 @@ class SupplyView(ListView):
                 mimetype='application/json',
                 content_type='application/json')
 
-
 class ListOrdersSummary(TemplateView):
     template_name = 'almacen/listorderssupply.html'
     context_object_name = 'Orders'
@@ -1918,7 +1887,6 @@ class ListOrdersSummary(TemplateView):
             return HttpResponse(
                 simplejson.dumps(data),
                 mimetype='application/json')
-
 
 class ListDetOrders(JSONResponseMixin, TemplateView):
     template_name = 'almacen/listdetailsOrders.html'
@@ -1963,7 +1931,6 @@ class ListDetOrders(JSONResponseMixin, TemplateView):
                 data['status'] = False
             # data = simplejson.dumps(data)
             return self.render_to_json_response(data)
-
 
 # Input order purchase
 class InputOrderPurchase(JSONResponseMixin, TemplateView):
@@ -2181,7 +2148,6 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                 context['status'] = False
             return self.render_to_json_response(context)
 
-
 class NoteIngressView(JSONResponseMixin, TemplateView):
     template_name = 'almacen/listnoteingress.html'
 
@@ -2314,7 +2280,6 @@ class NoteIngressView(JSONResponseMixin, TemplateView):
                 context['raise'] = str(e)
                 context['status'] = True
             return self.render_to_json_response(context)
-
 
 class GuideSingle(JSONResponseMixin, TemplateView):
 
@@ -2521,7 +2486,6 @@ class GuideSingle(JSONResponseMixin, TemplateView):
                 context['status'] = False
             return self.render_to_json_response(context)
 
-
 class MaterialBrand(JSONResponseMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
@@ -2598,6 +2562,22 @@ class ReturnItemOrders(JSONResponseMixin, TemplateView):
                         else:
                             context['details'] = '[]'
                         context['status'] = True
+                    if 'getNipples' in request.GET:
+                        gnp = json.loads(request.GET['check'])
+                        context['gnp'] = list()
+                        for x in gnp:
+                            nip = Niple.objects.filter(
+                                pedido_id=kwargs['order'],
+                                materiales_id=x['materials'],
+                                brand_id=x['brand'],
+                                model_id=x['model']).exclude(tag='2', cantshop__lte=0)
+                            if nip.count():
+                                context['gnp'].append(json.loads(
+                                    serializers.serialize(
+                                        'json',
+                                        nip, relations=('materiales'))))
+                        context['valid'] = True if len(context['gnp']) else False
+                        context['status'] = True
                 except (ObjectDoesNotExist, Exception) as e:
                     context['raise'] = str(e)
                     context['status'] = False
@@ -2617,28 +2597,76 @@ class ReturnItemOrders(JSONResponseMixin, TemplateView):
                     # validating quantity in ddbb
                     # requeriment before return materials to project
                     data = json.loads(request.POST['details'])
-                    valid = True
+                    nip = json.loads(request.POST['nip'])
+                    od = Pedido.objects.filter(pedido_id=kwargs['order'])
+                    if len(od) > 0:
+                        od = od[0]
+                    for d in data:
+                        valid = False
+                        nq = 0
+                        for n in nip:
+                            if d['materials'] in n:
+                                for x in n[d['materials']]:
+                                    nq += (float(x['import']) / 100)
+                                    # part return quantity at table nipple
+                                    try:
+                                        np = Nipple.objects.filter(
+                                                proyecto_id=od.proyecto_id,
+                                                sector_id=od.sector_id,
+                                                materiales_id=x['materials'],
+                                                metrado=x['meter'],
+                                                tipo=x['type'])
+                                        if np.count() > 0:
+                                            np = np[0]
+                                            np.cantshop += float(x['quantity'])
+                                            np.tag = '1'
+                                            np.save()
+                                        # remove or decrease
+                                        # items from orders nipple
+                                        rno = Niple.objects.get(id=x['id'])
+                                        rno.cantshop += float(x['quantity'])
+                                        rno.cantidad -= float(x['quantity'])
+                                        if rno.cantidad <= 0:
+                                            rno.delete()
+                                        else:
+                                            rno.save()
+                                    except Exception as e:
+                                        print 'NIPPLE DONT EXISTS'
+                                        print str(e)
+                                valid = True
+                        if valid is True:
+                            d['quantity'] = round(nq, 2)
                     notProc = list()
                     for x in data:
+                        valid = True
                         queryset = Detpedido.objects.get(id=x['id'], pedido_id=kwargs['order'])
-                        if queryset.cantshop > x['quantity']:
+                        print '---------------------------'
+                        print 'HERE QUERY ', queryset
+                        print '---------------------------'
+                        print queryset.cantshop, 'CANTIDAD PROCESS ', x['quantity']
+                        if queryset.cantshop < float(x['quantity']):
                             valid = False
                         if valid:
                             if queryset.cantidad == x['quantity']:
+                                print 'ITEM DELETE'
                                 queryset.delete()
                             elif queryset.cantshop == x['quantity']:
+                                print 'ITEM COMPLETE'
                                 queryset.cantshop = (queryset.cantshop - x['quantity'])
-                                queryset.cantidad = (queryset.cantidad - x['quantoty'])
+                                queryset.cantidad = (queryset.cantidad - x['quantity'])
                                 queryset.tag = '2'
                                 queryset.save()
                             if x['quantity'] < queryset.cantshop:
+                                print 'ITEM MEDIO'
                                 queryset.cantshop = (queryset.cantshop - x['quantity'])
-                                queryset.cantidad = (queryset.cantidad - x['quantoty'])
+                                queryset.cantidad = (queryset.cantidad - x['quantity'])
                                 queryset.save()
                         else:
+                            print 'ITEM NOT FOUND'
                             notProc.append(x)
                     # consult and update status order
                     order = Pedido.objects.get(pedido_id=kwargs['order'])
+                    print order
                     qdp = Detpedido.objects.filter(pedido_id=kwargs['order'])
                     if qdp.filter(cantshop__gt=0).count():
                         if qdp.count() == qdp.filter(cantshop__gt=0).count():
@@ -2657,8 +2685,10 @@ class ReturnItemOrders(JSONResponseMixin, TemplateView):
                     obj.save()
                     # return materials to project
                     opr = None
-                    if isinstance(order.dsecto_id, str):
+                    # print request.POST
+                    if isinstance(order.dsector_id, str) and len(str(order.dsector_id).strip()) == 10:
                         # this part return item to area table operations "dsmetrado"
+                        print 'table dsmetrado'
                         for x in data:
                             try:
                                 opr =  dsmetrado.objects.get(
@@ -2673,13 +2703,14 @@ class ReturnItemOrders(JSONResponseMixin, TemplateView):
                                     opr.tag = '0'
                                 opr.save()
                             except Exception, e:
-                                raise e
+                                print e
                                 continue
                     else:
+                        print 'table metProject'
                         # this part return item to project for table operations "metproject"
                         for x in data:
                             try:
-                                opr = dsmetrado.objects.get(
+                                opr = MetProject.objects.get(
                                     sector_id=order.sector_id,
                                     materiales_id=x['materials'],
                                     brand_id=x['brand_id'],
@@ -2691,12 +2722,10 @@ class ReturnItemOrders(JSONResponseMixin, TemplateView):
                                     opr.tag = '0'
                                 opr.save()
                             except Exception, e:
-                                raise e
+                                print e
                                 continue
-                    context['status'] =  True
+                    context['status'] = True
             except (ObjectDoesNotExist, Exception), e:
                 context['raise'] = str(e)
-                context['status'] = True
+                context['status'] = False
             return self.render_to_json_response(context)
-        
-

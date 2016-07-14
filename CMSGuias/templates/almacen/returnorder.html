@@ -89,7 +89,7 @@
 							<td>{{x.fields.materiales.fields.unidad}}</td>
 							<td>{{x.fields.cantidad}}</td>
 							<td>
-								<input type="number" class="right-align" min="0" max="{{x.fields.cantshop}}" step="1" ng-model="quantity[x.pk]" ng-init="quantity[x.pk]=x.fields.cantshop" minandmax ng-disabled="mat[x.pk] == false">
+								<input type="number" class="right-align" min="0" max="{{x.fields.cantshop}}" step="1" ng-model="quantity[x.pk]" ng-init="quantity[x.pk]=x.fields.cantshop" ng-disabled="mat[x.pk] == false" minandmax>
 							</td>
 						</tr>
 					{% endverbatim %}
@@ -97,8 +97,8 @@
 				</table>
 			</article>
 		{% endif %}
-		<!-- block model -->
-		<div id="mview" class="modal modal-fixed-footer bottom-sheet" style="max-height: 90%;">
+		<!-- block modals -->
+		<div id="mview" class="modal modal-fixed-footer bottom-sheet" style="max-height: 95%; height: 100%;">
 			<div class="modal-content">
 				<h5>Materiales que se van a retornar</h5>
 				<table class="responsive-table highlight">
@@ -122,7 +122,7 @@
 							<td>{{x.unit}}</td>
 							<td>{{x.brand}}</td>
 							<td>{{x.model}}</td>
-							<td>{{x.quantity}}</td>
+							<td class="right-align">{{x.quantity}}</td>
 						</tr>
 					</tbody>
 					{% endverbatim %}
@@ -136,6 +136,56 @@
 				<button type="button" class="btn blue lighthen-2" ng-click="sendReturnList()">
 					<i class="fa fa-reply-all"></i>
 					<span class="hide-on-small-only">Retornar Materiales</span>
+				</button>
+				<button type="button" class="btn amber lighten-1 grey-text text-darken-3" ng-click="getNipples()">
+					<i class="fa fa-bars"></i>
+					<span>NIples</span>
+				</button>
+			</div>
+		</div>
+		<div id="mnp" class="modal modal-fixed-footer" style="width: 90%;">
+			<div class="modal-content">
+				<h4>Niples</h4>
+				{% verbatim %}
+					<table class="hightlight responsive-table" ng-repeat="x in gnp track by $index">
+						<caption class="left-align">
+							<div class="switch">
+								<label>
+									Ninguno
+									<input type="checkbox" id="{{x[0].fields.materiales.pk}}" ng-model="dnp[x[0].fields.materiales.pk]" ng-init="dnp[x[0].fields.materiales.pk] = true" ng-checked="dnp[x[0].fields.materiales.pk]" status>
+									<span class="lever"></span>
+									Todo
+								</label>
+							</div>
+							{{x[0].fields.materiales.fields.matnom}} {{x[0].fields.materiales.fields.matmed}}
+						</caption>
+						<thead>
+							<tr>
+								<th></th>
+								<th>Descripción</th>
+								<th>Cantidad</th>
+								<th></th>
+								<th>Medida</th>
+								<th>Devolver</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="n in x">
+								<td>{{$index+1}}</td>
+								<td class="center-align">Niple {{n.fields.tipo}}</td>
+								<td class="right-align">{{n.fields.cantidad}}</td>
+								<td class="center-align">x</td>
+								<td>{{n.fields.metrado}} cm</td>
+								<td><input type="number" id="{{n.pk}}" nip="{{n.fields.tipo}}" metrado="{{n.fields.metrado}}" name="{{n.fields.materiales.pk}}" class="right-align" min="0" max="{{n.fields.cantshop}}" ng-model="np[n.pk]" ng-init="np[n.pk]=n.fields.cantshop" tmandm></td>
+							</tr>
+						</tbody>
+					</table>
+				{% endverbatim %}
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn modal-action modal-close" ng-click="test()">
+					<i class="fa fa-check"></i>
+					<span>Aceptar</span>
 				</button>
 			</div>
 		</div>

@@ -107,6 +107,10 @@ class Niple(models.Model):
                 DSector, to_field='dsector_id', blank=True, null=True)
     empdni = models.CharField(max_length=8, null=False)
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
+    brand = models.ForeignKey(
+            Brand, to_field='brand_id', blank=True, default='BR000')
+    model = models.ForeignKey(
+            Model, to_field='model_id', blank=True, default='MO000')
     cantidad = models.FloatField(null=True, default=1)
     metrado = models.FloatField(null=False, default=0)
     cantshop = models.FloatField(null=True, default=0)
@@ -116,6 +120,8 @@ class Niple(models.Model):
     tag = models.CharField(max_length=1, default='0')
     comment = models.CharField(
                 max_length=250, default='', null=True, blank=True)
+
+    audit_log = AuditLog()
 
     class Meta:
         ordering = ['materiales']
@@ -134,6 +140,10 @@ class tmpniple(models.Model):
     sector = models.ForeignKey(
                 Sectore, to_field='sector_id', null=True, blank=True)
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
+    brand = models.ForeignKey(
+            Brand, to_field='brand_id', blank=True, default='BR000')
+    model = models.ForeignKey(
+            Model, to_field='model_id', blank=True, default='MO000')
     cantidad = models.FloatField(null=True, default=1)
     metrado = models.FloatField(null=False, default=1)
     tipo = models.CharField(max_length=1)
@@ -210,6 +220,10 @@ class TmpDetGuia(models.Model):
 class NipleGuiaRemision(models.Model):
     guia = models.ForeignKey(GuiaRemision, to_field='guia_id')
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
+    brand = models.ForeignKey(
+            Brand, to_field='brand_id', blank=True, default='BR000')
+    model = models.ForeignKey(
+            Model, to_field='model_id', blank=True, default='MO000')
     metrado = models.FloatField(null=False, default=0)
     cantguide = models.FloatField(default=0, null=True, blank=True)
     tipo = models.CharField(max_length=1)

@@ -126,6 +126,7 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                                 status='AC')
                     elif area == 'logistica' or area == 'almacen':
                         cust = cust.filter(status='AC')
+                    # print 'para despacho'
                     cust = cust.order_by(
                             'ruccliente__razonsocial').distinct(
                             'ruccliente__razonsocial')
@@ -170,25 +171,33 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                     context['status'] = True
                 if 'allProjects' in request.GET:
                     if area == 'ventas' or area == 'administrator':
+                        # print 'Aqui ingresa admin'
                         projects = Proyecto.objects.filter(
                                     Q(flag=True),
-                                    ~Q(status='DA')).order_by('-proyecto_id')
+                                    ~Q(status='DA'))#.order_by('-proyecto_id')
                     elif area == 'operaciones':
+                        # print 'Aqui ingresa opera'
                         projects = Proyecto.objects.filter(
                                     Q(flag=True),
                                     Q(status='AC'),
                                     empdni_id=request.user.get_profile(
-                                        ).empdni_id).order_by('-proyecto_id')
+                                        ).empdni_id)#.order_by('-proyecto_id')
                     elif area == 'logistica' or area == 'almacen':
+                        # print 'Aqui ingresa log sto'
                         projects = Proyecto.objects.filter(
                                     Q(flag=True),
-                                    Q(status='AC')).order_by('-proyecto_id')
+                                    Q(status='AC'))#.order_by('-proyecto_id')
                     cnom = request.user.get_profile(
                             ).empdni.charge.cargos.lower()
                     if cnom == 'jefe de operaciones':
                         projects = Proyecto.objects.filter(
                                     Q(flag=True),
-                                    Q(status='AC')).order_by('-proyecto_id')
+                                    Q(status='AC'))#.order_by('-proyecto_id')
+                    # print projects.count()
+                    # co = 1
+                    # for x in projects:
+                    #     print co, x.ruccliente_id, x.ruccliente.razonsocial
+                    #     co += 1
                     context['projects'] = simplejson.loads(
                                             serializers.serialize(
                                                 'json', projects))
@@ -202,6 +211,7 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                             ).order_by('-proyecto_id')))
                     context['status'] = True
             except ObjectDoesNotExist as e:
+                print e
                 context['raise'] = str(e)
                 context['status'] = False
             return self.render_to_json_response(context)
