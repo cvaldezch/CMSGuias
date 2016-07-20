@@ -108,9 +108,9 @@ class Niple(models.Model):
     empdni = models.CharField(max_length=8, null=False)
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     brand = models.ForeignKey(
-            Brand, to_field='brand_id', blank=True, default='BR000')
+            Brand, to_field='brand_id', blank=True, default='BR000', null=False)
     model = models.ForeignKey(
-            Model, to_field='model_id', blank=True, default='MO000')
+            Model, to_field='model_id', blank=True, default='MO000', null=False)
     cantidad = models.FloatField(null=True, default=1)
     metrado = models.FloatField(null=False, default=0)
     cantshop = models.FloatField(null=True, default=0)
