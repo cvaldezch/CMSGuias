@@ -236,6 +236,10 @@ assignedResponsible = ->
         $.post "", data, (response) ->
             if response.status
                 $pro = $("input[name=pro]")
+                setTimeout ->
+                    location.reload()
+                , 2600
+                
                 param =
                     'getfors': true
                     'name': $pro.attr "data-name"

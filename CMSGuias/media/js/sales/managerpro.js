@@ -241,6 +241,9 @@ assignedResponsible = function() {
       var $pro, param;
       if (response.status) {
         $pro = $("input[name=pro]");
+        setTimeout(function() {
+          location.reload();
+        }, 2600);
         param = {
           'getfors': true,
           'name': $pro.attr("data-name")
