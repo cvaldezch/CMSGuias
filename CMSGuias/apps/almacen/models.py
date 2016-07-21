@@ -221,9 +221,9 @@ class NipleGuiaRemision(models.Model):
     guia = models.ForeignKey(GuiaRemision, to_field='guia_id')
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     brand = models.ForeignKey(
-            Brand, to_field='brand_id', blank=True, default='BR000')
+            Brand, to_field='brand_id', blank=True, default='BR000', null=False)
     model = models.ForeignKey(
-            Model, to_field='model_id', blank=True, default='MO000')
+            Model, to_field='model_id', blank=True, default='MO000', null=False)
     metrado = models.FloatField(null=False, default=0)
     cantguide = models.FloatField(default=0, null=True, blank=True)
     tipo = models.CharField(max_length=1)

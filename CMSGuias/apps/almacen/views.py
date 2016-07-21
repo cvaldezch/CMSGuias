@@ -1042,10 +1042,7 @@ def view_attend_order(request, oid):
                     #         nip[n]['quantityshop']))
                     obj.cantguide = float(nip[n]['quantityshop'])
                     obj.cantshop -= float(nip[n]['quantityshop'])
-                    if obj.cantshop > 0:
-                        obj.tag = '1'
-                    else:
-                        obj.tag = '2'
+                    obj.tag = '1'
                     obj.save()
                     cnn += 1
                 # evaluation status orders
@@ -1171,6 +1168,7 @@ def view_generate_document_out(request, oid):
                         nip = Niple.objects.filter(
                             pedido_id__exact=request.POST.get('pedido'),
                             tag='1', flag=True)
+                        print 'DETAILS NIP ', nip, nip.count()
                         for x in nip:
                             obj = NipleGuiaRemision()
                             obj.guia_id = code
@@ -1179,14 +1177,18 @@ def view_generate_document_out(request, oid):
                             obj.cantguide = x.cantguide
                             obj.tipo = x.tipo
                             obj.flag = True
+                            obj.brand_id = x.brand_id
+                            obj.model_id = x.model_id
                             # save details niples for guide referral
                             obj.save()
                             ob = Niple.objects.get(pk__exact=x.id)
                             ob.tag = '2' if x.cantshop <= 0 else '0'
                             ob.save()
                         data['status'] = True
-                        data['guide'] = guidekeys
+                        data['guide'] = code
                     except ObjectDoesNotExist, e:
+                        print 'Error to ingress NIPPLE'
+                        print e
                         data['status'] = False
                 else:
                     data['status'] = False
