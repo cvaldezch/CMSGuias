@@ -1007,13 +1007,13 @@ def view_attend_order(request, oid):
                 # we walk the list materials and update items
                 # materials of details orders
                 for c in range(len(mat)):
-                    cs = 0
-                    for x in range(len(nip)):
-                        if mat[c]['matid'] == nip[x]['matid']:
-                            cs += (
-                                float(nip[x]['quantityshop']) * float(
-                                    nip[x]['meter']))
-                    ctn += cs
+                    # cs = 0
+                    # for x in range(len(nip)):
+                    #     if mat[c]['matid'] == nip[x]['matid']:
+                    #         cs += (
+                    #             float(nip[x]['quantityshop']) * float(
+                    #                 nip[x]['meter']))
+                    # ctn += cs
                     obj = Detpedido.objects.get(
                             pedido_id__exact=request.POST.get('oid'),
                             materiales_id__exact=mat[c]['matid'])

@@ -60,9 +60,9 @@ class Detpedido(models.Model):
     pedido = models.ForeignKey(Pedido, to_field='pedido_id')
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     brand = models.ForeignKey(
-                Brand, to_field='brand_id', default='BR000', blank=True)
+                Brand, to_field='brand_id', default='BR000', blank=True, null=False)
     model = models.ForeignKey(
-                Model, to_field='model_id', default='MO000', blank=True)
+                Model, to_field='model_id', default='MO000', blank=True, null=False)
     cantidad = models.FloatField(null=False)
     cantshop = models.FloatField(default=0, null=False)
     cantguide = models.FloatField(default=0, null=True, blank=True)
@@ -87,9 +87,9 @@ class tmppedido(models.Model):
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     cantidad = models.FloatField(null=False)
     brand = models.ForeignKey(
-                Brand, to_field='brand_id', default='BR000', blank=True)
+                Brand, to_field='brand_id', default='BR000', blank=True, null=False)
     model = models.ForeignKey(
-                Model, to_field='model_id', default='MO000', blank=True)
+                Model, to_field='model_id', default='MO000', blank=True, null=False)
 
     def __unicode__(self):
         return '%s %s %f' % (self.empdni, self.materiales, self.cantidad)
@@ -141,9 +141,9 @@ class tmpniple(models.Model):
                 Sectore, to_field='sector_id', null=True, blank=True)
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     brand = models.ForeignKey(
-            Brand, to_field='brand_id', blank=True, default='BR000')
+            Brand, to_field='brand_id', blank=True, default='BR000', null=False)
     model = models.ForeignKey(
-            Model, to_field='model_id', blank=True, default='MO000')
+            Model, to_field='model_id', blank=True, default='MO000', null=False)
     cantidad = models.FloatField(null=True, default=1)
     metrado = models.FloatField(null=False, default=1)
     tipo = models.CharField(max_length=1)
@@ -186,9 +186,9 @@ class DetGuiaRemision(models.Model):
     materiales = models.ForeignKey(Materiale, to_field='materiales_id')
     cantguide = models.FloatField(default=0, null=True, blank=True)
     brand = models.ForeignKey(
-                Brand, to_field='brand_id', null=True, blank=True)
+                Brand, to_field='brand_id', blank=True, default='BR000')
     model = models.ForeignKey(
-                Model, to_field='model_id', null=True, blank=True)
+                Model, to_field='model_id', blank=True, default='MO000')
     observation = models.CharField(max_length=250, null=True, blank=True)
     flag = models.BooleanField(default=True)
 
