@@ -15,7 +15,7 @@ from CMSGuias.apps.tools import number_to_char
 #  Variables Globals  #
 #######################
 """
-    Status Models
+    Status ENTITIES
 """
 status = {
     'AC': 'ACTIVO',
@@ -29,6 +29,19 @@ status = {
     'EN': 'ENVIADO',
     'UP': 'CARGADO',
 }
+
+doc_status = [
+    {'key': 'AC', 'status': 'ACTIVO'},
+    {'key': 'AN', 'status': 'ANULADO'},
+    {'key': 'AP', 'status': 'APROBADO'},
+    {'key': 'CO', 'status': 'COMPLETO'},
+    {'key': 'DL', 'status': 'ELIMINADO'},
+    {'key': 'IN', 'status': 'INCOMPLETO'},
+    {'key': 'NN', 'status': 'NOTHING'},
+    {'key': 'PE', 'status': 'PENDIENTE'},
+    {'key': 'EN', 'status': 'ENVIADO'},
+    {'key': 'UP', 'status': 'CARGADO'},
+]
 
 # types nipples
 tipo_nipples = {

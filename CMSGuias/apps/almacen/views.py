@@ -2746,7 +2746,17 @@ class AttendOrder(JSONResponseMixin, TemplateView):
                         context['details'] = json.loads(
                             serializers.serialize(
                                 'json',
-                                Detpedido.objects.filter(pedido_id=kwargs['order'])))
+                                Detpedido.objects.filter(
+                                    pedido_id=kwargs['order']),
+                                relations=('materiales', 'brand', 'model')))
+                        context['status'] = True
+                    if 'detailsnip' in request.GET:
+                        context['nip'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                Niple.objects.filter(
+                                    pedido_id=kwargs['order']), relations=('materiales', 'brand', 'model')))
+                        context['types'] = globalVariable.tipo_nipples
                         context['status'] = True
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)

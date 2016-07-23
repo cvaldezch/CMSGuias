@@ -10,7 +10,187 @@
 		</h3>
 	</header>
 	{% if order.status == 'IN' or order.status == 'AP' %}
-	
+	<input type="hidden" ng-model="init" ng-init="init=true">
+	<div class="card-panel">
+		<div class="card-content">
+			<div class="row">
+				<div class="col l6 m6 s12">
+					<blockquote>
+						<table>
+							<tbody>
+								<tr>
+									<td><strong>Proyecto</strong></td>
+									<td><strong>{{ order.proyecto_id }}</strong> {{ order.proyecto.nompro }}</td>
+								</tr>
+								<tr>
+									<td><strong>Sector</strong></td>
+									<td>{{ order.sector.nomsec }}</td>
+								</tr>
+								<tr>
+									<td><strong>Almacén</strong></td>
+									<td>{{ order.almacen.nombre }}</td>
+								</tr>
+								<tr>
+									<td><strong>Creado Por</strong></td>
+									<td>{{ order.empdni.name_complete }}</td>
+								</tr>
+								<tr>
+									<td><strong>Asunto</strong></td>
+									<td>{{ order.asunto }}</td>
+								</tr>
+							</tbody>
+						</table>
+					</blockquote>
+				</div>
+				<div class="col l6 m6 s12">
+					<blockquote>
+						<table>
+							<tbody>
+								<tr>
+									<td><strong>Realizado</strong></td>
+									<td>{{ order.registrado }}</td>
+								</tr>
+								<tr>
+									<td><strong>Traslado</strong></td>
+									<td>{{ order.traslado }}</td>
+								</tr>
+								<tr>
+									<td><strong>Observación</strong></td>
+									<td>{{ order.obser|safe }}</td>
+								</tr>
+								<tr>
+									<td><strong>Estado</strong></td>
+									<td></td>
+								</tr>
+								{% if order.orderfile %}
+									<tr>
+										<td><strong>Adjunto</strong></td>
+										<td><a href="{{ MEDIA_URL }}{{ order.empdni.name_complete }}">i.fa.fa-file</a></td>
+									</tr>
+								{% endif %}
+							</tbody>
+						</table>
+					</blockquote>
+				</div>
+			</div>
+		</div>
+		<div class="card-action">
+			<label>Seleccionar </label>
+			<div class="switch">
+				<label>
+					Ninguno
+					<input type="checkbox">
+					<span class="lever"></span>
+					Todos
+				</label>
+			</div>
+			<table class="responsive-table highlight">
+				<thead>
+					<tr class="lime lighten-3">
+						<th>#</th>
+						<th></th>
+						<th>Código</th>
+						<th>Descripción</th>
+						<th class="center-align">Unidad</th>
+						<th class="center-align">Marca</th>
+						<th class="center-align">Modelo</th>
+						<th class="center-align">Cantidad</th>
+						<th class="center-align">Por Enviar</th>
+						<th class="center-align">Stock</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					{% verbatim %}
+						<tr ng-repeat="x in dorders">
+							<td>{{$index + 1}}</td>
+							<td>
+								<input type="checkbox" id="{{x.fields.materiales.pk}}">
+								<label for="{{x.fields.materiales.pk}}"></label>
+							</td>
+							<td><small>{{x.fields.materiales.pk}}</small></td>
+							<td><small>{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}</small></td>
+							<td class="center-align"><small>{{x.fields.materiales.fields.unidad}}</small></td>
+							<td class="center-align"><small>{{x.fields.brand.fields.brand}}</small></td>
+							<td class="center-align"><small>{{x.fields.model.fields.model}}</small></td>
+							<td class="right-align">{{x.fields.cantidad}}</td>
+							<td>
+								<input type="number" class="right-align" min="0" max="{{x.fields.cantshop}}" value="{{x.fields.cantshop}}" cinmam>
+							</td>
+							<td>
+								<!-- here stock materials -->
+							</td>
+							<td>
+								<button type="button" class="waves-effect waves-light">
+									<i class="fa fa-cube"></i>
+								</button>
+							</td>
+						</tr>
+					{% endverbatim %}
+				</tbody>
+				<tfoot ng-hide="dorders.length">
+					<tr>
+						<td colspan="10">
+							<div class="progress red lighten-4">
+								<div class="indeterminate red accent-3"></div>
+							</div>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+	<div class="card-panel" ng-show="dnip.length">
+		<div class="card-content">
+			<h4>Niples</h4>
+			{% verbatim %}
+				<table class="responsive-table highlight" ng-repeat="(k, v) in dnip | groupBy: '[materials, brand, model]'">
+					<thead>
+						<tr>
+							<td colspan="7">
+								<div class="switch">
+									<label>
+										Ninguno
+										<input type="checkbox">
+										<span class="lever"></span>
+										Todos
+									</label>
+								</div>
+								{{v[0].materials}} {{v[0].name}} {{v[0].bname}} {{v[0].mname}}
+							</td>
+						</tr>
+						<tr>
+							<th>#</th>
+							<th></th>
+							<th>Descripción</th>
+							<th>Cantidad</th>
+							<th>Tipo</th>
+							<th></th>
+							<th>Medida</th>
+							<th>Por Pedir</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="n in v | orderBy: 'meter'">
+							<td>{{$index + 1}}</td>
+							<td>
+								<input type="checkbox">
+								<label for=""></label>
+							</td>
+							<td>{{n.description}}</td>
+							<td>{{n.quantity}}</td>
+							<td>{{n.tipo}}</td>
+							<td>x</td>
+							<td>{{n.meter}} cm</td>
+							<td>
+								<input type="number" class="right-align" min="0" max="{{n.send}}" value="{{n.send}}" cinmam>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			{% endverbatim %}
+		</div>
+	</div>
 	{% else %}
 		<div class="card">
 			<div class="card-content">
@@ -21,11 +201,12 @@
 						<p>- Ya se ha completado.</p>
 						<p>- No esta aprobado.</p>
 						<p>- Ha sido anulado.</p>
+						<p><small>ESTADO {{ order.status }}</small></p>
 					</small>
 				</h5>
 			</div>
 			<div class="card-action">
-				<a href="#" class="btn waves-effect waves-light">
+				<a href="/reports/orders/{{order.pedido_id}}/{{order.status}}/" class="btn waves-effect waves-light">
 					<i class="fa fa-file-pdf-o"></i>
 				</a>
 				<button type="button" class="btn waves-effect waves-light" ng-click="getDetailsOrder()">
@@ -35,28 +216,35 @@
 		</div>
 	{% endif %}
 	<!-- block modals -->
-	<div class="modal modal-footer-fixed" id="midetails" style="max-height: 85%;">
+	<div class="modal bottom-sheet" id="midetails" style="max-height: 85%;">
 		<div class="content-modal">
+			<button type="button" class="modal-action modal-close btn waves-effect waves-light grey lighten-5 grey-text text-darken-3 right">
+				<i class="fa fa-times"></i>
+			</button>
 			<table class="responsive-table highlight">
 				<thead>
 					<tr>
-						<td></td>
-						<td>Descripción</td>
-						<td>Marca</td>
-						<td>Modelo</td>
-						<td>Cantidad</td>
-						<td>Por Enviar</td>
+						<th></th>
+						<th>Descripción</th>
+						<th class="center-align">Unidad</th>
+						<th class="center-align">Marca</th>
+						<th class="center-align">Modelo</th>
+						<th class="center-align">Cantidad</th>
+						<th class="center-align">Por Enviar</th>
+						<th class="center-align">En Guia</th>
 					</tr>
 				</thead>
 				<tbody>
 					{% verbatim %}
 						<tr ng-repeat="x in sdetails">
-							<td>{{$index+1}}</td>
-							<td>{{x.name}}</td>
-							<td>{{x.brand}}</td>
-							<td>{{x.model}}</td>
-							<td>{{x.quantity}}</td>
-							<td>{{x.send}}</td>
+							<td>{{$index + 1}}</td>
+							<td>{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}</td>
+							<td class="center-align">{{x.fields.materiales.fields.unidad}}</td>
+							<td class="center-align">{{x.fields.brand.fields.brand}}</td>
+							<td class="center-align">{{x.fields.model.fields.model}}</td>
+							<td class="right-align">{{x.fields.cantidad}}</td>
+							<td class="right-align">{{x.fields.cantshop}}</td>
+							<td class="right-align">{{x.fields.cantguide}}</td>
 						</tr>
 					{% endverbatim %}
 				</tbody>
@@ -67,5 +255,6 @@
 <!-- block for scripts -->
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-filter/dist/angular-filter.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/almacen/order-attend.js"></script>
 {% endblock content %}
