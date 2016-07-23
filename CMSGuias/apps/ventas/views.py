@@ -200,7 +200,7 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                     #     co += 1
                     context['projects'] = simplejson.loads(
                                             serializers.serialize(
-                                                'json', projects))
+                                                'json', projects.order_by('-proyecto_id')))
                     context['status'] = True
                 if 'ascAllProjects' in request.GET:
                     context['projects'] = json.loads(serializers.serialize(

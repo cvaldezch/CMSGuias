@@ -994,6 +994,7 @@ def view_attend_order(request, oid):
                 ctx,
                 context_instance=RequestContext(request))
         elif request.method == 'POST':
+            # Here change method Attend order stores #mark
             try:
                 data = dict()
                 # recover list of materials
@@ -2731,3 +2732,28 @@ class ReturnItemOrders(JSONResponseMixin, TemplateView):
                 context['raise'] = str(e)
                 context['status'] = False
             return self.render_to_json_response(context)
+
+
+class AttendOrder(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if request.is_ajax():
+                try:
+                    if 'details' in request.GET:
+                        context['details'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                Detpedido.objects.filter(pedido_id=kwargs['order'])))
+                        context['status'] = True
+                except ObjectDoesNotExist, e:
+                    context['raise'] = str(e)
+                    context['status'] = False
+                return self.render_to_json_response(context)
+            else:
+                context['order'] = Pedido.objects.get(pedido_id=kwargs['order'])
+                return render(request, 'almacen/attends/vieworderattend.html', context)
+        except TemplateDoesNotExist as e:
+            raise Http404(e)

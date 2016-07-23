@@ -242,7 +242,7 @@ assignedResponsible = function() {
       if (response.status) {
         $pro = $("input[name=pro]");
         setTimeout(function() {
-          location.reload();
+          return location.reload();
         }, 2600);
         param = {
           'getfors': true,

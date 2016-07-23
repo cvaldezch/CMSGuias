@@ -114,4 +114,6 @@ urlpatterns = patterns(
         EditBedsideGuide.as_view(), name='view_guide_edit'),
     url(r'^return/item/orders/(?P<order>\w{10})/$',
         ReturnItemOrders.as_view(), name='return_order_items_view'),
+    url(r'^order/attend/(?P<order>\w{10})/$',
+        AttendOrder.as_view(), name='view_attendorder'),
 )
