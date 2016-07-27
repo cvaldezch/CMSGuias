@@ -510,3 +510,81 @@ class RptPreOrders(TemplateView):
             return generate_pdf(html)
         except TemplateDoesNotExist, e:
             raise Http404(e)
+
+class ReportsOrder(TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            order = get_object_or_404(models.Pedido, pk=kwargs['pid'])
+            lista = models.Detpedido.objects.filter(
+                        pedido_id=kwargs['pid']).order_by('materiales__matnom')
+            nipples = models.Niple.objects.filter(
+                        pedido_id__exact=kwargs['pid']).order_by('materiales')
+            context['order'] = order
+            lcount = float(lista.count())
+            if lcount > 30:
+                sheet = int(float('%.0f' % (lcount)) / 30)
+                if float(float('%.3f' % (float(lcount))) / 30) > sheet:
+                    sheet += 1
+            else:
+                sheet = 1
+            counter = 0
+            section = list()
+            for c in range(sheet):
+                dataset = lista[counter:counter+30]
+                tmp = list()
+                for x in dataset:
+                    tmp.append({
+                        'item': counter + 1,
+                        'materials': x.materiales_id,
+                        'name': '%s - %s' % (
+                                x.materiales.matnom,
+                                x.materiales.matmed),
+                        'unit': x.materiales.unidad.uninom,
+                        'brand': x.brand.brand,
+                        'model': x.model.model,
+                        'quantity': x.cantidad,
+                        'comment': x.comment})
+                    counter += 1
+                section.append(tmp)
+            context['lista'] = section
+            secn = list()
+            count = 0
+            sheet = 0
+            tipo = globalVariable.tipo_nipples
+            if nipples.count() > 35:
+                sheet = int(float('%.0f' % (nipples.count())) / 30)
+                if float(float('%.3f' % (float(nipples.count()))) / 30) > sheet:
+                    sheet += 1
+            else:
+                sheet = 1
+            # print sheet, 'sheet'
+            # print nipples.count(), 'nipples'
+            for c in range(sheet):
+                datset = nipples[count:count+35]
+                tmp = list()
+                # print datset, 'datset'
+                for x in datset:
+                    tmp.append({
+                        'item': (count + 1),
+                        'materials': x.materiales_id,
+                        'quantity': x.cantidad,
+                        'type': tipo[x.tipo],
+                        'comment': x.comment,
+                        'measure': x.materiales.matmed,
+                        'meter': x.metrado,
+                        'comment': x.comment})
+                    print tmp, 'temp'
+                    count += 1
+                secn.append(tmp)
+            context['nipples'] = secn
+            context['tipo'] = globalVariable.tipo_nipples
+            html = render_to_string(
+                    'report/rptordersstore.html',
+                    context,
+                    context_instance=RequestContext(request))
+            return generate_pdf(html)
+        except TemplateDoesNotExist, e:
+            raise Http404(e)

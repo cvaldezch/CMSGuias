@@ -9,6 +9,7 @@ urlpatterns = patterns('CMSGuias.apps.reports.views',
 	url(r'^test/$','view_test_pdf',name='vista_report'),
 	# reports
 	url(r'^orders/(?P<pid>.*)/(?P<sts>.*)/','rpt_orders_details',name='rpt_orders'),
+	url(r'^order/(?P<pid>\w{10})/$', ReportsOrder.as_view(), name='rpt_order'),
 	url(r'^guidereferral/(?P<gid>.*)/(?P<pg>.*)/$','rpt_guide_referral_format',name='rpt_guide_referral'),
 	url(r'^supply/(?P<sid>.*)/$', RptSupply.as_view(), name='rpt_supply'),
     url(r'^quote/(?P<qid>.*)/(?P<pid>.*)/$', RptQuote.as_view(), name='rpt_quote'),

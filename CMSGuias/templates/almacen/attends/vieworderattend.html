@@ -60,12 +60,12 @@
 								</tr>
 								<tr>
 									<td><strong>Estado</strong></td>
-									<td></td>
+									<td>{{ order.status }}</td>
 								</tr>
 								{% if order.orderfile %}
 									<tr>
 										<td><strong>Adjunto</strong></td>
-										<td><a href="{{ MEDIA_URL }}{{ order.empdni.name_complete }}">i.fa.fa-file</a></td>
+										<td><a href="{{ MEDIA_URL }}{{ order.empdni.name_complete }}" target="_blank"><i class="fa fa-file fa-lg"></i></a></td>
 									</tr>
 								{% endif %}
 							</tbody>
@@ -75,11 +75,31 @@
 			</div>
 		</div>
 		<div class="card-action">
+			<a href="{% url 'rpt_order' order.pedido_id %}" class="btn waves-effect waves-light grey lighten-5 grey-text text-darken-3" target="_blank">
+				<i class="fa fa-file-pdf-o"></i>
+				<span class="hide-on-small-only">
+					IMPRIMIR
+				</span>
+			</a>
+			<button type="button" class="btn waves-effect waves-light amber grey-text text-darken-3" ng-click="getStock()">
+				<i class="fa fa-cubes"></i>
+				<span class="hide-on-small-only">
+					VALIDAR STOCK
+				</span>
+			</button>
+			<button type="button" class="btn waves-effect waves-light red grey-text text-lighten-5" ng-disabled="!vstock">
+				<i class="fa fa-file-text-o"></i>
+				<span class="hide-on-small-only">
+					GENERAR GUIA
+				</span>
+			</button>
+		</div>
+		<div class="card-action">
 			<label>Seleccionar </label>
 			<div class="switch">
 				<label>
 					Ninguno
-					<input type="checkbox">
+					<input type="checkbox" ng-model="chk" ng-init="chk=false" ng-change="chkAll()">
 					<span class="lever"></span>
 					Todos
 				</label>
@@ -96,17 +116,18 @@
 						<th class="center-align">Modelo</th>
 						<th class="center-align">Cantidad</th>
 						<th class="center-align">Por Enviar</th>
+						<th class="center-align">Enviar</th>
 						<th class="center-align">Stock</th>
-						<th></th>
+						<th class="center-align"></th>
 					</tr>
 				</thead>
 				<tbody>
 					{% verbatim %}
-						<tr ng-repeat="x in dorders">
+						<tr ng-repeat="x in dorders" id="itd{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}">
 							<td>{{$index + 1}}</td>
 							<td>
-								<input type="checkbox" id="{{x.fields.materiales.pk}}">
-								<label for="{{x.fields.materiales.pk}}"></label>
+								<input type="checkbox" name="chk" id="chk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" data-materials="{{x.fields.materiales.pk}}" data-mname="{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" data-nbrand="{{x.fields.brand.fields.brand}}" data-nmodel="{{x.fields.model.fields.model}}" data-quantity="{{x.fields.cantshop}}">
+								<label for="chk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}"></label>
 							</td>
 							<td><small>{{x.fields.materiales.pk}}</small></td>
 							<td><small>{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}</small></td>
@@ -114,11 +135,13 @@
 							<td class="center-align"><small>{{x.fields.brand.fields.brand}}</small></td>
 							<td class="center-align"><small>{{x.fields.model.fields.model}}</small></td>
 							<td class="right-align">{{x.fields.cantidad}}</td>
+							<td class="right-align">{{x.fields.cantshop}}</td>
 							<td>
-								<input type="number" class="right-align" min="0" max="{{x.fields.cantshop}}" value="{{x.fields.cantshop}}" cinmam>
+								<input type="number" id="q{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" class="right-align" min="0" max="{{x.fields.cantshop}}" value="0" readonly="true" cinmam>
 							</td>
 							<td>
 								<!-- here stock materials -->
+								<input type="number" class="right-align" id="stk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" readonly="true" min="0" max="{{x.fields.cantshop}}" value="0" cinmam>
 							</td>
 							<td>
 								<button type="button" class="waves-effect waves-light">
@@ -148,23 +171,23 @@
 					<thead>
 						<tr>
 							<td colspan="7">
+								<strong>{{v[0].materials}} {{v[0].name}} {{v[0].bname}} {{v[0].mname}}</strong>
 								<div class="switch">
 									<label>
 										Ninguno
-										<input type="checkbox">
+										<input type="checkbox" id="">
 										<span class="lever"></span>
 										Todos
 									</label>
 								</div>
-								{{v[0].materials}} {{v[0].name}} {{v[0].bname}} {{v[0].mname}}
 							</td>
 						</tr>
 						<tr>
 							<th>#</th>
 							<th></th>
 							<th>Descripción</th>
-							<th>Cantidad</th>
-							<th>Tipo</th>
+							<th class="right-align">Cantidad</th>
+							<th class="center-align">Tipo</th>
 							<th></th>
 							<th>Medida</th>
 							<th>Por Pedir</th>
@@ -173,17 +196,19 @@
 					<tbody>
 						<tr ng-repeat="n in v | orderBy: 'meter'">
 							<td>{{$index + 1}}</td>
-							<td>
-								<input type="checkbox">
+							<td ng-if="n.send > 0">
+								<input type="checkbox"">
 								<label for=""></label>
 							</td>
+							<td ng-if="n.send <= 0"></td>
 							<td>{{n.description}}</td>
-							<td>{{n.quantity}}</td>
-							<td>{{n.tipo}}</td>
-							<td>x</td>
+							<td class="right-align">{{n.quantity}}</td>
+							<td class="center-align">{{n.tipo}}</td>
+							<td class="center-align">x</td>
 							<td>{{n.meter}} cm</td>
-							<td>
-								<input type="number" class="right-align" min="0" max="{{n.send}}" value="{{n.send}}" cinmam>
+							<td class="center-align">
+								<input type="number" ng-if="n.send > 0" class="right-align" min="0" max="{{n.send}}" value="{{n.send}}" cinmam>
+								<span ng-if="n.send <= 0">{{n.send}}</span>
 							</td>
 						</tr>
 					</tbody>
@@ -247,6 +272,57 @@
 							<td class="right-align">{{x.fields.cantguide}}</td>
 						</tr>
 					{% endverbatim %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<!-- show modals stock -->
+	<div id="mstock" class="modal" style="max-height:85%; width: 95%;">
+		<div class="modal-footer">
+			<button type="button" class="waves-effect waves-light btn" ng-click="validSelectStock()">
+				<i class="fa fa-check"></i>
+				<span class="hide-on-only-small">GUARDAR</span>
+			</button>
+			<h5>Stock para <small id="sd"></small></h5>
+		</div>
+		<div class="modal-content">
+			{% verbatim %}
+			<h5>Cantidad pendiente por enviar: <strong>{{qmax}}</strong></h5>
+			{% endverbatim %}
+			<table class="responsive-table highlight">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th></th>
+						<th>Marca</th>
+						<th>Modelo</th>
+						<th>Unidad</th>
+						<th width="2cm">Disponible</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+				{% verbatim %}
+					<tr ng-repeat="x in istock|orderBy:'-fields.stock'" ng-class="{'red': x.fields.stock <= 1, 'amber lighten-3': x.fields.stock > 1 && x.fields.stock < 10 }">
+						<td>{{$index + 1}}</td>
+						<td>
+							<input type="checkbox" id="stks{{$index}}" ng-model="stks['chk'+$index]" ng-init="stks['chk'+$index]=false">
+							<label for="stks{{$index}}"></label>
+						</td>
+						<td>{{x.fields.brand.fields.brand}}</td>
+						<td>{{x.fields.model.fields.model}}</td>
+						<td>{{x.fields.materials.fields.unidad}}</td>
+						<td class="right-align">{{x.fields.stock | number:2}}</td>
+						<td>
+							<input type="number" class="right-align" ng-model="stks['quantity'+$index]" ng-init="stks['quantity'+$index] = 0" min="0" max="{{qmax}}" ng-disabled="!stks['chk'+$index]" cinmam>
+						</td>
+						<!--<td>
+							<button type="button" class="btn grey lighten-5 grey-text text-darken-3 waves-effect waves-steal" ng-model="cs[$index]" ng-init="cs[$index]=false" ng-mouseenter="cs[$index]=true" ng-mouseleave="cs[$index]=false" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" ng-click="selectStock($event)">
+								<i class="fa" ng-class="{'fa-check-square-o':cs[$index], 'fa-square-o': !cs[$index]}"></i>
+							</button>
+						</td> -->
+					</tr>
+				{% endverbatim %}
 				</tbody>
 			</table>
 		</div>

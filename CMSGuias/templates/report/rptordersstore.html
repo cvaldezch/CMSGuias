@@ -7,7 +7,7 @@
 </head>
 <body>
 	<header>
-		<img id="logo" src="/media/images/icrlogo.png" alt="image">
+		<!--<img id="logo" src="/media/images/icrlogo.png" alt="image">-->
 		<div id="dir" >
 			{{ request.session.company.address }}<br >
 			Central Telefonica: (511) {{ request.session.company.phone }}<br >
@@ -28,7 +28,7 @@
 			<tr><td><strong>Área :</strong></td><td> {{ order.dsector.sgroup.name }} - {{ order.dsector.name }}</td></tr>
 			<tr><td><strong>Almacén :</strong></td><td> {{ order.almacen.nombre }}</td></tr>
 			<tr><td><strong>Asunto :</strong></td><td> {{ order.asunto }}</td></tr>
-			<tr><td>Cliente: </td><td>{{ order.proyecto.ruccliente_id }} - {{ order.proyecto.ruccliente.razonsocial }}</td></tr>
+			<tr><td><strong>Cliente: </strong></td><td>{{ order.proyecto.ruccliente_id }} - {{ order.proyecto.ruccliente.razonsocial }}</td></tr>
 			</table>
 		</div>
 		<div id="bedside-col2">
