@@ -7,18 +7,40 @@ app.config ($httpProvider) ->
 	return
 
 app.directive 'cinmam', ($parse) ->
+	restrict: 'A'
+	require: '?ngModel'
+	scope: '@'
 	link: (scope, element, attrs, ngModel) ->
 		element.bind 'change, blur', (event) ->
-			# console.log element
-			val = parseFloat element.context.value
+			if !isNaN(element.context.value) and element.context.value != ""
+				val = parseFloat element.context.value
+			else
+				val = parseFloat attrs.max
 			max = parseFloat attrs.max
 			min = parseFloat attrs.min
-			
+			result = 0
 			if val > max
-				element.context.value = max
-				# console.log element.change()
-			if val < min
-				element.context.value = min
+				result = max
+			else if val < min
+				result = min
+			else
+				result = val
+			if attrs.hasOwnProperty 'ngModel'
+				ngModel.$setViewValue result
+				ngModel.$render()
+				scope.$apply()
+				# ngModel.$parses.unshift (value) ->
+				# 	ngModel.$setViewValue result
+				# 	ngModel.$render()
+				# 	return result
+				# return
+				# scope.$apply ->
+				# 	# ngModel.$modelValue = result
+				# 	scope.ngModel = result
+				# 	return
+				return
+			else
+				element.context.value = result
 				return
 			# angular.element(element).change()
 		return
@@ -45,6 +67,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 	$scope.cstock = new Array()
 	$scope.qmax = 0
 	$scope.stks = []
+	$scope.dguide = new Array()
 	angular.element(document).ready ->
 		# console.log "angular load success!"
 		if $scope.init is true
@@ -133,15 +156,16 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 		# create array with code materials
 		angular.forEach angular.element("[name=chk]"), (el) ->
 			# walk items selected
-			promises.push
-				materials: el.attributes["data-materials"].value
-				name: el.attributes["data-mname"].value
-				brand: el.attributes["data-brand"].value
-				model: el.attributes["data-model"].value
-				nbrand: el.attributes["data-nbrand"].value
-				nmodel: el.attributes["data-nmodel"].value
-				quantity: el.attributes['data-quantity'].value
-			return
+			if angular.element(el).is(":checked")
+				promises.push
+					materials: el.attributes["data-materials"].value
+					name: el.attributes["data-mname"].value
+					brand: el.attributes["data-brand"].value
+					model: el.attributes["data-model"].value
+					nbrand: el.attributes["data-nbrand"].value
+					nmodel: el.attributes["data-nmodel"].value
+					quantity: el.attributes['data-quantity'].value
+				return
 		$q.all(promises).then (response) ->
 			defer.resolve response
 			return
@@ -150,6 +174,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 	$scope.getStock = ->
 		validStock().then (result) ->
 			$scope.cstock = result
+			$scope.dguide = new Array()
 			$scope.stock()
 			return
 		return
@@ -166,8 +191,12 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 					if response.status
 						# show stock item and remove item cstock
 						# return false
+						$scope.stks = new Array()
 						$scope.istock = response.stock
 						$scope.qmax = parseFloat prm.quantity
+						$scope.gbrand = prm.brand
+						$scope.gmodel = prm.model
+						$scope.gmaterials = prm.materials
 						angular.element("#sd").text "#{prm.name} #{prm.nbrand} #{prm.nmodel}"
 						$scope.dstock = 
 							'materials': prm.materials
@@ -202,27 +231,74 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 		$scope.stock()
 		.then (result) ->
 			console.warn result
-			if result.value
+			if result
 				Materialize.toast "Complete!", 3000
 			else
 				console.log "Falta"
 		return
-	$scope.validSelectStock = ->
-		# valid item select for stock
-		#deferred = $q.defer
-		#promise = deferred.promise
-		console.log $scope.stks
-		console.info JSON.stringify $scope.stks
-		# subruntine
-		#valcountandselect = ->
-	#	#	count = 0
 
-			#angular.forEach $scope.stks, (obj) ->
-		#	#	if obj.quantity
-			#		# ...
-			#	
+	$scope.showNip = ->
+		mat = ($scope.gmaterials is obj.materials)
+		brand = ($scope.gbrand is obj.brand)
+		model = ($scoep.gmodel is obj.model)
+		tmp = new Array()
+		angular.forEach $scope.dnip, (obj, index) ->
+			if mat and brand and model
+				tmp.push obj
+				return
 		return
 	
+	$scope.validSelectStock = ->
+		# valid item select for stock
+		# deferred = $q.defer
+		# promise = deferred.promise
+		# console.log $scope.stks
+		tmp = new Array()
+		amount = 0
+		angular.forEach $scope.stks, (obj, index) ->
+			amount += obj['quantity']
+			return
+		console.log amount
+		if amount > $scope.qmax
+			Materialize.toast "<i class='fa fa-times fa-3x red-text'></i>&nbsp;Cantidad mayor a la requerida.", 6000
+		else if amount < 0
+			Materialize.toast "<i class='fa fa-times fa-3x red-text'></i>&nbsp;Cantidad menor que 0.", 6000
+		else
+			stk = angular.element("#q#{$scope.gmaterials}#{$scope.gbrand}#{$scope.gmodel}")
+			$scope.dguide.push
+				'materials': $scope.gmaterials
+				'brand': $scope.gbrand
+				'model': $scope.gmodel
+				'details': new Array()
+			angular.forEach $scope.dguide, (obj, index) ->
+				m = (obj.materials is $scope.gmaterials)
+				b = (obj.brand is $scope.gbrand)
+				o = (obj.model is $scope.gmodel)
+				if m and b and o
+					angular.forEach $scope.stks, (stk, i) ->
+						obj.details.push
+							'materials': $scope.gmaterials
+							'brand': stk.brand
+							'model': stk.model
+							'quantity': stk.quantity
+						return
+					return
+			console.log stk
+			stk[0].value = amount
+			console.info "Nothing generate guide"
+			# poner en cero la cantidad
+			console.warn $scope.dguide
+			$scope.stock()
+			.then (result) ->
+				console.warn result
+				if result
+					angular.element("#mstock").closeModal()
+					Materialize.toast "Completo!", 3000
+					return
+				else
+					console.log "Falta"
+					return
+		return
 	return
 
 app.controller 'attendCtrl', controllers

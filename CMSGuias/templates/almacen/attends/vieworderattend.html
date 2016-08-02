@@ -94,6 +94,11 @@
 				</span>
 			</button>
 		</div>
+		<br>
+		<div class="card-panel amber" ng-model="ntf" ng-init="ntf=true" ng-show="ntf">
+			<i class="fa fa-times right" ng-click="ntf=!ntf"></i>
+			<strong>¡Ten en cuenta!</strong> que solo debes de seleccionar 12 items como maximo para generar una guia de remision.
+		</div>
 		<div class="card-action">
 			<label>Seleccionar </label>
 			<div class="switch">
@@ -117,8 +122,8 @@
 						<th class="center-align">Cantidad</th>
 						<th class="center-align">Por Enviar</th>
 						<th class="center-align">Enviar</th>
-						<th class="center-align">Stock</th>
-						<th class="center-align"></th>
+						<!--<th class="center-align">Stock</th>-->
+						<!--<th class="center-align"></th>-->
 					</tr>
 				</thead>
 				<tbody>
@@ -139,15 +144,15 @@
 							<td>
 								<input type="number" id="q{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" class="right-align" min="0" max="{{x.fields.cantshop}}" value="0" readonly="true" cinmam>
 							</td>
-							<td>
+							<!--<td> -->
 								<!-- here stock materials -->
-								<input type="number" class="right-align" id="stk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" readonly="true" min="0" max="{{x.fields.cantshop}}" value="0" cinmam>
-							</td>
-							<td>
+								<!--<input type="number" class="right-align" id="stk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" readonly="true" min="0" max="{{x.fields.cantshop}}" value="0" cinmam>
+							</td>-->
+							<!--<td>
 								<button type="button" class="waves-effect waves-light">
 									<i class="fa fa-cube"></i>
 								</button>
-							</td>
+							</td>-->
 						</tr>
 					{% endverbatim %}
 				</tbody>
@@ -197,7 +202,7 @@
 						<tr ng-repeat="n in v | orderBy: 'meter'">
 							<td>{{$index + 1}}</td>
 							<td ng-if="n.send > 0">
-								<input type="checkbox"">
+								<input type="checkbox">
 								<label for=""></label>
 							</td>
 							<td ng-if="n.send <= 0"></td>
@@ -277,7 +282,7 @@
 		</div>
 	</div>
 	<!-- show modals stock -->
-	<div id="mstock" class="modal" style="max-height:85%; width: 95%;">
+	<div id="mstock" class="modal" style="height:100%; width: 100%;">
 		<div class="modal-footer">
 			<button type="button" class="waves-effect waves-light btn" ng-click="validSelectStock()">
 				<i class="fa fa-check"></i>
@@ -288,6 +293,10 @@
 		<div class="modal-content">
 			{% verbatim %}
 			<h5>Cantidad pendiente por enviar: <strong>{{qmax}}</strong></h5>
+			<button type="button" class="btn red">
+				<i class="fa fa-times-circle-o"></i>
+				<span class="hide-on-small-only">DEJAR EN CERO</span>
+			</button>
 			{% endverbatim %}
 			<table class="responsive-table highlight">
 				<thead>
@@ -306,7 +315,7 @@
 					<tr ng-repeat="x in istock|orderBy:'-fields.stock'" ng-class="{'red': x.fields.stock <= 1, 'amber lighten-3': x.fields.stock > 1 && x.fields.stock < 10 }">
 						<td>{{$index + 1}}</td>
 						<td>
-							<input type="checkbox" id="stks{{$index}}" ng-model="stks['chk'+$index]" ng-init="stks['chk'+$index]=false">
+							<input type="checkbox" id="stks{{$index}}" ng-model="stks[$index].chk" ng-init="stks[$index].chk=false" ng-change="stks[$index].quantity=(!stks[$index].chk?0:stks[$index].quantity)">
 							<label for="stks{{$index}}"></label>
 						</td>
 						<td>{{x.fields.brand.fields.brand}}</td>
@@ -314,7 +323,9 @@
 						<td>{{x.fields.materials.fields.unidad}}</td>
 						<td class="right-align">{{x.fields.stock | number:2}}</td>
 						<td>
-							<input type="number" class="right-align" ng-model="stks['quantity'+$index]" ng-init="stks['quantity'+$index] = 0" min="0" max="{{qmax}}" ng-disabled="!stks['chk'+$index]" cinmam>
+							<input type="hidden" ng-model="stks[$index].brand" ng-init="stks[$index].brand=x.fields.brand.pk">
+							<input type="hidden" ng-model="stks[$index].model" ng-init="stks[$index].model=x.fields.model.pk">
+							<input type="number" class="right-align" ng-model="stks[$index].quantity" ng-init="stks[$index].quantity = 0" min="0" max="{{qmax}}" ng-disabled="!stks[$index].chk" cinmam>
 						</td>
 						<!--<td>
 							<button type="button" class="btn grey lighten-5 grey-text text-darken-3 waves-effect waves-steal" ng-model="cs[$index]" ng-init="cs[$index]=false" ng-mouseenter="cs[$index]=true" ng-mouseleave="cs[$index]=false" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" ng-click="selectStock($event)">
@@ -325,6 +336,67 @@
 				{% endverbatim %}
 				</tbody>
 			</table>
+		</div>
+	</div>
+	<!-- block guide -->
+	<div class="modal bottom-sheet" id="mguide" data-dismissible="false" style="max-height:85%;">
+		<div class="modal-body">
+			<div class="row">
+				<div class="col l12 m12 s12">
+					<br>
+					<h4>Generar Guia de Remisión</h4>
+				</div>
+				<div class="input-field col l2 m4 s12">
+					<input type="text" id="nguide" class="right-align" placeholder="000-0000000">
+					<label for="nguide">Nro de Guia</label>
+				</div>
+				<div class="input-field col l2 m4 s12">
+					<input type="text" id="norder" readonly="true">
+					<label for="norder">Nro de Pedido</label>
+				</div>
+				<div class="input-field col l2 m4 s12">
+					<input type="text" id="ngroup" readonly="true">
+					<label for="norder">Grupo</label>
+				</div>
+				<div class="input-field col l2 m2 s12">
+					<input type="text" id="ngroup" readonly="true">
+					<label for="norder">RUC</label>
+				</div>
+				<div class="input-field col l4 m4 s12">
+					<input type="text" id="nrs" readonly="true">
+					<label for="nrs">Razón Social</label>
+				</div>
+				<div class="input-field col l9 m12 s12">
+					<input type="text" id="pll">
+					<label for="pll">Punto de Llegada</label>
+				</div>
+				<div class="input-field col l3 m6 s12">
+					<input type="text" id="transfer" readonly="true">
+					<label for="transfer">Traslado</label>
+				</div>
+				<div class="col l4 m6 s12">
+					<label for="">Transportista</label>
+					<select name="" id="" class="browser-default"></select>
+				</div>
+				<div class="col l4 m6 s12">
+					<label for="">Transporte</label>
+					<select name="" id="" class="browser-default"></select>
+				</div>
+				<div class="col l4 m6 s12">
+					<label for="">Conductor</label>
+					<select name="" id="" class="browser-default"></select>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="modal-action modal-close btn grey lighten-5 grey-text text-darken-3 left">
+				<i class="fa fa-times"></i>
+				<span class="hide-on-small-only">Cancelar</span>
+			</button>
+			<button type="button" class="btn red grey-text text-lighten-5">
+				<i class="fa fa-list-alt"></i>
+				<span class="hide-on-small-only">GENERAR GUIA REMISIOn</span>
+			</button>
 		</div>
 	</div>
 </section>

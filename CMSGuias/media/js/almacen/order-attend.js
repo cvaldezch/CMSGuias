@@ -10,17 +10,33 @@ app.config(function($httpProvider) {
 
 app.directive('cinmam', function($parse) {
   return {
+    restrict: 'A',
+    require: '?ngModel',
+    scope: '@',
     link: function(scope, element, attrs, ngModel) {
       element.bind('change, blur', function(event) {
-        var max, min, val;
-        val = parseFloat(element.context.value);
+        var max, min, result, val;
+        if (!isNaN(element.context.value) && element.context.value !== "") {
+          val = parseFloat(element.context.value);
+        } else {
+          val = parseFloat(attrs.max);
+        }
         max = parseFloat(attrs.max);
         min = parseFloat(attrs.min);
+        result = 0;
         if (val > max) {
-          element.context.value = max;
+          result = max;
+        } else if (val < min) {
+          result = min;
+        } else {
+          result = val;
         }
-        if (val < min) {
-          element.context.value = min;
+        if (attrs.hasOwnProperty('ngModel')) {
+          ngModel.$setViewValue(result);
+          ngModel.$render();
+          scope.$apply();
+        } else {
+          element.context.value = result;
         }
       });
     }
@@ -68,6 +84,7 @@ controllers = function($scope, $timeout, $q, attendFactory) {
   $scope.cstock = new Array();
   $scope.qmax = 0;
   $scope.stks = [];
+  $scope.dguide = new Array();
   angular.element(document).ready(function() {
     if ($scope.init === true) {
       $scope.sDetailsOrders();
@@ -143,15 +160,17 @@ controllers = function($scope, $timeout, $q, attendFactory) {
     defer = $q.defer();
     promises = [];
     angular.forEach(angular.element("[name=chk]"), function(el) {
-      promises.push({
-        materials: el.attributes["data-materials"].value,
-        name: el.attributes["data-mname"].value,
-        brand: el.attributes["data-brand"].value,
-        model: el.attributes["data-model"].value,
-        nbrand: el.attributes["data-nbrand"].value,
-        nmodel: el.attributes["data-nmodel"].value,
-        quantity: el.attributes['data-quantity'].value
-      });
+      if (angular.element(el).is(":checked")) {
+        promises.push({
+          materials: el.attributes["data-materials"].value,
+          name: el.attributes["data-mname"].value,
+          brand: el.attributes["data-brand"].value,
+          model: el.attributes["data-model"].value,
+          nbrand: el.attributes["data-nbrand"].value,
+          nmodel: el.attributes["data-nmodel"].value,
+          quantity: el.attributes['data-quantity'].value
+        });
+      }
     });
     $q.all(promises).then(function(response) {
       defer.resolve(response);
@@ -161,6 +180,7 @@ controllers = function($scope, $timeout, $q, attendFactory) {
   $scope.getStock = function() {
     validStock().then(function(result) {
       $scope.cstock = result;
+      $scope.dguide = new Array();
       $scope.stock();
     });
   };
@@ -174,8 +194,12 @@ controllers = function($scope, $timeout, $q, attendFactory) {
         prm['gstock'] = true;
         attendFactory.getStockItem(prm).success(function(response) {
           if (response.status) {
+            $scope.stks = new Array();
             $scope.istock = response.stock;
             $scope.qmax = parseFloat(prm.quantity);
+            $scope.gbrand = prm.brand;
+            $scope.gmodel = prm.model;
+            $scope.gmaterials = prm.materials;
             angular.element("#sd").text(prm.name + " " + prm.nbrand + " " + prm.nmodel);
             $scope.dstock = {
               'materials': prm.materials,
@@ -209,16 +233,75 @@ controllers = function($scope, $timeout, $q, attendFactory) {
     angular.element("#mstock").closeModal();
     $scope.stock().then(function(result) {
       console.warn(result);
-      if (result.value) {
+      if (result) {
         return Materialize.toast("Complete!", 3000);
       } else {
         return console.log("Falta");
       }
     });
   };
+  $scope.showNip = function() {
+    var brand, mat, model, tmp;
+    mat = $scope.gmaterials === obj.materials;
+    brand = $scope.gbrand === obj.brand;
+    model = $scoep.gmodel === obj.model;
+    tmp = new Array();
+    angular.forEach($scope.dnip, function(obj, index) {
+      if (mat && brand && model) {
+        tmp.push(obj);
+      }
+    });
+  };
   $scope.validSelectStock = function() {
-    console.log($scope.stks);
-    console.info(JSON.stringify($scope.stks));
+    var amount, stk, tmp;
+    tmp = new Array();
+    amount = 0;
+    angular.forEach($scope.stks, function(obj, index) {
+      amount += obj['quantity'];
+    });
+    console.log(amount);
+    if (amount > $scope.qmax) {
+      Materialize.toast("<i class='fa fa-times fa-3x red-text'></i>&nbsp;Cantidad mayor a la requerida.", 6000);
+    } else if (amount < 0) {
+      Materialize.toast("<i class='fa fa-times fa-3x red-text'></i>&nbsp;Cantidad menor que 0.", 6000);
+    } else {
+      stk = angular.element("#q" + $scope.gmaterials + $scope.gbrand + $scope.gmodel);
+      $scope.dguide.push({
+        'materials': $scope.gmaterials,
+        'brand': $scope.gbrand,
+        'model': $scope.gmodel,
+        'details': new Array()
+      });
+      angular.forEach($scope.dguide, function(obj, index) {
+        var b, m, o;
+        m = obj.materials === $scope.gmaterials;
+        b = obj.brand === $scope.gbrand;
+        o = obj.model === $scope.gmodel;
+        if (m && b && o) {
+          angular.forEach($scope.stks, function(stk, i) {
+            obj.details.push({
+              'materials': $scope.gmaterials,
+              'brand': stk.brand,
+              'model': stk.model,
+              'quantity': stk.quantity
+            });
+          });
+        }
+      });
+      console.log(stk);
+      stk[0].value = amount;
+      console.info("Nothing generate guide");
+      console.warn($scope.dguide);
+      $scope.stock().then(function(result) {
+        console.warn(result);
+        if (result) {
+          angular.element("#mstock").closeModal();
+          Materialize.toast("Completo!", 3000);
+        } else {
+          console.log("Falta");
+        }
+      });
+    }
   };
 };
 
