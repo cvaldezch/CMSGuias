@@ -85,11 +85,31 @@ controllers = function($scope, $timeout, $q, attendFactory) {
   $scope.qmax = 0;
   $scope.stks = [];
   $scope.dguide = new Array();
+  $scope.fchk = new Array();
   angular.element(document).ready(function() {
     if ($scope.init === true) {
       $scope.sDetailsOrders();
     }
   });
+  $scope.changeAttend = function($index) {
+    console.log("if star process remove " + $index);
+    if (!$scope.fchk[$index].status) {
+      $scope.fchk[$index].quantity = 0;
+      angular.forEach($scope.dguide, function(obj, index) {
+        var b, m, o;
+        m = $scope.fchk[$index].materials === obj.materials;
+        b = $scope.fchk[$index].brand === obj.brand;
+        o = ($scope.fchk[$index].model = obj.model);
+        if (m && b && o) {
+          console.log(obj);
+          console.warn($scope.fchk[$index]);
+          $scope.dguide.splice(index, 1);
+          console.info($scope.dguide);
+        }
+      });
+      $scope.enableGuide();
+    }
+  };
   $scope.sDetailsOrders = function() {
     attendFactory.getDetailsOrder({
       'details': true
@@ -151,8 +171,20 @@ controllers = function($scope, $timeout, $q, attendFactory) {
     });
   };
   $scope.chkAll = function() {
-    angular.forEach(angular.element("[name=chk]"), function(el) {
-      el.checked = $scope.chk;
+    var selected;
+    selected = function() {
+      var deferred;
+      deferred = $q.defer();
+      angular.forEach($scope.fchk, function(obj, index) {
+        obj.status = $scope.chk;
+        if (!$scope.chk) {
+          $scope.changeAttend(index);
+        }
+      });
+      return deferred.promise;
+    };
+    selected().then(function(response) {
+      $scope.enableGuide();
     });
   };
   validStock = function() {
@@ -225,51 +257,51 @@ controllers = function($scope, $timeout, $q, attendFactory) {
     nextStep();
     return deferred.promise;
   };
-  $scope.selectStock = function($event) {
-    var stk;
-    console.log(this);
-    stk = angular.element("#stk" + this.x.fields.materials.pk + $scope.dstock['brand'] + $scope.dstock['model']);
-    stk[0].value = this.x.fields.stock;
-    angular.element("#mstock").closeModal();
-    $scope.stock().then(function(result) {
-      console.warn(result);
-      if (result) {
-        return Materialize.toast("Complete!", 3000);
-      } else {
-        return console.log("Falta");
-      }
-    });
-  };
   $scope.showNip = function() {
-    var brand, mat, model, tmp;
-    mat = $scope.gmaterials === obj.materials;
-    brand = $scope.gbrand === obj.brand;
-    model = $scoep.gmodel === obj.model;
-    tmp = new Array();
-    angular.forEach($scope.dnip, function(obj, index) {
-      if (mat && brand && model) {
-        tmp.push(obj);
+    var consulting;
+    consulting = function() {
+      var deferred, promises;
+      deferred = $q.defer();
+      promises = new Array();
+      angular.forEach($scope.dnip, function(obj, index) {
+        var brand, mat, model;
+        mat = $scope.gmaterials === obj.materials;
+        brand = $scope.gbrand === obj.brand;
+        model = $scope.gmodel === obj.model;
+        if (mat && brand && model) {
+          promises.push(obj);
+        }
+      });
+      $q.all(promises).then(function(response) {
+        deferred.resolve(response);
+      });
+      return deferred.promise;
+    };
+    consulting().then(function(result) {
+      if (result.length > 0) {
+        angular.element("#snip").openModal({
+          dismissible: false
+        });
       }
     });
   };
   $scope.validSelectStock = function() {
-    var amount, stk, tmp;
+    var amount, tmp;
     tmp = new Array();
     amount = 0;
     angular.forEach($scope.stks, function(obj, index) {
       amount += obj['quantity'];
     });
-    console.log(amount);
     if (amount > $scope.qmax) {
       Materialize.toast("<i class='fa fa-times fa-3x red-text'></i>&nbsp;Cantidad mayor a la requerida.", 6000);
     } else if (amount < 0) {
       Materialize.toast("<i class='fa fa-times fa-3x red-text'></i>&nbsp;Cantidad menor que 0.", 6000);
     } else {
-      stk = angular.element("#q" + $scope.gmaterials + $scope.gbrand + $scope.gmodel);
       $scope.dguide.push({
         'materials': $scope.gmaterials,
         'brand': $scope.gbrand,
         'model': $scope.gmodel,
+        'amount': amount,
         'details': new Array()
       });
       angular.forEach($scope.dguide, function(obj, index) {
@@ -279,22 +311,30 @@ controllers = function($scope, $timeout, $q, attendFactory) {
         o = obj.model === $scope.gmodel;
         if (m && b && o) {
           angular.forEach($scope.stks, function(stk, i) {
-            obj.details.push({
-              'materials': $scope.gmaterials,
-              'brand': stk.brand,
-              'model': stk.model,
-              'quantity': stk.quantity
-            });
+            if (stk.chk === true) {
+              obj.details.push({
+                'materials': $scope.gmaterials,
+                'brand': stk.brand,
+                'model': stk.model,
+                'quantity': stk.quantity
+              });
+            }
           });
         }
       });
-      console.log(stk);
-      stk[0].value = amount;
+      angular.forEach($scope.fchk, function(obj, index) {
+        var b, m, o;
+        m = obj.materials === $scope.gmaterials;
+        b = obj.brand === $scope.gbrand;
+        o = obj.model === $scope.gmodel;
+        if (m && b && o) {
+          $scope.fchk[index].quantity = amount;
+        }
+      });
       console.info("Nothing generate guide");
-      console.warn($scope.dguide);
       $scope.stock().then(function(result) {
-        console.warn(result);
         if (result) {
+          $scope.enableGuide();
           angular.element("#mstock").closeModal();
           Materialize.toast("Completo!", 3000);
         } else {
@@ -302,6 +342,32 @@ controllers = function($scope, $timeout, $q, attendFactory) {
         }
       });
     }
+  };
+  return $scope.enableGuide = function() {
+    var sd;
+    sd = function() {
+      var count, defered, promises;
+      defered = $q.defer();
+      promises = new Array();
+      count = 0;
+      angular.forEach($scope.dguide, function(obj) {
+        if (obj.amount > 0) {
+          count++;
+          promises.push(count);
+        }
+      });
+      $q.all(promises).then(function(response) {
+        defered.resolve(response.length);
+      });
+      return defered.promise;
+    };
+    sd().then(function(result) {
+      if (result > 0) {
+        $scope.vstock = true;
+      } else {
+        $scope.vstock = false;
+      }
+    });
   };
 };
 

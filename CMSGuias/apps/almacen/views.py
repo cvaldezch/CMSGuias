@@ -2758,7 +2758,7 @@ class AttendOrder(JSONResponseMixin, TemplateView):
                                     pedido_id=kwargs['order']), relations=('materiales', 'brand', 'model')))
                         context['types'] = globalVariable.tipo_nipples
                         context['status'] = True
-                    if 'gstock' in request.GET:
+                    if 'x' in request.GET:
                         # here obtend stock
                         context['stock'] = json.loads(
                             serializers.serialize(

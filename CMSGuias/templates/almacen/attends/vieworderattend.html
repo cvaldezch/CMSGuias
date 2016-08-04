@@ -93,6 +93,9 @@
 					GENERAR GUIA
 				</span>
 			</button>
+			<button type="button" class="btn waves-effect waves-light" ng-click="enableGuide()">
+				TEST
+			</button>
 		</div>
 		<br>
 		<div class="card-panel amber" ng-model="ntf" ng-init="ntf=true" ng-show="ntf">
@@ -131,7 +134,7 @@
 						<tr ng-repeat="x in dorders" id="itd{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}">
 							<td>{{$index + 1}}</td>
 							<td>
-								<input type="checkbox" name="chk" id="chk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" data-materials="{{x.fields.materiales.pk}}" data-mname="{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" data-nbrand="{{x.fields.brand.fields.brand}}" data-nmodel="{{x.fields.model.fields.model}}" data-quantity="{{x.fields.cantshop}}">
+								<input type="checkbox" ng-if="x.fields.tag != '2'" name="chk" id="chk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" data-materials="{{x.fields.materiales.pk}}" data-mname="{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" data-nbrand="{{x.fields.brand.fields.brand}}" data-nmodel="{{x.fields.model.fields.model}}" data-quantity="{{x.fields.cantshop}}" ng-model="fchk[$index].status" ng-change="changeAttend($index)">
 								<label for="chk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}"></label>
 							</td>
 							<td><small>{{x.fields.materiales.pk}}</small></td>
@@ -142,7 +145,10 @@
 							<td class="right-align">{{x.fields.cantidad}}</td>
 							<td class="right-align">{{x.fields.cantshop}}</td>
 							<td>
-								<input type="number" id="q{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" class="right-align" min="0" max="{{x.fields.cantshop}}" value="0" readonly="true" cinmam>
+								<input type="hidden" ng-model="fchk[$index].materials" ng-init="fchk[$index].materials=x.fields.materiales.pk">
+								<input type="hidden" ng-model="fchk[$index].brand" ng-init="fchk[$index].brand=x.fields.brand.pk">
+								<input type="hidden" ng-model="fchk[$index].model" ng-init="fchk[$index].model=x.fields.model.pk">
+								<input type="number" ng-if="x.fields.tag != '2'" class="right-align" min="0" max="{{x.fields.cantshop}}" ng-model="fchk[$index].quantity" ng-init="fchk[$index].quantity=0" value="{{fchk[$index].quantity}}" readonly="true" ng-disabled="!fchk[$index].status" cinmam>
 							</td>
 							<!--<td> -->
 								<!-- here stock materials -->
@@ -325,7 +331,7 @@
 						<td>
 							<input type="hidden" ng-model="stks[$index].brand" ng-init="stks[$index].brand=x.fields.brand.pk">
 							<input type="hidden" ng-model="stks[$index].model" ng-init="stks[$index].model=x.fields.model.pk">
-							<input type="number" class="right-align" ng-model="stks[$index].quantity" ng-init="stks[$index].quantity = 0" min="0" max="{{qmax}}" ng-disabled="!stks[$index].chk" cinmam>
+							<input type="number" class="right-align" ng-model="stks[$index].quantity" ng-init="stks[$index].quantity = 0" min="0" max="{{qmax}}" ng-disabled="!stks[$index].chk" ng-focus="showNip()" cinmam>
 						</td>
 						<!--<td>
 							<button type="button" class="btn grey lighten-5 grey-text text-darken-3 waves-effect waves-steal" ng-model="cs[$index]" ng-init="cs[$index]=false" ng-mouseenter="cs[$index]=true" ng-mouseleave="cs[$index]=false" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" ng-click="selectStock($event)">
@@ -396,6 +402,22 @@
 			<button type="button" class="btn red grey-text text-lighten-5">
 				<i class="fa fa-list-alt"></i>
 				<span class="hide-on-small-only">GENERAR GUIA REMISIOn</span>
+			</button>
+		</div>
+	</div>
+	<!-- block select nipple -->
+	<div id="snip" class="modal" style="max-width:80%">
+		<div class="modal-content">
+			<table class="table highlight responsive-table"></table>
+		</div>
+		<div class="modal-footer">
+			<button type="button">
+				<i class="fa fa-times"></i>
+				<span class="hide-on-small-only">DEJAR EN CERO</span>
+			</button>
+			<button type="button" class="light-green grey-text text-darken-3">
+				<i class="fa fa-check"></i>
+				<span class="hide-on-small-only">GUARDAR</span>
 			</button>
 		</div>
 	</div>

@@ -68,10 +68,36 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 	$scope.qmax = 0
 	$scope.stks = []
 	$scope.dguide = new Array()
+	$scope.fchk = new Array()
 	angular.element(document).ready ->
 		# console.log "angular load success!"
 		if $scope.init is true
 			$scope.sDetailsOrders()
+		return
+
+	$scope.changeAttend = ($index) ->
+		console.log "if star process remove #{$index}"
+		# console.warn $scope.fchk
+		if !$scope.fchk[$index].status
+			# $scope.fchk[$index].status = !$scope.fchk[$index].status
+			# console.log $scope.fchk[$index].status
+			$scope.fchk[$index].quantity = 0
+			# console.log $scope.dguide
+			# console.log $index
+			# console.info $scope.fchk
+			angular.forEach $scope.dguide, (obj, index) ->
+				m = ($scope.fchk[$index].materials == obj.materials)
+				b = ($scope.fchk[$index].brand == obj.brand)
+				o = ($scope.fchk[$index].model = obj.model)
+				if m and b and o
+					console.log obj
+					console.warn $scope.fchk[$index]
+					$scope.dguide.splice(index, 1)
+					console.info $scope.dguide
+				return
+			$scope.enableGuide()
+			# $scope.fchk[$index].status = !$scope.fchk[$index].status
+			# $scope.apply()
 		return
 
 	$scope.sDetailsOrders = ->
@@ -145,9 +171,20 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 		return
 
 	$scope.chkAll = ->
-		angular.forEach angular.element("[name=chk]"), (el) ->
-			el.checked = $scope.chk
+		selected = ->
+			deferred = $q.defer()
+			angular.forEach $scope.fchk, (obj, index) ->
+				obj.status = $scope.chk
+				if !$scope.chk
+					$scope.changeAttend index
+				return
+			return deferred.promise
+		selected().then (response) ->
+			$scope.enableGuide()
 			return
+		# angular.forEach angular.element("[name=chk]"), (el) ->
+		# 	el.checked = $scope.chk
+		# 	return
 		return
 
 	validStock = ->
@@ -221,30 +258,43 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 		nextStep()
 		return deferred.promise
 	
-	$scope.selectStock = ($event) ->
-		console.log this
-		# get materials, brand, model and stock
-		# console.log angular.element("#stk#{this.x.fields.materials.pk}#{$scope.dstock['brand']}#{$scope.dstock['model']}")
-		stk = angular.element("#stk#{this.x.fields.materials.pk}#{$scope.dstock['brand']}#{$scope.dstock['model']}")
-		stk[0].value = this.x.fields.stock
-		angular.element("#mstock").closeModal()
-		$scope.stock()
-		.then (result) ->
-			console.warn result
-			if result
-				Materialize.toast "Complete!", 3000
-			else
-				console.log "Falta"
-		return
+	# $scope.selectStock = ($event) ->
+	# 	# console.log this
+	# 	# get materials, brand, model and stock
+	# 	# console.log angular.element("#stk#{this.x.fields.materials.pk}#{$scope.dstock['brand']}#{$scope.dstock['model']}")
+	# 	stk = angular.element("#stk#{this.x.fields.materials.pk}#{$scope.dstock['brand']}#{$scope.dstock['model']}")
+	# 	stk[0].value = this.x.fields.stock
+	# 	angular.element("#mstock").closeModal()
+	# 	$scope.stock()
+	# 	.then (result) ->
+	# 		console.warn result
+	# 		if result
+	# 			Materialize.toast "Complete!", 3000
+	# 		else
+	# 			console.log "Falta"
+	# 	return
 
 	$scope.showNip = ->
-		mat = ($scope.gmaterials is obj.materials)
-		brand = ($scope.gbrand is obj.brand)
-		model = ($scoep.gmodel is obj.model)
-		tmp = new Array()
-		angular.forEach $scope.dnip, (obj, index) ->
-			if mat and brand and model
-				tmp.push obj
+		consulting = ->
+			deferred = $q.defer()
+			promises = new Array()
+			# tmp = new Array()
+			angular.forEach $scope.dnip, (obj, index) ->
+				mat = ($scope.gmaterials is obj.materials)
+				brand = ($scope.gbrand is obj.brand)
+				model = ($scope.gmodel is obj.model)
+				if mat and brand and model
+					promises.push obj
+					return
+			$q.all(promises).then (response) ->
+				deferred.resolve response
+				return
+			return deferred.promise
+		consulting().then (result) ->
+			if result.length > 0
+				# show modal
+				angular.element("#snip").openModal
+					dismissible: false
 				return
 		return
 	
@@ -258,17 +308,18 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 		angular.forEach $scope.stks, (obj, index) ->
 			amount += obj['quantity']
 			return
-		console.log amount
+		# console.log amount
 		if amount > $scope.qmax
 			Materialize.toast "<i class='fa fa-times fa-3x red-text'></i>&nbsp;Cantidad mayor a la requerida.", 6000
 		else if amount < 0
 			Materialize.toast "<i class='fa fa-times fa-3x red-text'></i>&nbsp;Cantidad menor que 0.", 6000
 		else
-			stk = angular.element("#q#{$scope.gmaterials}#{$scope.gbrand}#{$scope.gmodel}")
+			# stk = angular.element("#q#{$scope.gmaterials}#{$scope.gbrand}#{$scope.gmodel}")
 			$scope.dguide.push
 				'materials': $scope.gmaterials
 				'brand': $scope.gbrand
 				'model': $scope.gmodel
+				'amount': amount
 				'details': new Array()
 			angular.forEach $scope.dguide, (obj, index) ->
 				m = (obj.materials is $scope.gmaterials)
@@ -276,22 +327,31 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				o = (obj.model is $scope.gmodel)
 				if m and b and o
 					angular.forEach $scope.stks, (stk, i) ->
-						obj.details.push
-							'materials': $scope.gmaterials
-							'brand': stk.brand
-							'model': stk.model
-							'quantity': stk.quantity
-						return
+						if stk.chk is true
+							obj.details.push
+								'materials': $scope.gmaterials
+								'brand': stk.brand
+								'model': stk.model
+								'quantity': stk.quantity
+							return
 					return
-			console.log stk
-			stk[0].value = amount
+			angular.forEach $scope.fchk, (obj, index) ->
+				m = (obj.materials is $scope.gmaterials)
+				b = (obj.brand is $scope.gbrand)
+				o = (obj.model is $scope.gmodel)
+				if m and b and o
+					$scope.fchk[index].quantity = amount
+				return
+			# console.log stk
+			# stk[0].value = amount
 			console.info "Nothing generate guide"
 			# poner en cero la cantidad
-			console.warn $scope.dguide
+			# console.warn $scope.dguide
 			$scope.stock()
 			.then (result) ->
-				console.warn result
+				# console.warn result
 				if result
+					$scope.enableGuide()
 					angular.element("#mstock").closeModal()
 					Materialize.toast "Completo!", 3000
 					return
@@ -299,7 +359,36 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 					console.log "Falta"
 					return
 		return
-	return
+	
+	$scope.enableGuide = ->
+		sd = ->
+			defered = $q.defer()
+			promises = new Array()
+			count = 0
+			angular.forEach $scope.dguide, (obj) ->
+				# console.log obj
+				if obj.amount > 0
+					count++
+					promises.push count
+					return
+			$q.all(promises).then (response) ->
+				defered.resolve response.length
+				return
+			return defered.promise
+		sd().then (result) ->
+			# console.info result
+			if result > 0
+				$scope.vstock = true
+				return
+			else
+				$scope.vstock = false
+				return
+		return
+
+	# $scope.$watch 'fchk', (newval, oldval) ->
+	# 	console.info newval
+	# 	console.warn oldval
+	# return
 
 app.controller 'attendCtrl', controllers
 	
