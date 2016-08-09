@@ -69,6 +69,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 	$scope.stks = []
 	$scope.dguide = new Array()
 	$scope.fchk = new Array()
+	$scope.nipdetails = new Array()
 	angular.element(document).ready ->
 		# console.log "angular load success!"
 		if $scope.init is true
@@ -155,7 +156,10 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 						'quantity': value.fields.cantidad
 						'send': value.fields.cantshop
 						'guide': value.fields.cantguide
+						'tag': value.fields.tag
+						# 'status': false
 					return
+				$scope.nTypes = response.types
 				# console.table tmp
 				$scope.dnip = tmp
 				# change input readonly
@@ -274,7 +278,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 	# 			console.log "Falta"
 	# 	return
 
-	$scope.showNip = ->
+	$scope.showNip = (indexsnip) ->
 		consulting = ->
 			deferred = $q.defer()
 			promises = new Array()
@@ -290,11 +294,49 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				deferred.resolve response
 				return
 			return deferred.promise
-		consulting().then (result) ->
-			if result.length > 0
-				# show modal
-				angular.element("#snip").openModal
-					dismissible: false
+		verify = ->
+			console.log "star verify"
+			defer = $q.defer()
+			# promises = new Array()
+			ver = false
+			console.error $scope.nipdetails
+			angular.forEach $scope.nipdetails, (obj, index) ->
+				console.warn obj
+				mat = ($scope.gmaterials is obj.materials)
+				brand = ($scope.gbrand is obj.brand)
+				model = ($scope.gmodel is obj.model)
+				if mat and brand and model
+					ver = (obj.details.length > 0 ? true : false)
+					console.log ver
+				defer.resolve ver
+				return
+			defer.resolve ver
+			console.log ver
+			console.log "finish verify"
+			return defer.promise
+		verify().then (response) ->
+			# console.log "VERIFY " + response
+			$scope.indexshownip = indexsnip
+			if response is true
+				# get data
+				angular.forEach $scope.nipdetails, (obj, index) ->
+				mat = ($scope.gmaterials is obj.materials)
+				brand = ($scope.gbrand is obj.brand)
+				model = ($scope.gmodel is obj.model)
+				if mat and brand and model
+					$scope.snip = obj.details
+					angular.element("#snip").openModal
+						dismissible: false
+					return
+			else
+				# execute function consulting
+				consulting().then (result) ->
+					if result.length > 0
+						# show modal
+						$scope.snip = result
+						angular.element("#snip").openModal
+							dismissible: false
+						return
 				return
 		return
 	
@@ -311,7 +353,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 		# console.log amount
 		if amount > $scope.qmax
 			Materialize.toast "<i class='fa fa-times fa-3x red-text'></i>&nbsp;Cantidad mayor a la requerida.", 6000
-		else if amount < 0
+		else if amount <= 0
 			Materialize.toast "<i class='fa fa-times fa-3x red-text'></i>&nbsp;Cantidad menor que 0.", 6000
 		else
 			# stk = angular.element("#q#{$scope.gmaterials}#{$scope.gbrand}#{$scope.gmodel}")
@@ -385,10 +427,66 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				return
 		return
 
-	# $scope.$watch 'fchk', (newval, oldval) ->
-	# 	console.info newval
-	# 	console.warn oldval
-	# return
+	$scope.verifyNip = ->
+		console.log "star verify"
+		defer = $q.defer()
+		promises = new Array()
+		angular.forEach $scope.nipdetails, (obj, index) ->
+			ver = -1
+			mat = ($scope.gmaterials is obj.materials)
+			brand = ($scope.gbrand is obj.brand)
+			model = ($scope.gmodel is obj.model)
+			if mat and brand and model
+				ver = index
+				promises.push ver
+			else
+				promises.push ver
+		$q.all(promises).then (response) ->
+			count = Array.from(new Set(response))
+			if count.length > 1
+				if count[1] is -1
+					defer.resolve count[0]
+					return
+				else
+					defer.resolve count[1]
+					return
+			else
+				defer.resolve -1
+				return
+		return defer.promise
+
+	$scope.selectNip = ->
+		$scope.verifyNip().then (response) ->
+			console.warn response
+			if response >= 0
+				$scope.nipdetails[response].details = $scope.snip
+				$scope.snip = new Array()
+				angular.element("#snip").closeModal()
+				console.log $scope.nipdetails
+				return
+			else
+				$scope.nipdetails.push
+					'materials': $scope.gmaterials
+					'brand': $scope.gbrand
+					'model': $scope.gmodel
+					'details': $scope.snip
+				$scope.snip = new Array()
+				angular.element("#snip").closeModal()
+				console.log $scope.nipdetails
+				return
+			# angular.forEach (obj) ->
+			# 	# ...
+		return
+	
+	$scope.setZeroNip = ->
+		console.log $scope.snip
+		return
+
+	$scope.selectOrderNip = ->
+		angular.forEach $scope.snip, (obj, index) ->
+			obj.status = $scope.ns
+			return
+		return
 
 app.controller 'attendCtrl', controllers
 	

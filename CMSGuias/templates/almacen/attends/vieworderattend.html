@@ -331,7 +331,7 @@
 						<td>
 							<input type="hidden" ng-model="stks[$index].brand" ng-init="stks[$index].brand=x.fields.brand.pk">
 							<input type="hidden" ng-model="stks[$index].model" ng-init="stks[$index].model=x.fields.model.pk">
-							<input type="number" class="right-align" ng-model="stks[$index].quantity" ng-init="stks[$index].quantity = 0" min="0" max="{{qmax}}" ng-disabled="!stks[$index].chk" ng-focus="showNip()" cinmam>
+							<input type="number" class="right-align" ng-model="stks[$index].quantity" ng-init="stks[$index].quantity = 0" min="0" max="{{qmax}}" ng-disabled="!stks[$index].chk" ng-focus="showNip($index)" cinmam>
 						</td>
 						<!--<td>
 							<button type="button" class="btn grey lighten-5 grey-text text-darken-3 waves-effect waves-steal" ng-model="cs[$index]" ng-init="cs[$index]=false" ng-mouseenter="cs[$index]=true" ng-mouseleave="cs[$index]=false" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" ng-click="selectStock($event)">
@@ -406,16 +406,63 @@
 		</div>
 	</div>
 	<!-- block select nipple -->
-	<div id="snip" class="modal" style="max-width:80%">
+	<div id="snip" class="modal" style="width:70%; max-height:100%;">
 		<div class="modal-content">
-			<table class="table highlight responsive-table"></table>
+			{% verbatim %}
+				<h5>{{snip[0].name}}</h5>
+				<p>
+					<div class="switch">
+						<label>
+							Ninguno
+							<input type="checkbox" ng-model="ns" ng-init="ns=false" ng-change="selectOrderNip()">
+							<span class="lever"></span>
+							Todo
+						</label>
+					</div>
+				</p>
+			{% endverbatim %}
+			<table class="table highlight responsive-table">
+				<thead>
+					<tr>
+						<th></th>
+						<td></td>
+						<th>Descripcion</th>
+						<th>Tipo</th>
+						<th class="right-align">Cantidad</th>
+						<th></th>
+						<th>Medida</th>
+						<th colspan="2">Por Pedir</th>
+						<!--<th></th>-->
+					</tr>
+				</thead>
+				{% verbatim %}
+				<tbody>
+					<tr ng-repeat="s in snip | orderBy: 'meter'">
+						<td>{{$index+1}}</td>
+						<td>
+							<input type="checkbox" id="ns{{$index}}" ng-model="s.status" ng-init="s.status=false" ng-if="s.send > 0">
+							<label for="ns{{$index}}"></label>
+						</td>
+						<td>{{s.description}}</td>
+						<td>{{s.tipo}}</td>
+						<td class="right-align">{{s.quantity}}</td>
+						<td>x</td>
+						<td>{{s.meter}} cm</td>
+						<td>{{s.send}}</td>
+						<td>
+							<input type="number" class="right-align" min="0" max="{{s.send}}" ng-if="s.tag!='2'" ng-disabled="!s.status" ng-model="s.guide" ng-init="s.guide=s.send" value="{{s.guide}}" cinmam>
+						</td>
+					</tr>
+				</tbody>
+				{% endverbatim %}
+			</table>
 		</div>
 		<div class="modal-footer">
-			<button type="button">
-				<i class="fa fa-times"></i>
+			<button type="button" class="btn waves-effect waves-light grey lighten-5 grey-text text-darken-3 left" ng-click="setZeroNip()">
+				<i class="fa fa-square-o"></i>
 				<span class="hide-on-small-only">DEJAR EN CERO</span>
 			</button>
-			<button type="button" class="light-green grey-text text-darken-3">
+			<button type="button" class="btn waves-effect waves-light light-green grey-text text-darken-3" ng-click="selectNip()">
 				<i class="fa fa-check"></i>
 				<span class="hide-on-small-only">GUARDAR</span>
 			</button>

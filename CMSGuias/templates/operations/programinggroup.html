@@ -52,7 +52,7 @@
           <i class="fa fa-plus"></i>
           <span>Agregar Area</span>
         </button>
-        <button type="button" class="btn green lighten-2 waves-effect waves-light modal-trigger" data-target="mexcel" ng-if="area == 'administrator' || area == 'ventas' || perdni == '46377134'">
+        <button type="button" class="btn green lighten-2 waves-effect waves-light modal-trigger" data-target="mexcel" ng-if="area == 'administrator' || area == 'ventas' || perdni == '46377134' || area == 'operaciones'">
           <i class="fa fa-file-excel-o"></i>
           <span>Archivo</span>
         </button>
@@ -69,15 +69,15 @@
           <span>Aprobar</span>
         </button>
       {% else %}
-        <a href="{% url 'consultpending_view' project.proyecto_id sector.sector_id %}" class="btn amber accent-2 waves-effect waves-light grey-text text-darken-3">
-          <i class="fa fa-bars"></i>
-          <span>Pendientes</span>
-        </a>
         <button type="button" class="btn red darken-1 waves-effect waves-light right" ng-click="DiscapprovedAreas($event)" ng-if="area == 'administrator' || area == 'ventas'">
           <i class="fa fa-thumbs-o-up"></i>
           <span>Quitar Aprobacion</span>
         </button>
       {% endif %}
+      <a href="{% url 'consultpending_view' project.proyecto_id sector.sector_id %}" class="btn amber accent-2 waves-effect waves-light grey-text text-darken-3">
+          <i class="fa fa-bars"></i>
+          <span>Pendientes</span>
+        </a>
       <button type="button" class="btn green lighten-2 waves-effect waves-light" ng-model="dsfshow" ng-click="dsfshow=!dsfshow" ng-show="slist">
         <i class="fa fa-search"></i>
         <span>Buscar</span>

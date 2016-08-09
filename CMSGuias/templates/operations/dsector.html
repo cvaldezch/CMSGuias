@@ -125,7 +125,7 @@
                 {% endif %}
             {% endif %}
             {% if dsector.status == 'AC' %}
-                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-model="btnmodify" ng-init="btnmodify={% if modify|length > 0 %} true {% else %} false {% endif %}" ng-click="showModify()" ng-disabled="btnmodify" ng-show="perarea == 'administrator' || perarea == 'ventas' || perdni == '46377134' || percharge == 'jefe de almacen' || percharge == 'jefe de operaciones'">
+                <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-model="btnmodify" ng-init="btnmodify={% if modify|length > 0 %} true {% else %} false {% endif %}" ng-click="showModify()" ng-disabled="btnmodify" ng-show="perarea == 'administrator' || perarea == 'ventas' || perdni == '46377134' || percharge == 'jefe de almacen' || perarea == 'operaciones'">
                     <i class="fa fa-pencil"></i>
                     <span class="hide-on-med-and-down"> Modificar Área</span>
                 </button>

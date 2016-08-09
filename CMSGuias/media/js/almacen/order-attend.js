@@ -86,6 +86,7 @@ controllers = function($scope, $timeout, $q, attendFactory) {
   $scope.stks = [];
   $scope.dguide = new Array();
   $scope.fchk = new Array();
+  $scope.nipdetails = new Array();
   angular.element(document).ready(function() {
     if ($scope.init === true) {
       $scope.sDetailsOrders();
@@ -157,9 +158,11 @@ controllers = function($scope, $timeout, $q, attendFactory) {
             'meter': value.fields.metrado,
             'quantity': value.fields.cantidad,
             'send': value.fields.cantshop,
-            'guide': value.fields.cantguide
+            'guide': value.fields.cantguide,
+            'tag': value.fields.tag
           });
         });
+        $scope.nTypes = response.types;
         $scope.dnip = tmp;
         angular.forEach($scope.dnip, function(object, index) {
           var a;
@@ -257,8 +260,8 @@ controllers = function($scope, $timeout, $q, attendFactory) {
     nextStep();
     return deferred.promise;
   };
-  $scope.showNip = function() {
-    var consulting;
+  $scope.showNip = function(indexsnip) {
+    var consulting, verify;
     consulting = function() {
       var deferred, promises;
       deferred = $q.defer();
@@ -277,10 +280,53 @@ controllers = function($scope, $timeout, $q, attendFactory) {
       });
       return deferred.promise;
     };
-    consulting().then(function(result) {
-      if (result.length > 0) {
-        angular.element("#snip").openModal({
-          dismissible: false
+    verify = function() {
+      var defer, ver;
+      console.log("star verify");
+      defer = $q.defer();
+      ver = false;
+      console.error($scope.nipdetails);
+      angular.forEach($scope.nipdetails, function(obj, index) {
+        var brand, mat, model, ref;
+        console.warn(obj);
+        mat = $scope.gmaterials === obj.materials;
+        brand = $scope.gbrand === obj.brand;
+        model = $scope.gmodel === obj.model;
+        if (mat && brand && model) {
+          ver = (ref = obj.details.length > 0) != null ? ref : {
+            "true": false
+          };
+          console.log(ver);
+        }
+        defer.resolve(ver);
+      });
+      defer.resolve(ver);
+      console.log(ver);
+      console.log("finish verify");
+      return defer.promise;
+    };
+    verify().then(function(response) {
+      var brand, mat, model;
+      $scope.indexshownip = indexsnip;
+      if (response === true) {
+        angular.forEach($scope.nipdetails, function(obj, index) {});
+        mat = $scope.gmaterials === obj.materials;
+        brand = $scope.gbrand === obj.brand;
+        model = $scope.gmodel === obj.model;
+        if (mat && brand && model) {
+          $scope.snip = obj.details;
+          angular.element("#snip").openModal({
+            dismissible: false
+          });
+        }
+      } else {
+        consulting().then(function(result) {
+          if (result.length > 0) {
+            $scope.snip = result;
+            angular.element("#snip").openModal({
+              dismissible: false
+            });
+          }
         });
       }
     });
@@ -294,7 +340,7 @@ controllers = function($scope, $timeout, $q, attendFactory) {
     });
     if (amount > $scope.qmax) {
       Materialize.toast("<i class='fa fa-times fa-3x red-text'></i>&nbsp;Cantidad mayor a la requerida.", 6000);
-    } else if (amount < 0) {
+    } else if (amount <= 0) {
       Materialize.toast("<i class='fa fa-times fa-3x red-text'></i>&nbsp;Cantidad menor que 0.", 6000);
     } else {
       $scope.dguide.push({
@@ -343,7 +389,7 @@ controllers = function($scope, $timeout, $q, attendFactory) {
       });
     }
   };
-  return $scope.enableGuide = function() {
+  $scope.enableGuide = function() {
     var sd;
     sd = function() {
       var count, defered, promises;
@@ -367,6 +413,68 @@ controllers = function($scope, $timeout, $q, attendFactory) {
       } else {
         $scope.vstock = false;
       }
+    });
+  };
+  $scope.verifyNip = function() {
+    var defer, promises;
+    console.log("star verify");
+    defer = $q.defer();
+    promises = new Array();
+    angular.forEach($scope.nipdetails, function(obj, index) {
+      var brand, mat, model, ver;
+      ver = -1;
+      mat = $scope.gmaterials === obj.materials;
+      brand = $scope.gbrand === obj.brand;
+      model = $scope.gmodel === obj.model;
+      if (mat && brand && model) {
+        ver = index;
+        return promises.push(ver);
+      } else {
+        return promises.push(ver);
+      }
+    });
+    $q.all(promises).then(function(response) {
+      var count;
+      count = Array.from(new Set(response));
+      if (count.length > 1) {
+        if (count[1] === -1) {
+          defer.resolve(count[0]);
+        } else {
+          defer.resolve(count[1]);
+        }
+      } else {
+        defer.resolve(-1);
+      }
+    });
+    return defer.promise;
+  };
+  $scope.selectNip = function() {
+    $scope.verifyNip().then(function(response) {
+      console.warn(response);
+      if (response >= 0) {
+        $scope.nipdetails[response].details = $scope.snip;
+        $scope.snip = new Array();
+        angular.element("#snip").closeModal();
+        console.log($scope.nipdetails);
+      } else {
+        $scope.nipdetails.push({
+          'materials': $scope.gmaterials,
+          'brand': $scope.gbrand,
+          'model': $scope.gmodel,
+          'details': $scope.snip
+        });
+        $scope.snip = new Array();
+        angular.element("#snip").closeModal();
+        console.log($scope.nipdetails);
+      }
+    });
+  };
+  $scope.setZeroNip = function() {
+    console.log($scope.snip);
+  };
+  return $scope.selectOrderNip = function() {
+    angular.forEach($scope.snip, function(obj, index) {
+      obj.status = $scope.ns;
     });
   };
 };
