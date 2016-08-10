@@ -282,7 +282,6 @@ controllers = function($scope, $timeout, $q, attendFactory) {
     };
     verify = function() {
       var defer, ver;
-      console.log("star verify");
       defer = $q.defer();
       ver = false;
       console.error($scope.nipdetails);
@@ -292,33 +291,32 @@ controllers = function($scope, $timeout, $q, attendFactory) {
         mat = $scope.gmaterials === obj.materials;
         brand = $scope.gbrand === obj.brand;
         model = $scope.gmodel === obj.model;
+        console.info(mat, brand, model);
         if (mat && brand && model) {
           ver = (ref = obj.details.length > 0) != null ? ref : {
             "true": false
           };
-          console.log(ver);
         }
         defer.resolve(ver);
       });
       defer.resolve(ver);
-      console.log(ver);
-      console.log("finish verify");
       return defer.promise;
     };
     verify().then(function(response) {
-      var brand, mat, model;
       $scope.indexshownip = indexsnip;
       if (response === true) {
-        angular.forEach($scope.nipdetails, function(obj, index) {});
-        mat = $scope.gmaterials === obj.materials;
-        brand = $scope.gbrand === obj.brand;
-        model = $scope.gmodel === obj.model;
-        if (mat && brand && model) {
-          $scope.snip = obj.details;
-          angular.element("#snip").openModal({
-            dismissible: false
-          });
-        }
+        return angular.forEach($scope.nipdetails, function(obj, index) {
+          var brand, mat, model;
+          mat = $scope.gmaterials === obj.materials;
+          brand = $scope.gbrand === obj.brand;
+          model = $scope.gmodel === obj.model;
+          if (mat && brand && model) {
+            $scope.snip = obj.details;
+            angular.element("#snip").openModal({
+              dismissible: false
+            });
+          }
+        });
       } else {
         consulting().then(function(result) {
           if (result.length > 0) {
@@ -416,28 +414,32 @@ controllers = function($scope, $timeout, $q, attendFactory) {
     });
   };
   $scope.verifyNip = function() {
-    var defer, promises;
+    var brand, defer, key, mat, model, obj, promises, ref, ver;
     console.log("star verify");
     defer = $q.defer();
     promises = new Array();
-    angular.forEach($scope.nipdetails, function(obj, index) {
-      var brand, mat, model, ver;
+    ref = $scope.nipdetails;
+    for (key in ref) {
+      obj = ref[key];
+      console.log("check nip obj", key);
+      console.log(obj);
       ver = -1;
       mat = $scope.gmaterials === obj.materials;
       brand = $scope.gbrand === obj.brand;
       model = $scope.gmodel === obj.model;
       if (mat && brand && model) {
-        ver = index;
-        return promises.push(ver);
+        ver = parseInt(key);
+        promises.push(ver);
       } else {
-        return promises.push(ver);
+        promises.push(ver);
       }
-    });
+    }
     $q.all(promises).then(function(response) {
       var count;
+      console.info(response);
       count = Array.from(new Set(response));
-      if (count.length > 1) {
-        if (count[1] === -1) {
+      if (count.length >= 1) {
+        if (count[0] === -1) {
           defer.resolve(count[0]);
         } else {
           defer.resolve(count[1]);

@@ -295,7 +295,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				return
 			return deferred.promise
 		verify = ->
-			console.log "star verify"
+			# console.log "star verify"
 			defer = $q.defer()
 			# promises = new Array()
 			ver = false
@@ -305,14 +305,15 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				mat = ($scope.gmaterials is obj.materials)
 				brand = ($scope.gbrand is obj.brand)
 				model = ($scope.gmodel is obj.model)
+				console.info mat, brand, model
 				if mat and brand and model
 					ver = (obj.details.length > 0 ? true : false)
-					console.log ver
+					# console.log ver
 				defer.resolve ver
 				return
 			defer.resolve ver
-			console.log ver
-			console.log "finish verify"
+			# console.log ver
+			# console.log "finish verify"
 			return defer.promise
 		verify().then (response) ->
 			# console.log "VERIFY " + response
@@ -320,14 +321,14 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 			if response is true
 				# get data
 				angular.forEach $scope.nipdetails, (obj, index) ->
-				mat = ($scope.gmaterials is obj.materials)
-				brand = ($scope.gbrand is obj.brand)
-				model = ($scope.gmodel is obj.model)
-				if mat and brand and model
-					$scope.snip = obj.details
-					angular.element("#snip").openModal
-						dismissible: false
-					return
+					mat = ($scope.gmaterials is obj.materials)
+					brand = ($scope.gbrand is obj.brand)
+					model = ($scope.gmodel is obj.model)
+					if mat and brand and model
+						$scope.snip = obj.details
+						angular.element("#snip").openModal
+							dismissible: false
+						return
 			else
 				# execute function consulting
 				consulting().then (result) ->
@@ -431,20 +432,36 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 		console.log "star verify"
 		defer = $q.defer()
 		promises = new Array()
-		angular.forEach $scope.nipdetails, (obj, index) ->
+
+		for key, obj of $scope.nipdetails
+			console.log "check nip obj", key
+			console.log obj
 			ver = -1
 			mat = ($scope.gmaterials is obj.materials)
 			brand = ($scope.gbrand is obj.brand)
 			model = ($scope.gmodel is obj.model)
 			if mat and brand and model
-				ver = index
+				ver = parseInt key
 				promises.push ver
+				# return false
 			else
 				promises.push ver
+		
+		# angular.forEach $scope.nipdetails, (obj, index) ->
+		# 	ver = -1
+		# 	mat = ($scope.gmaterials is obj.materials)
+		# 	brand = ($scope.gbrand is obj.brand)
+		# 	model = ($scope.gmodel is obj.model)
+		# 	if mat and brand and model
+		# 		ver = index
+		# 		promises.push ver
+		# 	else
+		# 		promises.push ver
 		$q.all(promises).then (response) ->
+			console.info response
 			count = Array.from(new Set(response))
-			if count.length > 1
-				if count[1] is -1
+			if count.length >= 1
+				if count[0] is -1
 					defer.resolve count[0]
 					return
 				else
