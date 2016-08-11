@@ -129,17 +129,19 @@
                     <i class="fa fa-pencil"></i>
                     <span class="hide-on-med-and-down"> Modificar Área</span>
                 </button>
+                {% if modify|length == 0 %}
                 <button type="button" class="btn blue lighten-1" ng-click="pOrders($event)" ng-if="perarea == 'administrator' || perarea == 'ventas' || perarea == 'operaciones' || percharge == 'jefe de almacen'">
                     <i class="fa fa-list"></i>
                     PEDIDO ALMACÉN
                 </button>
+                {% endif %}
             {% endif %}
             {% if modify|length > 0 %}
                 <button type="button" class="btn amber accent-2 grey-text text-darken-3 waves-effect" ng-click="gui.smat=!gui.smat" ng-show="perarea == 'administrator' || perarea == 'ventas' || perdni == '46377134' || percharge == 'jefe de almacen' || perarea == 'operaciones'">
                     <i class="fa fa-plus"></i>
                     <span class="hide-on-med-and-down">Agregar</span>
                 </button>
-                <button type="button" class="btn red lighten-2 grey-text text-darken-3 waves-effect" ng-click="delAllModifyArea($event)" ng-show="perarea == 'administrator' || perarea == 'ventas' || perdni == '46377134' || percharge == 'jefe de almacen' || percharge == 'jefe de operaciones'">
+                <button type="button" class="btn red lighten-2 grey-text text-darken-3 waves-effect" ng-click="delAllModifyArea($event)" ng-show="perarea == 'administrator' || perarea == 'ventas' || perdni == '46377134' || percharge == 'jefe de almacen' || perarea == 'operaciones'">
                     <i class="fa fa-fire"></i>
                     <i class="fa fa-trash"></i>
                     <span class="hide-on-med-and-down"> Eliminar Modificación</span>

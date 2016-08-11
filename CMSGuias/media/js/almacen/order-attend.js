@@ -478,7 +478,17 @@ controllers = function($scope, $timeout, $q, attendFactory) {
     });
   };
   $scope.setZeroNip = function() {
-    console.log($scope.snip);
+    var amount, i, ref, x;
+    amount = 0;
+    ref = $scope.snip;
+    for (i in ref) {
+      x = ref[i];
+      x.guide = 0;
+      x.status = false;
+    }
+    $scope.stks[$scope.indexshownip].quantity = amount;
+    angular.element("#snip").closeModal();
+    $scope.snip = new Array();
   };
   return $scope.selectOrderNip = function(idx) {
     if (idx == null) {

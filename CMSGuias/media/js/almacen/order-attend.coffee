@@ -498,7 +498,15 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 		return
 	
 	$scope.setZeroNip = ->
-		console.log $scope.snip
+		amount = 0
+		for i, x of $scope.snip
+			x.guide = 0
+			x.status = false
+			# amount += ((x.meter * x.guide)/100)
+		$scope.stks[$scope.indexshownip].quantity = amount
+		angular.element("#snip").closeModal()
+		$scope.snip = new Array()
+		#console.log $scope.snip
 		return
 
 	$scope.selectOrderNip = (idx = -1) ->
