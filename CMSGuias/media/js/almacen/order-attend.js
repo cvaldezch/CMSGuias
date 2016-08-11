@@ -439,7 +439,7 @@ controllers = function($scope, $timeout, $q, attendFactory) {
       console.info(response);
       count = Array.from(new Set(response));
       if (count.length >= 1) {
-        if (count[0] === -1) {
+        if (count[0] !== -1) {
           defer.resolve(count[0]);
         } else {
           defer.resolve(count[1]);
@@ -452,12 +452,19 @@ controllers = function($scope, $timeout, $q, attendFactory) {
   };
   $scope.selectNip = function() {
     $scope.verifyNip().then(function(response) {
+      var amount, i, ref, x;
       console.warn(response);
+      amount = 0;
+      ref = $scope.snip;
+      for (i in ref) {
+        x = ref[i];
+        amount += (x.meter * x.guide) / 100;
+      }
+      $scope.stks[$scope.indexshownip].quantity = amount;
       if (response >= 0) {
         $scope.nipdetails[response].details = $scope.snip;
         $scope.snip = new Array();
         angular.element("#snip").closeModal();
-        console.log($scope.nipdetails);
       } else {
         $scope.nipdetails.push({
           'materials': $scope.gmaterials,
@@ -467,17 +474,29 @@ controllers = function($scope, $timeout, $q, attendFactory) {
         });
         $scope.snip = new Array();
         angular.element("#snip").closeModal();
-        console.log($scope.nipdetails);
       }
     });
   };
   $scope.setZeroNip = function() {
     console.log($scope.snip);
   };
-  return $scope.selectOrderNip = function() {
-    angular.forEach($scope.snip, function(obj, index) {
-      obj.status = $scope.ns;
-    });
+  return $scope.selectOrderNip = function(idx) {
+    if (idx == null) {
+      idx = -1;
+    }
+    if (idx === -1) {
+      angular.forEach($scope.snip, function(obj, index) {
+        obj.status = $scope.ns;
+        if (!obj.status) {
+          $scope.snip[index].guide = 0;
+        }
+      });
+    }
+    if (idx >= 0) {
+      if (!$scope.snip[idx].status) {
+        $scope.snip[idx].guide = 0;
+      }
+    }
   };
 };
 

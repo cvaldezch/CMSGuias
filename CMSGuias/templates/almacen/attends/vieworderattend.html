@@ -101,6 +101,9 @@
 		<div class="card-panel amber" ng-model="ntf" ng-init="ntf=true" ng-show="ntf">
 			<i class="fa fa-times right" ng-click="ntf=!ntf"></i>
 			<strong>¡Ten en cuenta!</strong> que solo debes de seleccionar 12 items como maximo para generar una guia de remision.
+			<p>
+				Recuerda que solo se debe realizar una guia a la vez.
+			</p>
 		</div>
 		<div class="card-action">
 			<label>Seleccionar </label>
@@ -440,7 +443,7 @@
 					<tr ng-repeat="s in snip | orderBy: 'meter'">
 						<td>{{$index+1}}</td>
 						<td>
-							<input type="checkbox" id="ns{{$index}}" ng-model="s.status" ng-init="s.status=false" ng-if="s.send > 0">
+							<input type="checkbox" id="ns{{$index}}" ng-model="s.status" ng-if="s.send > 0" ng-change="selectOrderNip($index)">
 							<label for="ns{{$index}}"></label>
 						</td>
 						<td>{{s.description}}</td>

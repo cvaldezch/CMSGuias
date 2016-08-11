@@ -461,7 +461,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 			console.info response
 			count = Array.from(new Set(response))
 			if count.length >= 1
-				if count[0] is -1
+				if count[0] isnt -1
 					defer.resolve count[0]
 					return
 				else
@@ -472,14 +472,18 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				return
 		return defer.promise
 
-	$scope.selectNip = ->
+	$scope.selectNip = ->	
 		$scope.verifyNip().then (response) ->
 			console.warn response
+			amount = 0
+			for i, x of $scope.snip
+				amount += ((x.meter * x.guide)/100)
+			$scope.stks[$scope.indexshownip].quantity = amount
 			if response >= 0
 				$scope.nipdetails[response].details = $scope.snip
 				$scope.snip = new Array()
 				angular.element("#snip").closeModal()
-				console.log $scope.nipdetails
+				# console.log $scope.nipdetails
 				return
 			else
 				$scope.nipdetails.push
@@ -489,20 +493,24 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 					'details': $scope.snip
 				$scope.snip = new Array()
 				angular.element("#snip").closeModal()
-				console.log $scope.nipdetails
+				# console.log $scope.nipdetails
 				return
-			# angular.forEach (obj) ->
-			# 	# ...
 		return
 	
 	$scope.setZeroNip = ->
 		console.log $scope.snip
 		return
 
-	$scope.selectOrderNip = ->
-		angular.forEach $scope.snip, (obj, index) ->
-			obj.status = $scope.ns
-			return
+	$scope.selectOrderNip = (idx = -1) ->
+		if idx is -1
+			angular.forEach $scope.snip, (obj, index) ->
+				obj.status = $scope.ns
+				if !obj.status
+					$scope.snip[index].guide = 0
+				return
+		if idx >= 0
+			if !$scope.snip[idx].status
+				$scope.snip[idx].guide = 0
 		return
 
 app.controller 'attendCtrl', controllers
