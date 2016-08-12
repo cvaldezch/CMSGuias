@@ -93,7 +93,7 @@
 					GENERAR GUIA
 				</span>
 			</button>
-			<button type="button" class="btn waves-effect waves-light" ng-click="enableGuide()">
+			<button type="button" class="btn waves-effect waves-light" ng-click="test();">
 				TEST
 			</button>
 		</div>
@@ -181,7 +181,15 @@
 		<div class="card-content">
 			<h4>Niples</h4>
 			{% verbatim %}
-				<table class="responsive-table highlight" ng-repeat="(k, v) in dnip | groupBy: '[materials, brand, model]'">
+				<table>
+					<thead>
+						<tr></tr>
+					</thead>
+					<tbody>
+						<tr></tr>
+					</tbody>
+				</table>
+				<!--<table class="responsive-table highlight" ng-repeat="(k, v) in dnip | groupBy: '[materials, brand, model]'">
 					<thead>
 						<tr>
 							<td colspan="7">
@@ -226,7 +234,7 @@
 							</td>
 						</tr>
 					</tbody>
-				</table>
+				</table>-->
 			{% endverbatim %}
 		</div>
 	</div>

@@ -96,6 +96,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 					$scope.dguide.splice(index, 1)
 					console.info $scope.dguide
 				return
+			for k, o of 
 			$scope.enableGuide()
 			# $scope.fchk[$index].status = !$scope.fchk[$index].status
 			# $scope.apply()
@@ -519,6 +520,10 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 		if idx >= 0
 			if !$scope.snip[idx].status
 				$scope.snip[idx].guide = 0
+		return
+
+	$scope.test = ->
+		console.log($scope.snip, $scope.nipdetails);
 		return
 
 app.controller 'attendCtrl', controllers

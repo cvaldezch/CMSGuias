@@ -490,7 +490,7 @@ controllers = function($scope, $timeout, $q, attendFactory) {
     angular.element("#snip").closeModal();
     $scope.snip = new Array();
   };
-  return $scope.selectOrderNip = function(idx) {
+  $scope.selectOrderNip = function(idx) {
     if (idx == null) {
       idx = -1;
     }
@@ -507,6 +507,9 @@ controllers = function($scope, $timeout, $q, attendFactory) {
         $scope.snip[idx].guide = 0;
       }
     }
+  };
+  return $scope.test = function() {
+    console.log($scope.snip, $scope.nipdetails);
   };
 };
 
