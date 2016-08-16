@@ -93,6 +93,7 @@ controllers = function($scope, $timeout, $q, attendFactory) {
     }
   });
   $scope.changeAttend = function($index) {
+    var b, k, m, o, ref;
     console.log("if star process remove " + $index);
     if (!$scope.fchk[$index].status) {
       $scope.fchk[$index].quantity = 0;
@@ -108,6 +109,16 @@ controllers = function($scope, $timeout, $q, attendFactory) {
           console.info($scope.dguide);
         }
       });
+      ref = $scope.nipdetails;
+      for (k in ref) {
+        o = ref[k];
+        m = $scope.fchk[$index].materials === obj.materials;
+        b = $scope.fchk[$index].brand === obj.brand;
+        o = ($scope.fchk[$index].model = obj.model);
+        if (m && b && o) {
+          $scope.nipdetails.splice(k, 1);
+        }
+      }
       $scope.enableGuide();
     }
   };

@@ -29,15 +29,6 @@ app.directive 'cinmam', ($parse) ->
 				ngModel.$setViewValue result
 				ngModel.$render()
 				scope.$apply()
-				# ngModel.$parses.unshift (value) ->
-				# 	ngModel.$setViewValue result
-				# 	ngModel.$render()
-				# 	return result
-				# return
-				# scope.$apply ->
-				# 	# ngModel.$modelValue = result
-				# 	scope.ngModel = result
-				# 	return
 				return
 			else
 				element.context.value = result
@@ -96,7 +87,12 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 					$scope.dguide.splice(index, 1)
 					console.info $scope.dguide
 				return
-			for k, o of 
+			for k, o of $scope.nipdetails
+				m = ($scope.fchk[$index].materials == obj.materials)
+				b = ($scope.fchk[$index].brand == obj.brand)
+				o = ($scope.fchk[$index].model = obj.model)
+				if m and b and o
+					$scope.nipdetails.splice(k, 1)
 			$scope.enableGuide()
 			# $scope.fchk[$index].status = !$scope.fchk[$index].status
 			# $scope.apply()
