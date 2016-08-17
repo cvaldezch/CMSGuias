@@ -27,6 +27,13 @@
 									<td>{{ order.sector.nomsec }}</td>
 								</tr>
 								<tr>
+									<td><strong>Grupo / Area</strong></td>
+									<td>
+										{{ order.dsector.sgroup.name }} / {{ order.dsector.name }} <br>
+										{{ order.dsector.sgroup_id }} / {{ order.dsector_id }} <br>
+									</td>
+								</tr>
+								<tr>
 									<td><strong>Almacén</strong></td>
 									<td>{{ order.almacen.nombre }}</td>
 								</tr>
@@ -81,6 +88,10 @@
 					IMPRIMIR
 				</span>
 			</a>
+			<button type="button" class="modal-trigger waves-effec wavs-light btn green ligthen-2" data-target="allnip">
+				<i class="fa fa-list-alt"></i>
+				<span class="hide-on-small-only">DET. NIPLES</span>
+			</button>
 			<button type="button" class="btn waves-effect waves-light amber grey-text text-darken-3" ng-click="getStock()">
 				<i class="fa fa-cubes"></i>
 				<span class="hide-on-small-only">
@@ -310,7 +321,7 @@
 		<div class="modal-content">
 			{% verbatim %}
 			<h5>Cantidad pendiente por enviar: <strong>{{qmax}}</strong></h5>
-			<button type="button" class="btn red">
+			<button type="button" class="waves-effect waves-light btn red" ng-click="SetSezoItemSelected()">
 				<i class="fa fa-times-circle-o"></i>
 				<span class="hide-on-small-only">DEJAR EN CERO</span>
 			</button>
@@ -357,7 +368,7 @@
 	</div>
 	<!-- block guide -->
 	<div class="modal bottom-sheet" id="mguide" data-dismissible="false" style="max-height:85%;">
-		<div class="modal-body">
+		<div class="modal-content">
 			<div class="row">
 				<div class="col l12 m12 s12">
 					<br>
@@ -477,6 +488,51 @@
 				<i class="fa fa-check"></i>
 				<span class="hide-on-small-only">GUARDAR</span>
 			</button>
+		</div>
+	</div>
+	<!-- block modal show niples -->
+	<div id="allnip" class="modal bottom-sheet" style="max-height:90%">
+		<div class="modal-content">
+			<button type="button" class="modal-action modal-close btn waves-effect waves-light grey lighten-5 grey-text text-darken-3 right">
+				<i class="fa fa-times"></i>
+				Salir
+			</button>
+			<h4>Detalles de Niples</h4>
+			{% verbatim %}
+			<table class="responsive-table highlight" ng-repeat="(k, v) in dnip | groupBy: '[materials, brand, model]'">
+				<thead>
+					<tr>
+						<td colspan="7">
+							<strong>{{v[0].materials}} {{v[0].name}} {{v[0].bname}} {{v[0].mname}}</strong>
+						</td>
+					</tr>
+					<tr>
+						<th>#</th>
+						<th></th>
+						<th>Descripción</th>
+						<th class="right-align">Cantidad</th>
+						<th class="center-align">Tipo</th>
+						<th></th>
+						<th>Medida</th>
+						<th>Por Pedir</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="n in v | orderBy: 'meter'">
+						<td>{{$index + 1}}</td>
+						<td>
+							<i class="fa" ng-class="{'fa-check':n.send == 0, 'fa-square-o': n.send > 0}"></i>
+						</td>
+						<td>{{n.description}}</td>
+						<td class="right-align">{{n.quantity}}</td>
+						<td class="center-align">{{n.tipo}}</td>
+						<td class="center-align">x</td>
+						<td>{{n.meter}} cm</td>
+						<td>{{n.send}}</td>
+					</tr>
+				</tbody>
+			</table>
+			{% endverbatim %}
 		</div>
 	</div>
 </section>

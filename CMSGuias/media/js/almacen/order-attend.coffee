@@ -63,14 +63,18 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 	$scope.nipdetails = new Array()
 	angular.element(document).ready ->
 		# console.log "angular load success!"
+		angular.element(".modal-trigger").leanModal()
 		if $scope.init is true
 			$scope.sDetailsOrders()
 		return
 
 	$scope.changeAttend = ($index) ->
-		console.log "if star process remove #{$index}"
-		# console.warn $scope.fchk
+		# console.log "if star process remove #{$index}"
+		# console.warn "HERE CHECK CHECKED"
+		# console.error $scope.fchk[$index].status
 		if !$scope.fchk[$index].status
+			# console.warn "HERE CHECK CHECKED"
+			# console.error $scope.fchk[$index].status
 			# $scope.fchk[$index].status = !$scope.fchk[$index].status
 			# console.log $scope.fchk[$index].status
 			$scope.fchk[$index].quantity = 0
@@ -87,7 +91,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 					$scope.dguide.splice(index, 1)
 					console.info $scope.dguide
 				return
-			for k, o of $scope.nipdetails
+			for k, obj of $scope.nipdetails
 				m = ($scope.fchk[$index].materials == obj.materials)
 				b = ($scope.fchk[$index].brand == obj.brand)
 				o = ($scope.fchk[$index].model = obj.model)
@@ -141,6 +145,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 					# 		$scope.dorders.splice key, 1
 					# 		console.log key
 					tmp.push
+						'id': value.pk
 						'materials': value.fields.materiales.pk
 						'name': "#{value.fields.materiales.fields.matnom} #{value.fields.materiales.fields.matmed} #{value.fields.materiales.fields.unidad}"
 						'description': "Niple #{response.types[value.fields.tipo]} "
@@ -160,11 +165,11 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				# console.table tmp
 				$scope.dnip = tmp
 				# change input readonly
-				angular.forEach $scope.dnip, (object, index) ->
+				#angular.forEach $scope.dnip, (object, index) ->
 					# change input readonly
-					a = angular.element("#q#{object.materials}#{object.brand}#{object.model}")
-					
-					return
+				#	a = angular.element("#q#{object.materials}#{object.brand}#{object.model}")
+				#	
+				#	return
 				return
 			else
 				Materialize.toast "Error #{response.raise}", 3000, 'rounded'
@@ -506,6 +511,31 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 		#console.log $scope.snip
 		return
 
+	$scope.SetSezoItemSelected = ->
+		for k, o of $scope.dorders
+			console.warn o
+			console.info "INDEX OBJECT ", k
+			mat = ($scope.gmaterials is o.fields.materiales.pk)
+			brand = ($scope.gbrand is o.fields.brand.pk)
+			model = ($scope.gmodel is o.fields.model.pk)
+			if mat and brand and model
+				console.log "change zero", k
+				el = angular.element("#chk#{$scope.gmaterials}#{$scope.gbrand}#{$scope.gmodel}")
+				el[0].checked = false
+				$scope.fchk[k].status = false
+				$scope.changeAttend(k)
+				$scope.stock()
+				.then (result) ->
+					if result
+						$scope.enableGuide()
+						angular.element("#mstock").closeModal()
+						Materialize.toast "Completo!", 3000
+						return
+					else
+						console.log "Falta"
+						return
+		return
+
 	$scope.selectOrderNip = (idx = -1) ->
 		if idx is -1
 			angular.forEach $scope.snip, (obj, index) ->
@@ -519,7 +549,8 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 		return
 
 	$scope.test = ->
-		console.log($scope.snip, $scope.nipdetails);
+		console.log $scope.snip, $scope.nipdetails
+		console.info $scope.dguide
 		return
 
 app.controller 'attendCtrl', controllers

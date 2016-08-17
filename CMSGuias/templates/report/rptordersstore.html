@@ -22,25 +22,41 @@
 		</div>
 		<div id="bedside-col1">
 			<table>
-			<tr><td width="2cm"><strong>Proyecto :</strong></td><td> {{ order.proyecto.nompro }}</td></tr>
-			<tr><td><strong>Subproyecto :</strong></td><td> {{ order.subproyecto.nomsub }}</td></tr>
-			<tr><td><strong>Sector :</strong></td><td> {{ order.sector.nomsec }}</td></tr>
-			<tr><td><strong>Área :</strong></td><td> {{ order.dsector.sgroup.name }} - {{ order.dsector.name }}</td></tr>
-			<tr><td><strong>Almacén :</strong></td><td> {{ order.almacen.nombre }}</td></tr>
-			<tr><td><strong>Asunto :</strong></td><td> {{ order.asunto }}</td></tr>
-			<tr><td><strong>Cliente: </strong></td><td>{{ order.proyecto.ruccliente_id }} - {{ order.proyecto.ruccliente.razonsocial }}</td></tr>
+			<tr><td width="2cm"><strong>PROYECTO :</strong></td><td> {{ order.proyecto.nompro }}</td></tr>
+			<tr><td><strong>SUBPROYECT.:</strong></td><td> {{ order.subproyecto.nomsub }}</td></tr>
+			<tr><td><strong>SECTOR :</strong></td><td> {{ order.sector.nomsec }}</td></tr>
+			<tr>
+                <td><strong>GRUPO/AREA:</strong></td>
+                <td>
+                    {{ order.dsector.sgroup.name }} / {{ order.dsector.name }} <br>
+                    {{ order.dsector.sgroup_id }} / {{ order.dsector_id }}
+                </td>
+            </tr>
+			<tr><td><strong>ALMACEN :</strong></td><td> {{ order.almacen.nombre }}</td></tr>
+			<tr><td><strong>ASUNTO :</strong></td><td> {{ order.asunto }}</td></tr>
+			<tr><td><strong>CLIENTE: </strong></td><td>{{ order.proyecto.ruccliente_id }} - {{ order.proyecto.ruccliente.razonsocial }}</td></tr>
 			</table>
 		</div>
 		<div id="bedside-col2">
 			<table>
-			<tr><td width="3cm"><strong>Fecha Registrado :</strong></td><td> {{ order.registrado }}</td></tr>
-			<tr><td><strong>Fecha Traslado :</strong></td><td> {{ order.traslado }}</td></tr>
-			<tr><td><strong>Estado :</strong></td><td> {{ order.status }}</td></tr>
-			<tr><td><strong>Realizado :</strong></td><td>{{ order.empdni.firstname }} {{ order.empdni.lastname }}</td></tr>
-			<tr><td><strong>Observación :</strong></td><td> {{ order.obser|removetags:"p"|safe }}</td></tr>
+			<tr><td width="3cm"><strong>REGISTRADO :</strong></td><td> {{ order.registrado }}</td></tr>
+			<tr><td><strong>TRASLADO :</strong></td><td> {{ order.traslado }}</td></tr>
+			<tr><td><strong>ESTADO :</strong></td><td> {{ order.status }}</td></tr>
+			<tr><td><strong>CREADO POR :</strong></td><td>{{ order.empdni.firstname }} {{ order.empdni.lastname }}</td></tr>
+			<tr>
+                <td><strong>IMPRESO POR:</strong></td>
+                <td>{{ user.get_profile.empdni.firstname }}, {{ user.get_profile.empdni.lastname }}</td>
+            </tr>
+            <tr>
+            	<td><strong>Fecha y Hora:</strong></td>
+            	<td>{% now "SHORT_DATETIME_FORMAT" %}</td>
+            </tr>
+			<tr><td><strong>OBSERVACION :</strong></td><td> {{ order.obser|removetags:"p"|safe }}</td></tr>
 			</table>
 		</div>
 	</header>
+	<br>
+	<br>
 	<section>
 		<div class="details">
 			{% for c in lista %}

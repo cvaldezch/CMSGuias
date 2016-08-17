@@ -88,13 +88,13 @@ controllers = function($scope, $timeout, $q, attendFactory) {
   $scope.fchk = new Array();
   $scope.nipdetails = new Array();
   angular.element(document).ready(function() {
+    angular.element(".modal-trigger").leanModal();
     if ($scope.init === true) {
       $scope.sDetailsOrders();
     }
   });
   $scope.changeAttend = function($index) {
-    var b, k, m, o, ref;
-    console.log("if star process remove " + $index);
+    var b, k, m, o, obj, ref;
     if (!$scope.fchk[$index].status) {
       $scope.fchk[$index].quantity = 0;
       angular.forEach($scope.dguide, function(obj, index) {
@@ -111,7 +111,7 @@ controllers = function($scope, $timeout, $q, attendFactory) {
       });
       ref = $scope.nipdetails;
       for (k in ref) {
-        o = ref[k];
+        obj = ref[k];
         m = $scope.fchk[$index].materials === obj.materials;
         b = $scope.fchk[$index].brand === obj.brand;
         o = ($scope.fchk[$index].model = obj.model);
@@ -158,6 +158,7 @@ controllers = function($scope, $timeout, $q, attendFactory) {
         tmp = new Array();
         angular.forEach(response.nip, function(value) {
           tmp.push({
+            'id': value.pk,
             'materials': value.fields.materiales.pk,
             'name': value.fields.materiales.fields.matnom + " " + value.fields.materiales.fields.matmed + " " + value.fields.materiales.fields.unidad,
             'description': "Niple " + response.types[value.fields.tipo] + " ",
@@ -175,10 +176,6 @@ controllers = function($scope, $timeout, $q, attendFactory) {
         });
         $scope.nTypes = response.types;
         $scope.dnip = tmp;
-        angular.forEach($scope.dnip, function(object, index) {
-          var a;
-          a = angular.element("#q" + object.materials + object.brand + object.model);
-        });
       } else {
         Materialize.toast("Error " + response.raise, 3000, 'rounded');
       }
@@ -501,6 +498,34 @@ controllers = function($scope, $timeout, $q, attendFactory) {
     angular.element("#snip").closeModal();
     $scope.snip = new Array();
   };
+  $scope.SetSezoItemSelected = function() {
+    var brand, el, k, mat, model, o, ref;
+    ref = $scope.dorders;
+    for (k in ref) {
+      o = ref[k];
+      console.warn(o);
+      console.info("INDEX OBJECT ", k);
+      mat = $scope.gmaterials === o.fields.materiales.pk;
+      brand = $scope.gbrand === o.fields.brand.pk;
+      model = $scope.gmodel === o.fields.model.pk;
+      if (mat && brand && model) {
+        console.log("change zero", k);
+        el = angular.element("#chk" + $scope.gmaterials + $scope.gbrand + $scope.gmodel);
+        el[0].checked = false;
+        $scope.fchk[k].status = false;
+        $scope.changeAttend(k);
+        $scope.stock().then(function(result) {
+          if (result) {
+            $scope.enableGuide();
+            angular.element("#mstock").closeModal();
+            Materialize.toast("Completo!", 3000);
+          } else {
+            console.log("Falta");
+          }
+        });
+      }
+    }
+  };
   $scope.selectOrderNip = function(idx) {
     if (idx == null) {
       idx = -1;
@@ -521,6 +546,7 @@ controllers = function($scope, $timeout, $q, attendFactory) {
   };
   return $scope.test = function() {
     console.log($scope.snip, $scope.nipdetails);
+    console.info($scope.dguide);
   };
 };
 

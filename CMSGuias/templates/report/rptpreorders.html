@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Report Pre Orders</title>
-    <link rel="stylesheet" href="/media/css/reports/stylepreorders.css">
+    <!--<link rel="stylesheet" href="{{ MEDIA_URL }}css/reports/stylepreorders.css">-->
 </head>
 <body>
     <header>
-        <img id="logo" src="{{ MEDIA_URL }}images/icrlogo.png" alt="image">
+        <!--<img id="logo" src="{{ MEDIA_URL }}images/icrlogo.png" alt="image">-->
         <div id="address" >
             {{ request.session.company.address }}<!-- <br > -->
             Central Telefonica: (511) {{ request.session.company.phone }}<!-- <br > -->
@@ -35,6 +35,13 @@
                     <tr>
                         <td>SECTOR:</td>
                         <td>{{ bedside.sector_id }} - {{ bedside.sector.nomsec }}</td>
+                    </tr>
+                    <tr>
+                        <td>GRUPO / AREA:</td>
+                        <td>
+                            {{ bedside.dsector.sgroup.name }} / {{ bedside.dsector.name }} <br>
+                            {{ bedside.dsector.sgroup_id }} / {{ bedside.dsector_id }}
+                        </td>
                     </tr>
                     <tr>
                         <td>CLIENTE:</td>
@@ -67,6 +74,10 @@
                                 {% endif %}
                             {% endfor %}
                         </td>
+                    </tr>
+                    <tr>
+                        <th>IMPRESO POR: </th>
+                        <td><small>{{user.name}}</small></td>
                     </tr>
                 </tbody>
             </table>
