@@ -33,7 +33,6 @@ app.directive 'cinmam', ($parse) ->
 			else
 				element.context.value = result
 				return
-			# angular.element(element).change()
 		return
 
 factories = ($http, $cookies) ->
@@ -46,13 +45,20 @@ factories = ($http, $cookies) ->
 		$http.get "", params: options
 	obj.getStockItem = (options = {}) ->
 		$http.get "", params: options
-	
+	obj.valNGuide = (options = {}) ->
+		$http.get "", params: options
+	obj.getCarrier = (options = {}) ->
+		$http.get "/json/get/carries/", params: options
+	obj.getTransport = (options = {}) ->
+		$http.get "/json/get/list/transport/#{options.ruc}/", params: options
+	obj.getConductor = (options = {}) ->
+		$http.get "/json/get/list/conductor/#{options.ruc}/", params: options
+
 	obj
 
 app.factory 'attendFactory', factories
 
 controllers = ($scope, $timeout, $q, attendFactory) ->
-
 	$scope.dorders = []
 	$scope.vstock = false
 	$scope.cstock = new Array()
@@ -61,11 +67,64 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 	$scope.dguide = new Array()
 	$scope.fchk = new Array()
 	$scope.nipdetails = new Array()
+	$scope.ngvalid = false
 	angular.element(document).ready ->
 		# console.log "angular load success!"
 		angular.element(".modal-trigger").leanModal()
 		if $scope.init is true
+			angular.element(".datepicker").pickadate
+				container: 'body'
+				format: 'yyyy-mm-dd'
+				min: new Date()
+				selectMonths: true
+				selectYears: 15
 			$scope.sDetailsOrders()
+			$timeout ->
+				$scope.getCarrier()
+				return
+			, 2000
+		return
+
+	# get data on load document
+	$scope.getCarrier = ->
+		console.log "REQUEST DATA CARRIER"
+		attendFactory.getCarrier().
+		success (response) ->
+			console.log "DATOS DE CARRIER EXTRACT ", response
+			if response.status
+				$scope.carriers = response.carrier
+				return
+			else
+				Materialize.toast "Transportista sin datos!", 3600
+				return
+		return
+
+	$scope.getTransport = ->
+		console.log "EXECUTE JSON TRANSPORT"
+		prms = 'ruc': $scope.carrier
+		attendFactory.getTransport(prms)
+		.success (response) ->
+			if response.status
+				$scope.transports = response.list
+				console.log $scope.transports
+				return
+			else
+				Materialize.toast "Transporte sin datos!", 3600
+				return
+		return
+
+	$scope.getConductor = ->
+		console.log "EXECUTE JSON CONDUCTOR"
+		prms = 'ruc': $scope.carrier
+		attendFactory.getConductor(prms)
+		.success (response) ->
+			if response.status
+				$scope.conductors = response.list
+				console.log $scope.conductors
+				return
+			else
+				Materialize.toast "Conductor sin datos!", 3600
+				return
 		return
 
 	$scope.changeAttend = ($index) ->
@@ -179,11 +238,16 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 	$scope.chkAll = ->
 		selected = ->
 			deferred = $q.defer()
+			promises = new Array()
 			angular.forEach $scope.fchk, (obj, index) ->
 				obj.status = $scope.chk
 				if !$scope.chk
 					$scope.changeAttend index
+					promises.push index
 				return
+			$q.all(promises).then (result) ->
+				deferred.resolve result
+				returns
 			return deferred.promise
 		selected().then (response) ->
 			$scope.enableGuide()
@@ -240,6 +304,9 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 						$scope.gbrand = prm.brand
 						$scope.gmodel = prm.model
 						$scope.gmaterials = prm.materials
+						$scope.gname = prm.name
+						$scope.gnbrand = prm.nbrand
+						$scope.gnmodel = prm.nmodel
 						angular.element("#sd").text "#{prm.name} #{prm.nbrand} #{prm.nmodel}"
 						$scope.dstock = 
 							'materials': prm.materials
@@ -263,22 +330,6 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				return
 		nextStep()
 		return deferred.promise
-	
-	# $scope.selectStock = ($event) ->
-	# 	# console.log this
-	# 	# get materials, brand, model and stock
-	# 	# console.log angular.element("#stk#{this.x.fields.materials.pk}#{$scope.dstock['brand']}#{$scope.dstock['model']}")
-	# 	stk = angular.element("#stk#{this.x.fields.materials.pk}#{$scope.dstock['brand']}#{$scope.dstock['model']}")
-	# 	stk[0].value = this.x.fields.stock
-	# 	angular.element("#mstock").closeModal()
-	# 	$scope.stock()
-	# 	.then (result) ->
-	# 		console.warn result
-	# 		if result
-	# 			Materialize.toast "Complete!", 3000
-	# 		else
-	# 			console.log "Falta"
-	# 	return
 
 	$scope.showNip = (indexsnip) ->
 		consulting = ->
@@ -364,6 +415,9 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				'materials': $scope.gmaterials
 				'brand': $scope.gbrand
 				'model': $scope.gmodel
+				'name': $scope.gname
+				'nbrand': $scope.gnbrand
+				'nmodel': $scope.gnmodel
 				'amount': amount
 				'details': new Array()
 			angular.forEach $scope.dguide, (obj, index) ->
@@ -474,7 +528,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				return
 		return defer.promise
 
-	$scope.selectNip = ->	
+	$scope.selectNip = -> 
 		$scope.verifyNip().then (response) ->
 			console.warn response
 			amount = 0
@@ -547,6 +601,28 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 			if !$scope.snip[idx].status
 				$scope.snip[idx].guide = 0
 		return
+
+	## Block Guide Remision
+	$scope.validNroGuide = ->
+		if ($scope.guide.nro is null)
+			return
+		if ($scope.guide.nro.match("[0-9]{3}\-[0-9]{1, 8}"))
+			# Validando el nro de guia ya existe
+			prms =
+				'validNumber': true
+				'guia': $scope.guide.nro
+			attendFactory.valNGuide(prms)
+			.success (response) ->
+				if response.status
+					$scope.ngvalid = true
+					return
+				else
+					Materialize.toast "<span>Nro de Guia Invalido!<br>#{response.raise}</span>", 2000
+					return
+			return
+		else
+			Materialize.toast "Nro de Guia Invalido!", 3600
+			return
 
 	$scope.test = ->
 		console.log $scope.snip, $scope.nipdetails
