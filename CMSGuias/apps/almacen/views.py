@@ -2769,7 +2769,7 @@ class AttendOrder(JSONResponseMixin, TemplateView):
                                     materials_id=request.GET['materials']),
                                 relations=('materials','brand','model')))
                         context['status'] = True
-                    if 'validNumber' in request.GET
+                    if 'validNumber' in request.GET:
                         import re
                         nguia = request.GET['guia']
                         mt = re.match('[0-9]{3}[-]{1}[0-9]{8}$', nguia)
@@ -2782,10 +2782,10 @@ class AttendOrder(JSONResponseMixin, TemplateView):
                                     context['status'] = True
                                 else:
                                     context['status'] = False
-                                else:
-                                    context['status'] = True
+                                    context['raise'] = 'La guia pertenece a otro proyecto'
                         else:
                             context['status'] = False
+                            context['raise'] = 'Formato Invalido.'
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)
                     context['status'] = False

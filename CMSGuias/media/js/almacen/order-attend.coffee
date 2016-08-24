@@ -175,7 +175,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				console.log "error in data #{response.raise}"
 				return
 		return
-	
+
 	$scope.getDetailsOrder = ->
 		attendFactory.getDetailsOrder 'details': true
 		.success (response) ->
@@ -227,7 +227,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				#angular.forEach $scope.dnip, (object, index) ->
 					# change input readonly
 				#	a = angular.element("#q#{object.materials}#{object.brand}#{object.model}")
-				#	
+				#
 				#	return
 				return
 			else
@@ -308,7 +308,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 						$scope.gnbrand = prm.nbrand
 						$scope.gnmodel = prm.nmodel
 						angular.element("#sd").text "#{prm.name} #{prm.nbrand} #{prm.nmodel}"
-						$scope.dstock = 
+						$scope.dstock =
 							'materials': prm.materials
 							'brand': prm.brand
 							'model': prm.model
@@ -393,7 +393,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 						return
 				return
 		return
-	
+
 	$scope.validSelectStock = ->
 		# valid item select for stock
 		# deferred = $q.defer
@@ -458,7 +458,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 					console.log "Falta"
 					return
 		return
-	
+
 	$scope.enableGuide = ->
 		sd = ->
 			defered = $q.defer()
@@ -502,7 +502,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				# return false
 			else
 				promises.push ver
-		
+
 		# angular.forEach $scope.nipdetails, (obj, index) ->
 		# 	ver = -1
 		# 	mat = ($scope.gmaterials is obj.materials)
@@ -528,7 +528,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				return
 		return defer.promise
 
-	$scope.selectNip = -> 
+	$scope.selectNip = ->
 		$scope.verifyNip().then (response) ->
 			console.warn response
 			amount = 0
@@ -552,7 +552,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				# console.log $scope.nipdetails
 				return
 		return
-	
+
 	$scope.setZeroNip = ->
 		amount = 0
 		for i, x of $scope.snip
@@ -606,7 +606,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 	$scope.validNroGuide = ->
 		if ($scope.guide.nro is null)
 			return
-		if ($scope.guide.nro.match("[0-9]{3}\-[0-9]{1, 8}"))
+		if ($scope.guide.nro.match("[0-9]{3}[-][0-9]{8}$"))
 			# Validando el nro de guia ya existe
 			prms =
 				'validNumber': true
@@ -630,4 +630,3 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 		return
 
 app.controller 'attendCtrl', controllers
-	
