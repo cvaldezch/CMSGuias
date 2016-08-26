@@ -101,12 +101,12 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 
 	$scope.getTransport = ->
 		console.log "EXECUTE JSON TRANSPORT"
-		prms = 'ruc': $scope.carrier
+		prms = 'ruc': $scope.guide.carrier
 		attendFactory.getTransport(prms)
 		.success (response) ->
 			if response.status
 				$scope.transports = response.list
-				console.log $scope.transports
+				# console.log $scope.transports
 				return
 			else
 				Materialize.toast "Transporte sin datos!", 3600
@@ -115,12 +115,12 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 
 	$scope.getConductor = ->
 		console.log "EXECUTE JSON CONDUCTOR"
-		prms = 'ruc': $scope.carrier
+		prms = 'ruc': $scope.guide.carrier
 		attendFactory.getConductor(prms)
 		.success (response) ->
 			if response.status
 				$scope.conductors = response.list
-				console.log $scope.conductors
+				# console.log $scope.conductors
 				return
 			else
 				Materialize.toast "Conductor sin datos!", 3600
@@ -431,6 +431,8 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 								'materials': $scope.gmaterials
 								'brand': stk.brand
 								'model': stk.model
+								'nbrand': stk.nbrand
+								'nmodel': stk.nmodel
 								'quantity': stk.quantity
 							return
 					return
@@ -604,8 +606,6 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 
 	## Block Guide Remision
 	$scope.validNroGuide = ->
-		if ($scope.guide.nro is null)
-			return
 		if ($scope.guide.nro.match("[0-9]{3}[-][0-9]{8}$"))
 			# Validando el nro de guia ya existe
 			prms =
@@ -613,16 +613,28 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				'guia': $scope.guide.nro
 			attendFactory.valNGuide(prms)
 			.success (response) ->
+				console.log response
 				if response.status
 					$scope.ngvalid = true
 					return
 				else
-					Materialize.toast "<span>Nro de Guia Invalido!<br>#{response.raise}</span>", 2000
+					$scope.ngvalid = false
+					Materialize.toast "<i class='fa fa-times fa-3x red-text'></i> <span>Nro de Guia Invalido!<br>#{response.raise}</span>", 6000
 					return
 			return
 		else
+			$scope.ngvalid = false
 			Materialize.toast "Nro de Guia Invalido!", 3600
 			return
+
+	$scope.openObs = ->
+		angular.element("#iobs").openModal()
+		angular.element("#textObs").trumbowyg()
+		return
+
+	$scope.genGuide = ->
+		console.log $scope.guide
+		return
 
 	$scope.test = ->
 		console.log $scope.snip, $scope.nipdetails

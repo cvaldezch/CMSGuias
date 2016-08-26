@@ -172,6 +172,7 @@ class GuiaRemision(models.Model):
     observation = models.CharField(max_length=250, null=True, blank=True)
     nota = models.CharField(max_length=250, null=True, blank=True)
     dotoutput = models.CharField(max_length=250, null=True, blank=True)
+    orders = models.CharField(max_length=250, null=True, blank=True, default=None)
     flag = models.BooleanField(default=True)
 
     audit_log = AuditLog()
@@ -190,6 +191,7 @@ class DetGuiaRemision(models.Model):
     model = models.ForeignKey(
                 Model, to_field='model_id', blank=True, default='MO000')
     observation = models.CharField(max_length=250, null=True, blank=True)
+    order = models.CharField(max_length=250, null=True, blank=True)
     flag = models.BooleanField(default=True)
 
     audit_log = AuditLog()

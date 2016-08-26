@@ -151,12 +151,11 @@ controllers = function($scope, $timeout, $q, attendFactory) {
     var prms;
     console.log("EXECUTE JSON TRANSPORT");
     prms = {
-      'ruc': $scope.carrier
+      'ruc': $scope.guide.carrier
     };
     attendFactory.getTransport(prms).success(function(response) {
       if (response.status) {
         $scope.transports = response.list;
-        console.log($scope.transports);
       } else {
         Materialize.toast("Transporte sin datos!", 3600);
       }
@@ -166,12 +165,11 @@ controllers = function($scope, $timeout, $q, attendFactory) {
     var prms;
     console.log("EXECUTE JSON CONDUCTOR");
     prms = {
-      'ruc': $scope.carrier
+      'ruc': $scope.guide.carrier
     };
     attendFactory.getConductor(prms).success(function(response) {
       if (response.status) {
         $scope.conductors = response.list;
-        console.log($scope.conductors);
       } else {
         Materialize.toast("Conductor sin datos!", 3600);
       }
@@ -464,6 +462,8 @@ controllers = function($scope, $timeout, $q, attendFactory) {
                 'materials': $scope.gmaterials,
                 'brand': stk.brand,
                 'model': stk.model,
+                'nbrand': stk.nbrand,
+                'nmodel': stk.nmodel,
                 'quantity': stk.quantity
               });
             }
@@ -642,24 +642,31 @@ controllers = function($scope, $timeout, $q, attendFactory) {
   };
   $scope.validNroGuide = function() {
     var prms;
-    if ($scope.guide.nro === null) {
-      return;
-    }
-    if ($scope.guide.nro.match("[0-9]{3}\-[0-9]{1, 8}")) {
+    if ($scope.guide.nro.match("[0-9]{3}[-][0-9]{8}$")) {
       prms = {
         'validNumber': true,
         'guia': $scope.guide.nro
       };
       attendFactory.valNGuide(prms).success(function(response) {
+        console.log(response);
         if (response.status) {
           $scope.ngvalid = true;
         } else {
-          Materialize.toast("<span>Nro de Guia Invalido!<br>" + response.raise + "</span>", 2000);
+          $scope.ngvalid = false;
+          Materialize.toast("<i class='fa fa-times fa-3x red-text'></i> <span>Nro de Guia Invalido!<br>" + response.raise + "</span>", 6000);
         }
       });
     } else {
+      $scope.ngvalid = false;
       Materialize.toast("Nro de Guia Invalido!", 3600);
     }
+  };
+  $scope.openObs = function() {
+    angular.element("#iobs").openModal();
+    angular.element("#textObs").trumbowyg();
+  };
+  $scope.genGuide = function() {
+    console.log($scope.guide);
   };
   return $scope.test = function() {
     console.log($scope.snip, $scope.nipdetails);

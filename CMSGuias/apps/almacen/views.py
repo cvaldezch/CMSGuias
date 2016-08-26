@@ -2770,22 +2770,27 @@ class AttendOrder(JSONResponseMixin, TemplateView):
                                 relations=('materials','brand','model')))
                         context['status'] = True
                     if 'validNumber' in request.GET:
+                        print request.GET
                         import re
                         nguia = request.GET['guia']
                         mt = re.match('[0-9]{3}[-]{1}[0-9]{8}$', nguia)
+                        print
                         if mt:
                             guia = GuiaRemision.objects.filter(guia_id=nguia)
                             if len(guia) > 0:
-                                # verify pediido is self project
+                                guia = guia[0]
+                                # verify pedido is self project
                                 ord = Pedido.objects.get(pedido_id=kwargs['order'])
-                                if ord.proyecto_id == guia.pediido.proyecto_id:
+                                if ord.proyecto_id == guia.pedido.proyecto_id:
                                     context['status'] = True
                                 else:
                                     context['status'] = False
                                     context['raise'] = 'La guia pertenece a otro proyecto'
+                            else:
+                                context['status'] = True
                         else:
-                            context['status'] = False
                             context['raise'] = 'Formato Invalido.'
+                            context['status'] = False
                 except ObjectDoesNotExist, e:
                     context['raise'] = str(e)
                     context['status'] = False
