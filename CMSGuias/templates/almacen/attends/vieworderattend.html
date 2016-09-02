@@ -580,6 +580,7 @@
 						<th>MODELO</th>
 						<th>CANTIDAD TOTAL</td>
 						<th>OBSERVACIONES</th>
+						<th></th>
 					</tr>
 					<tr>
 						<td>{{$index+1}}</td>
@@ -588,10 +589,11 @@
 						<td>{{v.nmodel}}</td>
 						<td>{{v.amount}}</td>
 						<td>
-							<button type="button" class="grey lighten-5 grey-text text-darken-3 waves-effect waves-light btn" ng-click="openObs()">
+							<button type="button" class="grey lighten-5 grey-text text-darken-3 waves-effect waves-light btn" ng-click="openObs($index)">
 								<i class="fa fa-comments"></i>
 							</button>
 						</td>
+						<td>{{v.observation}}</td>
 					</tr>
 					<!-- <tr>
 						<th>#</th>
@@ -619,7 +621,7 @@
 				<i class="fa fa-times"></i>
 				<span class="hide-on-small-only">Salir</span>
 			</button>
-			<button type="button" class="waves-effect waves-light btn blue accent grey-text text-lighten-5 right">
+			<button type="button" class="waves-effect waves-light btn blue accent grey-text text-lighten-5 right" ng-click="saveComment()">
 				<i class="fa fa-floppy-o"></i>
 				<span class="hide-on-small-only">Guardar</span>
 			</button>

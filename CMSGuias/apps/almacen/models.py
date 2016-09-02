@@ -462,3 +462,19 @@ class ReturnItemsProject(models.Model):
 
     def __unicode__(self):
         return '%s %s %s' % (self.pedido.pedido_id, self.register, self.observation)
+
+class Balance(models.Model):
+    materials = models.ForeignKey(Materiale, to_field='materiales_id')
+    storage = models.ForeignKey(Almacene, to_field='almacen_id',  default='AL01', blank=True)
+    register = models.DateTimeField(auto_now_add=True)
+    brand = models.ForeignKey(Brand, to_field='brand_id')
+    model = models.ForeignKey(Model, to_field='model_id')
+    balance = models.FloatField()
+
+    audit_log = AuditLog()
+
+    class Meta:
+        ordering = ['-register']
+
+    def __unicode__(self):
+        return '%s %s %s %f' % (self.materials_id, self.brand.brand, self.model.model, self.balance)

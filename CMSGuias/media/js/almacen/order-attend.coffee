@@ -53,6 +53,11 @@ factories = ($http, $cookies) ->
 		$http.get "/json/get/list/transport/#{options.ruc}/", params: options
 	obj.getConductor = (options = {}) ->
 		$http.get "/json/get/list/conductor/#{options.ruc}/", params: options
+	obj.genGuideRemision = (options = {}) ->
+		$http
+			url: ''
+			method: 'POST'
+			data:
 
 	obj
 
@@ -68,6 +73,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 	$scope.fchk = new Array()
 	$scope.nipdetails = new Array()
 	$scope.ngvalid = false
+	$scope.idxobs = -1
 	angular.element(document).ready ->
 		# console.log "angular load success!"
 		angular.element(".modal-trigger").leanModal()
@@ -627,13 +633,26 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 			Materialize.toast "Nro de Guia Invalido!", 3600
 			return
 
-	$scope.openObs = ->
+	$scope.openObs = (index) ->
+		$scope.idxobs = index
+		$scope.icomment = ''
 		angular.element("#iobs").openModal()
 		angular.element("#textObs").trumbowyg()
 		return
 
+	$scope.saveComment = ->
+		$scope.dguide[$scope.idxobs].observation = angular.element("#textObs").trumbowyg("html")
+		angular.element("#iobs").closeModal()
+		return
+
 	$scope.genGuide = ->
-		console.log $scope.guide
+		if $scope.ngvalid
+			console.log $scope.guide
+			prms =
+				'': true
+
+		else
+			console.log "No valido"
 		return
 
 	$scope.test = ->

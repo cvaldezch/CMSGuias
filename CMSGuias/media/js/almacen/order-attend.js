@@ -120,6 +120,7 @@ controllers = function($scope, $timeout, $q, attendFactory) {
   $scope.fchk = new Array();
   $scope.nipdetails = new Array();
   $scope.ngvalid = false;
+  $scope.idxobs = -1;
   angular.element(document).ready(function() {
     angular.element(".modal-trigger").leanModal();
     if ($scope.init === true) {
@@ -661,12 +662,22 @@ controllers = function($scope, $timeout, $q, attendFactory) {
       Materialize.toast("Nro de Guia Invalido!", 3600);
     }
   };
-  $scope.openObs = function() {
+  $scope.openObs = function(index) {
+    $scope.idxobs = index;
+    $scope.icomment = '';
     angular.element("#iobs").openModal();
     angular.element("#textObs").trumbowyg();
   };
+  $scope.saveComment = function() {
+    $scope.dguide[$scope.idxobs].observation = angular.element("#textObs").trumbowyg("html");
+    angular.element("#iobs").closeModal();
+  };
   $scope.genGuide = function() {
-    console.log($scope.guide);
+    if ($scope.ngvalid) {
+      console.log($scope.guide);
+    } else {
+      console.log("No valido");
+    }
   };
   return $scope.test = function() {
     console.log($scope.snip, $scope.nipdetails);

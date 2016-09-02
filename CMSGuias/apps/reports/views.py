@@ -157,7 +157,7 @@ def rpt_orders_details(request, pid, sts):
 def rpt_guide_referral_format(request, gid, pg):
     try:
         if request.method == 'GET':
-            guide = get_object_or_404(models.GuiaRemision, pk=gid, flag=True)
+            guide = get_object_or_404(models.GuiaRemision, pk=gid)
             det = models.DetGuiaRemision.objects.filter(guia_id__exact=gid, flag=True)
             nipples = models.NipleGuiaRemision.objects.filter(guia_id__exact= gid, flag=True)
             tipo = globalVariable.tipo_nipples #{ "A":"Roscado", "B": "Ranurado","C":"Roscado - Ranurado" }
