@@ -39,6 +39,11 @@ factories = ($http, $cookies) ->
 	$http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken
 	$http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 	obj = new Object
+	formd = (options = {})->
+		form = new FormData()
+		for k, v of options
+			form.append k, v
+		return form
 	obj.getDetailsOrder = (options = {}) ->
 		$http.get "", params: options
 	obj.getDetNiples = (options = {}) ->
@@ -54,11 +59,8 @@ factories = ($http, $cookies) ->
 	obj.getConductor = (options = {}) ->
 		$http.get "/json/get/list/conductor/#{options.ruc}/", params: options
 	obj.genGuideRemision = (options = {}) ->
-		$http
-			url: ''
-			method: 'POST'
-			data:
-
+		$http.post "", formd(options), transformRequest: angular.identity, headers: "Content-Type": undefined
+		
 	obj
 
 app.factory 'attendFactory', factories

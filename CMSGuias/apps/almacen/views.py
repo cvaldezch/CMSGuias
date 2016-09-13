@@ -2733,7 +2733,6 @@ class ReturnItemOrders(JSONResponseMixin, TemplateView):
                 context['status'] = False
             return self.render_to_json_response(context)
 
-
 class AttendOrder(JSONResponseMixin, TemplateView):
 
     @method_decorator(login_required)
@@ -2765,7 +2764,7 @@ class AttendOrder(JSONResponseMixin, TemplateView):
                                 'json',
                                 InventoryBrand.objects.filter(
                                     storage_id='AL01',
-                                    period=globalVariable.get_year,
+                                    #period=globalVariable.get_year,
                                     materials_id=request.GET['materials']),
                                 relations=('materials','brand','model')))
                         context['status'] = True
@@ -2774,7 +2773,7 @@ class AttendOrder(JSONResponseMixin, TemplateView):
                         import re
                         nguia = request.GET['guia']
                         mt = re.match('[0-9]{3}[-]{1}[0-9]{8}$', nguia)
-                        print
+                        # print
                         if mt:
                             guia = GuiaRemision.objects.filter(guia_id=nguia)
                             if len(guia) > 0:
@@ -2800,3 +2799,151 @@ class AttendOrder(JSONResponseMixin, TemplateView):
                 return render(request, 'almacen/attends/vieworderattend.html', context)
         except TemplateDoesNotExist as e:
             raise Http404(e)
+
+class LoadInventoryBrand(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if request.is_ajax():
+                try:
+                    if 'getmat' in request.GET:
+                        context['materials'] = json.loads(
+                            serializers.serialize(
+                            'json',
+                            Inventario.objects.filter(
+                                Q(
+                                materiales__matnom__icontains=request.GET[
+                                    'desc']) | Q(
+                                    materiales__matmed__icontains=request.GET[
+                                    'desc'])).order_by('materiales__matmed'),
+                                relations=('materiales')))
+                        context['status'] = True
+                    if 'details' in request.GET:
+                        ib = InventoryBrand.objects.filter(materials_id=request.GET['materials'])
+                        context['materials'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                ib.order_by('brand__brand'),
+                                    relations=('materials', 'brand', 'model')))
+                        context['amount'] = ib.aggregate(Sum('stock'))['stock__sum']
+                        context['status'] = True
+                except (ObjectDoesNotExist, Exception) as e:
+                    context['raise'] = str(e)
+                    context['status'] = False
+                return self.render_to_json_response(context)
+            else:
+                return render(request, 'almacen/uploadStock.html', context)
+        except TemplateDoesNotExist as e:
+            raise Http404(e)
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        if request.is_ajax():
+            try:
+                if 'delInventory' in request.POST:
+                    erase = InventoryBrand.eraseAllInventory()
+                    # print erase
+                    context['raise'] = erase
+                    context['status'] = erase
+                if 'loadInventory' in request.POST:
+                    # print request.FILES
+                    path = '/storage/Temp/'
+                    options = {'name': 'storage'}
+                    filename = uploadFiles.upload(
+                                path,
+                                request.FILES['fload'],
+                                options)
+                    if uploadFiles.fileExists(filename):
+                        wb = load_workbook(filename=filename, read_only=True)
+                        # print filename
+                        ws = wb.worksheets[0]
+                        for x in range(1, (ws.max_row + 1)):
+                            print x
+                            cell = str('%s'%ws.cell(row=x, column=1).value).encode('utf-8')
+                            if len(cell) >= 14 and cell != None:
+                                stk = float(str('%s'%ws.cell(row=x, column=7).value).encode('utf-8'))
+                                if float(str(stk)) <= 0 or stk == None:
+                                    continue
+                                else:
+                                    # get brand and model
+                                    brd = str('%s'%ws.cell(row=x, column=5).value).encode('utf-8').upper().strip()
+                                    if brd == '-' or brd == "":
+                                        brd = 'BR000'
+                                    else:
+                                        sbrd = Brand.objects.filter(brand=brd)
+                                        if len(sbrd):
+                                            brd = sbrd[0].brand_id
+                                        else:
+                                            b = Brand(
+                                                brand_id=genkeys.GenerateIdBrand(),
+                                                brand=brd)
+                                            b.save()
+                                            brd = b.brand_id
+                                    mdl = str('%s'%ws.cell(row=x, column=4).value).encode('utf-8').upper().strip()
+                                    if mdl == '-' or mdl == "":
+                                        mdl = 'MO000'
+                                    else:
+                                        smdl = Model.objects.filter(model=mdl)
+                                        if len(smdl):
+                                            mdl = smdl[0].model_id
+                                        else:
+                                            b = Model(
+                                                model_id=genkeys.GenerateIdModel(),
+                                                brand_id=brd,
+                                                model=mdl)
+                                            b.save()
+                                            mdl = b.model_id
+                                    # evaluate code exists
+                                    ib = InventoryBrand.objects.filter(
+                                        materials_id=cell,
+                                        brand_id=brd,
+                                        model_id=mdl)
+                                    if len(ib):
+                                        ib = ib[0]
+                                        ib.stock = (ib.stock + stk)
+                                        ib.save()
+                                    else:
+                                        ppurchase = float(ws.cell(row=x, column=8).value)
+                                        psales = float(ws.cell(row=x, column=9).value)
+                                        ib = InventoryBrand(
+                                            storage_id='AL01',
+                                            period=globalVariable.get_year,
+                                            materials_id=cell,
+                                            brand_id=brd,
+                                            model_id=mdl,
+                                            stock=stk,
+                                            purchase=ppurchase,
+                                            sale=psales)
+                                        ib.save()
+                        uploadFiles.removeTmp(filename)
+                    context['status'] = True
+                if 'putorder' in request.POST:
+                    dt = DetPedido.objects.filter(pedido_id__in=request.POST['order'].split(','))
+                    for x in dt:
+                        ib = InventoryBrand.objects.filter(
+                            materials_id=x.materiales_id,
+                            brand_id='BR000',
+                            model_id='MO000')
+                        if len(ib):
+                            ib = ib[0]
+                            ib.stock = (ib.stock + x.cantidad)
+                            ib.save()
+                        else:
+                            ib = InventoryBrand(
+                                storage_id='AL01',
+                                period=globalVariable.get_year,
+                                materials_id=x.materiales_id,
+                                brand_id='BR000',
+                                model_id='MO000',
+                                stock=x.cantidad,
+                                purchase=1,
+                                sale=1)
+                            ib.save()
+                    context['status'] = True
+            except (ObjectDoesNotExist, Exception) as e:
+                context['raise'] = str(e)
+                context['status'] = False
+            return self.render_to_json_response(context)

@@ -44,7 +44,7 @@ class Proyecto(models.Model):
                     decimal_places=3,
                     blank=True,
                     default=0,
-                    null=True)
+                    null=False)
     flag = models.BooleanField(default=True, null=False)
 
     audit_log = AuditLog()

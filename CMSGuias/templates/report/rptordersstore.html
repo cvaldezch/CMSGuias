@@ -35,6 +35,10 @@
 			<tr><td><strong>ALMACEN :</strong></td><td> {{ order.almacen.nombre }}</td></tr>
 			<tr><td><strong>ASUNTO :</strong></td><td> {{ order.asunto }}</td></tr>
 			<tr><td><strong>CLIENTE: </strong></td><td>{{ order.proyecto.ruccliente_id }} - {{ order.proyecto.ruccliente.razonsocial }}</td></tr>
+			<tr>
+				<td><strong>Responsable:</strong></td>
+				<td>{{order.proyecto.empdni.name_complete}}</td>
+			</tr>
 			</table>
 		</div>
 		<div id="bedside-col2">
@@ -44,13 +48,13 @@
 			<tr><td><strong>ESTADO :</strong></td><td> {{ order.status }}</td></tr>
 			<tr><td><strong>CREADO POR :</strong></td><td>{{ order.empdni.firstname }} {{ order.empdni.lastname }}</td></tr>
 			<tr>
-                <td><strong>IMPRESO POR:</strong></td>
-                <td>{{ user.get_profile.empdni.firstname }}, {{ user.get_profile.empdni.lastname }}</td>
-            </tr>
-            <tr>
-            	<td><strong>Fecha y Hora:</strong></td>
-            	<td>{% now "SHORT_DATETIME_FORMAT" %}</td>
-            </tr>
+        <td><strong>IMPRESO POR:</strong></td>
+        <td>{{ user.get_profile.empdni.firstname }}, {{ user.get_profile.empdni.lastname }}</td>
+      </tr>
+      <tr>
+      	<td><strong>Fecha y Hora:</strong></td>
+      	<td>{% now "SHORT_DATETIME_FORMAT" %}</td>
+      </tr>
 			<tr><td><strong>OBSERVACION :</strong></td><td> {{ order.obser|removetags:"p"|safe }}</td></tr>
 			</table>
 		</div>

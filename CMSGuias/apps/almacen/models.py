@@ -371,6 +371,19 @@ class InventoryBrand(models.Model):
     class Meta:
         ordering = ['materials']
 
+    @staticmethod
+    @transaction.commit_on_success
+    def eraseAllInventory():
+        cn = connection.cursor()
+        try:
+            cn.callproc('proc_erase_all_inventory')
+            return cn.fetchone()[0]
+        except Exception, e:
+            transaction.rollback()
+            return str(e)
+        finally:
+            cn.close()
+
     def __unicode__(self):
         return '%s %s %s %f' % (
             self.materials, self.period, self.brand, self.stock)
@@ -446,7 +459,7 @@ class DetRestoration(models.Model):
         ordering = ['materials']
 
     def __unicode__(self):
-        return '%s %s' % (self.restoration, self.materials)
+        return '%s %s' % (self.restoration_id, self.materials_id)
 
 class ReturnItemsProject(models.Model):
     pedido = models.ForeignKey(Pedido, to_field='pedido_id')

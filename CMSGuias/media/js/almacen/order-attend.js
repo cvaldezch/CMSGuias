@@ -44,10 +44,22 @@ app.directive('cinmam', function($parse) {
 });
 
 factories = function($http, $cookies) {
-  var obj;
+  var formd, obj;
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
   obj = new Object;
+  formd = function(options) {
+    var form, k, v;
+    if (options == null) {
+      options = {};
+    }
+    form = new FormData();
+    for (k in options) {
+      v = options[k];
+      form.append(k, v);
+    }
+    return form;
+  };
   obj.getDetailsOrder = function(options) {
     if (options == null) {
       options = {};
@@ -102,6 +114,17 @@ factories = function($http, $cookies) {
     }
     return $http.get("/json/get/list/conductor/" + options.ruc + "/", {
       params: options
+    });
+  };
+  obj.genGuideRemision = function(options) {
+    if (options == null) {
+      options = {};
+    }
+    return $http.post("", formd(options), {
+      transformRequest: angular.identity,
+      headers: {
+        "Content-Type": void 0
+      }
     });
   };
   return obj;
@@ -673,8 +696,12 @@ controllers = function($scope, $timeout, $q, attendFactory) {
     angular.element("#iobs").closeModal();
   };
   $scope.genGuide = function() {
+    var prms;
     if ($scope.ngvalid) {
       console.log($scope.guide);
+      prms = {
+        '': true
+      };
     } else {
       console.log("No valido");
     }

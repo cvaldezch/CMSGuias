@@ -1,0 +1,156 @@
+{% extends "basemd.html" %}
+{% block menu %}
+  {% include "menus/storagemd.htm" %}
+{% endblock menu %}
+{% block content %}
+<section ng-app="inventoryApp" ng-controller="inventoryCtrl">
+  <input type="hidden" ng-model="parea" ng-init="parea='{{ request.user.get_profile.empdni.charge.area|lower }}'">
+  <input type="hidden" ng-model="pcargo" ng-init="pcargo='{{ request.user.get_profile.empdni.charge.cargos|lower }}'">
+  <div class="card-panel">
+    <h4>Inventario</h4>
+    <button type="button" class="waves-effect waves-light btn amber lighten-1 grey-text text-darken-3 modal-trigger" ng-show="parea=='administrator'" ng-model="bload" ng-init="bload=false" data-target="mupload">
+      <i class="fa fa-upload"></i>
+      <span class="hide-on-small-only">CARGAR INVENTARIO</span>
+    </button>
+    <button type="button" class="waves-effect waves-light btn red lighten-1" ng-show="parea=='administrator'" ng-model="bdel" ng-init="bdel=false" ng-disabled="bdel" ng-click="delInventory()">
+      <i class="fa fa-trash-o"></i>
+      <span class="hide-on-small-only">Eliminar INVENTARIO</span>
+    </button>
+    <button type="button" class="waves-effect waves-light btn blue lighten-1" ng-show="parea=='administrator' && '70492850' == {{request.user.get_profile.empdni_id}}" ng-click="loadOrderStk()">
+      <i class="fa fa-list"></i>
+      <span class="hide-on-small-only">CARGAR STOCK PEDIDO</span>
+    </button>
+    <blockquote>
+      <div class="input-field">
+        <i class="fa fa-filter prefix"></i>
+        <input type="text" ng-model="desc" ng-keyup="getMaterials($event)">
+        <label for="">Filtrar Materiales del Inventario</label>
+      </div>
+    </blockquote>
+    <blockquote ng-model="sload" ng-show="sload">
+      <h3>Cargar Inventario</h3>
+      <div class="file-field input-field">
+        <div class="btn">
+          <span>Archivo</span>
+          <input type="file">
+        </div>
+        <div class="file-path-wrapper">
+          <input class="file-path validate" type="text">
+        </div>
+      </div>
+    </blockquote>
+  </div>
+  <div class="card-panel">
+    <table class="table responsive-table highlight">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Código</th>
+          <th>Descripción</th>
+          <!--<th>Marca</th>
+          <th>Modelo</th>-->
+          <th>Unidad</th>
+          <th>Stock</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% verbatim %}
+            <tr ng-repeat="x in lstinv">
+              <td class="center-align">{{$index+1}}</td>
+              <td class="left-align">{{x.fields.materiales.pk}}</td>
+              <td class="left-align">{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}</td>
+              <!--<td>{{x.fields.brand.fields.brand}}</td>
+              <td>{{x.fields.model.fields.model}}</td>-->
+              <td class="center-align">{{x.fields.materiales.fields.unidad}}</td>
+              <td class="right-align">{{x.fields.stock | number:2}}</td>
+              <td class="center-align">
+                <a href="#!{{x.fields.materiales.pk}}" ng-click="getDetails(x.fields.materiales.pk)">
+                  <i class="fa fa-list-alt"></i>
+                </a>
+              </td>
+            </tr>
+        {% endverbatim %}
+      </tbody>
+    </table>
+  </div>
+  <!-- block modal -->
+  <div class="modal" id="mupload">
+    <div class="modal-content">
+      <div class="file-field input-field">
+        <div class="btn">
+          <span>Archivo *.xlsx</span>
+          <input type="file" file-model="fload" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+        </div>
+        <div class="file-path-wrapper">
+          <input class="file-path validate" type="text">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="modal-action modal-close waves-effect btn left grey lighten-5 grey-text text-darken-3">
+        <i class="fa fa-times"></i>
+        <span class="hide-on-small-only">Salir</span>
+      </button>
+      <button type="button" class="btn blue" ng-disabled="bload" ng-click="loadInventory()">
+        <i class="fa" ng-class="{'fa-cog fa-spinner fa-pulse fa-fw':bload, 'fa-upload': !bload}"></i>
+        <span class="hide-on-small-only">Cargar</span>
+      </button>
+    </div>
+  </div>
+  <!-- block modals -->
+  <div id="mdetails" class="modal bottom-sheet" style="max-height:80%;">
+    <div class="modal-content">
+      {% verbatim %}
+        <h4>
+          {{details[0].fields.materials.fields.matnom}} {{details[0].fields.materials.fields.matmed}}
+          <br>
+          <small><strong>STOCK TOTAL {{amount}}</strong></small>
+        </h4>
+      {% endverbatim %}
+      <table class="table responsive-table highlight">
+        <caption class="input-field" ng-hide="sf">
+          <i class="prefix fa fa-filter"></i>
+          <input type="text" id="sb" ng-model="sbrand" placeholder="Filtar">
+        </caption>
+        <thead>
+          <tr>
+            <th>
+              <a href="#!" ng-model="sf" ng-init="sf=true" ng-click="sf=!sf"><i class="fa fa-search"></i></a>
+            </th>
+            <th>Código</th>
+            <th>Descripción</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Unidad</th>
+            <th>Stock</th> 
+          </tr>
+        </thead>
+        <tbody>
+          {% verbatim %}
+            <tr ng-repeat="x in details | filter : sbrand">
+              <td>{{$index+1}}</td>
+              <td class="center-align">{{x.fields.materials.pk}}</td>
+              <td class="left-align">{{x.fields.materials.fields.matnom}} {{x.fields.materials.fields.matmed}}</td>
+              <td class="center-align">{{x.fields.brand.fields.brand}}</td>
+              <td class="center-align">{{x.fields.model.fields.model}}</td>
+              <td class="center-align">{{x.fields.materials.fields.unidad}}</td>
+              <td class="right-align">{{x.fields.stock | number : 2}}</td>
+              <td>
+            </tr>
+          {% endverbatim %}
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="modal-action modal-close waves-effect waves-light btn grey lighten-5 grey-text text-darken-3 left">
+        <i class="fa fa-times"></i>
+        <small class="hide-on-small-only">SALIR</small>
+      </button>
+    </div>
+  </div>
+</section>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/almacen/loadinvetory.js"></script>
+{% endblock content %}
