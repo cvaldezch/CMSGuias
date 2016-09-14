@@ -174,6 +174,7 @@ class GuiaRemision(models.Model):
     dotoutput = models.CharField(max_length=250, null=True, blank=True)
     orders = models.CharField(max_length=250, null=True, blank=True, default=None)
     flag = models.BooleanField(default=True)
+    perreg = models.ForeignKey(Employee, to_field='empdni_id', null=True, blank=True)
 
     audit_log = AuditLog()
 
@@ -190,8 +191,12 @@ class DetGuiaRemision(models.Model):
                 Brand, to_field='brand_id', blank=True, default='BR000')
     model = models.ForeignKey(
                 Model, to_field='model_id', blank=True, default='MO000')
+    obrand = models.ForeignKey(
+                Brand, related_name='obrandAsDetGuide', blank=True, default='BR000')
+    omodel = models.ForeignKey(
+                Model, related_name='omodelAsDetGuide', blank=True, default='MO000')
     observation = models.CharField(max_length=250, null=True, blank=True)
-    order = models.CharField(max_length=250, null=True, blank=True)
+    order = models.ForeignKey(Pedido, to_field='pedido_id', null=True, blank=True)
     flag = models.BooleanField(default=True)
 
     audit_log = AuditLog()

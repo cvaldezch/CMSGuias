@@ -112,14 +112,72 @@ SELECT * FROM almacen_inventario WHERE materiales_id LIKE '115354089913003';
 /* END BLOCK INVENTORY GLOBAL */
 
 /* BLOCK TRIGGER REGISTER DECREATE INVENTORYBRAND WHEN REGISTER GUIDE REMISION */
+CREATE OR REPLACE FUNCTION proc_decrease_inventorybrand_and_detorder()
+  RETURNS trigger AS
+$BODY$
+DECLARE
+  _stk DOUBLE PRECISION := 0;
+  _shop DOUBLE PRECISION := 0;
+BEGIN
+  -- DECREASE TABLE INVENTORYBRAND 
+  SELECT stock into _stk FROM almacen_inventorybrand WHERE materials_id LIKE NEW.materiales_id AND brand_id LIKE NEW.brand_id AND model_id LIKE NEW.model_id
+  IF _stk IS NOT NULL THEN
+    _stk := (_stk - NEW.cantguide);
+    if _stk < 0 THEN
+      _stk := 0;
+    END IF;
+    UPDATE almacen_inventorybrand SET stock = _stk
+    WHERE materials_id LIKE NEW.materiales_id AND brand_id LIKE NEW.brand_id AND model_id LIKE NEW.model_id;
+  END IF;
+  -- DECREASE TABLE DETPEDIDO
+  SELECT cantshop INTO _shop FROM almacen_detpedido WHERE pedido_id LIKE NEW.order_id AND materiales_id LIKE NEW.materiales_id AND brand_id LIKE NEW.obrand_id AND model_id LIKE NEW.omodel_id
+  IF _shop IS NOT NULL THEN
+    _shop := (_shop - NEW.cantguide);
+    IF _shop < 0 THEN
+      _shop := 0;
+    END IF;
+    UPDATE almacen_detpedido SET cantshop = _shop
+    WHERE pedido_id LIKE NEW.order_id AND materiales_id LIKE NEW.materiales_id AND brand_id LIKE NEW.obrand_id AND model_id LIKE NEW.omodel_id;
+  END IF;
+  RETURN NEW;
+  EXCEPTION
+  WHEN OTHERS THEN
+    RAISE INFO 'EXCEPTION ERROR %', SQLERRM;
+    ROLLBACK;
+    RETURN NULL;
+END;
+$BODY$
+LANGUAGE plpgsql VOLATILE
+COST 100;
 
+CREATE TRIGGER tr_discount_on_inventorybrand_detpedido
+AFTER INSERT ON almacen_detguiaremision
+FOR EACH ROW EXECUTE PROCEDURE proc_decrease_inventorybrand_and_detorder();
+-- TEST
+select ABS(-3);
+SELECT * FROM almacen_detguiaremision;
+-- PR16011
+-- 342032441900004
+-- PE16001319
+-- 001-00019723
+select * from almacen_guiaremision g
+inner join almacen_pedido p
+on g.pedido_id LIKE p.pedido_id
+WHERE p.proyecto_id like 'PR16011';
+select * from almacen_detguiaremision where guia_id like '001-00019723';
+insert into almacen_detguiaremision (guia_id, materiales_id, cantguide, flag, brand_id, model_id, observation, order_id, obrand_id, omodel_id) 
+VALUES('001-00019723','342032441900004',4,true,'BR002','MO022','','PE16001319','BR000','MO000');
+insert into almacen_detguiaremision (guia_id, materiales_id, cantguide, flag, brand_id, model_id, observation, order_id, obrand_id, omodel_id) 
+VALUES('001-00019723','342032441900004',1,true,'BR011','MO022','','PE16001319','BR000','MO000');
+select 
 /* END BLOCK REGISTER DET. GUIDE REMISION */
 do $$
-	declare a int;
+	declare a double precision;
 	begin
-		a := 3;
+		select cantshop into a from almacen_detpedido limit 1;
+    raise info 'SHOP ORIGIN %', a;
 		a = a + 4;
-		raise notice '%', a;
+		raise notice '%', a IS NOT NULL;
 	end;
 $$
 ---

@@ -38,3 +38,11 @@ select i.* from almacen_inventorybrand i
 inner join home_materiale m
 on m.materiales_id like i.materials_id
 where m.matnom like '%Antisismica'
+ 
+-- UPDATE DATA ASERVICE OF TABLE SALES PROJECT
+select count(*) from ventas_proyecto;
+select count(*) from ventas_proyecto where aservices IS  NULL;
+update ventas_proyecto set aservices = 0
+where aservices IS NULL;
+update ventas_proyectoauditlogentry set aservices = 0
+where aservices IS NULL;
