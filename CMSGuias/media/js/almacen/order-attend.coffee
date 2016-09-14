@@ -25,6 +25,12 @@ app.directive 'cinmam', ($parse) ->
 				result = min
 			else
 				result = val
+			#  console.log attrs
+			if attrs.hasOwnProperty 'stk'
+				console.log 'inside stk'
+				stk = parseFloat attrs.stk
+				if result > stk
+					result = stk
 			if attrs.hasOwnProperty 'ngModel'
 				ngModel.$setViewValue result
 				ngModel.$render()
@@ -78,7 +84,8 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 	$scope.idxobs = -1
 	angular.element(document).ready ->
 		# console.log "angular load success!"
-		angular.element(".modal-trigger").leanModal()
+		angular.element(".modal-trigger").leanModal
+			dismissible: false
 		if $scope.init is true
 			angular.element(".datepicker").pickadate
 				container: 'body'
@@ -255,7 +262,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				return
 			$q.all(promises).then (result) ->
 				deferred.resolve result
-				returns
+				return
 			return deferred.promise
 		selected().then (response) ->
 			$scope.enableGuide()
@@ -647,12 +654,21 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 		angular.element("#iobs").closeModal()
 		return
 
+	$scope.openGenerateGuide = ->
+		items = 0
+		for i, x of $scope.dguide
+			items += x.details.length
+		if items > 12
+			Materialize.toast "<i class='fa fa-exclamation-circle fa-2x amber-text'></i>&nbsp; Has seleccionado más de 12 items para la guia de remisión!<br>&nbsp;Te recomendamos que quites algunos items para poder imprimir la guia sin problemas.", 60000
+		angular.element("#mguide").openModal()
+		return
+
 	$scope.genGuide = ->
 		if $scope.ngvalid
 			console.log $scope.guide
 			prms =
 				'': true
-
+			console.info $scope.dguide
 		else
 			console.log "No valido"
 		return

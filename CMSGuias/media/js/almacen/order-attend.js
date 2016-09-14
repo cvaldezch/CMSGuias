@@ -15,7 +15,7 @@ app.directive('cinmam', function($parse) {
     scope: '@',
     link: function(scope, element, attrs, ngModel) {
       element.bind('change, blur', function(event) {
-        var max, min, result, val;
+        var max, min, result, stk, val;
         if (!isNaN(element.context.value) && element.context.value !== "") {
           val = parseFloat(element.context.value);
         } else {
@@ -30,6 +30,13 @@ app.directive('cinmam', function($parse) {
           result = min;
         } else {
           result = val;
+        }
+        if (attrs.hasOwnProperty('stk')) {
+          console.log('inside stk');
+          stk = parseFloat(attrs.stk);
+          if (result > stk) {
+            result = stk;
+          }
         }
         if (attrs.hasOwnProperty('ngModel')) {
           ngModel.$setViewValue(result);
@@ -145,7 +152,9 @@ controllers = function($scope, $timeout, $q, attendFactory) {
   $scope.ngvalid = false;
   $scope.idxobs = -1;
   angular.element(document).ready(function() {
-    angular.element(".modal-trigger").leanModal();
+    angular.element(".modal-trigger").leanModal({
+      dismissible: false
+    });
     if ($scope.init === true) {
       angular.element(".datepicker").pickadate({
         container: 'body',
@@ -302,7 +311,6 @@ controllers = function($scope, $timeout, $q, attendFactory) {
       });
       $q.all(promises).then(function(result) {
         deferred.resolve(result);
-        return returns;
       });
       return deferred.promise;
     };
@@ -695,6 +703,19 @@ controllers = function($scope, $timeout, $q, attendFactory) {
     $scope.dguide[$scope.idxobs].observation = angular.element("#textObs").trumbowyg("html");
     angular.element("#iobs").closeModal();
   };
+  $scope.openGenerateGuide = function() {
+    var i, items, ref, x;
+    items = 0;
+    ref = $scope.dguide;
+    for (i in ref) {
+      x = ref[i];
+      items += x.details.length;
+    }
+    if (items > 12) {
+      Materialize.toast("<i class='fa fa-exclamation-circle fa-2x amber-text'></i>&nbsp; Has seleccionado más de 12 items para la guia de remisión!<br>&nbsp;Te recomendamos que quites algunos items para poder imprimir la guia sin problemas.", 60000);
+    }
+    angular.element("#mguide").openModal();
+  };
   $scope.genGuide = function() {
     var prms;
     if ($scope.ngvalid) {
@@ -702,6 +723,7 @@ controllers = function($scope, $timeout, $q, attendFactory) {
       prms = {
         '': true
       };
+      console.info($scope.dguide);
     } else {
       console.log("No valido");
     }

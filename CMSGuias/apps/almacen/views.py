@@ -2742,12 +2742,38 @@ class AttendOrder(JSONResponseMixin, TemplateView):
             if request.is_ajax():
                 try:
                     if 'details' in request.GET:
-                        context['details'] = json.loads(
-                            serializers.serialize(
-                                'json',
-                                Detpedido.objects.filter(
-                                    pedido_id=kwargs['order']),
-                                relations=('materiales', 'brand', 'model')))
+                        det = Detpedido.objects.filter(
+                                    pedido_id=kwargs['order']).extra(
+                                    select={'stock': "SELECT stock FROM almacen_inventario WHERE almacen_detpedido.materiales_id LIKE almacen_inventario.materiales_id"})
+                        context['details'] = [{
+                            'pk': x.id,
+                            'fields': {
+                                'materiales': {
+                                    'pk': x.materiales_id,
+                                    'fields': {
+                                        'matnom': x.materiales.matnom,
+                                        'matmed': x.materiales.matmed,
+                                        'unidad': x.materiales.unidad.uninom
+                                    }
+                                },
+                                'brand': {
+                                    'pk': x.brand_id,
+                                    'fields': {
+                                        'brand': x.brand.brand,
+                                    }
+                                },
+                                'model': {
+                                    'pk': x.model_id,
+                                    'fields': {
+                                        'model': x.model.model
+                                    }
+                                },
+                                'cantidad': x.cantidad,
+                                'cantshop': x.cantshop,
+                                'tag': x.tag,
+                                'stock': x.stock
+                                }
+                            } for x in det]
                         context['status'] = True
                     if 'detailsnip' in request.GET:
                         context['nip'] = json.loads(

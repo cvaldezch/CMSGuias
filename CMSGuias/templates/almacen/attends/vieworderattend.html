@@ -93,7 +93,7 @@
 					VALIDAR STOCK
 				</span>
 			</button>
-			<button type="button" class="modal-trigger btn waves-effect waves-light red grey-text text-lighten-5" ng-disabled="!vstock" data-target="mguide">
+			<button type="button" class="btn waves-effect waves-light red grey-text text-lighten-5" ng-disabled="!vstock" ng-click="openGenerateGuide()">
 				<i class="fa fa-file-text-o"></i>
 				<span class="hide-on-small-only">
 					GENERAR GUIA
@@ -134,18 +134,18 @@
 						<th class="center-align">Cantidad</th>
 						<th class="center-align">Por Enviar</th>
 						<th class="center-align">Enviar</th>
-						<!--<th class="center-align">Stock</th>-->
+						<th class="center-align">Stock</th>
 						<!--<th class="center-align"></th>-->
 					</tr>
 				</thead>
 				<tbody>
 					{% verbatim %}
-					<tr ng-repeat="x in dorders" id="itd{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}">
+					<tr ng-repeat="x in dorders" id="itd{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" ng-class="{'red lighten-1': (x.fields.stock < 0 || x.fields.stock == null), 'amber lighten-3': (x.fields.stock < x.fields.cantshop && x.fields.stock > 0)}">
 						<td>{{$index + 1}}</td>
 						<td>
 							<input type="checkbox" ng-if="x.fields.tag != '2'" name="chk" id="chk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" data-materials="{{x.fields.materiales.pk}}" data-mname="{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}"
 											data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" data-nbrand="{{x.fields.brand.fields.brand}}" data-nmodel="{{x.fields.model.fields.model}}" data-quantity="{{x.fields.cantshop}}" ng-model="fchk[$index].status" ng-change="changeAttend($index)">
-							<label for="chk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}"></label>
+							<label ng-if="x.fields.stock > 0" for="chk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}"></label>
 						</td>
 						<td><small>{{x.fields.materiales.pk}}</small></td>
 						<td><small>{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}</small></td>
@@ -158,9 +158,9 @@
 							<input type="hidden" ng-model="fchk[$index].materials" ng-init="fchk[$index].materials=x.fields.materiales.pk">
 							<input type="hidden" ng-model="fchk[$index].brand" ng-init="fchk[$index].brand=x.fields.brand.pk">
 							<input type="hidden" ng-model="fchk[$index].model" ng-init="fchk[$index].model=x.fields.model.pk">
-							<input type="number" ng-if="x.fields.tag != '2'" class="right-align" min="0" max="{{x.fields.cantshop}}" ng-model="fchk[$index].quantity" ng-init="fchk[$index].quantity=0" value="{{fchk[$index].quantity}}" readonly="true" ng-disabled="!fchk[$index].status"
-											cinmam>
+							<input type="number" ng-if="x.fields.tag != '2'" class="right-align" min="0" max="{{x.fields.cantshop}}" ng-model="fchk[$index].quantity" ng-init="fchk[$index].quantity=0" value="{{fchk[$index].quantity}}" readonly="true" ng-disabled="!fchk[$index].status" cinmam>
 						</td>
+						<th class="right-align">{{x.fields.stock}}</th>
 						<!--<td> -->
 						<!-- here stock materials -->
 						<!--<input type="number" class="right-align" id="stk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" readonly="true" min="0" max="{{x.fields.cantshop}}" value="0" cinmam>
@@ -350,7 +350,7 @@
 						<th>Marca</th>
 						<th>Modelo</th>
 						<th>Unidad</th>
-						<th width="2cm">Disponible</th>
+						<th width="2cm">Stock Disponible</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -373,7 +373,7 @@
 							<input type="hidden" ng-model="stks[$index].model" ng-init="stks[$index].model=x.fields.model.pk">
 							<input type="hidden" ng-model="stks[$index].nbrand" ng-init="stks[$index].nbrand=x.fields.brand.fields.brand">
 							<input type="hidden" ng-model="stks[$index].nmodel" ng-init="stks[$index].nmodel=x.fields.model.fields.model">
-							<input type="number" class="right-align" ng-model="stks[$index].quantity" ng-init="stks[$index].quantity = 0" min="0" max="{{qmax}}" ng-disabled="!stks[$index].chk" ng-focus="showNip($index)" cinmam>
+							<input type="number" class="right-align" ng-model="stks[$index].quantity" ng-init="stks[$index].quantity = 0" data-stk="{{x.fields.stock}}" min="0" max="{{qmax}}" ng-disabled="!stks[$index].chk" ng-focus="showNip($index)" cinmam>
 						</td>
 						<!--<td>
 							<button type="button" class="btn grey lighten-5 grey-text text-darken-3 waves-effect waves-steal" ng-model="cs[$index]" ng-init="cs[$index]=false" ng-mouseenter="cs[$index]=true" ng-mouseleave="cs[$index]=false" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" ng-click="selectStock($event)">
@@ -571,8 +571,8 @@
 				<i class="fa fa-times"></i>
 			</button>
 			<h5>Detalle de Guia de Remision {% verbatim %} {{guide.nro}} {% endverbatim %}</h5> {% verbatim %}
-			<table class="responsive-table highlight" ng-repeat="(k, v) in dguide">
-				<thead>
+			<table>
+				<tbody>
 					<tr>
 						<th>#</th>
 						<th>DESCRIPCION</th>
@@ -582,6 +582,10 @@
 						<th>OBSERVACIONES</th>
 						<th></th>
 					</tr>
+				</tbody>
+			</table>
+			<table class="responsive-table highlight" ng-repeat="(k, v) in dguide">
+				<tbody>
 					<tr>
 						<td>{{$index+1}}</td>
 						<td>{{v.name}}</td>
@@ -595,14 +599,7 @@
 						</td>
 						<td>{{v.observation}}</td>
 					</tr>
-					<!-- <tr>
-						<th>#</th>
-						<th>Marca</th>
-						<th>Model</th>
-						<th>Cantidad</th>
-						<th></th>
-					</tr>-->
-				</thead>
+				</tbody>
 				<tbody>
 					<tr ng-repeat="x in v.details">
 						<td></td>
