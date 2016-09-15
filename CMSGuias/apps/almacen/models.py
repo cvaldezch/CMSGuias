@@ -120,6 +120,7 @@ class Niple(models.Model):
     tag = models.CharField(max_length=1, default='0')
     comment = models.CharField(
                 max_length=250, default='', null=True, blank=True)
+    related = models.IntegerField(null=True, blank=True, default=0)
 
     audit_log = AuditLog()
 
@@ -235,6 +236,7 @@ class NipleGuiaRemision(models.Model):
     cantguide = models.FloatField(default=0, null=True, blank=True)
     tipo = models.CharField(max_length=1)
     flag = models.BooleanField(default=True)
+    related = models.IntegerField(null=True, blank=True, default=0)
 
     class Meta:
         ordering = ['materiales']

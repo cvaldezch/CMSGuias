@@ -140,7 +140,7 @@
 				</thead>
 				<tbody>
 					{% verbatim %}
-					<tr ng-repeat="x in dorders" id="itd{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" ng-class="{'red lighten-1': (x.fields.stock < 0 || x.fields.stock == null), 'amber lighten-3': (x.fields.stock < x.fields.cantshop && x.fields.stock > 0)}">
+					<tr ng-repeat="x in dorders" id="itd{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" ng-class="{'red lighten-1': (x.fields.stock < 0 || x.fields.stock == null), 'amber lighten-3': (x.fields.stock < x.fields.cantshop && x.fields.stock > 0), 'light-green accent-2': (x.fields.cantshop == 0 && x.fields.tag == '2')}">
 						<td>{{$index + 1}}</td>
 						<td>
 							<input type="checkbox" ng-if="x.fields.tag != '2'" name="chk" id="chk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" data-materials="{{x.fields.materiales.pk}}" data-mname="{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}"
@@ -373,6 +373,7 @@
 							<input type="hidden" ng-model="stks[$index].model" ng-init="stks[$index].model=x.fields.model.pk">
 							<input type="hidden" ng-model="stks[$index].nbrand" ng-init="stks[$index].nbrand=x.fields.brand.fields.brand">
 							<input type="hidden" ng-model="stks[$index].nmodel" ng-init="stks[$index].nmodel=x.fields.model.fields.model">
+							<input type="hidden" ng-model="stks[$index].stock" ng-init="stks[$index].stock=x.fields.stock">
 							<input type="number" class="right-align" ng-model="stks[$index].quantity" ng-init="stks[$index].quantity = 0" data-stk="{{x.fields.stock}}" min="0" max="{{qmax}}" ng-disabled="!stks[$index].chk" ng-focus="showNip($index)" cinmam>
 						</td>
 						<!--<td>

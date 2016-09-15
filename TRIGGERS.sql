@@ -1,4 +1,4 @@
-﻿/*
+/*
 ### STORES PROCEDURES
 */
 -- DROP FUNCTION proc_erase_all_inventory()
@@ -57,15 +57,15 @@ BEGIN
         WHERE materiales_id LIKE NEW.materials_id;
       ELSIF TG_OP = 'UPDATE' THEN
         _stkold := (NEW.stock - OLD.stock);
-        RAISE INFO 'NEW VAL %', NEW.stock;
-        RAISE INFO 'OLD VAL %', OLD.stock;
+        -- RAISE INFO 'NEW VAL %', NEW.stock;
+        -- RAISE INFO 'OLD VAL %', OLD.stock;
         IF (NEW.stock < OLD.stock) THEN
-          RAISE INFO 'DECREASE UPDATE';
-          RAISE INFO 'DECREASE VAL %', _stkold;
+          -- RAISE INFO 'DECREASE UPDATE';
+          -- RAISE INFO 'DECREASE VAL %', _stkold;
           UPDATE almacen_inventario SET stock = (stock - (@_stkold))
           WHERE materiales_id LIKE NEW.materials_id;
         ELSE
-          RAISE INFO 'INCREASE UPDATE';
+          -- RAISE INFO 'INCREASE UPDATE';
           UPDATE almacen_inventario SET stock = (stock + _stkold)
           WHERE materiales_id LIKE NEW.materials_id;
         END IF;
@@ -118,10 +118,13 @@ $BODY$
 DECLARE
   _stk DOUBLE PRECISION := 0;
   _shop DOUBLE PRECISION := 0;
+  _tag CHAR := '0';
+  _status CHAR:= '';
+  _order RECORD;
 BEGIN
   -- DECREASE TABLE INVENTORYBRAND 
-  SELECT stock into _stk FROM almacen_inventorybrand WHERE materials_id LIKE NEW.materiales_id AND brand_id LIKE NEW.brand_id AND model_id LIKE NEW.model_id
-  IF _stk IS NOT NULL THEN
+  SELECT stock into _stk FROM almacen_inventorybrand WHERE materials_id LIKE NEW.materiales_id AND brand_id LIKE NEW.brand_id AND model_id LIKE NEW.model_id;
+  IF (_stk IS NOT NULL) THEN
     _stk := (_stk - NEW.cantguide);
     if _stk < 0 THEN
       _stk := 0;
@@ -130,15 +133,32 @@ BEGIN
     WHERE materials_id LIKE NEW.materiales_id AND brand_id LIKE NEW.brand_id AND model_id LIKE NEW.model_id;
   END IF;
   -- DECREASE TABLE DETPEDIDO
-  SELECT cantshop INTO _shop FROM almacen_detpedido WHERE pedido_id LIKE NEW.order_id AND materiales_id LIKE NEW.materiales_id AND brand_id LIKE NEW.obrand_id AND model_id LIKE NEW.omodel_id
-  IF _shop IS NOT NULL THEN
+  SELECT cantshop INTO _shop FROM almacen_detpedido WHERE pedido_id LIKE NEW.order_id AND materiales_id LIKE NEW.materiales_id AND brand_id LIKE NEW.obrand_id AND model_id LIKE NEW.omodel_id;
+  IF (_shop IS NOT NULL) THEN
     _shop := (_shop - NEW.cantguide);
     IF _shop < 0 THEN
       _shop := 0;
     END IF;
-    UPDATE almacen_detpedido SET cantshop = _shop
+    IF _shop == 0 THEN
+      _tag := '2';
+    ELSIF _shop > 0 THEN
+      _tag := '1';
+    END IF;
+    UPDATE almacen_detpedido SET cantshop = _shop, tag = _tag
     WHERE pedido_id LIKE NEW.order_id AND materiales_id LIKE NEW.materiales_id AND brand_id LIKE NEW.obrand_id AND model_id LIKE NEW.omodel_id;
   END IF;
+  FOR _order IN (SELECT pedido_id, 
+          (SELECT COUNT(*) FROM almacen_detpedido WHERE pedido_id LIKE d.pedido_id) AS total, 
+          (SELECT COUNT(*) FROM almacen_detpedido WHERE d.pedido_id LIKE pedido_id AND tag = '2') AS complete
+  FROM almacen_detpedido d WHERE d.pedido_id like NEW.order_id GROUP BY pedido_id)
+  LOOP
+    IF (_order.total == _order.complete) THEN
+      _status := 'CO';
+    ELSIF (_order.complete > 0 AND _order.total > _order.complete) THEN
+      _status := 'IN';
+    END IF;
+    UPDATE almacen_pedido SET status = _status WHERE pedido_id LIKE NEW.order_id;
+  END LOOP;
   RETURN NEW;
   EXCEPTION
   WHEN OTHERS THEN
@@ -154,10 +174,10 @@ CREATE TRIGGER tr_discount_on_inventorybrand_detpedido
 AFTER INSERT ON almacen_detguiaremision
 FOR EACH ROW EXECUTE PROCEDURE proc_decrease_inventorybrand_and_detorder();
 -- TEST
-select ABS(-3);
-SELECT * FROM almacen_detguiaremision;
+-- select ABS(-3);
+-- SELECT * FROM almacen_detguiaremision;
 -- PR16011
--- 342032441900004
+-- 342032441900004, 343181560150005
 -- PE16001319
 -- 001-00019723
 select * from almacen_guiaremision g
@@ -169,15 +189,32 @@ insert into almacen_detguiaremision (guia_id, materiales_id, cantguide, flag, br
 VALUES('001-00019723','342032441900004',4,true,'BR002','MO022','','PE16001319','BR000','MO000');
 insert into almacen_detguiaremision (guia_id, materiales_id, cantguide, flag, brand_id, model_id, observation, order_id, obrand_id, omodel_id) 
 VALUES('001-00019723','342032441900004',1,true,'BR011','MO022','','PE16001319','BR000','MO000');
-select 
+--
+insert into almacen_detguiaremision (guia_id, materiales_id, cantguide, flag, brand_id, model_id, observation, order_id, obrand_id, omodel_id) 
+VALUES('001-00019723','343181560150005',1,true,'BR003','MO054','','PE16001319','BR000','MO000');
+select * from almacen_detpedido where pedido_id like 'PE16001319';
+UPDATE almacen_detpedido SET tag = '2' where pedido_id like 'PE16001319' AND materiales_id LIKE '342032441900004';
+UPDATE almacen_detpedido SET cantshop = 0 where tag = '2';
 /* END BLOCK REGISTER DET. GUIDE REMISION */
 do $$
 	declare a double precision;
+  x RECORD;
+  status char(2) := '';
 	begin
+    if not found status then
+      raise info 'Nothing';
+    end if;
 		select cantshop into a from almacen_detpedido limit 1;
     raise info 'SHOP ORIGIN %', a;
 		a = a + 4;
 		raise notice '%', a IS NOT NULL;
+    FOR x in (SELECT pedido_id, 
+          (SELECT COUNT(*) FROM almacen_detpedido WHERE pedido_id LIKE d.pedido_id) AS total, 
+          (SELECT COUNT(*) FROM almacen_detpedido WHERE d.pedido_id LIKE pedido_id AND tag = '2') AS complete
+          FROM almacen_detpedido d WHERE d.pedido_id like 'PE16001319' GROUP BY pedido_id)
+    LOOP
+      RAISE INFO '%', x.total;
+    END LOOP;
 	end;
 $$
 ---

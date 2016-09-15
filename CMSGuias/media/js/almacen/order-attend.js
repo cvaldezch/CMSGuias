@@ -596,20 +596,27 @@ controllers = function($scope, $timeout, $q, attendFactory) {
         x = ref[i];
         amount += (x.meter * x.guide) / 100;
       }
-      $scope.stks[$scope.indexshownip].quantity = amount;
-      if (response >= 0) {
-        $scope.nipdetails[response].details = $scope.snip;
+      if (amount > $scope.stks[$scope.indexshownip].stock) {
+        Materialize.toast("<i class='fa fa-times red-text'></i>&nbsp; Stock es menor a lo seleccionado.", 8000);
         $scope.snip = new Array();
         angular.element("#snip").closeModal();
+        return false;
       } else {
-        $scope.nipdetails.push({
-          'materials': $scope.gmaterials,
-          'brand': $scope.gbrand,
-          'model': $scope.gmodel,
-          'details': $scope.snip
-        });
-        $scope.snip = new Array();
-        angular.element("#snip").closeModal();
+        $scope.stks[$scope.indexshownip].quantity = amount;
+        if (response >= 0) {
+          $scope.nipdetails[response].details = $scope.snip;
+          $scope.snip = new Array();
+          angular.element("#snip").closeModal();
+        } else {
+          $scope.nipdetails.push({
+            'materials': $scope.gmaterials,
+            'brand': $scope.gbrand,
+            'model': $scope.gmodel,
+            'details': $scope.snip
+          });
+          $scope.snip = new Array();
+          angular.element("#snip").closeModal();
+        }
       }
     });
   };
@@ -720,11 +727,18 @@ controllers = function($scope, $timeout, $q, attendFactory) {
     var prms;
     if ($scope.ngvalid) {
       console.log($scope.guide);
-      prms = {
-        '': true
-      };
-      console.info($scope.dguide);
+      prms = $scope.guide;
+      if (!isNaN(Date.parse(prms.transfer))) {
+        prms['generateGuide'] = true;
+        prms['details'] = $scope.nipdetails;
+        prms['nipp'] = $scope.nipdetails;
+      } else {
+        Materialize.toast("<i class='fa fa-exclamation-circle amber-text'></i>&nbsp;No se cumple con el formato de la Guia!", 8000);
+        return;
+      }
+      console.info(prms);
     } else {
+      Materialize.toast("<i class='fa fa-exclamation red-text'></i>&nbsp;Datos Incorrectos!", 8000);
       console.log("No valido");
     }
   };

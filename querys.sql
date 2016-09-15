@@ -46,3 +46,5 @@ update ventas_proyecto set aservices = 0
 where aservices IS NULL;
 update ventas_proyectoauditlogentry set aservices = 0
 where aservices IS NULL;
+
+select * from almacen_niple where id = 9774;
