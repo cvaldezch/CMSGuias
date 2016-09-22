@@ -42,8 +42,11 @@ def upload(absolutePath, archive, options={}):
 def removeTmp(absolutePath):
     try:
         os.remove(absolutePath)
+        return True
     except Exception, e:
+        print e
         raise e
+        return False
 
 def deleteFile(uriPath, partial=False):
     try:

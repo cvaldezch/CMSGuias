@@ -70,22 +70,22 @@ controller = ($scope, $timeout, $q, inventoryFactory) ->
           return
       return
 
-    $scope.getDetails = (matid) ->
-      prms =
-        details: true
-        materials: matid
-      inventoryFactory.getDetails prms
-      .success (response) ->
-        if response.status
-          $scope.details = response.materials
-          $scope.amount = response.amount
-          angular.element("#mdetails").openModal
-            dismissible: false
-          return
-        else
-          console.error "Error #{response.raise}"
-          return
-      return
+  $scope.getDetails = (matid) ->
+    prms =
+      details: true
+      materials: matid
+    inventoryFactory.getDetails prms
+    .success (response) ->
+      if response.status
+        $scope.details = response.materials
+        $scope.amount = response.amount
+        angular.element("#mdetails").openModal
+          dismissible: false
+        return
+      else
+        console.error "Error #{response.raise}"
+        return
+    return
 
   $scope.delInventory = ->
     swal
@@ -148,6 +148,7 @@ controller = ($scope, $timeout, $q, inventoryFactory) ->
             $timeout ->
               angular.element("#mupload").closeModal()
               $scope.bload = !$scope.bload
+              return
             , 4000
             return
           else

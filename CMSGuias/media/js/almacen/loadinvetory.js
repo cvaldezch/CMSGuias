@@ -120,25 +120,25 @@ controller = function($scope, $timeout, $q, inventoryFactory) {
           console.error("Error " + response.raise);
         }
       });
-      return;
     }
-    return $scope.getDetails = function(matid) {
-      prms = {
-        details: true,
-        materials: matid
-      };
-      inventoryFactory.getDetails(prms).success(function(response) {
-        if (response.status) {
-          $scope.details = response.materials;
-          $scope.amount = response.amount;
-          angular.element("#mdetails").openModal({
-            dismissible: false
-          });
-        } else {
-          console.error("Error " + response.raise);
-        }
-      });
+  };
+  $scope.getDetails = function(matid) {
+    var prms;
+    prms = {
+      details: true,
+      materials: matid
     };
+    inventoryFactory.getDetails(prms).success(function(response) {
+      if (response.status) {
+        $scope.details = response.materials;
+        $scope.amount = response.amount;
+        angular.element("#mdetails").openModal({
+          dismissible: false
+        });
+      } else {
+        console.error("Error " + response.raise);
+      }
+    });
   };
   $scope.delInventory = function() {
     swal({
@@ -201,7 +201,7 @@ controller = function($scope, $timeout, $q, inventoryFactory) {
             Materialize.toast("<i class='fa fa-check green-text'></i>&nbsp; Archivo Cargado!", 4000);
             $timeout(function() {
               angular.element("#mupload").closeModal();
-              return $scope.bload = !$scope.bload;
+              $scope.bload = !$scope.bload;
             }, 4000);
           } else {
             $scope.bload = !$scope.bload;

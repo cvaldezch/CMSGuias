@@ -2840,6 +2840,7 @@ class AttendOrder(JSONResponseMixin, TemplateView):
                     guia_id=code,
                     pedido_id=kwargs['order'],
                     ruccliente_id=request.POST['customer'],
+                    registrado=datetime.datetime.today(),
                     puntollegada=request.POST['dotdelivery'],
                     traslado=request.POST['transfer'],
                     traruc_id=request.POST['carrier'],
