@@ -13,7 +13,7 @@ urlpatterns = patterns(
     url(r'^orders/pending/$',
         'view_orders_pending',
         name='vista_slope_orders'),
-    url(r'^list/oreders/approved/$',
+    url(r'^list/orders/approved/$',
         'view_orders_list_approved',
         name='vista_list_approved'),
     url(r'^meet/order/(?P<oid>.*)/$',

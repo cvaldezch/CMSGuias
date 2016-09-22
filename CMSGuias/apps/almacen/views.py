@@ -2826,6 +2826,72 @@ class AttendOrder(JSONResponseMixin, TemplateView):
         except TemplateDoesNotExist as e:
             raise Http404(e)
 
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if 'generateGuide' in request.POST:
+                # Here get data
+                # save bedside Guide Remision
+                code = str(request.POST['nro']).strip()
+                code = code.split('-')
+                code = '%s-%s' % ('{:0>3d}'.format(int(code[0])), '{:0>8d}'.format(int(code[1])))
+                guide = GuiaRemision(
+                    guia_id=code,
+                    pedido_id=kwargs['order'],
+                    ruccliente_id=request.POST['customer'],
+                    puntollegada=request.POST['dotdelivery'],
+                    traslado=request.POST['transfer'],
+                    traruc_id=request.POST['carrier'],
+                    condni_id=request.POST['conductor'],
+                    nropla_id=request.POST['transport'],
+                    status='GE',
+                    motive='VENTA',
+                    orders=kwargs['order'],
+                    perreg_id=request.user.get_profile().empdni_id)
+                guide.save()
+                # here save details guide
+                det = json.loads(request.POST['details'])
+                print 'DETALLE DE GUIA', det
+                for d in det:
+                    for x in d['details']:
+                        dg = DetGuiaRemision(
+                            guia_id=code,
+                            materiales_id=x['materials'],
+                            cantguide=x['quantity'],
+                            flag=True,
+                            brand_id=x['brand'],
+                            model_id=x['model'],
+                            observation=x['observation'] if 'observation' in x else '',
+                            order_id=kwargs['order'],
+                            obrand_id=d['brand'],
+                            omodel_id=d['model'])
+                        dg.save()
+                nip = json.loads(request.POST['nipp'])
+                print 'NIPPLES', nip
+                if len(nip) > 0:
+                    for n in nip:
+                        for x in n['details']:
+                            if float(x['guide']) > 0:
+                                ng = NipleGuiaRemision(
+                                    guia_id=code,
+                                    materiales_id=x['materials'],
+                                    metrado=x['meter'],
+                                    cantguide=x['guide'],
+                                    tipo=x['tipo'],
+                                    flag=True,
+                                    brand_id=x['brand'],
+                                    model_id=x['model'],
+                                    related=x['id'],
+                                    order_id=kwargs['order'])
+                                ng.save()
+                context['code'] = code
+                context['status'] = True
+        except (ObjectDoesNotExist, Exception) as e:
+            context['raise'] = str(e)
+            context['status'] = False
+        return self.render_to_json_response(context)
+
 class LoadInventoryBrand(JSONResponseMixin, TemplateView):
 
     @method_decorator(login_required)
@@ -2839,6 +2905,7 @@ class LoadInventoryBrand(JSONResponseMixin, TemplateView):
                             serializers.serialize(
                             'json',
                             Inventario.objects.filter(
+                                Q(materiales_id=request.GET['desc']) |
                                 Q(
                                 materiales__matnom__icontains=request.GET[
                                     'desc']) | Q(

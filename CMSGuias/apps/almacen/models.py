@@ -237,6 +237,7 @@ class NipleGuiaRemision(models.Model):
     tipo = models.CharField(max_length=1)
     flag = models.BooleanField(default=True)
     related = models.IntegerField(null=True, blank=True, default=0)
+    order = models.ForeignKey(Pedido, to_field='pedido_id', null=True, blank=True)
 
     class Meta:
         ordering = ['materiales']

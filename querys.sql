@@ -48,3 +48,22 @@ update ventas_proyectoauditlogentry set aservices = 0
 where aservices IS NULL;
 
 select * from almacen_niple where id = 9774;
+select * from almacen_guiaremision limit 1;
+select * from almacen_detguiaremision limit 3;
+-- nipleria para guia de remision
+select * from almacen_nipleguiaremision limit 3;
+-- nipleria para pedido
+select * from almacen_niple limit 3;
+
+  id   | pedido_id  |  materiales_id  | brand_id | model_id | cantidad | cantshop | cantguide | tag | spptag | comment | flag 
+-------+------------+-----------------+----------+----------+----------+----------+-----------+-----+--------+---------+------
+ 17660 | PE16001319 | 117010610013001 | BR000    | MO000    |        6 |        6 |         0 | 0   | f      |         | t
+(1 row)
+
+  id  | pedido_id  | proyecto_id | subproyecto_id |  sector_id   | empdni |  materiales_id  | cantidad | metrado | cantshop | cantguide | tipo | flag | tag |        comment         | dsector_id | brand_id | model_id | related 
+------+------------+-------------+----------------+--------------+--------+-----------------+----------+---------+----------+-----------+------+------+-----+------------------------+------------+----------+----------+---------
+ 9774 | PE16000741 | PR15129     |                | PR15129VEN01 |        | 115100030400040 |       65 |     600 |       65 |         0 | B    | t    | 0   |                        |            | BR000    | MO000    |       0
+ 9777 | PE16000741 | PR15129     |                | PR15129VEN01 |        | 115100030400042 |       10 |     600 |       10 |         0 | B    | t    | 0   |                        |            | BR000    | MO000    |       0
+ 9775 | PE16000741 | PR15129     |                | PR15129VEN01 |        | 115100030400040 |        2 |     100 |        2 |         0 | B    | t    | 0   | Soldar aquí el paquete |            | BR000    | MO000    |       0
+ 9776 | PE16000741 | PR15129     |                | PR15129VEN01 |        | 115100030400043 |        2 |     600 |        2 |         0 | B    | t    | 0   |                        |            | BR000    | MO000    |       0
+(4 rows)

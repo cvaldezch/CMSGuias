@@ -83,6 +83,7 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 	$scope.nipdetails = new Array()
 	$scope.ngvalid = false
 	$scope.idxobs = -1
+	$scope.nroguide = ''
 	angular.element(document).ready ->
 		# console.log "angular load success!"
 		angular.element(".modal-trigger").leanModal
@@ -672,19 +673,71 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 
 	$scope.genGuide = ->
 		if $scope.ngvalid
-			console.log $scope.guide
+			# console.log $scope.guide
 			prms = $scope.guide
-			if !isNaN(Date.parse(prms.transfer))
-				prms['generateGuide'] = true
-				prms['details'] = $scope.nipdetails
-				prms['nipp'] = $scope.nipdetails
-			else
-				Materialize.toast "<i class='fa fa-exclamation-circle amber-text'></i>&nbsp;No se cumple con el formato de la Guia!", 8000
-				return
-			console.info prms
+			if isNaN(Date.parse(prms.transfer))
+				Materialize.toast "<i class='fa fa-exclamation-circle amber-text fa-2x'></i>&nbsp;Fecha de traslado Inconrecta!", 8000				
+				return false
+			if !prms.hasOwnProperty 'carrier'
+				Materialize.toast "<i class='fa fa-exclamation-circle amber-text fa-2x'></i>&nbsp;Seleccione Transportista!", 8000
+				return false
+			if !prms.hasOwnProperty 'conductor'
+				Materialize.toast "<i class='fa fa-exclamation-circle amber-text fa-2x'></i>&nbsp;Seleccione Conductor!", 8000
+				return false
+			if !prms.hasOwnProperty 'transport'
+				Materialize.toast "<i class='fa fa-exclamation-circle amber-text fa-2x'></i>&nbsp;Seleccione Transporte!", 8000
+				return false
+			swal
+				title: "Desea generar la Guia de Remision?"
+				text: ""
+				type: "warning"
+				closeOnConfirm: true
+				closeOnConfirm: true
+				showCancelButton: true
+				confirmButtonColor: "#dd6b55"
+				confirmButtonText: "Si, Generar!"
+				cancelButtonText:"No"
+			, (isConfirm) ->
+				if isConfirm
+					$scope.vgenrem = true
+					prms['generateGuide'] = true
+					prms['details'] = JSON.stringify $scope.dguide
+					prms['nipp'] = JSON.stringify $scope.nipdetails
+					# console.log prms
+					#Materialize.toast "<i class='fa fa-exclamation-circle amber-text fa-2x'></i>&nbsp;No se cumple con el formato de la Guia!", 8000
+					console.info prms
+					attendFactory.genGuideRemision(prms)
+					.success (response) ->
+						if response.status
+							angular.element("#mguide").closeModal()
+							Materialize.toast "<i class='fa fa-check fa-2x green-text'></i>&nbsp;Felicidades!, Se genero la guia <strong>#{prms.guide}</strong>", 2000
+							$timeout ->
+								$scope.vgenrem = true
+								$scope.nroguide = response.code
+								angular.element("#mprint").openModal
+									dismissible: false
+								return
+							, 1800
+							return
+						else
+							Materialize.toast "<i class='fa fa-times red-text fa-2x'></i>&nbsp;Error! no generada. #{response.raise}", 6000
+							$scope.vgenrem = false
+							return
+					return
 		else
-			Materialize.toast "<i class='fa fa-exclamation red-text'></i>&nbsp;Datos Incorrectos!", 8000
+			Materialize.toast "<i class='fa fa-exclamation red-text fa-2x'></i>&nbsp;Datos Incorrectos!", 8000
 			console.log "No valido"
+		return
+
+	$scope.showPrint = (type) ->
+		url = "/reports/guidereferral/#{$scope.nroguide}/#{type}/"
+		win = window.open url, '_blank'
+		win.focus()
+		return
+
+	$scope.closePrint = ->
+		angular.element("#mprint").closeModal()
+		location.reload()
 		return
 
 	$scope.test = ->

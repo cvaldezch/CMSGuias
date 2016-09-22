@@ -626,6 +626,40 @@
 			<textarea id="textObs"></textarea>
 		</div>
 	</div>
+	<!-- block print guide remision -->
+	<div class="row">
+		<div class="modal offset-m4 col m4" id="mprint">
+			<div class="modal-content">
+				<h5>Imprimir Guia de Remisión</h5>
+				<div class="row">
+					<div class="col m8 offset-m2 s12">
+						<button class="col l12 m12 s12 btn waves-effect waves-light blue grey-text text-darken-3" type="button" ng-click="showPrint('format')">
+							<i class="fa fa-file-code-o"></i>
+							<span class="hide-on-small-only">FORMATO</span>
+						</a>
+					</div>
+					<div class="col m8 offset-m2 s12">
+						<button class="col l12 m12 s12 btn waves-effect waves-light green grey-text text-darken-3" type="button" ng-click="showPrint('without')">
+							<i class="fa fa-file-text-o"></i>
+							<span class="hide-on-small-only">SIN FORMATO</span>
+						</button>
+					</div>
+					<div class="col m8 offset-m2 s12">
+						<a href="{% url 'vista_list_approved' %}" class="col l12 m12 s12 btn waves-effect waves-light red lighten-1 grey-text text-darken-3">
+							<i class="fa fa-truck"></i>
+							<span class="hide-on-small-only">ATENDER MÁS</span>
+						</a>
+					</div>
+					<div class="col m8 offset-m2 s12">
+						<button class="col l12 m12 s12 btn waves-effect waves-light grey lighten-5 grey-text text-darken-3" type="button" ng-click="closePrint()">
+							<i class="fa fa-times"></i>
+							<span class="hide-on-small-only">Salir</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </section>
 <div id="editor"></div>
 <!-- block for scripts -->
