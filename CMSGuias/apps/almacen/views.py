@@ -1208,18 +1208,18 @@ def view_list_guide_referral_success(request):
         if request.method == 'GET':
             if request.is_ajax():
                 data = dict()
-                ls = []
+                ls = list()
+                lst = list()
                 try:
                     if request.GET.get('tra') == 'series':
-                        lst = GuiaRemision.objects.get(
-                            pk=request.GET.get('series'),
+                        lst = GuiaRemision.objects.filter(
+                                pk=request.GET.get('series'),
                             status='GE', flag=True)
-                        ls = [{
-                            'item': 1,
-                            'guia_id': lst.guia_id,
-                            'nompro': lst.pedido.proyecto.nompro,
-                            'traslado': lst.traslado.strftime(FORMAT_DATE_STR),
-                            'connom': lst.condni.connom}]
+                        data['status'] = True
+                    elif request.GET['tra'] == 'project':
+                        lst = GuiaRemision.objects.filter(
+                            pedido__proyecto__nompro__icontains=request.GET[
+                            'project'], status='GE', flag=True).order_by('-traslado')
                         data['status'] = True
                     elif request.GET.get('tra') == 'dates':
                         fecf = request.GET.get('fecf')
@@ -1241,17 +1241,17 @@ def view_list_guide_referral_success(request):
                                     traslado__range=[star, end],
                                     status='GE',
                                     flag=True)
-                        i = 1
-                        for x in lst:
-                            ls.append({
-                                'item': i,
-                                'guia_id': x.guia_id,
-                                'nompro': x.pedido.proyecto.nompro,
-                                'traslado': x.traslado.strftime(
-                                                FORMAT_DATE_STR),
-                                'connom': x.condni.connom})
-                            i += 1
                         data['status'] = True
+                    i = 1
+                    for x in lst:
+                        ls.append({
+                            'item': i,
+                            'guia_id': x.guia_id,
+                            'nompro': x.pedido.proyecto.nompro,
+                            'traslado': x.traslado.strftime(
+                                            FORMAT_DATE_STR),
+                            'connom': x.condni.connom})
+                        i += 1
                 except ObjectDoesNotExist, e:
                     data['status'] = False
                 data['list'] = ls
@@ -1378,17 +1378,17 @@ def view_list_guide_referral_canceled(request):
             if request.is_ajax():
                 data = dict()
                 ls = list()
+                lst = list()
                 try:
                     if request.GET.get('tra') == 'series':
-                        lst = GuiaRemision.objects.get(
+                        lst = GuiaRemision.objects.filter(
                             pk=request.GET.get('series'),
                             status='AN', flag=False)
-                        ls = [{
-                            'item': 1,
-                            'guia_id': lst.guia_id,
-                            'nompro': lst.pedido.proyecto.nompro,
-                            'traslado': lst.traslado.strftime(FORMAT_DATE_STR),
-                            'connom': lst.condni.connom}]
+                        data['status'] = True
+                    elif request.GET['tra'] == 'project':
+                        lst = GuiaRemision.objects.filter(
+                            pedido__proyecto__nompro__icontains=request.GET[
+                            'project'], status='AN').order_by('-traslado')
                         data['status'] = True
                     elif request.GET.get('tra') == 'dates':
                         if request.GET.get('fecf') == '' and request.GET.get('feci') != '':
@@ -1408,17 +1408,17 @@ def view_list_guide_referral_canceled(request):
                                 traslado__range=[star, end],
                                 status='AN',
                                 flag=False)
-                        i = 1
-                        for x in lst:
-                            ls.append({
-                                'item': i,
-                                'guia_id': x.guia_id,
-                                'nompro': x.pedido.proyecto.nompro,
-                                'traslado': x.traslado.strftime(
-                                                FORMAT_DATE_STR),
-                                'connom': x.condni.connom})
-                            i += 1
                         data['status'] = True
+                    i = 1
+                    for x in lst:
+                        ls.append({
+                            'item': i,
+                            'guia_id': x.guia_id,
+                            'nompro': x.pedido.proyecto.nompro,
+                            'traslado': x.traslado.strftime(
+                                            FORMAT_DATE_STR),
+                            'connom': x.condni.connom})
+                        i += 1
                 except ObjectDoesNotExist, e:
                     data['status'] = False
                     data['raise'] = str(e)
@@ -1946,46 +1946,34 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
             if request.is_ajax():
                 try:
                     if 'type' in request.GET:
+                        result = list()
                         if request.GET.get('type') == 'code':
-                            context['list'] = [{
-                                'purchase': x.compra_id,
-                                'reason': x.proveedor.razonsocial,
-                                'supplier': x.proveedor_id,
-                                'document': x.documento.documento,
-                                'transfer': globalVariable.format_date_str(
-                                    x.traslado)}
-                                for x in Compra.objects.filter(
-                                    compra_id=request.GET.get('code'))]
+                            result = Compra.objects.filter(
+                                    compra_id=request.GET.get('code'))
                             context['status'] = True
                         elif request.GET.get('type') == 'dates':
                             if 'end' not in request.GET and 'start' in request.GET:
-                                context['list'] = [{
-                                    'purchase': x.compra_id,
-                                    'reason': x.proveedor.razonsocial,
-                                    'supplier': x.proveedor_id,
-                                    'document': x.documento.documento,
-                                    'transfer': globalVariable.format_date_str(
-                                                    x.traslado)
-                                    }
-                                    for x in Compra.objects.filter(
+                                result = Compra.objects.filter(
                                         registrado__startswith=globalVariable.format_str_date(
-                                            request.GET.get('start')))]
+                                            request.GET.get('start')))
                                 context['status'] = True
                             elif 'end' in request.GET and 'start' in request.GET:
-                                context['list'] = [{
-                                    'purchase': x.compra_id,
-                                    'reason': x.proveedor.razonsocial,
-                                    'supplier': x.proveedor_id,
-                                    'document': x.documento.documento,
-                                    'transfer': globalVariable.format_date_str(
-                                                    x.traslado)
-                                } for x in Compra.objects.filter(
+                                result = Compra.objects.filter(
                                     registrado__range=(
                                         globalVariable.format_str_date(
                                             request.GET.get('start')),
                                         globalVariable.format_str_date(
-                                            request.GET.get('end'))))]
-                                context['status'] = True
+                                            request.GET.get('end'))))
+                        elif request.GET['type'] == 'supplier':
+                            result = Compra.objects.filter(proveedor__razonsocial__icontains=request.GET['supplier'])
+                            context['status'] = True
+                        context['list'] = [{
+                            'purchase': x.compra_id,
+                            'reason': x.proveedor.razonsocial,
+                            'supplier': x.proveedor_id,
+                            'document': x.documento.documento,
+                            'transfer': globalVariable.format_date_str(x.traslado)
+                        } for x in result]
                     if 'purchase' in request.GET:
                         com = Compra.objects.get(
                                 pk=request.GET.get('purchase'))
@@ -2009,6 +1997,7 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                             'name': x.materiales.matnom,
                             'measure': x.materiales.matmed,
                             'unit': x.materiales.unidad.uninom,
+                            'dunit': x.unit.uninom if x.unit is not None else '',
                             'quantity': x.cantidad,
                             'static': x.cantstatic,
                             'price': x.precio,
@@ -2032,7 +2021,9 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                     Q(status='PE') | Q(status='IN')
                 ).order_by('-compra_id')
             context['storage'] = Almacene.objects.filter(flag=True)
-            context['employee'] = Employee.objects.filter(flag=True)
+            context['employee'] = Employee.objects.filter(
+                                    flag=True, 
+                                    charge__area__icontains='almacen')
             return render_to_response(
                     self.template_name,
                     context,
@@ -2069,78 +2060,80 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                             det.model_id = x[
                                 'model'] if 'model' in x else 'MO000'
                             det.report = '0'
+                            det.purchase = float(x['price'])
+                            det.sales = round(float(x['sales']) * 1.15, 2)
                             det.save()
-                            inv = Inventario.objects.filter(
-                                    materiales_id=x['materials'],
-                                    periodo=globalVariable.get_year,
-                                    almacen_id=request.POST.get('storage'),
-                                    flag=True)
-                            if inv:
-                                inv[0].stock = (
-                                    inv[0].stock + float(x['quantity']))
-                                inv[0].save()
-                            else:
-                                inv = Inventario()
-                                inv.almacen_id = request.POST.get('storage')
-                                inv.materiales_id = x['materials']
-                                inv.stock = x['quantity']
-                                inv.precompra = float(x['price'])
-                                inv.preventa = (
-                                    float(
-                                        x['price']) + (
-                                            float(x['price']) * 0.15))
-                                inv.stkmin = 0
-                                inv.stkpendiente = 0
-                                inv.stkdevuelto = 0
-                                inv.periodo = globalVariable.get_year
-                                inv.compra_id = request.POST.get('purchase')
-                                inv.save()
-                            wbm = InventoryBrand.objects.filter(
-                                storage_id=request.POST.get('storage'),
-                                materials_id=x['materials'],
-                                period=globalVariable.get_year,
-                                brand_id=x[
-                                    'brand'] if 'brand' in x else 'BR000',
-                                model_id=x[
-                                    'model'] if 'model' in x else 'MO000')
-                            if wbm:
-                                wbm[0].stock = wbm[0].stock + float(
-                                    x['quantity'])
-                                wbm[0].save()
-                            else:
-                                bm = InventoryBrand()
-                                bm.storage_id = request.POST.get('storage')
-                                bm.materials_id = x['materials']
-                                bm.period = globalVariable.get_year
-                                bm.brand_id = x[
-                                    'brand'] if 'brand' in x else 'BR000'
-                                bm.model_id = x[
-                                    'model'] if 'model' in x else 'MO000'
-                                bm.stock = x['quantity']
-                                bm.purchase = float(x['price'])
-                                bm.sale = (
-                                    float(x['price']) + (
-                                        float(x['price']) * 0.15))
-                                bm.save()
-                            dbuy = DetCompra.objects.get(
-                                    compra_id=request.POST.get('purchase'),
-                                    materiales_id=x['materials'])
-                            dbuy.flag = x['tag']
-                            dbuy.cantidad = (
-                                dbuy.cantidad - float(x['quantity']))
-                            dbuy.save()
-                        compra = Compra.objects.get(
-                                pk=request.POST.get('purchase'))
-                        det = DetCompra.objects.filter(
-                            Q(compra_id=request.POST.get('purchase')),
-                            Q(flag='1') | Q(flag='0')).aggregate(
-                                counter=Count('flag'))
-                        if det['counter'] > 0:
-                            compra.status = 'IN'
-                            compra.save()
-                        else:
-                            compra.status = 'CO'
-                            compra.save()
+                        #     inv = Inventario.objects.filter(
+                        #             materiales_id=x['materials'],
+                        #             periodo=globalVariable.get_year,
+                        #             almacen_id=request.POST.get('storage'),
+                        #             flag=True)
+                        #     if inv:
+                        #         inv[0].stock = (
+                        #             inv[0].stock + float(x['quantity']))
+                        #         inv[0].save()
+                        #     else:
+                        #         inv = Inventario()
+                        #         inv.almacen_id = request.POST.get('storage')
+                        #         inv.materiales_id = x['materials']
+                        #         inv.stock = x['quantity']
+                        #         inv.precompra = float(x['price'])
+                        #         inv.preventa = (
+                        #             float(
+                        #                 x['price']) + (
+                        #                     float(x['price']) * 0.15))
+                        #         inv.stkmin = 0
+                        #         inv.stkpendiente = 0
+                        #         inv.stkdevuelto = 0
+                        #         inv.periodo = globalVariable.get_year
+                        #         inv.compra_id = request.POST.get('purchase')
+                        #         inv.save()
+                        #     wbm = InventoryBrand.objects.filter(
+                        #         storage_id=request.POST.get('storage'),
+                        #         materials_id=x['materials'],
+                        #         period=globalVariable.get_year,
+                        #         brand_id=x[
+                        #             'brand'] if 'brand' in x else 'BR000',
+                        #         model_id=x[
+                        #             'model'] if 'model' in x else 'MO000')
+                        #     if wbm:
+                        #         wbm[0].stock = wbm[0].stock + float(
+                        #             x['quantity'])
+                        #         wbm[0].save()
+                        #     else:
+                        #         bm = InventoryBrand()
+                        #         bm.storage_id = request.POST.get('storage')
+                        #         bm.materials_id = x['materials']
+                        #         bm.period = globalVariable.get_year
+                        #         bm.brand_id = x[
+                        #             'brand'] if 'brand' in x else 'BR000'
+                        #         bm.model_id = x[
+                        #             'model'] if 'model' in x else 'MO000'
+                        #         bm.stock = x['quantity']
+                        #         bm.purchase = float(x['price'])
+                        #         bm.sale = (
+                        #             float(x['price']) + (
+                        #                 float(x['price']) * 0.15))
+                        #         bm.save()
+                        #     dbuy = DetCompra.objects.get(
+                        #             compra_id=request.POST.get('purchase'),
+                        #             materiales_id=x['materials'])
+                        #     dbuy.flag = x['tag']
+                        #     dbuy.cantidad = (
+                        #         dbuy.cantidad - float(x['quantity']))
+                        #     dbuy.save()
+                        # compra = Compra.objects.get(
+                        #         pk=request.POST.get('purchase'))
+                        # det = DetCompra.objects.filter(
+                        #     Q(compra_id=request.POST.get('purchase')),
+                        #     Q(flag='1') | Q(flag='0')).aggregate(
+                        #         counter=Count('flag'))
+                        # if det['counter'] > 0:
+                        #     compra.status = 'IN'
+                        #     compra.save()
+                        # else:
+                        #     compra.status = 'CO'
+                        #     compra.save()
                         context['status'] = True
                         context['ingress'] = ingress
                     else:

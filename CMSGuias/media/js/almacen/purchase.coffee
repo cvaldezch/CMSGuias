@@ -11,19 +11,28 @@ $(document).ready ->
 	$("[name=select]").on "change", changeSelect
 	$(".btn-generate-note").on "click", loadIngress
 	$(".btn-generate").on "click", saveNoteIngress
+	$('.btn-return').on "click", showListFirst
 	$(".btn-repeat").click (event) ->
 		location.reload()
 		return
+	$("#observation").trumbowyg()
+	$('.trumbowyg-box,.trumbowyg-editor').css 'minHeight', '128px'
 	return
 
 changeSearch = ->
 	if @checked
-		if  @value is "code"
+		if @value is "code"
 			$("input[name=code]").attr "disabled", false
 			$("input[name=start],input[name=end]").attr "disabled", true
+			$("input[name=supplier]").attr "disabled", true
 		else if @value is "dates"
 			$("input[name=code]").attr "disabled", true
 			$("input[name=start],input[name=end]").attr "disabled", false
+			$("input[name=supplier]").attr "disabled", true
+		else if @value is "supplier"
+			$("input[name=code]").attr "disabled", true
+			$("input[name=start],input[name=end]").attr "disabled", true
+			$("input[name=supplier]").attr "disabled", false
 	return
 
 searchPurchase = ->
@@ -39,6 +48,9 @@ searchPurchase = ->
 				if $("input[name=end]").val().length is 10
 					data.end = $("input[name=end]").val()
 				return
+			else if element.value is "supplier"
+				data.supplier = $("input[name=supplier]").val()
+				return
 
 	if data.type is "code"
 		if data.code.length is 10
@@ -52,6 +64,8 @@ searchPurchase = ->
 		else
 			data.pass = false
 			$().toastmessage "showWarningToast", "No se han ingresado la fecha a buscar."
+	else
+		data.pass = true
 	if data.pass
 		$.getJSON "", data, (response) ->
 			if response.status
@@ -67,22 +81,22 @@ listTemplate = (list)->
 	$tb = $("table > tbody")
 	$tb.empty()
 	if list.length
-		template = "<tr>
+		template = """<tr>
 						<td>{{ item }}</td>
 						<td>{{ purchase }}</td>
 						<td>{{ reason }}</td>
 						<td>{{ document }}</td>
 						<td>{{ transfer }}</td>
-						<td class=\"text-center\">
-							<button value=\"{{ purchase }}\" data-ruc=\"{{ x.supplier }}\" class=\"btn btn-link btn-xs text-black btn-deposit\"><span class=\"glyphicon glyphicon-credit-card\"></span></button>
+						<td class="text-center">
+							<button value="{{ purchase }}" data-ruc="{{ x.supplier }}" class="btn btn-link btn-xs text-black btn-deposit"><span class="glyphicon glyphicon-credit-card"></span></button>
 						</td>
-						<td class=\"text-center\">
-							<a href=\"/reports/order/purchase/{{ purchase }}/\" target=\"_blank\" class=\"btn btn-xs btn-link text-black\"><span class=\"glyphicon glyphicon-eye-open\"></span></a>
+						<td class="text-center">
+							<a href="/reports/order/purchase/{{ purchase }}/" target="_blank" class="btn btn-xs btn-link text-black"><span class="glyphicon glyphicon-eye-open"></span></a>
 						</td>
-						<td class=\"text-center\">
-							<button value=\"{{ purchase }}\" data-ruc=\"{{ x.supplier }}\" class=\"btn btn-link btn-xs text-black btn-action\"><span class=\"glyphicon glyphicon-inbox\"></span></button>
+						<td class="text-center">
+							<button value="{{ purchase }}" data-ruc="{{ x.supplier }}" class="btn btn-link btn-xs text-black btn-action"><span class="glyphicon glyphicon-inbox"></span></button>
 						</td>
-					</tr>"
+					</tr>"""
 		for x of list
 			list[x].item = (parseInt(x) + 1)
 			$tb.append Mustache.render template, list[x]
@@ -113,8 +127,18 @@ showIngressInventory = (event) ->
 			$(".transfer").html response.head.transfer
 			$(".contact").html response.head.contact
 			$(".performed").html response.head.performed
-			# $(".deposit").append "<a target=\"_blank\" class=\"btn btn-warning btn-xs text-black\" href=\"/media/#{response.head.deposit}\"><span class=\"glyphicon glyphicon-cloud-download\"></span></a>"
-			template = "<tr><td><input type=\"checkbox\" name=\"mats\" value=\"{{ materials }}\"></td><td>{{ item }}</td><td>{{ materials }}</td><td>{{ name }}</td><td>{{ measure }}</td><td>{{ brand }}</td><td>{{ model }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td><input type=\"number\" class=\"form-control input-sm materials\" name=\"{{ materials }}\" value=\"{{ quantity }}\" min=\"1\" max=\"{{ quantity }}\" data-price=\"{{ price }}\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\" disabled></td></tr>"
+			# $(".deposit").append "<a target="_blank" class="btn btn-warning btn-xs text-black\" href=\"/media/#{response.head.deposit}\"><span class=\"glyphicon glyphicon-cloud-download\"></span></a>"
+			template = """<tr>
+							<td><input type="checkbox" name="mats" value="{{ materials }}"></td>
+							<td class='text-center'>{{ item }}</td>
+							<td><small>{{ materials }}</small></td>
+							<td><small>{{ name }} {{ measure }}</small></td>
+							<td class='text-center'>{{ brand }}</td>
+							<td class='text-center'>{{ model }}</td>
+							<td class='text-center'>{{ dunit }}</td>
+							<td class='text-center'>{{ unit }}</td>
+							<td class="text-center">{{ quantity }}</td>
+							<td><input type="number" class="form-control input-sm text-right" name="{{ materials }}" value="{{ quantity }}" min="1" max="{{ quantity }}" data-price="{{ price }}" data-brand="{{ brand_id }}" data-model="{{ model_id }}" disabled></td></tr>"""
 			$tb = $("table.table-ingress > tbody")
 			$tb.empty()
 			for x of response.details
@@ -127,6 +151,11 @@ showIngressInventory = (event) ->
 			$(".step-first").fadeOut 200
 			$(".step-second").fadeIn 600
 			return
+	return
+
+showListFirst = ->
+	$(".step-second").fadeOut 200
+	$(".step-first").fadeIn 600
 	return
 
 validQuantityBlur = (event) ->
@@ -178,7 +207,13 @@ saveNoteIngress = (response) ->
 			max = $("input[name=#{element.value}]").attr "max"
 			quantity = $("input[name=#{element.value}]").val()
 			tag = if parseFloat(quantity) < parseFloat(max) then "1" else  "2"
-			mats.push {"materials": element.value, "quantity": quantity, "price": $("input[name=#{element.value}]").attr("data-price"), "tag":tag, "brand": $("input[name=#{element.value}]").attr("data-brand"), "model": $("input[name=#{element.value}]").attr("data-model")}
+			mats.push 
+				"materials": element.value
+				"quantity": quantity
+				"price": $("input[name=#{element.value}]").attr("data-price")
+				"tag": tag
+				"brand": $("input[name=#{element.value}]").attr("data-brand")
+				"model": $("input[name=#{element.value}]").attr("data-model")
 			return
 	data.details = JSON.stringify mats
 	$(".mingress > div > div > div.modal-body > div.row").find("input, select").each (index, element) ->
@@ -192,13 +227,14 @@ saveNoteIngress = (response) ->
 				$().toastmessage "showWarningToast", "Campo vacio, #{element.name}"
 				pass = false
 				return pass
+	data['observation'] = $("#observation").trumbowyg("html")
 	console.log pass
 	if pass
 		$().toastmessage "showToast",
 			text : "Desea generar una <q>Nota de Ingreso</q> con los materiales seleccionados?"
 			sticky : true
 			type : "confirm"
-			buttons : [{value:"Si"},{value:"No"}]
+			buttons : [{value:"Si"}, {value:"No"}]
 			success : (result) ->
 				if result is "Si"
 					data.ingress = true

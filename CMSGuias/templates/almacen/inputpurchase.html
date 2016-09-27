@@ -4,13 +4,15 @@ Input Order Purchase
 {% endblock titlte %}
 {% block script %}
 <script src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/trumbowyg/dist/trumbowyg.min.js"></script>
+<link rel="stylesheet" href="{{ MEDIA_URL }}vendor/trumbowyg/dist/ui/trumbowyg.min.css">
 <script src="{{ MEDIA_URL }}js/almacen/purchase.js"></script>
 {% endblock script %}
 {% block menu %}
 	{% include "menus/storage_menu.htm" %}
 {% endblock menu %}
 {% block content %}
-<div class="container">
+<div class="">
 	<div class="well step-first">
 		<header>
 			<h3>Lista de Ordenes de Compra</h3>
@@ -27,6 +29,10 @@ Input Order Purchase
 									Nro de Compra
 								</label>
 								<label class="inline-radio">
+									<input type="radio" name="search" value="supplier">
+									Proveedor
+								</label>
+								<label class="inline-radio">
 									<input type="radio" name="search" value="dates">
 									Fechas
 								</label>
@@ -38,6 +44,12 @@ Input Order Purchase
 									<div class="form-group">
 										<label class="control-label">Nro Compra</label>
 										<input type="text" name="code" class="form-control input-sm" maxlength="10" placeholder="OCAA000000" disabled="disabled">
+									</div>
+								</div>
+								<div class="col-md-5">
+									<div class="form-group">
+										<label class="control-label">Proveedor</label>
+										<input type="text" name="supplier" placeholder="Ingrese una descripción" class="form-control input-sm" disabled="disabled">
 									</div>
 								</div>
 								<div class="col-md-2">
@@ -104,6 +116,10 @@ Input Order Purchase
 	<div class="well step-second">
 		<header>
 			<h3>Ingreso de Orden de Compra <span class="purchase"></span></h3>
+			<button type="button" class="btn btn-return">
+				<i class="fa fa-chevron-left"></i>
+				<span>Regresar</span>
+			</button>
 		</header>
 		<section>
 			<article>
@@ -140,34 +156,43 @@ Input Order Purchase
 					</div>
 				</div>
 			</article>
+			<div class="alert alert-warning alert-dismissible text-black" role="alert" style="background-color:#f0ad4e;">
+			  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			  	<span aria-hidden="true"><i class="fa fa-times"></i></span>
+			  </button>
+			  <h4><strong>¡Ten en cuenta!</strong> <small class="text-black"> que algunos materailes se generan con una diferente unidad de medida al registrado inicialmente. Recuerde que para estos casos realize la converción manual he ingrese la cantidad resultante.</small></h4>
+			</div>
 			<div class="panel panel-primary">
 				<div class="table-responsive">
 					<table class="table table-hover table-condensed table-ingress">
 						<caption>
 							<div class="form-group pull-left">
 								Seleccionar :
-								<label class="radio-inline"><input name="select" type="radio" value="1"> Todo</label>
-								<label class="radio-inline"><input name="select" type="radio" value="0"> Ninguno.</label>
+								<label class="radio-inline">
+									<input name="select" type="radio" value="1"> Todo</label>
+								<label class="radio-inline">
+									<input name="select" type="radio" value="0"> Ninguno.</label>
 							</div>
 							<div class="form-group pull-right">
-								<button class="btn btn-primary btn-generate-note">
+								<button class="btn btn-danger btn-generate-note">
 									<span class="glyphicon glyphicon-floppy-save"></span>
 									Generar Nota de Ingreso
 								</button>
 							</div>
 						</caption>
 						<thead>
-							<tr class="brand-primary text-white">
+							<tr class="brand-danger text-white">
 								<th class="text-center"></th>
 								<th class="text-center">Item</th>
 								<th class="text-center">Código</th>
 								<th class="text-center">Descripción</th>
-								<th class="text-center">Medida</th>
+								<!--<th class="text-center">Medida</th>-->
 								<th class="text-center">Marca</th>
 								<th class="text-center">Modelo</th>
-								<th class="text-center">Unidad</th>
+								<th class="text-center">UND COMPRA</th>
+								<th class="text-center">UND REG.</th>
 								<th class="text-center">Cantidad</th>
-								<th class="text-center">Ingreso</th>
+								<th class="col-3 text-center">Ingreso</th>
 							</tr>
 						</thead>
 						<tbody></tbody>
@@ -209,7 +234,7 @@ Input Order Purchase
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
-					<button class="btn btn-block btn-primary btn-ingress">
+					<button class="btn btn-block btn-danger btn-ingress">
 						<span class="glyphicon glyphicon-inbox"></span> Ingresar al Inventario
 					</button>
 					<button class="btn btn-block btn-primary btn-credit">
@@ -225,15 +250,14 @@ Input Order Purchase
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
-				<a data-dismiss="modal" class="close">&times;</a>
-				<h4 class="modal-title text-primary">
-					Nota de Ingreso Almacén
-				</h4>
+				<h3 class="modal-title text-black">
+					GENERAR NOTA DE INGRESO
+				</h3>
 			</div>
 			<div class="modal-body">
 				<div class="row">
 					<div class="col-md-4">
-						<div class="form-group has-primary">
+						<div class="form-group">
 							<label class="control-label ">Almacén</label>
 							<select name="storage" id="storage" class="form-control">
 							{% for x in storage %}
@@ -244,38 +268,38 @@ Input Order Purchase
 							</select>
 						</div>
 					</div>
-					<div class="col-md-2">
-						<div class="form-group has-primary">
+					<div class="col-md-4">
+						<div class="form-group">
 							<label class="control-label ">Nro Compra</label>
-							<input type="text" maxlength="10" name="purchase" class="form-control">
+							<input type="text" maxlength="10" name="purchase" class="form-control" readonly="true">
 						</div>
 					</div>
-					<div class="col-md-3">
-						<div class="form-group has-primary">
+					<div class="col-md-4">
+						<div class="form-group">
 							<label class="control-label ">Guias Remision</label>
-							<input type="text" name="guide" maxlength="12"  class="form-control">
+							<input type="text" name="guide" maxlength="12"  class="form-control" placeholder="000-00000000" required>
 						</div>
 					</div>
-					<div class="col-md-3">
-						<div class="form-group has-primary">
+					<div class="col-md-4">
+						<div class="form-group">
 							<label class="control-label ">Nro Factura</label>
 							<input type="text" name="invoice" maxlength="12"  class="form-control">
 						</div>
 					</div>
-					<div class="col-md-5">
-						<div class="form-group has-primary">
+					<div class="col-md-8">
+						<div class="form-group">
 							<label class="control-label ">Motivo de Ingreso</label>
 							<input type="text" name="motive" class="form-control">
 						</div>
 					</div>
-					<div class="col-md-7">
-						<div class="form-group has-primary">
+					<div class="col-md-12">
+						<div class="form-group">
 							<label class="control-label ">Observación</label>
 							<textarea name="observation" id="observation" class="form-control"></textarea>
 						</div>
 					</div>
 					<div class="col-md-4">
-						<div class="form-group has-primary">
+						<div class="form-group">
 							<label class="control-label ">Recibido por</label>
 							<select name="receive" id="receive" class="form-control">
 							{% for x in employee %}
@@ -287,7 +311,7 @@ Input Order Purchase
 						</div>
 					</div>
 					<div class="col-md-4">
-						<div class="form-group has-primary">
+						<div class="form-group">
 							<label class="control-label ">Inspeccionado por</label>
 							<select name="inspection" id="inspection" class="form-control">
 							{% for x in employee %}
@@ -299,7 +323,7 @@ Input Order Purchase
 						</div>
 					</div>
 					<div class="col-md-4">
-						<div class="form-group has-primary">
+						<div class="form-group">
 							<label class="control-label ">Vista Bueno por</label>
 							<select name="approval" id="approval" class="form-control">
 							{% for x in employee %}
@@ -316,7 +340,7 @@ Input Order Purchase
 				<button class="btn btn-default pull-left" data-dismiss="modal">
 					<span class="glyphicon glyphicon-remove"></span> Cancelar
 				</button>
-				<button class="btn btn-primary btn-generate">
+				<button class="btn btn-danger btn-generate">
 					<span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios
 				</button>
 			</div>

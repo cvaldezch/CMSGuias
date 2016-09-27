@@ -54,6 +54,7 @@ select * from almacen_detguiaremision limit 3;
 select * from almacen_nipleguiaremision limit 3;
 -- nipleria para pedido
 select * from almacen_niple limit 3;
+select * from almacen_guiaremision limit 1;
 
   id   | pedido_id  |  materiales_id  | brand_id | model_id | cantidad | cantshop | cantguide | tag | spptag | comment | flag 
 -------+------------+-----------------+----------+----------+----------+----------+-----------+-----+--------+---------+------
@@ -67,3 +68,5 @@ select * from almacen_niple limit 3;
  9775 | PE16000741 | PR15129     |                | PR15129VEN01 |        | 115100030400040 |        2 |     100 |        2 |         0 | B    | t    | 0   | Soldar aquí el paquete |            | BR000    | MO000    |       0
  9776 | PE16000741 | PR15129     |                | PR15129VEN01 |        | 115100030400043 |        2 |     600 |        2 |         0 | B    | t    | 0   |                        |            | BR000    | MO000    |       0
 (4 rows)
+
+select * from logistica_detcompra where compra_id = 'OC16000205';

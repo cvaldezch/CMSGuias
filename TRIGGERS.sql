@@ -165,9 +165,6 @@ DECLARE
   _stk DOUBLE PRECISION := 0;
   _shop DOUBLE PRECISION := 0;
   _tag CHAR := '0';
-  _status CHAR(2):= '';
-  complete integer;
-  total integer;
   v_error_stack text;
 BEGIN
   -- DECREASE TABLE INVENTORYBRAND 
@@ -196,16 +193,6 @@ BEGIN
     WHERE pedido_id LIKE NEW.order_id AND materiales_id LIKE NEW.materiales_id AND brand_id LIKE NEW.obrand_id AND model_id LIKE NEW.omodel_id;
     RAISE INFO 'THE UPDATE DETPEDIDO';
   END IF;
-  total := count(pedido_id) FROM almacen_detpedido WHERE pedido_id LIKE NEW.order_id;
-  complete := count(pedido_id) FROM almacen_detpedido WHERE pedido_id LIKE NEW.order_id AND tag LIKE '2';
-  IF (total = complete) THEN
-    _status := 'CO';
-  ELSIF (complete > 0 AND total > complete) THEN
-    _status := 'IN';
-  ELSE
-    _status := 'AP';
-  END IF;
-  UPDATE almacen_pedido SET status = _status WHERE pedido_id = NEW.order_id;
   --PERFORM proc_register_in_balance(NEW.materiales_id, NEW.brand_id, NEW.model_id, NEW.cantguide, '-');
   RETURN NEW;
   EXCEPTION
@@ -223,6 +210,38 @@ COST 100;
 CREATE TRIGGER tr_discount_on_inventorybrand_detpedido
 AFTER INSERT ON almacen_detguiaremision
 FOR EACH ROW EXECUTE PROCEDURE proc_decrease_inventorybrand_and_detorder();
+
+CREATE OR REPLACE FUNCTION proc_change_status_order()
+  RETURNS TRIGGER AS
+$$
+DECLARE
+  complete integer;
+  _status CHAR(2):= '';
+  total integer;
+BEGIN
+  total := count(pedido_id) FROM almacen_detpedido WHERE pedido_id LIKE NEW.order_id;
+  complete := count(pedido_id) FROM almacen_detpedido WHERE pedido_id LIKE NEW.order_id AND tag LIKE '2';
+  IF (total = complete) THEN
+    _status := 'CO';
+  ELSIF (complete > 0 AND total > complete) THEN
+    _status := 'IN';
+  ELSE
+    _status := 'AP';
+  END IF;
+  UPDATE almacen_pedido SET status = _status WHERE pedido_id = NEW.order_id;
+  RETURN NEW;
+EXCEPTION
+  WHEN OTHERS THEN
+  ROLLBACK;
+  RETURN NULL;
+END;
+$$
+LANGUAGE plpgsql VOLATILE
+COST 100;
+
+CREATE TRIGGER tr_change_status_order
+AFTER UPDATE ON almacen_detpedido
+FOR EACH ROW EXECUTE PROCEDURE proc_change_status_order();
 
 -- FUNCTION FOR REGISTER DISCOUNT REGISTER GUIDE
 CREATE OR REPLACE FUNCTION proc_register_in_balance()
@@ -342,12 +361,14 @@ FOR EACH ROW EXECUTE PROCEDURE proc_decrease_change_status_nip_order();
 
 INSERT INTO almacen_nipleguiaremision(guia_id, materiales_id, metrado, cantguide, tipo, flag, brand_id, model_id, related, order_id)
 VALUES('001-00000146', '115100030400040', 600, 10, 'B', true, 'BR000', 'MO000', 9774, 'PE16000741');
-SELECT * FROM almacen_nipleguiaremision WHERE guia_id = '001-00000146';
+select * from almacen_detguiaremision where guia_id = '001-00000147';
+SELECT * FROM almacen_nipleguiaremision WHERE guia_id = '001-00000147';
 SELECT * FROM almacen_niple WHERE pedido_id LIKE 'PE16000741';
 SELECT * FROM almacen_pedido WHERE pedido_id LIKE 'PE16000741';
 SELECT * FROM almacen_inventorybrand WHERE materials_id = '115100030400040';
 SELECT * FROM almacen_inventario WHERE materiales_id = '115100030400040';
 SELECT * FROM almacen_balance WHERE materials_id = '115100030400040';
+
 update almacen_pedido set status = 'IN' WHERE pedido_id LIKE 'PE16000741';
 DELETE FROM almacen_nipleguiaremision WHERE guia_id = '001-00000146';
 select * from almacen_detguiaremision where guia_id = '001-00000146';
@@ -360,13 +381,118 @@ do $$
 	declare
   x integer;
   a record;
-  status char(2) := '';
+  status char := '';
 	begin
-  SELECT * FROM almacen_detpedido WHERE pedido_id = 'PE16001319' AND tag = '8' limit 1 INTO a;
-  -- RAISE INFO '%', pg_typeof(a);
-  --RAISE INFO '%', EXISTS(x);
-  GET DIAGNOSTICS x = ROW_COUNT;
-  raise info '%', x;
+  SELECT * FROM almacen_detpedido WHERE pedido_id = 'PE16001319' limit 1 INTO a;
+  CASE WHEN a.cantidad = 6 THEN status := '0';
+        WHEN a.cantidad < 5 THEN status := '1';
+        ELSE status := '2';
+  END CASE;
+  RAISE INFO '%', status;
 	end;
 $$
 ---
+-- CREATE TRIGGER FOR INGRESS NOTE
+CREATE OR REPLACE FUNCTION proc_add_inventorybrand_detnoteingress()
+  RETURNS TRIGGER AS
+$$
+DECLARE
+  _stock DOUBLE PRECISION := 0;
+  _invbrand RECORD;
+BEGIN
+  SELECT INTO _invbrand * FROM almacen_inventorybrand WHERE materials_id = NEW.materials_id AND brand_id = NEW.brand_id AND model_id = NEW.model_id;
+  IF FOUND THEN
+  -- update old
+    _stock := (_invbrand.stock + NEW.quantity);
+    UPDATE almacen_inventorybrand SET stock = _stock, purchase = NEW.purchase, sale = NEW.purchase
+    WHERE materials_id = NEW.materials_id AND brand_id = NEW.brand_id AND model_id = NEW.model_id;
+  ELSE
+  -- insert new
+    INSERT INTO almacen_inventorybrand(storage_id, period, materials_id, brand_id, model_id, ingress, stock, purchase, sales, flag)
+    VALUES('AL01', TO_CHAR(current_date, 'YYYY'), NEW.materials_id, NEW.brand_id, NEW.model_id, now(), NEW.quantity, NEW.purchase, NEW.sales, true);
+  END IF;
+  RETURN NEW;
+EXCEPTION
+  WHEN OTHERS THEN
+  ROLLBACK;
+  RETURN NULL;
+END;
+$$
+LANGUAGE plpgsql VOLATILE
+COST 100;
+
+CREATE TRIGGER tr_add_invetorybrand_noteingress
+AFTER INSERT ON almacen_detingress
+FOR EACH ROW EXECUTE PROCEDURE proc_add_inventorybrand_detnoteingress();
+
+select * from logistica_detcompra limit 2;
+select * from almacen_detingress where ingress_id = 'NI16000077' order by id desc;
+select * from almacen_inventorybrand where materials_id = '222128036013015';
+INSERT INTO almacen_detingress(ingress_id, materials_id, quantity, brand_id, model_id, report, flag, purchase, sale)
+VALUES('NI16000077', '222128036013015', 5, 'BR000','MO000', 0, true, 2.3, 2.7);
+/**/
+CREATE OR REPLACE FUNCTION proc_change_status_detcompra()
+  RETURNS TRIGGER AS
+$$
+DECLARE
+  reg RECORD;
+  quantity DOUBLE PRECISION;
+  tag CHAR;
+BEGIN
+  SELECT INTO reg * FROM logistica_detcompra WHERE materiales_id = NEW.materials_id AND brand_id = NEW.brand_id AND model_id = NEW.model_id;
+  IF FOUND THEN
+    quantity = (reg.cantidad - NEW.quantity);
+    CASE WHEN quantity = 0 THEN tag := '2';
+          WHEN (quantity >= 0.1) AND (quantity < reg.cantstatic) THEN tag := '1';
+          WHEN (quantity = reg.cantstatic) THEN tag := '0';
+    END CASE;
+    IF quantity < 0 THEN
+      quantity := 0;
+    END IF;
+    UPDATE logistica_detcompra SET tag = tag, cantidad = quantity
+    WHERE materiales_id = NEW.materials_id AND brand_id = NEW.brand_id AND model_id = NEW.model_id;
+  END IF;
+  RETURN NEW;
+EXCEPTION
+  WHEN OTHERS THEN
+  ROLLBACK;
+  RETURN NULL;
+END;
+$$
+LANGUAGE plpgsql VOLATILE
+COST 100;
+
+CREATE TRIGGER tr_change_status_detcompra
+BEFORE INSERT ON almacen_detingress
+FOR EACH ROW EXECUTE PROCEDURE proc_change_status_detcompra();
+
+CREATE OR REPLACE FUNCTION proc_change_status_compra()
+  RETURNS TRIGGER AS
+$$
+DECLARE
+  _complete INTEGER := 0;
+  _total INTEGER := 0;
+  _status CHAR(2) := '';
+BEGIN
+  _complete := (SELECT COUNT(*) FROM logistica_detcompra WHERE compra_id = NEW.compra_id AND tag = '2');
+  _total := (SELECT COUNT(*) FROM logistica_detcompra WHERE compra_id = NEW.compra_id);
+  CASE
+    WHEN _complete = _total THEN _status := 'CO';
+    WHEN _complete < _total THEN _status := 'IN';
+    ELSE _status := 'PE';
+  END CASE;
+  UPDATE logistica_compra SET status = _status WHERE compra_id = NEW.compra_id;
+  RETURN NEW;
+EXCEPTION
+  WHEN OTHERS THEN
+  ROLLBACK;
+  RETURN NULL;
+END;
+$$
+LANGUAGE plpgsql VOLATILE
+COST 100;
+
+CREATE TRIGGER tr_change_status_compra
+AFTER INSERT ON almacen_detingress
+FOR EACH ROW EXECUTE PROCEDURE proc_change_status_compra();
+/*=============*/

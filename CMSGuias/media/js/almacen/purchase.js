@@ -1,4 +1,4 @@
-var changeCheck, changeSearch, changeSelect, listTemplate, loadIngress, saveNoteIngress, searchPurchase, showAction, showDeposit, showIngressInventory, validQuantityBlur;
+var changeCheck, changeSearch, changeSelect, listTemplate, loadIngress, saveNoteIngress, searchPurchase, showAction, showDeposit, showIngressInventory, showListFirst, validQuantityBlur;
 
 $(document).ready(function() {
   $(".step-second,.step-tree").hide();
@@ -16,9 +16,12 @@ $(document).ready(function() {
   $("[name=select]").on("change", changeSelect);
   $(".btn-generate-note").on("click", loadIngress);
   $(".btn-generate").on("click", saveNoteIngress);
+  $('.btn-return').on("click", showListFirst);
   $(".btn-repeat").click(function(event) {
     location.reload();
   });
+  $("#observation").trumbowyg();
+  $('.trumbowyg-box,.trumbowyg-editor').css('minHeight', '128px');
 });
 
 changeSearch = function() {
@@ -26,9 +29,15 @@ changeSearch = function() {
     if (this.value === "code") {
       $("input[name=code]").attr("disabled", false);
       $("input[name=start],input[name=end]").attr("disabled", true);
+      $("input[name=supplier]").attr("disabled", true);
     } else if (this.value === "dates") {
       $("input[name=code]").attr("disabled", true);
       $("input[name=start],input[name=end]").attr("disabled", false);
+      $("input[name=supplier]").attr("disabled", true);
+    } else if (this.value === "supplier") {
+      $("input[name=code]").attr("disabled", true);
+      $("input[name=start],input[name=end]").attr("disabled", true);
+      $("input[name=supplier]").attr("disabled", false);
     }
   }
 };
@@ -46,6 +55,8 @@ searchPurchase = function() {
         if ($("input[name=end]").val().length === 10) {
           data.end = $("input[name=end]").val();
         }
+      } else if (element.value === "supplier") {
+        data.supplier = $("input[name=supplier]").val();
       }
     }
   });
@@ -63,6 +74,8 @@ searchPurchase = function() {
       data.pass = false;
       $().toastmessage("showWarningToast", "No se han ingresado la fecha a buscar.");
     }
+  } else {
+    data.pass = true;
   }
   if (data.pass) {
     $.getJSON("", data, function(response) {
@@ -81,7 +94,7 @@ listTemplate = function(list) {
   $tb = $("table > tbody");
   $tb.empty();
   if (list.length) {
-    template = "<tr> <td>{{ item }}</td> <td>{{ purchase }}</td> <td>{{ reason }}</td> <td>{{ document }}</td> <td>{{ transfer }}</td> <td class=\"text-center\"> <button value=\"{{ purchase }}\" data-ruc=\"{{ x.supplier }}\" class=\"btn btn-link btn-xs text-black btn-deposit\"><span class=\"glyphicon glyphicon-credit-card\"></span></button> </td> <td class=\"text-center\"> <a href=\"/reports/order/purchase/{{ purchase }}/\" target=\"_blank\" class=\"btn btn-xs btn-link text-black\"><span class=\"glyphicon glyphicon-eye-open\"></span></a> </td> <td class=\"text-center\"> <button value=\"{{ purchase }}\" data-ruc=\"{{ x.supplier }}\" class=\"btn btn-link btn-xs text-black btn-action\"><span class=\"glyphicon glyphicon-inbox\"></span></button> </td> </tr>";
+    template = "<tr>\n	<td>{{ item }}</td>\n	<td>{{ purchase }}</td>\n	<td>{{ reason }}</td>\n	<td>{{ document }}</td>\n	<td>{{ transfer }}</td>\n	<td class=\"text-center\">\n		<button value=\"{{ purchase }}\" data-ruc=\"{{ x.supplier }}\" class=\"btn btn-link btn-xs text-black btn-deposit\"><span class=\"glyphicon glyphicon-credit-card\"></span></button>\n	</td>\n	<td class=\"text-center\">\n		<a href=\"/reports/order/purchase/{{ purchase }}/\" target=\"_blank\" class=\"btn btn-xs btn-link text-black\"><span class=\"glyphicon glyphicon-eye-open\"></span></a>\n	</td>\n	<td class=\"text-center\">\n		<button value=\"{{ purchase }}\" data-ruc=\"{{ x.supplier }}\" class=\"btn btn-link btn-xs text-black btn-action\"><span class=\"glyphicon glyphicon-inbox\"></span></button>\n	</td>\n</tr>";
     for (x in list) {
       list[x].item = parseInt(x) + 1;
       $tb.append(Mustache.render(template, list[x]));
@@ -119,7 +132,7 @@ showIngressInventory = function(event) {
       $(".transfer").html(response.head.transfer);
       $(".contact").html(response.head.contact);
       $(".performed").html(response.head.performed);
-      template = "<tr><td><input type=\"checkbox\" name=\"mats\" value=\"{{ materials }}\"></td><td>{{ item }}</td><td>{{ materials }}</td><td>{{ name }}</td><td>{{ measure }}</td><td>{{ brand }}</td><td>{{ model }}</td><td>{{ unit }}</td><td>{{ quantity }}</td><td><input type=\"number\" class=\"form-control input-sm materials\" name=\"{{ materials }}\" value=\"{{ quantity }}\" min=\"1\" max=\"{{ quantity }}\" data-price=\"{{ price }}\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\" disabled></td></tr>";
+      template = "<tr>\n<td><input type=\"checkbox\" name=\"mats\" value=\"{{ materials }}\"></td>\n<td class='text-center'>{{ item }}</td>\n<td><small>{{ materials }}</small></td>\n<td><small>{{ name }} {{ measure }}</small></td>\n<td class='text-center'>{{ brand }}</td>\n<td class='text-center'>{{ model }}</td>\n<td class='text-center'>{{ dunit }}</td>\n<td class='text-center'>{{ unit }}</td>\n<td class=\"text-center\">{{ quantity }}</td>\n<td><input type=\"number\" class=\"form-control input-sm text-right\" name=\"{{ materials }}\" value=\"{{ quantity }}\" min=\"1\" max=\"{{ quantity }}\" data-price=\"{{ price }}\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\" disabled></td></tr>";
       $tb = $("table.table-ingress > tbody");
       $tb.empty();
       for (x in response.details) {
@@ -133,6 +146,11 @@ showIngressInventory = function(event) {
       $(".step-second").fadeIn(600);
     }
   });
+};
+
+showListFirst = function() {
+  $(".step-second").fadeOut(200);
+  $(".step-first").fadeIn(600);
 };
 
 validQuantityBlur = function(event) {
@@ -223,6 +241,7 @@ saveNoteIngress = function(response) {
       }
     }
   });
+  data['observation'] = $("#observation").trumbowyg("html");
   console.log(pass);
   if (pass) {
     $().toastmessage("showToast", {

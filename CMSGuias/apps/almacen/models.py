@@ -422,6 +422,8 @@ class DetIngress(models.Model):
     quantity = models.FloatField()
     brand = models.ForeignKey(Brand, to_field='brand_id')
     model = models.ForeignKey(Model, to_field='model_id')
+    purchase = models.FloatField(default=0)
+    sales = models.FloatField(default=0)
     report = models.CharField(max_length=1, default='0')
     flag = models.BooleanField(default=True)
 
@@ -499,3 +501,4 @@ class Balance(models.Model):
 
     def __unicode__(self):
         return '%s %s %s %f' % (self.materials_id, self.brand.brand, self.model.model, self.balance)
+
