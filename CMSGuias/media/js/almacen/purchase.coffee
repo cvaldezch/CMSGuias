@@ -137,7 +137,8 @@ showIngressInventory = (event) ->
 							<td class='text-center'>{{ model }}</td>
 							<td class='text-center'>{{ dunit }}</td>
 							<td class='text-center'>{{ unit }}</td>
-							<td class="text-center">{{ quantity }}</td>
+							<td class="text-center">{{ static }}</td>
+							<td class="text-right">{{ quantity }}</td>
 							<td><input type="number" class="form-control input-sm text-right" name="{{ materials }}" value="{{ quantity }}" min="1" max="{{ quantity }}" data-price="{{ price }}" data-brand="{{ brand_id }}" data-model="{{ model_id }}" disabled></td></tr>"""
 			$tb = $("table.table-ingress > tbody")
 			$tb.empty()

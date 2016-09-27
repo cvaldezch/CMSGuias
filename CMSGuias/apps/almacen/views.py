@@ -2061,7 +2061,7 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
                                 'model'] if 'model' in x else 'MO000'
                             det.report = '0'
                             det.purchase = float(x['price'])
-                            det.sales = round(float(x['sales']) * 1.15, 2)
+                            det.sales = round(float(x['price']) * 1.15, 2)
                             det.save()
                         #     inv = Inventario.objects.filter(
                         #             materiales_id=x['materials'],

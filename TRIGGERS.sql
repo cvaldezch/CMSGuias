@@ -408,14 +408,15 @@ BEGIN
     WHERE materials_id = NEW.materials_id AND brand_id = NEW.brand_id AND model_id = NEW.model_id;
   ELSE
   -- insert new
-    INSERT INTO almacen_inventorybrand(storage_id, period, materials_id, brand_id, model_id, ingress, stock, purchase, sales, flag)
+    INSERT INTO almacen_inventorybrand(storage_id, period, materials_id, brand_id, model_id, ingress, stock, purchase, sale, flag)
     VALUES('AL01', TO_CHAR(current_date, 'YYYY'), NEW.materials_id, NEW.brand_id, NEW.model_id, now(), NEW.quantity, NEW.purchase, NEW.sales, true);
   END IF;
   RETURN NEW;
 EXCEPTION
   WHEN OTHERS THEN
-  ROLLBACK;
-  RETURN NULL;
+    RAISE INFO 'EXCEPTION ERROR %', SQLERRM;
+    ROLLBACK;
+    RETURN NULL;
 END;
 $$
 LANGUAGE plpgsql VOLATILE
@@ -425,11 +426,16 @@ CREATE TRIGGER tr_add_invetorybrand_noteingress
 AFTER INSERT ON almacen_detingress
 FOR EACH ROW EXECUTE PROCEDURE proc_add_inventorybrand_detnoteingress();
 
-select * from logistica_detcompra limit 2;
-select * from almacen_detingress where ingress_id = 'NI16000077' order by id desc;
+select * from logistica_detcompra where compra_id = 'OC16000205';
+select * from logistica_compra where compra_id = 'OC16000205';
+select * from almacen_noteingress where ingress_id = 'NI16000083';
+select * from almacen_detingress where ingress_id = 'NI16000083' order by id desc;
 select * from almacen_inventorybrand where materials_id = '222128036013015';
-INSERT INTO almacen_detingress(ingress_id, materials_id, quantity, brand_id, model_id, report, flag, purchase, sale)
-VALUES('NI16000077', '222128036013015', 5, 'BR000','MO000', 0, true, 2.3, 2.7);
+select * from almacen_inventario where materiales_id = '222128036013015';
+select * from logistica_co
+INSERT INTO almacen_detingress(ingress_id, materials_id, quantity, brand_id, model_id, report, flag, purchase, sales)
+VALUES('NI16000079', '222128036013015', 5, 'BR000','MO000', 0, true, 2.3, 2.7);
+select * from logistica_detcompra where materiales_id = '222128036013015';
 /**/
 CREATE OR REPLACE FUNCTION proc_change_status_detcompra()
   RETURNS TRIGGER AS
@@ -438,8 +444,10 @@ DECLARE
   reg RECORD;
   quantity DOUBLE PRECISION;
   tag CHAR;
+  buy varchar(10);
 BEGIN
-  SELECT INTO reg * FROM logistica_detcompra WHERE materiales_id = NEW.materials_id AND brand_id = NEW.brand_id AND model_id = NEW.model_id;
+  buy := (SELECT purchase_id FROM almacen_noteingress WHERE ingress_id = NEW.ingress_id LIMIT 1);
+  SELECT INTO reg * FROM logistica_detcompra WHERE compra_id = buy AND materiales_id = NEW.materials_id AND brand_id = NEW.brand_id AND model_id = NEW.model_id;
   IF FOUND THEN
     quantity = (reg.cantidad - NEW.quantity);
     CASE WHEN quantity = 0 THEN tag := '2';
@@ -449,8 +457,8 @@ BEGIN
     IF quantity < 0 THEN
       quantity := 0;
     END IF;
-    UPDATE logistica_detcompra SET tag = tag, cantidad = quantity
-    WHERE materiales_id = NEW.materials_id AND brand_id = NEW.brand_id AND model_id = NEW.model_id;
+    UPDATE logistica_detcompra SET flag = tag, cantidad = quantity
+    WHERE compra_id = buy AND materiales_id = NEW.materials_id AND brand_id = NEW.brand_id AND model_id = NEW.model_id;
   END IF;
   RETURN NEW;
 EXCEPTION
@@ -473,25 +481,28 @@ DECLARE
   _complete INTEGER := 0;
   _total INTEGER := 0;
   _status CHAR(2) := '';
+  _compra varchar(10);
 BEGIN
-  _complete := (SELECT COUNT(*) FROM logistica_detcompra WHERE compra_id = NEW.compra_id AND tag = '2');
-  _total := (SELECT COUNT(*) FROM logistica_detcompra WHERE compra_id = NEW.compra_id);
+  _compra := (SELECT purchase_id FROM almacen_noteingress WHERE ingress_id = NEW.ingress_id LIMIT 1);
+  _complete := (SELECT COUNT(*) FROM logistica_detcompra WHERE compra_id = _compra AND flag = '2');
+  _total := (SELECT COUNT(*) FROM logistica_detcompra WHERE compra_id = _compra);
   CASE
     WHEN _complete = _total THEN _status := 'CO';
     WHEN _complete < _total THEN _status := 'IN';
     ELSE _status := 'PE';
   END CASE;
-  UPDATE logistica_compra SET status = _status WHERE compra_id = NEW.compra_id;
+  UPDATE logistica_compra SET status = _status WHERE compra_id = _compra;
   RETURN NEW;
 EXCEPTION
   WHEN OTHERS THEN
-  ROLLBACK;
-  RETURN NULL;
+    RAISE INFO 'EXCEPTION ERROR %', SQLERRM;
+    ROLLBACK;
+    RETURN NULL;
 END;
 $$
 LANGUAGE plpgsql VOLATILE
 COST 100;
-
+-- DROP TRIGGER tr_change_status_compra ON almacen_detingress;
 CREATE TRIGGER tr_change_status_compra
 AFTER INSERT ON almacen_detingress
 FOR EACH ROW EXECUTE PROCEDURE proc_change_status_compra();

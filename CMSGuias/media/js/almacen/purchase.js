@@ -132,7 +132,7 @@ showIngressInventory = function(event) {
       $(".transfer").html(response.head.transfer);
       $(".contact").html(response.head.contact);
       $(".performed").html(response.head.performed);
-      template = "<tr>\n<td><input type=\"checkbox\" name=\"mats\" value=\"{{ materials }}\"></td>\n<td class='text-center'>{{ item }}</td>\n<td><small>{{ materials }}</small></td>\n<td><small>{{ name }} {{ measure }}</small></td>\n<td class='text-center'>{{ brand }}</td>\n<td class='text-center'>{{ model }}</td>\n<td class='text-center'>{{ dunit }}</td>\n<td class='text-center'>{{ unit }}</td>\n<td class=\"text-center\">{{ quantity }}</td>\n<td><input type=\"number\" class=\"form-control input-sm text-right\" name=\"{{ materials }}\" value=\"{{ quantity }}\" min=\"1\" max=\"{{ quantity }}\" data-price=\"{{ price }}\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\" disabled></td></tr>";
+      template = "<tr>\n<td><input type=\"checkbox\" name=\"mats\" value=\"{{ materials }}\"></td>\n<td class='text-center'>{{ item }}</td>\n<td><small>{{ materials }}</small></td>\n<td><small>{{ name }} {{ measure }}</small></td>\n<td class='text-center'>{{ brand }}</td>\n<td class='text-center'>{{ model }}</td>\n<td class='text-center'>{{ dunit }}</td>\n<td class='text-center'>{{ unit }}</td>\n<td class=\"text-center\">{{ static }}</td>\n<td class=\"text-right\">{{ quantity }}</td>\n<td><input type=\"number\" class=\"form-control input-sm text-right\" name=\"{{ materials }}\" value=\"{{ quantity }}\" min=\"1\" max=\"{{ quantity }}\" data-price=\"{{ price }}\" data-brand=\"{{ brand_id }}\" data-model=\"{{ model_id }}\" disabled></td></tr>";
       $tb = $("table.table-ingress > tbody");
       $tb.empty();
       for (x in response.details) {
