@@ -1,6 +1,10 @@
 from django.contrib import admin
 from CMSGuias.apps.home import models
 
+class EmployeeAdmin(admin.ModelAdmin):
+    # list_filter = ('firstname',)
+    search_fields = ('firstname', 'lastname',)
+
 admin.site.register(models.Almacene)
 admin.site.register(models.Cliente)
 admin.site.register(models.Conductore)
@@ -24,7 +28,7 @@ admin.site.register(models.Moneda)
 admin.site.register(models.TipoCambio)
 admin.site.register(models.Proveedor)
 admin.site.register(models.Configuracion)
-admin.site.register(models.Employee)
+admin.site.register(models.Employee, EmployeeAdmin)
 admin.site.register(models.GroupMaterials)
 admin.site.register(models.DetailsGroup)
 admin.site.register(models.TypeGroup)

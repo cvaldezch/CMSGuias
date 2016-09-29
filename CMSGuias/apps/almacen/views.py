@@ -1273,93 +1273,94 @@ def view_list_guide_referral_success(request):
                 obj = GuiaRemision.objects.get(
                         pk=request.POST.get('series'), status='GE', flag=True)
                 obj.status = 'AN'
+                obj.motive = request.POST['observation']
                 obj.flag = False
                 obj.save()
-                det = DetGuiaRemision.objects.filter(
-                        guia_id__exact=request.POST.get('series'))
-                det.update(flag=False)
-                nip = NipleGuiaRemision.objects.filter(
-                    guia_id__exact=request.POST.get('series'))
-                nip.update(flag=False)
-                # generate beside restoration
-                add = Restoration()
-                res = genkeys.keyRestoration().strip()
-                add.restoration_id = res
-                if obj.pedido_id:
-                    add.almacen_id = obj.pedido.almacen_id
-                else:
-                    add.almacen_id = 'AL01'
-                add.ndocument_id = obj.guia_id
-                add.observation = request.POST['observation']
-                add.performed_id = request.user.get_profile().empdni_id
-                add.save()
-                for x in det:
-                    # return quantity at inventory
-                    inv = Inventario.objects.filter(
-                            periodo=globalVariable.get_year,
-                            materiales_id=x.materiales_id).order_by(
-                            '-ingreso')[0]
-                    if x.brand_id:
-                        brand = x.brand_id
-                    else:
-                        brand = 'BR000'
-                    if x.model_id:
-                        model = x.model_id
-                    else:
-                        model = 'MO000'
-                    # return quantity at inventory brand
-                    ibm = InventoryBrand.objects.filter(
-                        period=globalVariable.get_year,
-                        materials_id=x.materiales_id,
-                        brand_id=brand,
-                        model_id=model).order_by('-ingress')
-                    if ibm:
-                        ibm = ibm[0]
-                        inv.stock = (float(inv.stock) + float(x.cantguide))
-                        inv.save()
-                        ibm.stock = (float(ibm.stock) + float(x.cantguide))
-                        ibm.save()
-                    # Save Details Restoration
-                    dt = DetRestoration()
-                    dt.restoration_id = res
-                    dt.materials_id = x.materiales_id
-                    dt.brand_id = brand
-                    dt.model_id = model
-                    dt.quantity = x.cantguide
-                    dt.save()
-                    # Return quantity at order if exists
-                    if obj.pedido_id:
-                        ords = Detpedido.objects.get(
-                            pedido_id=obj.pedido_id,
-                            materiales_id=x.materiales_id,
-                            brand_id=brand,
-                            model_id=model)
-                        ords.cantshop = (ords.cantshop + x.cantguide)
-                        ords.cantguide = (ords.cantguide - x.cantguide)
-                        ords.tag = '1'
-                        ords.save()
+                # det = DetGuiaRemision.objects.filter(
+                #         guia_id__exact=request.POST.get('series'))
+                # det.update(flag=False)
+                # nip = NipleGuiaRemision.objects.filter(
+                #     guia_id__exact=request.POST.get('series'))
+                # nip.update(flag=False)
+                # # generate beside restoration
+                # add = Restoration()
+                # res = genkeys.keyRestoration().strip()
+                # add.restoration_id = res
+                # if obj.pedido_id:
+                #     add.almacen_id = obj.pedido.almacen_id
+                # else:
+                #     add.almacen_id = 'AL01'
+                # add.ndocument_id = obj.guia_id
+                # add.observation = request.POST['observation']
+                # add.performed_id = request.user.get_profile().empdni_id
+                # add.save()
+                # for x in det:
+                #     # return quantity at inventory
+                #     inv = Inventario.objects.filter(
+                #             periodo=globalVariable.get_year,
+                #             materiales_id=x.materiales_id).order_by(
+                #             '-ingreso')[0]
+                #     if x.brand_id:
+                #         brand = x.brand_id
+                #     else:
+                #         brand = 'BR000'
+                #     if x.model_id:
+                #         model = x.model_id
+                #     else:
+                #         model = 'MO000'
+                #     # return quantity at inventory brand
+                #     ibm = InventoryBrand.objects.filter(
+                #         period=globalVariable.get_year,
+                #         materials_id=x.materiales_id,
+                #         brand_id=brand,
+                #         model_id=model).order_by('-ingress')
+                #     if ibm:
+                #         ibm = ibm[0]
+                #         inv.stock = (float(inv.stock) + float(x.cantguide))
+                #         inv.save()
+                #         ibm.stock = (float(ibm.stock) + float(x.cantguide))
+                #         ibm.save()
+                    # # Save Details Restoration
+                    # dt = DetRestoration()
+                    # dt.restoration_id = res
+                    # dt.materials_id = x.materiales_id
+                    # dt.brand_id = brand
+                    # dt.model_id = model
+                    # dt.quantity = x.cantguide
+                    # dt.save()
+                    # # Return quantity at order if exists
+                    # if obj.pedido_id:
+                    #     ords = Detpedido.objects.get(
+                    #         pedido_id=obj.pedido_id,
+                    #         materiales_id=x.materiales_id,
+                    #         brand_id=brand,
+                    #         model_id=model)
+                    #     ords.cantshop = (ords.cantshop + x.cantguide)
+                    #     ords.cantguide = (ords.cantguide - x.cantguide)
+                    #     ords.tag = '1'
+                    #     ords.save()
                 # if guide nipple exist for material
-                if obj.pedido_id:
-                    gn = NipleGuiaRemision.objects.filter(guia_id=obj.guia_id)
-                    if gn:
-                        for n in gn:
-                            try:
-                                np = Niple.objects.get(
-                                    pedido_id=obj.pedido_id,
-                                    materiales_id=n.materiales_id,
-                                    metrado=n.metrado,
-                                    tipo=n.tipo)
-                                np.cantguide = (np.cantguide - n.cantguide)
-                                np.cantshop = (np.cantshop + n.cantguide)
-                                np.save()
-                            except Niple.DoesNotExist:
-                                raise e
-                            n.flag = False
-                            n.save()
-                    pe = Pedido.objects.get(
-                        pedido_id=obj.pedido_id)
-                    pe.status = 'IN'
-                    pe.save()
+                # if obj.pedido_id:
+                #     gn = NipleGuiaRemision.objects.filter(guia_id=obj.guia_id)
+                #     if gn:
+                #         for n in gn:
+                #             try:
+                #                 np = Niple.objects.get(
+                #                     pedido_id=obj.pedido_id,
+                #                     materiales_id=n.materiales_id,
+                #                     metrado=n.metrado,
+                #                     tipo=n.tipo)
+                #                 np.cantguide = (np.cantguide - n.cantguide)
+                #                 np.cantshop = (np.cantshop + n.cantguide)
+                #                 np.save()
+                #             except Niple.DoesNotExist:
+                #                 raise e
+                #             n.flag = False
+                #             n.save()
+                #     pe = Pedido.objects.get(
+                #         pedido_id=obj.pedido_id)
+                #     pe.status = 'IN'
+                #     pe.save()
                 data['status'] = True
             except ObjectDoesNotExist, e:
                 print e
@@ -2031,6 +2032,7 @@ class InputOrderPurchase(JSONResponseMixin, TemplateView):
         except TemplateDoesNotExist, e:
             raise Http404('Template not found')
 
+    @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             context = dict()

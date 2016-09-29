@@ -168,7 +168,7 @@ class GuiaRemision(models.Model):
     condni = models.ForeignKey(Conductore, to_field='condni_id')
     nropla = models.ForeignKey(Transporte, to_field='nropla_id')
     status = models.CharField(max_length=2, default='46')
-    motive = models.CharField(max_length=160, default='VENTA', blank=True)
+    motive = models.CharField(max_length=250, default='NO SE ESPECIFICA.', blank=True)
     comment = models.TextField(default='')
     observation = models.CharField(max_length=250, null=True, blank=True)
     nota = models.CharField(max_length=250, null=True, blank=True)
@@ -176,6 +176,7 @@ class GuiaRemision(models.Model):
     orders = models.CharField(max_length=250, null=True, blank=True, default=None)
     flag = models.BooleanField(default=True)
     perreg = models.ForeignKey(Employee, to_field='empdni_id', null=True, blank=True)
+    moveby = models.CharField(max_length=60, blank=True, default='Venta')
 
     audit_log = AuditLog()
 

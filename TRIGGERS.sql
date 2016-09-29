@@ -189,16 +189,16 @@ BEGIN
     ELSIF _shop > 0::DOUBLE PRECISION THEN
       _tag := '1';
     END IF;
-    UPDATE almacen_detpedido SET cantshop = _shop, tag = _tag::CHAR
+    UPDATE almacen_detpedido SET cantshop = _shop, cantguide = (cantguide + NEW.cantguide), tag = _tag::CHAR
     WHERE pedido_id LIKE NEW.order_id AND materiales_id LIKE NEW.materiales_id AND brand_id LIKE NEW.obrand_id AND model_id LIKE NEW.omodel_id;
     RAISE INFO 'THE UPDATE DETPEDIDO';
   END IF;
   --PERFORM proc_register_in_balance(NEW.materiales_id, NEW.brand_id, NEW.model_id, NEW.cantguide, '-');
   RETURN NEW;
-  EXCEPTION
+EXCEPTION
   WHEN OTHERS THEN
-    GET STACKED DIAGNOSTICS v_error_stack = PG_EXCEPTION_CONTEXT;
-    RAISE WARNING 'The stack trace of the error is: "%"', v_error_stack;
+    -- GET STACKED DIAGNOSTICS v_error_stack = PG_EXCEPTION_CONTEXT;
+    -- RAISE WARNING 'The stack trace of the error is: "%"', v_error_stack;
     RAISE INFO 'EXCEPTION ERROR % %', SQLERRM, SQLSTATE;
     ROLLBACK;
     RETURN NULL;
@@ -219,8 +219,8 @@ DECLARE
   _status CHAR(2):= '';
   total integer;
 BEGIN
-  total := count(pedido_id) FROM almacen_detpedido WHERE pedido_id LIKE NEW.order_id;
-  complete := count(pedido_id) FROM almacen_detpedido WHERE pedido_id LIKE NEW.order_id AND tag LIKE '2';
+  total := (SELECT count(pedido_id) FROM almacen_detpedido WHERE pedido_id LIKE NEW.pedido_id);
+  complete := (SELECT count(pedido_id) FROM almacen_detpedido WHERE pedido_id LIKE NEW.pedido_id AND tag LIKE '2');
   IF (total = complete) THEN
     _status := 'CO';
   ELSIF (complete > 0 AND total > complete) THEN
@@ -228,12 +228,13 @@ BEGIN
   ELSE
     _status := 'AP';
   END IF;
-  UPDATE almacen_pedido SET status = _status WHERE pedido_id = NEW.order_id;
+  UPDATE almacen_pedido SET status = _status WHERE pedido_id = NEW.pedido_id;
   RETURN NEW;
 EXCEPTION
   WHEN OTHERS THEN
-  ROLLBACK;
-  RETURN NULL;
+    RAISE INFO 'EXCEPTION ERROR % %', SQLERRM, SQLSTATE;
+    ROLLBACK;
+    RETURN NULL;
 END;
 $$
 LANGUAGE plpgsql VOLATILE
@@ -272,7 +273,7 @@ BEGIN
     UPDATE almacen_balance SET balance = NEW.stock WHERE materials_id = NEW.materials_id AND brand_id = NEW.brand_id AND model_id = NEW.model_id  AND extract(year FROM register) = extract(year FROM current_date) AND extract(month FROM register) = extract(month FROM current_date);
   END IF;
   RETURN NEW;
-  EXCEPTION
+EXCEPTION
     WHEN OTHERS THEN
     RAISE INFO 'EXCEPTION ERROR %', SQLERRM;
     ROLLBACK;
@@ -342,7 +343,7 @@ BEGIN
     ELSIF _quantity > 0 THEN
       _tag := '1';
     END IF;
-    UPDATE almacen_niple SET cantshop = _quantity, tag = _tag WHERE id=NEW.related AND pedido_id LIKE NEW.order_id;
+    UPDATE almacen_niple SET cantshop = _quantity, cantguide=(cantguide + NEW.cantguide), tag = _tag WHERE id=NEW.related AND pedido_id LIKE NEW.order_id;
   END IF;
   RETURN NEW;
 EXCEPTION
@@ -507,3 +508,161 @@ CREATE TRIGGER tr_change_status_compra
 AFTER INSERT ON almacen_detingress
 FOR EACH ROW EXECUTE PROCEDURE proc_change_status_compra();
 /*=============*/
+-- CREATE TRIGGER FOR STORAGE NRO ORDERS IN BEDSIDE
+CREATE OR REPLACE FUNCTION proc_more_order_guide_storage_orders()
+  RETURNS TRIGGER AS
+$$
+BEGIN
+  IF OLD.orders IS NULL OR OLD.orders = '' THEN
+    NEW.orders := NEW.orders;
+  ELSE
+    NEW.orders := (OLD.orders || ',' || NEW.orders);
+  END IF;
+  RETURN NEW;
+EXCEPTION
+  WHEN OTHERS THEN
+    RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql VOLATILE
+COST 100;
+DROP TRIGGER tr_more_order_guide_storage_orders ON almacen_guiaremision;
+CREATE TRIGGER tr_more_order_guide_storage_orders
+BEFORE UPDATE ON almacen_guiaremision
+FOR EACH ROW WHEN ('GE' = NEW.status)
+EXECUTE PROCEDURE proc_more_order_guide_storage_orders();
+
+/* ANNULAR GUIDE REMISION */
+CREATE OR REPLACE FUNCTION proc_annular_guide_remision()
+  RETURNS trigger AS
+$$
+DECLARE
+  x RECORD;
+  oord RECORD;
+  np RECORD;
+  nstk RECORD;
+  so RECORD;
+BEGIN
+  IF OLD.orders <> NULL OR OLD.orders <> '' THEN
+    RAISE INFO 'NEW VERSION';
+    -- returns items of guide the orders
+    FOR x IN (SELECT * FROM almacen_detguiaremision WHERE guia_id = NEW.guia_id AND flag = True)
+    LOOP
+      raise info 'det guide %', x;
+      -- RETURN ITEM ORDERS
+      SELECT INTO oord * FROM almacen_detpedido WHERE pedido_id = x.order_id AND materiales_id = x.materiales_id AND brand_id = x.obrand_id AND model_id = x.omodel_id;
+      IF oord.pedido_id IS NOT NULL THEN
+        UPDATE almacen_detpedido SET cantshop = (oord.cantshop + x.cantguide), cantguide = (cantguide - x.cantguide), tag = '1', flag = True WHERE pedido_id = x.order_id AND materiales_id = x.materiales_id AND brand_id = x.obrand_id AND model_id = x.omodel_id;
+      END IF;
+      -- RETURN NIPLES ORDER
+      IF EXISTS(SELECT * FROM almacen_nipleguiaremision WHERE guia_id = NEW.guia_id AND materiales_id = x.materiales_id AND order_id = x.order_id) THEN
+        FOR np IN (SELECT * FROM almacen_nipleguiaremision WHERE guia_id = NEW.guia_id AND materiales_id = x.materiales_id AND order_id = x.order_id)
+        LOOP
+          UPDATE almacen_niple SET cantshop=(cantshop+np.cantguide), cantguide=(cantguide-np.cantguide), tag='1' WHERE pedido_id = np.order_id AND id = np.related;
+        END LOOP;
+      END IF;
+      -- RETURN ITEM INVENTORYBRAND
+      SELECT INTO nstk * FROM almacen_inventorybrand WHERE materials_id = x.materiales_id AND brand_id = x.brand_id AND model_id = x.model_id;
+      UPDATE almacen_inventorybrand set stock = (nstk.stock + x.cantguide) WHERE materials_id = x.materiales_id AND brand_id = x.brand_id AND model_id = x.model_id;
+      -- UPDATE STATUS DET GUIDE
+      UPDATE almacen_detguiaremision SET flag = false WHERE guia_id = NEW.guia_id AND materiales_id = x.materiales_id AND id = x.id;
+    END LOOP;
+    -- FOR so IN (SELECT DISTINCT order_id FROM almacen_detguiaremision WHERE guia_id = NEW.guia_id AND order_id IS NOT NULL)
+    -- LOOP
+    --   IF EXISTS(SELECT * FROM almacen_detpedido WHERE pedido_id = so.order_id AND cantshop > 0) THEN
+    --     UPDATE almacen_pedido SET status = 'IN' WHERE pedido_id = so.order_id;
+    --   END IF;
+    -- END LOOP;
+    RAISE NOTICE 'FINISH PROCESS';
+  ELSE
+    RAISE INFO 'OLD VERSION';
+    -- RETURNS ITEMS ORDER
+    BEGIN
+      FOR x IN (SELECT * FROM almacen_detguiaremision WHERE guia_id = NEW.guia_id AND flag = true)
+      LOOP
+        -- RAISE INFO 'DET GUIDE %', x;
+        -- SELECT INTO oord * FROM almacen_detpedido WHERE pedido_id = NEW.pedido_id AND materiales_id = x.materiales_id AND brand_id = x.brand_id AND model_id = x.model_id;
+        -- RAISE INFO 'DET ORDER % ', oord;
+        -- IF FOUND THEN
+        -- raise info 'INSIDE  IF record NOT NULL % % % %', x.brand_id, x.model_id, x.materiales_id, NEW.pedido_id;
+        UPDATE almacen_detpedido SET cantshop=(cantshop + x.cantguide), cantguide=(cantguide - x.cantguide), tag='1', flag=true WHERE pedido_id = NEW.pedido_id AND materiales_id = x.materiales_id AND brand_id = x.brand_id AND model_id = x.model_id;
+        RAISE INFO 'IS WHEN UPDATE GUIDE DET REMISIOn';
+        UPDATE almacen_detguiaremision SET flag = false WHERE guia_id = NEW.guia_id AND materiales_id = x.materiales_id AND id = x.id;
+        -- END IF;
+        RAISE INFO 'NIP GUIDE ';
+        FOR np IN (SELECT * FROM almacen_nipleguiaremision WHERE guia_id = NEW.guia_id AND materiales_id = x.materiales_id)
+        LOOP
+          UPDATE almacen_niple SET cantshop=(np.cantguide+cantshop), cantguide=(cantguide-np.cantguide), tag='1' WHERE pedido_id = NEW.pedido_id AND tipo = np.tipo AND materiales_id = np.materiales_id AND metrado = np.metrado;
+          UPDATE almacen_nipleguiaremision SET flag = false WHERE id = np.id;
+        END LOOP;
+        RAISE INFO 'DET ORDER IU inventory ';
+        -- RETURN ITEM INVENTORYBRAND
+        SELECT INTO nstk * FROM almacen_inventorybrand WHERE materials_id = x.materiales_id AND brand_id = x.brand_id AND model_id = x.model_id;
+        IF nstk.materials_id IS NOT NULL THEN
+          UPDATE almacen_inventorybrand SET stock = (nstk.stock + x.cantguide) WHERE materials_id = x.materiales_id AND brand_id = x.brand_id AND model_id = x.model_id;
+        ELSE
+          INSERT INTO almacen_inventorybrand(storage_id,period,materials_id,brand_id,model_id,ingress,stock,purchase,flag,sale)
+          VALUES ('AL01',to_char(current_date, 'YYYY'),x.materiales_id,x.brand_id,x.model_id,now(),x.cantguide,1,true,1.15);
+        END IF;
+      END LOOP;
+    END;
+    -- IF EXISTS(SELECT * FROM almacen_detpedido WHERE pedido_id = NEW.pedido_id AND cantshop > 0) THEN
+    --   UPDATE almacen_pedido SET status = 'IN' WHERE pedido_id = NEW.pedido_id;
+    -- END IF;
+  END IF;
+  RETURN NEW;
+EXCEPTION
+  WHEN OTHERS THEN
+    RAISE NOTICE 'EXCEPTION ERROR % %', SQLERRM, SQLSTATE;
+    ROLLBACK;
+    RETURN NULL;
+END;
+$$
+LANGUAGE plpgsql VOLATILE
+COST 100;
+CREATE TRIGGER tr_annular_guide_remision
+AFTER UPDATE ON almacen_guiaremision
+FOR EACH ROW WHEN (NEW.status = 'AN')
+EXECUTE PROCEDURE proc_annular_guide_remision();
+/* END ANNULAR GUIDE REMISION*/
+select * from almacen_detguiaremision where order_id is not null;
+update almacen_guiaremision set status = 'AN' where guia_id = '001-00019723';
+update almacen_guiaremision set status = 'GE' where guia_id = '001-10019104';
+select * from almacen_guiaremision where guia_id = '001-10019104';
+update almacen_detguiaremision set guia_id = '001-10019104' WHERE guia_id = '001-00019723' AND order_id is NULL;
+delete from almacen_detguiaremision WHERE id = 14495;
+-- Para realizar prueba de anulacion
+select * from almacen_guiaremision where guia_id = '001-00019723';
+SELECT * from almacen_detguiaremision where guia_id = '001-00019723';
+select * from almacen_pedido where pedido_id = 'PE16001319';
+select * from almacen_detpedido WHERE pedido_id = 'PE16001319';
+select * from almacen_inventorybrand where materials_id in ('117010610013001','342032441900004')
+-- ---  ---- 
+select * from almacen_guiaremision where guia_id = '001-00000147';
+SELECT * from almacen_detguiaremision where guia_id = '001-00000147';
+select * from almacen_pedido where pedido_id = 'PE16000741';
+select * from almacen_detpedido WHERE pedido_id = 'PE16000741';
+SELECT * from almacen_nipleguiaremision where guia_id = '001-00000147';
+select * from almacen_niple WHERE pedido_id = 'PE16000741';
+select * from almacen_inventorybrand where materials_id in ('115100030400040')
+
+select * from almacen_guiaremision where guia_id = '001-00018508';
+SELECT * from almacen_detguiaremision where guia_id = '001-00018508';
+select * from almacen_pedido where pedido_id = 'PE16000253';
+select * from almacen_detpedido WHERE pedido_id = 'PE16000253';
+SELECT * from almacen_nipleguiaremision where guia_id = '001-00018508';
+select * from almacen_niple WHERE pedido_id = 'PE16000253';
+select * from almacen_inventorybrand where materials_id in ('340012441900005','342032441900004','221098036001007','221098036001006') order by stock desc;
+select * from almacen_balance where materials_id in ('340012441900005','342032441900004','221098036001007','221098036001006') order by balance desc;
+
+do $$
+declare
+  x record;
+  c integer;
+begin
+  -- raise INFO 'is record empty % ', x;
+  c:= (select count(*) from almacen_pedido where pedido_id = 'PE16000851');
+  raise notice 'Number count pedido %', c;
+end;
+$$;
+
