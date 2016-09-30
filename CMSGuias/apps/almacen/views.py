@@ -3036,3 +3036,41 @@ class LoadInventoryBrand(JSONResponseMixin, TemplateView):
                 context['raise'] = str(e)
                 context['status'] = False
             return self.render_to_json_response(context)
+
+class DevolutionStorage(JSONResponseMixin, TemplateView):
+    template_name = "almacen/devolutions/devolution.html"
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            return render(request, self.template_name, context)
+        except TemplateDoesNotExist as e:
+            raise Http404(e)
+
+class ReturnWith(JSONResponseMixin, TemplateView):
+    template_name = "almacen/devolutions/withguide.html"
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if request.is_ajax():
+                pass
+            return render(request, self.template_name, context)
+        except TemplateDoesNotExist as e:
+            raise Http404(e)
+
+
+class ReturnWithout(JSONResponseMixin, TemplateView):
+    template_name = "almacen/devolutions/withoutguide.html"
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        try:
+            if request.is_ajax():
+                pass
+            return render(request, self.template_name, context)
+        except TemplateDoesNotExist as e:
+            raise Http404(e)

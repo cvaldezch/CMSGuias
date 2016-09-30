@@ -1,0 +1,23 @@
+{% extends "basemd.html" %}
+{% block menu %}
+	{% include "menus/storagemd.htm" %}
+{% endblock menu %}
+{% block content %}
+<section ng-app="appReturnWith" ng-controller="ctrlReturnWith">
+	<h3 class="row">
+		<div class="col l8">
+			Devolución de Con Guia de Remisión
+		</div>
+		<div class="input-field col l4 s12 m5 flow-text">
+			<input type="text" class="text-32 grey-text text-darken-2" maxlength="12" placeholder="000-00000000" ng-model="tmpg" only-Number-Hyphen ng-class="{'invalid': !valid, 'valid': valid}">
+		</div>
+	</h3>
+	<button type="button" class="btn" ng-click="test()">
+		test
+	</button>
+</section>
+<!-- block script -->
+<script defer type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
+<script defer type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script defer type="text/javascript" src="{{ MEDIA_URL }}js/almacen/returnwith.js"></script>
+{% endblock content %}

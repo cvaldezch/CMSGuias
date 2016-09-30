@@ -1,4 +1,8 @@
-{% extends "basemd.html" %} {% block menu %} {% include "menus/storagemd.htm" %} {% endblock menu %} {% block content %}
+{% extends "basemd.html" %}
+{% block menu %}
+	{% include "menus/storagemd.htm" %}
+{% endblock menu %}
+{% block content %}
 <section ng-app="attendApp" ng-controller="attendCtrl">
 	<header>
 		<h3>
@@ -663,10 +667,10 @@
 </section>
 <div id="editor"></div>
 <!-- block for scripts -->
-<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-filter/dist/angular-filter.min.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}vendor/trumbowyg/dist/trumbowyg.min.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/almacen/order-attend.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js" defer></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js" defer></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-filter/dist/angular-filter.min.js" defer></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/trumbowyg/dist/trumbowyg.min.js" defer></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/almacen/order-attend.js" defer></script>
 <link rel="stylesheet" href="{{ MEDIA_URL }}vendor/trumbowyg/dist/ui/trumbowyg.min.css"/>
 {% endblock content %}

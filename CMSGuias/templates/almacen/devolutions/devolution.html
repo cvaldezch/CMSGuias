@@ -1,0 +1,61 @@
+{% extends "basemd.html" %}
+{% block menu %}
+	{% include "menus/storagemd.htm" %}
+{% endblock menu %}
+{% block content %}
+<section>
+	<h3>
+		Devoluciones
+	</h3>
+	<div class="row">
+		<div class="card hoverable col offset-m2 offset-l2 l3 m3 s12">
+			<div class="card-image waves-effect waves-block waves-light valign-wrapper">
+				<br>
+				<i class="fa fa-cogs fa-5x valign center-align activator"></i>
+			</div>
+			<div class="card-content">
+				<span class="card-title activator grey-text text-darken-4">
+					<i class="fa fa-ellipsis-v right"></i>
+					Con Guia de Remision</span>
+			</div>
+			<div class="card-action">
+				<a href="{% url 'returnw_view' %}">PROCESAR DEVOLUCION</a>
+			</div>
+			<div class="card-reveal">
+				<span class="card-title grey-text text-darken-4">
+					Detalle
+					<i class="fa fa-times right"></i>
+				</span>
+				<p>
+					Con esta opción se realiza la devolución a almacen con el número de guia referencial de donde se devuelve los accesorios de dicha guia.
+					Adicionalmente para que se realice la devolución se requiere del ingreso de un número de guia para el registro de devolución.
+				</p>
+			</div>
+		</div>
+		<div class="card hoverable col offset-m1 offset-l1 l3 m3 s12">
+			<div class="card-image waves-effect waves-block waves-light valign-wrapper">
+				<br>
+				<i class="fa fa-columns fa-5x valign center-align activator"></i>
+			</div>
+			<div class="card-content">
+				<span class="card-title activator grey-text text-darken-4">
+					<i class="fa fa-ellipsis-v right"></i>
+					Sin Guia de Remision</span>
+			</div>
+			<div class="card-action">
+				<a href="{% url 'returnwo_view' %}">PROCESAR DEVOLUCION</a>
+			</div>
+			<div class="card-reveal">
+				<span class="card-title grey-text text-darken-4">
+					Detalle
+					<i class="fa fa-times right"></i>
+				</span>
+				<p>
+					Con esta opción se realiza una nota de devolución al no tener el número de guia referencial se ingresa los accesorios manualmente.
+					Adicionalmente en un segundo paso se puede seleccionar los materiales que se pueden reciclar para eso se registra una guia de remisión para el ingreso al inventario.
+				</p>
+			</div>
+		</div>
+	</div>
+</section>
+{% endblock content %}

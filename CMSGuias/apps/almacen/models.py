@@ -445,12 +445,17 @@ class ReportInspect(models.Model):
 
 
 class Restoration(models.Model):
-    restoration_id = models.CharField(max_length=6, primary_key=True)
+    restoration_id = models.CharField(max_length=8, primary_key=True)
     almacen = models.ForeignKey(Almacene, to_field='almacen_id', blank=True)
     register = models.DateTimeField(auto_now_add=True)
-    ndocument = models.ForeignKey(GuiaRemision, to_field='guia_id')
+    guideout = models.ForeignKey(GuiaRemision, related_name='guideoutAsGuide', null=True, blank=True)
+    guidein = models.ForeignKey(GuiaRemision, related_name='guideinGuide', null=True, blank=True)
     observation = models.TextField()
+    project = models.ForeignKey(Proyecto, to_field='proyecto_id', null=True)
+    sector = models.ForeignKey(Sectore, to_field='sector_id', null=True)
+    dsector_id = models.ForeignKey(DSector, to_field='dsector_id', null=True)
     performed = models.ForeignKey(Employee, to_field='empdni_id')
+    status = models.CharField(max_length=2, default='AC')
     flag = models.BooleanField(default=True)
 
     audit_log = AuditLog()
@@ -465,6 +470,8 @@ class DetRestoration(models.Model):
     brand = models.ForeignKey(Brand, to_field='brand_id')
     model = models.ForeignKey(Model, to_field='model_id')
     quantity = models.FloatField()
+    niple = models.TextField(null=True, blank=True)
+    other = models.TextField(null=True, blank=True)
 
     class Meta:
         ordering = ['materials']

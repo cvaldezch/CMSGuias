@@ -116,5 +116,9 @@ urlpatterns = patterns(
         ReturnItemOrders.as_view(), name='return_order_items_view'),
     url(r'^order/attend/(?P<order>\w{10})/$',
         AttendOrder.as_view(), name='view_attendorder'),
-    url(r'^load/inventory/$', LoadInventoryBrand.as_view(),            name='load_stk_view'),
+    url(r'^load/inventory/$', LoadInventoryBrand.as_view(),
+        name='load_stk_view'),
+    url(r'^devolution/$', DevolutionStorage.as_view(), name='return_view'),
+    url(r'^return/with/$', ReturnWith.as_view(), name='returnw_view'),
+    url(r'^return/without/$', ReturnWithout.as_view(), name='returnwo_view'),
 )

@@ -654,7 +654,13 @@ SELECT * from almacen_nipleguiaremision where guia_id = '001-00018508';
 select * from almacen_niple WHERE pedido_id = 'PE16000253';
 select * from almacen_inventorybrand where materials_id in ('340012441900005','342032441900004','221098036001007','221098036001006') order by stock desc;
 select * from almacen_balance where materials_id in ('340012441900005','342032441900004','221098036001007','221098036001006') order by balance desc;
-
+/*
++==================================================================================================================================================+
++ EXECUTE FOR REGULARIZED DETPEDIDO AND NIPLE*/
+UPDATE almacen_detpedido SET cantguide = (cantidad - cantshop) WHERE cantguide < 0;
+UPDATE almacen_niple SET cantguide = (cantidad - cantshop) WHERE cantguide < 0;
+/*+==================================================================================================================================================+
+*/
 do $$
 declare
   x record;
