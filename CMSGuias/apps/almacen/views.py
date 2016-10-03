@@ -3056,7 +3056,17 @@ class ReturnWith(JSONResponseMixin, TemplateView):
         context = dict()
         try:
             if request.is_ajax():
-                pass
+                try:
+                    if 'getdetails' in request.GET:
+                        context['details'] = json.loads(
+                            'json',
+                            DetGuiaRemision.objects.filter(guia_id=request.GET['guide']),
+                            relations=('materiales', 'brand', 'model'))
+                        context['status'] = True
+                except (ObjectDoesNotExist | Exception) as e:
+                    context['raise'] = str(e)
+                    context['status'] = False
+                return self.render_to_json_response(context)
             return render(request, self.template_name, context)
         except TemplateDoesNotExist as e:
             raise Http404(e)

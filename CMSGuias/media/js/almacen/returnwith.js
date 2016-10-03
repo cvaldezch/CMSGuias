@@ -13,16 +13,6 @@ app.directive('onlyNumberHyphen', function() {
     restrict: 'AE',
     require: '?ngModel',
     link: function(scope, element, attrs, ngModel) {
-      element.bind('keypress', function(event) {
-        var keycode;
-        keycode = event.which || event.keyCode;
-        console.log(keycode);
-        if ((keycode < 48 || keycode > 57) && keycode !== 8 && keycode !== 45) {
-          console.log("key block", keycode);
-          event.preventDefault();
-          return false;
-        }
-      });
       element.bind('keyup', function(event) {
         var key, vl;
         key = event.which || event.keyCode;
@@ -42,19 +32,75 @@ app.directive('onlyNumberHyphen', function() {
           });
         }
       });
+      element.bind('keypress', function(event) {
+        var keycode;
+        keycode = event.which || event.keyCode;
+        console.log(keycode);
+        if ((keycode < 48 || keycode > 57) && keycode !== 8 && keycode !== 45) {
+          console.log("key block", keycode);
+          event.preventDefault();
+          return false;
+        }
+      });
     }
   };
 });
 
-app.controller('ctrlReturnWith', function($scope, $timeout) {
+app.factory('returnFactory', function($http, $cookies) {
+  var formd, obj;
+  $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+  $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+  obj = new Object;
+  formd = function(options) {
+    var form, i, k, len, v;
+    if (options == null) {
+      options = {};
+    }
+    form = new FormData();
+    for (v = i = 0, len = options.length; i < len; v = ++i) {
+      k = options[v];
+      form.append(k, v);
+    }
+    return form;
+  };
+  obj.getDetailsGuide = function(options) {
+    if (options == null) {
+      options = {};
+    }
+    return $http.get("", {
+      params: options
+    });
+  };
+  return obj;
+});
+
+app.controller('ctrlReturnWith', function($scope, $timeout, $q, returnFactory) {
   $scope.valid = false;
   $scope.guide = '';
   angular.element(document).ready(function() {
     console.log("Document ready");
   });
+  $scope.getdetailsGuide = function() {};
   $scope.test = function() {
     console.log($scope.valid);
     console.log($scope.tmpg);
     console.log($scope.guide);
   };
+  $scope.$watch('guide', function(nw, old) {
+    var prm;
+    if (nw !== old) {
+      console.log(nw);
+      prm = {
+        getdetails: true,
+        guide: nw
+      };
+      returnFactory.getDetailsGuide(prm).success(function(response) {
+        if (response.status) {
+          $scope.dguide = response.details;
+        } else {
+          Materialize.toast("<i class='fa fa-times red fa-2x'></i> No se cargo el detalle del número de guia ", 4000);
+        }
+      });
+    }
+  });
 });
