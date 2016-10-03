@@ -65,7 +65,7 @@
 	<input type="hidden" ng-init="area='{{request.user.get_profile.empdni.charge.area|lower}}'" ng-model="area">
 	<input type="hidden" ng-init="cargo='{{request.user.get_profile.empdni.charge.cargos|lower}}'" ng-model="cargo">
 	<div class="well">
-	<h1 class="text-primary">Lista Atender Pedido</h1>
+	<h1 class="text-danger">Atender Pedidos</h1>
 		<!--<input type="hidden" class="empdni" value="{{user.get_profile.empdni}}">-->
 		<div class="row show-grid">
 			<div class="col-md-12">
@@ -78,7 +78,7 @@
 							</div>
 						</caption>
 						<thead>
-							<tr class="brand-primary text-white">
+							<tr class="brand-danger text-white">
 								<th class="text-center">Item</th>
 								<th class="text-center">Codigo</th>
 								<th>Proyecto</th>
@@ -90,6 +90,11 @@
 								{% if request.user.get_profile.empdni.charge.area|lower == 'administrator' %}
 									<th>Anular</th>
 								{% endif %}
+							</tr>
+							<tr ng-hide="orders.length">
+								<th colspan="8" class="text-center">
+									<i class="fa fa-spinner fa-5x fa-pulse fa-fw"></i>
+								</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -107,13 +112,13 @@
 									</a>
 								</td>
 								<td class="text-center">
-									<a  class="btn btn-xs btn-link text-black" href="/almacen/meet/order/{{x.pk}}/">
-										<span class="glyphicon glyphicon-ok"></span>
+									<a  class="btn btn-xs btn-link text-black" href="/almacen/order/attend/{{x.pk}}/">
+										<span class="glyphicon glyphicon-shopping-cart"></span>
 									</a>
 								</td>
 								<td class="text-center" ng-if="area == 'administrator' || cargo == 'jefe de almacen'">
 									<a href="#" class="btn btn-xs text-black" ng-click="cancelOrder($event)" data-order="{{x.pk}}">
-										<i class="fa fa-trash"></i>
+										<i class="fa fa-fire"></i>
 									</a>
 								</td>
 							</tr>
