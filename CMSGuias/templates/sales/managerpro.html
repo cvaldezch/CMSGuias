@@ -384,7 +384,8 @@
                 </div>
                 <div class="col-md-12">
                     <div class="row">
-                        {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
+                        {% if user.get_profile.empdni.charge.area|lower == 'administrator' or user.get_profile.empdni_id == '44263241' or user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'logistica' %}
+
                         <div class="col-md-6">
                             <div class="panel panel-primary">
                                 <div class="panel-footer">
