@@ -240,6 +240,7 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                         add.proyecto_id = key
                         # add.empdni_id = request.user.get_profile().empdni_id
                         add.status = 'PE'
+                        add.aservices = 0
                         add.save()
                         context['status'] = True
                     else:

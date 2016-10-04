@@ -517,7 +517,10 @@ controllers = function($scope, $timeout, $q, attendFactory) {
         if (result) {
           $scope.enableGuide();
           angular.element("#mstock").closeModal();
-          Materialize.toast("Completo!", 3000);
+          Materialize.toast("<i class='fa fa-check fa-2x green-text'></i>&nbsp;Completo!", 3000);
+          $timeout(function() {
+            angular.element('.lean-overlay').remove();
+          }, 800);
         } else {
           console.log("Falta");
         }
@@ -654,7 +657,10 @@ controllers = function($scope, $timeout, $q, attendFactory) {
           if (result) {
             $scope.enableGuide();
             angular.element("#mstock").closeModal();
-            Materialize.toast("Completo!", 3000);
+            Materialize.toast("<i class='fa fa-check fa-2x green-text'></i>&nbsp; Completo!", 3000);
+            $timeout(function() {
+              angular.element('.lean-overlay').remove();
+            }, 800);
           } else {
             console.log("Falta");
           }

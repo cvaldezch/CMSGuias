@@ -267,14 +267,17 @@ BEGIN
       UPDATE almacen_balance SET balance = NEW.stock WHERE materials_id = NEW.materials_id AND brand_id = NEW.brand_id AND model_id = NEW.model_id  AND extract(year FROM register) = extract(year FROM current_date) AND extract(month FROM register) = extract(month FROM current_date);
     END IF;
   ELSE
-    SELECT stock INTO _stk FROM almacen_inventorybrand WHERE materials_id = NEW.materials_id AND brand_id = NEW.brand_id AND model_id = NEW.model_id;
+    -- SELECT stock INTO _stk FROM almacen_inventorybrand WHERE materials_id = NEW.materials_id AND brand_id = NEW.brand_id AND model_id = NEW.model_id;
     -- insert new register item
-    INSERT INTO almacen_balance (materials_id, storage_id, register, brand_id, model_id, balance) VALUES(NEW.materials_id, 'AL01', now(), NEW.brand_id, NEW.model_id, _stk);
-    UPDATE almacen_balance SET balance = NEW.stock WHERE materials_id = NEW.materials_id AND brand_id = NEW.brand_id AND model_id = NEW.model_id  AND extract(year FROM register) = extract(year FROM current_date) AND extract(month FROM register) = extract(month FROM current_date);
+    -- IF FOUND THEN
+    -- UPDATE almacen_balance SET balance = NEW.stock WHERE materials_id = NEW.materials_id AND brand_id = NEW.brand_id AND model_id = NEW.model_id  AND extract(year FROM register) = extract(year FROM current_date) AND extract(month FROM register) = extract(month FROM current_date);
+    -- ELSE
+    INSERT INTO almacen_balance (materials_id, storage_id, register, brand_id, model_id, balance) VALUES(NEW.materials_id, 'AL01', now(), NEW.brand_id, NEW.model_id, NEW.stock);
+    -- END IF;
   END IF;
   RETURN NEW;
 EXCEPTION
-    WHEN OTHERS THEN
+  WHEN OTHERS THEN
     RAISE INFO 'EXCEPTION ERROR %', SQLERRM;
     ROLLBACK;
     RETURN NULL;

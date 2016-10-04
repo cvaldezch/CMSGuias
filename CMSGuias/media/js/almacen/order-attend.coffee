@@ -471,7 +471,11 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 				if result
 					$scope.enableGuide()
 					angular.element("#mstock").closeModal()
-					Materialize.toast "Completo!", 3000
+					Materialize.toast "<i class='fa fa-check fa-2x green-text'></i>&nbsp;Completo!", 3000
+					$timeout ->
+						angular.element('.lean-overlay').remove()
+						return
+					, 800
 					return
 				else
 					console.log "Falta"
@@ -608,7 +612,11 @@ controllers = ($scope, $timeout, $q, attendFactory) ->
 					if result
 						$scope.enableGuide()
 						angular.element("#mstock").closeModal()
-						Materialize.toast "Completo!", 3000
+						Materialize.toast "<i class='fa fa-check fa-2x green-text'></i>&nbsp; Completo!", 3000
+						$timeout ->
+							angular.element('.lean-overlay').remove()
+							return
+						, 800
 						return
 					else
 						console.log "Falta"
