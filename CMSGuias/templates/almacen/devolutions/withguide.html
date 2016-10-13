@@ -4,20 +4,121 @@
 {% endblock menu %}
 {% block content %}
 <section ng-app="appReturnWith" ng-controller="ctrlReturnWith">
-	<h3 class="row">
+	<h4 class="row">
 		<div class="col l8">
-			Devolución de Con Guia de Remisión
+			Devolución a Inventario Con Guia de Remisión
 		</div>
 		<div class="input-field col l4 s12 m5 flow-text">
 			<input type="text" class="text-32 grey-text text-darken-2" maxlength="12" placeholder="000-00000000" ng-model="tmpg" only-Number-Hyphen ng-class="{'invalid': !valid, 'valid': valid}">
 		</div>
-	</h3>
-	<button type="button" class="btn" ng-click="test()">
+	</h4>
+	<div class="card">
+		<div class="card-action">
+			<button type="button" class="waves-effect btn grey lighten-5 grey-text text-darken-3">
+				<i class="fa fa-reply"></i>
+				<span class="hide-on-small-only">REGRESAR</span>
+			</button>
+			<button type="button" class="waves-effect waves-light btn blue accent-4" ng-click="returnInventory()">
+				<i class="fa fa-angle-right"></i>
+				<i class="fa fa-archive"></i>
+				<span class="hide-on-small-only">DEVOLVER A INVENTARIO</span>
+			</button>
+		</div>
+	</div>
+	{% verbatim %}
+	<blockquote>
+		DATOS
+		<dl>
+			<dt>Nro Guia</dt>
+			<dd>{{sguide.pk}}</dd>
+			<dt>Pedido(s)</dt>
+			<dd>{{sguide.fields.orders}}</dd>
+		</dl>
+	</blockquote>
+	{% endverbatim %}
+	<!--<button type="button" class="btn" ng-click="test()">
 		test
-	</button>
+	</button>-->
+	<div class="center-align" ng-show="sald">
+		<div class="preloader-wrapper big active">
+			<div class="spinner-layer spinner-red">
+				<div class="circle-clipper left">
+					<div class="circle"></div>
+				</div>
+				<div class="gap-patch">
+					<div class="circle"></div>
+				</div>
+				<div class="circle-clipper right">
+					<div class="circle"></div>
+				</div>
+			</div>
+			<div class="spinner-layer spinner-blue">
+				<div class="circle-clipper left">
+					<div class="circle"></div>
+				</div>
+				<div class="gap-patch">
+					<div class="circle"></div>
+				</div>
+				<div class="circle-clipper right">
+					<div class="circle"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="card-panel" ng-hide="!dguide.length">
+		<div class="switch">
+			<label>Seleccionar: </label>
+			<label>
+			Ninguno
+			<input type="checkbox" ng-model="chkdet">
+			<span class="lever red"></span>
+			Todo
+			</label>
+		</div>
+		<table class="table responsive-table">
+			<thead>
+				<tr class="red">
+					<th>#</th>
+					<th></th>
+					<th>Código</th>
+					<th>Descripción</th>
+					<th>Marca</th>
+					<th>Modelo</th>
+					<th>UND</th>
+					<th>Cantidad</th>
+					<th>Cant. a Devolver</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% verbatim %}
+				<tr ng-repeat="x in dguide">
+					<td>{{$index+1}}</td>
+					<td class="center-align">
+						<input type="checkbox" id="{{x.pk}}" class="filled-in red" ng-model="returns[$index].check" ng-init="returns[$index].check=false">
+						<label for="{{x.pk}}"></label>
+					</td>
+					<td>{{x.fields.materiales.pk}}</td>
+					<td>{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}</td>
+					<td>{{x.fields.brand.fields.brand}}</td>
+					<td>{{x.fields.model.fields.model}}</td>
+					<td class="center-align">{{x.fields.materiales.fields.unidad}}</td>
+					<td class="right-align">{{x.fields.cantguide}}</td>
+					<td>
+						<input type="hidden" ng-model="returns[$index].materials" ng-init="returns[$index].materials=x.fields.materiales.pk">
+						<input type="hidden" ng-model="returns[$index].brand" ng-init="returns[$index].brand=x.fields.brand.pk">
+						<input type="hidden" ng-model="returns[$index].model" ng-init="returns[$index].model=x.fields.model.pk">
+						<input type="hidden" ng-model="returns[$index].quantity" ng-init="returns[$index].quantity=x.fields.cantguide">
+						<input type="number" class="right-align" min="0" max="{{x.fields.cantguide}}" ng-model="returns[$index].qreturn" ng-init="returns[$index].qreturn=x.fields.cantguide" ng-disabled="!returns[$index].check" vminmax>
+					</td>
+				</tr>
+			{% endverbatim %}
+			</tbody>
+		</table>
+	</div>
 </section>
 <!-- block script -->
 <script defer type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js"></script>
 <script defer type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js"></script>
+<script defer type="text/javascript" src="{{ MEDIA_URL }}js/directives.js"></script>
 <script defer type="text/javascript" src="{{ MEDIA_URL }}js/almacen/returnwith.js"></script>
 {% endblock content %}

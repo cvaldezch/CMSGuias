@@ -657,6 +657,8 @@ SELECT * from almacen_nipleguiaremision where guia_id = '001-00018508';
 select * from almacen_niple WHERE pedido_id = 'PE16000253';
 select * from almacen_inventorybrand where materials_id in ('340012441900005','342032441900004','221098036001007','221098036001006') order by stock desc;
 select * from almacen_balance where materials_id in ('340012441900005','342032441900004','221098036001007','221098036001006') order by balance desc;
+
+select * from almacen_detguiaremision where brand_id <> 'BR000';
 /*
 +==================================================================================================================================================+
 + EXECUTE FOR REGULARIZED DETPEDIDO AND NIPLE*/

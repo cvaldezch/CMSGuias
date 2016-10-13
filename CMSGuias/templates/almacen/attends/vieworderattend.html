@@ -103,9 +103,15 @@
 					GENERAR GUIA
 				</span>
 			</button>
-			<button type="button" class="btn waves-effect waves-light" ng-click="test();">
+			<a href="{% url 'return_order_items_view' order.pedido_id %}" class="btn waves-effect waves-light light-blue accent-4">
+				<i class="fa fa-reply"></i>
+				<span class="hide-on-small-only">
+					RETORNAR ITEMS
+				</span>
+			</a>
+			<!-- <button type="button" class="btn waves-effect waves-light" ng-click="test();">
 				TEST
-			</button>
+			</button> -->
 		</div>
 		<br>
 		<div class="card-panel amber" ng-model="ntf" ng-init="ntf=true" ng-show="ntf">

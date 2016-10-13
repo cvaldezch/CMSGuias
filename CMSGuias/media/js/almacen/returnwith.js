@@ -17,7 +17,7 @@ app.directive('onlyNumberHyphen', function() {
         var key, vl;
         key = event.which || event.keyCode;
         vl = element.val();
-        if (RegExp(/[0-9]{3}[-]{1}[0-9]{8}/).test(vl)) {
+        if (RegExp(/(?=[0-9]{3}[-]{1}[0-9]{8}).{12}$/).test(vl)) {
           scope.$apply(function() {
             scope.valid = true;
           });
@@ -45,6 +45,8 @@ app.directive('onlyNumberHyphen', function() {
     }
   };
 });
+
+app.directive('vminmax', valMinandMax);
 
 app.factory('returnFactory', function($http, $cookies) {
   var formd, obj;
@@ -77,10 +79,52 @@ app.factory('returnFactory', function($http, $cookies) {
 app.controller('ctrlReturnWith', function($scope, $timeout, $q, returnFactory) {
   $scope.valid = false;
   $scope.guide = '';
+  $scope.sald = false;
+  $scope.returns = [];
+  $scope.chkdet = false;
   angular.element(document).ready(function() {
     console.log("Document ready");
   });
-  $scope.getdetailsGuide = function() {};
+  $scope.returnInventory = function() {
+    var available;
+    available = function() {
+      var defer, i, len, promises, ref, x;
+      defer = $q.defer();
+      promises = new Array;
+      ref = $scope.returns;
+      for (i = 0, len = ref.length; i < len; i++) {
+        x = ref[i];
+        if (x.check === true && x.qreturn > 0) {
+          promises.push(x);
+        }
+      }
+      $q.all(promises).then(function(result) {
+        defer.resolve(result);
+      });
+      return defer.promise;
+    };
+    available().then(function(result) {
+      if (result.length > 0) {
+        swal({
+          title: 'Realmente desea retornar el/los accesorio(s) seleccionado(s)?.',
+          text: '',
+          type: 'warning',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Si! Retornar',
+          cancelButtonText: 'No!',
+          showCancelButton: true,
+          closeOnConfirm: true,
+          closeOnCancel: true
+        }, function(isConfirm) {
+          if (isConfirm) {
+            console.log("return");
+          }
+        });
+      } else {
+        Materialize.toast("<i class='fa fa-warning fa-2x amber-text'></i>&nbsp;<spam>Debe de selecionar al menos un item y su cantidad tiene que ser mayor a 0.</spam>", 9000, 'rounded');
+      }
+    });
+  };
   $scope.test = function() {
     console.log($scope.valid);
     console.log($scope.tmpg);
@@ -89,7 +133,7 @@ app.controller('ctrlReturnWith', function($scope, $timeout, $q, returnFactory) {
   $scope.$watch('guide', function(nw, old) {
     var prm;
     if (nw !== old) {
-      console.log(nw);
+      $scope.sald = true;
       prm = {
         getdetails: true,
         guide: nw
@@ -97,10 +141,26 @@ app.controller('ctrlReturnWith', function($scope, $timeout, $q, returnFactory) {
       returnFactory.getDetailsGuide(prm).success(function(response) {
         if (response.status) {
           $scope.dguide = response.details;
+          $scope.sguide = response.guide;
+          $scope.returns = [];
+          $scope.sald = false;
+          if (response.details.length === 0) {
+            Materialize.toast("<i class=\"fa fa-meh-o fa-2x red-text\"></i>&nbsp;Oops! Noy hay un detalle que coincida con el Nro de Guia ingresado \"" + $scope.tmpg + "\" ", 12000, "rounded");
+          }
         } else {
-          Materialize.toast("<i class='fa fa-times red fa-2x'></i> No se cargo el detalle del número de guia ", 4000);
+          Materialize.toast("<i class='fa fa-times red-text fa-2x'></i> No se cargo el detalle del número de guia ", 4000);
         }
       });
     }
+  });
+  $scope.$watch('chkdet', function(nw, old) {
+    var i, len, ref, results, x;
+    ref = $scope.returns;
+    results = [];
+    for (i = 0, len = ref.length; i < len; i++) {
+      x = ref[i];
+      results.push(x.check = nw);
+    }
+    return results;
   });
 });

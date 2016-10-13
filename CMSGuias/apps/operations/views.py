@@ -470,7 +470,7 @@ class ProgramingProject(JSONResponseMixin, View):
                                 else:
                                     cell = float(str(cell))
                                     cm = str(sheet.cell(row=x, column=1).value)
-                                    if len(cm) == 15:
+                                    if len(cm) >= 14 and len(cm) <= 15:
                                         # ingreso de materiales
                                         ns = sheet.cell(row=3, column=c).value
                                         ns = ns.upper().strip()

@@ -3010,7 +3010,7 @@ class LoadInventoryBrand(JSONResponseMixin, TemplateView):
                         uploadFiles.removeTmp(filename)
                     context['status'] = True
                 if 'putorder' in request.POST:
-                    dt = DetPedido.objects.filter(pedido_id__in=request.POST['order'].split(','))
+                    dt = Detpedido.objects.filter(pedido_id__in=request.POST['order'].split(','))
                     for x in dt:
                         ib = InventoryBrand.objects.filter(
                             materials_id=x.materiales_id,
@@ -3058,19 +3058,25 @@ class ReturnWith(JSONResponseMixin, TemplateView):
             if request.is_ajax():
                 try:
                     if 'getdetails' in request.GET:
+                        context['guide'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                GuiaRemision.objects.filter(
+                                    guia_id=request.GET['guide'])))
                         context['details'] = json.loads(
-                            'json',
-                            DetGuiaRemision.objects.filter(guia_id=request.GET['guide']),
-                            relations=('materiales', 'brand', 'model'))
+                            serializers.serialize(
+                                'json',
+                                DetGuiaRemision.objects.filter(
+                                    guia_id=request.GET['guide']),
+                                relations=('materiales', 'brand', 'model',)))
                         context['status'] = True
-                except (ObjectDoesNotExist | Exception) as e:
+                except (ObjectDoesNotExist, Exception) as e:
                     context['raise'] = str(e)
                     context['status'] = False
                 return self.render_to_json_response(context)
             return render(request, self.template_name, context)
         except TemplateDoesNotExist as e:
             raise Http404(e)
-
 
 class ReturnWithout(JSONResponseMixin, TemplateView):
     template_name = "almacen/devolutions/withoutguide.html"

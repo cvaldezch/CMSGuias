@@ -4,6 +4,7 @@ var gulp = require('gulp'),
     watch = require('gulp-watch');
 var coffee = require('gulp-coffee');
 var plumber = require('gulp-plumber');
+var uglify = require('gulp-uglify');
 
 gulp.task('stylus', function() {
   gulp.src('CMSGuias/media/**/*.styl')
@@ -24,6 +25,14 @@ gulp.task('coffee', function() {
     }))
   .pipe(gulp.dest('CMSGuias/media/'));
   console.log('CoffeeScript Compiled!');
+});
+
+gulp.task('minjs', function() {
+    gulp.src('CMSGuias/media/**/*.js')
+    .pipe(plumber())
+    .pipe(uglify())
+    .pipe(gulp.dest('CMSGuias/media/'));
+    console.log('JS minify Compiled!');
 });
 
 gulp.task('watch', function() {

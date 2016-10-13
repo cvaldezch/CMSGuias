@@ -13,7 +13,7 @@ app.directive 'onlyNumberHyphen', ->
 		element.bind 'keyup', (event) ->
 			key = event.which or event.keyCode
 			vl = element.val()
-			if RegExp(/[0-9]{3}[-]{1}[0-9]{8}/).test(vl)
+			if RegExp(/(?=[0-9]{3}[-]{1}[0-9]{8}).{12}$/).test(vl)
 				scope.$apply ->
 					scope.valid = true
 					return
@@ -38,6 +38,8 @@ app.directive 'onlyNumberHyphen', ->
 			return
 		return
 
+app.directive 'vminmax', valMinandMax
+
 app.factory 'returnFactory', ($http, $cookies) ->
 	$http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken
 	$http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
@@ -57,13 +59,45 @@ app.controller 'ctrlReturnWith', ($scope, $timeout, $q, returnFactory) ->
 
 	$scope.valid = false
 	$scope.guide = ''
+	$scope.sald = false
+	$scope.returns = []
+	$scope.chkdet = false
 
 	angular.element(document).ready ->
 		console.log "Document ready"
 		return
 
-	$scope.getdetailsGuide = ->
-		
+	$scope.returnInventory = ->
+		available = ->
+			defer = $q.defer()
+			promises = new Array
+			for x in $scope.returns
+				if x.check is true and x.qreturn > 0
+					promises.push x
+					
+			$q.all(promises).then (result) ->
+				defer.resolve result
+				return
+			return defer.promise
+		available().then (result) ->
+			if result.length > 0
+				swal
+					title: 'Realmente desea retornar el/los accesorio(s) seleccionado(s)?.'
+					text: ''
+					type: 'warning'
+					confirmButtonColor: '#3085d6'
+					confirmButtonText: 'Si! Retornar'
+					cancelButtonText: 'No!'
+					showCancelButton: true
+					closeOnConfirm: true
+					closeOnCancel: true
+				, (isConfirm) ->
+					if isConfirm
+						console.log "return"
+						return
+			else
+				Materialize.toast "<i class='fa fa-warning fa-2x amber-text'></i>&nbsp;<spam>Debe de selecionar al menos un item y su cantidad tiene que ser mayor a 0.</spam>", 9000, 'rounded'
+			return
 		return
 	
 	$scope.test = ->
@@ -74,7 +108,8 @@ app.controller 'ctrlReturnWith', ($scope, $timeout, $q, returnFactory) ->
 
 	$scope.$watch 'guide', (nw, old) ->
 		if nw isnt old
-			console.log nw
+			$scope.sald = true
+			# console.log nw
 			prm =
 				getdetails: true
 				guide: nw
@@ -82,15 +117,18 @@ app.controller 'ctrlReturnWith', ($scope, $timeout, $q, returnFactory) ->
 			.success (response) ->
 				if response.status
 					$scope.dguide = response.details
+					$scope.sguide = response.guide
+					$scope.returns = []
+					$scope.sald = false
+					if response.details.length is 0
+						Materialize.toast "<i class=\"fa fa-meh-o fa-2x red-text\"></i>&nbsp;Oops! Noy hay un detalle que coincida con el Nro de Guia ingresado \"#{$scope.tmpg}\" ", 12000, "rounded"
 					return
 				else
-					Materialize.toast "<i class='fa fa-times red fa-2x'></i> No se cargo el detalle del número de guia ", 4000
+					Materialize.toast "<i class='fa fa-times red-text fa-2x'></i> No se cargo el detalle del número de guia ", 4000
 					return
 			return
+
+	$scope.$watch 'chkdet', (nw, old) ->
+		for x in $scope.returns
+			x.check = nw
 	return
-# (scope, element, attrs) ->
-#   element.bind 'keypress', (event) ->.
-#       key = event.keyCode
-#       console.log key
-#       return
-#   return
