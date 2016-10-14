@@ -11,3 +11,4 @@ django_yuml/
 node_modules/
 npm-debug.log
 **/images/
+.vscode/

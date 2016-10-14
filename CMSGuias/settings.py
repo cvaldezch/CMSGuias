@@ -143,7 +143,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'django.contrib.messages',
+    # 'django.contrib.messages',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
@@ -153,15 +153,15 @@ INSTALLED_APPS = (
     # 'CMSGuias.django_yuml',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'CMSGuias.apps.home',
+    'CMSGuias.apps.ventas',
+    'CMSGuias.apps.operations',
     'CMSGuias.apps.agenda',
     'CMSGuias.apps.almacen',
-    'CMSGuias.apps.home',
     'CMSGuias.apps.logistica',
     'CMSGuias.apps.reports',
     'CMSGuias.apps.taller',
     'CMSGuias.apps.wsjson',
-    'CMSGuias.apps.operations',
-    'CMSGuias.apps.ventas',
     'CMSGuias.apps.suppliers',
     'CMSGuias.apps.ventas.budget',
 )
@@ -200,3 +200,5 @@ LOGGING = {
         },
     }
 }
+
+SOUTH_TESTS_MIGRATE = False

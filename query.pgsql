@@ -1,0 +1,1 @@
+INSERT INTO home_mniple VALUES ('A', 'ROSCADO', true), ('B', 'RANURADO', true), ('C', 'ROSCA-RANURA', true), ('D', 'BRIDA', true), ('E', 'BRIDA-ROSCA', true), ('F', 'BRIDA-RANURA', true), ('G', 'BISEL', true), ('H', 'BISEL-ROSCA', true), ('I', 'BRIDA HECHIZO', true),('-', 'ROSCADO', true);

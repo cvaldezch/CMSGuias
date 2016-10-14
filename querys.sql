@@ -343,3 +343,5 @@ INFO:  DET ORDER (14753,PE16000851,221098036001007,BR000,MO000,6,0,6,2,f,"",t)
 ------+------------+--------+-----------------+----------+----------+----------------------------+-------+----------+------+------
  8732 | AL01       | 2016   | 115100030400040 | BR000    | MO000    | 2016-09-22 08:49:51.534-05 |     1 |     12.4 | t    |    2
 (1 row)
+/* 14-10-2016  */
+INSERT INTO home_mniple VALUES ('A', 'ROSCADO', true), ('B', 'RANURADO', true), ('C', 'ROSCA-RANURA', true), ('D', 'BRIDA', true), ('E', 'BRIDA-ROSCA', true), ('F', 'BRIDA-RANURA', true), ('G', 'BISEL', true), ('H', 'BISEL-ROSCA', true), ('I', 'BRIDA HECHIZO', true),('-', 'ROSCADO', true);

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-# Generate Reports PDF's
-
 import os
 from django.conf import settings
 import ho.pisa as pisa
@@ -28,7 +26,7 @@ from CMSGuias.apps.logistica.models import (Cotizacion,
                                             ServiceOrder,
                                             DetailsServiceOrder)
 from CMSGuias.apps.ventas.models import Proyecto
-from CMSGuias.apps.home.models import Configuracion, Conductore
+from CMSGuias.apps.home.models import Configuracion, Conductore, MNiple
 from CMSGuias.apps.operations.models import PreOrders, DetailsPreOrders
 
 
@@ -143,6 +141,7 @@ def rpt_orders_details(request, pid, sts):
                 secn.append(tmp)
             context['nipples'] = secn
             context['tipo'] = globalVariable.tipo_nipples
+
             html = render_to_string(
                     'report/rptordersstore.html',
                     context,
@@ -152,8 +151,6 @@ def rpt_orders_details(request, pid, sts):
         raise Http404(e)
 
 # report guide referral with format
-
-
 def rpt_guide_referral_format(request, gid, pg):
     try:
         if request.method == 'GET':
@@ -390,8 +387,6 @@ class RptPurchase(TemplateView):
             raise Http404(e)
 
 # Report Note Inrgess
-
-
 class RptNoteIngress(TemplateView):
     template_name = "report/rptnoteingress.html"
 
@@ -414,8 +409,6 @@ class RptNoteIngress(TemplateView):
             raise Http404(e)
 
 # Report Service Orders
-
-
 class RptServiceOrder(TemplateView):
 
     @method_decorator(login_required)
@@ -453,7 +446,6 @@ class RptServiceOrder(TemplateView):
             return generate_pdf(html)
         except TemplateDoesNotExist, e:
             raise Http404(e)
-
 
 class RptPreOrders(TemplateView):
 
@@ -511,7 +503,10 @@ class RptPreOrders(TemplateView):
         except TemplateDoesNotExist, e:
             raise Http404(e)
 
+
 class ReportsOrder(TemplateView):
+    cnip = dict()
+    _cdb = dict()
 
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
@@ -562,6 +557,8 @@ class ReportsOrder(TemplateView):
                 sheet = 1
             # print sheet, 'sheet'
             # print nipples.count(), 'nipples'
+            # get types for each count niple
+            
             for c in range(sheet):
                 datset = nipples[count:count+35]
                 tmp = list()
@@ -576,7 +573,7 @@ class ReportsOrder(TemplateView):
                         'measure': x.materiales.matmed,
                         'meter': x.metrado,
                         'comment': x.comment})
-                    print tmp, 'temp'
+                    # print tmp, 'temp'
                     count += 1
                 secn.append(tmp)
             context['nipples'] = secn
@@ -588,3 +585,19 @@ class ReportsOrder(TemplateView):
             return generate_pdf(html)
         except TemplateDoesNotExist, e:
             raise Http404(e)
+    
+    def __counterNip(self, ntype=''):
+        # Add item at count type niple
+        try:
+            # consult type in db and sum 
+            if ntype not in self.cnip:
+                # Create item
+                n = MNiple.objects.filter(ktype=ntype)
+                self._cdb[ntype] = n if len(n) else list()
+            for x in self._cdb:
+                if self._cdb[x].ncount is int:
+                    self.cnip[ntype].count += self._cdb[x].ncount
+                else:
+                     
+        except Exception as e:
+            raise e
