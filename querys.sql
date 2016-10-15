@@ -345,3 +345,99 @@ INFO:  DET ORDER (14753,PE16000851,221098036001007,BR000,MO000,6,0,6,2,f,"",t)
 (1 row)
 /* 14-10-2016  */
 INSERT INTO home_mniple VALUES ('A', 'ROSCADO', true), ('B', 'RANURADO', true), ('C', 'ROSCA-RANURA', true), ('D', 'BRIDA', true), ('E', 'BRIDA-ROSCA', true), ('F', 'BRIDA-RANURA', true), ('G', 'BISEL', true), ('H', 'BISEL-ROSCA', true), ('I', 'BRIDA HECHIZO', true),('-', 'ROSCADO', true);
+
+115100030401042 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  6"      | m         | Pintado |  0.529
+ 115100030401032 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  1/2"    | m         | Pintado |  0.067
+ 115100030401033 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  3/4"    | m         | Pintado |  0.084
+ 115100030401035 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  1 1/4"  | m         | Pintado |  0.132
+ 115100030401034 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  1"      | m         | Pintado |  0.105
+ 115100030401036 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  1 1/2"  | m         | Pintado |  0.152
+ 115100030401037 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  2"      | m         | Pintado |   0.19
+ 115100030401047 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  16"     | m         | Pintado |  1.277
+ 115100030401046 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  14"     | m         | Pintado |  1.117
+ 115100030401039 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  3"      | m         | Pintado |  0.279
+ 115100030401045 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  12"     | m         | Pintado |  1.017
+ 115100030401040 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  4"      | m         | Pintado |  0.359
+ 115100030401041 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  5"      | m         | Pintado |  0.444
+ 115100030401044 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  10"     | m         | Pintado |  0.858
+ 115100030401043 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  8"      | m         | Pintado |  0.688
+ 115100030401038 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  2 1/2"  | m         | Pintado |  0.229
+ 115100030401031 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  3/8"    | m         | Pintado | 0.0534
+ 115100030401030 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  1/4"    | m         | Pintado |  0.043
+ 115100030401050 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  24"     | m         | Pintado |  1.915
+ 115100030401049 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  20"     | m         | Pintado |  1.596
+ 115100030401048 | Tuberia Galvanizada de Acero Sin Costura SCH40 Grado B, ASTM A53                      |  18"     | m         | Pintado |  1.436
+
+
+
+
+ 115110030400010 | Tuberia de Acero Sin Costura SCH10 Grado B, ASTM A53                                  | 10"      | Unid      | Pintado |      0
+ 115110030400001 | Tuberia de Acero Sin Costura SCH10 Grado B, ASTM A53                                  | 1"       | m         | Pintado |      0
+ 115110030400002 | Tuberia de Acero Sin Costura SCH10 Grado B, ASTM A53                                  | 1 1/4"   | m         | Pintado |      0
+ 115110030400003 | Tuberia de Acero Sin Costura SCH10 Grado B, ASTM A53                                  | 1 1/2"   | m         | Pintado |      0
+ 115110030400004 | Tuberia de Acero Sin Costura SCH10 Grado B, ASTM A53                                  | 2"       | m         | natural |      0
+ 115110030400005 | Tuberia de Acero Sin Costura SCH10 Grado B, ASTM A53                                  | 3"       | m         | Pintado |      0
+ 115110030400006 | Tuberia de Acero Sin Costura SCH10 Grado B, ASTM A53                                  | 4"       | m         | Pintado |      0
+ 115110030400007 | Tuberia de Acero Sin Costura SCH10 Grado B, ASTM A53                                  | 6"       | m         | Pintado |      0
+ 115110030400008 | Tuberia de Acero Sin Costura SCH10 Grado B, ASTM A53                                  | 8"       | m         | Pintado |      0
+ 115110030400009 | Tuberia de Acero Sin Costura SCH10 Grado B, ASTM A53                                  | 2 1/2"   | m         | Pintado |      0
+ 115100030400039 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  3"      | m         | Pintado |  0.279
+ 115100030400036 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  1 1/2"  | m         | Pintado |  0.152
+ 115100030400033 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  3/4"    | m         | Pintado |  0.084
+ 115100030400031 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  3/8"    | m         | Pintado | 0.0534
+ 115100030400042 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  6"      | m         | Pintado |  0.529
+ 115100030400035 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  1 1/4"  | m         | Pintado |  0.132
+ 115100030400038 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  2 1/2"  | m         | Pintado |  0.229
+ 115100030400040 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  4"      | m         | Pintado |  0.359
+ 115100030400050 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  24"     | m         | Pintado |  1.915
+ 115100030400049 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  20"     | m         | Pintado |  1.596
+ 115100030400048 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  18"     | m         | Pintado |  1.436
+ 115100030400047 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  16"     | m         | Pintado |  1.277
+ 115100030400046 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  14"     | m         | Pintado |  1.117
+ 115100030400045 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  12"     | m         | Pintado |  1.017
+ 115100030400044 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  10"     | m         | Pintado |  0.858
+ 115100030400043 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  8"      | m         | Pintado |  0.688
+ 115100030400041 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  5"      | m         | Pintado |  0.444
+ 115100030400030 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  1/4"    | m         | Pintado |  0.043
+ 115100030400037 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  | 2"       | m         | Pintado |   0.19
+ 115100030400032 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  1/2"    | m         | Pintado |  0.067
+ 115100030400034 | Tuberia de Acero Sin Costura SCH40 Grado B, ASTM A53                                  |  1"      | m         | Pintado |  0.105
+ 115113030400039 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  3"      | m         | Pintado |  0.279
+ 115113030400045 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  12"     | m         | Pintado |  1.017
+ 115113030400047 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  16"     | m         | Pintado |  1.277
+ 115113030400046 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  14"     | m         | Pintado |  1.117
+ 115113030400036 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  1 1/2"  | m         | Pintado |  0.152
+ 115113030400043 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  8"      | m         | Pintado |  0.688
+ 115113030400049 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  20"     | m         | Pintado |  1.596
+ 115113030400044 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  10"     | m         | Pintado |  0.858
+ 115113030400030 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  1/4"    | m         | Pintado |  0.043
+ 115113030400042 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  6"      | m         | Pintado |  0.529
+ 115113030400041 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  5"      | m         | Pintado |  0.444
+ 115113030400040 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  4"      | m         | Pintado |  0.359
+ 115113030400031 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  3/8"    | m         | Pintado | 0.0534
+ 115113030400050 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  24"     | m         | Pintado |  1.915
+ 115113030400048 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  18"     | m         | Pintado |  1.436
+ 115113030400032 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  1/2"    | m         | Pintado |  0.067
+ 115113030400033 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  3/4"    | m         | Pintado |  0.084
+ 115113030400034 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  1"      | m         | Pintado |  0.105
+ 115113030400035 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  1 1/4"  | m         | Pintado |  0.132
+ 115113030400037 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  2"      | m         | Pintado |   0.19
+ 115113030400038 | Tuberia de Acero Sin Costura SCH80 Grado B, ASTM A53                                  |  2 1/2"  | m         | Pintado |  0.229
+
+  115459020001001 | Tuberia Conduit Flexible Metalico Hermetico                                           | 1/2"     | m         | Natural |      0
+ 115102030400009 | Tuberia de Acero Con Costura SCH10 Grado B, ASTM A53     UL                           | 6"       | Unid      | Pintado |      0
+ 115102030400004 | Tuberia de Acero Con Costura SCH40 Grado B, ASTM A53                                  | 2"       | m         | Pintado |      0
+ 115102030400003 | Tuberia de Acero Con Costura SCH40 Grado B, ASTM A53                                  | 1 1/2"   | m         | Pintado |      0
+ 115102030400005 | Tuberia de Acero Con Costura SCH40 Grado B, ASTM A53                                  | 2 1/2"   | m         | Pintado |      0
+ 115102030400008 | Tuberia de Acero Con Costura SCH40 Grado B, ASTM A53                                  | 6"       | m         | Pintado |      0
+ 115102030400007 | Tuberia de Acero Con Costura SCH40 Grado B, ASTM A53                                  | 4"       | m         | Pintado |      0
+ 115102030400002 | Tuberia de Acero Con Costura SCH40 Grado B, ASTM A53                                  | 1 1/4"   | m         | Pintado |      0
+ 115102030400001 | Tuberia de Acero Con Costura SCH40 Grado B, ASTM A53                                  | 1"       | m         | Pintado |      0
+ 115102030400006 | Tuberia de Acero Con Costura SCH40 Grado B, ASTM A53                                  | 3"       | m         | Pintado |      0
+ 115410060050001 | Tuberia de Acero Inoxidable SCH10, C304                                               | 2"       | m         | Natural |      0
+ 115420060050001 | Tuberia de Acero Inoxidable SCH40, C304                                               | 2"       | m         | Natural |      0
+ 115420060050002 | Tuberia de Acero Inoxidable SCH40, C304                                               | 1 1/4"   | m         | Natural |      0
+ 115320060050004 | Tuberia de Acero Inoxidable Tipo 306 L                                                | 1 1/2"   | m         | Pintado |      0
+ 115320060050002 | Tuberia de Acero Inoxidable Tipo 306 L                                                | 1 1/4"   | m         | Pintado |      0
+ 115320060050001 | Tuberia de Acero Inoxidable Tipo 306 L                                                | 1"       | m         | Pintado |      0
+ 115320060050003 | Tuberia de Acero Inoxidable Tipo 306 L                                                | 2"       | m         | Pintado |      0

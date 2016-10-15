@@ -15,6 +15,7 @@ from django.template import RequestContext, TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
+from decimal import Decimal, getcontext
 
 from CMSGuias.apps.almacen import models
 from CMSGuias.apps.tools import globalVariable, search, number_to_char
@@ -26,7 +27,7 @@ from CMSGuias.apps.logistica.models import (Cotizacion,
                                             ServiceOrder,
                                             DetailsServiceOrder)
 from CMSGuias.apps.ventas.models import Proyecto
-from CMSGuias.apps.home.models import Configuracion, Conductore, MNiple
+from CMSGuias.apps.home.models import Configuracion, Conductore, MNiple, Materiale
 from CMSGuias.apps.operations.models import PreOrders, DetailsPreOrders
 
 
@@ -512,11 +513,12 @@ class ReportsOrder(TemplateView):
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
-            order = get_object_or_404(models.Pedido, pk=kwargs['pid'])
+            order = models.Pedido.objects.filter(pedido_id=kwargs['pid'])
+            # .order_by('materiales__materiales_id')
             lista = models.Detpedido.objects.filter(
                         pedido_id=kwargs['pid']).order_by('materiales__matnom')
             nipples = models.Niple.objects.filter(
-                        pedido_id__exact=kwargs['pid']).order_by('materiales')
+                        pedido_id=kwargs['pid']).order_by('materiales__materiales_id','metrado')
             context['order'] = order
             lcount = float(lista.count())
             if lcount > 30:
@@ -546,37 +548,39 @@ class ReportsOrder(TemplateView):
                 section.append(tmp)
             context['lista'] = section
             secn = list()
-            count = 0
-            sheet = 0
-            tipo = globalVariable.tipo_nipples
-            if nipples.count() > 35:
-                sheet = int(float('%.0f' % (nipples.count())) / 30)
-                if float(float('%.3f' % (float(nipples.count()))) / 30) > sheet:
-                    sheet += 1
-            else:
-                sheet = 1
-            # print sheet, 'sheet'
-            # print nipples.count(), 'nipples'
-            # get types for each count niple
-            
-            for c in range(sheet):
-                datset = nipples[count:count+35]
-                tmp = list()
-                # print datset, 'datset'
-                for x in datset:
-                    tmp.append({
-                        'item': (count + 1),
-                        'materials': x.materiales_id,
-                        'quantity': x.cantidad,
-                        'type': tipo[x.tipo],
-                        'comment': x.comment,
-                        'measure': x.materiales.matmed,
-                        'meter': x.metrado,
-                        'comment': x.comment})
-                    # print tmp, 'temp'
-                    count += 1
-                secn.append(tmp)
+            if nipples.count() > 0:
+                count = 0
+                sheet = 0
+                tipo = globalVariable.tipo_nipples
+                if nipples.count() > 35:
+                    sheet = int(float('%.0f' % (nipples.count())) / 30)
+                    if float(float('%.3f' % (float(nipples.count()))) / 30) > sheet:
+                        sheet += 1
+                else:
+                    sheet = 1
+                # print sheet, 'sheet'
+                # print nipples.count(), 'nipples'
+                # get types for each count niple
+                for c in range(sheet):
+                    datset = nipples[count:count+35]
+                    tmp = list()
+                    # print datset, 'datset'
+                    for x in datset:
+                        tmp.append({
+                            'item': (count + 1),
+                            'materials': x.materiales_id,
+                            'quantity': x.cantidad,
+                            'type': tipo[x.tipo],
+                            'comment': x.comment,
+                            'measure': x.materiales.matmed,
+                            'meter': x.metrado,
+                            'comment': x.comment})
+                        self.__counterNip(x.materiales_id, x.tipo, x.metrado, x.cantidad)
+                        # print tmp, 'temp'
+                        count += 1
+                    secn.append(tmp)
             context['nipples'] = secn
+            print self.cnip
             context['tipo'] = globalVariable.tipo_nipples
             html = render_to_string(
                     'report/rptordersstore.html',
@@ -586,18 +590,37 @@ class ReportsOrder(TemplateView):
         except TemplateDoesNotExist, e:
             raise Http404(e)
     
-    def __counterNip(self, ntype=''):
+    def __counterNip(self, mt, ntype='', meter=0, quantity=0):
         # Add item at count type niple
         try:
+            # getcontext().prec = 3
             # consult type in db and sum 
-            if ntype not in self.cnip:
+            if ntype not in self._cdb:
                 # Create item
                 n = MNiple.objects.filter(ktype=ntype)
-                self._cdb[ntype] = n if len(n) else list()
-            for x in self._cdb:
-                if self._cdb[x].ncount is int:
-                    self.cnip[ntype].count += self._cdb[x].ncount
+                self._cdb[ntype] = n[0] if len(n) else list()
+            if len(self._cdb[ntype].ncount) == 1:
+                if mt in self.cnip:
+                    if ntype in self.cnip[mt]:
+                        self.cnip[mt][ntype]['count'] += int(self._cdb[ntype].ncount)
+                    else:
+                        self.cnip[mt][ntype] = {'count': int(self._cdb[ntype].ncount)}
                 else:
-                     
+                    self.cnip[mt] = {ntype: {'count': int(self._cdb[ntype].ncount)}}
+            else:
+                for x in self._cdb[ntype].ncount.split('-'):
+                    if mt in self.cnip:
+                        if x in self.cnip:
+                            self.cnip[mt][ntype]['count'] += 1
+                        else:
+                            self.cnip[mt][x] = {'count': 1}
+                    else:
+                        self.cnip[mt] = {x: {'count': 1}}
+            if 'ml' in self.cnip[mt][ntype]:
+                self.cnip[mt][ntype]['ml'] += round((Decimal(meter) * Decimal(quantity)), 2)
+            else:
+                self.cnip[mt][ntype]['ml'] = round((Decimal(meter) * Decimal(quantity)), 2)
+            if 'area' not in self.cnip[mt]:
+                self.cnip[mt]['area'] = round(Materiale.objects.get(materiales_id=mt).matare, 3)
         except Exception as e:
-            raise e
+            print e
