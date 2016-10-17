@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-import os
 from django.conf import settings
 import ho.pisa as pisa
 import cStringIO as StringIO
+import json
+import os
 import cgi
 
 # from django.contrib import messages
@@ -513,7 +514,7 @@ class ReportsOrder(TemplateView):
     def get(self, request, *args, **kwargs):
         context = dict()
         try:
-            order = models.Pedido.objects.filter(pedido_id=kwargs['pid'])
+            order = models.Pedido.objects.get(pedido_id=kwargs['pid'])
             # .order_by('materiales__materiales_id')
             lista = models.Detpedido.objects.filter(
                         pedido_id=kwargs['pid']).order_by('materiales__matnom')
@@ -549,6 +550,8 @@ class ReportsOrder(TemplateView):
             context['lista'] = section
             secn = list()
             if nipples.count() > 0:
+                self.cnip = {}
+                self._cdb = {}
                 count = 0
                 sheet = 0
                 tipo = globalVariable.tipo_nipples
@@ -575,12 +578,20 @@ class ReportsOrder(TemplateView):
                             'measure': x.materiales.matmed,
                             'meter': x.metrado,
                             'comment': x.comment})
-                        self.__counterNip(x.materiales_id, x.tipo, x.metrado, x.cantidad)
+                        self.__counterNip(  mt=x.materiales_id,
+                                            md=x.materiales.matmed,
+                                            ntype=x.tipo,
+                                            meter=x.metrado,
+                                            quantity=x.cantidad)
                         # print tmp, 'temp'
                         count += 1
                     secn.append(tmp)
             context['nipples'] = secn
-            print self.cnip
+            if nipples.count() > 0:
+                context['keys'] = sorted(list(set(self.cnip['keys'])))
+                del self.cnip['keys']
+                context['npcalc'] = self.cnip
+            print json.dumps(self.cnip)
             context['tipo'] = globalVariable.tipo_nipples
             html = render_to_string(
                     'report/rptordersstore.html',
@@ -590,11 +601,13 @@ class ReportsOrder(TemplateView):
         except TemplateDoesNotExist, e:
             raise Http404(e)
     
-    def __counterNip(self, mt, ntype='', meter=0, quantity=0):
+    def __counterNip(self, mt, md='', ntype='', meter=0, quantity=0):
         # Add item at count type niple
         try:
+            if 'keys' not in self.cnip:
+                self.cnip['keys'] = list()
             # getcontext().prec = 3
-            # consult type in db and sum 
+            # consult type in db and sum
             if ntype not in self._cdb:
                 # Create item
                 n = MNiple.objects.filter(ktype=ntype)
@@ -602,25 +615,29 @@ class ReportsOrder(TemplateView):
             if len(self._cdb[ntype].ncount) == 1:
                 if mt in self.cnip:
                     if ntype in self.cnip[mt]:
-                        self.cnip[mt][ntype]['count'] += int(self._cdb[ntype].ncount)
+                        self.cnip[mt][ntype]['count'] += (int(self._cdb[ntype].ncount) * quantity)
                     else:
-                        self.cnip[mt][ntype] = {'count': int(self._cdb[ntype].ncount)}
+                        self.cnip[mt][ntype] = {'count': (int(self._cdb[ntype].ncount) * quantity)}
                 else:
-                    self.cnip[mt] = {ntype: {'count': int(self._cdb[ntype].ncount)}}
+                    self.cnip[mt] = {ntype: {'count': (int(self._cdb[ntype].ncount) * quantity)}}
             else:
                 for x in self._cdb[ntype].ncount.split('-'):
                     if mt in self.cnip:
-                        if x in self.cnip:
-                            self.cnip[mt][ntype]['count'] += 1
+                        self.cnip['keys'].append(x)
+                        if x in self.cnip[mt]:
+                            self.cnip[mt][x]['count'] += (1 * quantity)
                         else:
-                            self.cnip[mt][x] = {'count': 1}
+                            self.cnip[mt][x] = {'count': (1 * quantity)}
                     else:
-                        self.cnip[mt] = {x: {'count': 1}}
-            if 'ml' in self.cnip[mt][ntype]:
-                self.cnip[mt][ntype]['ml'] += round((Decimal(meter) * Decimal(quantity)), 2)
+                        self.cnip[mt] = {x: {'count': (1 * quantity)}}
+            if 'ml' in self.cnip[mt]:
+                self.cnip[mt]['ml'] += round(Decimal((meter * quantity) / 100), 2)
             else:
-                self.cnip[mt][ntype]['ml'] = round((Decimal(meter) * Decimal(quantity)), 2)
+                self.cnip[mt]['ml'] = round(Decimal((meter * quantity) / 100), 2)
+                self.cnip[mt]['meter'] = md
             if 'area' not in self.cnip[mt]:
                 self.cnip[mt]['area'] = round(Materiale.objects.get(materiales_id=mt).matare, 3)
+            if ntype not in self.cnip['keys']:
+                self.cnip['keys'].append(ntype)
         except Exception as e:
             print e
