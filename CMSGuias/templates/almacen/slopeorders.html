@@ -54,7 +54,7 @@
 			$.post('/json/post/approved/orders/', data, function(response) {
 				console.warn(response);
 				if (response.status) {
-					sts == 'atender' ? location.href='/almacen/meet/order/'+id+'/' : location.reload()
+					sts == 'atender' ? location.href='/almacen/order/attend/'+id+'/' : location.reload()
 				}else{
 					$().toastmessage("showWarningToast","No se a podido aprobar el pedido.");
 				};
