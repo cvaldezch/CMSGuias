@@ -32,6 +32,8 @@ project_urls = patterns(
         ListGuideByProject.as_view(), name='view_list_guide_by_projects'),
     url(r'list/orders/(?P<pro>\w+)/(?P<sub>\w+)/(?P<sec>\w+)/$',
         ListOrdersByProject.as_view(), name='view_orders_by_projects'),
+    url(r'^paint/(?P<pro>\w{7})/$', PaintingView.as_view(), 
+        name='paintingp_view'),
 )
 
 urlpatterns = patterns(

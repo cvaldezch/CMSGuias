@@ -227,10 +227,18 @@
                                                         <span class="glyphicon-class">Lista Materiales</span>
                                                     </a>
                                                 </li>
+                                                <!-- Option Service -->
                                                 <li>
                                                     <a href="{% url 'servicesp_view' project.proyecto_id %}" class="btn btn-link btn-xs text-black">
                                                         <i class="fa fa-usd"></i>
                                                         <span class="glyphicon-class">Servicios</span>
+                                                    </a>
+                                                </li>
+                                                <!-- Option Configuration Painting -->
+                                                <li>
+                                                    <a href="{% url 'paintingp_view' project.proyecto_id %}" class="btn btn-link btn-xs text-black">
+                                                        <i class="fa fa-paint-brush"></i>
+                                                        <span class="glyphicon-class">Pintura</span>
                                                     </a>
                                                 </li>
                                             {% endif %}

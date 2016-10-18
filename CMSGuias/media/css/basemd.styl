@@ -1,43 +1,5 @@
 @import 'nib'
 
-@font-face
-  font-family 'Material Icons'
-  font-style normal
-  font-weight 400
-  src url(/media/vendor/materialize/dist/font/material-design-icons/Material-Design-Icons.eot) /* For IE6-8 */
-  // src url(/media/vendor/materialize/dist/font/material-design-icons/Material-Design-Icons.svg) format('svg')
-  src local('Material Icons'),
-      local('Material-Design-Icons'),
-      url(/media/vendor/materialize/dist/font/material-design-icons/Material-Design-Icons.woff2) format('woff2'),
-      url(/media/vendor/materialize/dist/font/material-design-icons/Material-Design-Icons.woff) format('woff'),
-      url(/media/vendor/materialize/dist/font/material-design-icons/Material-Design-Icons.ttf) format('truetype'),
-      url(/media/vendor/materialize/dist/font/material-design-icons/Material-Design-Icons.svg) format('svg')
-
-
-.material-icons
-  font-family 'Material Icons'
-  font-weight normal
-  font-style normal
-  font-size 24px  /* Preferred icon size */
-  display inline-block
-  width 1em
-  height 1em
-  line-height 1
-  text-transform none
-  letter-spacing normal
-  word-wrap normal
-
-  /* Support for all WebKit browsers. */
-  -webkit-font-smoothing antialiased
-  /* Support for Safari and Chrome. */
-  text-rendering optimizeLegibility
-
-  /* Support for Firefox. */
-  -moz-osx-font-smoothing grayscale
-
-  /* Support for IE. */
-  font-feature-settings 'liga'
-
 .code
   background #999
   background-color #999
@@ -159,13 +121,13 @@ dd
   padding-left 50px
 
 table.table tbody tr td
-    padding 1px 2px 1px 2px
-  & > input[type="number"]
+  padding 1px 2px 1px 2px
+  & input[type="number"]
     height 28px
     margin-bottom 0px
-  & > input[type="checkbox"]+label
+  & input[type="checkbox"]+label
     display initial !important
-  & > [type="checkbox"].filled-in
+  & [type="checkbox"].filled-in
     &.blue:checked+label:after
       background-color: #0089ec
       border: 2px solid #0870F6

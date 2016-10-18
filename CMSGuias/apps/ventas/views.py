@@ -2580,8 +2580,41 @@ class ServicesProjectView(JSONResponseMixin, TemplateView):
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         # context = dict()
-        if 'saservices' in request.POST:
-            p = Proyecto.objects.get(proyecto_id=kwargs['pro'])
-            p.aservices = request.POST['aservices']
-            p.save()
-            return redirect('servicesp_view', pro=kwargs['pro'])
+        try:
+            if 'saservices' in request.POST:
+                p = Proyecto.objects.get(proyecto_id=kwargs['pro'])
+                p.aservices = request.POST['aservices']
+                p.save()
+                return redirect('servicesp_view', pro=kwargs['pro'])
+        except ObjectDoesNotExist, e:
+            raise e
+
+
+# Configuration Painting for Project
+class PaintingView(JSONResponseMixin, TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        try:
+            try:
+                kwargs['paint'] = Painting.objects.get(project_id=kwargs['pro'])
+            except Painting.DoesNotExist:
+                kwargs['paint'] = {'nlayers': 0, 'nfilmb': 0, 'nfilmc': 0}
+            return render(request, 'sales/paintingproject.html', kwargs)
+        except (TemplateDoesNotExist or Exception) as e:
+            raise Http404(e)
+
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwags):
+        try:
+            form = PaintingForm(request.POST)
+            print form
+            if form.is_valid():
+                isf = form.save(commit=False)
+                isf.project_id = kwags['pro']
+                isf.save()
+                return redirect(('/sales/projects/manager/%s/' % kwags['pro']))
+            else:
+                return redirect(('/sales/projects/paint/%s/' % kwags['pro']))
+        except (TemplateDoesNotExist or Exception) as e:
+            raise Http404(e)

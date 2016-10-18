@@ -416,3 +416,24 @@ class DetailsPurchaseOrder(models.Model):
 
     class Meta:
         ordering = ['nropurchase']
+
+
+class Painting(models.Model):
+
+    project = models.ForeignKey(Proyecto, to_field='proyecto_id')
+    nlayers = models.SmallIntegerField(default=1, null=False)
+    nfilmb = models.SmallIntegerField(default=4)
+    nfilmc = models.SmallIntegerField(default=4)
+    register = models.DateTimeField(auto_now_add=True)
+    tag = models.BooleanField(default=True)
+
+    audit_log = AuditLog()
+
+    class Meta:
+        ordering = ['-project']
+
+    def __unicode__(self):
+        return '%s %s %d %d' % (self.project,
+                                self.register,
+                                self.nfilmb,
+                                self.nfilmc)

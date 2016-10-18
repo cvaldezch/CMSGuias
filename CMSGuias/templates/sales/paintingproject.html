@@ -1,0 +1,49 @@
+{% extends "basemd.html" %}
+{% block menu %}
+    {% include "menus/salesmd.html" %}
+{% endblock menu %}
+{% block content %}
+<section>
+    <div class="card-panel">
+        <h4>
+            Configuración de Pintura<br>
+            <small>Proyecto: <strong>{{pro}}</strong></small>
+        </h4>
+        <form action="" method="POST">
+            <div class="card">
+                <div class="card-action">
+                    <a href="{% url 'managerpro_view' pro %}" class="waves-effect waves-light btn btn-large grey lighten-5 grey-text text-darken-3">
+                        <i class="fa fa-reply"></i>
+                        <span class="hide-on-small-only">REgresar</span>
+                    </a>
+                    <button type="submit" class="waves-effect waves-light btn btn-large right red">
+                        <i class="fa fa-floppy-o"></i>
+                        <span class="hide-on-small-only">Guardar</span>
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col l12 m12 s12">
+                    <div class="input-field col l3 m3 s12">
+                        <input type="number" class="right-align" id="layers" name="nlayers" value="{{paint.nlayers}}" min="1" required>
+                        <label for="layers"># de Capas</label>
+                    </div>
+                </div>
+                <div class="col l6 m6 s12">
+                    <div class="input-field col l6 m3 s12">
+                        <input type="number" class="right-align" id="filmb" name="nfilmb" value="{{paint.nfilmb}}" min"1" required>
+                        <label for="filmb"># Peliculas Base</label>
+                    </div>
+                </div>
+                <div class="col l6 m6 s12">
+                    <div class="input-field col l6 m3 s12">
+                        <input type="number" class="right-align" id="filmc" name="nfilmc" value="{{paint.nfilmc}}" min"1" required>
+                        <label for="filmc"># Peliculas Acabado</label>
+                    </div>
+                </div>
+            </div>
+            {% csrf_token %}
+        </form>
+    </div>
+</section>
+{% endblock content %}
