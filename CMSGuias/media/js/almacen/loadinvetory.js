@@ -99,7 +99,20 @@ controller = function($scope, $timeout, $q, inventoryFactory) {
   $scope.lstinv = [];
   $scope.parea = '';
   $scope.pcargo = '';
+  $scope.ginit = false;
   angular.element(document).ready(function() {
+    var prms;
+    prms = {
+      getmat: true,
+      desc: ''
+    };
+    inventoryFactory.getMaterials(prms).success(function(response) {
+      if (response.status) {
+        console.log(response);
+        $scope.lstinv = response.materials;
+        $scope.ginit = true;
+      }
+    });
     angular.element('.modal-trigger').leanModal({
       dismissible: false
     });
@@ -111,11 +124,13 @@ controller = function($scope, $timeout, $q, inventoryFactory) {
         'getmat': true,
         'desc': $scope.desc
       };
+      $scope.ginit = false;
       inventoryFactory.getMaterials(prms).success(function(response) {
         if (response.status) {
           console.log(response);
           $scope.lstinv = response.materials;
           console.info($scope.lstinv);
+          $scope.ginit = true;
         } else {
           console.error("Error " + response.raise);
         }

@@ -2906,7 +2906,7 @@ class LoadInventoryBrand(JSONResponseMixin, TemplateView):
                                 materiales__matnom__icontains=request.GET[
                                     'desc']) | Q(
                                     materiales__matmed__icontains=request.GET[
-                                    'desc'])).order_by('materiales__matmed'),
+                                    'desc'])).order_by('materiales__matnom','materiales__matmed'),
                                 relations=('materiales')))
                         context['status'] = True
                     if 'details' in request.GET:

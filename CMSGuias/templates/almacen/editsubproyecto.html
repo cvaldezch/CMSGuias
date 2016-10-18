@@ -1,44 +1,44 @@
 {% extends 'base.html' %}
 {% block menu %}
-	{% include "menus/storage_menu.htm" %}
+    {% include "menus/storage_menu.htm" %}
 {% endblock menu %}
 {% block content %}
 <div class="container">
-	<div class="well">
-		<h3 class="text-primary">Editar Subproyecto</h3>
-		{% csrf_token %}
-		<a href="{% url 'vista_sub_project' pid %}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> regresar</a>
-		<div class="row show-grid">
-		{% if msg %}
-			<div class="col-md-4">
-				<div class="alert alert-block alert-warning">
-					<a class="close" data-dismiss="alert">&times;</a>
-					<strong>Warning</strong>
-					<p>{{msg}}</p>
-				</div>
-			</div>
-		{% endif %}
-		</div>
-		<form class="form-horizontal" method="POST" action="">
-			{% csrf_token %}
-			<table>
-			<tr>
-					<td><label for="proyecto_id">Proyecto ID:</label></td>
-					<td><input type="text" name="proyecto_id" class="form-control" value="{{pid}}" readonly></td>
-				</tr>
-				{{form.as_table}}
-			</table>
-			<button type="submit" value="submit" class="btn btn-success text-black"><span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios</button>
-		</form>
-	</div>
+    <div class="well">
+        <h3 class="text-primary">Editar Subproyecto</h3>
+        {% csrf_token %}
+        <a href="{% url 'vista_sub_project' pid %}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> regresar</a>
+        <div class="row show-grid">
+        {% if msg %}
+            <div class="col-md-4">
+                <div class="alert alert-block alert-warning">
+                    <a class="close" data-dismiss="alert">&times;</a>
+                    <strong>Warning</strong>
+                    <p>{{msg}}</p>
+                </div>
+            </div>
+        {% endif %}
+        </div>
+        <form class="form-horizontal" method="POST" action="">
+            {% csrf_token %}
+            <table>
+            <tr>
+                    <td><label for="proyecto_id">Proyecto ID:</label></td>
+                    <td><input type="text" name="proyecto_id" class="form-control" value="{{pid}}" readonly></td>
+                </tr>
+                {{form.as_table}}
+            </table>
+            <button type="submit" value="submit" class="btn btn-success text-black"><span class="glyphicon glyphicon-floppy-save"></span> Guardar Cambios</button>
+        </form>
+    </div>
 </div>
 <!-- Block Scripts -->
 <script type="text/javascript">
-	$(document).ready(function() {
-		$("[name=subproyecto_id]").attr("readonly",true);
-		$(".in-date").datepicker({ minDate: "0" , maxDate: "" , changeMonth: true, changeYear: true, showAnim: "slide", dateFormat: "yy-mm-dd"});
-		$("[name=sector_id]").attr('readonly', true);
-	});
+    $(document).ready(function() {
+        $("[name=subproyecto_id]").attr("readonly",true);
+        $(".in-date").datepicker({ minDate: "0" , maxDate: "" , changeMonth: true, changeYear: true, showAnim: "slide", dateFormat: "yy-mm-dd"});
+        $("[name=sector_id]").attr('readonly', true);
+    });
 </script>
 <!-- endblock -->
 {% endblock %}

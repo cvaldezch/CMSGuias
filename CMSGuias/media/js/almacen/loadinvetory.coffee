@@ -47,8 +47,19 @@ controller = ($scope, $timeout, $q, inventoryFactory) ->
   $scope.lstinv = []
   $scope.parea = ''
   $scope.pcargo = ''
+  $scope.ginit = false
 
   angular.element(document).ready ->
+    prms = 
+      getmat: true
+      desc: ''
+    inventoryFactory.getMaterials prms
+        .success (response) ->
+          if response.status
+            console.log response
+            $scope.lstinv = response.materials
+            $scope.ginit = true
+            return
     angular.element('.modal-trigger').leanModal
       dismissible: false
     return
@@ -58,12 +69,14 @@ controller = ($scope, $timeout, $q, inventoryFactory) ->
       prms =
         'getmat': true
         'desc': $scope.desc
+      $scope.ginit = false
       inventoryFactory.getMaterials prms
       .success (response) ->
         if response.status
           console.log response
           $scope.lstinv = response.materials
           console.info $scope.lstinv
+          $scope.ginit = true
           return
         else
           console.error "Error #{response.raise}"

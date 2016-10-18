@@ -8,259 +8,259 @@
 {% block style %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}vendor/sweetalert/dist/sweetalert.css">
 <style>
-	input[name=ias]{
-		width: 80px;
-	}
-	.opadcbo{
-		width: 140px;
-	}
+    input[name=ias]{
+        width: 80px;
+    }
+    .opadcbo{
+        width: 140px;
+    }
 </style>
 {% endblock %}
 {% block menu %}
-	{% include "menus/storage_menu.htm" %}
+    {% include "menus/storage_menu.htm" %}
 {% endblock menu %}
 {% block content %}
 <div class="container">
-	<div class="well">
-		<header>
-			<h3>Inventory <span class="text-warning glyphicon glyphicon-th"></span></h3>
-		</header>
-		<div class="row show-grid">
-			<div class="col-md-12">
-				<aside class="bs-callout bs-callout-warning text-warning">
-					<div class="row show-grid">
-						<div class="col-md-12">
-							<label class="inline-radio"><input type="radio" value="old" name="nper"> Otros Periodos</label>
-							<label class="inline-radio"><input type="radio" value="now" name="nper" checked="true"> Periodo Actual</label>
-						</div>
-						<div class="col-md-2">
-							<label class="control-label">Periodo</label>
-							<select name="periodo" disabled="disabled" class="form-control">
-								{% for p in periodo %}
-									<option value="{{p}}">{{p}}</option>
-								{% empty %}
-									<option value="">Nothing</option>
-								{% endfor %}
-							</select>
-						</div>
-						<div class="col-md-3">
-							<label class="control-label">Almacen</label>
-							<select name="almacen" id="" class="form-control">
-								{% for a in almacen %}
-									<option value="{{a.alid}}">{{a.nom}}</option>
-								{% endfor %}
-							</select>
-						</div>
-						<div class="col-md-2">
-							<label class="control-label">Código</label>
-							<input type="text" name="cod" class="form-control">
-						</div>
-						<div class="col-md-5">
-							<label class="control-label">Descripción</label>
-							<input type="text" name="desc" id="" class="form-control">
-						</div>
-						<div class="col-md-2">
-							<label class="checkbox-inline"><input type="checkbox" class="stkzero"> Sotck en "0"</label>
-						</div>
-						<div class="col-md-2">
-							<label class="checkbox-inline"><input type="checkbox" class="stkmin"> Sotck Min.</label>
-							<input type="number" class="form-control" name="smin" min="0" value="10" disabled="disabled">
-						</div>
-						<div class="col-md-1 pull-right">
-							<label class="control-label">Avanzado</label>
-							<button type="Button" name="btn-opad" class="btn btn-sm btn-primary btn-block"
-							{% ifnotequal user.get_profile.cargo_id '111111111' %}
-								disabled="true"
-							{% endifnotequal %} ><span class="glyphicon glyphicon-chevron-down"></span></button>
-						</div>
-						<!-- <div class="col-md-1">
-						<label for="" class="control-label">search</label>
-							<button class="btn btn-success text-black btn-block btn-sm">
-							<span class="glyphicon glyphicon-search"></span></button>
-						</div> -->
-						<div class="col-md-1 pull-right">
-							<label class="control-label">Suministro</label>
-							<button class="btn btn-block btn-sm btn-warning text-black">
-								<span class="glyphicon glyphicon-shopping-cart"></span>
-								<span class="glyphicon glyphicon-chevron-right"></span>
-								<span class="glyphicon glyphicon-list-alt"></span>
-							</button>
-						</div>
+    <div class="well">
+        <header>
+            <h3>Inventory <span class="text-warning glyphicon glyphicon-th"></span></h3>
+        </header>
+        <div class="row show-grid">
+            <div class="col-md-12">
+                <aside class="bs-callout bs-callout-warning text-warning">
+                    <div class="row show-grid">
+                        <div class="col-md-12">
+                            <label class="inline-radio"><input type="radio" value="old" name="nper"> Otros Periodos</label>
+                            <label class="inline-radio"><input type="radio" value="now" name="nper" checked="true"> Periodo Actual</label>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="control-label">Periodo</label>
+                            <select name="periodo" disabled="disabled" class="form-control">
+                                {% for p in periodo %}
+                                    <option value="{{p}}">{{p}}</option>
+                                {% empty %}
+                                    <option value="">Nothing</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Almacen</label>
+                            <select name="almacen" id="" class="form-control">
+                                {% for a in almacen %}
+                                    <option value="{{a.alid}}">{{a.nom}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="control-label">Código</label>
+                            <input type="text" name="cod" class="form-control">
+                        </div>
+                        <div class="col-md-5">
+                            <label class="control-label">Descripción</label>
+                            <input type="text" name="desc" id="" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="checkbox-inline"><input type="checkbox" class="stkzero"> Sotck en "0"</label>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="checkbox-inline"><input type="checkbox" class="stkmin"> Sotck Min.</label>
+                            <input type="number" class="form-control" name="smin" min="0" value="10" disabled="disabled">
+                        </div>
+                        <div class="col-md-1 pull-right">
+                            <label class="control-label">Avanzado</label>
+                            <button type="Button" name="btn-opad" class="btn btn-sm btn-primary btn-block"
+                            {% ifnotequal user.get_profile.cargo_id '111111111' %}
+                                disabled="true"
+                            {% endifnotequal %} ><span class="glyphicon glyphicon-chevron-down"></span></button>
+                        </div>
+                        <!-- <div class="col-md-1">
+                        <label for="" class="control-label">search</label>
+                            <button class="btn btn-success text-black btn-block btn-sm">
+                            <span class="glyphicon glyphicon-search"></span></button>
+                        </div> -->
+                        <div class="col-md-1 pull-right">
+                            <label class="control-label">Suministro</label>
+                            <button class="btn btn-block btn-sm btn-warning text-black">
+                                <span class="glyphicon glyphicon-shopping-cart"></span>
+                                <span class="glyphicon glyphicon-chevron-right"></span>
+                                <span class="glyphicon glyphicon-list-alt"></span>
+                            </button>
+                        </div>
 
-						<div class="col-md-12">
-							<div class="panel panel-primary opad">
-								<div class="panel-heading">Opciones Avanzadas <a class="close">&times;</a></div>
-								<div class="panel-body">
-									<strong>Ingreso a Inventario</strong>
-									<p>
-										<span class="glyphicon glyphicon-ok-sign">
-										</span>  Ingresar al inventario, todo la lista de Materiales con stock 0, de lo contrario especifica aqui.
-										<input type="number" class="input-sm" name="ias" min="0" value="0">
-										<button class="btn btn-sm btn-primary btn-register-all-list">
-										<span class="glyphicon glyphicon-chevron-right"></span>
-										<span class="glyphicon glyphicon-sort-by-attributes"></span>
-										</button>
-									</p>
-									<p>
-										<span class="glyphicon glyphicon-ok-sign"></span> Pasar el Stock del Periodo pasado al actual.
-									</p>
-									<p>
-										<!-- cbo almacén a copiar-->
-										Almacén a ingresar:
-										<select name="alcp" id="" class="input-sm opadcbo">
-											{% for a in almacen %}
-												<option value="{{a.alid}}">{{a.nom}}</option>
-											{% endfor %}
-										</select>
-										<!-- cbo period -->
-										Periodo a copiar:
-										<select name="pewh" id="" class="input-sm opadcbo">
-										{% for p in periodo %}
-											<option value="{{p}}">{{p}}</option>
-										{% empty %}
-											<option value="">Nothing</option>
-										{% endfor %}
-									</select>
-									<!-- cbo almacén -->
-									Almacén a copiar:
-									<select name="alwh" id="" class="input-sm opadcbo">
-										{% for a in almacen %}
-											<option value="{{a.alid}}">{{a.nom}}</option>
-										{% endfor %}
-									</select>
-									<button class="btn btn-sm btn-primary btn-list-period">
-										<span class="glyphicon glyphicon-chevron-right"></span>
-										<span class="glyphicon glyphicon-ok-circle"></span>
-									</button>
-									</p>
-								</div>
-							</div>
-						</div>
-						{% if user.get_profile.empdni.charge.area|lower == 'administrator' %}
-							<div class="col-md-12">
-								<button class="btn btn-danger" id="bdelAllInv" type="button">
-									<i class="fa fa-fire"></i>
-									<span>Eliminar Todo</span>
-								</button>
-								<button class="btn btn-success" id="bupall" type="button">
-									<i class="fa fa-upload"></i>
-									<span>Cargar Archivo</span>
-								</button>
-							</div>
-						{% endif %}
-					</div>
-				</aside>
-			</div>
-			<div class="col-md-12">
-				<div class="table-responsive">
-					<table class="table table-hover table-striped table-condensed">
-						<thead>
-							<tr class="brand-warning">
-								<th class="text-center"></th>
-								<th class="text-center">Código</th>
-								<th class="text-center">Descripción</th>
-								<th class="text-center">Unid.</th>
-								<th class="text-center">Min</th>
-								<th class="text-center">Stock</th>
-								<th class="text-center">Ingreso</th>
-								<th class="text-center">O. Compra</th>
-								<th class="text-center"></th>
-							</tr>
-						</thead>
-						<tbody data-templeta-name="list-materials">
-							{% for x in inventory %}
-								<tr class="{% if x.stock > x.stkmin %}success{% elif x.stock <= x.stkmin and x.stock > 0 %}warning{% elif x.stock <= 0 %}danger{% endif %}">
-									<td>{{ forloop.counter }}</td>
-									<td><a href="{% url 'storebrand' x.materiales_id %}">{{ x.materiales_id }}</a></td>
-									<td>{{ x.materiales.matnom }} - {{ x.materiales.matmed }}</td>
-									<td>{{ x.materiales.unidad_id }}</td>
-									<td>{{ x.stkmin }}</td>
-									<td>{{ x.stock }}</td>
-									<td>{{ x.ingreso }}</td>
-									<td>{{ x.compra_id }}</td>
-									<td>
-										<button value="{{ x.materiales_id }}" name="btn-{{ x.materiales_id }}" class="btn btn-xs btn-warning text-black btn-add-supply"
-										{% if x.spptag %}
-											disabled
-										{% endif %}
-										><span class="glyphicon glyphicon-plus"></span><span class="glyphicon glyphicon-shopping-cart"></span></button>
-									</td>
-								</tr>
-							{% empty %}
-							{% endfor %}
-						</tbody>
-						<tfoot>
-							<tr>
-								<td colspan="10" class="text-center">
-									<ul class="pager">
-										{% if inventory.has_previous %}
-											<li><a href="?page=1">&laquo;</a></li>
-											<li>
-												<a class="" href="?page={{ inventory.previous_page_number }}">Anterior</a>
-											</li>
-					        	{% endif %}
-										<li class="info-pages">
-				            	Page {{ inventory.number }} of {{ inventory.paginator.num_pages }}.
-				        		</li>
-						        {% if inventory.has_next %}
-						        	<li>
-						            <a href="?page={{ inventory.next_page_number }}">Siguiente</a>
-						          </li>
-						          <li><a href="?page={{ inventory.paginator.num_pages }}">&raquo;</a></li>
-						        {% endif %}
-						    	</ul>
-								</td>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
-			</div>
-		</div>
-	</div>
+                        <div class="col-md-12">
+                            <div class="panel panel-primary opad">
+                                <div class="panel-heading">Opciones Avanzadas <a class="close">&times;</a></div>
+                                <div class="panel-body">
+                                    <strong>Ingreso a Inventario</strong>
+                                    <p>
+                                        <span class="glyphicon glyphicon-ok-sign">
+                                        </span>  Ingresar al inventario, todo la lista de Materiales con stock 0, de lo contrario especifica aqui.
+                                        <input type="number" class="input-sm" name="ias" min="0" value="0">
+                                        <button class="btn btn-sm btn-primary btn-register-all-list">
+                                        <span class="glyphicon glyphicon-chevron-right"></span>
+                                        <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                                        </button>
+                                    </p>
+                                    <p>
+                                        <span class="glyphicon glyphicon-ok-sign"></span> Pasar el Stock del Periodo pasado al actual.
+                                    </p>
+                                    <p>
+                                        <!-- cbo almacén a copiar-->
+                                        Almacén a ingresar:
+                                        <select name="alcp" id="" class="input-sm opadcbo">
+                                            {% for a in almacen %}
+                                                <option value="{{a.alid}}">{{a.nom}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <!-- cbo period -->
+                                        Periodo a copiar:
+                                        <select name="pewh" id="" class="input-sm opadcbo">
+                                        {% for p in periodo %}
+                                            <option value="{{p}}">{{p}}</option>
+                                        {% empty %}
+                                            <option value="">Nothing</option>
+                                        {% endfor %}
+                                    </select>
+                                    <!-- cbo almacén -->
+                                    Almacén a copiar:
+                                    <select name="alwh" id="" class="input-sm opadcbo">
+                                        {% for a in almacen %}
+                                            <option value="{{a.alid}}">{{a.nom}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="btn btn-sm btn-primary btn-list-period">
+                                        <span class="glyphicon glyphicon-chevron-right"></span>
+                                        <span class="glyphicon glyphicon-ok-circle"></span>
+                                    </button>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        {% if user.get_profile.empdni.charge.area|lower == 'administrator' %}
+                            <div class="col-md-12">
+                                <button class="btn btn-danger" id="bdelAllInv" type="button">
+                                    <i class="fa fa-fire"></i>
+                                    <span>Eliminar Todo</span>
+                                </button>
+                                <button class="btn btn-success" id="bupall" type="button">
+                                    <i class="fa fa-upload"></i>
+                                    <span>Cargar Archivo</span>
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </aside>
+            </div>
+            <div class="col-md-12">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-condensed">
+                        <thead>
+                            <tr class="brand-warning">
+                                <th class="text-center"></th>
+                                <th class="text-center">Código</th>
+                                <th class="text-center">Descripción</th>
+                                <th class="text-center">Unid.</th>
+                                <th class="text-center">Min</th>
+                                <th class="text-center">Stock</th>
+                                <th class="text-center">Ingreso</th>
+                                <th class="text-center">O. Compra</th>
+                                <th class="text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody data-templeta-name="list-materials">
+                            {% for x in inventory %}
+                                <tr class="{% if x.stock > x.stkmin %}success{% elif x.stock <= x.stkmin and x.stock > 0 %}warning{% elif x.stock <= 0 %}danger{% endif %}">
+                                    <td>{{ forloop.counter }}</td>
+                                    <td><a href="{% url 'storebrand' x.materiales_id %}">{{ x.materiales_id }}</a></td>
+                                    <td>{{ x.materiales.matnom }} - {{ x.materiales.matmed }}</td>
+                                    <td>{{ x.materiales.unidad_id }}</td>
+                                    <td>{{ x.stkmin }}</td>
+                                    <td>{{ x.stock }}</td>
+                                    <td>{{ x.ingreso }}</td>
+                                    <td>{{ x.compra_id }}</td>
+                                    <td>
+                                        <button value="{{ x.materiales_id }}" name="btn-{{ x.materiales_id }}" class="btn btn-xs btn-warning text-black btn-add-supply"
+                                        {% if x.spptag %}
+                                            disabled
+                                        {% endif %}
+                                        ><span class="glyphicon glyphicon-plus"></span><span class="glyphicon glyphicon-shopping-cart"></span></button>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="10" class="text-center">
+                                    <ul class="pager">
+                                        {% if inventory.has_previous %}
+                                            <li><a href="?page=1">&laquo;</a></li>
+                                            <li>
+                                                <a class="" href="?page={{ inventory.previous_page_number }}">Anterior</a>
+                                            </li>
+                                {% endif %}
+                                        <li class="info-pages">
+                                Page {{ inventory.number }} of {{ inventory.paginator.num_pages }}.
+                                </li>
+                                {% if inventory.has_next %}
+                                    <li>
+                                    <a href="?page={{ inventory.next_page_number }}">Siguiente</a>
+                                  </li>
+                                  <li><a href="?page={{ inventory.paginator.num_pages }}">&raquo;</a></li>
+                                {% endif %}
+                                </ul>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% csrf_token %}
 <!-- Block modals -->
 <div class="modal fade maddsupply">
-	<div class="modal-dialog modal-sm">
-		<div class="modal-content">
-			<div class="modal-header">
-				<a class="close" data-dismiss="modal">&times;</a>
-				<h4>Agregar a Suministro</h4>
-			</div>
-			<div class="modal-body">
-				<div class="form-group has-warning">
-					<label class="control-label">Código</label>
-					<input type="text" name="add-id" class="form-control add-id" readonly />
-				</div>
-				<div class="form-group has-warning">
-					<label class="control-label">Cantidad</label>
-					<input type="number" name="add-cant" class="form-control add-cant" min="1" value="1" />
-				</div>
-				<button data-dismiss="modal" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-remove"></span> Salir</button>
-				<button class="btn btn-sm btn-warning pull-right text-black btn-stmp-supply"><span class="glyphicon glyphicon-save"></span> Añadir</button>
-			</div>
-		</div>
-	</div>
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a class="close" data-dismiss="modal">&times;</a>
+                <h4>Agregar a Suministro</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group has-warning">
+                    <label class="control-label">Código</label>
+                    <input type="text" name="add-id" class="form-control add-id" readonly />
+                </div>
+                <div class="form-group has-warning">
+                    <label class="control-label">Cantidad</label>
+                    <input type="number" name="add-cant" class="form-control add-cant" min="1" value="1" />
+                </div>
+                <button data-dismiss="modal" class="btn btn-sm btn-default"><span class="glyphicon glyphicon-remove"></span> Salir</button>
+                <button class="btn btn-sm btn-warning pull-right text-black btn-stmp-supply"><span class="glyphicon glyphicon-save"></span> Añadir</button>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="modal fade" id="ufile">
-	<div class="modal-dialog modal-sm">
-		<div class="modal-content">
-			<div class="modal-header">
-				<a href="#" class="close" data-dismiss="">&times;</a>
-				Cargar Archivo
-			</div>
-			<div class="modal-body">
-				<div class="form-group">
-					<label class="control-label">Archivo</label>
-					<input type="file" id="afile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-				</div>
-				<div class="form-group text-right">
-					<button type="button" class="btn btn-primary upfile">
-						<i class="fa fa-upload"></i> Cargar
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="">&times;</a>
+                Cargar Archivo
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">Archivo</label>
+                    <input type="file" id="afile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                </div>
+                <div class="form-group text-right">
+                    <button type="button" class="btn btn-primary upfile">
+                        <i class="fa fa-upload"></i> Cargar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
