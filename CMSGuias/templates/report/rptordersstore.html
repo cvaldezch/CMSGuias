@@ -1,17 +1,17 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Orders stores</title>
     <link rel="stylesheet" type="text/css" href="/media/css/reports/ordersstore.css">
 </head>
+
 <body>
     <header>
         {% comment %}<img id="logo" src="/media/images/icrlogo.png" alt="image">{% endcomment %}
-        <div id="dir" >
-            {{ request.session.company.address }}<br >
-            Central Telefonica: (511) {{ request.session.company.phone }}<br >
-            E-mail: logistica@icrperusa.com
+        <div id="dir">
+            {{ request.session.company.address }}<br> Central Telefonica: (511) {{ request.session.company.phone }}<br> E-mail: logistica@icrperusa.com
         </div>
         <div id="info-type">
             <h1>Materiales</h1>
@@ -22,40 +22,73 @@
         </div>
         <div id="bedside-col1">
             <table>
-            <tr><td width="2cm"><strong>PROYECTO :</strong></td><td> {{ order.proyecto.nompro }}</td></tr>
-            <tr><td><strong>SUBPROYECT.:</strong></td><td> {{ order.subproyecto.nomsub }}</td></tr>
-            <tr><td><strong>SECTOR :</strong></td><td> {{ order.sector.nomsec }}</td></tr>
-            <tr>
-                <td><strong>GRUPO/AREA:</strong></td>
-                <td>
-                    {{ order.dsector.sgroup.name }} / {{ order.dsector.name }} <br>
-                    {{ order.dsector.sgroup_id }} / {{ order.dsector_id }}
-                </td>
-            </tr>
-            <tr><td><strong>ALMACEN :</strong></td><td> {{ order.almacen.nombre }}</td></tr>
-            <tr><td><strong>ASUNTO :</strong></td><td> {{ order.asunto }}</td></tr>
-            <tr><td><strong>CLIENTE: </strong></td><td>{{ order.proyecto.ruccliente_id }} - {{ order.proyecto.ruccliente.razonsocial }}</td></tr>
-            <tr>
-                <td><strong>RESPONSABLE:</strong></td>
-                <td>&nbsp;&nbsp;&nbsp;{{order.proyecto.empdni.name_complete}}</td>
-            </tr>
+                <tr>
+                    <td width="2cm"><strong>PROYECTO :</strong></td>
+                    <td> {{ order.proyecto.nompro }}</td>
+                </tr>
+                <tr>
+                    <td><strong>SUBPROYECT.:</strong></td>
+                    <td> {{ order.subproyecto.nomsub }}</td>
+                </tr>
+                <tr>
+                    <td><strong>SECTOR :</strong></td>
+                    <td> {{ order.sector.nomsec }}</td>
+                </tr>
+                <tr>
+                    <td><strong>GRUPO/AREA:</strong></td>
+                    <td>
+                        {{ order.dsector.sgroup.name }} / {{ order.dsector.name }}<br>
+                        {{ order.dsector.sgroup_id }} / {{ order.dsector_id }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>ALMACEN :</strong></td>
+                    <td> {{ order.almacen.nombre }}</td>
+                </tr>
+                <tr>
+                    <td><strong>ASUNTO :</strong></td>
+                    <td> {{ order.asunto }}</td>
+                </tr>
+                <tr>
+                    <td><strong>CLIENTE: </strong></td>
+                    <td>{{ order.proyecto.ruccliente_id }} - {{ order.proyecto.ruccliente.razonsocial }}</td>
+                </tr>
+                <tr>
+                    <td><strong>RESPONSABLE:</strong></td>
+                    <td>&nbsp;&nbsp;&nbsp;{{order.proyecto.empdni.name_complete}}</td>
+                </tr>
             </table>
         </div>
         <div id="bedside-col2">
             <table>
-            <tr><td width="3cm"><strong>REGISTRADO :</strong></td><td> {{ order.registrado }}</td></tr>
-            <tr><td><strong>TRASLADO :</strong></td><td> {{ order.traslado }}</td></tr>
-            <tr><td><strong>ESTADO :</strong></td><td> {{ order.status }}</td></tr>
-            <tr><td><strong>CREADO POR :</strong></td><td>{{ order.empdni.firstname }} {{ order.empdni.lastname }}</td></tr>
-            <tr>
-        <td><strong>IMPRESO POR:</strong></td>
-        <td>{{ user.get_profile.empdni.firstname }}, {{ user.get_profile.empdni.lastname }}</td>
-      </tr>
-      <tr>
-          <td><strong>Fecha y Hora:</strong></td>
-          <td>{% now "SHORT_DATETIME_FORMAT" %}</td>
-      </tr>
-            <tr><td><strong>OBSERVACION :</strong></td><td> {{ order.obser|removetags:"p"|safe }}</td></tr>
+                <tr>
+                    <td width="3cm"><strong>REGISTRADO :</strong></td>
+                    <td> {{ order.registrado }}</td>
+                </tr>
+                <tr>
+                    <td><strong>TRASLADO :</strong></td>
+                    <td> {{ order.traslado }}</td>
+                </tr>
+                <tr>
+                    <td><strong>ESTADO :</strong></td>
+                    <td> {{ order.status }}</td>
+                </tr>
+                <tr>
+                    <td><strong>CREADO POR :</strong></td>
+                    <td>{{ order.empdni.firstname }} {{ order.empdni.lastname }}</td>
+                </tr>
+                <tr>
+                    <td><strong>IMPRESO POR:</strong></td>
+                    <td>{{ user.get_profile.empdni.firstname }}, {{ user.get_profile.empdni.lastname }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Fecha y Hora:</strong></td>
+                    <td>{% now "SHORT_DATETIME_FORMAT" %}</td>
+                </tr>
+                <tr>
+                    <td><strong>OBSERVACION :</strong></td>
+                    <td> {{ order.obser|removetags:"p"|safe }}</td>
+                </tr>
             </table>
         </div>
     </header>
@@ -64,7 +97,7 @@
     <section>
         <div class="details">
             {% for c in lista %}
-            <table repeat="1">
+            <table class="painting" repeat="1">
                 <thead>
                     <tr>
                         <th width="1.5cm">Item</th>
@@ -79,20 +112,17 @@
                 </thead>
                 <tbody>
                     {% for x in c %}
-                        <tr>
-                            <td class="text-center item">{{ x.item|floatformat:"2" }}</td>
-                            <td class="text-center cod">{{ x.materials }}</td>
-                            <td>
-                                {{ x.name }}
-                                {% if x.comment|length %}
-                                    - {{ x.comment }}
-                                {% endif %}
-                            </td>
-                            <td class="text-center">{{ x.unit }}</td>
-                            <td class="text-center">{{ x.brand }}</td>
-                            <td class="text-center">{{ x.model }}</td>
-                            <td class="text-center">{{ x.quantity }}</td>
-                            <!-- <td class="text-center item">{{ forloop.counter|floatformat:"2" }}</td>
+                    <tr>
+                        <td class="text-center item">{{ x.item|floatformat:"2" }}</td>
+                        <td class="text-center cod">{{ x.materials }}</td>
+                        <td>
+                            {{ x.name }} {% if x.comment|length %} - {{ x.comment }} {% endif %}
+                        </td>
+                        <td class="text-center">{{ x.unit }}</td>
+                        <td class="text-center">{{ x.brand }}</td>
+                        <td class="text-center">{{ x.model }}</td>
+                        <td class="text-center">{{ x.quantity }}</td>
+                        <!-- <td class="text-center item">{{ forloop.counter|floatformat:"2" }}</td>
                             <td class="text-center cod">{{ x.materiales_id }}</td>
                             <td>{{ x.materiales.matnom }} -
                             </td>
@@ -102,103 +132,189 @@
                             <td class="text-center">{{ x.brand.brand }}</td>
                             <td class="text-center">{{ x.model.model }}</td>
                             <td class="text-center">{{ x.cantidad }}</td> -->
-                        </tr>
+                    </tr>
                     {% endfor%}
                 </tbody>
+                {% comment %}
                 <tfoot>
                     <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                     </tr>
-                </tfoot>
+                </tfoot>{% endcomment %}
             </table>
             {% if not forloop.last %}
-                <div><pdf:nextpage /></div>
-            {% endif %}
-            {% endfor %}
+            <div>
+                <pdf:nextpage />
+            </div>
+            {% endif %} {% endfor %}
         </div>
     </section>
     {% if npcalc %}
-        <pdf:nextpage>
+    <pdf:nextpage>
         <br><br>
         <section class="details">
             {% load extras %}
-            <table>
+            <table class="painting">
                 <thead>
                     <tr>
-                        <th>0/Type</th>
-                        {% for x in keys %}
-                            <th>{{x}}</th>
+                        <td></td>
+                        <th colspan="{{keys|length}}">TIPOS</th>
+                    </tr>
+                    <tr>
+                        <th>Código / Diametro</th>
+                        {% for x in tipo %}
+                            {% if x.ktype in keys %}
+                                <th>{{x.ktype}} - {{x.ntype}}</th>
+                            {% endif %}
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
                     {% for k,v in npcalc.items %}
-                        <tr>
-                            <td>{{k}} / {{v.meter}}</td>
-                            {% for n in keys %}
-                                <td class="text-center">{{v|get_val:n|get_val:'count'}}</td>
-                            {% endfor %}
-                        </tr>
+                    <tr>
+                        <td>{{k}} / {{v.meter}}</td>
+                        {% for n in keys %}
+                        <td class="text-center">{{v|get_val:n|get_val:'count'}}</td>
+                        {% endfor %}
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            <br>
+            <h3>Calculo de Pintura</h3>
+            <table class="painting">
+                <thead>
+                    <tr>
+                        <th>Diametro</th>
+                        <th>Area externa en m2</th>
+                        <th>ml</th>
+                        <th>m2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for k,v in npcalc.items %}
+                    <tr>
+                        <td class="text-center">{{v.meter}}</td>
+                        <td class="text-center">{{v.area}}</td>
+                        <td class="text-center">{{v.ml}}</td>
+                        <td class="text-center">{{v.m2}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3">AREA TOTAL</th>
+                        <td class="text-center">{{cpainting.areat}}</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <br>
+            <table class="painting">
+                <thead>
+                    <tr>
+                        <th>Total <br> Area m2</th>
+                        <th class="item">Capas</th>
+                        <th>Descripción</th>
+                        <th>Espesor <br> Pelicula Seca (mils)</th>
+                        <th>% Solidos en Volumen</th>
+                        <th>Rend. Teórico a 1 mil (m2/Gln)</th>
+                        <th>Rend. Teórico (m2/GLN)</th>
+                        <th>Rend. Práctico Aprox. (m2/GLN)</th>
+                        <th>Total GALONES Estimados</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-center">{{cpainting.areat}}</td>
+                        <td class="text-center">{{cpainting.capas}}</td>
+                        <td>CATALIZADOR BASE</td>
+                        <td class="text-center">{{cpainting.pbase}}</td>
+                        <td class="text-center">{{cpainting.sv}}</td>
+                        <td class="text-center">{{cpainting.rtm}}</td>
+                        <td class="text-center">{{cpainting.rtb}}</td>
+                        <td class="text-center">{{cpainting.rpb}}</td>
+                        <td class="text-center">{{cpainting.tgb}}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">{{cpainting.areat}}</td>
+                        <td class="text-center">{{cpainting.capas}}</td>
+                        <td>CATALIZADOR ACABADO</td>
+                        <td class="text-center">{{cpainting.pacabado}}</td>
+                        <td class="text-center">{{cpainting.sv}}</td>
+                        <td class="text-center">{{cpainting.rtm}}</td>
+                        <td class="text-center">{{cpainting.rta}}</td>
+                        <td class="text-center">{{cpainting.rpa}}</td>
+                        <td class="text-center">{{cpainting.tga}}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">{{cpainting.areat}}</td>
+                        <td class="text-center"></td>
+                        <td>DILUYENTE</td>
+                        <td class="text-center"></td>
+                        <td class="text-center"></td>
+                        <td class="text-center"></td>
+                        <td class="text-center"></td>
+                        <td class="text-center"></td>
+                        <td class="text-center">{{cpainting.tgd}}</td>
+                    </tr>
+                </tbody>
+            </table>
         </section>
-    {% endif %}
-    {% if nipples %}
+        {% endif %} {% if nipples %}
         <pdf:nextpage>
-        <pdf:nexttemplate name="nipples">
-        <br><br>
-        <h3>Lista de Nipples</h3>
-        <section>
-            <div class="details">
-            {% for n in nipples %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th width="2.5cm">Código</th>
-                            <th width="1cm">Cantidad</th>
-                            <th width="8cm">Descripción</th>
-                            <th width="3cm">Diametro</th>
-                            <th width="1cm"></th>
-                            <th width="1cm">Medida</th>
-                            <th width="1cm">Unidad</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for x in n %}
-                            <tr>
-                                <td class="text-center item">{{ x.item }}</td>
-                                <td class="text-center cod">{{ x.materials }}</td>
-                                <td class="text-center">{{ x.quantity }}</td>
-                                <td class="">Niple{{ x.quantity|pluralize }} {{ x.type }}{{ x.quantity|pluralize }}
-                                {% if x.comment|length %}
-                                    - {{ x.comment }}
-                                {% endif %}
-                                </td>
-                                <td class="text-center">{{ x.measure }}</td>
-                                <td class="text-center">x</td>
-                                <td class="text-center">{{ x.meter }}</td>
-                                <td class="text-center">cm</td>
-                            </tr>
-                        {% endfor%}
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="8"></td>
-                        </tr>
-                    </tfoot>
-                </table>
-                {% if not forloop.last %}
-                    <div><pdf:nextpage /></div>
+            <pdf:nexttemplate name="nipples">
+                <br><br>
+                <h3>Lista de Nipples</h3>
+                <section>
+                    <div class="details">
+                        {% for n in nipples %}
+                        <table class="painting">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th width="2.5cm">Código</th>
+                                    <th width="1cm">Cant.</th>
+                                    <th width="8cm">Descripción</th>
+                                    <th width="3cm">Diametro</th>
+                                    <th width="1cm"></th>
+                                    <th width="1cm">Medida</th>
+                                    <th width="1cm">UND</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for x in n %}
+                                <tr>
+                                    <td class="text-center item">{{ x.item }}</td>
+                                    <td class="text-center cod">{{ x.materials }}</td>
+                                    <td class="text-center">{{ x.quantity }}</td>
+                                    <td class="">Niple{{ x.quantity|pluralize }} {{ x.type }}{{ x.quantity|pluralize }} {% if x.comment|length %} - {{ x.comment }} {% endif %}
+                                    </td>
+                                    <td class="text-center">{{ x.measure }}</td>
+                                    <td class="text-center">x</td>
+                                    <td class="text-center">{{ x.meter }}</td>
+                                    <td class="text-center">cm</td>
+                                </tr>
+                                {% endfor%}
+                            </tbody>
+                            {% comment %}
+                            <tfoot>
+                                <tr>
+                                    <td colspan="8"></td>
+                                </tr>
+                            </tfoot>{% endcomment %}
+                        </table>
+                        {% if not forloop.last %}
+                        <div>
+                            <pdf:nextpage />
+                        </div>
+                        {% endif %} {% endfor %}
+                    </div>
+                </section>
                 {% endif %}
-            {% endfor %}
-            </div>
-        </section>
-    {% endif %}
 </body>
+
 </html>

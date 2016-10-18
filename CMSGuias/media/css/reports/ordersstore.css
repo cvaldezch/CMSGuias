@@ -1,88 +1,98 @@
 @page {
-	size: a4;
-	margin: 1cm;
-	@frame header_frame {
-		-pdf-frame-content: logo;
-		margin-top: 1cm; top: 0; left: 1cm;
-	}
-	@frame header_frame {
-		-pdf-frame-content: dir;
-		margin-top: 1cm;top: 0pt;
-	}
-	@frame header_frame {
-		-pdf-frame-content: info-type;
-		margin-top: 1cm;top: 0cm;right: 1cm;width: 9%;
-	}
-	@frame header_frame {
-		-pdf-frame-content: nro-serie;
-		margin-top: 2.5cm; right: 1cm; top: 0; width: 9cm;
-	}
-	@frame header_frame {
-		-pdf-frame-content: nro;
-		margin-top: 3.3cm; right: 1cm; width: 9cm;
-	}
-	@frame header_frame {
-		-pdf-frame-content: bedside-col1;
-		left: 1cm; margin-top: 3.8cm; width: 9cm;
-	}
-	@frame header_frame {
-		-pdf-frame-content: bedside-col2;
-		right: 1cm; margin-top: 4.3cm; width: 9cm;
-	}
-	@frame content_frame {
-		/*-pdf-frame-content: details;*/
-		top: 7cm;
-		margin-left: 1cm;
-		margin-right: 1cm;
-	}
-	@frame footer_frame {
-		-pdf-frame-content: footer_content;
-		left: 50pt; width: 512pt; top: 772pt; height: 20pt;
-	}
+    size: a4;
+    margin: 1cm;
+    @frame header_frame {
+        -pdf-frame-content: logo;
+        margin-top: 1cm; top: 0; left: 1cm;
+    }
+    @frame header_frame {
+        -pdf-frame-content: dir;
+        margin-top: 1cm;top: 0pt;
+    }
+    @frame header_frame {
+        -pdf-frame-content: info-type;
+        margin-top: 1cm;top: 0cm;right: 1cm;width: 9%;
+    }
+    @frame header_frame {
+        -pdf-frame-content: nro-serie;
+        margin-top: 2.5cm; right: 1cm; top: 0; width: 9cm;
+    }
+    @frame header_frame {
+        -pdf-frame-content: nro;
+        margin-top: 3.3cm; right: 1cm; width: 9cm;
+    }
+    @frame header_frame {
+        -pdf-frame-content: bedside-col1;
+        left: 1cm; margin-top: 3.8cm; width: 9cm;
+    }
+    @frame header_frame {
+        -pdf-frame-content: bedside-col2;
+        right: 1cm; margin-top: 4.3cm; width: 9cm;
+    }
+    @frame content_frame {
+        /*-pdf-frame-content: details;*/
+        top: 7cm;
+        margin-left: 1cm;
+        margin-right: 1cm;
+    }
+    @frame footer_frame {
+        -pdf-frame-content: footer_content;
+        left: 50pt; width: 512pt; top: 772pt; height: 20pt;
+    }
 }
 @page nipples {
-	size: a4;
-	margin: 1cm;
+    size: a4;
+    margin: 1cm;
 }
 img{
-	zoom: 80%;
+    zoom: 80%;
 }
 #dir,
 #nro-serie,
 .text-center {
-	text-align: center;
+    text-align: center;
 }
 #nro-serie h1 {
-	font-size: 24px;
+    font-size: 24px;
 }
-.details table > thead > tr { background-color: dodgerblue; border: 0.01 solid dodgerblue; padding-top: .15cm; padding-bottom: 0.1cm; }
-.details table > tbody > tr { border-left: .01cm solid dodgerblue; border-right: .01cm solid dodgerblue; padding-top: .05cm; padding-bottom: 0.01cm; }
-/*.details table > tfoot > tr { border-top: 0.01cm solid dodgerblue; }*/
-.details table > tbody > tr:last-child { border-bottom: 1px solid dodgerblue; }
+/*.details table.principal > thead > tr { background-color: dodgerblue; border: 0.01 solid dodgerblue; padding-top: .15cm; padding-bottom: 0.1cm; }
+.details table.principal > tbody > tr { border-left: .01cm solid dodgerblue; border-right: .01cm solid dodgerblue; padding-top: .05cm; padding-bottom: 0.01cm; }
+/*.details table.principal > tfoot > tr { border-top: 0.01cm solid dodgerblue; }*/
+/*.details table.principal > tbody > tr:last-child { border-bottom: 1px solid dodgerblue; }
+.details table.principal > tfoot > tr { border: 1px solid dodgerblue; padding-top: .05cm; }*/
+
+table > tbody > tr > td {
+    padding-left: 2px;
+}
+table.painting thead tr {
+     background-color: #d32b2b;
+     border: 0.01 solid #d32b2b;
+     padding-top: .15cm;
+     padding-bottom: 0.1cm;
+}
+table.painting tbody tr {
+    border-left: .01cm solid #d32b2b;
+    border-right: .01cm solid #d32b2b;
+    padding-top: .05cm;
+    padding-bottom: 0.01cm;
+}
+table.painting tfoot tr { 
+    border: 1px solid #d32b2b;
+    padding-top: .05cm;
+}
+table.painting tbody tr:last-child {
+    border-bottom: 1px solid #d32b2b !important;
+}
+
 .nom {
-	width: 7cm;
+    width: 7cm;
 }
 .cod{
-	font-size: 8px;
+    font-size: 8px;
 }
 .item {
-	width: 1cm;
+    width: 1cm;
 }
 .text-center{
-	text-align: center;
-}
-.table-note-footer {
-	/*border: 1px solid black;*/
-}
-.table-note-footer > tbody > tr:first-child > td {
-	border-top: 1px solid black;
-	border-left: 1px solid black;
-	border-right: 1px solid black;
-	padding-top: 0.03cm;
-	padding-left: 0.08cm;
-}
-.table-note-footer > tbody > tr:last-child > td {
-	border-bottom: 1px solid black;
-	border-left: 1px solid black;
-	border-right: 1px solid black;
+    text-align: center;
 }

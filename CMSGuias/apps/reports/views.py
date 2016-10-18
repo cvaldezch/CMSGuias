@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum, Q
 from django.http import HttpResponse, Http404
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext, TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.views.generic import TemplateView
@@ -78,77 +78,78 @@ def view_test_pdf(request):
 def rpt_orders_details(request, pid, sts):
     context = dict()
     try:
-        if request.method == 'GET':
-            order = get_object_or_404(models.Pedido, pk=pid, status=sts)
-            lista = models.Detpedido.objects.filter(
-                        pedido_id=pid).order_by('materiales__matnom')
-            nipples = models.Niple.objects.filter(
-                        pedido_id__exact=pid).order_by('materiales')
-            context['order'] = order
-            lcount = float(lista.count())
-            if lcount > 30:
-                sheet = int(float('%.0f' % (lcount)) / 30)
-                if float(float('%.3f' % (float(lcount))) / 30) > sheet:
-                    sheet += 1
-            else:
-                sheet = 1
-            counter = 0
-            section = list()
-            for c in range(sheet):
-                dataset = lista[counter:counter+30]
-                tmp = list()
-                for x in dataset:
-                    tmp.append({
-                        'item': counter + 1,
-                        'materials': x.materiales_id,
-                        'name': '%s - %s' % (
-                                x.materiales.matnom,
-                                x.materiales.matmed),
-                        'unit': x.materiales.unidad.uninom,
-                        'brand': x.brand.brand,
-                        'model': x.model.model,
-                        'quantity': x.cantidad,
-                        'comment': x.comment})
-                    counter += 1
-                section.append(tmp)
-            context['lista'] = section
-            secn = list()
-            count = 0
-            sheet = 0
-            tipo = globalVariable.tipo_nipples
-            if nipples.count() > 35:
-                sheet = int(float('%.0f' % (nipples.count())) / 30)
-                if float(float('%.3f' % (float(nipples.count()))) / 30) > sheet:
-                    sheet += 1
-            else:
-                sheet = 1
-            # print sheet, 'sheet'
-            # print nipples.count(), 'nipples'
-            for c in range(sheet):
-                datset = nipples[count:count+35]
-                tmp = list()
-                # print datset, 'datset'
-                for x in datset:
-                    tmp.append({
-                        'item': (count + 1),
-                        'materials': x.materiales_id,
-                        'quantity': x.cantidad,
-                        'type': tipo[x.tipo],
-                        'comment': x.comment,
-                        'measure': x.materiales.matmed,
-                        'meter': x.metrado,
-                        'comment': x.comment})
-                    print tmp, 'temp'
-                    count += 1
-                secn.append(tmp)
-            context['nipples'] = secn
-            context['tipo'] = globalVariable.tipo_nipples
+        return redirect('rpt_order', pid=pid)
+    #     if request.method == 'GET':
+    #         order = get_object_or_404(models.Pedido, pk=pid, status=sts)
+    #         lista = models.Detpedido.objects.filter(
+    #                     pedido_id=pid).order_by('materiales__matnom')
+    #         nipples = models.Niple.objects.filter(
+    #                     pedido_id__exact=pid).order_by('materiales')
+    #         context['order'] = order
+    #         lcount = float(lista.count())
+    #         if lcount > 30:
+    #             sheet = int(float('%.0f' % (lcount)) / 30)
+    #             if float(float('%.3f' % (float(lcount))) / 30) > sheet:
+    #                 sheet += 1
+    #         else:
+    #             sheet = 1
+    #         counter = 0
+    #         section = list()
+    #         for c in range(sheet):
+    #             dataset = lista[counter:counter+30]
+    #             tmp = list()
+    #             for x in dataset:
+    #                 tmp.append({
+    #                     'item': counter + 1,
+    #                     'materials': x.materiales_id,
+    #                     'name': '%s - %s' % (
+    #                             x.materiales.matnom,
+    #                             x.materiales.matmed),
+    #                     'unit': x.materiales.unidad.uninom,
+    #                     'brand': x.brand.brand,
+    #                     'model': x.model.model,
+    #                     'quantity': x.cantidad,
+    #                     'comment': x.comment})
+    #                 counter += 1
+    #             section.append(tmp)
+    #         context['lista'] = section
+    #         secn = list()
+    #         count = 0
+    #         sheet = 0
+    #         tipo = globalVariable.tipo_nipples
+    #         if nipples.count() > 35:
+    #             sheet = int(float('%.0f' % (nipples.count())) / 30)
+    #             if float(float('%.3f' % (float(nipples.count()))) / 30) > sheet:
+    #                 sheet += 1
+    #         else:
+    #             sheet = 1
+    #         # print sheet, 'sheet'
+    #         # print nipples.count(), 'nipples'
+    #         for c in range(sheet):
+    #             datset = nipples[count:count+35]
+    #             tmp = list()
+    #             # print datset, 'datset'
+    #             for x in datset:
+    #                 tmp.append({
+    #                     'item': (count + 1),
+    #                     'materials': x.materiales_id,
+    #                     'quantity': x.cantidad,
+    #                     'type': tipo[x.tipo],
+    #                     'comment': x.comment,
+    #                     'measure': x.materiales.matmed,
+    #                     'meter': x.metrado,
+    #                     'comment': x.comment})
+    #                 print tmp, 'temp'
+    #                 count += 1
+    #             secn.append(tmp)
+    #         context['nipples'] = secn
+    #         context['tipo'] = globalVariable.tipo_nipples
 
-            html = render_to_string(
-                    'report/rptordersstore.html',
-                    context,
-                    context_instance=RequestContext(request))
-            return generate_pdf(html)
+    #         html = render_to_string(
+    #                 'report/rptordersstore.html',
+    #                 context,
+    #                 context_instance=RequestContext(request))
+    #         return generate_pdf(html)
     except TemplateDoesNotExist, e:
         raise Http404(e)
 
@@ -590,9 +591,31 @@ class ReportsOrder(TemplateView):
             if nipples.count() > 0:
                 context['keys'] = sorted(list(set(self.cnip['keys'])))
                 del self.cnip['keys']
+                # calc meter cuac
+                areat = 0
+                for x in self.cnip:
+                    self.cnip[x]['ml'] = round(self.cnip[x]['ml'], 2)
+                    self.cnip[x]['m2'] = round((self.cnip[x]['area'] * self.cnip[x]['ml']), 3)
+                    areat += self.cnip[x]['m2']
+                print 'AREA TOTAL ', areat
+                context['cpainting'] = {
+                    'areat': round(areat, 2),
+                    'capas': 1,
+                    'pbase': 4,
+                    'pacabado': 4,
+                    'sv': '85%',
+                    'rtm': 126.65}
+                context['cpainting']['rtb'] = round((context['cpainting']['rtm'] / context['cpainting']['pbase']), 2)
+                context['cpainting']['rta'] = round((context['cpainting']['rtm'] / context['cpainting']['pacabado']), 2)
+                context['cpainting']['rpb'] = round((context['cpainting']['rtb'] * 0.5), 3)
+                context['cpainting']['rpa'] = round((context['cpainting']['rta'] * 0.5), 3)
+                context['cpainting']['tgb'] = round((context['cpainting']['areat']/context['cpainting']['rpb']), 2)
+                context['cpainting']['tga'] = round((context['cpainting']['areat']/context['cpainting']['rpa']), 2)
+                context['cpainting']['tgd'] = round(((context['cpainting']['tga'] + context['cpainting']['tgb']) / 3), 2)
                 context['npcalc'] = self.cnip
             print json.dumps(self.cnip)
-            context['tipo'] = globalVariable.tipo_nipples
+            context['tipo'] = MNiple.objects.filter(flag=True)
+            print context['tipo']
             html = render_to_string(
                     'report/rptordersstore.html',
                     context,
@@ -631,9 +654,9 @@ class ReportsOrder(TemplateView):
                     else:
                         self.cnip[mt] = {x: {'count': (1 * quantity)}}
             if 'ml' in self.cnip[mt]:
-                self.cnip[mt]['ml'] += round(Decimal((meter * quantity) / 100), 2)
+                self.cnip[mt]['ml'] += ((meter * quantity) / 100)
             else:
-                self.cnip[mt]['ml'] = round(Decimal((meter * quantity) / 100), 2)
+                self.cnip[mt]['ml'] = ((meter * quantity) / 100)
                 self.cnip[mt]['meter'] = md
             if 'area' not in self.cnip[mt]:
                 self.cnip[mt]['area'] = round(Materiale.objects.get(materiales_id=mt).matare, 3)

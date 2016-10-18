@@ -17,4 +17,4 @@ def get_val(dictionary, args=''):
         if ks in dictionary:
             return dictionary[ks]
         else:
-            return ''
+            return '-'

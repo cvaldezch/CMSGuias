@@ -49,12 +49,11 @@ tipo_nipples = {
     'B': 'Ranurado',
     'C': 'Rosca - Ranura',
     'D': 'Brida',
-    'E': 'Brida - Brida',
-    'F': 'Brida - Rosca',
-    'G': 'Brida - Ranura',
-    'H': 'Bisel - Bisel',
-    'I': 'Bisel - Rosca',
-    'J': 'BridaHechizo',
+    'E': 'Brida - Rosca',
+    'F': 'Brida - Ranura',
+    'G': 'Bisel - Bisel',
+    'H': 'Bisel - Rosca',
+    'I': 'BridaHechizo',
     '-': ''}
 
 # name month
