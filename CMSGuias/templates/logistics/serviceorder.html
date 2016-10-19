@@ -2,15 +2,11 @@
 {% block title %}
     Service Order
 {% endblock title %}
-{% block script %}
-    <script src="{{ MEDIA_URL }}js/mustache.js"></script>
-    <script src="{{ MEDIA_URL }}js/floatThead.js"></script>
-    <script src="{{ MEDIA_URL }}js/logistics/serviceorder.js"></script>
-{% endblock script %}
 {% block menu %}
     {% include "menus/logistics.htm" %}
 {% endblock menu %}
 {% block content %}
+<link rel="stylesheet" href="{{MEDIA_URL}}vendor/trumbowyg/dist/ui/trumbowyg.min.css">
     <div class="container">
         <div class="well">
             <header>
@@ -280,15 +276,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <a class="close" data-dismiss="modal">&times;</a>
-                <h4 class="text-warning">
-                    Partida de Orden
-                </h4>
+                <h5><strong>Partida de Orden</strong></h5>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group has-warning">
-                            <label class="control-label">Descripción</label>
+                            <!--<label class="control-label">Descripción</label>-->
                             <textarea name="desc" class="form-control" rows="7"></textarea>
                             {# <input type="text" > #}
                         </div>
@@ -318,7 +312,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-sm btn-default" data-dismiss="modal">
+                <button class="btn btn-sm btn-default pull-left" data-dismiss="modal">
                     <span class="fa fa-times"></span>
                     Cancelar
                 </button>
@@ -333,4 +327,8 @@
 </div>
 <!-- variable -->
 {% csrf_token %}
+<script type="text/javascript" defer src="{{ MEDIA_URL }}js/mustache.js"></script>
+<script type="text/javascript" defer src="{{ MEDIA_URL }}js/floatThead.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}vendor/trumbowyg/dist/trumbowyg.min.js" defer></script>
+<script type="text/javascript" defer src="{{ MEDIA_URL }}js/logistics/serviceorder.js"></script>
 {% endblock content %}

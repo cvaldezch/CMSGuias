@@ -20,6 +20,10 @@ $(document).ready(function() {
   $("button.btn-new").on("click", showNew);
   $("button.btn-list").on("click", showList);
   $("button.btn-generate").on("click", saveServiceOrder);
+  $("textarea[name=desc]").trumbowyg();
+  $(".trumbowyg-box,.trumbowyg-editor").css({
+    minHeight: "250px !important"
+  });
 });
 
 showNew = function(event) {
