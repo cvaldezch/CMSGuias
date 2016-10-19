@@ -242,6 +242,8 @@ class ProjectsList(JSONResponseMixin, TemplateView):
                         add.status = 'PE'
                         add.aservices = 0
                         add.save()
+                        pt = Painting(project_id=key, nlayers=1, nfilmb=4, nfilmc=4)
+                        pt.save()
                         context['status'] = True
                     else:
                         context['status'] = False
@@ -2605,16 +2607,27 @@ class PaintingView(JSONResponseMixin, TemplateView):
             raise Http404(e)
 
     @method_decorator(login_required)
-    def post(self, request, *args, **kwags):
+    def post(self, request, *args, **kwargs):
         try:
-            form = PaintingForm(request.POST)
-            print form
+            try:
+                pt = Painting.objects.get(project_id=kwargs['pro'])
+                form = PaintingForm(request.POST, instance=pt)
+            except Painting.DoesNotExist:
+                form = PaintingForm(request.POST)
+            # print form
             if form.is_valid():
                 isf = form.save(commit=False)
-                isf.project_id = kwags['pro']
+                if isf.project_id is None:
+                    isf.project_id = kwargs['pro']
                 isf.save()
-                return redirect(('/sales/projects/manager/%s/' % kwags['pro']))
+                # return redirect(('/sales/projects/manager/%s/' % kwargs['pro']))
+                kwargs['url'] = '/sales/projects/manager/'
+                kwargs['paint'] = Painting.objects.get(project_id=kwargs['pro'])
+                kwargs['status'] = True
+                return render(request, 'sales/paintingproject.html', kwargs)
             else:
-                return redirect(('/sales/projects/paint/%s/' % kwags['pro']))
+                kwargs['status'] = False
+                kwargs['raise'] = 'Formato Incorrecto!'
+                return redirect(('/sales/projects/paint/%s/' % kwargs['pro']))
         except (TemplateDoesNotExist or Exception) as e:
             raise Http404(e)

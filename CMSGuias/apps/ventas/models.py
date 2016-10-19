@@ -1,5 +1,6 @@
-# -*- coding: utf-8 -*-
-#
+# -*- coding: utf-8 -*- 
+# encoding: utf-8
+from __future__ import unicode_literals
 import datetime
 from django.db import models
 # from audit_log.models.fields import LastUserField
@@ -71,7 +72,9 @@ class Proyecto(models.Model):
         return False
 
     def __unicode__(self):
-        return '%s %s %s' % (self.proyecto_id, self.nompro, self.ruccliente_id)
+        return '%s %s %s' % (self.proyecto_id,
+                            unicode(self.nompro).encode('ascii', errors='ignore'),
+                            self.ruccliente_id)
 
 
 class CloseProject(models.Model):
@@ -433,7 +436,7 @@ class Painting(models.Model):
         ordering = ['-project']
 
     def __unicode__(self):
-        return '%s %s %d %d' % (self.project,
+        return 'unicode(%s) %s %d %d' % (self.project,
                                 self.register,
                                 self.nfilmb,
                                 self.nfilmc)

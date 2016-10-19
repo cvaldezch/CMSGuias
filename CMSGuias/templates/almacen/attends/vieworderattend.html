@@ -1,675 +1,675 @@
 {% extends "basemd.html" %}
 {% block menu %}
-	{% include "menus/storagemd.htm" %}
+    {% include "menus/storagemd.htm" %}
 {% endblock menu %}
 {% block content %}
 <section ng-app="attendApp" ng-controller="attendCtrl">
-	<header>
-		<h3>
-			Atender Pedido Nro {{ order.pedido_id }}
-		</h3>
-	</header>
-	{% if order.status == 'IN' or order.status == 'AP' %}
-	<input type="hidden" ng-model="init" ng-init="init=true">
-	<div class="card-panel">
-		<div class="card-content">
-			<div class="row">
-				<div class="col l6 m6 s12">
-					<blockquote>
-						<table>
-							<tbody>
-								<tr>
-									<td><strong>Proyecto</strong></td>
-									<td><strong>{{ order.proyecto_id }}</strong> {{ order.proyecto.nompro }}</td>
-								</tr>
-								<tr>
-									<td><strong>Sector</strong></td>
-									<td>{{ order.sector.nomsec }}</td>
-								</tr>
-								<tr>
-									<td><strong>Grupo / Area</strong></td>
-									<td>
-										{{ order.dsector.sgroup.name }} / {{ order.dsector.name }} <br> {{ order.dsector.sgroup_id }} / {{ order.dsector_id }} <br>
-									</td>
-								</tr>
-								<tr>
-									<td><strong>Almacén</strong></td>
-									<td>{{ order.almacen.nombre }}</td>
-								</tr>
-								<tr>
-									<td><strong>Creado Por</strong></td>
-									<td>{{ order.empdni.name_complete }}</td>
-								</tr>
-								<tr>
-									<td><strong>Asunto</strong></td>
-									<td>{{ order.asunto }}</td>
-								</tr>
-							</tbody>
-						</table>
-					</blockquote>
-				</div>
-				<div class="col l6 m6 s12">
-					<blockquote>
-						<table>
-							<tbody>
-								<tr>
-									<td><strong>Realizado</strong></td>
-									<td>{{ order.registrado }}</td>
-								</tr>
-								<tr>
-									<td><strong>Traslado</strong></td>
-									<td>{{ order.traslado }}</td>
-								</tr>
-								<tr>
-									<td><strong>Observación</strong></td>
-									<td>{{ order.obser|safe }}</td>
-								</tr>
-								<tr>
-									<td><strong>Estado</strong></td>
-									<td>{{ order.status }}</td>
-								</tr>
-								{% if order.orderfile %}
-								<tr>
-									<td><strong>Adjunto</strong></td>
-									<td><a href="{{ MEDIA_URL }}{{ order.empdni.name_complete }}" target="_blank"><i class="fa fa-file fa-lg"></i></a></td>
-								</tr>
-								{% endif %}
-							</tbody>
-						</table>
-					</blockquote>
-				</div>
-			</div>
-		</div>
-		<div class="card-action">
-			<a href="{% url 'rpt_order' order.pedido_id %}" class="btn waves-effect waves-light grey lighten-5 grey-text text-darken-3" target="_blank">
-				<i class="fa fa-file-pdf-o"></i>
-				<span class="hide-on-small-only">
-					IMPRIMIR
-				</span>
-			</a>
-			<button type="button" class="modal-trigger waves-effec wavs-light btn green ligthen-2" data-target="allnip">
-				<i class="fa fa-list-alt"></i>
-				<span class="hide-on-small-only">DET. NIPLES</span>
-			</button>
-			<button type="button" class="btn waves-effect waves-light amber grey-text text-darken-3" ng-click="getStock()">
-				<i class="fa fa-cubes"></i>
-				<span class="hide-on-small-only">
-					VALIDAR STOCK
-				</span>
-			</button>
-			<button type="button" class="btn waves-effect waves-light red grey-text text-lighten-5" ng-disabled="!vstock" ng-click="openGenerateGuide()">
-				<i class="fa fa-file-text-o"></i>
-				<span class="hide-on-small-only">
-					GENERAR GUIA
-				</span>
-			</button>
-			<a href="{% url 'return_order_items_view' order.pedido_id %}" class="btn waves-effect waves-light light-blue accent-4">
-				<i class="fa fa-reply"></i>
-				<span class="hide-on-small-only">
-					RETORNAR ITEMS
-				</span>
-			</a>
-			<!-- <button type="button" class="btn waves-effect waves-light" ng-click="test();">
-				TEST
-			</button> -->
-		</div>
-		<br>
-		<div class="card-panel amber" ng-model="ntf" ng-init="ntf=true" ng-show="ntf">
-			<i class="fa fa-times right" ng-click="ntf=!ntf"></i>
-			<strong>¡Ten en cuenta!</strong> que solo debes de seleccionar 12 items como maximo para generar una guia de remision.
-			<p>
-				Recuerda que solo se debe realizar una guia a la vez.
-			</p>
-		</div>
-		<div class="card-action">
-			<label>Seleccionar </label>
-			<div class="switch">
-				<label>
-					Ninguno
-					<input type="checkbox" ng-model="chk" ng-init="chk=false" ng-change="chkAll()">
-					<span class="lever"></span>
-					Todos
-				</label>
-			</div>
-			<table class="responsive-table highlight">
-				<thead>
-					<tr class="lime lighten-3">
-						<th>#</th>
-						<th></th>
-						<th>Código</th>
-						<th>Descripción</th>
-						<th class="center-align">Unidad</th>
-						<th class="center-align">Marca</th>
-						<th class="center-align">Modelo</th>
-						<th class="center-align">Cantidad</th>
-						<th class="center-align">Por Enviar</th>
-						<th class="center-align">Enviar</th>
-						<th class="center-align">Stock</th>
-						<!--<th class="center-align"></th>-->
-					</tr>
-				</thead>
-				<tbody>
-					{% verbatim %}
-					<tr ng-repeat="x in dorders" id="itd{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" ng-class="{'red lighten-1': (x.fields.stock < 0 || x.fields.stock == null), 'amber lighten-3': (x.fields.stock < x.fields.cantshop && x.fields.stock > 0), 'light-green accent-2': (x.fields.cantshop == 0 && x.fields.tag == '2')}">
-						<td>{{$index + 1}}</td>
-						<td>
-							<input type="checkbox" ng-if="x.fields.tag != '2'" name="chk" id="chk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" data-materials="{{x.fields.materiales.pk}}" data-mname="{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}"
-											data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" data-nbrand="{{x.fields.brand.fields.brand}}" data-nmodel="{{x.fields.model.fields.model}}" data-quantity="{{x.fields.cantshop}}" ng-model="fchk[$index].status" ng-change="changeAttend($index)">
-							<label ng-if="x.fields.stock > 0" for="chk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}"></label>
-						</td>
-						<td><small>{{x.fields.materiales.pk}}</small></td>
-						<td><small>{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}</small></td>
-						<td class="center-align"><small>{{x.fields.materiales.fields.unidad}}</small></td>
-						<td class="center-align"><small>{{x.fields.brand.fields.brand}}</small></td>
-						<td class="center-align"><small>{{x.fields.model.fields.model}}</small></td>
-						<td class="right-align">{{x.fields.cantidad}}</td>
-						<td class="right-align">{{x.fields.cantshop}}</td>
-						<td>
-							<input type="hidden" ng-model="fchk[$index].materials" ng-init="fchk[$index].materials=x.fields.materiales.pk">
-							<input type="hidden" ng-model="fchk[$index].brand" ng-init="fchk[$index].brand=x.fields.brand.pk">
-							<input type="hidden" ng-model="fchk[$index].model" ng-init="fchk[$index].model=x.fields.model.pk">
-							<input type="number" ng-if="x.fields.tag != '2'" class="right-align" min="0" max="{{x.fields.cantshop}}" ng-model="fchk[$index].quantity" ng-init="fchk[$index].quantity=0" value="{{fchk[$index].quantity}}" readonly="true" ng-disabled="!fchk[$index].status" cinmam>
-						</td>
-						<th class="right-align">{{x.fields.stock}}</th>
-						<!--<td> -->
-						<!-- here stock materials -->
-						<!--<input type="number" class="right-align" id="stk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" readonly="true" min="0" max="{{x.fields.cantshop}}" value="0" cinmam>
-							</td>-->
-						<!--<td>
-								<button type="button" class="waves-effect waves-light">
-									<i class="fa fa-cube"></i>
-								</button>
-							</td>-->
-					</tr>
-					{% endverbatim %}
-				</tbody>
-				<tfoot ng-hide="dorders.length">
-					<tr>
-						<td colspan="10">
-							<div class="progress red lighten-4">
-								<div class="indeterminate red accent-3"></div>
-							</div>
-						</td>
-					</tr>
-				</tfoot>
-			</table>
-		</div>
-	</div>
-	<div class="card-panel" ng-show="dnip.length">
-		<div class="card-content">
-			<h4>Niples</h4> {% verbatim %}
-			<table class="responsive-table highlight" ng-repeat="(k, v) in nipdetails | groupBy:'[materials, brand, model]'">
-				<thead>
-					<tr>
-						<th colspan="7">
-							{{v[0].materials}} {{v[0].details[0].name}} {{v[0].details[0].bname}} {{v[0].details[0].mname}}
-						</th>
-					</tr>
-					<tr>
-						<th>#</th>
-						<th>Descripción</th>
-						<th class="right-align">Cantidad</th>
-						<th class="center-align">Tipo</th>
-						<th></th>
-						<th>Medida</th>
-						<th>Por Pedir</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr ng-repeat="n in v[0].details | orderBy: 'meter'">
-						<td>{{$index + 1}}</td>
-						<td>{{n.description}}</td>
-						<td class="right-align">{{n.quantity}}</td>
-						<td class="center-align">{{n.tipo}}</td>
-						<td class="center-align">x</td>
-						<td>{{n.meter}} cm</td>
-						<td class="center-align">{{n.guide}}</td>
-					</tr>
-				</tbody>
-			</table>
-			<!--<table class="responsive-table highlight" ng-repeat="(k, v) in dnip | groupBy: '[materials, brand, model]'">
-					<thead>
-						<tr>
-							<td colspan="7">
-								<strong>{{v[0].materials}} {{v[0].name}} {{v[0].bname}} {{v[0].mname}}</strong>
-								<div class="switch">
-									<label>
-										Ninguno
-										<input type="checkbox" id="">
-										<span class="lever"></span>
-										Todos
-									</label>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<th>#</th>
-							<th></th>
-							<th>Descripción</th>
-							<th class="right-align">Cantidad</th>
-							<th class="center-align">Tipo</th>
-							<th></th>
-							<th>Medida</th>
-							<th>Por Pedir</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr ng-repeat="n in v | orderBy: 'meter'">
-							<td>{{$index + 1}}</td>
-							<td ng-if="n.send > 0">
-								<input type="checkbox">
-								<label for=""></label>
-							</td>
-							<td ng-if="n.send <= 0"></td>
-							<td>{{n.description}}</td>
-							<td class="right-align">{{n.quantity}}</td>
-							<td class="center-align">{{n.tipo}}</td>
-							<td class="center-align">x</td>
-							<td>{{n.meter}} cm</td>
-							<td class="center-align">
-								<input type="number" ng-if="n.send > 0" class="right-align" min="0" max="{{n.send}}" value="{{n.send}}" cinmam>
-								<span ng-if="n.send <= 0">{{n.send}}</span>
-							</td>
-						</tr>
-					</tbody>
-				</table>-->
-			{% endverbatim %}
-		</div>
-	</div>
-	{% else %}
-	<div class="card">
-		<div class="card-content">
-			<h5>
-					El pedido no se puede atender, por las siguiente razones.
-					<br>
-					<small>
-						<p>- Ya se ha completado.</p>
-						<p>- No esta aprobado.</p>
-						<p>- Ha sido anulado.</p>
-						<p><small>ESTADO {{ order.status }}</small></p>
-					</small>
-				</h5>
-		</div>
-		<div class="card-action">
-			<a href="/reports/orders/{{order.pedido_id}}/{{order.status}}/" class="btn waves-effect waves-light">
-				<i class="fa fa-file-pdf-o"></i>
-			</a>
-			<button type="button" class="btn waves-effect waves-light" ng-click="getDetailsOrder()">
-					<i class="fa fa-info"></i>
-				</button>
-		</div>
-	</div>
-	{% endif %}
-	<!-- block modals -->
-	<div class="modal bottom-sheet" id="midetails" style="max-height: 85%;">
-		<div class="content-modal">
-			<button type="button" class="modal-action modal-close btn waves-effect waves-light grey lighten-5 grey-text text-darken-3 right">
-				<i class="fa fa-times"></i>
-			</button>
-			<table class="responsive-table highlight">
-				<thead>
-					<tr>
-						<th></th>
-						<th>Descripción</th>
-						<th class="center-align">Unidad</th>
-						<th class="center-align">Marca</th>
-						<th class="center-align">Modelo</th>
-						<th class="center-align">Cantidad</th>
-						<th class="center-align">Por Enviar</th>
-						<th class="center-align">En Guia</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% verbatim %}
-					<tr ng-repeat="x in sdetails">
-						<td>{{$index + 1}}</td>
-						<td>{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}</td>
-						<td class="center-align">{{x.fields.materiales.fields.unidad}}</td>
-						<td class="center-align">{{x.fields.brand.fields.brand}}</td>
-						<td class="center-align">{{x.fields.model.fields.model}}</td>
-						<td class="right-align">{{x.fields.cantidad}}</td>
-						<td class="right-align">{{x.fields.cantshop}}</td>
-						<td class="right-align">{{x.fields.cantguide}}</td>
-					</tr>
-					{% endverbatim %}
-				</tbody>
-			</table>
-		</div>
-	</div>
-	<!-- show modals stock -->
-	<div id="mstock" class="modal" style="height:100%; width: 100%;">
-		<div class="modal-footer">
-			<button type="button" class="waves-effect waves-light btn" ng-click="validSelectStock()">
-				<i class="fa fa-check"></i>
-				<span class="hide-on-only-small">GUARDAR</span>
-			</button>
-			<h5>Stock para <small id="sd"></small></h5>
-		</div>
-		<div class="modal-content">
-			{% verbatim %}
-			<h5>Cantidad pendiente por enviar: <strong>{{qmax}}</strong></h5>
-			<button type="button" class="waves-effect waves-light btn red" ng-click="SetSezoItemSelected()">
-				<i class="fa fa-times-circle-o"></i>
-				<span class="hide-on-small-only">DEJAR EN CERO</span>
-			</button> {% endverbatim %}
-			<table class="responsive-table highlight">
-				<thead>
-					<tr>
-						<th>#</th>
-						<th></th>
-						<th>Marca</th>
-						<th>Modelo</th>
-						<th>Unidad</th>
-						<th width="2cm">Stock Disponible</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-					{% verbatim %}
-					<tr ng-repeat="x in istock|orderBy:'-fields.stock'" ng-class="{'red': x.fields.stock <= 1, 'amber lighten-3': x.fields.stock > 1 && x.fields.stock < 10 }">
-						<td>{{$index + 1}}</td>
-						<td>
-							<input type="checkbox" id="stks{{$index}}" ng-model="stks[$index].chk" ng-init="stks[$index].chk=false" ng-change="stks[$index].quantity=(!stks[$index].chk?0:stks[$index].quantity)">
-							<label for="stks{{$index}}"></label>
-						</td>
-						<td>{{x.fields.brand.fields.brand}}</td>
-						<td>{{x.fields.model.fields.model}}</td>
-						<td>{{x.fields.materials.fields.unidad}}</td>
-						<td class="right-align">{{x.fields.stock | number:2}}</td>
-						<td>
-							<input type="hidden" ng-model="stks[$index].unit" ng-init="stks[$index].unit=x.fields.materials.fields.unidad">
-							<input type="hidden" ng-model="stks[$index].desciption" ng-init="stks[$index].description=x.fields.materials.fields.matnom+' '+x.fields.materials.fields.matmed">
-							<input type="hidden" ng-model="stks[$index].brand" ng-init="stks[$index].brand=x.fields.brand.pk">
-							<input type="hidden" ng-model="stks[$index].model" ng-init="stks[$index].model=x.fields.model.pk">
-							<input type="hidden" ng-model="stks[$index].nbrand" ng-init="stks[$index].nbrand=x.fields.brand.fields.brand">
-							<input type="hidden" ng-model="stks[$index].nmodel" ng-init="stks[$index].nmodel=x.fields.model.fields.model">
-							<input type="hidden" ng-model="stks[$index].stock" ng-init="stks[$index].stock=x.fields.stock">
-							<input type="number" class="right-align" ng-model="stks[$index].quantity" ng-init="stks[$index].quantity = 0" data-stk="{{x.fields.stock}}" min="0" max="{{qmax}}" ng-disabled="!stks[$index].chk" ng-focus="showNip($index)" cinmam>
-						</td>
-						<!--<td>
-							<button type="button" class="btn grey lighten-5 grey-text text-darken-3 waves-effect waves-steal" ng-model="cs[$index]" ng-init="cs[$index]=false" ng-mouseenter="cs[$index]=true" ng-mouseleave="cs[$index]=false" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" ng-click="selectStock($event)">
-								<i class="fa" ng-class="{'fa-check-square-o':cs[$index], 'fa-square-o': !cs[$index]}"></i>
-							</button>
-						</td> -->
-					</tr>
-					{% endverbatim %}
-				</tbody>
-			</table>
-		</div>
-	</div>
-	<!-- block guide -->
-	<div class="modal bottom-sheet" id="mguide" data-dismissible="false" style="max-height:85%;">
-		<div class="modal-content">
-			<div class="row">
-				<div class="col l12 m12 s12">
-					<br>
-					<h4>Generar Guia de Remisión</h4>
-				</div>
-				<div class="input-field col l2 m4 s12">
-					<input type="text" id="nguide" ng-model="guide.nro" class="right-align" placeholder="000-00000000" maxlength="12" ng-class="{'valid':ngvalid}" ng-blur="validNroGuide()">
-					<label for="nguide">Nro de Guia</label>
-				</div>
-				<div class="input-field col l2 m4 s12">
-					<input type="text" id="norder" readonly="true" ng-model="guide.order" ng-init="guide.order='{{order.pedido_id}}'">
-					<label for="norder">Nro de Pedido</label>
-				</div>
-				<div class="input-field col l2 m4 s12">
-					<input type="text" id="ngroup" readonly="true" ng-model="guide.group">
-					<label for="norder">Grupo</label>
-				</div>
-				<div class="input-field col l2 m2 s12">
-					<input type="text" id="ngroup" ng-model="guide.customer" readonly="true" ng-init="guide.customer='{{order.proyecto.ruccliente_id}}'">
-					<label for="norder">RUC</label>
-				</div>
-				<div class="input-field col l4 m4 s12">
-					<input type="text" id="nrs" readonly="true" ng-model="guide.reason" ng-init="guide.reason='{{order.proyecto.ruccliente.razonsocial}}'">
-					<label for="nrs">Razón Social</label>
-				</div>
-				<div class="input-field col l9 m12 s12">
-					<input type="text" id="pll" ng-model="guide.dotdelivery" ng-init="guide.dotdelivery='{{order.proyecto.direccion}}, {{order.proyecto.distrito.distnom}} {{order.proyecto.provincia.provnom}}, {{order.proyecto.pais.paisnom}}'">
-					<label for="pll">Punto de Llegada</label>
-				</div>
-				<div class="input-field col l3 m6 s12">
-					<input type="text" id="transfer" ng-model="guide.transfer" class="datepicker" readonly="true" ng-init="guide.transfer='{{order.traslado| date:'Y-m-d'}}'">
-					<label for="transfer">Traslado</label>
-				</div>
-				<div class="col l4 m6 s12">
-					<label for="">Transportista</label>
-					<select ng-model="guide.carrier" class="browser-default" ng-options="x.pk as x.fields.tranom for x in carriers" ng-change="getTransport();getConductor()">
-						<option value="">-- SELECCIONE --</option>
-					</select>
-				</div>
-				<div class="col l4 m6 s12">
-					<label for="">Transporte</label>
-					<select ng-model="guide.transport" class="browser-default" ng-options="x.nropla_id as x.nropla_id +' - '+ x.marca for x in transports">
-						<option value="">-- SELECCIONE --</option>
-					</select>
-				</div>
-				<div class="col l4 m6 s12">
-					<label for="">Conductor</label>
-					<select ng-model="guide.conductor" class="browser-default" ng-options="x.condni_id as x.connom for x in conductors">
-						<option value="">-- SELECCIONE --</option>
-					</select>
-				</div>
-			</div>
-		</div>
-		<div class="modal-footer">
-			<button type="button" class="modal-action modal-close btn grey lighten-5 grey-text text-darken-3 left">
-				<i class="fa fa-times"></i>
-				<span class="hide-on-small-only">CANCELAR</span>
-			</button>
-			<button type="button" class="btn red grey-text text-lighten-5" ng-click="genGuide()" ng-disabled="!ngvalid">
-				<i class="fa fa-file-text-o"></i>
-				<span class="hide-on-small-only">GENERAR GUIA REMISION</span>
-			</button>
-			<button type="button" data-target="detguide" class="modal-trigger waves-effect waves-light btn blue accent-3">
-				<i class="fa fa-list-alt"></i>
-				<span class="hide-n-small-only">DETALLE DE GUIA</span>
-			</button>
-		</div>
-	</div>
-	<!-- block select nipple -->
-	<div id="snip" class="modal modal-fixed-footer" style="width:70%; max-height:100%;">
-		<div class="modal-content">
-			{% verbatim %}
-			<h5>{{snip[0].name}}</h5>
-			<p>
-				<div class="switch">
-					<label>
-							Ninguno
-							<input type="checkbox" ng-model="ns" ng-init="ns=false" ng-change="selectOrderNip()">
-							<span class="lever"></span>
-							Todo
-						</label>
-				</div>
-			</p>
-			{% endverbatim %}
-			<table class="table highlight responsive-table">
-				<thead>
-					<tr>
-						<th></th>
-						<td></td>
-						<th>Descripcion</th>
-						<th>Tipo</th>
-						<th class="right-align">Cantidad</th>
-						<th></th>
-						<th>Medida</th>
-						<th colspan="2">Por Pedir</th>
-						<!--<th></th>-->
-					</tr>
-				</thead>
-				{% verbatim %}
-				<tbody>
-					<tr ng-repeat="s in snip | orderBy: 'meter'">
-						<td>{{$index+1}}</td>
-						<td>
-							<input type="checkbox" id="ns{{$index}}" ng-model="s.status" ng-if="s.send > 0" ng-change="selectOrderNip($index)">
-							<label for="ns{{$index}}"></label>
-						</td>
-						<td>{{s.description}}</td>
-						<td>{{s.tipo}}</td>
-						<td class="right-align">{{s.quantity}}</td>
-						<td>x</td>
-						<td>{{s.meter}} cm</td>
-						<td>{{s.send}}</td>
-						<td>
-							<input type="number" class="right-align" min="0" max="{{s.send}}" ng-if="s.tag!='2'" ng-disabled="!s.status" ng-model="s.guide" value="{{s.guide}}" cinmam>
-						</td>
-					</tr>
-				</tbody>
-				{% endverbatim %}
-			</table>
-		</div>
-		<div class="modal-footer">
-			<button type="button" class="btn waves-effect waves-light grey lighten-5 grey-text text-darken-3 left" ng-click="setZeroNip()">
-				<i class="fa fa-square-o"></i>
-				<span class="hide-on-small-only">DEJAR EN CERO</span>
-			</button>
-			<button type="button" class="btn waves-effect waves-light light-green grey-text text-darken-3" ng-click="selectNip()">
-				<i class="fa fa-check"></i>
-				<span class="hide-on-small-only">GUARDAR</span>
-			</button>
-		</div>
-	</div>
-	<!-- block modal show niples -->
-	<div id="allnip" class="modal bottom-sheet" style="max-height:90%">
-		<div class="modal-content">
-			<button type="button" class="modal-action modal-close btn waves-effect waves-light grey lighten-5 grey-text text-darken-3 right">
-				<i class="fa fa-times"></i>
-				Salir
-			</button>
-			<h4>Detalles de Niples</h4> {% verbatim %}
-			<table class="responsive-table highlight" ng-repeat="(k, v) in dnip | groupBy: '[materials, brand, model]'">
-				<thead>
-					<tr>
-						<td colspan="7">
-							<strong>{{v[0].materials}} {{v[0].name}} {{v[0].bname}} {{v[0].mname}}</strong>
-						</td>
-					</tr>
-					<tr>
-						<th>#</th>
-						<th></th>
-						<th>Descripción</th>
-						<th class="right-align">Cantidad</th>
-						<th class="center-align">Tipo</th>
-						<th></th>
-						<th>Medida</th>
-						<th>Por Pedir</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr ng-repeat="n in v | orderBy: 'meter'">
-						<td>{{$index + 1}}</td>
-						<td>
-							<i class="fa" ng-class="{'fa-check':n.send == 0, 'fa-square-o': n.send > 0}"></i>
-						</td>
-						<td>{{n.description}}</td>
-						<td class="right-align">{{n.quantity}}</td>
-						<td class="center-align">{{n.tipo}}</td>
-						<td class="center-align">x</td>
-						<td>{{n.meter}} cm</td>
-						<td>{{n.send}}</td>
-					</tr>
-				</tbody>
-			</table>
-			{% endverbatim %}
-		</div>
-	</div>
-	<!-- block show details guide remision -->
-	<div id="detguide" class="modal bottom-sheet" style="max-height:90%;">
-		<div class="model-content">
-			<button type="button" class="modal-action modal-close waves-effect waves-light btn grey lighten-5 grey-text text-darken-3 right">
-				<i class="fa fa-times"></i>
-			</button>
-			<h5>Detalle de Guia de Remision {% verbatim %} {{guide.nro}} {% endverbatim %}</h5> {% verbatim %}
-			<table>
-				<tbody>
-					<tr>
-						<th>#</th>
-						<th>DESCRIPCION</th>
-						<th>MARCA</th>
-						<th>MODELO</th>
-						<th>CANTIDAD TOTAL</td>
-						<th>OBSERVACIONES</th>
-						<th></th>
-					</tr>
-				</tbody>
-			</table>
-			<table class="responsive-table highlight" ng-repeat="(k, v) in dguide">
-				<tbody>
-					<tr>
-						<td>{{$index+1}}</td>
-						<td>{{v.name}}</td>
-						<td>{{v.nbrand}}</td>
-						<td>{{v.nmodel}}</td>
-						<td>{{v.amount}}</td>
-						<td>
-							<button type="button" class="grey lighten-5 grey-text text-darken-3 waves-effect waves-light btn" ng-click="openObs($index)">
-								<i class="fa fa-comments"></i>
-							</button>
-						</td>
-						<td>{{v.observation}}</td>
-					</tr>
-				</tbody>
-				<tbody>
-					<tr ng-repeat="x in v.details">
-						<td></td>
-						<td>{{$index+1}}&nbsp;&nbsp; {{x.nbrand}}&nbsp;&nbsp; {{x.nmodel}}&nbsp;&nbsp; <strong>{{x.quantity}}</strong></td>
-					</tr>
-				</tbody>
-			</table>
-			{% endverbatim %}
-		</div>
-	</div>
-	<!-- block comment item for guide -->
-	<div class="modal" id="iobs">
-		<div class="modal-content">
-			<h5>Observaciones</h5>
-			<button type="button" class="modal-action modal-close waves-effect waves-light btn grey lighten-5 grey-text text-darken-3">
-				<i class="fa fa-times"></i>
-				<span class="hide-on-small-only">Salir</span>
-			</button>
-			<button type="button" class="waves-effect waves-light btn blue accent grey-text text-lighten-5 right" ng-click="saveComment()">
-				<i class="fa fa-floppy-o"></i>
-				<span class="hide-on-small-only">Guardar</span>
-			</button>
-			<textarea id="textObs"></textarea>
-		</div>
-	</div>
-	<!-- block print guide remision -->
-	<div class="row">
-		<div class="modal offset-m4 col m4" id="mprint">
-			<div class="modal-content">
-				<h5>Imprimir Guia de Remisión</h5>
-				<div class="row">
-					<div class="col m8 offset-m2 s12">
-						<button class="col l12 m12 s12 btn waves-effect waves-light blue grey-text text-darken-3" type="button" ng-click="showPrint('format')">
-							<i class="fa fa-file-code-o"></i>
-							<span class="hide-on-small-only">FORMATO</span>
-						</a>
-					</div>
-					<div class="col m8 offset-m2 s12">
-						<button class="col l12 m12 s12 btn waves-effect waves-light green grey-text text-darken-3" type="button" ng-click="showPrint('without')">
-							<i class="fa fa-file-text-o"></i>
-							<span class="hide-on-small-only">SIN FORMATO</span>
-						</button>
-					</div>
-					<div class="col m8 offset-m2 s12">
-						<a href="{% url 'vista_list_approved' %}" class="col l12 m12 s12 btn waves-effect waves-light red lighten-1 grey-text text-darken-3">
-							<i class="fa fa-truck"></i>
-							<span class="hide-on-small-only">ATENDER MÁS</span>
-						</a>
-					</div>
-					<div class="col m8 offset-m2 s12">
-						<button class="col l12 m12 s12 btn waves-effect waves-light grey lighten-5 grey-text text-darken-3" type="button" ng-click="closePrint()">
-							<i class="fa fa-times"></i>
-							<span class="hide-on-small-only">Salir</span>
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+    <header>
+        <h3>
+            Atender Pedido Nro {{ order.pedido_id }}
+        </h3>
+    </header>
+    {% if order.status == 'IN' or order.status == 'AP' %}
+    <input type="hidden" ng-model="init" ng-init="init=true">
+    <div class="card-panel">
+        <div class="card-content">
+            <div class="row">
+                <div class="col l6 m6 s12">
+                    <blockquote>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Proyecto</strong></td>
+                                    <td><strong>{{ order.proyecto_id }}</strong> {{ order.proyecto.nompro }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sector</strong></td>
+                                    <td>{{ order.sector.nomsec }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Grupo / Area</strong></td>
+                                    <td>
+                                        {{ order.dsector.sgroup.name }} / {{ order.dsector.name }} <br> {{ order.dsector.sgroup_id }} / {{ order.dsector_id }} <br>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Almacén</strong></td>
+                                    <td>{{ order.almacen.nombre }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Creado Por</strong></td>
+                                    <td>{{ order.empdni.name_complete }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Asunto</strong></td>
+                                    <td>{{ order.asunto }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </blockquote>
+                </div>
+                <div class="col l6 m6 s12">
+                    <blockquote>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Realizado</strong></td>
+                                    <td>{{ order.registrado }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Traslado</strong></td>
+                                    <td>{{ order.traslado }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Observación</strong></td>
+                                    <td>{{ order.obser|safe }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Estado</strong></td>
+                                    <td>{{ order.status }}</td>
+                                </tr>
+                                {% if order.orderfile %}
+                                <tr>
+                                    <td><strong>Adjunto</strong></td>
+                                    <td><a href="{{ MEDIA_URL }}{{ order.empdni.name_complete }}" target="_blank"><i class="fa fa-file fa-lg"></i></a></td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+        <div class="card-action">
+            <a href="{% url 'rpt_order' order.pedido_id %}" class="btn waves-effect waves-light grey lighten-5 grey-text text-darken-3" target="_blank">
+                <i class="fa fa-file-pdf-o"></i>
+                <span class="hide-on-small-only">
+                    IMPRIMIR
+                </span>
+            </a>
+            <button type="button" class="modal-trigger waves-effec wavs-light btn green ligthen-2" data-target="allnip">
+                <i class="fa fa-list-alt"></i>
+                <span class="hide-on-small-only">DET. NIPLES</span>
+            </button>
+            <button type="button" class="btn waves-effect waves-light amber grey-text text-darken-3" ng-click="getStock()">
+                <i class="fa fa-cubes"></i>
+                <span class="hide-on-small-only">
+                    VALIDAR STOCK
+                </span>
+            </button>
+            <button type="button" class="btn waves-effect waves-light red grey-text text-lighten-5" ng-disabled="!vstock" ng-click="openGenerateGuide()">
+                <i class="fa fa-file-text-o"></i>
+                <span class="hide-on-small-only">
+                    GENERAR GUIA
+                </span>
+            </button>
+            <a href="{% url 'return_order_items_view' order.pedido_id %}" class="btn waves-effect waves-light light-blue accent-4">
+                <i class="fa fa-reply"></i>
+                <span class="hide-on-small-only">
+                    RETORNAR ITEMS
+                </span>
+            </a>
+            <!-- <button type="button" class="btn waves-effect waves-light" ng-click="test();">
+                TEST
+            </button> -->
+        </div>
+        <br>
+        <div class="card-panel amber" ng-model="ntf" ng-init="ntf=true" ng-show="ntf">
+            <i class="fa fa-times right" ng-click="ntf=!ntf"></i>
+            <strong>¡Ten en cuenta!</strong> que solo debes de seleccionar 12 items como maximo para generar una guia de remision.
+            <p>
+                Recuerda que solo se debe realizar una guia a la vez.
+            </p>
+        </div>
+        <div class="card-action">
+            <label>Seleccionar </label>
+            <div class="switch">
+                <label>
+                    Ninguno
+                    <input type="checkbox" ng-model="chk" ng-init="chk=false" ng-change="chkAll()">
+                    <span class="lever"></span>
+                    Todos
+                </label>
+            </div>
+            <table class="responsive-table highlight">
+                <thead>
+                    <tr class="lime lighten-3">
+                        <th>#</th>
+                        <th></th>
+                        <th>Código</th>
+                        <th>Descripción</th>
+                        <th class="center-align">Unidad</th>
+                        <th class="center-align">Marca</th>
+                        <th class="center-align">Modelo</th>
+                        <th class="center-align">Cantidad</th>
+                        <th class="center-align">Por Enviar</th>
+                        <th class="center-align">Enviar</th>
+                        <th class="center-align">Stock</th>
+                        <!--<th class="center-align"></th>-->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% verbatim %}
+                    <tr ng-repeat="x in dorders" id="itd{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" ng-class="{'red lighten-1': (x.fields.stock < 0 || x.fields.stock == null), 'amber lighten-3': (x.fields.stock < x.fields.cantshop && x.fields.stock > 0), 'lime accent-2': (x.fields.cantshop == 0 && x.fields.tag == '2')}">
+                        <td>{{$index + 1}}</td>
+                        <td>
+                            <input type="checkbox" ng-if="x.fields.tag != '2'" name="chk" id="chk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" data-materials="{{x.fields.materiales.pk}}" data-mname="{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}"
+                                            data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" data-nbrand="{{x.fields.brand.fields.brand}}" data-nmodel="{{x.fields.model.fields.model}}" data-quantity="{{x.fields.cantshop}}" ng-model="fchk[$index].status" ng-change="changeAttend($index)">
+                            <label ng-if="x.fields.stock > 0" for="chk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}"></label>
+                        </td>
+                        <td><small>{{x.fields.materiales.pk}}</small></td>
+                        <td><small>{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}</small></td>
+                        <td class="center-align"><small>{{x.fields.materiales.fields.unidad}}</small></td>
+                        <td class="center-align"><small>{{x.fields.brand.fields.brand}}</small></td>
+                        <td class="center-align"><small>{{x.fields.model.fields.model}}</small></td>
+                        <td class="right-align">{{x.fields.cantidad}}</td>
+                        <td class="right-align">{{x.fields.cantshop}}</td>
+                        <td>
+                            <input type="hidden" ng-model="fchk[$index].materials" ng-init="fchk[$index].materials=x.fields.materiales.pk">
+                            <input type="hidden" ng-model="fchk[$index].brand" ng-init="fchk[$index].brand=x.fields.brand.pk">
+                            <input type="hidden" ng-model="fchk[$index].model" ng-init="fchk[$index].model=x.fields.model.pk">
+                            <input type="number" ng-if="x.fields.tag != '2'" class="right-align" min="0" max="{{x.fields.cantshop}}" ng-model="fchk[$index].quantity" ng-init="fchk[$index].quantity=0" value="{{fchk[$index].quantity}}" readonly="true" ng-disabled="!fchk[$index].status" cinmam>
+                        </td>
+                        <th class="right-align">{{x.fields.stock}}</th>
+                        <!--<td> -->
+                        <!-- here stock materials -->
+                        <!--<input type="number" class="right-align" id="stk{{x.fields.materiales.pk}}{{x.fields.brand.pk}}{{x.fields.model.pk}}" readonly="true" min="0" max="{{x.fields.cantshop}}" value="0" cinmam>
+                            </td>-->
+                        <!--<td>
+                                <button type="button" class="waves-effect waves-light">
+                                    <i class="fa fa-cube"></i>
+                                </button>
+                            </td>-->
+                    </tr>
+                    {% endverbatim %}
+                </tbody>
+                <tfoot ng-hide="dorders.length">
+                    <tr>
+                        <td colspan="10">
+                            <div class="progress red lighten-4">
+                                <div class="indeterminate red accent-3"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="card-panel" ng-show="dnip.length">
+        <div class="card-content">
+            <h4>Niples</h4> {% verbatim %}
+            <table class="responsive-table highlight" ng-repeat="(k, v) in nipdetails | groupBy:'[materials, brand, model]'">
+                <thead>
+                    <tr>
+                        <th colspan="7">
+                            {{v[0].materials}} {{v[0].details[0].name}} {{v[0].details[0].bname}} {{v[0].details[0].mname}}
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>#</th>
+                        <th>Descripción</th>
+                        <th class="right-align">Cantidad</th>
+                        <th class="center-align">Tipo</th>
+                        <th></th>
+                        <th>Medida</th>
+                        <th>Por Pedir</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="n in v[0].details | orderBy: 'meter'">
+                        <td>{{$index + 1}}</td>
+                        <td>{{n.description}}</td>
+                        <td class="right-align">{{n.quantity}}</td>
+                        <td class="center-align">{{n.tipo}}</td>
+                        <td class="center-align">x</td>
+                        <td>{{n.meter}} cm</td>
+                        <td class="center-align">{{n.guide}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <!--<table class="responsive-table highlight" ng-repeat="(k, v) in dnip | groupBy: '[materials, brand, model]'">
+                    <thead>
+                        <tr>
+                            <td colspan="7">
+                                <strong>{{v[0].materials}} {{v[0].name}} {{v[0].bname}} {{v[0].mname}}</strong>
+                                <div class="switch">
+                                    <label>
+                                        Ninguno
+                                        <input type="checkbox" id="">
+                                        <span class="lever"></span>
+                                        Todos
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>#</th>
+                            <th></th>
+                            <th>Descripción</th>
+                            <th class="right-align">Cantidad</th>
+                            <th class="center-align">Tipo</th>
+                            <th></th>
+                            <th>Medida</th>
+                            <th>Por Pedir</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="n in v | orderBy: 'meter'">
+                            <td>{{$index + 1}}</td>
+                            <td ng-if="n.send > 0">
+                                <input type="checkbox">
+                                <label for=""></label>
+                            </td>
+                            <td ng-if="n.send <= 0"></td>
+                            <td>{{n.description}}</td>
+                            <td class="right-align">{{n.quantity}}</td>
+                            <td class="center-align">{{n.tipo}}</td>
+                            <td class="center-align">x</td>
+                            <td>{{n.meter}} cm</td>
+                            <td class="center-align">
+                                <input type="number" ng-if="n.send > 0" class="right-align" min="0" max="{{n.send}}" value="{{n.send}}" cinmam>
+                                <span ng-if="n.send <= 0">{{n.send}}</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>-->
+            {% endverbatim %}
+        </div>
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="card-content">
+            <h5>
+                    El pedido no se puede atender, por las siguiente razones.
+                    <br>
+                    <small>
+                        <p>- Ya se ha completado.</p>
+                        <p>- No esta aprobado.</p>
+                        <p>- Ha sido anulado.</p>
+                        <p><small>ESTADO {{ order.status }}</small></p>
+                    </small>
+                </h5>
+        </div>
+        <div class="card-action">
+            <a href="/reports/orders/{{order.pedido_id}}/{{order.status}}/" class="btn waves-effect waves-light">
+                <i class="fa fa-file-pdf-o"></i>
+            </a>
+            <button type="button" class="btn waves-effect waves-light" ng-click="getDetailsOrder()">
+                    <i class="fa fa-info"></i>
+                </button>
+        </div>
+    </div>
+    {% endif %}
+    <!-- block modals -->
+    <div class="modal bottom-sheet" id="midetails" style="max-height: 85%;">
+        <div class="content-modal">
+            <button type="button" class="modal-action modal-close btn waves-effect waves-light grey lighten-5 grey-text text-darken-3 right">
+                <i class="fa fa-times"></i>
+            </button>
+            <table class="responsive-table highlight">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Descripción</th>
+                        <th class="center-align">Unidad</th>
+                        <th class="center-align">Marca</th>
+                        <th class="center-align">Modelo</th>
+                        <th class="center-align">Cantidad</th>
+                        <th class="center-align">Por Enviar</th>
+                        <th class="center-align">En Guia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% verbatim %}
+                    <tr ng-repeat="x in sdetails">
+                        <td>{{$index + 1}}</td>
+                        <td>{{x.fields.materiales.fields.matnom}} {{x.fields.materiales.fields.matmed}}</td>
+                        <td class="center-align">{{x.fields.materiales.fields.unidad}}</td>
+                        <td class="center-align">{{x.fields.brand.fields.brand}}</td>
+                        <td class="center-align">{{x.fields.model.fields.model}}</td>
+                        <td class="right-align">{{x.fields.cantidad}}</td>
+                        <td class="right-align">{{x.fields.cantshop}}</td>
+                        <td class="right-align">{{x.fields.cantguide}}</td>
+                    </tr>
+                    {% endverbatim %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- show modals stock -->
+    <div id="mstock" class="modal" style="height:100%; width: 100%;">
+        <div class="modal-footer">
+            <button type="button" class="waves-effect waves-light btn" ng-click="validSelectStock()">
+                <i class="fa fa-check"></i>
+                <span class="hide-on-only-small">GUARDAR</span>
+            </button>
+            <h5>Stock para <small id="sd"></small></h5>
+        </div>
+        <div class="modal-content">
+            {% verbatim %}
+            <h5>Cantidad pendiente por enviar: <strong>{{qmax}}</strong></h5>
+            <button type="button" class="waves-effect waves-light btn red" ng-click="SetSezoItemSelected()">
+                <i class="fa fa-times-circle-o"></i>
+                <span class="hide-on-small-only">DEJAR EN CERO</span>
+            </button> {% endverbatim %}
+            <table class="responsive-table highlight">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th></th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Unidad</th>
+                        <th width="2cm">Stock Disponible</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% verbatim %}
+                    <tr ng-repeat="x in istock|orderBy:'-fields.stock'" ng-class="{'red': x.fields.stock <= 1, 'amber lighten-3': x.fields.stock > 1 && x.fields.stock < 10 }">
+                        <td>{{$index + 1}}</td>
+                        <td>
+                            <input type="checkbox" id="stks{{$index}}" ng-model="stks[$index].chk" ng-init="stks[$index].chk=false" ng-change="stks[$index].quantity=(!stks[$index].chk?0:stks[$index].quantity)">
+                            <label for="stks{{$index}}"></label>
+                        </td>
+                        <td>{{x.fields.brand.fields.brand}}</td>
+                        <td>{{x.fields.model.fields.model}}</td>
+                        <td>{{x.fields.materials.fields.unidad}}</td>
+                        <td class="right-align">{{x.fields.stock | number:2}}</td>
+                        <td>
+                            <input type="hidden" ng-model="stks[$index].unit" ng-init="stks[$index].unit=x.fields.materials.fields.unidad">
+                            <input type="hidden" ng-model="stks[$index].desciption" ng-init="stks[$index].description=x.fields.materials.fields.matnom+' '+x.fields.materials.fields.matmed">
+                            <input type="hidden" ng-model="stks[$index].brand" ng-init="stks[$index].brand=x.fields.brand.pk">
+                            <input type="hidden" ng-model="stks[$index].model" ng-init="stks[$index].model=x.fields.model.pk">
+                            <input type="hidden" ng-model="stks[$index].nbrand" ng-init="stks[$index].nbrand=x.fields.brand.fields.brand">
+                            <input type="hidden" ng-model="stks[$index].nmodel" ng-init="stks[$index].nmodel=x.fields.model.fields.model">
+                            <input type="hidden" ng-model="stks[$index].stock" ng-init="stks[$index].stock=x.fields.stock">
+                            <input type="number" class="right-align" ng-model="stks[$index].quantity" ng-init="stks[$index].quantity = 0" data-stk="{{x.fields.stock}}" min="0" max="{{qmax}}" ng-disabled="!stks[$index].chk" ng-focus="showNip($index)" cinmam>
+                        </td>
+                        <!--<td>
+                            <button type="button" class="btn grey lighten-5 grey-text text-darken-3 waves-effect waves-steal" ng-model="cs[$index]" ng-init="cs[$index]=false" ng-mouseenter="cs[$index]=true" ng-mouseleave="cs[$index]=false" data-brand="{{x.fields.brand.pk}}" data-model="{{x.fields.model.pk}}" ng-click="selectStock($event)">
+                                <i class="fa" ng-class="{'fa-check-square-o':cs[$index], 'fa-square-o': !cs[$index]}"></i>
+                            </button>
+                        </td> -->
+                    </tr>
+                    {% endverbatim %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- block guide -->
+    <div class="modal bottom-sheet" id="mguide" data-dismissible="false" style="max-height:85%;">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col l12 m12 s12">
+                    <br>
+                    <h4>Generar Guia de Remisión</h4>
+                </div>
+                <div class="input-field col l2 m4 s12">
+                    <input type="text" id="nguide" ng-model="guide.nro" class="right-align" placeholder="000-00000000" maxlength="12" ng-class="{'valid':ngvalid}" ng-blur="validNroGuide()">
+                    <label for="nguide">Nro de Guia</label>
+                </div>
+                <div class="input-field col l2 m4 s12">
+                    <input type="text" id="norder" readonly="true" ng-model="guide.order" ng-init="guide.order='{{order.pedido_id}}'">
+                    <label for="norder">Nro de Pedido</label>
+                </div>
+                <div class="input-field col l2 m4 s12">
+                    <input type="text" id="ngroup" readonly="true" ng-model="guide.group">
+                    <label for="norder">Grupo</label>
+                </div>
+                <div class="input-field col l2 m2 s12">
+                    <input type="text" id="ngroup" ng-model="guide.customer" readonly="true" ng-init="guide.customer='{{order.proyecto.ruccliente_id}}'">
+                    <label for="norder">RUC</label>
+                </div>
+                <div class="input-field col l4 m4 s12">
+                    <input type="text" id="nrs" readonly="true" ng-model="guide.reason" ng-init="guide.reason='{{order.proyecto.ruccliente.razonsocial}}'">
+                    <label for="nrs">Razón Social</label>
+                </div>
+                <div class="input-field col l9 m12 s12">
+                    <input type="text" id="pll" ng-model="guide.dotdelivery" ng-init="guide.dotdelivery='{{order.proyecto.direccion}}, {{order.proyecto.distrito.distnom}} {{order.proyecto.provincia.provnom}}, {{order.proyecto.pais.paisnom}}'">
+                    <label for="pll">Punto de Llegada</label>
+                </div>
+                <div class="input-field col l3 m6 s12">
+                    <input type="text" id="transfer" ng-model="guide.transfer" class="datepicker" readonly="true" ng-init="guide.transfer='{{order.traslado| date:'Y-m-d'}}'">
+                    <label for="transfer">Traslado</label>
+                </div>
+                <div class="col l4 m6 s12">
+                    <label for="">Transportista</label>
+                    <select ng-model="guide.carrier" class="browser-default" ng-options="x.pk as x.fields.tranom for x in carriers" ng-change="getTransport();getConductor()">
+                        <option value="">-- SELECCIONE --</option>
+                    </select>
+                </div>
+                <div class="col l4 m6 s12">
+                    <label for="">Transporte</label>
+                    <select ng-model="guide.transport" class="browser-default" ng-options="x.nropla_id as x.nropla_id +' - '+ x.marca for x in transports">
+                        <option value="">-- SELECCIONE --</option>
+                    </select>
+                </div>
+                <div class="col l4 m6 s12">
+                    <label for="">Conductor</label>
+                    <select ng-model="guide.conductor" class="browser-default" ng-options="x.condni_id as x.connom for x in conductors">
+                        <option value="">-- SELECCIONE --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="modal-action modal-close btn grey lighten-5 grey-text text-darken-3 left">
+                <i class="fa fa-times"></i>
+                <span class="hide-on-small-only">CANCELAR</span>
+            </button>
+            <button type="button" class="btn red grey-text text-lighten-5" ng-click="genGuide()" ng-disabled="!ngvalid">
+                <i class="fa fa-file-text-o"></i>
+                <span class="hide-on-small-only">GENERAR GUIA REMISION</span>
+            </button>
+            <button type="button" data-target="detguide" class="modal-trigger waves-effect waves-light btn blue accent-3">
+                <i class="fa fa-list-alt"></i>
+                <span class="hide-n-small-only">DETALLE DE GUIA</span>
+            </button>
+        </div>
+    </div>
+    <!-- block select nipple -->
+    <div id="snip" class="modal modal-fixed-footer" style="width:70%; max-height:100%;">
+        <div class="modal-content">
+            {% verbatim %}
+            <h5>{{snip[0].name}}</h5>
+            <p>
+                <div class="switch">
+                    <label>
+                            Ninguno
+                            <input type="checkbox" ng-model="ns" ng-init="ns=false" ng-change="selectOrderNip()">
+                            <span class="lever"></span>
+                            Todo
+                        </label>
+                </div>
+            </p>
+            {% endverbatim %}
+            <table class="table highlight responsive-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <td></td>
+                        <th>Descripcion</th>
+                        <th>Tipo</th>
+                        <th class="right-align">Cantidad</th>
+                        <th></th>
+                        <th>Medida</th>
+                        <th colspan="2">Por Pedir</th>
+                        <!--<th></th>-->
+                    </tr>
+                </thead>
+                {% verbatim %}
+                <tbody>
+                    <tr ng-repeat="s in snip | orderBy: 'meter'">
+                        <td>{{$index+1}}</td>
+                        <td>
+                            <input type="checkbox" id="ns{{$index}}" ng-model="s.status" ng-if="s.send > 0" ng-change="selectOrderNip($index)">
+                            <label for="ns{{$index}}"></label>
+                        </td>
+                        <td>{{s.description}}</td>
+                        <td>{{s.tipo}}</td>
+                        <td class="right-align">{{s.quantity}}</td>
+                        <td>x</td>
+                        <td>{{s.meter}} cm</td>
+                        <td>{{s.send}}</td>
+                        <td>
+                            <input type="number" class="right-align" min="0" max="{{s.send}}" ng-if="s.tag!='2'" ng-disabled="!s.status" ng-model="s.guide" value="{{s.guide}}" cinmam>
+                        </td>
+                    </tr>
+                </tbody>
+                {% endverbatim %}
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn waves-effect waves-light grey lighten-5 grey-text text-darken-3 left" ng-click="setZeroNip()">
+                <i class="fa fa-square-o"></i>
+                <span class="hide-on-small-only">DEJAR EN CERO</span>
+            </button>
+            <button type="button" class="btn waves-effect waves-light light-green grey-text text-darken-3" ng-click="selectNip()">
+                <i class="fa fa-check"></i>
+                <span class="hide-on-small-only">GUARDAR</span>
+            </button>
+        </div>
+    </div>
+    <!-- block modal show niples -->
+    <div id="allnip" class="modal bottom-sheet" style="max-height:90%">
+        <div class="modal-content">
+            <button type="button" class="modal-action modal-close btn waves-effect waves-light grey lighten-5 grey-text text-darken-3 right">
+                <i class="fa fa-times"></i>
+                Salir
+            </button>
+            <h4>Detalles de Niples</h4> {% verbatim %}
+            <table class="responsive-table highlight" ng-repeat="(k, v) in dnip | groupBy: '[materials, brand, model]'">
+                <thead>
+                    <tr>
+                        <td colspan="7">
+                            <strong>{{v[0].materials}} {{v[0].name}} {{v[0].bname}} {{v[0].mname}}</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>#</th>
+                        <th></th>
+                        <th>Descripción</th>
+                        <th class="right-align">Cantidad</th>
+                        <th class="center-align">Tipo</th>
+                        <th></th>
+                        <th>Medida</th>
+                        <th>Por Pedir</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="n in v | orderBy: 'meter'">
+                        <td>{{$index + 1}}</td>
+                        <td>
+                            <i class="fa" ng-class="{'fa-check':n.send == 0, 'fa-square-o': n.send > 0}"></i>
+                        </td>
+                        <td>{{n.description}}</td>
+                        <td class="right-align">{{n.quantity}}</td>
+                        <td class="center-align">{{n.tipo}}</td>
+                        <td class="center-align">x</td>
+                        <td>{{n.meter}} cm</td>
+                        <td>{{n.send}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            {% endverbatim %}
+        </div>
+    </div>
+    <!-- block show details guide remision -->
+    <div id="detguide" class="modal bottom-sheet" style="max-height:90%;">
+        <div class="model-content">
+            <button type="button" class="modal-action modal-close waves-effect waves-light btn grey lighten-5 grey-text text-darken-3 right">
+                <i class="fa fa-times"></i>
+            </button>
+            <h5>Detalle de Guia de Remision {% verbatim %} {{guide.nro}} {% endverbatim %}</h5> {% verbatim %}
+            <table>
+                <tbody>
+                    <tr>
+                        <th>#</th>
+                        <th>DESCRIPCION</th>
+                        <th>MARCA</th>
+                        <th>MODELO</th>
+                        <th>CANTIDAD TOTAL</td>
+                        <th>OBSERVACIONES</th>
+                        <th></th>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="responsive-table highlight" ng-repeat="(k, v) in dguide">
+                <tbody>
+                    <tr>
+                        <td>{{$index+1}}</td>
+                        <td>{{v.name}}</td>
+                        <td>{{v.nbrand}}</td>
+                        <td>{{v.nmodel}}</td>
+                        <td>{{v.amount}}</td>
+                        <td>
+                            <button type="button" class="grey lighten-5 grey-text text-darken-3 waves-effect waves-light btn" ng-click="openObs($index)">
+                                <i class="fa fa-comments"></i>
+                            </button>
+                        </td>
+                        <td>{{v.observation}}</td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr ng-repeat="x in v.details">
+                        <td></td>
+                        <td>{{$index+1}}&nbsp;&nbsp; {{x.nbrand}}&nbsp;&nbsp; {{x.nmodel}}&nbsp;&nbsp; <strong>{{x.quantity}}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            {% endverbatim %}
+        </div>
+    </div>
+    <!-- block comment item for guide -->
+    <div class="modal" id="iobs">
+        <div class="modal-content">
+            <h5>Observaciones</h5>
+            <button type="button" class="modal-action modal-close waves-effect waves-light btn grey lighten-5 grey-text text-darken-3">
+                <i class="fa fa-times"></i>
+                <span class="hide-on-small-only">Salir</span>
+            </button>
+            <button type="button" class="waves-effect waves-light btn blue accent grey-text text-lighten-5 right" ng-click="saveComment()">
+                <i class="fa fa-floppy-o"></i>
+                <span class="hide-on-small-only">Guardar</span>
+            </button>
+            <textarea id="textObs"></textarea>
+        </div>
+    </div>
+    <!-- block print guide remision -->
+    <div class="row">
+        <div class="modal offset-m4 col m4" id="mprint">
+            <div class="modal-content">
+                <h5>Imprimir Guia de Remisión</h5>
+                <div class="row">
+                    <div class="col m8 offset-m2 s12">
+                        <button class="col l12 m12 s12 btn waves-effect waves-light blue grey-text text-darken-3" type="button" ng-click="showPrint('format')">
+                            <i class="fa fa-file-code-o"></i>
+                            <span class="hide-on-small-only">FORMATO</span>
+                        </a>
+                    </div>
+                    <div class="col m8 offset-m2 s12">
+                        <button class="col l12 m12 s12 btn waves-effect waves-light green grey-text text-darken-3" type="button" ng-click="showPrint('without')">
+                            <i class="fa fa-file-text-o"></i>
+                            <span class="hide-on-small-only">SIN FORMATO</span>
+                        </button>
+                    </div>
+                    <div class="col m8 offset-m2 s12">
+                        <a href="{% url 'vista_list_approved' %}" class="col l12 m12 s12 btn waves-effect waves-light red lighten-1 grey-text text-darken-3">
+                            <i class="fa fa-truck"></i>
+                            <span class="hide-on-small-only">ATENDER MÁS</span>
+                        </a>
+                    </div>
+                    <div class="col m8 offset-m2 s12">
+                        <button class="col l12 m12 s12 btn waves-effect waves-light grey lighten-5 grey-text text-darken-3" type="button" ng-click="closePrint()">
+                            <i class="fa fa-times"></i>
+                            <span class="hide-on-small-only">Salir</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 <div id="editor"></div>
 <!-- block for scripts -->

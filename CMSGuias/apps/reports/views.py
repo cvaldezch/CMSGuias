@@ -27,7 +27,7 @@ from CMSGuias.apps.logistica.models import (Cotizacion,
                                             DetCompra,
                                             ServiceOrder,
                                             DetailsServiceOrder)
-from CMSGuias.apps.ventas.models import Proyecto
+from CMSGuias.apps.ventas.models import Proyecto, Painting
 from CMSGuias.apps.home.models import Configuracion, Conductore, MNiple, Materiale
 from CMSGuias.apps.operations.models import PreOrders, DetailsPreOrders
 
@@ -597,12 +597,13 @@ class ReportsOrder(TemplateView):
                     self.cnip[x]['ml'] = round(self.cnip[x]['ml'], 2)
                     self.cnip[x]['m2'] = round((self.cnip[x]['area'] * self.cnip[x]['ml']), 3)
                     areat += self.cnip[x]['m2']
-                print 'AREA TOTAL ', areat
+                # print 'AREA TOTAL ', areat
+                pt = Painting.objects.get(project_id=order.proyecto_id)
                 context['cpainting'] = {
                     'areat': round(areat, 2),
-                    'capas': 1,
-                    'pbase': 4,
-                    'pacabado': 4,
+                    'capas': pt.nlayers,
+                    'pbase': pt.nfilmb,
+                    'pacabado': pt.nfilmc,
                     'sv': '85%',
                     'rtm': 126.65}
                 context['cpainting']['rtb'] = round((context['cpainting']['rtm'] / context['cpainting']['pbase']), 2)

@@ -22,6 +22,27 @@
                     </button>
                 </div>
             </div>
+            {% if status %}
+                {% if status == False %}
+                    <div class="card red lighten-1">
+                        <div class="card-content">
+                            <p>{{raise}}</p>
+                        </div>
+                    </div>
+                {% else %}
+                    <meta http-equiv="REFRESH" content="3;url={{ url }}{{ pro }}">
+                    <div class="card light-green accent-1">
+                        <div class="card-content">
+                            <div class="valign-wrapper">
+                                <h5 class="valign">
+                                    <i class="fa fa-check-circle-o fa-lg"></i> 
+                                    Felicidades! se ha registrado correctamente la configuración de la pintura.
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
             <div class="row">
                 <div class="col l12 m12 s12">
                     <div class="input-field col l3 m3 s12">
