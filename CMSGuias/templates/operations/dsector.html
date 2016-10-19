@@ -674,7 +674,7 @@
                                     </button>
                                 </td>
                                 <td>
-                                    <button type="button" ng-click="deleteItemOrders($event)" class="btn btn-flat grey lighten-5 red-text text-lighten-1 waves-effect" value="{{x.id}}">
+                                    <button type="button" ng-click="deleteItemOrders(x.id)" class="btn btn-flat grey lighten-5 red-text text-lighten-1 waves-effect" value="{{x.id}}">
                                         <i class="fa fa-times"></i>
                                     </button>
                                 </td>
@@ -787,7 +787,7 @@
                         </div>
                     </div>
                     <div class="input-field col s12">
-                        <textarea id="observation" ng-model="orders.observation" class="materialize-textarea" length="246" tabindex="3"></textarea>
+                        <textarea id="observation" ng-model="orders.observation" ng-init="orders.observation=''" class="materialize-textarea" length="246" tabindex="3"></textarea>
                         <label for="observation">Observaciones</label>
                     </div>
                 </div>

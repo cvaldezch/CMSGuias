@@ -38,7 +38,7 @@ app.directive('file', function($parse) {
   };
 });
 
-app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout, $sce) {
+app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout, $sce, $q) {
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
   $scope.perarea = "";
@@ -880,18 +880,33 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout, $
       }
     }
   };
-  $scope.deleteItemOrders = function($event) {
-    var count, i, len, ref, x;
-    count = 0;
-    ref = $scope.dataOrders;
-    for (i = 0, len = ref.length; i < len; i++) {
-      x = ref[i];
-      if (x.id === $event.currentTarget.value) {
-        $scope.dataOrders.splice(count, 1);
-        console.log("item delete");
+  $scope.deleteItemOrders = function($id) {
+    var $tmp, remove;
+    $tmp = $scope.dataOrders;
+    remove = function() {
+      var count, defer, i, len, promises, x;
+      defer = $q.defer();
+      promises = [];
+      count = 0;
+      for (i = 0, len = $tmp.length; i < len; i++) {
+        x = $tmp[i];
+        if (x.id === $id) {
+          $tmp.splice(count, 1);
+          promises.push(count);
+        }
+        count++;
       }
-      count++;
-    }
+      $q.all(promises).then(function(result) {
+        defer.resolve(result);
+      });
+      return defer.promise;
+    };
+    remove().then(function(result) {
+      $scope.dataOrders = $tmp;
+      if ($scope.dataOrders.length <= 0) {
+        angular.element("#morders").closeModal();
+      }
+    });
   };
   $scope.getNippleMaterials = function($event) {
     var data;
@@ -953,7 +968,6 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout, $
             arn.push($scope.dataOrders[n].id);
           }
         }
-        console.log(arn);
         if (arn.length) {
           for (i = 0, len = arn.length; i < len; i++) {
             n = arn[i];
@@ -972,12 +986,10 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout, $
             });
           }
         }
-        console.log(nipples);
         det = new Array();
         ref = $scope.ordersm;
         for (k in ref) {
           v = ref[k];
-          console.log(k, v);
           if (v <= 0) {
             swal("", "Los materiales deben de tener una cantidad mayor a 0", "warning");
             break;
@@ -1007,13 +1019,11 @@ app.controller('DSCtrl', function($scope, $http, $cookies, $compile, $timeout, $
           v = ref1[k];
           data.append(k, v);
         }
-        console.log(data);
         data.append("details", JSON.stringify(det));
         data.append("saveOrders", true);
         if (nipples.length) {
           data.append("nipples", JSON.stringify(nipples));
         }
-        console.log($event);
         data.append("csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val());
         $.ajax({
           url: "",

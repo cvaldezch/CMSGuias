@@ -24,7 +24,7 @@ app.directive 'file', ($parse) ->
       scope.file = if file then file else undefined
       scope.$apply()
 
-app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout, $sce) ->
+app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout, $sce, $q) ->
   $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken
   $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
   $scope.perarea = ""
@@ -823,14 +823,28 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout, $sce) ->
       if x.id == $event.currentTarget.dataset.materials
         x.qorders = $event.currentTarget.value
     return
-  $scope.deleteItemOrders = ($event) ->
-    count = 0
-    for x in $scope.dataOrders
-      # console.log x.id, $event.currentTarget.value
-      if x.id == $event.currentTarget.value
-        $scope.dataOrders.splice count, 1
-        console.log "item delete"
-      count++
+  $scope.deleteItemOrders = ($id) ->
+    $tmp = $scope.dataOrders
+    remove = ->
+      defer = $q.defer()
+      promises = []
+      count = 0
+      for x in $tmp
+        # console.log x.id, $event.currentTarget.value
+        if x.id == $id
+          $tmp.splice count, 1
+          promises.push count
+          # console.log "item delete"
+        count++
+      $q.all(promises).then (result) ->
+        defer.resolve result
+        return
+      return defer.promise
+    remove().then (result) ->
+      $scope.dataOrders = $tmp
+      if $scope.dataOrders.length <= 0
+        angular.element("#morders").closeModal()
+      return
     return
   $scope.getNippleMaterials = ($event) ->
     data =
@@ -882,7 +896,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout, $sce) ->
         for n of $scope.dataOrders
           if JSON.parse($scope.dataOrders[n].nipple)
             arn.push $scope.dataOrders[n].id
-        console.log arn
+        # console.log arn
         if arn.length
           for n in arn
             $("[name=selno#{n}").each (index, element) ->
@@ -895,11 +909,11 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout, $sce) ->
                   'quantity': $np.val()
                   'measure': $np.attr("data-measure")
                 return
-        console.log nipples
+        # console.log nipples
         det = new Array()
         # Valid quantity list principal
         for k,v of $scope.ordersm
-          console.log k, v
+          # console.log k, v
           if v <= 0
             swal "", "Los materiales deben de tener una cantidad mayor a 0", "warning"
             break
@@ -922,12 +936,12 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout, $sce) ->
           data.append "ordersf", $file.files[0]
         for k,v of $scope.orders
           data.append k, v
-        console.log data
+        # console.log data
         data.append "details", JSON.stringify det
         data.append "saveOrders", true
         if nipples.length
           data.append "nipples", JSON.stringify nipples
-        console.log $event
+        # console.log $event
         data.append "csrfmiddlewaretoken", $("[name=csrfmiddlewaretoken]").val()
         $.ajax
           url: ""
@@ -975,7 +989,7 @@ app.controller 'DSCtrl', ($scope, $http, $cookies, $compile, $timeout, $sce) ->
     return
 
   $scope.uploadPlane = ->
-    data = 
+    data =
       'uploadPlane': true
       'plane': $scope.file
       'note': $scope.note
