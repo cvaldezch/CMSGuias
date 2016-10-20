@@ -19,6 +19,9 @@ $(document).ready ->
     $("button.btn-generate").on "click", saveServiceOrder
     $("textarea[name=desc]").trumbowyg()
     $(".trumbowyg-box,.trumbowyg-editor").css(minHeight:"250px !important")
+    $(".chosen-select").chosen
+        no_results_next: "Oops, nada encontrado!"
+        width: "100%"
     return
 
 showNew = (event) ->
@@ -81,14 +84,14 @@ addItem = (event) ->
 listDetails = (response) ->
     if Object.keys(response).length
         temp = "<tr>
-                <td>
+                <td class=\"text-center\">
                     <input type=\"checkbox\" name=\"items\" value=\"{{ item }}\">
                 </td>
-                <td>{{ item }}</td>
-                <td>{{ description }}</td>
-                <td>{{ quantity }}</td>
-                <td>{{ unit }}</td>
-                <td>{{ price }}</td>
+                <td class=\"text-center\">{{ item }}</td>
+                <td>{{{ description }}}</td>
+                <td class=\"text-right\">{{ quantity }}</td>
+                <td class=\"text-center\">{{ unit }}</td>
+                <td class=\"text-right\">{{ price }}</td>
                 <td class=\"text-right\">{{ amount }}</td>
                 <td class=\"text-center\">
                     <button class=\"btn btn-xs text-green btn-link btn-edit\" data-item=\"{{ item }}\" data-desc=\"{{ description }}\" data-quantity=\"{{ quantity }}\" data-unit=\"{{ unit }}\" data-price=\"{{ price }}\">
@@ -99,8 +102,9 @@ listDetails = (response) ->
         $tb = $("table.table-details > tbody")
         $tb.empty()
         for x of response.list
-            #response.list[x].item = parseInt(x) + 1
-            $tb.append Mustache.render temp, response.list[x]
+            
+            response.list[x].description =  
+            $tb.append Mustache.to_html temp, response.list[x]
         calcamount()
     return
 
@@ -182,7 +186,7 @@ selectDel = (event) ->
 
 loadEdit = (event) ->
     $("input[name=edit-item]").val @getAttribute "data-item"
-    $("textarea[name=desc]").val @getAttribute "data-desc"
+    $("textarea[name=desc]").trumbowyg 'html', @getAttribute("data-desc")
     $("select[name=unit]").val @getAttribute "data-unit"
     $("input[name=quantity]").val @getAttribute "data-quantity"
     $("input[name=price]").val @getAttribute "data-price"

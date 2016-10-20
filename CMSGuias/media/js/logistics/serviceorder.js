@@ -24,6 +24,10 @@ $(document).ready(function() {
   $(".trumbowyg-box,.trumbowyg-editor").css({
     minHeight: "250px !important"
   });
+  $(".chosen-select").chosen({
+    no_results_next: "Oops, nada encontrado!",
+    width: "100%"
+  });
 });
 
 showNew = function(event) {
@@ -94,11 +98,11 @@ addItem = function(event) {
 listDetails = function(response) {
   var $tb, temp, x;
   if (Object.keys(response).length) {
-    temp = "<tr> <td> <input type=\"checkbox\" name=\"items\" value=\"{{ item }}\"> </td> <td>{{ item }}</td> <td>{{ description }}</td> <td>{{ quantity }}</td> <td>{{ unit }}</td> <td>{{ price }}</td> <td class=\"text-right\">{{ amount }}</td> <td class=\"text-center\"> <button class=\"btn btn-xs text-green btn-link btn-edit\" data-item=\"{{ item }}\" data-desc=\"{{ description }}\" data-quantity=\"{{ quantity }}\" data-unit=\"{{ unit }}\" data-price=\"{{ price }}\"> <span class=\"fa fa-edit\"></span> </button> </td> </tr>";
+    temp = "<tr> <td class=\"text-center\"> <input type=\"checkbox\" name=\"items\" value=\"{{ item }}\"> </td> <td class=\"text-center\">{{ item }}</td> <td>{{{ description }}}</td> <td class=\"text-right\">{{ quantity }}</td> <td class=\"text-center\">{{ unit }}</td> <td class=\"text-right\">{{ price }}</td> <td class=\"text-right\">{{ amount }}</td> <td class=\"text-center\"> <button class=\"btn btn-xs text-green btn-link btn-edit\" data-item=\"{{ item }}\" data-desc=\"{{ description }}\" data-quantity=\"{{ quantity }}\" data-unit=\"{{ unit }}\" data-price=\"{{ price }}\"> <span class=\"fa fa-edit\"></span> </button> </td> </tr>";
     $tb = $("table.table-details > tbody");
     $tb.empty();
     for (x in response.list) {
-      $tb.append(Mustache.render(temp, response.list[x]));
+      response.list[x].description = $tb.append(Mustache.to_html(temp, response.list[x]));
     }
     calcamount();
   }
@@ -199,7 +203,7 @@ selectDel = function(event) {
 
 loadEdit = function(event) {
   $("input[name=edit-item]").val(this.getAttribute("data-item"));
-  $("textarea[name=desc]").val(this.getAttribute("data-desc"));
+  $("textarea[name=desc]").trumbowyg('html', this.getAttribute("data-desc"));
   $("select[name=unit]").val(this.getAttribute("data-unit"));
   $("input[name=quantity]").val(this.getAttribute("data-quantity"));
   $("input[name=price]").val(this.getAttribute("data-price"));
