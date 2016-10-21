@@ -1,0 +1,197 @@
+{% extends "basemd.html" %}
+{% block style %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}vendor/chosen/chosen.css">
+{% endblock style %}
+{% block menu %}
+    {% include "menus/logisticsmd.htm" %}
+{% endblock menu %}
+{% block content %}
+<section ng-app="soApp" ng-controller="soCtrl">
+    <div class="card-panel">
+        <h4>
+            Editar Orden de Servicio <b>{{oservice}}</b>
+        </h4>
+        {% if status %}
+        <div class="card red">
+            <div class="card-content">
+                <i class="fa fa-times fa-lg"></i> El Nro de la order de servicio.
+            </div>
+        </div>
+        {% else %}
+        <div class="card-action">
+            <a href="{% url 'orders_service' %}" class="waves-effect waves-light btn grey lighten-5 grey-text text-darken-3">
+                <i class="fa fa-reply"></i>
+                <span class="hide-on-small-only">REGRESAR</span>
+            </a>
+        </div>
+        <div class="center-align" ng-hide="projects.length">
+            <div class="preloader-wrapper big active">
+                <div class="spinner-layer spinner-blue-only">
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div><div class="gap-patch">
+                    <div class="circle"></div>
+                </div><div class="circle-clipper right">
+                    <div class="circle"></div>
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="card yellow lighten-5" ng-show="projects.length">
+            <div class="card-content">
+                <div class="row">
+                    <div class="col l6 m6 s12">
+                        <div class="input">
+                            <label for="project" ng-class="{'active': so.project}">Proyectos</label>
+                            <select name="project" id="project" ng-model="so.project" class="browser-default chosen-select" ng-options="x.pk as x.pk +' '+ x.fields.nompro for x in projects"></select>
+                        </div>
+                    </div>
+                    <div class="col l6 m6 s12">
+                        <div class="input">
+                            <label for="supplier" ng-class="{'active': so.supplier}">Proveedor</label>
+                            <select name="supplier" id="supplier" ng-model="so.supplier" class="browser-default chosen-select" ng-options="x.pk as x.fields.razonsocial for x in suppliers"></select>
+                        </div>
+                    </div>
+                    <div class="col l3 m3 s12">
+                        <div class="input-field">
+                            <input type="text" id="quotation" ng-model="so.quotation">
+                            <label for="quotation" ng-class="{'active': so.quotation}">Cotización</label>
+                        </div>
+                    </div>
+                    <div class="col l9 m9 s12">
+                        <div class="input-field">
+                            <input type="text" id="place" ng-model="so.arrival">
+                            <label for="place" ng-class="{'active': so.arrival}">Lugar</label>
+                        </div>
+                    </div>
+                    <div class="col l3 m3 s12">
+                        <div class="input-">
+                            <label for="document" ng-class="{'active': so.document}">Documento</label>
+                            <select name="document" id="document" ng-model="so.document" class="browser-default chosen-select" ng-options="x.pk as x.fields.documento for x in documents"></select>
+                        </div>
+                    </div>
+                    <div class="col l3 m3 s12">
+                        <div class="input-">
+                            <label for="method" ng-class="{'active': so.method}">Forma Pago</label>
+                            <select name="method" id="method" ng-model="so.method" class="browser-default chosen-select" ng-options="x.pk as x.fields.pagos for x in methods"></select>
+                        </div>
+                    </div>
+                    <div class="col l2 m2 s12">
+                        <div class="input-field">
+                            <input type="text" name="start" id="start" ng-model="so.start">
+                            <label for="start" ng-class="{'active': so.start}">Fecha Inicio</label>
+                        </div>
+                    </div>
+                    <div class="col l2 m2 s12">
+                        <div class="input-field">
+                            <input type="text" name="term" id="term" ng-model="so.term">
+                            <label for="term" ng-class="{'active': so.term}">Fecha Termino</label>
+                        </div>
+                    </div>
+                    <div class="col l2 m2 s12">
+                        <div class="input-field">
+                            <input type="number" name="discount" id="discount" ng-model="so.dsct">
+                            <label for="discount" ng-class="{'active': so.dsct != null}">Descuento %</label>
+                        </div>
+                    </div>
+                    <div class="col l3 m3 s12">
+                        <div class="input-">
+                            <label for="currency" ng-class="{'active': so.currency}">Moneda</label>
+                            <select name="currency" id="currency" class="browser-default chosen-select" ng-model="so.currency" ng-options="x.pk as x.fields.moneda for x in currencys"></select>
+                        </div>
+                    </div>
+                    <div class="col l5 m5 s12">
+                        <div class="input-">
+                            <label for="auth" ng-class="{'active': so.authorized}">Autoriza</label>
+                            <select name="auth" id="auth" class="browser-default chosen-select" ng-model="so.authorized" ng-options="x.pk as x.fields.firstname + ' '+ x.fields.lastname for x in authorizeds"></select>
+                        </div>
+                    </div>
+                    <div class="col l2 m2 s12">
+                        <div class="input-field">
+                            <input type="checkbox" class="filled-in red" name="sigv" id="sigv" ng-model="so.sigv">
+                            <label for="sigv" class="grey-text text-darken-3">Incluye IGV</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% verbatim %}
+        <table class="table highlight responsiive-table" ng-show="details.length">
+            <thead>
+            <tr>
+                <th></th>
+                <th>Item</th>
+                <th>Descripción</th>
+                <th>Unidad</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Importe</th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="x in details">
+                    <td class="center-align">
+                        <input type="checkbox" id="c{{$index}}" class="filled-in blue">
+                        <label for="c{{$index}}"></label>
+                    </td>
+                    <td class="center-align">{{$index+1}}</td>
+                    <td ng-bind-html="x.fields.description"></td>
+                    <td class="center-align">{{x.fields.unit}}</td>
+                    <td class="right-align">{{x.fields.quantity}}</td>
+                    <td class="right-align">{{x.fields.price}}</td>
+                    <td class="right-align">{{x.fields.quantity * x.fields.price | number:2}}</td>
+                    <td>
+                        <a href="#!" class="light-blue-text">
+                            <i class="fa fa-edit fa-lg"></i>
+                        </a>
+                    </td>
+                    <td class="center-align">
+                        <a href="#!" class="red-text">
+                            <i class="fa fa-trash fa-lg"></i>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody>
+                <tr>
+                    <td colspan="5" rowspan="4"><strong>SON: </strong>{{letter}} /100 {{lcur}}</td>
+                    <td><strong>SUBTOTAL</strong></td>
+                    <td class="right-align">{{dstotal}}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    
+                    <td><strong>DSCT {{ so.dsct }} %</strong></td>
+                    <td class="right-align">{{ddsct}}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    
+                    <td><strong>IGV {{ digv }} %</strong></td>
+                    <td class="right-align">{{dsigv}}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    
+                    <td><strong>TOTAL</strong></td>
+                    <td class="right-align">{{dtotal}}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+            {% endverbatim %}
+        </table>
+        {% endif %}
+    </div>
+</section>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js" defer></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js" defer></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js" defer></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/chosen/chosen.jquery.js" defer></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/logistics/editorderservice.js" defer></script>
+{% endblock content %}

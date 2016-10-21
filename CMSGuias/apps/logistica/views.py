@@ -31,7 +31,7 @@ from .models import (
                         DetailsServiceOrder)
 from CMSGuias.apps.ventas.models import Proyecto, Subproyecto
 from CMSGuias.apps.operations.models import MetProject
-from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles, search
+from CMSGuias.apps.tools import genkeys, globalVariable, uploadFiles, search, number_to_char
 from .forms import (
                     addTmpCotizacionForm, addTmpCompraForm, CompraForm,
                     ProveedorForm, ServiceOrderForm)
@@ -1689,8 +1689,8 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
                     context['status'] = True
                 if 'generateService' in request.POST:
                     form = ServiceOrderForm(request.POST, request.FILES)
-                    print form
-                    print form.is_valid()
+                    # print form
+                    # print form.is_valid()
                     if form.is_valid():
                         add = form.save(commit=False)
                         service = genkeys.GenerateIdServiceOrder()
@@ -1716,6 +1716,70 @@ class ServiceOrders(JSONResponseMixin, TemplateView):
                 context['raise'] = e.__str__()
                 context['status'] = False
             return self.render_to_json_response(context)
+
+class EditServiceOrder(JSONResponseMixin, TemplateView):
+
+    template = 'logistics/editOrderService.html'
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        try:
+            if request.is_ajax():
+                try:
+                    if 'lnumber' in request.GET:
+                        kwargs['letter'] = number_to_char.numero_a_letras(float(request.GET['number']))
+                        kwargs['status'] = True
+                    if 'details' in request.GET:
+                        kwargs['details'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                DetailsServiceOrder.objects.filter(
+                                    serviceorder_id=kwargs['oservice'])))
+                        kwargs['status'] = True
+                    if 'load' in request.GET:
+                        os = ServiceOrder.objects.get(serviceorder_id=kwargs['oservice'])
+                        kwargs['data'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                [os]))
+                        kwargs['data'] = kwargs['data'][0]['fields']
+                        kwargs['projects'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                Proyecto.objects.filter(
+                                    flag=True).exclude(status='AN').order_by('-registrado')))
+                        kwargs['supplier'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                Proveedor.objects.filter(flag=True)))
+                        kwargs['currencys'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                Moneda.objects.filter(flag=True)))
+                        kwargs['document'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                Documentos.objects.filter(flag=True)))
+                        kwargs['method'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                FormaPago.objects.filter(flag=True)))
+                        kwargs['authorized'] = json.loads(
+                            serializers.serialize(
+                                'json', Employee.objects.filter(flag=True)))
+                        kwargs['unit'] = json.loads(
+                            serializers.serialize(
+                                'json', Unidade.objects.filter(flag=True)))
+                        y = globalVariable.format_date_str(_date=os.register, format='%Y')
+                        kwargs['vigv'] = search.getIGVCurrent(year=y)
+                        kwargs['status'] = True
+                except ObjectDoesNotExist as e:
+                    kwargs['raise'] = str(e)
+                    kwargs['status'] = False
+                return self.render_to_json_response(kwargs)
+            return render(request, self.template, kwargs)
+        except TemplateDoesNotExist as e:
+            raise Http404(e)
 
 
 class PriceMaterialsViews(JSONResponseMixin, TemplateView):

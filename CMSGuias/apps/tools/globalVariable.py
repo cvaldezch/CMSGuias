@@ -89,26 +89,28 @@ months_name = {
 
 # List of emails
 emails = [
-    'almacen@icrperusa.com',
+    # 'almacen@icrperusa.com',
     'armando.atencio@icrperusa.com',
-    'asistente1@icrperusa.com',
+    # 'asistente1@icrperusa.com',
     'contabilidad@icrperusa.com',
     'cvaldezchavez@gmail.com',
     'danilo.martinez@icrperusa.com',
-    'icr.luisvalencia@gmail.com',
+    # 'icr.luisvalencia@gmail.com',
     'logistica@icrperusa.com',
     'luis.martinez@icrperusa.com',
     'sandra.atencio@icrperusa.com',
     'steven.paredes@icrperusa.com',
     'ssoma1@icrperusa.com',
     'jesus.esteban@icrperusa.com',
-    'operaciones1@icrperusa.com',
+    # 'operaciones1@icrperusa.com',
     'operaciones2@icrperusa.com',
     'operaciones3@icrperusa.com',
     'calidad@icrperusa.com',
-    'mauromartinezicr@gmail.com',
+    # 'mauromartinezicr@gmail.com',
     'a.atenciov@icrperusa.com',
-    'jhon.martinez@icrperusa.com']
+    'jhon.martinez@icrperusa.com',
+    'ingeneria1@icrperusa.com',
+    'info@icrperusa.com']
 
 # Type of project
 typeProject = {
@@ -179,7 +181,7 @@ def format_str_date(_str=None, format='%Y-%m-%d'):
             str_date = 'str invalid!'
     except Exception, e:
         str_date = 'date invalid!'
-        messages.add_message(e)
+        # messages.add_message(e)
     return str_date
 # Block Dates and Times
 # get year current str

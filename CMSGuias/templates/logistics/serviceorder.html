@@ -8,12 +8,10 @@
 {% block content %}
 <link rel="stylesheet" href="{{ MEDIA_URL }}vendor/trumbowyg/dist/ui/trumbowyg.min.css">
 <link rel="stylesheet" href="{{ MEDIA_URL }}vendor/chosen/chosen.css">
-    <div class="container">
+    <div class="container-fluid">
         <div class="well">
             <header>
-                <h3>
-                    Orden de Servicio
-                </h3>
+                <h3>Orden de Servicio</h3>
                 <nav>
                     <button class="btn btn-sm btn-warning text-black btn-new">
                         <span class="fa fa-file"></span>
@@ -225,33 +223,33 @@
                                    <th>Código</th>
                                    <th>Proveedor</th>
                                    <th>Proyecto</th>
-                                   <th>Registrado</th>
-                                   <th>Documento</th>
+                                   <th class="col-3 text-center">Registrado</th>
+                                   <th class="col-2 text-center">Documento</th>
                                    <th>Metodo</th>
                                    <th>Estado</th>
-                                   <th>Deposito</th>
+                                   <th class="col-1 text-center">Deposito</th>
                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for x in service %}
                                     <tr>
-                                        <td>{{ forloop.counter }}</td>
-                                        <td>{{ x.serviceorder_id }}</td>
+                                        <td class="text-center">{{ forloop.counter }}</td>
+                                        <td class="text-center"><a href="{% url 'edorderservice_view' x.serviceorder_id %}">{{ x.serviceorder_id }}</a></td>
                                         <td>{{ x.supplier.razonsocial }}</td>
                                         <td>{{ x.project.nompro }}</td>
-                                        <td>{{ x.register|date:"d M Y H:m" }}</td>
+                                        <td class="text-center">{{ x.register|date:"d M Y" }}</td>
                                         <td>{{ x.document.documento }}</td>
                                         <td>{{ x.method.pagos }}</td>
-                                        <td>{{ x.status }}</td>
-                                        <td>
+                                        <td class="text-center">{{ x.status }}</td>
+                                        <td class="text-center">
                                             {% if x.deposit %}
                                                 <a href="#" class="btn-link text-red">
                                                     <span class="fa fa-file"></span>
                                                 </a>
                                             {% endif %}
                                         </td>
-                                        <td>
+                                        <td class="text-center">
                                             <a href="{% url 'rpt_serviceorder' x.serviceorder_id %}" target="_blank" class="btn-link text-black">
                                                 <span class="fa fa-file-text"></span>
                                             </a>

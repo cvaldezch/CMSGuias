@@ -433,15 +433,18 @@ class RptServiceOrder(TemplateView):
             amount = (amount - (amount * (context['bedside'].dsct / 100)))
             context['dsct'] = '%.3f' % (
                                 amount * (context['bedside'].dsct / 100))
-            context['igv'] = search.getIGVCurrent(
-                                context['bedside'].register.strftime('%Y'))
+            if context['bedside'].sigv:
+                context['igv'] = search.getIGVCurrent(
+                                    context['bedside'].register.strftime('%Y'))
+            else:
+                context['igv'] = 0
             context['qigv'] = '%.3f' % (amount * (float(context['igv']) / 100))
             context['total'] = '%.2f' % (amount + float(context['qigv']))
             context['literal'] = number_to_char.numero_a_letras(
                                     float(context['total']))
             context['status'] = globalVariable.status
             context['pagesize'] = 'A4'
-            print context
+            # print context
             html = render_to_string(
                     'report/rptserviceorders.html',
                     context,
