@@ -1,6 +1,7 @@
 {% extends "basemd.html" %}
 {% block style %}
 <link rel="stylesheet" href="{{ MEDIA_URL }}vendor/chosen/chosen.css">
+<link rel="stylesheet" href="{{ MEDIA_URL }}vendor/trumbowyg/dist/ui/trumbowyg.min.css">
 {% endblock style %}
 {% block menu %}
     {% include "menus/logisticsmd.htm" %}
@@ -11,6 +12,10 @@
         <h4>
             Editar Orden de Servicio <b>{{oservice}}</b>
         </h4>
+        <div class="chip amber">
+            <i class="fa fa-info-circle"></i> Todas las modificaciones realizadas son temporales hasta que se presione el boton guardar!
+            <i class="close fa fa-times"></i>
+        </div>
         {% if status %}
         <div class="card red">
             <div class="card-content">
@@ -23,6 +28,12 @@
                 <i class="fa fa-reply"></i>
                 <span class="hide-on-small-only">REGRESAR</span>
             </a>
+            <button type="button" class="btn light-blue right" ng-click="saveOrderService()">
+                <i class="fa fa-floppy-o"></i>
+                <span class="hide-on-small-only">
+                    GUARDAR
+                </span>
+            </button>
         </div>
         <div class="center-align" ng-hide="projects.length">
             <div class="preloader-wrapper big active">
@@ -37,7 +48,7 @@
                 </div>
             </div>
         </div>
-        <div class="card yellow lighten-5" ng-show="projects.length">
+        <div class="card grey lighten-4" ng-show="projects.length">
             <div class="card-content">
                 <div class="row">
                     <div class="col l6 m6 s12">
@@ -90,7 +101,7 @@
                     </div>
                     <div class="col l2 m2 s12">
                         <div class="input-field">
-                            <input type="number" name="discount" id="discount" ng-model="so.dsct">
+                            <input type="number" name="discount" id="discount" ng-model="so.dsct" class="right-align">
                             <label for="discount" ng-class="{'active': so.dsct != null}">Descuento %</label>
                         </div>
                     </div>
@@ -117,9 +128,14 @@
         </div>
         {% verbatim %}
         <table class="table highlight responsiive-table" ng-show="details.length">
+            <caption class="left-align z-depth-1">
+                <button type="button" class="modal-trigger waves-effect waves-light btn green" data-target="eDetails">
+                    <i class="fa fa-plus"></i>
+                    <span class="hide-on-small-only">AGREGAR</span>
+                </button>
+            </caption>
             <thead>
             <tr>
-                <th></th>
                 <th>Item</th>
                 <th>Descripción</th>
                 <th>Unidad</th>
@@ -132,10 +148,7 @@
             </thead>
             <tbody>
                 <tr ng-repeat="x in details">
-                    <td class="center-align">
-                        <input type="checkbox" id="c{{$index}}" class="filled-in blue">
-                        <label for="c{{$index}}"></label>
-                    </td>
+                    
                     <td class="center-align">{{$index+1}}</td>
                     <td ng-bind-html="x.fields.description"></td>
                     <td class="center-align">{{x.fields.unit}}</td>
@@ -143,12 +156,12 @@
                     <td class="right-align">{{x.fields.price}}</td>
                     <td class="right-align">{{x.fields.quantity * x.fields.price | number:2}}</td>
                     <td>
-                        <a href="#!" class="light-blue-text">
+                        <a href="#!" class="light-blue-text" ng-click="showEdit(x.pk, x.fields)">
                             <i class="fa fa-edit fa-lg"></i>
                         </a>
                     </td>
                     <td class="center-align">
-                        <a href="#!" class="red-text">
+                        <a href="#!" class="red-text" ng-click="delItem(x.pk)">
                             <i class="fa fa-trash fa-lg"></i>
                         </a>
                     </td>
@@ -156,7 +169,7 @@
             </tbody>
             <tbody>
                 <tr>
-                    <td colspan="5" rowspan="4"><strong>SON: </strong>{{letter}} /100 {{lcur}}</td>
+                    <td colspan="4" rowspan="4"><strong>SON: </strong>{{letter}} 00/100 {{lcur}}</td>
                     <td><strong>SUBTOTAL</strong></td>
                     <td class="right-align">{{dstotal}}</td>
                     <td></td>
@@ -188,10 +201,45 @@
         </table>
         {% endif %}
     </div>
+    <!-- sectoion modals -->
+    <div id="eDetails" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <input type="hidden" ng-model="edit.pk">
+            <div class="row">
+                <div class="col l12 m12 s12 input-field">
+                    <label ng-class="{'active': edit.description}">Descripción</label>
+                    <textarea name="desc" id="desc" ng-model="edit.description"></textarea>
+                </div>
+                <div class="col l4 m6 s12 input-field">
+                    <input class="right-align" type="number" min="0" step="0.01" ng-model="edit.quantity">
+                    <label ng-class="{'active': edit.quantity}">Cantidad</label>
+                </div>
+                <div class="col l4 m6 s12 input-field">
+                    <input class="right-align" type="number" min="0" step="0.01" ng-model="edit.price">
+                    <label ng-class="{'active': edit.price}">Precio</label>
+                </div>
+                <div class="col l4 m6 s12 input">
+                    <label for="eunit" ng-class="{'active': edit.unit}">Unidad</label>
+                    <select class="browser-default" name="eunit" id="eunit" ng-model="edit.unit" ng-options="x.pk as x.fields.uninom for x in units"></select>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="modal-action modal-close btn grey lighten-5 grey-text text-darken-3 left" ng-click="eClean()">
+                <i class="fa fa-times"></i>
+                <span class="hide-on-small-only">CANCELAR</span>
+            </button>
+            <button type="button" class="modal-action modal-close btn blue lighten-1" ng-click="applyDetails()">
+                <i class="fa fa-pencil"></i>
+                <span class="hide-on-small-only">GUARDAR</span>
+            </button>
+        </div>
+    </div>
 </section>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular/angular.min.js" defer></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js" defer></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-sanitize/angular-sanitize.min.js" defer></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/chosen/chosen.jquery.js" defer></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/trumbowyg/dist/trumbowyg.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/logistics/editorderservice.js" defer></script>
 {% endblock content %}

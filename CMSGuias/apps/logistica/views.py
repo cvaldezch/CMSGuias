@@ -1781,6 +1781,31 @@ class EditServiceOrder(JSONResponseMixin, TemplateView):
         except TemplateDoesNotExist as e:
             raise Http404(e)
 
+    @method_decorator(login_required)
+    def post(self, request, *args, **kwargs):
+        print request.POST
+        print request.is_ajax(), 'IS AJAX'
+        if request.is_ajax():
+            try:
+                if 'editd' in request.POST:
+                    # print request.POST
+                    # e = DetailsServiceOrder.objects.get(
+                    #         pk=request.POST['pk'],
+                    #         serviceorder_id=kwargs['oservice'])
+                    # e.description = request.POST['description']
+                    # e.unit_id = request.POST['unit']
+                    # e.quantity = request.POST['quantity']
+                    # e.price = request.POST['price']
+                    # e.save()
+                    # kwargs['status'] = True
+                    pass
+                if 'saveOrder' in request.POST:
+                    kwargs['status'] = True
+            except ObjectDoesNotExist as e:
+                kwargs['status'] = False
+                kwargs['raise'] = str(e)
+            return self.render_to_json_response(kwargs)
+
 
 class PriceMaterialsViews(JSONResponseMixin, TemplateView):
 
