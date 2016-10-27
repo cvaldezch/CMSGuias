@@ -155,18 +155,54 @@ input[type="checkbox"].filled-in.grey:checked+label:after {
   background-color: #0089ec;
 }
 .switch label input[type=checkbox]:checked+.lever.blue:after {
-  background-color: #0094ff;
+  background-color: #0089ec;
 }
 .switch label input[type=checkbox]:checked+.lever.red {
-  background-color: #ea1434;
+  background-color: #f44336;
 }
 .switch label input[type=checkbox]:checked+.lever.red:after {
-  background-color: #ea1434 !important;
+  background-color: #f44336 !important;
 }
 table.highlight > tbody > tr:hover {
   background: #bfbbbb;
   background-color: #bfbbbb;
   background-color: rgba(191,187,187,0.8);
+}
+.margin .ml28 {
+  margin-left: 28px !important;
+}
+.margin .oml28 {
+  margin-left: -28px !important;
+}
+.margin .mt15 {
+  margin-top: 15px !important;
+}
+.margin .omt15 {
+  margin-top: -15px !important;
+}
+.margin .mb15 {
+  margin-bottom: 15px !important;
+}
+.margin .omb15 {
+  margin-bottom: -15px !important;
+}
+.padding .pl28 {
+  margin-left: 28px !important;
+}
+.padding .opl28 {
+  margin-left: -28px !important;
+}
+.padding .pt15 {
+  margin-top: 15px !important;
+}
+.padding .opt15 {
+  margin-top: -15px !important;
+}
+.padding .pb15 {
+  margin-bottom: 15px !important;
+}
+.padding .opb15 {
+  margin-bottom: -15px !important;
 }
 @media screen and (max-width: 992px) {
   tbody tr td {

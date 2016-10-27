@@ -79,11 +79,11 @@ class Proyecto(models.Model):
 
 class CloseProject(models.Model):
     def url(self, filename):
-        return 'storage/projects/%s/%s/closure/%s' % (
+        return 'storage/projects/%s/%s/administrative/cierre/%s' % (
             self.project.registrado.strftime('%Y'), self.project_id, filename)
 
     def uriaco(self, filename):
-        return 'storage/projects/%s/%s/closure/accounting/%s' % (
+        return 'storage/projects/%s/%s/administrative/cierre/contabilidad/%s' % (
             self.project.registrado.strftime('%Y'), self.project_id, filename)
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
     storageclose = models.BooleanField(default=False, blank=True)
@@ -91,6 +91,7 @@ class CloseProject(models.Model):
     letterdelivery = models.FileField(upload_to=url, null=True, max_length=250)
     dateletter = models.DateField(null=True, blank=True)
     documents = models.BooleanField(default=False, blank=True)
+    docregister = models.DateField(null=True)
     accounting = models.BooleanField(default=False, blank=True)
     tinvoice = models.FloatField(default=0, blank=True)
     tiva = models.FloatField(default=0, blank=True)
@@ -112,6 +113,8 @@ class CloseProject(models.Model):
                     Employee, related_name='accounting', null=True, blank=True)
     performedclose = models.ForeignKey(
                 Employee, related_name='closeasproject', null=True, blank=True)
+    
+    audit_log = AuditLog()
 
 
 class Subproyecto(models.Model):
