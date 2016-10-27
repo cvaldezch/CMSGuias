@@ -1,0 +1,132 @@
+{% extends "basemd.html" %}
+{% block menu %}
+    {% if user.get_profile.empdni.charge.area|lower == 'ventas' or user.get_profile.empdni.charge.area|lower == 'administrator' %}
+        {% include "menus/salesmd.html" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'logistica'%}
+        {% include "menus/logisticsmd.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'operaciones' %}
+        {% include "menus/operations.htm" %}
+    {% endif %}
+    {% if user.get_profile.empdni.charge.area|lower == 'almacen' %}
+        {% include "menus/storage_menu.htm" %}
+    {% endif %}
+    {% endblock menu %}
+{% block content %}
+<section ng-app="cpApp" ng-controller="cpCtrl">
+    <div class="row">
+        <div class="col s12 m9 l10">
+            <h4>
+                Archivar Proyecto {{ pro }} {{ pr.nompro }}
+                <br>
+                <small>CLIENTE: {{ pr.ruccliente }}</small><br />
+                <small>RESPONSABLE: {{ pr.empdni_id }} {{ pr.empdni.firstname }} {{ pr.empdni.lastname }}</small><br />
+                <small>
+                    <a class="grey-text text-darken-3 right" href="#!" ng-model="call" ng-click="call=!call">
+                        <i class="fa" ng-class="{'fa-minus-square-o': call, 'fa-plus-square-o': !call}"></i>
+                    </a>
+                </small>
+            </h4>
+            <a href="{% url 'managerpro_view' pro %}" class="waves-effect waves-light btn grey lighten-5 grey-text text-darken-3">
+                <i class="fa fa-reply"></i>
+                <span>REGRESAR</span>
+            </a>
+            <div id="introduction" class="section scrollspy">
+                <ul class="collapsible" data-collapsible="accordion">
+                    <li ng-class="{'active': call, '': !call}">
+                        <div class="collapsible-header" ng-class="{'active': call, '': !call}">
+                            <i class="fa fa-info-circle fa-lg"></i>
+                            <strong>Inducción</strong>
+                        </div>
+                        <div class="collapsible-body" ng-style="mstyle">
+                            <p>Lorem ipsum dolor sit amet.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="storage" class="section scrollspy">
+                <ul class="collapsible popout" data-collapsible="accordion">
+                    <li ng-class="{'active': call, '': !call}">
+                        <div class="collapsible-header" ng-class="{'active': call, '': !call}"><i class="fa fa-free-code-camp"></i>First</div>
+                        <div class="collapsible-body" ng-style="mstyle">
+                            <p>Lorem ipsum dolor sit amet.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="letter" class="section scrollspy">
+                <ul class="collapsible popout" data-collapsible="accordion">
+                    <li ng-class="{'active': call, '': !call}">
+                        <div class="collapsible-header" ng-class="{'active': call, '': !call}"><i class="fa fa-free-code-camp"></i>First</div>
+                        <div class="collapsible-body" ng-style="mstyle">
+                            <p>Lorem ipsum dolor sit amet.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="dossier" class="section scrollspy">
+                <ul class="collapsible popout" data-collapsible="accordion">
+                    <li ng-class="{'active': call, '': !call}">
+                        <div class="collapsible-header" ng-class="{'active': call, '': !call}"><i class="fa fa-free-code-camp"></i>First</div>
+                        <div class="collapsible-body" ng-style="mstyle">
+                            <p>Lorem ipsum dolor sit amet.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="invoce" class="section scrollspy">
+                <ul class="collapsible popout" data-collapsible="accordion">
+                    <li ng-class="{'active': call, '': !call}">
+                        <div class="collapsible-header" ng-class="{'active': call, '': !call}"><i class="fa fa-free-code-camp"></i>First</div>
+                        <div class="collapsible-body" ng-style="mstyle">
+                            <p>Lorem ipsum dolor sit amet.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="sales" class="section scrollspy">
+                <ul class="collapsible popout" data-collapsible="accordion">
+                    <li ng-class="{'active': call, '': !call}">
+                        <div class="collapsible-header" ng-class="{'active': call, '': !call}"><i class="fa fa-free-code-camp"></i>First</div>
+                        <div class="collapsible-body" ng-style="mstyle">
+                            <p>Lorem ipsum dolor sit amet.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br><br>
+            <br><br>
+            <br>
+            <br>
+            <br><br>
+            <br>
+            <br>
+        </div>
+        <div class="col hide-on-small-only m3 l2">
+            <ul class="section table-of-contents pinned">
+                <li><a href="#introduction">Introduction</a></li>
+                <li><a href="#storage">Almacén</a></li>
+                <li><a href="#letter">Operaciones</a></li>
+                <li><a href="#dossier">Calidad</a></li>
+                <li><a href="#invoce">Contabilidad</a></li>
+                <li><a href="#sales">Ventas</a></li>
+            </ul>
+        </div>
+    </div>
+</section>
+<!-- block script -->
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angularjs/angular.min.js" defer></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/sales/closeproject.js" defer></script>
+{% endblock content %}

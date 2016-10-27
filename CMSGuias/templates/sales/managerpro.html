@@ -5,6 +5,7 @@
 {% block style %}
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/sales/managerpro.css">
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/chosen.css">
+    <link rel="stylesheet" href="{{ MEDIA_URL}}vendor/font-awesome/css/font-awesome.min.css">
 {% endblock style %}
 {% block script %}
     <script src="{{ MEDIA_URL }}js/tinymce.js"></script>
@@ -74,6 +75,10 @@
                 <br>
                 <a href="{% url 'view_projects' %}" class="btn btn-default btn-xs">
                     <span class="glyphicon glyphicon-chevron-left"></span> Regresar
+                </a>
+                <a href="{% url 'closedproject_view' project.proyecto_id %}" class="pull-right btn btn-default">
+                    <i class="fa fa-archive fa-lg"></i>
+                    <strong> Archivar Proyecto</strong>
                 </a>
             </h3>
             <div class="row">
@@ -200,15 +205,14 @@
                                         <span class="visible-lg visible-lg">Acciones</span>
                                     </button>
                                     <ul class="dropdown-menu text-left" role="menu">
-                                        {% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'operaciones' %}
-                                            <li class="text-left">
+                                        {% comment %}{% if request.user.get_profile.empdni.charge.area|lower == 'administrator' or request.user.get_profile.empdni.charge.area|lower == 'operaciones' %}{% endcomment %}
+                                            <!-- <li class="text-left">
                                                 <button type="Button" class="btn btn-link btn-xs text-black btn-close-project" data-toggle="modal" data-target="#closeProject">
                                                     <span class="fa fa-check-circle"></span>
-                                                    <!-- <span class="fa fa-star-half-o"></span> -->
                                                     <span class="glyphicon-class">Terminar Proyecto</span>
                                                 </button>
-                                            </li>
-                                        {% endif %}
+                                            </li> -->
+                                        {% comment %}{% endif %}{% endcomment %}
                                         <!-- load file materials -->
                                         {% if request.user.get_profile.empdni.charge.area|lower == 'ventas' or request.user.get_profile.empdni.charge.area|lower == 'administrator' %}
                                             <li>

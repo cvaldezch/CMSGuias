@@ -4,6 +4,7 @@
 from django.conf.urls import patterns, url, include
 
 from .views import *
+from .viewssec import *
 from CMSGuias.apps.ventas.budget.urls import budget_urls
 
 
@@ -34,6 +35,8 @@ project_urls = patterns(
         ListOrdersByProject.as_view(), name='view_orders_by_projects'),
     url(r'^paint/(?P<pro>\w{7})/$', PaintingView.as_view(), 
         name='paintingp_view'),
+    url(r'^closed/(?P<pro>\w{7})/$', ClosedProjectView.as_view(),
+        name='closedproject_view'),
 )
 
 urlpatterns = patterns(

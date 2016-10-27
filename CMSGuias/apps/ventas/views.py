@@ -2631,3 +2631,6 @@ class PaintingView(JSONResponseMixin, TemplateView):
                 return redirect(('/sales/projects/paint/%s/' % kwargs['pro']))
         except (TemplateDoesNotExist or Exception) as e:
             raise Http404(e)
+
+#Create View Close a Project
+
