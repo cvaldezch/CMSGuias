@@ -17,7 +17,7 @@ from django.template import TemplateDoesNotExist
 from django.views.generic import View
 
 # local Django
-from .models import Proyecto
+from .models import Proyecto, CloseProject
 
 
 class JSONResponseMixin(object):
@@ -52,4 +52,33 @@ class ClosedProjectView(JSONResponseMixin, View):
         return HttpResponse('GET request!')
 
     def post(self, request, *args, **kwargs):
-        return HttpResponse('POST request!')
+        if request.is_ajax():
+            try:
+                if 'storage' in request.POST:
+                    try:
+                        cl = CloseProject.objects.get(project_id=kwargs['pro'])
+                        cl.storageclose = True
+                        cl.datestorage = datetime.datetime.today()
+                        cl.performedstorage_id = request.user.get_profile().empdni_id
+                        cl.save()
+                    except (CloseProject.DoesNotExist) as ex:
+                        CloseProject.objects.create(
+                            project_id=kwargs['pro'],
+                            storageclose=True,
+                            performedstorage_id=request.user.get_profile().empdni_id)
+                        kwargs['status'] = True
+                if 'operations' in request.POST:
+                    try:
+                        pass
+                    except (CloseProject.DoesNotExist or Exception) as ex:
+                        pass
+                if 'quality' in request.POST:
+                    pass
+                if 'accounting' in request.POST:
+                    pass
+                if 'sales' in request.POST:
+                    pass
+            except (ObjectDoesNotExist or Exception) as e:
+                kwargs['raise'] = str(e)
+                kwargs['status'] = False
+            return self.render_to_json_response(kwargs)

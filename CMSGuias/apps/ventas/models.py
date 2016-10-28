@@ -87,7 +87,7 @@ class CloseProject(models.Model):
             self.project.registrado.strftime('%Y'), self.project_id, filename)
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
     storageclose = models.BooleanField(default=False, blank=True)
-    datestorage = models.DateField(auto_now_add=True)
+    datestorage = models.DateField()
     letterdelivery = models.FileField(upload_to=url, null=True, max_length=250)
     dateletter = models.DateField(null=True, blank=True)
     documents = models.BooleanField(default=False, blank=True)
