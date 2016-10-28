@@ -52,18 +52,18 @@
                         <div class="collapsible-header" ng-class="{'active': call, '': !call}">
                             <i class="fa fa-th"></i>
                             <span><strong>Cierre de Almacén</strong></span>
-                            <i class="fa fa-square-o right"></i>
+                            <i class="fa right" ng-class="{'fa-check-square-o': sh.storage, 'fa-square-o': !sh.storage}"></i>
                         </div>
-                        <div class="collapsible-body" ng-style="mstyle">
+                        <div class="collapsible-body" ng-show="ctrl.storage" ng-style="mstyle" >
                             <p>
                                 Si esta completamente seguro que ya se ha terminado de enviar todos los requerimientos a obra usted
                                 puedo completar esta paso. <br> Debe de tener encuenta que una vez completado este paso el proyecto no permitira realizar pedidos.
                             </p>
-                            <div class="card-panel">
+                            <div class="card-panel" ng-hide="sh.storage">
                                 <div class="switch">
                                     <label>
                                         Abrir
-                                        <input type="checkbox">
+                                        <input type="checkbox" ng-model="closedstorage" ng-init="closeStorage=false">
                                         <span class="lever red"></span>
                                         Cerrar
                                     </label>
@@ -80,24 +80,24 @@
                         <div class="collapsible-header" ng-class="{'active': call, '': !call}">
                             <i class="fa fa-file-text"></i>
                             <span><strong>Carta de Entrega</strong></span>
-                            <i class="fa fa-square-o right"></i>
+                            <i class="fa right" ng-class="{'fa-check-square-o': sh.operations, 'fa-square-o': !sh.operations}"></i>
                         </div>
-                        <div class="collapsible-body" ng-style="mstyle">
-                            <div class="card-panel">
+                        <div class="collapsible-body" ng-show="ctrl.operations" ng-style="mstyle">
+                            <div class="card-panel" ng-hide="sh.operations">
                                 <span>Este apartado es para subir la carta de entrega que formaliza el termino de proyecto.</span>
                                 <div class="row">
                                     <div class="col l12 m12 s12 file-field input-field">
                                         <div class="btn red">
                                             <i class="fa fa-file-text-o"></i>
                                             <span>Carta</span>
-                                            <input type="file">
+                                            <input type="file" id="letterup">
                                         </div>
                                         <div class="file-path-wrapper">
                                             <input class="file-path validate" type="text">
                                         </div>
                                     </div>
                                     <div class="col l12 m12 s12">
-                                        <button type="button" class="right waves-effect waves-light btn light-blue">
+                                        <button type="button" class="right waves-effect waves-light btn light-blue" ng-click="letterClosed()">
                                             <i class="fa fa-upload"></i>
                                             <span class="hide-on-small-only">Cargar</span>
                                         </button>
@@ -115,10 +115,10 @@
                         <div class="collapsible-header" ng-class="{'active': call, '': !call}">
                             <i class="fa fa-book"></i>
                             <span><strong>Documentos</strong></span>
-                            <i class="fa fa-square-o right"></i>
+                            <i class="fa right" ng-class="{'fa-check-square-o': sh.quality, 'fa-square-o': !sh.quality}"></i>
                         </div>
-                        <div class="collapsible-body" ng-style="mstyle">
-                            <div class="card-panel">
+                        <div class="collapsible-body" ng-show="ctrl.quality" ng-style="mstyle">
+                            <div class="card-panel" ng-hide="sh.quality">
                                 <span>Este apartado es para subir los documentos de calidad del proyecto.</span>
                                 <div class="row">
                                     <div class="col l12 m12 s12 file-field input-field">
@@ -150,10 +150,10 @@
                         <div class="collapsible-header" ng-class="{'active': call, '': !call}">
                             <i class="fa fa-money"></i>
                             <span><strong>Pagos</strong></span>
-                            <i class="fa fa-square-o right"></i>
+                            <i class="fa right" ng-class="{'fa-check-square-o': sh.accounting, 'fa-square-o': !sh.accounting}"></i>
                         </div>
-                        <div class="collapsible-body" ng-style="mstyle">
-                            <div class="row">
+                        <div class="collapsible-body" ng-show="ctrl.accounting" ng-style="mstyle">
+                            <div class="row" ng-hide="sh.accounting">
                                 <div class="col l6 m6 s12 input-field">
                                     <input type="number">
                                     <label for="">Total Facturado</label>
@@ -201,10 +201,10 @@
                         <div class="collapsible-header" ng-class="{'active': call, '': !call}">
                             <i class="fa fa-unlock-alt"></i>
                             <span><strong>Cierre de Proyecto</strong></span>
-                            <i class="fa fa-square-o right"></i>
+                            <i class="fa right" ng-class="{'fa-check-square-o': sh.sales, 'fa-square-o': !sh.sales}"></i>
                         </div>
-                        <div class="collapsible-body" ng-style="mstyle">
-                            <div class="row">
+                        <div class="collapsible-body" ng-show="ctrl.sales" ng-style="mstyle">
+                            <div class="row" ng-hide="sh.sales">
                                 <div class="col l4 m8 s8 input-field">
                                     <i class="fa fa-certificate prefix"></i>
                                     <input type="text">
@@ -256,8 +256,11 @@
             </ul>
         </div>
     </div>
+    <!-- models utils -->
+    <input type="hidden" ng-model="uarea" ng-init="uarea='{{user.get_profile.empdni.charge.area | lower}}'">
 </section>
 <!-- block script -->
 <script type="text/javascript" src="{{ MEDIA_URL }}vendor/angularjs/angular.min.js" defer></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}vendor/angular-cookies/angular-cookies.min.js" defer></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/sales/closeproject.js" defer></script>
 {% endblock content %}

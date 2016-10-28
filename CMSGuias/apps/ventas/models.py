@@ -78,31 +78,34 @@ class Proyecto(models.Model):
 
 
 class CloseProject(models.Model):
+
     def url(self, filename):
-        return 'storage/projects/%s/%s/administrative/cierre/%s' % (
+        return 'storage/projects/%s/%s/closed/%s' % (
+            self.project.registrado.strftime('%Y'), self.project_id, filename)
+
+    def uridoc(self, filename):
+        return 'storage/projects/%s/%s/closed/calidad/%s' % (
             self.project.registrado.strftime('%Y'), self.project_id, filename)
 
     def uriaco(self, filename):
-        return 'storage/projects/%s/%s/administrative/cierre/contabilidad/%s' % (
+        return 'storage/projects/%s/%s/closed/contabilidad/%s' % (
             self.project.registrado.strftime('%Y'), self.project_id, filename)
+
     project = models.ForeignKey(Proyecto, to_field='proyecto_id')
     storageclose = models.BooleanField(default=False, blank=True)
-    datestorage = models.DateField()
+    datestorage = models.DateTimeField()
     letterdelivery = models.FileField(upload_to=url, null=True, max_length=250)
-    dateletter = models.DateField(null=True, blank=True)
-    documents = models.BooleanField(default=False, blank=True)
-    docregister = models.DateField(null=True)
+    dateletter = models.DateTimeField(null=True, blank=True)
+    documents = models.FileField(upload_to=uridoc, null=True, blank=True, max_length=255)
+    docregister = models.DateTimeField(null=True)
     accounting = models.BooleanField(default=False, blank=True)
-    tinvoice = models.FloatField(default=0, blank=True)
-    tiva = models.FloatField(default=0, blank=True)
-    otherin = models.FloatField(blank=True, default=0)
-    otherout = models.FloatField(default=0, blank=True)
-    retention = models.FloatField(default=0, blank=True)
+    tinvoice = models.FloatField(null=True, blank=True)
+    tiva = models.FloatField(null=True, blank=True)
+    otherin = models.FloatField(blank=True, null=True)
+    otherout = models.FloatField(null=True, blank=True)
+    retention = models.FloatField(null=True, blank=True)
     fileaccounting = models.FileField(
                         upload_to=uriaco, null=True, max_length=250)
-    closeconfirm = models.CharField(default='', max_length=6, blank=True)
-    # close = models.BooleanField(default=False)
-    status = models.CharField(default='PE', blank=True, max_length=2)
     performedstorage = models.ForeignKey(
                     Employee, related_name='storage', null=True, blank=True)
     performedoperations = models.ForeignKey(
@@ -113,6 +116,12 @@ class CloseProject(models.Model):
                     Employee, related_name='accounting', null=True, blank=True)
     performedclose = models.ForeignKey(
                 Employee, related_name='closeasproject', null=True, blank=True)
+    closeconfirm = models.CharField(default='', max_length=6, blank=True)
+    dateclose = models.DateTimeField(null=True)
+    status = models.CharField(default='PE', max_length=2)
+    keyreopens = models.CharField(max_length=6, null=True)
+    performedre = models.ForeignKey(Employee, related_name='reopen', null=True)
+    datereopen = models.DateTimeField(null=True)
     
     audit_log = AuditLog()
 

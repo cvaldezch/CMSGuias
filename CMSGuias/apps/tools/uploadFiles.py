@@ -81,19 +81,23 @@ def fileExists(paths, partial=False):
         print e
         return False
 
-def descompressRAR(filename, path_to_extract):
+def descompressRAR(filename, path_to_extract=''):
     try:
         if filename == '':
-            return 'File name is nothing.'
+            if filename.find('media') == -1:
+                filename = '%s/%s' % (settings.MEDIA_ROOT, filename)
         if path_to_extract == '':
-            return 'Path to extract nothing.'
+            path_to_extract = get_path(filename)
+        else:
+            if path_to_extract.find('media') == -1:
+                path_to_extract = '%s%s'%(settings.MEDIA_ROOT, path_to_extract)
         if filename != '' and path_to_extract != '':
-            path_to_extract = '%s%s'%(settings.MEDIA_ROOT, path_to_extract)
             cmd = 'unrar x -y %s %s'%(filename, path_to_extract)
             os.system(cmd)
             return 'success'
     except Exception, e:
-        return e.__str__()
+        print e
+        return 'fail'
 
 def listDir(path):
     r = ['<ul class="jqueryFileTree" style="display: none;">']
@@ -191,3 +195,17 @@ def readQuotation(filename):
             head.append(sectors)
             sectors = dict()
     return head
+
+def get_path(filename):
+    try:
+        return os.path.dirname(filename)
+    except Exception as ex:
+        print ex
+        return 'undefined'
+
+def get_extension(filename):
+    try:
+        return os.path.splitext(filename)[1].lower()
+    except Exception as ex:
+        print ex
+        return 'undefined'

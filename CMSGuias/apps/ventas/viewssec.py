@@ -18,7 +18,8 @@ from django.views.generic import View
 
 # local Django
 from .models import Proyecto, CloseProject
-from ..tools.globalVariable import date_now
+from ..tools.globalVariable import date_now, get_pin
+from ..tools.uploadFiles import descompressRAR, get_extension
 
 
 class JSONResponseMixin(object):
@@ -31,7 +32,7 @@ class JSONResponseMixin(object):
         )
 
     def convert_context_to_json(self, context):
-        return simplejson.dumps(context,
+        return json.dumps(context,
                                 encoding='utf-8',
                                 cls=DjangoJSONEncoder)
 
@@ -42,7 +43,25 @@ class ClosedProjectView(JSONResponseMixin, View):
         try:
             if request.is_ajax():
                 try:
-                    pass
+                    if 'gcomplete' in request.GET:
+                        kwargs['complete'] = {
+                            'storage': False,
+                            'operations': False,
+                            'quality': False,
+                            'accounting': False,
+                            'sales': False}
+                        cl = CloseProject.objects.get(project_id=kwargs['pro'])
+                        if cl.storageclose != None:
+                            kwargs['complete']['storage'] = True
+                        if cl.letterdelivery != None:
+                            kwargs['complete']['operations'] = True
+                        if cl.documents != None:
+                            kwargs['complete']['quality'] = True
+                        if cl.accounting != None:
+                            kwargs['complete']['accounting'] = True
+                        if cl.dateclose != None:
+                            kwargs['complete']['sales'] = True
+                        kwargs['status'] = True
                 except (ObjectDoesNotExist or Exception) as e:
                     kwargs['status'] = False
                     kwargs['raise'] = str(e)
@@ -60,28 +79,79 @@ class ClosedProjectView(JSONResponseMixin, View):
                 if 'storage' in request.POST:
                     try:
                         cl = CloseProject.objects.get(project_id=kwargs['pro'])
-                        cl.storageclose = True
-                        cl.datestorage = date_now('datetime')
-                        cl.performedstorage_id = request.user.get_profile().empdni_id
-                        cl.save()
                     except (CloseProject.DoesNotExist) as ex:
-                        CloseProject.objects.create(
-                            project_id=kwargs['pro'],
-                            storageclose=True,
-                            datestorage=date_now('datetime'),
-                            performedstorage_id=request.user.get_profile().empdni_id)
-                        kwargs['status'] = True
+                        cl = CloseProject()
+                        cl.project_id=kwargs['pro']
+                    cl.storageclose = True
+                    cl.datestorage = date_now('datetime')
+                    cl.performedstorage_id = request.user.get_profile().empdni_id
+                    cl.save()
+                    kwargs['status'] = True
                 if 'operations' in request.POST:
                     try:
-                        pass
+                        cl = CloseProject.objects.get(project_id=kwargs['pro'])
                     except (CloseProject.DoesNotExist or Exception) as ex:
-                        pass
+                        cl = CloseProject()
+                        cl.project_id=kwargs['pro']
+                    cl.letterdelivery = request.FILES['letter']
+                    cl.dateletter = date_now('datetime')
+                    cl.performedoperations_id = request.user.get_profile().empdni_id
+                    cl.save()
+                    kwargs['status'] = True
                 if 'quality' in request.POST:
-                    pass
+                    try:
+                        cl = CloseProject.objects.get(project_id=kwargs['pro'])
+                    except (CloseProject.DoesNotExist or Exception) as ex:
+                        cl = CloseProject()
+                        cl.project_id=kwargs['pro']
+                    cl.documents = request.FILES['documents']
+                    cl.docregister = date_now('datetime')
+                    cl.performedoperations_id=request.user.get_profile().empdni()
+                    cl.save()
+                    if get_extension(cl.documents) == '.rar':
+                        descompressRAR(cl.documents)
+                    kwargs['status'] = True
                 if 'accounting' in request.POST:
-                    pass
+                    try:
+                        cl = CloseProject.objects.get(project_id=kwargs['pro'])
+                    except (CloseProject.DoesNotExist or Exception) as ex:
+                        cl = CloseProject()
+                        cl.project_id = kwargs['pro']
+                    if 'tinvoice' in request.POST:
+                        if request.POST['tinvoice'] > -1:
+                            cl.tinvoice = request.POST['tinvoice']
+                    if 'tiva' in request.POST:
+                        if request.POST['tiva'] > -1:
+                            cl.tiva = request.POST['tiva']
+                    if 'otherin' in request.POST:
+                        if request.POST['otherin'] > -1:
+                            cl.otherin = request.POST['otherin']
+                    if 'otherout' in request.POST:
+                        if request.POST['otherout'] > -1:
+                            cl.otherout = request.POST['otherout']
+                    if 'retention' in request.POST:
+                        if request.POST['retention'] > -1:
+                            cl.retention = request.POST['retention']
+                    if 'fileaccounting' in request.POST:
+                        cl.fileaccounting = request.FILES['fileaccounting']
+                    cl.performedaccounting_id = request.user.get_profile().empdni_id
+                    cl.save()
+                    if get_extension(cl.fileaccounting) == '.rar':
+                        descompressRAR(cl.fileaccounting)
+                    kwargs['status'] = True
                 if 'sales' in request.POST:
-                    pass
+                    cl = CloseProject.objects.get(project_id=kwargs['pro'])
+                    if 'genpin' in request.POST:
+                        cl.closeconfirm = gen_pin()
+                        cl.save()
+                        kwargs['pin'] =  cl.closeconfirm
+                        kwargs['status'] = True
+                    if 'closed' in request.POST:
+                        if request.POST['confirm'] == cl.closeconfirm:
+                            cl.dateclose = date_now('datetime')
+                            cl.performedclose_id = request.user.get_profile().empdni_id
+                            cl.status = 'CO'
+                            cl.save()
             except (ObjectDoesNotExist or Exception) as e:
                 kwargs['raise'] = str(e)
                 kwargs['status'] = False

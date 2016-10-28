@@ -204,6 +204,16 @@ def get_Token():
         raise e
     return token
 
+def get_pin():
+    pin = ''
+    try:
+        ar = list()
+        for x in range(0, 6):
+            pin += str(randint(0, 9))
+    except Exception as ex:
+        print ex
+        pin = '000000'
+    return pin
 
 def convertNumberLiteral(number=0):
     literal = ''
