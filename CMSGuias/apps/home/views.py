@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 import json
+import os
 
 from django.shortcuts import render_to_response, get_object_or_404, render
 from django.template import RequestContext, TemplateDoesNotExist
@@ -17,6 +18,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, TemplateView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.conf import settings
 
 # from CMSGuias.apps.home.forms import signupForm, logininForm
 from CMSGuias.apps.tools.redirectHome import RedirectModule
@@ -47,19 +49,34 @@ class HomeManager(ListView):
     def get(self, request, *args, **kwargs):
         try:
             context = dict()
-            com = Company.objects.get(pk='20428776110')
-            request.session['company'] = {
-                'ruc': com.ruc,
-                'name': com.companyname,
-                'address': com.address,
-                'phone': com.phone
-            }
-            self.template_name = RedirectModule(
-                request.user.get_profile().empdni.charge.area)
-            return render_to_response(
-                self.template_name,
-                context,
-                context_instance=RequestContext(request))
+            if 'company' in request.session:
+                self.template_name = RedirectModule(
+                    request.user.get_profile().empdni.charge.area)
+                return render(request, self.template_name, kwargs)
+            else:
+                f = open(os.path.join(settings.STATIC_ROOT, 'load.json'), 'r')
+                data = json.loads(f.read())
+                # print data
+                com = Company.objects.get(pk=data['company'])
+                request.session['company'] = {
+                    'ruc': com.ruc,
+                    'name': com.companyname,
+                    'address': com.address,
+                    'phone': com.phone
+                }
+                # print request.GET
+                ad = request.user.get_profile().empdni.charge.area.lower() == 'administrator'
+                sl = request.user.get_profile().empdni.charge.area.lower() == 'ventas'
+                lg = request.user.get_profile().empdni.charge.area.lower() == 'logistica'
+                if ad or sl or lg:
+                    if 'next' in request.GET:
+                        return HttpResponseRedirect(request.GET['next'])
+                self.template_name = RedirectModule(
+                    request.user.get_profile().empdni.charge.area)
+                return render_to_response(
+                    self.template_name,
+                    context,
+                    context_instance=RequestContext(request))
         except TemplateDoesNotExist, e:
             raise Http404(e)
 
@@ -67,6 +84,7 @@ class HomeManager(ListView):
 class LoginView(View):
 
     def get(self, request, *args, **kwargs):
+        # print request.GET
         if request.user.is_authenticated():
             return HttpResponseRedirect('/')
         else:
@@ -85,6 +103,10 @@ class LoginView(View):
             usuario = authenticate(username=username, password=password)
             if usuario is not None and usuario.is_active:
                 login(request, usuario)
+                # print request.POST
+                # print request.GET
+                if 'next' in request.GET:
+                    return HttpResponseRedirect('/?next=%s' % request.GET['next'])
                 return HttpResponseRedirect(reverse_lazy('vista_home'))
             else:
                 message = "Usuario o Password incorrecto"

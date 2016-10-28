@@ -18,6 +18,7 @@ from django.views.generic import View
 
 # local Django
 from .models import Proyecto, CloseProject
+from ..tools.globalVariable import date_now
 
 
 class JSONResponseMixin(object):
@@ -36,6 +37,7 @@ class JSONResponseMixin(object):
 
 class ClosedProjectView(JSONResponseMixin, View):
 
+    @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         try:
             if request.is_ajax():
@@ -51,6 +53,7 @@ class ClosedProjectView(JSONResponseMixin, View):
             raise Http404(ex)
         return HttpResponse('GET request!')
 
+    @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             try:
@@ -58,13 +61,14 @@ class ClosedProjectView(JSONResponseMixin, View):
                     try:
                         cl = CloseProject.objects.get(project_id=kwargs['pro'])
                         cl.storageclose = True
-                        cl.datestorage = datetime.datetime.today()
+                        cl.datestorage = date_now('datetime')
                         cl.performedstorage_id = request.user.get_profile().empdni_id
                         cl.save()
                     except (CloseProject.DoesNotExist) as ex:
                         CloseProject.objects.create(
                             project_id=kwargs['pro'],
                             storageclose=True,
+                            datestorage=date_now('datetime'),
                             performedstorage_id=request.user.get_profile().empdni_id)
                         kwargs['status'] = True
                 if 'operations' in request.POST:
