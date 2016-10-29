@@ -21,6 +21,8 @@ do ->
             $http.get "", params: options
         obj.formData = (options={}) ->
             $http.post "", fd(options), transformRequest: angular.identity, headers: 'Content-Type': undefined
+        obj.formCross = (uri="", options={}) ->
+            $http.jsonp uri, params: options
         return obj
     app.factory 'cpFactory', cpFactories
 
@@ -84,10 +86,10 @@ do ->
                     .success (response) ->
                         if response.status
                             $scope.sComplete()
-                            Materialize.toast "<i class='fa fa-check fa-lg green-text'></i>&nbps;Almacén Cerrado", 4000
+                            Materialize.toast "<i class='fa fa-check fa-lg green-text'></i>&nbsp;Almacén Cerrado", 4000
                             return
                         else
-                            Materialize.toast "<i class='fa fa-times fa-lg red-text'></i>&nbps;#{repsonse.raise}", 4000
+                            Materialize.toast "<i class='fa fa-times fa-lg red-text'></i>&nbsp;#{repsonse.raise}", 4000
                             return
                     return
                 else
@@ -111,20 +113,112 @@ do ->
                 closeOnConfirm: true
             , (isConfirm) ->
                 if isConfirm
-                    $log.info "yes closed"
                     prm =
                         'operations': true
                         'letter': angular.element("#letterup")[0].files[0]
-                    cpFactory.formData 
+                    cpFactory.formData prm
                     .success (response) ->
                         if response.status
                             $scope.sComplete()
-                            Materialize.toast "<i class='fa fa-check fa-lg green-text'></i>&nbps;Archivo subido.", 4000
+                            Materialize.toast "<i class='fa fa-check fa-lg green-text'></i>&nbsp;Archivo subido.", 4000
                             return
                         else
-                            Materialize.toast "<i class='fa fa-times fa-lg red-text'></i>&nbps;#{repsonse.raise}", 4000
+                            Materialize.toast "<i class='fa fa-times fa-lg red-text'></i>&nbsp;#{repsonse.raise}", 4000
                             return
                     return
+            return
+        
+        $scope.qualityClosed = ->
+            if angular.element("#qualityfile")[0].files.length is 0
+                Materialize.toast "<i class='fa fa-warning amber-text fa-lg'></i> Debe seleccionar por lo menos un archivo.", 4000
+                return false
+            swal
+                title: "Realmanete desea cargar los documentos de calidad?"
+                text: ''
+                type: 'warning'
+                showCancelButton: true
+                confirmButtonText: 'Si!, subir'
+                confirmButtonColor: "#f82432"
+                closeOnCancel: true
+                closeOnConfirm: true
+            , (isConfirm) ->
+                if isConfirm
+                    prm =
+                        'quality': true
+                        'documents': angular.element("#qualityfile")[0].files[0]
+                    cpFactory.formData prm
+                    .success (response) ->
+                        if response.status
+                            $scope.sComplete()
+                            Materialize.toast "<i class='fa fa-check fa-lg green-text'></i>&nbsp;Archivo subido.", 4000
+                            return
+                        else
+                            Materialize.toast "<i class='fa fa-times fa-lg red-text'></i>&nbsp;#{repsonse.raise}", 4000
+                            return
+                    return
+            return
+        $scope.accountingClosed = ->
+            prm =
+                accounting: true
+                tinvoice: $scope.acctinvoice
+                tiva: $scope.acctiva
+                otherin: $scope.acctotherin
+                otherout: $scope.acctotherout
+                retention: $scope.acctretention
+            if angular.element("#accountingfile")[0].files.length > 0
+                prm['fileaccounting']= angular.element("#accountingfile")[0].files[0]
+            swal
+                title: "Realmanete desea cargar los documentos de calidad?"
+                text: ''
+                type: 'warning'
+                showCancelButton: true
+                confirmButtonText: 'Si!, subir'
+                confirmButtonColor: "#f82432"
+                closeOnCancel: true
+                closeOnConfirm: true
+            , (isConfirm) ->
+                if isConfirm
+                    cpFactory.formData prm
+                    .success (response) ->
+                        if response.status
+                            $scope.sComplete()
+                            Materialize.toast "<i class='fa fa-check fa-lg green-text'></i>&nbsp;Archivo subido.", 4000
+                            return
+                        else
+                            Materialize.toast "<i class='fa fa-times fa-lg red-text'></i>&nbsp;#{repsonse.raise}", 4000
+                            return
+                    return
+            return
+        $scope.getPin = ->
+            Materialize.toast '<i class="fa fa-cog fa-spin fa-2x"></i>&nbsp;&nbsp;Generando PIN, espere!', 'some', 'lime lighten-1 grey-text text-darken-3 toast-static'
+            prm =
+                genpin: true
+                sales: true
+            cpFactory.formData prm
+            .success (response) ->
+                if response.status
+                    setTimeout (->
+                        angular.element(".toast-static").remove()
+                        Materialize.toast '<i class="fa fa-envelope-o fa-lg"></i>&nbsp Estamos enviando el PIN a su correo.', 'some', 'toast-static'
+                        prm =
+                            forsb: response.mail
+                            issue: "PIN DE CIERRE PROYECTO #{response.pro}"
+                            body: """<p><strong><strong>#{response.company} |</strong></strong> Operaciones Frecuentes</p><p>Generar PIN para cierre de proyecto | <strong>#{new Date().toString()}</strong></p><p><strong>PIN:&nbsp;#{response.pin}</strong></p><p><strong>Proyecto:&nbsp;#{response.pro} #{response.name}</strong></p>"""
+                            callback: 'JSON_CALLBACK'
+                        cpFactory.formCross "http://190.41.246.91:3000/mailer/", prm
+                        .success (rescross) ->
+                            if rescross.status
+                                angular.element(".toast-static").remove()
+                                Materialize.toast '<i class="fa fa-paper-plane-o fa-lg"></i>&nbsp; Se a envio correntamente el correo', 4000
+                                return
+                            else
+                                Materialize.toast 'Se ha producido algun error #{rescross}', 7000
+                                return
+                        return
+                    ), 8000
+                else
+                    Materialize.toast "<i class='fa fa-times fa-lg red-text'></i> #{response.raise}"
+                return
             return
         ## cpCtrl
         $scope.$watch 'call', (nw, old) ->

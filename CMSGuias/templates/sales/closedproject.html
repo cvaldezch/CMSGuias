@@ -125,7 +125,7 @@
                                         <div class="btn red">
                                             <i class="fa fa-server"></i>
                                             <span>Documentos</span>
-                                            <input type="file">
+                                            <input type="file" id="qualityfile">
                                         </div>
                                         <div class="file-path-wrapper">
                                             <input class="file-path validate" type="text">
@@ -155,35 +155,39 @@
                         <div class="collapsible-body" ng-show="ctrl.accounting" ng-style="mstyle">
                             <div class="row" ng-hide="sh.accounting">
                                 <div class="col l6 m6 s12 input-field">
-                                    <input type="number">
+                                    <input type="number" ng-model="acctinvoice">
                                     <label for="">Total Facturado</label>
                                 </div>
                                 <div class="col l6 m6 s12 input-field">
-                                    <input type="number">
+                                    <input type="number" ng-model="acctiva">
                                     <label for="">Total IGV</label>
                                 </div>
                                 <div class="col l6 m6 s12 input-field">
-                                    <input type="number">
+                                    <input type="number" ng-model="acctotherin">
                                     <label for="">Otros Ingresos</label>
                                 </div>
                                 <div class="col l6 m6 s12 input-field">
-                                    <input type="number">
+                                    <input type="number" ng-model="acctotherout">
                                     <label for="">Otras Salidas</label>
                                 </div>
                                 <div class="col l6 m6 s12 input-field">
-                                    <input type="number">
+                                    <input type="number" ng-model="acctretention">
                                     <label for="">Retenciones</label>
                                 </div>
                                 <div class="col l6 m6 s12 file-field input-field">
                                     <div class="btn red">
                                         <span>ARCHIVOS</span>
-                                        <input type="file">
+                                        <input type="file" id="accountingfile">
                                     </div>
                                     <div class="file-path-wrapper">
                                         <input class="file-path validate" type="text">
                                     </div>
                                 </div>
                                 <div class="col l12 m12 s12 input-field">
+                                    <button type="button" class="btn red waves-effect waves-light">
+                                        <i class="fa fa-lock"></i>
+                                        <span class="hide-on-small-only">Cerrar</span>
+                                    </button>
                                     <button type="button" class="btn light-blue waves-effect waves-light right">
                                         <i class="fa fa-floppy-o"></i>
                                         <span class="hide-on-small-only">GUARDAR</span>
@@ -212,7 +216,7 @@
                                 </div>
                                 <div class="col l4 m4 s4 input-field">
                                     <!-- <br> -->
-                                    <button type="button" class="btn green lighten-2 grey-text text-darken-3 waves-effect waves-light">
+                                    <button type="button" class="btn green lighten-2 grey-text text-darken-3 waves-effect waves-light" ng-click="getPin()">
                                         <i class="fa fa-key"></i>
                                         <span class="hide-on-small-only">Obtener Código</span>
                                     </button>

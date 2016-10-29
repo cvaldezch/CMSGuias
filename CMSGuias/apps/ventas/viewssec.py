@@ -51,15 +51,15 @@ class ClosedProjectView(JSONResponseMixin, View):
                             'accounting': False,
                             'sales': False}
                         cl = CloseProject.objects.get(project_id=kwargs['pro'])
-                        if cl.storageclose != None:
+                        if cl.storageclose != None and cl.storageclose != False:
                             kwargs['complete']['storage'] = True
-                        if cl.letterdelivery != None:
+                        if cl.letterdelivery != None and cl.letterdelivery != '':
                             kwargs['complete']['operations'] = True
-                        if cl.documents != None:
+                        if cl.documents != None and cl.documents != '':
                             kwargs['complete']['quality'] = True
-                        if cl.accounting != None:
+                        if cl.accounting != None and cl.accounting != False:
                             kwargs['complete']['accounting'] = True
-                        if cl.dateclose != None:
+                        if cl.status != None and cl.status != 'PE':
                             kwargs['complete']['sales'] = True
                         kwargs['status'] = True
                 except (ObjectDoesNotExist or Exception) as e:
@@ -142,9 +142,12 @@ class ClosedProjectView(JSONResponseMixin, View):
                 if 'sales' in request.POST:
                     cl = CloseProject.objects.get(project_id=kwargs['pro'])
                     if 'genpin' in request.POST:
-                        cl.closeconfirm = gen_pin()
+                        cl.closeconfirm = get_pin()
                         cl.save()
                         kwargs['pin'] =  cl.closeconfirm
+                        kwargs['company'] = request.session['company']['name']
+                        kwargs['name'] = cl.project.nompro
+                        kwargs['mail'] = request.user.get_profile().empdni.email
                         kwargs['status'] = True
                     if 'closed' in request.POST:
                         if request.POST['confirm'] == cl.closeconfirm:
@@ -152,6 +155,7 @@ class ClosedProjectView(JSONResponseMixin, View):
                             cl.performedclose_id = request.user.get_profile().empdni_id
                             cl.status = 'CO'
                             cl.save()
+                            kwargs['status'] = True
             except (ObjectDoesNotExist or Exception) as e:
                 kwargs['raise'] = str(e)
                 kwargs['status'] = False
