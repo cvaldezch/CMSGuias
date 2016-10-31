@@ -83,9 +83,9 @@
                             <i class="fa right" ng-class="{'fa-check-square-o': sh.operations, 'fa-square-o': !sh.operations}"></i>
                         </div>
                         <div class="collapsible-body" ng-show="ctrl.operations" ng-style="mstyle">
-                            <div class="card-panel" ng-hide="sh.operations">
+                            <div class="card-panel">
                                 <span>Este apartado es para subir la carta de entrega que formaliza el termino de proyecto.</span>
-                                <div class="row">
+                                <div class="row" ng-hide="sh.operations">
                                     <div class="col l12 m12 s12 file-field input-field">
                                         <div class="btn red">
                                             <i class="fa fa-file-text-o"></i>
@@ -184,11 +184,11 @@
                                     </div>
                                 </div>
                                 <div class="col l12 m12 s12 input-field">
-                                    <button type="button" class="btn red waves-effect waves-light">
+                                    <button type="button" class="btn red waves-effect waves-light" ng-click="accountingQuit()">
                                         <i class="fa fa-lock"></i>
                                         <span class="hide-on-small-only">Cerrar</span>
                                     </button>
-                                    <button type="button" class="btn light-blue waves-effect waves-light right">
+                                    <button type="button" class="btn light-blue waves-effect waves-light right"ng-click="accountingClosed()">
                                         <i class="fa fa-floppy-o"></i>
                                         <span class="hide-on-small-only">GUARDAR</span>
                                     </button>
@@ -222,7 +222,7 @@
                                     </button>
                                 </div>
                                 <div class="col l12 m12 s12">
-                                    <button type="button" class="btn red waves-effect waves-light right" ng-click="accountingQuit()">
+                                    <button type="button" class="btn red waves-effect waves-light right" ng-click="SaleClosed()">
                                         <i class="fa fa-lock"></i>
                                         <span class="hide-on-small-only">CERRAR PROYECTO</span>
                                     </button>

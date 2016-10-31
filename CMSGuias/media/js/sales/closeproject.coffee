@@ -54,6 +54,25 @@ do ->
             angular.element('.collapsible').collapsible()
             angular.element('.scrollspy').scrollSpy()
             $scope.sComplete()
+            $scope.loadData()
+            return
+
+        $scope.loadData = ->
+            prm =
+                load: true
+            cpFactory.getComplete prm
+            .success (response) ->
+                if response.status
+                    response.closed = response.closed[0].fields
+                    $scope.acctinvoice = response.closed.tinvoice
+                    $scope.acctiva = response.closed.tiva
+                    $scope.acctotherin = response.closed.otherin
+                    $scope.acctotherout = response.closed.otherout
+                    $scope.acctretention = response.closed.retention
+                    return
+                else
+                    console.log "#{response.raise}"
+                    return
             return
 
         $scope.sComplete = ->
@@ -180,11 +199,11 @@ do ->
             if angular.element("#accountingfile")[0].files.length > 0
                 prm['fileaccounting']= angular.element("#accountingfile")[0].files[0]
             swal
-                title: "Realmanete desea cargar los documentos de calidad?"
+                title: "Realmanete desea guardar los datos asignados?"
                 text: ''
                 type: 'warning'
                 showCancelButton: true
-                confirmButtonText: 'Si!, subir'
+                confirmButtonText: 'Si!, Guardar'
                 confirmButtonColor: "#f82432"
                 closeOnCancel: true
                 closeOnConfirm: true
@@ -201,14 +220,38 @@ do ->
                             return
                     return
             return
-        
         $scope.accountingQuit = ->
             swal
-                title: "Realmanete desea cargar los documentos de calidad?"
+                title: 'Realmanete desea cerrar Contabilidad?'
                 text: ''
                 type: 'warning'
                 showCancelButton: true
-                confirmButtonText: 'Si!, subir'
+                confirmButtonText: 'Si!, cerrar'
+                confirmButtonColor: "#f82432"
+                closeOnCancel: true
+                closeOnConfirm: true
+            , (isConfirm) ->
+                if isConfirm
+                    prm =
+                        quitaccounting: true
+                    cpFactory.formData prm
+                    .success (response) ->
+                        if response.status
+                            $scope.sComplete()
+                            Materialize.toast "<i class='fa fa-check fa-lg green-text'></i>&nbsp;Contabilidad cerrada.", 4000
+                            return
+                        else
+                            Materialize.toast "<i class='fa fa-times fa-lg red-text'></i>&nbsp;#{repsonse.raise}", 4000
+                            return
+                    return
+            return
+        $scope.SaleClosed = ->
+            swal
+                title: "Realmanete desea cerrar el proyecto?"
+                text: ''
+                type: 'warning'
+                showCancelButton: true
+                confirmButtonText: 'Si!, cerrar'
                 confirmButtonColor: "#f82432"
                 closeOnCancel: true
                 closeOnConfirm: true
@@ -222,7 +265,11 @@ do ->
                     .success (response) ->
                         if response.status
                             $scope.sComplete()
-                            Materialize.toast "<i class='fa fa-check fa-lg green-text'></i>&nbsp;Contabilidad cerrada.", 4000
+                            Materialize.toast "<i class='fa fa-check fa-lg green-text'></i>&nbsp;Proyecto cerrado Satisfactoriamente.", 4000
+                            setTimeout (->
+                                location.href = '/sales/projects/'
+                                return
+                            ), 4000
                             return
                         else
                             Materialize.toast "<i class='fa fa-times fa-lg red-text'></i>&nbsp;#{repsonse.raise}", 4000

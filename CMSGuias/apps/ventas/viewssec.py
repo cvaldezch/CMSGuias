@@ -43,6 +43,13 @@ class ClosedProjectView(JSONResponseMixin, View):
         try:
             if request.is_ajax():
                 try:
+                    if 'load' in request.GET:
+                        kwargs['closed'] = json.loads(
+                            serializers.serialize(
+                                'json',
+                                CloseProject.objects.filter(
+                                        project_id=kwargs['pro'])))
+                        kwargs['status'] = True
                     if 'gcomplete' in request.GET:
                         kwargs['complete'] = {
                             'storage': False,
@@ -106,9 +113,9 @@ class ClosedProjectView(JSONResponseMixin, View):
                         cl.project_id=kwargs['pro']
                     cl.documents = request.FILES['documents']
                     cl.docregister = date_now('datetime')
-                    cl.performedoperations_id=request.user.get_profile().empdni()
+                    cl.performeddocument_id=request.user.get_profile().empdni_id
                     cl.save()
-                    if get_extension(cl.documents) == '.rar':
+                    if get_extension(cl.documents.name) == '.rar':
                         descompressRAR(cl.documents)
                     kwargs['status'] = True
                 if 'accounting' in request.POST:
@@ -132,12 +139,17 @@ class ClosedProjectView(JSONResponseMixin, View):
                     if 'retention' in request.POST:
                         if request.POST['retention'] > -1:
                             cl.retention = request.POST['retention']
-                    if 'fileaccounting' in request.POST:
+                    if 'fileaccounting' in request.FILES:
                         cl.fileaccounting = request.FILES['fileaccounting']
                     cl.performedaccounting_id = request.user.get_profile().empdni_id
                     cl.save()
                     if get_extension(cl.fileaccounting) == '.rar':
                         descompressRAR(cl.fileaccounting)
+                    kwargs['status'] = True
+                if 'quitaccounting' in request.POST:
+                    cl = CloseProject.objects.get(project_id=kwargs['pro'])
+                    cl.accounting = True
+                    cl.save()
                     kwargs['status'] = True
                 if 'sales' in request.POST:
                     cl = CloseProject.objects.get(project_id=kwargs['pro'])
@@ -155,6 +167,10 @@ class ClosedProjectView(JSONResponseMixin, View):
                             cl.performedclose_id = request.user.get_profile().empdni_id
                             cl.status = 'CO'
                             cl.save()
+                            pr = Proyecto.objects.get(proyecto_id=kwargs['pro'])
+                            pr.status = 'CL'
+                            pr.flag = False
+                            pr.save()
                             kwargs['status'] = True
             except (ObjectDoesNotExist or Exception) as e:
                 kwargs['raise'] = str(e)

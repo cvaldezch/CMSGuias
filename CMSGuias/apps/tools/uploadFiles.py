@@ -83,16 +83,16 @@ def fileExists(paths, partial=False):
 
 def descompressRAR(filename, path_to_extract=''):
     try:
-        if filename == '':
-            if filename.find('media') == -1:
-                filename = '%s/%s' % (settings.MEDIA_ROOT, filename)
+        filename = str(filename)
+        if filename.find('media') == -1:
+            filename = '%s/%s' % (settings.MEDIA_ROOT, filename)
         if path_to_extract == '':
-            path_to_extract = get_path(filename)
+            path_to_extract = '%s/' % get_path(filename)
         else:
             if path_to_extract.find('media') == -1:
                 path_to_extract = '%s%s'%(settings.MEDIA_ROOT, path_to_extract)
         if filename != '' and path_to_extract != '':
-            cmd = 'unrar x -y %s %s'%(filename, path_to_extract)
+            cmd = 'unrar x -y %s %s' % (filename, path_to_extract)
             os.system(cmd)
             return 'success'
     except Exception, e:

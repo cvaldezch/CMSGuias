@@ -88,7 +88,26 @@
       angular.element('.collapsible').collapsible();
       angular.element('.scrollspy').scrollSpy();
       $scope.sComplete();
+      $scope.loadData();
     });
+    $scope.loadData = function() {
+      var prm;
+      prm = {
+        load: true
+      };
+      cpFactory.getComplete(prm).success(function(response) {
+        if (response.status) {
+          response.closed = response.closed[0].fields;
+          $scope.acctinvoice = response.closed.tinvoice;
+          $scope.acctiva = response.closed.tiva;
+          $scope.acctotherin = response.closed.otherin;
+          $scope.acctotherout = response.closed.otherout;
+          $scope.acctretention = response.closed.retention;
+        } else {
+          console.log("" + response.raise);
+        }
+      });
+    };
     $scope.sComplete = function() {
       cpFactory.getComplete({
         'gcomplete': true
@@ -227,11 +246,11 @@
         prm['fileaccounting'] = angular.element("#accountingfile")[0].files[0];
       }
       swal({
-        title: "Realmanete desea cargar los documentos de calidad?",
+        title: "Realmanete desea guardar los datos asignados?",
         text: '',
         type: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Si!, subir',
+        confirmButtonText: 'Si!, Guardar',
         confirmButtonColor: "#f82432",
         closeOnCancel: true,
         closeOnConfirm: true
@@ -250,11 +269,38 @@
     };
     $scope.accountingQuit = function() {
       swal({
-        title: "Realmanete desea cargar los documentos de calidad?",
+        title: 'Realmanete desea cerrar Contabilidad?',
         text: '',
         type: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Si!, subir',
+        confirmButtonText: 'Si!, cerrar',
+        confirmButtonColor: "#f82432",
+        closeOnCancel: true,
+        closeOnConfirm: true
+      }, function(isConfirm) {
+        var prm;
+        if (isConfirm) {
+          prm = {
+            quitaccounting: true
+          };
+          cpFactory.formData(prm).success(function(response) {
+            if (response.status) {
+              $scope.sComplete();
+              Materialize.toast("<i class='fa fa-check fa-lg green-text'></i>&nbsp;Contabilidad cerrada.", 4000);
+            } else {
+              Materialize.toast("<i class='fa fa-times fa-lg red-text'></i>&nbsp;" + repsonse.raise, 4000);
+            }
+          });
+        }
+      });
+    };
+    $scope.SaleClosed = function() {
+      swal({
+        title: "Realmanete desea cerrar el proyecto?",
+        text: '',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si!, cerrar',
         confirmButtonColor: "#f82432",
         closeOnCancel: true,
         closeOnConfirm: true
@@ -269,7 +315,10 @@
           cpFactory.formData(prm).success(function(response) {
             if (response.status) {
               $scope.sComplete();
-              Materialize.toast("<i class='fa fa-check fa-lg green-text'></i>&nbsp;Contabilidad cerrada.", 4000);
+              Materialize.toast("<i class='fa fa-check fa-lg green-text'></i>&nbsp;Proyecto cerrado Satisfactoriamente.", 4000);
+              setTimeout((function() {
+                location.href = '/sales/projects/';
+              }), 4000);
             } else {
               Materialize.toast("<i class='fa fa-times fa-lg red-text'></i>&nbsp;" + repsonse.raise, 4000);
             }
