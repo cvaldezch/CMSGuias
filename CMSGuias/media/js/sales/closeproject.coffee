@@ -8,6 +8,18 @@ do ->
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken'
         return
 
+    app.directive "vcode", ->
+        restrict: 'AE'
+        require: '?ngModel'
+        link: (scope, element, attrs) ->
+            element.bind 'keypress', (event) ->
+                code = String element.val()
+                console.info code
+                if code.length > 5
+                    event.preventDefault()
+                    return
+            return
+
     cpFactories = ($http, $cookies) ->
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken
         $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
@@ -189,6 +201,35 @@ do ->
                             return
                     return
             return
+        
+        $scope.accountingQuit = ->
+            swal
+                title: "Realmanete desea cargar los documentos de calidad?"
+                text: ''
+                type: 'warning'
+                showCancelButton: true
+                confirmButtonText: 'Si!, subir'
+                confirmButtonColor: "#f82432"
+                closeOnCancel: true
+                closeOnConfirm: true
+            , (isConfirm) ->
+                if isConfirm
+                    prm =
+                        'sales': true
+                        'closed': true
+                        'confirm': $scope.gpin
+                    cpFactory.formData prm
+                    .success (response) ->
+                        if response.status
+                            $scope.sComplete()
+                            Materialize.toast "<i class='fa fa-check fa-lg green-text'></i>&nbsp;Contabilidad cerrada.", 4000
+                            return
+                        else
+                            Materialize.toast "<i class='fa fa-times fa-lg red-text'></i>&nbsp;#{repsonse.raise}", 4000
+                            return
+                    return
+            return
+
         $scope.getPin = ->
             Materialize.toast '<i class="fa fa-cog fa-spin fa-2x"></i>&nbsp;&nbsp;Generando PIN, espere!', 'some', 'lime lighten-1 grey-text text-darken-3 toast-static'
             prm =
@@ -197,25 +238,25 @@ do ->
             cpFactory.formData prm
             .success (response) ->
                 if response.status
-                    setTimeout (->
-                        angular.element(".toast-static").remove()
-                        Materialize.toast '<i class="fa fa-envelope-o fa-lg"></i>&nbsp Estamos enviando el PIN a su correo.', 'some', 'toast-static'
-                        prm =
-                            forsb: response.mail
-                            issue: "PIN DE CIERRE PROYECTO #{response.pro}"
-                            body: """<p><strong><strong>#{response.company} |</strong></strong> Operaciones Frecuentes</p><p>Generar PIN para cierre de proyecto | <strong>#{new Date().toString()}</strong></p><p><strong>PIN:&nbsp;#{response.pin}</strong></p><p><strong>Proyecto:&nbsp;#{response.pro} #{response.name}</strong></p>"""
-                            callback: 'JSON_CALLBACK'
-                        cpFactory.formCross "http://190.41.246.91:3000/mailer/", prm
-                        .success (rescross) ->
-                            if rescross.status
-                                angular.element(".toast-static").remove()
-                                Materialize.toast '<i class="fa fa-paper-plane-o fa-lg"></i>&nbsp; Se a envio correntamente el correo', 4000
-                                return
-                            else
-                                Materialize.toast 'Se ha producido algun error #{rescross}', 7000
-                                return
-                        return
-                    ), 8000
+                    # setTimeout (->
+                    angular.element(".toast-static").remove()
+                    Materialize.toast '<i class="fa fa-envelope-o fa-lg"></i>&nbsp Estamos enviando el PIN a su correo.', 'some', 'toast-static'
+                    prm =
+                        forsb: response.mail
+                        issue: "PIN DE CIERRE PROYECTO #{response.pro}"
+                        body: """<p><strong><strong>#{response.company} |</strong></strong> Operaciones Frecuentes</p><p>Generar PIN para cierre de proyecto | <strong>#{new Date().toString()}</strong></p><p><strong>PIN:&nbsp;#{response.pin}</strong></p><p><strong>Proyecto:&nbsp;#{response.pro} #{response.name}</strong></p>"""
+                        callback: 'JSON_CALLBACK'
+                    cpFactory.formCross "http://190.41.246.91:3000/mailer/", prm
+                    .success (rescross) ->
+                        if rescross.status
+                            angular.element(".toast-static").remove()
+                            Materialize.toast '<i class="fa fa-paper-plane-o fa-lg"></i>&nbsp; Se a envio correntamente el correo', 4000
+                            return
+                        else
+                            Materialize.toast 'Se ha producido algun error #{rescross}', 7000
+                            return
+                    # return
+                    # ), 8000
                 else
                     Materialize.toast "<i class='fa fa-times fa-lg red-text'></i> #{response.raise}"
                 return

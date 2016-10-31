@@ -7,6 +7,22 @@
     $httpProvider.defaults.xsrfCookieName = 'csrftoken';
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
   });
+  app.directive("vcode", function() {
+    return {
+      restrict: 'AE',
+      require: '?ngModel',
+      link: function(scope, element, attrs) {
+        element.bind('keypress', function(event) {
+          var code;
+          code = String(element.val());
+          console.info(code);
+          if (code.length > 5) {
+            event.preventDefault();
+          }
+        });
+      }
+    };
+  });
   cpFactories = function($http, $cookies) {
     var fd, obj;
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
@@ -232,6 +248,35 @@
         }
       });
     };
+    $scope.accountingQuit = function() {
+      swal({
+        title: "Realmanete desea cargar los documentos de calidad?",
+        text: '',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si!, subir',
+        confirmButtonColor: "#f82432",
+        closeOnCancel: true,
+        closeOnConfirm: true
+      }, function(isConfirm) {
+        var prm;
+        if (isConfirm) {
+          prm = {
+            'sales': true,
+            'closed': true,
+            'confirm': $scope.gpin
+          };
+          cpFactory.formData(prm).success(function(response) {
+            if (response.status) {
+              $scope.sComplete();
+              Materialize.toast("<i class='fa fa-check fa-lg green-text'></i>&nbsp;Contabilidad cerrada.", 4000);
+            } else {
+              Materialize.toast("<i class='fa fa-times fa-lg red-text'></i>&nbsp;" + repsonse.raise, 4000);
+            }
+          });
+        }
+      });
+    };
     $scope.getPin = function() {
       var prm;
       Materialize.toast('<i class="fa fa-cog fa-spin fa-2x"></i>&nbsp;&nbsp;Generando PIN, espere!', 'some', 'lime lighten-1 grey-text text-darken-3 toast-static');
@@ -241,24 +286,22 @@
       };
       cpFactory.formData(prm).success(function(response) {
         if (response.status) {
-          setTimeout((function() {
-            angular.element(".toast-static").remove();
-            Materialize.toast('<i class="fa fa-envelope-o fa-lg"></i>&nbsp Estamos enviando el PIN a su correo.', 'some', 'toast-static');
-            prm = {
-              forsb: response.mail,
-              issue: "PIN DE CIERRE PROYECTO " + response.pro,
-              body: "<p><strong><strong>" + response.company + " |</strong></strong> Operaciones Frecuentes</p><p>Generar PIN para cierre de proyecto | <strong>" + (new Date().toString()) + "</strong></p><p><strong>PIN:&nbsp;" + response.pin + "</strong></p><p><strong>Proyecto:&nbsp;" + response.pro + " " + response.name + "</strong></p>",
-              callback: 'JSON_CALLBACK'
-            };
-            cpFactory.formCross("http://190.41.246.91:3000/mailer/", prm).success(function(rescross) {
-              if (rescross.status) {
-                angular.element(".toast-static").remove();
-                Materialize.toast('<i class="fa fa-paper-plane-o fa-lg"></i>&nbsp; Se a envio correntamente el correo', 4000);
-              } else {
-                Materialize.toast('Se ha producido algun error #{rescross}', 7000);
-              }
-            });
-          }), 8000);
+          angular.element(".toast-static").remove();
+          Materialize.toast('<i class="fa fa-envelope-o fa-lg"></i>&nbsp Estamos enviando el PIN a su correo.', 'some', 'toast-static');
+          prm = {
+            forsb: response.mail,
+            issue: "PIN DE CIERRE PROYECTO " + response.pro,
+            body: "<p><strong><strong>" + response.company + " |</strong></strong> Operaciones Frecuentes</p><p>Generar PIN para cierre de proyecto | <strong>" + (new Date().toString()) + "</strong></p><p><strong>PIN:&nbsp;" + response.pin + "</strong></p><p><strong>Proyecto:&nbsp;" + response.pro + " " + response.name + "</strong></p>",
+            callback: 'JSON_CALLBACK'
+          };
+          cpFactory.formCross("http://190.41.246.91:3000/mailer/", prm).success(function(rescross) {
+            if (rescross.status) {
+              angular.element(".toast-static").remove();
+              Materialize.toast('<i class="fa fa-paper-plane-o fa-lg"></i>&nbsp; Se a envio correntamente el correo', 4000);
+            } else {
+              Materialize.toast('Se ha producido algun error #{rescross}', 7000);
+            }
+          });
         } else {
           Materialize.toast("<i class='fa fa-times fa-lg red-text'></i> " + response.raise);
         }

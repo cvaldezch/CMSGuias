@@ -21,7 +21,7 @@
                 Archivar Proyecto {{ pro }} {{ pr.nompro }}
                 <br>
                 <small>CLIENTE: {{ pr.ruccliente }}</small><br />
-                <small>RESPONSABLE: {{ pr.empdni_id }} {{ pr.empdni.firstname }} {{ pr.empdni.lastname }}</small><br />
+                <small>RESPONSABLE: {{ pr.empdni.firstname }} {{ pr.empdni.lastname }}</small><br />
                 <small>
                     <a class="grey-text text-darken-3 right" href="#!" ng-model="call" ng-click="call=!call">
                         <i class="fa" ng-class="{'fa-minus-square-o': call, 'fa-plus-square-o': !call}"></i>
@@ -132,7 +132,7 @@
                                         </div>
                                     </div>
                                     <div class="col l12 m12 s12">
-                                        <button type="button" class="right waves-effect waves-light btn light-blue">
+                                        <button type="button" class="right waves-effect waves-light btn light-blue" ng-click="qualityClosed()">
                                             <i class="fa fa-upload"></i>
                                             <span class="hide-on-small-only">Cargar</span>
                                         </button>
@@ -155,23 +155,23 @@
                         <div class="collapsible-body" ng-show="ctrl.accounting" ng-style="mstyle">
                             <div class="row" ng-hide="sh.accounting">
                                 <div class="col l6 m6 s12 input-field">
-                                    <input type="number" ng-model="acctinvoice">
+                                    <input type="number" min="0" class="right-align" ng-model="acctinvoice">
                                     <label for="">Total Facturado</label>
                                 </div>
                                 <div class="col l6 m6 s12 input-field">
-                                    <input type="number" ng-model="acctiva">
+                                    <input type="number" min="0" class="right-align" ng-model="acctiva">
                                     <label for="">Total IGV</label>
                                 </div>
                                 <div class="col l6 m6 s12 input-field">
-                                    <input type="number" ng-model="acctotherin">
+                                    <input type="number" min="0" class="right-align" ng-model="acctotherin">
                                     <label for="">Otros Ingresos</label>
                                 </div>
                                 <div class="col l6 m6 s12 input-field">
-                                    <input type="number" ng-model="acctotherout">
+                                    <input type="number" min="0" class="right-align" ng-model="acctotherout">
                                     <label for="">Otras Salidas</label>
                                 </div>
                                 <div class="col l6 m6 s12 input-field">
-                                    <input type="number" ng-model="acctretention">
+                                    <input type="number" min="0" class="right-align" ng-model="acctretention">
                                     <label for="">Retenciones</label>
                                 </div>
                                 <div class="col l6 m6 s12 file-field input-field">
@@ -211,7 +211,7 @@
                             <div class="row" ng-hide="sh.sales">
                                 <div class="col l4 m8 s8 input-field">
                                     <i class="fa fa-certificate prefix"></i>
-                                    <input type="text">
+                                    <input type="number" class="right-align" min="100000" max="999999" maxlength="6" name="gpin" ng-model="gpin" vcode>
                                     <label for="">Código</label>
                                 </div>
                                 <div class="col l4 m4 s4 input-field">
@@ -222,7 +222,7 @@
                                     </button>
                                 </div>
                                 <div class="col l12 m12 s12">
-                                    <button type="button" class="btn red waves-effect waves-light right">
+                                    <button type="button" class="btn red waves-effect waves-light right" ng-click="accountingQuit()">
                                         <i class="fa fa-lock"></i>
                                         <span class="hide-on-small-only">CERRAR PROYECTO</span>
                                     </button>
